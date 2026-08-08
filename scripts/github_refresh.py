@@ -13,7 +13,7 @@ import sys
 import time
 from calendar import monthrange
 from collections import Counter, defaultdict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
@@ -346,7 +346,8 @@ def main():
     cota_final = t.consumo()
 
     payload = {
-        "gerado_em": datetime.now().isoformat(timespec="seconds"),
+        # UTC com sufixo Z para JavaScript interpretar corretamente
+        "gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00","Z"),
         "hoje": hoje.isoformat(),
         "meta_mensal_valor": META_MENSAL,
         "dias_op_mes": DIAS_OP_MES,
