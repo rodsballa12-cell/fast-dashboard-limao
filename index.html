@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FAST Limão — Painel Trinks</title>
 <style>
   :root{--bg:#0E0E0E;--surface:#171717;--surface-2:#1F1F1F;--border:#2A2A2A;--ink:#F5F2E8;--ink-2:#B8B4A8;--ink-3:#7A7770;--accent:#FFCB05;--accent-2:#E0A82E;--good:#8CC63F;--warn:#FF9500;--crit:#FF3B30;--grid:#242424;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.5);}
@@ -24,7 +29,7 @@
   .tab-btn .subn{color:var(--ink-3);font-size:10.5px;margin-left:6px;font-weight:400;}
   .panel{display:none;} .panel.active{display:block;}
   .audit{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--ink-2);display:flex;gap:10px;align-items:flex-start;}
-  .audit strong{color:var(--ink);} .audit code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:11.5px;color:var(--accent);}
+  .audit strong{color:var(--ink);}
   .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
   .kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
   .kpi::before{content:"";position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent);}
@@ -36,7 +41,6 @@
   .kpi .up{color:var(--good);font-weight:700;} .kpi .dn{color:var(--crit);font-weight:700;}
   .meta-card{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:14px;padding:22px 26px;margin-bottom:20px;box-shadow:var(--shadow);}
   .meta-card h2{font-family:Georgia,serif;font-size:19px;margin:0 0 4px;color:var(--ink);}
-  .meta-card h2 .icon{color:var(--accent);}
   .meta-card .sub{font-size:11.5px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px;}
   .meta-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;margin-bottom:16px;}
   .meta-cell{background:var(--surface-2);border-radius:8px;padding:12px 14px;}
@@ -44,15 +48,15 @@
   .meta-cell .v{font-family:Georgia,serif;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:4px;}
   .meta-cell .v.good{color:var(--good);} .meta-cell .v.warn{color:var(--warn);} .meta-cell .v.crit{color:var(--crit);} .meta-cell .v.accent{color:var(--accent);}
   .progress{height:26px;background:var(--surface-2);border-radius:6px;overflow:hidden;position:relative;border:1px solid var(--border);}
-  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));position:relative;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));position:relative;transition:width .5s;}
   .progress-fill::after{content:"";position:absolute;top:0;right:0;bottom:0;width:2px;background:var(--accent);box-shadow:0 0 8px var(--accent);}
   .progress-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums;}
   .progress-labels .now{color:var(--accent);font-weight:700;}
-  .grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-bottom:12px;}
   .grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);margin-bottom:12px;}
   .card h2{font-family:Georgia,serif;font-size:15px;font-weight:600;margin:0 0 4px;color:var(--ink);}
   .card .cap{font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;}
+  .card h2 .hi{color:var(--ink-3);font-size:11px;font-weight:400;margin-left:6px;}
   table.simple{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--ink);}
   table.simple th{text-align:left;font-weight:700;color:var(--ink-3);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:8px 6px;border-bottom:1px solid var(--border);}
   table.simple td{padding:8px 6px;border-bottom:1px dashed var(--grid);}
@@ -61,42 +65,34 @@
   .up{color:var(--good);font-weight:700;} .dn{color:var(--crit);font-weight:700;} .neu{color:var(--ink-3);}
   .badge-new{display:inline-block;background:var(--accent);color:#000;font-size:9.5px;padding:1px 6px;border-radius:3px;font-weight:800;letter-spacing:.05em;margin-left:4px;}
   .badge-live{display:inline-block;background:var(--warn);color:#000;font-size:9.5px;padding:1px 6px;border-radius:3px;font-weight:800;letter-spacing:.05em;margin-left:4px;animation:pulse 1.5s infinite;}
-  .bars-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;height:150px;align-items:end;padding:8px 0;border-bottom:1px solid var(--grid);}
-  .bars-dow .b{border-radius:4px 4px 0 0;background:var(--accent-2);min-height:2px;} .bars-dow .b.hi{background:var(--accent);}
-  .bars-hora{display:grid;grid-template-columns:repeat(13,1fr);gap:4px;height:120px;align-items:end;padding:8px 0;border-bottom:1px solid var(--grid);}
-  .bars-hora .b{background:var(--accent-2);min-height:2px;border-radius:2px 2px 0 0;} .bars-hora .b.hi{background:var(--accent);}
-  .bars-dia{display:grid;grid-template-columns:repeat(31,1fr);gap:3px;height:170px;align-items:end;padding:8px 0;border-bottom:1px solid var(--grid);}
-  .bars-dia .b{background:var(--accent-2);border-radius:2px 2px 0 0;min-height:2px;} .bars-dia .b.hi{background:var(--accent);} .bars-dia .b[data-empty="1"]{background:var(--grid);}
-  .xaxis-dia{display:grid;grid-template-columns:repeat(31,1fr);gap:3px;font-size:9px;text-align:center;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums;}
-  .xaxis-dia span:not(:nth-child(5n+1)){visibility:hidden;}
-  .xaxis-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;font-size:11px;text-align:center;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums;}
-  .xaxis-hora{display:grid;grid-template-columns:repeat(13,1fr);gap:4px;font-size:10px;text-align:center;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums;}
-  .categ-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .categ-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
   .categ-tile{background:var(--surface-2);border-radius:8px;padding:14px;border-left:3px solid var(--accent);}
   .categ-tile.c2{border-left-color:var(--accent-2);}
   .categ-tile.c3{border-left-color:var(--good);}
   .categ-tile .n{font-size:10.5px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;font-weight:700;}
   .categ-tile .v{font-family:Georgia,serif;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:4px;}
   .categ-tile .d{font-size:11.5px;color:var(--ink-2);margin-top:4px;font-variant-numeric:tabular-nums;}
-  .diag{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:12px;padding:22px 26px;margin-top:24px;box-shadow:var(--shadow);}
-  .diag h2{font-family:Georgia,serif;font-size:20px;margin:0 0 4px;color:var(--ink);}
-  .diag h2 .icon{color:var(--accent);}
-  .diag .sub{font-size:11.5px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:18px;}
-  .diag-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;}
-  .diag-col h3{font-family:Georgia,serif;font-size:13px;font-weight:700;margin:0 0 10px;color:var(--accent);padding-bottom:6px;border-bottom:1px solid var(--border);}
-  .diag-col h3.g{color:var(--good);} .diag-col h3.w{color:var(--warn);}
-  .diag-col ul{list-style:none;padding:0;margin:0;}
-  .diag-col li{padding:8px 0 8px 16px;position:relative;font-size:13px;line-height:1.55;color:var(--ink);}
-  .diag-col li::before{content:"";position:absolute;left:0;top:14px;width:6px;height:6px;border-radius:50%;background:var(--accent);}
-  .diag-col li strong{color:var(--ink);}
-  .diag-col li .num{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent);}
+  .bars-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;height:150px;align-items:end;padding:8px 0;border-bottom:1px solid var(--grid);}
+  .bars-dow .b{border-radius:4px 4px 0 0;background:var(--accent-2);min-height:2px;} .bars-dow .b.hi{background:var(--accent);}
+  .bars-hora{display:grid;grid-template-columns:repeat(13,1fr);gap:4px;height:120px;align-items:end;padding:8px 0;border-bottom:1px solid var(--grid);}
+  .bars-hora .b{background:var(--accent-2);min-height:2px;border-radius:2px 2px 0 0;} .bars-hora .b.hi{background:var(--accent);}
+  .bars-dia{display:grid;grid-template-columns:repeat(31,1fr);gap:3px;height:170px;align-items:end;padding:8px 0;border-bottom:1px solid var(--grid);}
+  .bars-dia .b{background:var(--accent-2);border-radius:2px 2px 0 0;min-height:2px;} .bars-dia .b.hi{background:var(--accent);} .bars-dia .b[data-empty="1"]{background:var(--grid);}
+  .xaxis-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;font-size:11px;text-align:center;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums;}
+  .xaxis-hora{display:grid;grid-template-columns:repeat(13,1fr);gap:4px;font-size:10px;text-align:center;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums;}
+  .xaxis-dia{display:grid;grid-template-columns:repeat(31,1fr);gap:3px;font-size:9px;text-align:center;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums;}
+  .xaxis-dia span:not(:nth-child(5n+1)){visibility:hidden;}
   .insight{background:var(--surface-2);border-left:3px solid var(--accent);border-radius:6px;padding:12px 14px;margin-top:14px;font-size:13px;color:var(--ink);}
   .insight strong{color:var(--accent);}
+  #loading{display:flex;align-items:center;justify-content:center;min-height:400px;color:var(--ink-3);font-size:14px;}
+  .spinner{width:30px;height:30px;border:3px solid var(--surface-2);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin-right:12px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
   footer{margin-top:28px;padding-top:16px;border-top:1px solid var(--border);font-size:11.5px;color:var(--ink-3);line-height:1.7;}
   footer code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:11px;color:var(--accent);}
-  @media (max-width:820px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.grid-2,.grid-2b{grid-template-columns:1fr;}.diag-grid,.categ-grid{grid-template-columns:1fr;gap:12px;}.meta-row{grid-template-columns:repeat(2,1fr);}.brand-txt h1{font-size:18px;}.logo svg{height:44px;width:44px;}.kpi .value{font-size:24px;}.tab-btn{padding:10px 12px;font-size:12.5px;}}
+  @media (max-width:820px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.grid-2b{grid-template-columns:1fr;}.categ-grid{grid-template-columns:1fr;}.meta-row{grid-template-columns:repeat(2,1fr);}.brand-txt h1{font-size:18px;}.logo svg{height:44px;width:44px;}.kpi .value{font-size:24px;}.tab-btn{padding:10px 12px;font-size:12.5px;}}
 </style>
-
+</head>
+<body>
 <div class="wrap">
   <header>
     <div class="brand">
@@ -113,691 +109,387 @@
       </div>
     </div>
     <div class="meta">
-      <span class="chip">08/08 17:07</span>
-      <span class="chip"><span class="dot"></span> Cota 88/10k</span>
-      <span class="chip live"><span class="dot"></span> 10 em atendim.</span>
+      <span class="chip" id="chip-updated">carregando…</span>
+      <span class="chip" id="chip-live" style="display:none;"></span>
     </div>
   </header>
 
-  <div class="tabs" role="tablist">
-    <button class="tab-btn" role="tab" aria-selected="false" data-tab="anual">Anual · 2026</button>
-    <button class="tab-btn" role="tab" aria-selected="true" data-tab="mensal">Mensal · Ago<span class="subn">meta 60k</span></button>
-    <button class="tab-btn" role="tab" aria-selected="false" data-tab="semanal">Semanal<span class="subn">03–09/08</span></button>
-    <button class="tab-btn" role="tab" aria-selected="false" data-tab="diario">Diário<span class="subn">HOJE sáb</span></button>
+  <div id="loading">
+    <div class="spinner"></div>
+    <div>Carregando dados frescos do Trinks…</div>
   </div>
 
-  <!-- ================================ ANUAL 2026 ================================ -->
-  <div class="panel" id="tab-anual">
-    <div class="audit"><div>ℹ️</div><div><strong>Consolidado 2026</strong> (2 meses · 17 dias operacionais). Loja abriu 23/07. Aba cresce a cada mês fechado.</div></div>
-
-    <section class="meta-card">
-      <h2><span class="icon">🎯</span> Meta Anual 2026 · <span style="color:var(--accent)">R$ 306.577</span></h2>
-      <div class="sub">Jul realizado (R$ 6.577) + 5 meses × R$ 60k (ago–dez)</div>
-      <div class="progress"><div class="progress-fill" style="width:6.6%"></div></div>
-      <div class="progress-labels"><span>R$ 0</span><span class="now">▲ R$ 20.128 · 6,6%</span><span>R$ 306.577</span></div>
-      <div class="meta-row" style="margin-top:20px;">
-        <div class="meta-cell"><div class="l">Realizado 2026</div><div class="v accent">R$ 20.128</div></div>
-        <div class="meta-cell"><div class="l">Falta</div><div class="v">R$ 286.449</div></div>
-        <div class="meta-cell"><div class="l">Meses restantes</div><div class="v">5 (ago–dez)</div></div>
-        <div class="meta-cell"><div class="l">Necessário/mês</div><div class="v warn">R$ 57.290</div></div>
-      </div>
-      <div class="insight"><strong>Meta anual viável</strong> se mantiver ~R$ 57k/mês de ago em diante. Se ago fechar em R$ 60k, sobra R$ 226k em 4 meses = R$ 56.612/mês. <em>Nota:</em> premissa conservadora sem ramp-up — se dez tiver Natal + Réveillon a meta pode ser superada.</div>
-    </section>
-
-    <section class="kpi-grid">
-      <div class="kpi"><div class="label">Caixa 2026</div><div class="value accent">R$ 20.128</div><div class="foot">Jul R$ 6.577 + Ago R$ 13.551 · 17 dias</div></div>
-      <div class="kpi k2"><div class="label">Atendimentos</div><div class="value">291</div><div class="foot">129 Jul + 162 Ago · 17,1/dia</div></div>
-      <div class="kpi k3"><div class="label">Ticket transação</div><div class="value">R$ 125,80</div><div class="foot">160 trans · Jul R$ 83 → Ago R$ 140</div></div>
-      <div class="kpi k4"><div class="label">Cancelamento</div><div class="value">7,9%</div><div class="foot">26/328 · Jul 10,3% → Ago 6,0%</div></div>
-    </section>
-
-    <div class="card" style="margin-bottom:12px;">
-      <h2>Detalhamento por categoria · Meta vs Realizado 2026</h2>
-      <div class="cap">Meta anual R$ 306.577 fatiada na proporção Ago (21/76/3) + atingimento + projeção</div>
-      <div class="categ-grid">
-        <div class="categ-tile"><div class="n">Pacotes</div><div class="v">R$ 2.849</div><div class="d">vs meta R$ 64.381 · <span class="dn">4,4%</span></div></div>
-        <div class="categ-tile c2"><div class="n">Serviços</div><div class="v">R$ 18.094</div><div class="d">vs meta R$ 232.998 · <span class="dn">7,8%</span></div></div>
-        <div class="categ-tile c3"><div class="n">Produtos</div><div class="v">R$ 593</div><div class="d">vs meta R$ 9.197 · <span class="dn">6,4%</span></div></div>
-      </div>
-      <table class="simple" style="margin-top:14px;">
-        <thead><tr><th>Categoria</th><th>Meta ano</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção*</th></tr></thead>
-        <tbody>
-          <tr><td>Pacotes (21%)</td><td>R$ 64.381</td><td>R$ 2.849</td><td class="dn">4,4%</td><td>R$ 61.532</td><td class="dn">R$ 20.664 (32%)</td></tr>
-          <tr><td>Serviços (76%)</td><td>R$ 232.998</td><td>R$ 18.094</td><td class="dn">7,8%</td><td>R$ 214.904</td><td class="warn">R$ 131.184 (56%)</td></tr>
-          <tr><td>Produtos (3%)</td><td>R$ 9.197</td><td>R$ 593</td><td class="dn">6,4%</td><td>R$ 8.604</td><td class="warn">R$ 4.301 (47%)</td></tr>
-          <tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL</td><td>R$ 306.577</td><td>R$ 20.128</td><td class="dn">6,6%</td><td>R$ 286.449</td><td>R$ 156.149 (51%)</td></tr>
-        </tbody>
-      </table>
-      <div class="insight">*Projeção linear: se o ritmo dos últimos 17 dias operacionais se mantiver até 31/12. <strong>Muito abaixo da meta anual</strong> — mas anual é conservadora; se ago fechar em R$ 60k e set-dez seguirem (ramp-up esperado), meta é factível. <strong>Pacotes ainda subutilizados</strong> (4,4%).</div>
+  <div id="content" style="display:none;">
+    <div class="tabs" role="tablist">
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="anual">Anual · 2026</button>
+      <button class="tab-btn" role="tab" aria-selected="true"  data-tab="mensal">Mensal<span class="subn" id="tab-mensal-sub"></span></button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="semanal">Semanal<span class="subn" id="tab-semanal-sub"></span></button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="diario">Diário<span class="subn" id="tab-diario-sub"></span></button>
     </div>
 
-    <section class="grid-2b">
-      <div class="card">
-        <h2>Ranking · profissionais 2026</h2>
-        <div class="cap">Jul + Ago · delta Ago vs Jul</div>
-        <table class="simple"><thead><tr><th>Profissional</th><th>Jul q/R$</th><th>Ago q/R$</th><th>Δ rec</th></tr></thead>
-        <tbody>
-          <tr><td>Erika Thais</td><td>23/1.715</td><td>27/2.136</td><td class="up">+24,5%</td></tr>
-          <tr><td>Giovanna Guedes</td><td>32/2.079</td><td>26/1.660</td><td class="dn">−20,2%</td></tr>
-          <tr><td>Katyane Muniz</td><td>12/1.028</td><td>19/1.567</td><td class="up">+52,4%</td></tr>
-          <tr><td>Gabriela Cristina</td><td>11/632</td><td>23/1.345</td><td class="up">+112,8%</td></tr>
-          <tr><td>Thaise Moreno</td><td>19/1.399</td><td>10/698</td><td class="dn">−50,1%</td></tr>
-          <tr><td>Tais Cristina</td><td>5/271</td><td>14/614</td><td class="up">+126,6%</td></tr>
-          <tr><td>Lidiane Quiteria</td><td>1/79</td><td>8/456</td><td class="up">+477%</td></tr>
-          <tr><td>Julia K. <span class="badge-new">NOVA</span></td><td>—</td><td>9/401</td><td class="up">novo</td></tr>
-          <tr><td>Andy Alexia <span class="badge-new">NOVA</span></td><td>—</td><td>8/376</td><td class="up">novo</td></tr>
-        </tbody></table>
-      </div>
-      <div class="card">
-        <h2>Serviços · evolução 2026</h2>
-        <div class="cap">Jul vs Ago · onde estamos crescendo</div>
-        <table class="simple"><thead><tr><th>Serviço</th><th>Jul</th><th>Ago</th><th>Δ rec</th></tr></thead>
-        <tbody>
-          <tr><td>ESCOVA LISA</td><td>28/2.148</td><td>48/2.923</td><td class="up">+36%</td></tr>
-          <tr><td>HIDRATAÇÃO MASK</td><td>7/529</td><td>22/1.027</td><td class="up">+94%</td></tr>
-          <tr><td>PÉS E MÃOS</td><td>4/332</td><td>10/830</td><td class="up">+150%</td></tr>
-          <tr><td>DESIGN SOBRANCELHAS</td><td>3/180</td><td>10/600</td><td class="up">+233%</td></tr>
-          <tr><td>FAST MAKE VIP</td><td>1/189</td><td>3/527</td><td class="up">+179%</td></tr>
-          <tr><td>FAST RETOQUE <span class="badge-new">NOVO</span></td><td>—</td><td>3/557</td><td class="up">novo</td></tr>
-          <tr><td>MÃOS</td><td>24/1.081</td><td>22/799</td><td class="dn">−26%</td></tr>
-          <tr><td>ESCOVA MODELADA</td><td>19/1.881</td><td>10/974</td><td class="dn">−48%</td></tr>
-          <tr><td>PÉS</td><td>15/701</td><td>6/282</td><td class="dn">−60%</td></tr>
-        </tbody></table>
-      </div>
-    </section>
+    <!-- ANUAL -->
+    <div class="panel" id="tab-anual">
+      <div class="audit"><div>ℹ️</div><div>Consolidado <strong>2026</strong>. Loja abriu 23/07. Cresce a cada mês fechado.</div></div>
+      <div id="anual-meta"></div>
+      <div id="anual-kpis"></div>
+      <div id="anual-categorias"></div>
+      <div id="anual-meses"></div>
+      <div id="anual-ltv"></div>
+      <div id="anual-rentabilidade"></div>
+      <div id="anual-hora"></div>
+    </div>
 
-    <!-- 💎 LTV · TOP CLIENTES -->
-    <div class="card" style="margin-bottom:12px;">
-      <h2>💎 Top clientes · LTV 2026 <span style="color:var(--ink-3);font-size:11px;font-weight:400;">(desde abertura 23/07)</span></h2>
-      <div class="cap">Concentração de receita · 142 clientes únicos · Pareto revelador</div>
-      <div class="categ-grid" style="margin-bottom:14px;">
-        <div class="categ-tile"><div class="n">Total clientes únicos</div><div class="v">142</div><div class="d">Base construída em 17 dias · R$ 134,83 LTV médio</div></div>
-        <div class="categ-tile c2"><div class="n">Pareto top 20%</div><div class="v">28 clientes</div><div class="d">R$ 8.488 · <span class="up">44,3% da receita total</span></div></div>
-        <div class="categ-tile c3"><div class="n">Só 1 visita (churn?)</div><div class="v">71 clientes</div><div class="d">50% da base · <span class="dn">nunca voltou</span> — reativar</div></div>
-      </div>
-      <table class="simple">
-        <thead><tr><th>#</th><th>Cliente</th><th>Visitas</th><th>LTV</th><th>% acum</th></tr></thead>
-        <tbody>
-          <tr><td>1</td><td>NATHALIA DANIELE BOMTEMPO GARCIA</td><td>16</td><td>R$ 1.054</td><td>5,5%</td></tr>
-          <tr><td>2</td><td>Daniela Rodrigues</td><td>7</td><td>R$ 688</td><td>9,1%</td></tr>
-          <tr><td>3</td><td>Grabrielly Baltazar</td><td>5</td><td>R$ 501</td><td>11,7%</td></tr>
-          <tr><td>4</td><td>Tatiana Donzelli</td><td>4</td><td>R$ 397</td><td>13,8%</td></tr>
-          <tr><td>5</td><td>Sandra Sandri</td><td>4</td><td>R$ 384</td><td>15,8%</td></tr>
-          <tr><td>6</td><td>Lucas De Pinho Garcia</td><td>8</td><td>R$ 338</td><td>17,6%</td></tr>
-          <tr><td>7</td><td>Monique Cardoso Gomes</td><td>6</td><td>R$ 328</td><td>19,3%</td></tr>
-          <tr><td>8</td><td>Rosangela Siqueira De Pinho Garcia</td><td>5</td><td>R$ 308</td><td>20,9%</td></tr>
-          <tr><td>9</td><td>Thamyres Caldro Matos</td><td>3</td><td>R$ 283</td><td>22,4%</td></tr>
-          <tr><td>10</td><td>Michele Nunes Da Silva</td><td>2</td><td>R$ 268</td><td>23,8%</td></tr>
-        </tbody>
-      </table>
-      <div class="insight">
-        <strong>Concentração alta:</strong> top 20% dos clientes carregam 44% da receita — perder qualquer um do top 10 dói.
-        <strong>Nathalia sozinha = 5,5%</strong> (esposa · lealdade máxima) · Lucas + Rosangela + Nathalia = família ≈ 9% da receita.
-        <strong>71 clientes vieram só 1×</strong> (50%!) — campanha de reativação com voucher pode recuperar 15-20 destes = R$ 1-2k/mês.
+    <!-- MENSAL -->
+    <div class="panel active" id="tab-mensal">
+      <div class="audit"><div>✓</div><div><strong>Dados vivos.</strong> Caixa = <code>Σ(formasPagamentos.valor)</code>. Fonte: API Trinks (refresh 1×/h).</div></div>
+      <div id="mensal-meta"></div>
+      <div id="mensal-kpis"></div>
+      <div id="mensal-categorias"></div>
+      <div id="mensal-novos"></div>
+      <div id="mensal-rentabilidade"></div>
+      <div id="mensal-dia"></div>
+      <div id="mensal-hora"></div>
+      <div class="grid-2b">
+        <div id="mensal-prof"></div>
+        <div id="mensal-meios"></div>
       </div>
     </div>
 
-    <!-- ⚡ R$/HORA POR SERVIÇO -->
-    <div class="card" style="margin-bottom:12px;">
-      <h2>⚡ Rentabilidade por hora · serviços <span style="color:var(--ink-3);font-size:11px;font-weight:400;">(R$/hora de cadeira ocupada)</span></h2>
-      <div class="cap">Qual serviço vale mais o tempo do time · dados Ago (base finalizada com duração)</div>
-      <table class="simple">
-        <thead><tr><th>Serviço</th><th>Qtd</th><th>Min/atend</th><th>Ticket</th><th>R$/hora</th></tr></thead>
-        <tbody>
-          <tr><td>APLICAÇÃO — FRESH MINT</td><td>3</td><td>3</td><td>R$ 35</td><td class="up">R$ 700,00</td></tr>
-          <tr><td>FAST CHAPINHA</td><td>1</td><td>10</td><td>R$ 79</td><td class="up">R$ 474,00</td></tr>
-          <tr><td>FAST RETOQUE</td><td>3</td><td>30</td><td>R$ 186</td><td class="up">R$ 371,33</td></tr>
-          <tr><td>FAST MAKE CASUAL</td><td>3</td><td>30</td><td>R$ 146</td><td class="up">R$ 291,33</td></tr>
-          <tr><td>FAST HIDRATAÇÃO — FAST MASK</td><td>22</td><td>10</td><td>R$ 47</td><td class="up">R$ 280,09</td></tr>
-          <tr><td>PLÁSTICA DOS PÉS VIP</td><td>1</td><td>30</td><td>R$ 129</td><td>R$ 258,00</td></tr>
-          <tr><td>BUÇO</td><td>3</td><td>10</td><td>R$ 35</td><td>R$ 210,00</td></tr>
-          <tr><td>CÍLIOS — UNIDADE</td><td>3</td><td>10</td><td>R$ 35</td><td>R$ 210,00</td></tr>
-          <tr><td>FAST MAKE VIP</td><td>3</td><td>60</td><td>R$ 176</td><td>R$ 175,67</td></tr>
-          <tr><td>ESCOVA MEGA HAIR — LISA</td><td>2</td><td>45</td><td>R$ 109</td><td>R$ 145,33</td></tr>
-          <tr><td>FAST ESCOVA — MODELADA</td><td>10</td><td>45</td><td>R$ 97</td><td>R$ 129,88</td></tr>
-          <tr><td>DESIGN SOBRANCELHAS</td><td>10</td><td>30</td><td>R$ 60</td><td>R$ 120,00</td></tr>
-          <tr><td>FAST ESCOVA — LISA <span class="badge-new">ANCHOR</span></td><td>48</td><td>45</td><td>R$ 61</td><td class="warn">R$ 81,19</td></tr>
-          <tr><td>MÃOS</td><td>22</td><td>30</td><td>R$ 36</td><td class="dn">R$ 72,64</td></tr>
-          <tr><td>PÉS</td><td>6</td><td>30</td><td>R$ 47</td><td class="dn">R$ 94,00</td></tr>
-        </tbody>
-      </table>
-      <div class="insight">
-        <strong>🚀 HIDRATAÇÃO MASK é a jóia:</strong> R$ 280/hora + 22 atend/mês = combina volume e margem-hora. Puxar de 22 → 40 atend soma R$ 840/mês.
-        <strong>⚠️ ESCOVA LISA (anchor)</strong> gera 28% do caixa mas rende só R$ 81/h — é a base de captura, precisa upsell.
-        <strong>💡 Aplicação Fresh Mint R$ 700/h</strong> — na verdade venda de produto travestida de serviço (3 min).
+    <!-- SEMANAL -->
+    <div class="panel" id="tab-semanal">
+      <div class="audit"><div>📊</div><div>Semana corrente (seg–dom). Domingo fechado.</div></div>
+      <div id="semanal-meta"></div>
+      <div id="semanal-kpis"></div>
+      <div id="semanal-categorias"></div>
+      <div id="semanal-dow"></div>
+      <div id="semanal-hora"></div>
+      <div class="grid-2b">
+        <div id="semanal-prof"></div>
+        <div id="semanal-meios"></div>
       </div>
     </div>
 
-    <div class="card" style="margin-bottom:12px;">
-      <h2>Por hora do dia · 2026 <span style="color:var(--ink-3);font-size:11px;font-weight:400;">(média trans/dia · 17 dias op.)</span></h2>
-      <div class="cap">Média de transações por hora — permite comparar padrão sem viés de volume</div>
-      <div class="bars-hora" id="hora-anual"></div>
-      <div class="xaxis-hora" id="xhora-anual"></div>
-      <div class="insight">Picos médios anuais: <strong>17h (1,53 trans/dia) · 19h (1,24) · 18h (1,18) · 16h (1,00)</strong>. Padrão "fim de tarde/início de noite" consistente — reforçar escala 16-20h.</div>
+    <!-- DIÁRIO -->
+    <div class="panel" id="tab-diario">
+      <div class="audit"><div>🔴</div><div><strong>HOJE ao vivo.</strong> Números crescem ao longo do dia (Task Scheduler refresh 1×/h).</div></div>
+      <div id="diario-meta"></div>
+      <div id="diario-kpis"></div>
+      <div id="diario-categorias"></div>
+      <div id="diario-hora"></div>
+      <div class="grid-2b">
+        <div id="diario-prof"></div>
+        <div id="diario-serv"></div>
+      </div>
+      <div id="diario-meios"></div>
     </div>
 
-    <section class="diag">
-      <h2><span class="icon">▸</span> Diagnóstico &amp; Ações · 2026</h2>
-      <div class="sub">Visão anual</div>
-      <div class="diag-grid">
-        <div class="diag-col"><h3 class="g">Sinais positivos</h3><ul>
-          <li>Ago dobrou Jul: <span class="num">+106%</span> em 8d vs 9d.</li>
-          <li>Ticket +67% · zero desconto ago.</li>
-          <li>Cancel 10,3% → 6,0%.</li>
-          <li>Pacotes entraram em ago (7 vendidos, ticket R$ 407).</li>
-        </ul></div>
-        <div class="diag-col"><h3 class="w">Riscos estruturais</h3><ul>
-          <li>Só 2 meses · baixa robustez.</li>
-          <li>Concentração sábado (48% ano).</li>
-          <li>UMECTAÇÃO/BELLE RECOVERY sumiram — descontinuar?</li>
-          <li>Produtos só 3,2% do caixa · potencial cross-sell.</li>
-        </ul></div>
-        <div class="diag-col"><h3>Recomendações</h3><ul>
-          <li>Fechar Jul (Trinks × Stone × SIIBELLO).</li>
-          <li>Meta ago R$ 60k · monitorar diário.</li>
-          <li>Investigar Thaise (−50%) e Giovanna (−20%).</li>
-          <li>Empurrar produto: Óleo/Fresh Mint em toda escova.</li>
-        </ul></div>
-      </div>
-    </section>
+    <footer>
+      <div><strong>Fonte:</strong> API Trinks (<code>api.trinks.com/v1</code>) · <strong>Refresh automático:</strong> 1×/h via Windows Task Scheduler</div>
+      <div style="margin-top:4px;">Caixa = <code>Σ(transacoes.formasPagamentos.valor)</code> · categorias = decomposição de <code>pacotes[] + servicos[] + produtos[]</code></div>
+      <div style="margin-top:4px;"><strong>Loja abriu 23/07/2026 · Meta Ago R$ 60.000</strong></div>
+    </footer>
   </div>
-
-  <!-- ================================ MENSAL AGO ================================ -->
-  <div class="panel active" id="tab-mensal">
-    <div class="audit"><div>✓</div><div><strong>Agosto/26 · até dia 8 (17h).</strong> Caixa = <code>Σ(formasPagamentos.valor)</code> bate exato com Trinks R$ 13.551,10.</div></div>
-
-    <section class="meta-card">
-      <h2><span class="icon">🎯</span> Meta Mensal Ago · <span style="color:var(--accent)">R$ 60.000</span></h2>
-      <div class="sub">Deveria estar em ~26% (dia 8 de 31) · está em 22,6%</div>
-      <div class="progress"><div class="progress-fill" style="width:22.6%"></div></div>
-      <div class="progress-labels"><span>R$ 0</span><span class="now">▲ R$ 13.551 · 22,6%</span><span>R$ 60.000</span></div>
-      <div class="meta-row" style="margin-top:20px;">
-        <div class="meta-cell"><div class="l">Realizado</div><div class="v accent">R$ 13.551</div></div>
-        <div class="meta-cell"><div class="l">Falta</div><div class="v">R$ 46.449</div></div>
-        <div class="meta-cell"><div class="l">Dias oper. restantes</div><div class="v">19 (10-31, sem dom)</div></div>
-        <div class="meta-cell"><div class="l">Necessário/dia útil</div><div class="v warn">R$ 2.445</div></div>
-      </div>
-      <div class="meta-row">
-        <div class="meta-cell"><div class="l">Ritmo atual/dia</div><div class="v">R$ 1.694</div></div>
-        <div class="meta-cell"><div class="l">Projeção linear</div><div class="v warn">R$ 52,5k</div></div>
-        <div class="meta-cell"><div class="l">Gap projeção</div><div class="v dn">−R$ 7,5k</div></div>
-        <div class="meta-cell"><div class="l">Aceleração p/ bater</div><div class="v warn">+44%</div></div>
-      </div>
-      <div class="insight"><strong>Ritmo precisa acelerar 44%</strong> (de R$ 1.694 para R$ 2.445/dia útil). Projeta 87,5% no linear. Bater os R$ 60k exige puxar Ter/Qua (+R$ 4k) OU segurar sábados como 01/08 (R$ 4.167 = 180% meta diária).</div>
-    </section>
-
-    <section class="kpi-grid">
-      <div class="kpi"><div class="label">Caixa · Ago</div><div class="value accent">R$ 13.551</div><div class="foot">97 trans · média R$ 1.694/dia</div></div>
-      <div class="kpi k2"><div class="label">Atendimentos</div><div class="value">162</div><div class="foot">183 agend · 11 cancel · 6,0% taxa</div></div>
-      <div class="kpi k3"><div class="label">Ticket transação</div><div class="value">R$ 139,70</div><div class="foot">zero desconto · Jul R$ 83 <span class="up">+67%</span></div></div>
-      <div class="kpi k4"><div class="label">Clientes únicos</div><div class="value">82</div><div class="foot">56% da base 146 atendida</div></div>
-    </section>
-
-    <div class="card" style="margin-bottom:12px;">
-      <h2>Detalhamento por categoria · Meta vs Realizado Ago</h2>
-      <div class="cap">Meta ago R$ 60k fatiada na proporção real (21/76/3) + atingimento + projeção</div>
-      <div class="categ-grid">
-        <div class="categ-tile"><div class="n">Pacotes</div><div class="v">R$ 2.849</div><div class="d">vs meta R$ 12.600 · <span class="warn">22,6%</span></div></div>
-        <div class="categ-tile c2"><div class="n">Serviços</div><div class="v">R$ 10.343</div><div class="d">vs meta R$ 45.600 · <span class="warn">22,7%</span></div></div>
-        <div class="categ-tile c3"><div class="n">Produtos</div><div class="v">R$ 356</div><div class="d">vs meta R$ 1.800 · <span class="dn">19,8%</span></div></div>
-      </div>
-      <table class="simple" style="margin-top:14px;">
-        <thead><tr><th>Categoria</th><th>Meta ago</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção mês</th></tr></thead>
-        <tbody>
-          <tr><td>Pacotes (21%)</td><td>R$ 12.600</td><td>R$ 2.849</td><td class="warn">22,6%</td><td>R$ 9.751</td><td class="warn">R$ 11.038 (88%)</td></tr>
-          <tr><td>Serviços (76%)</td><td>R$ 45.600</td><td>R$ 10.343</td><td class="warn">22,7%</td><td>R$ 35.257</td><td class="warn">R$ 40.079 (88%)</td></tr>
-          <tr><td>Produtos (3%)</td><td>R$ 1.800</td><td>R$ 356</td><td class="dn">19,8%</td><td>R$ 1.444</td><td class="dn">R$ 1.380 (77%)</td></tr>
-          <tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL</td><td>R$ 60.000</td><td>R$ 13.551</td><td class="warn">22,6%</td><td>R$ 46.449</td><td class="warn">R$ 52.500 (87,5%)</td></tr>
-        </tbody>
-      </table>
-      <div class="insight">Todas as 3 categorias no mesmo ritmo (~22%). Projeção mês fica em 87,5%. <strong>Produtos é a categoria mais atrasada</strong> (77%) — puxar cross-sell (Óleo Nutritivo + Fresh Mint em quem faz ESCOVA/HIDRATAÇÃO). <em>Sua planilha operacional mostra R$ 7.200 em Pacotes — se essa é a fonte oficial, meta pacotes pode subir para 30%.</em></div>
-    </div>
-
-    <section class="grid-2b">
-      <div class="card">
-        <h2>Ranking · profissionais Ago</h2>
-        <div class="cap">Ago · delta vs Jul</div>
-        <table class="simple"><thead><tr><th>Profissional</th><th>Ago q/R$</th><th>Δ Jul</th></tr></thead>
-        <tbody>
-          <tr><td>Erika Thais</td><td>27/2.136</td><td class="up">+24,5%</td></tr>
-          <tr><td>Giovanna Guedes</td><td>26/1.660</td><td class="dn">−20,2%</td></tr>
-          <tr><td>Katyane Muniz</td><td>19/1.567</td><td class="up">+52,4%</td></tr>
-          <tr><td>Gabriela Cristina</td><td>23/1.345</td><td class="up">+112,8%</td></tr>
-          <tr><td>Thaise Moreno</td><td>10/698</td><td class="dn">−50,1%</td></tr>
-          <tr><td>Tais Cristina</td><td>14/614</td><td class="up">+126,6%</td></tr>
-          <tr><td>Lidiane Quiteria</td><td>8/456</td><td class="up">+477%</td></tr>
-          <tr><td>Julia K. <span class="badge-new">NOVA</span></td><td>9/401</td><td class="up">—</td></tr>
-          <tr><td>Andy Alexia <span class="badge-new">NOVA</span></td><td>8/376</td><td class="up">—</td></tr>
-        </tbody></table>
-      </div>
-      <div class="card">
-        <h2>Serviços · Ago</h2>
-        <div class="cap">Top 10 realizados</div>
-        <table class="simple"><thead><tr><th>Serviço</th><th>Qtd</th><th>Receita</th></tr></thead>
-        <tbody>
-          <tr><td>ESCOVA LISA</td><td>48</td><td>R$ 2.923</td></tr>
-          <tr><td>HIDRATAÇÃO MASK</td><td>22</td><td>R$ 1.027</td></tr>
-          <tr><td>ESCOVA MODELADA</td><td>10</td><td>R$ 974</td></tr>
-          <tr><td>PÉS E MÃOS</td><td>10</td><td>R$ 830</td></tr>
-          <tr><td>MÃOS</td><td>22</td><td>R$ 799</td></tr>
-          <tr><td>DESIGN SOBRANCELHAS</td><td>10</td><td>R$ 600</td></tr>
-          <tr><td>FAST MAKE VIP</td><td>3</td><td>R$ 527</td></tr>
-          <tr><td>FAST RETOQUE</td><td>3</td><td>R$ 557</td></tr>
-          <tr><td>FAST MAKE CASUAL</td><td>3</td><td>R$ 437</td></tr>
-          <tr><td>PÉS</td><td>6</td><td>R$ 282</td></tr>
-        </tbody></table>
-      </div>
-    </section>
-
-    <!-- 🆕 NOVOS vs RECORRENTES -->
-    <div class="card" style="margin-bottom:12px;">
-      <h2>🆕 Novos vs Recorrentes · Ago <span style="color:var(--ink-3);font-size:11px;font-weight:400;">(aquisição vs retenção)</span></h2>
-      <div class="cap">De onde vem o caixa · e o que isso diz sobre a operação</div>
-      <div class="categ-grid" style="margin-bottom:14px;">
-        <div class="categ-tile"><div class="n">Clientes NOVOS em Ago</div><div class="v accent" style="color:var(--good)">74</div><div class="d">144 atend · <strong>R$ 9.447 (91,3% caixa)</strong></div></div>
-        <div class="categ-tile c2"><div class="n">Recorrentes (de Jul)</div><div class="v">8</div><div class="d">18 atend · R$ 896 (8,7% caixa)</div></div>
-        <div class="categ-tile c3"><div class="n">Taxa retenção Jul→Ago</div><div class="v dn">11,8%</div><div class="d">8 de 68 clientes de Jul voltaram · <strong>baixa</strong></div></div>
-      </div>
-      <table class="simple">
-        <thead><tr><th>Segmento</th><th>Clientes</th><th>Atend</th><th>Receita</th><th>Ticket cliente</th></tr></thead>
-        <tbody>
-          <tr><td>Novos (cadastrados em Ago)</td><td>74</td><td>144</td><td>R$ 9.447</td><td>R$ 127,66</td></tr>
-          <tr><td>Recorrentes (base Jul)</td><td>8</td><td>18</td><td>R$ 896</td><td>R$ 112,00</td></tr>
-          <tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL</td><td>82</td><td>162</td><td>R$ 10.343</td><td>R$ 126,13</td></tr>
-        </tbody>
-      </table>
-      <div class="insight">
-        <strong>🟢 Aquisição forte:</strong> 74 novos clientes em 8 dias = 9,25 novos/dia · loja está sendo descoberta.
-        <strong>🔴 Retenção fraca:</strong> apenas 12% dos clientes de julho voltaram em agosto — 60 clientes "sumiram".
-        <strong>Ação:</strong> se dobrar retenção (24%), recupera R$ 900/mês só de clientes voltando. Campanha WhatsApp para os 60 inativos com voucher de R$ 20 na próxima escova.
-      </div>
-    </div>
-
-    <!-- ⚡ R$/HORA POR SERVIÇO (mensal — mesmo dado do Anual, focado em Ago) -->
-    <div class="card" style="margin-bottom:12px;">
-      <h2>⚡ Rentabilidade por hora · serviços Ago <span style="color:var(--ink-3);font-size:11px;font-weight:400;">(R$/hora de cadeira ocupada)</span></h2>
-      <div class="cap">Onde o tempo do time rende mais · direcionar upsell/promoções</div>
-      <table class="simple">
-        <thead><tr><th>Serviço</th><th>Qtd</th><th>Min/atend</th><th>Ticket</th><th>R$/hora</th></tr></thead>
-        <tbody>
-          <tr><td>APLICAÇÃO — FRESH MINT</td><td>3</td><td>3</td><td>R$ 35</td><td class="up">R$ 700,00</td></tr>
-          <tr><td>FAST CHAPINHA</td><td>1</td><td>10</td><td>R$ 79</td><td class="up">R$ 474,00</td></tr>
-          <tr><td>FAST RETOQUE</td><td>3</td><td>30</td><td>R$ 186</td><td class="up">R$ 371,33</td></tr>
-          <tr><td>FAST MAKE CASUAL</td><td>3</td><td>30</td><td>R$ 146</td><td class="up">R$ 291,33</td></tr>
-          <tr><td>FAST HIDRATAÇÃO — MASK <span class="badge-new">🚀 JÓIA</span></td><td>22</td><td>10</td><td>R$ 47</td><td class="up">R$ 280,09</td></tr>
-          <tr><td>PLÁSTICA DOS PÉS VIP</td><td>1</td><td>30</td><td>R$ 129</td><td>R$ 258,00</td></tr>
-          <tr><td>BUÇO · CÍLIOS · HENNA</td><td>7</td><td>15</td><td>R$ 35</td><td>R$ 140-210</td></tr>
-          <tr><td>FAST MAKE VIP</td><td>3</td><td>60</td><td>R$ 176</td><td>R$ 175,67</td></tr>
-          <tr><td>ESCOVA MODELADA</td><td>10</td><td>45</td><td>R$ 97</td><td>R$ 129,88</td></tr>
-          <tr><td>DESIGN SOBRANCELHAS</td><td>10</td><td>30</td><td>R$ 60</td><td>R$ 120,00</td></tr>
-          <tr><td>FAST ESCOVA — LISA <span class="badge-new">ANCHOR</span></td><td>48</td><td>45</td><td>R$ 61</td><td class="warn">R$ 81,19</td></tr>
-          <tr><td>MÃOS</td><td>22</td><td>30</td><td>R$ 36</td><td class="dn">R$ 72,64</td></tr>
-        </tbody>
-      </table>
-      <div class="insight">
-        <strong>💡 Estratégia por rentabilidade:</strong> ESCOVA LISA é a âncora (48 atend, capta), mas rende só R$ 81/h. <strong>HIDRATAÇÃO MASK</strong> combina volume + margem-hora (R$ 280/h em 22 atend) — <strong>puxar de 22→40</strong> soma R$ 840/mês. Serviços curtos e caros (RETOQUE, CHAPINHA, MAKE CASUAL) devem entrar em combo com ESCOVA para elevar ticket sem consumir mais tempo.
-      </div>
-    </div>
-
-    <div class="card" style="margin-bottom:12px;">
-      <h2>Por dia do mês · Ago 2026</h2>
-      <div class="cap">Receita competência por dia · dias sem atividade em cinza · barra amarela clara = destaque · sábado em amarelo forte</div>
-      <div class="bars-dia" id="dia-mensal"></div>
-      <div class="xaxis-dia" id="xdia-mensal"></div>
-      <div class="insight"><strong>Melhor dia: 01/08 sáb (R$ 4.167 · 63 atend).</strong> Ter/Qua sistematicamente fracos (04/08 · 05/08). Sáb 08/08 (hoje) até 17h em R$ 1.881 — projeta ~R$ 2.500. <strong>Dias 09/08+ ainda a rodar (23 dias restantes).</strong></div>
-    </div>
-    <div class="card" style="margin-bottom:12px;">
-      <h2>Por hora do dia · Ago <span style="color:var(--ink-3);font-size:11px;font-weight:400;">(média trans/dia · 8 dias op.)</span></h2>
-      <div class="cap">Média por hora no mês — comparação com anual mostra intensidade de ago</div>
-      <div class="bars-hora" id="hora-mensal"></div>
-      <div class="xaxis-hora" id="xhora-mensal"></div>
-      <div class="insight">Picos médios em ago: <strong>16h (1,88 trans/dia) · 19h (1,75) · 17h (1,63) · 11h (1,13)</strong>. <strong>Todos os picos acima da média anual</strong> — ago está mais intenso hora a hora que a média histórica.</div>
-    </div>
-
-    <section class="diag">
-      <h2><span class="icon">▸</span> Diagnóstico &amp; Ações · Ago</h2>
-      <div class="sub">Onde intervir esta semana</div>
-      <div class="diag-grid">
-        <div class="diag-col"><h3 class="g">Sinais positivos</h3><ul>
-          <li>Caixa Ago > 2× Jul (<span class="num">+106%</span>).</li>
-          <li>Ticket <span class="num">+67%</span>.</li>
-          <li>Pacotes 21% do caixa (ticket R$ 407).</li>
-          <li>4 profissionais novas · 82 clientes únicos.</li>
-        </ul></div>
-        <div class="diag-col"><h3 class="w">Alertas</h3><ul>
-          <li>Meta 22,6% em 26% do mês — <strong>abaixo do ritmo</strong>.</li>
-          <li>Ter/Qua 3-3 trans · promo direcionada.</li>
-          <li>Thaise −50% · Giovanna −20% · investigar.</li>
-          <li>Produtos só 2,6% · empurrar cross-sell.</li>
-        </ul></div>
-        <div class="diag-col"><h3>Projeção</h3><ul>
-          <li>Linear: R$ 52,5k · 87,5% meta.</li>
-          <li>Puxar Ter+Qua: +R$ 4k/mês.</li>
-          <li>3 sábados = 01/08: +R$ 7k/mês.</li>
-          <li>Meta R$ 60k <strong>viável com foco</strong>.</li>
-        </ul></div>
-      </div>
-    </section>
-  </div>
-
-  <!-- ================================ SEMANAL 03-09/08 ================================ -->
-  <div class="panel" id="tab-semanal">
-    <div class="audit"><div>📊</div><div><strong>Semana corrente · seg 03/08 a sáb 08/08</strong> (6 dias operacionais · domingo fechado). Dados exclusivos da semana.</div></div>
-
-    <section class="meta-card">
-      <h2><span class="icon">🎯</span> Meta Semanal · <span style="color:var(--accent)">R$ 13.846</span></h2>
-      <div class="sub">Meta ago R$ 60k ÷ 26 dias op. × 6 dias da semana</div>
-      <div class="progress"><div class="progress-fill" style="width:58.4%"></div></div>
-      <div class="progress-labels"><span>R$ 0</span><span class="now">▲ R$ 8.087 · 58,4%</span><span>R$ 13.846</span></div>
-      <div class="meta-row" style="margin-top:20px;">
-        <div class="meta-cell"><div class="l">Realizado semana</div><div class="v accent">R$ 8.087</div></div>
-        <div class="meta-cell"><div class="l">Falta</div><div class="v">R$ 5.759</div></div>
-        <div class="meta-cell"><div class="l">Dias restantes</div><div class="v">Hoje (parcial)</div></div>
-        <div class="meta-cell"><div class="l">Ritmo médio/dia</div><div class="v">R$ 1.348</div></div>
-      </div>
-      <div class="insight"><strong>Sábado 08/08 precisa fechar em R$ 5.759</strong> para bater meta semanal — já fez R$ 1.980, faltam R$ 3.779 nas próximas 3h + fechamentos dos 10 em atendimento. <strong>Improvável bater 100%</strong>, projeção: R$ 10-11k (72-79% da meta).</div>
-    </section>
-
-    <section class="kpi-grid">
-      <div class="kpi"><div class="label">Caixa · semana</div><div class="value accent">R$ 8.087</div><div class="foot">61 trans · R$ 1.348/dia</div></div>
-      <div class="kpi k2"><div class="label">Atendimentos</div><div class="value">99</div><div class="foot">16,5/dia · finalizados na semana</div></div>
-      <div class="kpi k3"><div class="label">Ticket transação</div><div class="value">R$ 132,58</div><div class="foot">61 trans · vs Ago R$ 139,70</div></div>
-      <div class="kpi k4"><div class="label">Melhor dia · semana</div><div class="value">Sáb 08/08</div><div class="foot">R$ 1.980 · 30 atend · (parcial)</div></div>
-    </section>
-
-    <div class="card" style="margin-bottom:12px;">
-      <h2>Detalhamento por categoria · Meta vs Realizado semana</h2>
-      <div class="cap">Meta semanal R$ 13.846 fatiada na proporção real (21/76/3)</div>
-      <div class="categ-grid">
-        <div class="categ-tile"><div class="n">Pacotes</div><div class="v">R$ 1.710</div><div class="d">vs meta R$ 2.908 · <span class="warn">58,8%</span></div></div>
-        <div class="categ-tile c2"><div class="n">Serviços</div><div class="v">R$ 6.176</div><div class="d">vs meta R$ 10.523 · <span class="warn">58,7%</span></div></div>
-        <div class="categ-tile c3"><div class="n">Produtos</div><div class="v">R$ 198</div><div class="d">vs meta R$ 415 · <span class="dn">47,7%</span></div></div>
-      </div>
-      <table class="simple" style="margin-top:14px;">
-        <thead><tr><th>Categoria</th><th>Meta semana</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção sáb</th></tr></thead>
-        <tbody>
-          <tr><td>Pacotes (21%)</td><td>R$ 2.908</td><td>R$ 1.710</td><td class="warn">58,8%</td><td>R$ 1.198</td><td class="warn">R$ 2.140 (74%)</td></tr>
-          <tr><td>Serviços (76%)</td><td>R$ 10.523</td><td>R$ 6.176</td><td class="warn">58,7%</td><td>R$ 4.347</td><td class="warn">R$ 8.057 (77%)</td></tr>
-          <tr><td>Produtos (3%)</td><td>R$ 415</td><td>R$ 198</td><td class="dn">47,7%</td><td>R$ 217</td><td class="dn">R$ 297 (72%)</td></tr>
-          <tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL</td><td>R$ 13.846</td><td>R$ 8.087</td><td class="warn">58,4%</td><td>R$ 5.759</td><td class="warn">R$ 10.494 (76%)</td></tr>
-        </tbody>
-      </table>
-      <div class="insight"><strong>Sábado 08/08 precisa contribuir R$ 5.759 para bater semana</strong> — hoje só fez R$ 1.980 até 17h. Vai fechar em ~R$ 10.494 (76% da meta semanal). <strong>Pacotes vão bem</strong> (4 vendas, ticket R$ 428). Produtos são o gargalo (47,7%).</div>
-    </div>
-
-    <section class="grid-2b">
-      <div class="card">
-        <h2>Ranking · profissionais da semana</h2>
-        <div class="cap">03–08/08 · 6 dias</div>
-        <table class="simple"><thead><tr><th>Profissional</th><th>Atend</th><th>Receita</th></tr></thead>
-        <tbody>
-          <tr><td>Erika Thais</td><td>18</td><td>R$ 1.567</td></tr>
-          <tr><td>Gabriela Cristina</td><td>15</td><td>R$ 881</td></tr>
-          <tr><td>Thaise Moreno</td><td>10</td><td>R$ 698</td></tr>
-          <tr><td>Katyane Muniz</td><td>7</td><td>R$ 687</td></tr>
-          <tr><td>Giovanna Guedes</td><td>13</td><td>R$ 671</td></tr>
-          <tr><td>Julia Kathleen</td><td>9</td><td>R$ 401</td></tr>
-          <tr><td>Andy Alexia</td><td>8</td><td>R$ 376</td></tr>
-          <tr><td>Jeniffer Roberta</td><td>4</td><td>R$ 297</td></tr>
-        </tbody></table>
-        <div class="insight"><strong>Erika lidera a semana</strong> (R$ 1.567 · 19% do caixa). Gabriela em 2º com força.</div>
-      </div>
-      <div class="card">
-        <h2>Serviços da semana</h2>
-        <div class="cap">Top realizados 03–08/08</div>
-        <table class="simple"><thead><tr><th>Serviço</th><th>Qtd</th><th>Receita</th></tr></thead>
-        <tbody>
-          <tr><td>ESCOVA LISA</td><td>31</td><td>R$ 1.857</td></tr>
-          <tr><td>HIDRATAÇÃO MASK</td><td>15</td><td>R$ 751</td></tr>
-          <tr><td>FAST RETOQUE</td><td>3</td><td>R$ 557</td></tr>
-          <tr><td>MÃOS</td><td>15</td><td>R$ 517</td></tr>
-          <tr><td>DESIGN SOBRANCELHAS</td><td>7</td><td>R$ 420</td></tr>
-          <tr><td>ESCOVA MODELADA</td><td>4</td><td>R$ 380</td></tr>
-          <tr><td>FAST MAKE CASUAL</td><td>2</td><td>R$ 278</td></tr>
-          <tr><td>PÉS E MÃOS</td><td>3</td><td>R$ 249</td></tr>
-          <tr><td>FAST PENTEADO</td><td>2</td><td>R$ 238</td></tr>
-          <tr><td>MEGA HAIR LISA</td><td>2</td><td>R$ 218</td></tr>
-        </tbody></table>
-      </div>
-    </section>
-
-    <section class="grid-2b">
-      <div class="card">
-        <h2>Por dia da semana · atual</h2>
-        <div class="cap">03–08/08 · caixa por dia</div>
-        <div class="bars-dow" id="dow-semanal"></div>
-        <div class="xaxis-dow" id="xdow-semanal"></div>
-        <div class="insight">Sem sábado 01/08 no cálculo, essa semana está <strong>mais equilibrada</strong>: Qui R$ 2.473 puxou forte, Sáb 08 fez R$ 1.980.</div>
-      </div>
-      <div class="card">
-        <h2>Por hora do dia · semana <span style="color:var(--ink-3);font-size:11px;font-weight:400;">(média · 6 dias op.)</span></h2>
-        <div class="cap">Média de transações/dia na semana atual</div>
-        <div class="bars-hora" id="hora-semanal"></div>
-        <div class="xaxis-hora" id="xhora-semanal"></div>
-        <div class="insight">Picos médios semana: <strong>19h (1,33 trans/dia) · 16h (1,17) · 11h/13h (1,00) · 17h/18h (1,00)</strong>. Semana <strong>mais equilibrada</strong> que a média anual — sem picos dominantes.</div>
-      </div>
-    </section>
-  </div>
-
-  <!-- ================================ DIÁRIO HOJE ================================ -->
-  <div class="panel" id="tab-diario">
-    <div class="audit"><div>🔴</div><div><strong>HOJE · sábado 08/08/2026 · parcial 17h.</strong> <strong>10 clientes em atendimento</strong> — números crescem. Refresh 1×/h.</div></div>
-
-    <section class="meta-card">
-      <h2><span class="icon">🎯</span> Meta Diária · <span style="color:var(--accent)">R$ 2.308</span></h2>
-      <div class="sub">Meta ago R$ 60k ÷ 26 dias operacionais</div>
-      <div class="progress"><div class="progress-fill" style="width:85.8%"></div></div>
-      <div class="progress-labels"><span>R$ 0</span><span class="now">▲ R$ 1.980 · 85,8%</span><span>R$ 2.308</span></div>
-      <div class="meta-row" style="margin-top:20px;">
-        <div class="meta-cell"><div class="l">Realizado hoje</div><div class="v accent">R$ 1.980</div></div>
-        <div class="meta-cell"><div class="l">Falta bater meta</div><div class="v good">R$ 328</div></div>
-        <div class="meta-cell"><div class="l">Em atendimento</div><div class="v warn">10 <span class="badge-live">LIVE</span></div></div>
-        <div class="meta-cell"><div class="l">Projeção fechamento</div><div class="v good">R$ 2.610</div></div>
-      </div>
-      <div class="insight"><strong>🟢 Meta do dia praticamente batida.</strong> Faltam R$ 328 — as 10 pessoas em atendimento (média R$ 63/atend) trazem <strong>~R$ 630</strong>. Fechamento estimado <strong>R$ 2.610 (113% da meta)</strong>. Sábado passado (01/08) fez 180% da meta.</div>
-    </section>
-
-    <section class="kpi-grid">
-      <div class="kpi"><div class="label">Caixa hoje</div><div class="value accent">R$ 1.980</div><div class="foot">18 transações fechadas</div></div>
-      <div class="kpi k2"><div class="label">Atendimentos</div><div class="value">30</div><div class="foot">+10 em atend <span class="badge-live">LIVE</span></div></div>
-      <div class="kpi k3"><div class="label">Ticket transação</div><div class="value">R$ 110,00</div><div class="foot">R$ 1.980 / 18 notas hoje</div></div>
-      <div class="kpi k4"><div class="label">Clientes únicos</div><div class="value">17</div><div class="foot">1,8 serv/cliente</div></div>
-    </section>
-
-    <div class="card" style="margin-bottom:12px;">
-      <h2>Detalhamento por categoria · Meta vs Realizado hoje</h2>
-      <div class="cap">Meta diária R$ 2.308 fatiada na proporção real (21/76/3)</div>
-      <div class="categ-grid">
-        <div class="categ-tile"><div class="n">Pacotes</div><div class="v">R$ 0</div><div class="d">vs meta R$ 485 · <span class="dn">0%</span></div></div>
-        <div class="categ-tile c2"><div class="n">Serviços</div><div class="v">R$ 1.881</div><div class="d">vs meta R$ 1.754 · <span class="up">107,2%</span> ✓</div></div>
-        <div class="categ-tile c3"><div class="n">Produtos</div><div class="v">R$ 99</div><div class="d">vs meta R$ 69 · <span class="up">143,5%</span> ✓</div></div>
-      </div>
-      <table class="simple" style="margin-top:14px;">
-        <thead><tr><th>Categoria</th><th>Meta dia</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção fechamento</th></tr></thead>
-        <tbody>
-          <tr><td>Pacotes (21%)</td><td>R$ 485</td><td>R$ 0</td><td class="dn">0%</td><td>R$ 485</td><td class="dn">R$ 0 (0%)</td></tr>
-          <tr><td>Serviços (76%)</td><td>R$ 1.754</td><td>R$ 1.881</td><td class="up">107,2%</td><td>—</td><td class="up">R$ 2.511 (143%)</td></tr>
-          <tr><td>Produtos (3%)</td><td>R$ 69</td><td>R$ 99</td><td class="up">143,5%</td><td>—</td><td class="up">R$ 99 (143%)</td></tr>
-          <tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL</td><td>R$ 2.308</td><td>R$ 1.980</td><td class="warn">85,8%</td><td>R$ 328</td><td class="up">R$ 2.610 (113%)</td></tr>
-        </tbody>
-      </table>
-      <div class="insight"><strong>🟢 Serviços já superaram meta do dia (107%).</strong> Produtos também (1 Óleo = 143%). <strong>🔴 Pacotes zero</strong> — oportunidade perdida: cross-sell nos 17 clientes atendidos hoje. Se converter 1 pacote médio (R$ 407), fecha em R$ 3.017 (131% da meta total).</div>
-    </div>
-
-    <div class="card" style="margin-bottom:12px;">
-      <h2>Como está o dia · comparativos</h2>
-      <div class="cap">Hoje (parcial) vs sábado passado vs média Ago</div>
-      <table class="simple"><thead><tr><th>Métrica</th><th>Hoje 08/08</th><th>Sáb 01/08</th><th>Média Ago</th><th>Δ vs 01/08</th></tr></thead>
-      <tbody>
-        <tr><td>Caixa</td><td>R$ 1.980</td><td>R$ 4.167</td><td>R$ 1.694</td><td class="dn">−52% (parcial)</td></tr>
-        <tr><td>Atend finalizados</td><td>30</td><td>63</td><td>20,3</td><td class="dn">−52%</td></tr>
-        <tr><td>Clientes únicos</td><td>17</td><td>36</td><td>—</td><td class="dn">−53%</td></tr>
-        <tr><td>Em atendimento</td><td>10 <span class="badge-live">LIVE</span></td><td>—</td><td>—</td><td>—</td></tr>
-      </tbody></table>
-      <div class="insight">10 em atend podem virar <strong>~R$ 630</strong> → fechamento estimado <strong>R$ 2.500-2.700</strong>. Vs 4.167 do 01/08 fica −40%. Puxar walk-ins até 20h.</div>
-    </div>
-
-    <section class="grid-2b">
-      <div class="card">
-        <h2>Profissionais hoje</h2>
-        <div class="cap">9 trabalhando · valor gerado</div>
-        <table class="simple"><thead><tr><th>Profissional</th><th>Atend</th><th>Receita</th></tr></thead>
-        <tbody>
-          <tr><td>Katyane Augusta Muniz</td><td>5</td><td>R$ 529,10</td></tr>
-          <tr><td>Erika Thais Pereira Melim</td><td>6</td><td>R$ 376,00</td></tr>
-          <tr><td>Giovanna Guedes Da Silva</td><td>6</td><td>R$ 294,00</td></tr>
-          <tr><td>Gabriela Cristina Da Silva</td><td>3</td><td>R$ 257,00</td></tr>
-          <tr><td>Julia Kathleen Souza</td><td>3</td><td>R$ 173,00</td></tr>
-          <tr><td>Andy Alexia Colanere</td><td>3</td><td>R$ 158,00</td></tr>
-          <tr><td>Gisele Ismene Teixeira</td><td>2</td><td>R$ 94,00</td></tr>
-          <tr><td>Thaise Moreno</td><td>1</td><td>R$ 0,00</td></tr>
-          <tr><td>Sandra Margarete</td><td>1</td><td>R$ 0,00</td></tr>
-        </tbody></table>
-      </div>
-      <div class="card">
-        <h2>Serviços de hoje</h2>
-        <div class="cap">10 tipos diferentes realizados</div>
-        <table class="simple"><thead><tr><th>Serviço</th><th>Qtd</th><th>Receita</th></tr></thead>
-        <tbody>
-          <tr><td>ESCOVA LISA</td><td>11</td><td>R$ 671,50</td></tr>
-          <tr><td>ESCOVA MODELADA</td><td>3</td><td>R$ 281,10</td></tr>
-          <tr><td>HIDRATAÇÃO MASK</td><td>4</td><td>R$ 197,50</td></tr>
-          <tr><td>FAST RETOQUE</td><td>1</td><td>R$ 189,00</td></tr>
-          <tr><td>DESIGN SOBRANCELHAS</td><td>3</td><td>R$ 180,00</td></tr>
-          <tr><td>MÃOS</td><td>4</td><td>R$ 141,00</td></tr>
-          <tr><td>FAST PENTEADO <span class="badge-new">NOVO HJ</span></td><td>1</td><td>R$ 119,00</td></tr>
-          <tr><td>PÉS</td><td>1</td><td>R$ 47,00</td></tr>
-          <tr><td>HENNA <span class="badge-new">NOVO HJ</span></td><td>1</td><td>R$ 35,00</td></tr>
-        </tbody></table>
-      </div>
-    </section>
-
-    <div class="card" style="margin-bottom:12px;">
-      <h2>Por hora · hoje <span style="color:var(--ink-3);font-size:11px;font-weight:400;">(absoluto · 1 dia)</span></h2>
-      <div class="cap">Transações fechadas hoje até 17h · sem média (1 dia só)</div>
-      <div class="bars-hora" id="hora-diario"></div>
-      <div class="xaxis-hora" id="xhora-diario"></div>
-      <div class="insight">Pico hoje: <strong>12h e 13h (4 trans cada)</strong>. Vs média anual (17h=1,53), hoje concentrou mais cedo (almoço). <strong>10 em atendimento</strong> — vão fechar nas próximas horas.</div>
-    </div>
-
-    <section class="diag">
-      <h2><span class="icon">▸</span> Diagnóstico &amp; Ações · Hoje</h2>
-      <div class="sub">Como está o dia · o que fazer até 20h</div>
-      <div class="diag-grid">
-        <div class="diag-col"><h3 class="g">Como estamos</h3><ul>
-          <li>30 atend fin · 10 em curso.</li>
-          <li>Ritmo em linha com média mês.</li>
-          <li><strong>Katyane R$ 529</strong> lidera hoje.</li>
-          <li>2 serviços novos hoje: PENTEADO, HENNA.</li>
-        </ul></div>
-        <div class="diag-col"><h3 class="w">Atenção agora</h3><ul>
-          <li>Sáb 01/08 fez R$ 4.167 · hoje projeta R$ 2.500-2.700 (−40%).</li>
-          <li>Thaise/Sandra 1 atend R$ 0 — cortesia ou erro?</li>
-          <li>Espaço 13-15h vazio (5 atend/3h).</li>
-          <li>0 pacotes vendidos hoje.</li>
-        </ul></div>
-        <div class="diag-col"><h3>Ações até 20h</h3><ul>
-          <li>Publicar walk-ins 13-15h no Insta.</li>
-          <li>Oferecer HIDRATAÇÃO em quem só fez ESCOVA (11 vs 4).</li>
-          <li>Empurrar pacote para clientes recorrentes.</li>
-          <li>Atualizar meta ago no fim do dia (agora 22,6%).</li>
-        </ul></div>
-      </div>
-    </section>
-  </div>
-
-  <footer>
-    <div><strong>Fonte.</strong> API Trinks (<code>api.trinks.com/v1</code>). Delta horário via Task Scheduler.</div>
-    <div style="margin-top:4px;"><strong>Reconciliação.</strong> Caixa = <code>Σ(transacoes.formasPagamentos.valor)</code> · categorias via decomposição de <code>pacotes[]</code>+<code>servicos[]</code>+<code>produtos[]</code>. Ago bate exato R$ 13.551.</div>
-    <div style="margin-top:4px;"><strong>Loja abriu 23/07/2026 · Meta Ago R$ 60.000</strong>. Snapshot 17:07.</div>
-  </footer>
 </div>
 
 <script>
-  const btns=document.querySelectorAll('.tab-btn'); const panels=document.querySelectorAll('.panel');
-  btns.forEach(b=>b.addEventListener('click',()=>{btns.forEach(x=>x.setAttribute('aria-selected','false'));panels.forEach(p=>p.classList.remove('active'));b.setAttribute('aria-selected','true');document.getElementById('tab-'+b.dataset.tab).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}));
+// ============= HELPERS =============
+const DOW=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+const HORAS=[8,9,10,11,12,13,14,15,16,17,18,19,20];
+const brl=(v,d=2)=>'R$ '+(v||0).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const brl0=v=>brl(v,0);
+const pct=v=>(v||0).toFixed(1)+'%';
+const cls=(v,threshold_up=0)=>v>threshold_up?'up':(v<0?'dn':'neu');
+const fmtDelta=(a,b)=>{if(!b)return 'novo';const p=(a/b-1)*100;const s=p>=0?'+':'';return `<span class="${cls(p)}">${s}${p.toFixed(1)}%</span>`;};
+const fmtDate=iso=>{const d=new Date(iso);return d.toLocaleDateString('pt-BR');};
 
-  // DADOS POR PERIODO (dow + hora)
-  const DOW_NOMES=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
-  const HORAS=[8,9,10,11,12,13,14,15,16,17,18,19,20];
+function el(html){const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild;}
 
-  const dowData={
-    anual:[{n:'Seg',v:1666,c:12},{n:'Ter',v:438,c:5},{n:'Qua',v:903,c:6},{n:'Qui',v:3927,c:40},{n:'Sex',v:2771,c:26},{n:'Sáb',v:9101,c:71},{n:'Dom',v:0,c:0}],
-    mensal:[{n:'Seg',v:991,c:8},{n:'Ter',v:209,c:3},{n:'Qua',v:646,c:3},{n:'Qui',v:2473,c:11},{n:'Sex',v:1788,c:18},{n:'Sáb',v:7444,c:54},{n:'Dom',v:0,c:0}],
-    semanal:[{n:'Seg',v:991,c:8},{n:'Ter',v:209,c:3},{n:'Qua',v:646,c:3},{n:'Qui',v:2473,c:11},{n:'Sex',v:1788,c:18},{n:'Sáb',v:1980,c:18},{n:'Dom',v:0,c:0}],
-    diario:[{n:'Seg',v:0,c:0},{n:'Ter',v:0,c:0},{n:'Qua',v:0,c:0},{n:'Qui',v:0,c:0},{n:'Sex',v:0,c:0},{n:'Sáb',v:1980,c:18},{n:'Dom',v:0,c:0}]
-  };
-  // Absolutos + dias operacionais do período
-  const horaAbs={
-    anual:  {8:1,9:2,10:6,11:13,12:11,13:11,14:10,15:12,16:17,17:26,18:20,19:21,20:10},
-    mensal: {8:1,9:1,10:4,11:9, 12:8, 13:8, 14:5, 15:6, 16:15,17:13,18:9, 19:14,20:4},
-    semanal:{8:1,9:1,10:4,11:6, 12:5, 13:6, 14:4, 15:4, 16:7, 17:6, 18:6, 19:8, 20:3},
-    diario: {10:2,11:2,12:4,13:4,14:2,16:4}
-  };
-  const diasOp={anual:17, mensal:8, semanal:6, diario:1};
-  // horaData = média por dia (trans/dia) — permite comparação real entre períodos
-  const horaData={};
-  for(const p in horaAbs){
-    horaData[p]={};
-    for(const h in horaAbs[p]){
-      horaData[p][h] = +(horaAbs[p][h] / diasOp[p]).toFixed(2);
-    }
-  }
+function tile(cls_,label,value,detail,accent){
+  return `<div class="categ-tile ${cls_}"><div class="n">${label}</div><div class="v${accent?' '+accent:''}">${value}</div><div class="d">${detail}</div></div>`;
+}
 
-  function drawDow(id, data){
-    const el=document.getElementById(id); if(!el) return;
-    const xEl=document.getElementById('x'+id);
-    const max=Math.max(...data.map(d=>d.v),1);
-    data.forEach(d=>{
-      const b=document.createElement('div');
-      b.className='b'+(d.v===max && d.v>0?' hi':'');
-      b.style.height=(d.v>0?d.v/max*100:0.6)+'%';
-      b.title=`${d.n}: R$ ${d.v.toLocaleString('pt-BR')} · ${d.c} trans`;
-      el.appendChild(b);
-      const sx=document.createElement('span');
-      sx.innerHTML=`${d.n}<br><span style="opacity:.6">R$ ${(d.v/1000).toFixed(1)}k</span>`;
-      xEl.appendChild(sx);
-    });
-  }
-  function drawHora(id, data, periodo){
-    const el=document.getElementById(id); if(!el) return;
-    const xEl=document.getElementById('x'+id);
-    const max=Math.max(...Object.values(data),1);
-    const dias=diasOp[periodo]||1;
-    HORAS.forEach(h=>{
-      const media=data[h]||0;
-      const abs=Math.round(media*dias);
-      const b=document.createElement('div');
-      b.className='b'+(media===max && media>0?' hi':'');
-      b.style.height=(media>0?media/max*100:0.6)+'%';
-      b.title=`${h}h · média ${media.toFixed(2)} trans/dia · ${abs} total (${dias} dias)`;
-      el.appendChild(b);
-      const sx=document.createElement('span');
-      sx.textContent=h+'h';
-      xEl.appendChild(sx);
-    });
-  }
-  // DOW só aparece em Semanal (Anual removido; Mensal virou dia-do-mes; Diario removido)
-  ['semanal'].forEach(p=>{ drawDow('dow-'+p, dowData[p]); });
-  ['anual','mensal','semanal','diario'].forEach(p=>{ drawHora('hora-'+p, horaData[p], p); });
+function kpiCard(cls_,label,value,foot,accent){
+  return `<div class="kpi ${cls_}"><div class="label">${label}</div><div class="value${accent?' '+accent:''}">${value}</div><div class="foot">${foot}</div></div>`;
+}
 
-  // POR DIA DO MES · Agosto/26 (competência - receita finalizados por dia)
-  const porDiaMes={1:4167,3:581,4:209,5:376,6:1443,7:1686,8:1881.10};
-  const porDiaMesN={1:63,3:7,4:4,5:5,6:22,7:31,8:30};
-  const diaEl=document.getElementById('dia-mensal');
-  const xDiaEl=document.getElementById('xdia-mensal');
-  const maxD=Math.max(...Object.values(porDiaMes),1);
+// ============= RENDER GENÉRICOS =============
+function renderKPIs(container_id, kpis){
+  document.getElementById(container_id).innerHTML='<section class="kpi-grid">'+kpis.map((k,i)=>kpiCard('k'+(i+1)||'',k.label,k.value,k.foot,k.accent)).join('')+'</section>';
+}
+
+function renderMetaProgress(container_id, titulo, meta, subtitle){
+  if(!meta || !meta.meta) return;
+  const pct_v = Math.min(meta.pct,100);
+  const html=`
+    <section class="meta-card">
+      <h2><span style="color:var(--accent)">🎯</span> ${titulo} · <span style="color:var(--accent)">${brl0(meta.meta)}</span></h2>
+      <div class="sub">${subtitle||''}</div>
+      <div class="progress"><div class="progress-fill" style="width:${pct_v}%"></div></div>
+      <div class="progress-labels"><span>R$ 0</span><span class="now">▲ ${brl0(meta.realizado)} · ${pct(meta.pct)}</span><span>${brl0(meta.meta)}</span></div>
+      <div class="meta-row" style="margin-top:20px;">
+        <div class="meta-cell"><div class="l">Realizado</div><div class="v accent">${brl0(meta.realizado)}</div></div>
+        <div class="meta-cell"><div class="l">Falta</div><div class="v">${brl0(meta.falta)}</div></div>
+        <div class="meta-cell"><div class="l">Dias restantes</div><div class="v">${meta.dias_restantes}</div></div>
+        <div class="meta-cell"><div class="l">Necessário/dia</div><div class="v warn">${brl0(meta.necessario_dia)}</div></div>
+      </div>
+      <div class="meta-row">
+        <div class="meta-cell"><div class="l">Ritmo atual/dia</div><div class="v">${brl0(meta.ritmo_dia)}</div></div>
+        <div class="meta-cell"><div class="l">Projeção linear</div><div class="v ${meta.projecao_pct>=90?'good':'warn'}">${brl0(meta.projecao)}</div></div>
+        <div class="meta-cell"><div class="l">Projeção %</div><div class="v ${meta.projecao_pct>=90?'good':(meta.projecao_pct>=70?'warn':'crit')}">${pct(meta.projecao_pct)}</div></div>
+        <div class="meta-cell"><div class="l">Dias operados</div><div class="v">${meta.dias_realizados}/${meta.dias_total}</div></div>
+      </div>
+    </section>`;
+  document.getElementById(container_id).innerHTML=html;
+}
+
+function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta_realizado, meta_projecao){
+  const c=categorias||{};
+  const rows=[
+    {k:'pacotes',nome:'Pacotes',pct_meta:21,cls_:''},
+    {k:'servicos',nome:'Serviços',pct_meta:76,cls_:'c2'},
+    {k:'produtos',nome:'Produtos',pct_meta:3,cls_:'c3'},
+  ];
+  const tiles=rows.map(r=>{
+    const cat=c[r.k]||{v:0,n:0,pct:0};
+    const meta_cat=meta_valor*r.pct_meta/100;
+    const pct_ating=meta_cat>0?cat.v/meta_cat*100:0;
+    const cor=pct_ating>=100?'up':(pct_ating>=50?'warn':'dn');
+    return tile(r.cls_,r.nome,brl0(cat.v),`vs meta ${brl0(meta_cat)} · <span class="${cor}">${pct(pct_ating)}</span>`);
+  }).join('');
+  const proj_pct = meta_valor>0 ? meta_projecao/meta_valor*100 : 0;
+  const tabela_rows=rows.map(r=>{
+    const cat=c[r.k]||{v:0,n:0,pct:0};
+    const meta_cat=meta_valor*r.pct_meta/100;
+    const pct_ating=meta_cat>0?cat.v/meta_cat*100:0;
+    const proj_cat=meta_realizado>0?cat.v/meta_realizado*meta_projecao:0;
+    const proj_pct_cat=meta_cat>0?proj_cat/meta_cat*100:0;
+    const cor=pct_ating>=100?'up':(pct_ating>=50?'warn':'dn');
+    const cor_proj=proj_pct_cat>=90?'up':(proj_pct_cat>=70?'warn':'dn');
+    return `<tr><td>${r.nome} (${r.pct_meta}%)</td><td>${brl0(meta_cat)}</td><td>${brl0(cat.v)}</td><td class="${cor}">${pct(pct_ating)}</td><td>${brl0(Math.max(meta_cat-cat.v,0))}</td><td class="${cor_proj}">${brl0(proj_cat)} (${pct(proj_pct_cat)})</td></tr>`;
+  }).join('');
+  const total_row=`<tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL</td><td>${brl0(meta_valor)}</td><td>${brl0(meta_realizado)}</td><td>${pct(meta_valor>0?meta_realizado/meta_valor*100:0)}</td><td>${brl0(Math.max(meta_valor-meta_realizado,0))}</td><td>${brl0(meta_projecao)} (${pct(proj_pct)})</td></tr>`;
+  document.getElementById(container_id).innerHTML=`
+    <div class="card">
+      <h2>Detalhamento por categoria · Meta vs Realizado ${titulo}</h2>
+      <div class="cap">Meta ${brl0(meta_valor)} fatiada na proporção (21/76/3) + projeção linear</div>
+      <div class="categ-grid">${tiles}</div>
+      <table class="simple"><thead><tr><th>Categoria</th><th>Meta</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção</th></tr></thead><tbody>${tabela_rows}${total_row}</tbody></table>
+    </div>`;
+}
+
+function renderTable(container_id, titulo, subtitle, headers, rows){
+  const th=headers.map(h=>`<th>${h}</th>`).join('');
+  const tr=rows.map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('');
+  document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><table class="simple"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`;
+}
+
+function renderBarsDia(container_id, titulo, subtitle, dias_data, insight){
+  const map={};dias_data.forEach(d=>map[d.d]={n:d.n,v:d.v});
+  const max=Math.max(...dias_data.map(d=>d.v),1);
+  let bars='',axis='';
   for(let d=1;d<=31;d++){
-    const v=porDiaMes[d]||0;
-    const n=porDiaMesN[d]||0;
-    const b=document.createElement('div');
-    b.className='b'+(v===maxD?' hi':'');
-    b.style.height=(v>0?v/maxD*100:0.6)+'%';
-    if(!v) b.dataset.empty='1';
-    b.title=`${String(d).padStart(2,'0')}/08 · R$ ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})} · ${n} atend`;
-    diaEl.appendChild(b);
-    const sx=document.createElement('span');
-    sx.textContent=String(d).padStart(2,'0');
-    xDiaEl.appendChild(sx);
+    const v=map[d]?map[d].v:0, n=map[d]?map[d].n:0;
+    bars+=`<div class="b${v===max?' hi':''}" style="height:${v>0?v/max*100:0.6}%" ${!v?'data-empty="1"':''} title="${String(d).padStart(2,'0')} · ${brl(v)} · ${n} atend"></div>`;
+    axis+=`<span>${String(d).padStart(2,'0')}</span>`;
   }
+  document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="bars-dia">${bars}</div><div class="xaxis-dia">${axis}</div>${insight?'<div class="insight">'+insight+'</div>':''}</div>`;
+}
+
+function renderBarsDow(container_id, titulo, subtitle, dow_data, insight){
+  const max=Math.max(...dow_data.map(d=>d.v),1);
+  let bars='',axis='';
+  dow_data.forEach(d=>{
+    bars+=`<div class="b${d.v===max&&d.v>0?' hi':''}" style="height:${d.v>0?d.v/max*100:0.6}%" title="${d.nome}: ${brl0(d.v)} · ${d.n} atend"></div>`;
+    axis+=`<span>${d.nome}<br><span style="opacity:.6">${brl0(d.v/1000)}k</span></span>`;
+  });
+  document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="bars-dow">${bars}</div><div class="xaxis-dow">${axis}</div>${insight?'<div class="insight">'+insight+'</div>':''}</div>`;
+}
+
+function renderBarsHora(container_id, titulo, subtitle, hora_data, is_media, insight){
+  const map={};hora_data.forEach(x=>map[x.h]=is_media?x.media:x.n);
+  const max=Math.max(...Object.values(map),0.01);
+  let bars='',axis='';
+  HORAS.forEach(h=>{
+    const v=map[h]||0;
+    bars+=`<div class="b${v===max&&v>0?' hi':''}" style="height:${v>0?v/max*100:0.6}%" title="${h}h: ${is_media?v.toFixed(2)+' trans/dia média':v+' trans'}"></div>`;
+    axis+=`<span>${h}h</span>`;
+  });
+  document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="bars-hora">${bars}</div><div class="xaxis-hora">${axis}</div>${insight?'<div class="insight">'+insight+'</div>':''}</div>`;
+}
+
+function renderRankingProf(container_id, titulo, subtitle, prof_list){
+  const rows=prof_list.slice(0,10).map(p=>[p.nome,p.n,brl0(p.v)]);
+  renderTable(container_id, titulo, subtitle, ['Profissional','Atend','Receita'], rows);
+}
+
+function renderMeiosPagamento(container_id, titulo, subtitle, meios){
+  const rows=meios.map(m=>[m.nome,m.n,brl0(m.v),pct(m.pct)]);
+  renderTable(container_id, titulo, subtitle, ['Meio','Nº','Valor','%'], rows);
+}
+
+function renderCategTile(container_id, titulo, subtitle, categorias){
+  const c=categorias||{};
+  const tiles=[
+    tile('','Pacotes',brl0((c.pacotes||{}).v),`${(c.pacotes||{}).n||0} vendidos · ${pct((c.pacotes||{}).pct)} caixa`),
+    tile('c2','Serviços',brl0((c.servicos||{}).v),`${(c.servicos||{}).n||0} realizados · ${pct((c.servicos||{}).pct)} caixa`),
+    tile('c3','Produtos',brl0((c.produtos||{}).v),`${(c.produtos||{}).n||0} vendas · ${pct((c.produtos||{}).pct)} caixa`),
+  ].join('');
+  document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="categ-grid">${tiles}</div></div>`;
+}
+
+// ============= RENDER POR ABA =============
+function renderAnual(data){
+  const a=data.abas.anual;
+  const k=a.kpis;
+  renderKPIs('anual-kpis',[
+    {label:'Caixa · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
+    {label:'Receita competência',value:brl0(k.receita_serv),foot:`${k.atend_fin} atend finalizados`},
+    {label:'Ticket transação',value:brl(k.ticket_trans),foot:`${k.n_trans} notas`},
+    {label:'Cancelamento',value:pct(k.taxa_canc),foot:`${k.clientes_unicos} clientes únicos`}
+  ]);
+  if(a.meta && a.meta.meta) renderMetaProgress('anual-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
+  renderCategoriasMeta('anual-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0);
+
+  // Tabela mensal
+  const meses=Object.entries(a.meses||{}).sort();
+  const mrows=meses.map(([ym,m])=>[ym,m.dias_op,brl0(m.caixa),brl0(m.receita_serv),m.atend_fin,m.clientes_unicos,brl(m.ticket_trans),pct(m.taxa_canc)]);
+  renderTable('anual-meses','Tabela mensal detalhada','Consolidado por mês',['Mês','Dias','Caixa','Receita','Atend','Únicos','Ticket','Cancel'],mrows);
+
+  // LTV
+  const ltv=a.top_ltv;
+  const rows=ltv.top.map((c,i)=>[i+1,c.nome,c.n,brl0(c.v)]);
+  document.getElementById('anual-ltv').innerHTML=`
+    <div class="card">
+      <h2>💎 Top clientes · LTV 2026 <span class="hi">(${ltv.total_clientes} únicos)</span></h2>
+      <div class="cap">Concentração de receita · Pareto revelador</div>
+      <div class="categ-grid">
+        ${tile('','Total únicos',ltv.total_clientes+'',`R$ ${(ltv.receita_total/Math.max(ltv.total_clientes,1)).toFixed(0)} LTV médio`)}
+        ${tile('c2','Pareto top 20%',ltv.pareto20_n+' clientes',`${brl0(ltv.pareto20_v)} · <span class="up">${pct(ltv.pareto20_pct)}</span>`)}
+        ${tile('c3','Só 1 visita (churn?)',ltv.uma_vez+'',`<span class="dn">${ltv.total_clientes>0?(ltv.uma_vez/ltv.total_clientes*100).toFixed(0):0}% da base</span>`)}
+      </div>
+      <table class="simple"><thead><tr><th>#</th><th>Cliente</th><th>Visitas</th><th>LTV</th></tr></thead>
+      <tbody>${rows.map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('')}</tbody></table>
+    </div>`;
+
+  // Rentabilidade
+  const rent=a.rentabilidade_hora||[];
+  const rentRows=rent.map(s=>[s.nome,s.n,s.min_medio,brl0(s.ticket),`<span class="${s.rs_hora>=250?'up':(s.rs_hora>=100?'warn':'dn')}">${brl(s.rs_hora)}</span>`]);
+  renderTable('anual-rentabilidade','⚡ Rentabilidade por hora · serviços','R$/hora de cadeira ocupada',['Serviço','Qtd','Min','Ticket','R$/hora'],rentRows);
+
+  renderBarsHora('anual-hora','Por hora do dia · 2026 <span class="hi">(média trans/dia · '+k.dias_op+'d op.)</span>','Média de transações por hora',a.hora_media,true,'');
+}
+
+function renderMensal(data){
+  const m=data.abas.mensal, k=m.kpis;
+  document.getElementById('tab-mensal-sub').textContent='meta '+brl0(data.meta_mensal_valor/1000)+'k';
+  if(k.em_atendimento>0){document.getElementById('chip-live').style.display='';document.getElementById('chip-live').innerHTML=`<span class="dot"></span> ${k.em_atendimento} em atendim.`;document.getElementById('chip-live').className='chip live';}
+  renderKPIs('mensal-kpis',[
+    {label:'Caixa · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent'},
+    {label:'Atendimentos',value:k.atend_fin+'',foot:`${k.clientes_unicos} únicos · ${pct(k.taxa_canc)} cancel`},
+    {label:'Ticket transação',value:brl(k.ticket_trans),foot:`descontos ${brl0(m.descontos*-1)}`},
+    {label:'Dias operados',value:k.dias_op+'',foot:`de ${data.dias_op_mes} totais no mês`}
+  ]);
+  renderMetaProgress('mensal-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
+  renderCategoriasMeta('mensal-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao);
+
+  // Novos vs Recorrentes
+  const nvr=m.novos_vs_recorr;
+  const total_c=nvr.novos.clientes+nvr.recorrentes.clientes;
+  const rec_pct=total_c>0?nvr.recorrentes.clientes/total_c*100:0;
+  document.getElementById('mensal-novos').innerHTML=`
+    <div class="card">
+      <h2>🆕 Novos vs Recorrentes · mês</h2>
+      <div class="cap">Aquisição vs retenção</div>
+      <div class="categ-grid">
+        ${tile('','Clientes NOVOS',nvr.novos.clientes+'',`${nvr.novos.atend} atend · <strong>${brl0(nvr.novos.receita)}</strong>`)}
+        ${tile('c2','Recorrentes',nvr.recorrentes.clientes+'',`${nvr.recorrentes.atend} atend · ${brl0(nvr.recorrentes.receita)}`)}
+        ${tile('c3','Taxa retenção',pct(rec_pct),`${nvr.recorrentes.clientes} de ${total_c} clientes ativos`)}
+      </div>
+    </div>`;
+
+  // Rentabilidade
+  const rent=m.rentabilidade_hora||[];
+  const rentRows=rent.map(s=>[s.nome,s.n,s.min_medio,brl0(s.ticket),`<span class="${s.rs_hora>=250?'up':(s.rs_hora>=100?'warn':'dn')}">${brl(s.rs_hora)}</span>`]);
+  renderTable('mensal-rentabilidade','⚡ Rentabilidade por hora · mês','R$/hora de cadeira ocupada',['Serviço','Qtd','Min','Ticket','R$/hora'],rentRows);
+
+  renderBarsDia('mensal-dia','Por dia do mês','Receita competência por dia',m.por_dia_mes,'');
+  renderBarsHora('mensal-hora','Por hora do dia <span class="hi">(média trans/dia · '+k.dias_op+'d op.)</span>','Média de transações',m.hora_media,true,'');
+  renderRankingProf('mensal-prof','Ranking · profissionais','Por receita gerada',m.ranking_prof);
+  renderMeiosPagamento('mensal-meios','Meios de pagamento','Valor recebido',m.meios_pagamento);
+}
+
+function renderSemanal(data){
+  const s=data.abas.semanal, k=s.kpis;
+  document.getElementById('tab-semanal-sub').textContent=fmtDate(k.periodo_ini).slice(0,5)+'–'+fmtDate(k.periodo_fim).slice(0,5);
+  renderKPIs('semanal-kpis',[
+    {label:'Caixa · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent'},
+    {label:'Atendimentos',value:k.atend_fin+'',foot:`${k.clientes_unicos} únicos · ${pct(k.taxa_canc)} cancel`},
+    {label:'Ticket transação',value:brl(k.ticket_trans),foot:'padrão varejo'},
+    {label:'Dias operados',value:k.dias_op+'',foot:'de 6 (seg–sáb)'}
+  ]);
+  renderMetaProgress('semanal-meta','Meta Semanal',s.meta,'Meta mensal ÷ dias oper. × dias da semana');
+  renderCategoriasMeta('semanal-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao);
+  renderBarsDow('semanal-dow','Por dia da semana','Caixa por dia · onde a receita se concentra',s.por_dow,'');
+  renderBarsHora('semanal-hora','Por hora do dia <span class="hi">(média · '+k.dias_op+'d op.)</span>','Média de transações/dia',s.hora_media,true,'');
+  renderRankingProf('semanal-prof','Ranking · profissionais','Por receita gerada',s.ranking_prof);
+  renderMeiosPagamento('semanal-meios','Meios de pagamento','Valor recebido',s.meios_pagamento);
+}
+
+function renderDiario(data){
+  const d=data.abas.diario, k=d.kpis;
+  document.getElementById('tab-diario-sub').textContent=fmtDate(k.data)+' '+k.dia_semana;
+  renderKPIs('diario-kpis',[
+    {label:'Caixa · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent'},
+    {label:'Atendimentos',value:k.atend_fin+'',foot:`+${k.em_atendimento} em atend · ${k.clientes_unicos} únicos`},
+    {label:'Ticket transação',value:k.n_trans>0?brl(k.ticket_trans):'—',foot:'hoje'},
+    {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
+  ]);
+  renderMetaProgress('diario-meta','Meta Diária',d.meta,'Meta mensal ÷ dias operacionais');
+  renderCategoriasMeta('diario-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao);
+  renderBarsHora('diario-hora','Por hora · hoje <span class="hi">(absoluto · 1 dia)</span>','Transações fechadas até agora',d.hora_abs,false,'');
+  renderRankingProf('diario-prof','Profissionais hoje','Trabalhando agora',d.ranking_prof);
+
+  const sRows=d.ranking_serv.map(s=>[s.nome,s.n,brl0(s.v)]);
+  renderTable('diario-serv','Serviços realizados hoje','Tipos e volumes',['Serviço','Qtd','Receita'],sRows);
+  renderMeiosPagamento('diario-meios','Meios de pagamento · hoje','Fechados até agora',d.meios_pagamento);
+}
+
+// ============= TABS =============
+function setupTabs(){
+  const btns=document.querySelectorAll('.tab-btn');
+  const panels=document.querySelectorAll('.panel');
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    btns.forEach(x=>x.setAttribute('aria-selected','false'));
+    panels.forEach(p=>p.classList.remove('active'));
+    b.setAttribute('aria-selected','true');
+    document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }));
+}
+
+// ============= LOAD =============
+async function load(){
+  try {
+    const resp = await fetch('data/dashboard_data.json?_='+Date.now(), {cache:'no-store'});
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    const data = await resp.json();
+    renderAnual(data);
+    renderMensal(data);
+    renderSemanal(data);
+    renderDiario(data);
+    setupTabs();
+    const dt=new Date(data.gerado_em);
+    document.getElementById('chip-updated').innerHTML=`<span class="dot"></span> Atualizado ${dt.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}`;
+    document.getElementById('loading').style.display='none';
+    document.getElementById('content').style.display='';
+  } catch(e){
+    document.getElementById('loading').innerHTML=`<div style="color:var(--crit)">❌ Erro ao carregar dados: ${e.message}<br><small>Tenta recarregar a página em 1 min.</small></div>`;
+  }
+}
+
+// auto-refresh a cada 5min (se aba visível)
+load();
+setInterval(()=>{if(!document.hidden) load();}, 5*60*1000);
 </script>
+</body>
+</html>
