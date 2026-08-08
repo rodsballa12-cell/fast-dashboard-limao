@@ -21,7 +21,22 @@
   .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);font-size:11.5px;border:1px solid var(--border);font-variant-numeric:tabular-nums;}
   .chip .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
   .chip.live .dot{background:var(--crit);animation:pulse 1.5s infinite;}
+  .chip.stale{border-color:var(--warn);color:var(--warn);}
+  .chip.stale .dot{background:var(--warn);}
+  .chip.fresh{border-color:var(--good);color:var(--good);}
+  .chip.fresh .dot{background:var(--good);}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+  .btn-refresh{background:var(--surface-2);color:var(--ink);border:1px solid var(--border);border-radius:999px;padding:5px 12px;font-size:11.5px;font-family:inherit;cursor:pointer;transition:.15s;font-weight:600;}
+  .btn-refresh:hover{background:var(--accent);color:#000;border-color:var(--accent);}
+  .btn-refresh:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-sync{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#000;border-color:var(--accent);font-weight:700;}
+  .btn-sync:hover{filter:brightness(1.1);}
+  #toast{position:fixed;top:20px;right:20px;background:var(--surface);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:8px;padding:14px 20px;box-shadow:var(--shadow);z-index:1000;font-size:13px;color:var(--ink);max-width:340px;display:none;}
+  #toast.show{display:block;animation:slideIn .3s;}
+  #toast.err{border-color:var(--crit);border-left-color:var(--crit);}
+  #toast strong{color:var(--accent);}
+  #toast.err strong{color:var(--crit);}
+  @keyframes slideIn{from{transform:translateX(400px);}to{transform:translateX(0);}}
   .tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:22px;overflow-x:auto;flex-wrap:wrap;}
   .tab-btn{background:transparent;border:0;padding:12px 18px;cursor:pointer;font-family:inherit;font-size:13.5px;color:var(--ink-2);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;border-radius:6px 6px 0 0;transition:.15s;}
   .tab-btn:hover{color:var(--ink);background:var(--surface-2);}
@@ -110,10 +125,14 @@
     </div>
     <div class="meta">
       <span class="chip" id="chip-updated">carregando…</span>
+      <span class="chip" id="chip-age" style="display:none;"></span>
       <span class="chip" id="chip-live" style="display:none;"></span>
+      <button id="btn-reload" class="btn-refresh" title="Recarrega os dados publicados">🔄 Recarregar</button>
+      <button id="btn-sync" class="btn-refresh btn-sync" title="Dispara nova captura na API Trinks (leva ~1min)">⚡ Sincronizar Trinks</button>
     </div>
   </header>
 
+  <div id="toast"></div>
   <div id="loading">
     <div class="spinner"></div>
     <div>Carregando dados frescos do Trinks…</div>
@@ -467,8 +486,19 @@ function setupTabs(){
   }));
 }
 
+// ============= TOAST =============
+function toast(msg, isError=false){
+  const t=document.getElementById('toast');
+  t.innerHTML=msg;
+  t.className='show'+(isError?' err':'');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.className='',5000);
+}
+
 // ============= LOAD =============
-async function load(){
+async function load(showToast=false){
+  const btn=document.getElementById('btn-reload');
+  if(btn){btn.disabled=true;btn.textContent='🔄 Recarregando…';}
   try {
     const resp = await fetch('data/dashboard_data.json?_='+Date.now(), {cache:'no-store'});
     if(!resp.ok) throw new Error('HTTP '+resp.status);
@@ -477,15 +507,79 @@ async function load(){
     renderMensal(data);
     renderSemanal(data);
     renderDiario(data);
-    setupTabs();
+    if(!window._tabsSet){ setupTabs(); window._tabsSet=true; }
     const dt=new Date(data.gerado_em);
-    document.getElementById('chip-updated').innerHTML=`<span class="dot"></span> Atualizado ${dt.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}`;
+    const ageMin=Math.floor((Date.now()-dt.getTime())/60000);
+    const chipUpd=document.getElementById('chip-updated');
+    chipUpd.innerHTML=`<span class="dot"></span> Dados de ${dt.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}`;
+    // idade: verde <65min, amarelo <180min, vermelho >180min
+    const chipAge=document.getElementById('chip-age');
+    chipAge.style.display='';
+    if(ageMin<=65){chipAge.className='chip fresh';chipAge.innerHTML=`<span class="dot"></span> há ${ageMin} min`;}
+    else if(ageMin<=180){chipAge.className='chip stale';chipAge.innerHTML=`<span class="dot"></span> há ${ageMin} min · próximo refresh em breve`;}
+    else{chipAge.className='chip stale';chipAge.innerHTML=`<span class="dot"></span> há ${Math.floor(ageMin/60)}h${ageMin%60}m ⚠️ desatualizado`;}
     document.getElementById('loading').style.display='none';
     document.getElementById('content').style.display='';
+    if(showToast) toast(`✅ Dados recarregados<br><small>Snapshot de ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} · idade ${ageMin} min</small>`);
   } catch(e){
-    document.getElementById('loading').innerHTML=`<div style="color:var(--crit)">❌ Erro ao carregar dados: ${e.message}<br><small>Tenta recarregar a página em 1 min.</small></div>`;
+    if(showToast) toast(`❌ <strong>Erro</strong> ao recarregar: ${e.message}`, true);
+    else document.getElementById('loading').innerHTML=`<div style="color:var(--crit)">❌ Erro ao carregar dados: ${e.message}<br><small>Tenta recarregar a página em 1 min.</small></div>`;
+  } finally {
+    if(btn){btn.disabled=false;btn.textContent='🔄 Recarregar';}
   }
 }
+
+// ============= SINCRONIZAR COM TRINKS (GitHub Actions) =============
+// Token fica em localStorage (só no seu browser · nunca no HTML público)
+function getToken(){
+  let t = localStorage.getItem('gh_token');
+  if(!t){
+    t = prompt('Cole o Personal Access Token do GitHub (só precisa 1×, fica no seu browser):\n\nCriar em: github.com/settings/tokens/new\n- Nota: fast-dashboard sync\n- Expiration: no expiration\n- Scopes: apenas "workflow"');
+    if(t) localStorage.setItem('gh_token', t.trim());
+  }
+  return t;
+}
+async function sincronizarTrinks(){
+  const btn=document.getElementById('btn-sync');
+  const token=getToken();
+  if(!token){toast('Cancelado · token não fornecido', true); return;}
+  btn.disabled=true;
+  btn.textContent='⚡ Disparando…';
+  try {
+    const r = await fetch('https://api.github.com/repos/rodsballa12-cell/fast-dashboard-limao/actions/workflows/refresh.yml/dispatches', {
+      method:'POST',
+      headers:{'Accept':'application/vnd.github+json','Authorization':'Bearer '+token,'X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
+      body:JSON.stringify({ref:'main'})
+    });
+    if(r.status===204){
+      toast(`⚡ <strong>Sync disparado!</strong><br><small>API Trinks sendo consultada agora. Em ~1min clica "🔄 Recarregar".</small>`);
+      btn.textContent='⏳ Rodando ~1min';
+      setTimeout(()=>{
+        btn.disabled=false;
+        btn.textContent='⚡ Sincronizar Trinks';
+        load(true);
+      },70000);
+    } else if(r.status===401){
+      localStorage.removeItem('gh_token');
+      toast(`❌ Token inválido · removido. Clica de novo p/ colar outro.`, true);
+      btn.disabled=false;btn.textContent='⚡ Sincronizar Trinks';
+    } else if(r.status===404){
+      toast(`⚠️ Workflow não encontrado ainda no repo. Setup em progresso.`, true);
+      btn.disabled=false;btn.textContent='⚡ Sincronizar Trinks';
+    } else {
+      const txt = (await r.text()).slice(0,150);
+      toast(`❌ HTTP ${r.status}: ${txt}`, true);
+      btn.disabled=false;btn.textContent='⚡ Sincronizar Trinks';
+    }
+  } catch(e){
+    toast(`❌ Erro: ${e.message}`, true);
+    btn.disabled=false;btn.textContent='⚡ Sincronizar Trinks';
+  }
+}
+
+// ============= BINDINGS =============
+document.getElementById('btn-reload').addEventListener('click', ()=>load(true));
+document.getElementById('btn-sync').addEventListener('click', sincronizarTrinks);
 
 // auto-refresh a cada 5min (se aba visível)
 load();
