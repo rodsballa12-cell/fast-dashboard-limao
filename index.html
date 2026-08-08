@@ -531,11 +531,20 @@ async function load(showToast=false){
 
 // ============= SINCRONIZAR COM TRINKS (GitHub Actions) =============
 // Token fica em localStorage (só no seu browser · nunca no HTML público)
+function sanitizeToken(t){
+  // remove BOM, espaços, quebras de linha e qualquer caractere não-ASCII imprimível
+  return (t||'').replace(/[^\x20-\x7E]/g,'').replace(/\s+/g,'').trim();
+}
 function getToken(){
   let t = localStorage.getItem('gh_token');
+  if(t){
+    const clean = sanitizeToken(t);
+    if(clean !== t){ localStorage.setItem('gh_token', clean); t = clean; }
+  }
   if(!t){
-    t = prompt('Cole o Personal Access Token do GitHub (só precisa 1×, fica no seu browser):\n\nCriar em: github.com/settings/tokens/new\n- Nota: fast-dashboard sync\n- Expiration: no expiration\n- Scopes: apenas "workflow"');
-    if(t) localStorage.setItem('gh_token', t.trim());
+    const raw = prompt('Cole o Personal Access Token do GitHub (só precisa 1×, fica no seu browser):\n\nCriar em: github.com/settings/tokens/new\n- Nota: fast-dashboard sync\n- Expiration: no expiration\n- Scopes: apenas "workflow"');
+    t = sanitizeToken(raw);
+    if(t) localStorage.setItem('gh_token', t);
   }
   return t;
 }
