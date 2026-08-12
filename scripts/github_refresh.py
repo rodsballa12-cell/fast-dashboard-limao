@@ -26,6 +26,7 @@ DOW_NOMES = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_JSON = REPO_ROOT / "data" / "dashboard_data.json"
+STONE_CSV = REPO_ROOT / "data" / "stone_extrato.csv"
 
 
 class Trinks:
@@ -345,6 +346,33 @@ def main():
 
     cota_final = t.consumo()
 
+    # ==== STONE reconciliação (se CSV existe) ====
+    stone_data = None
+    try:
+        from stone_processor import processar_stone_csv
+        # extrair transações Trinks (só cartão/PIX/dinheiro) para o matcher
+        trinks_tx = []
+        for tr in transac:
+            dt = None
+            try:
+                if tr.get("dataHora"):
+                    dt = datetime.fromisoformat(tr["dataHora"]).date()
+            except Exception:
+                pass
+            cli = (tr.get("cliente") or {}).get("nome", "")
+            for fp in (tr.get("formasPagamentos") or []):
+                trinks_tx.append({
+                    "data": dt,
+                    "meio": fp.get("nome", ""),
+                    "valor": float(fp.get("valor") or 0),
+                    "cliente": cli,
+                })
+        stone_data = processar_stone_csv(STONE_CSV, trinks_tx)
+        print(f"[stone] {'OK · ' + str(stone_data['total_lancamentos']) + ' lancamentos' if stone_data else 'sem CSV · aba vazia'}")
+    except Exception as e:
+        print(f"[stone] erro: {e}")
+        stone_data = None
+
     payload = {
         # UTC com sufixo Z para JavaScript interpretar corretamente
         "gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00","Z"),
@@ -352,6 +380,7 @@ def main():
         "meta_mensal_valor": META_MENSAL,
         "dias_op_mes": DIAS_OP_MES,
         "cota_api": cota_final,
+        "stone": stone_data,
         "abas": {
             "anual": {
                 "kpis": a_anual["kpis"], "meta": meta_ano, "categorias": a_anual["categorias"],

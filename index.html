@@ -144,6 +144,7 @@
       <button class="tab-btn" role="tab" aria-selected="true"  data-tab="mensal">Mensal<span class="subn" id="tab-mensal-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="semanal">Semanal<span class="subn" id="tab-semanal-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="diario">Diário<span class="subn" id="tab-diario-sub"></span></button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="stone">🏦 Stone<span class="subn" id="tab-stone-sub"></span></button>
     </div>
 
     <!-- ANUAL -->
@@ -204,6 +205,12 @@
       </div>
       <div id="diario-meios"></div>
       <div id="diario-topcli"></div>
+    </div>
+
+    <!-- STONE -->
+    <div class="panel" id="tab-stone">
+      <div class="audit"><div>🏦</div><div>Reconciliação <strong>Trinks × Stone</strong>. CSV do portal Stone processado. Cartões trabalham em <strong>D+30</strong>.</div></div>
+      <div id="stone-content"></div>
     </div>
 
     <footer>
@@ -523,6 +530,107 @@ function toast(msg, isError=false){
 }
 
 // ============= LOAD =============
+function renderStone(data){
+  const s = data.stone;
+  const el = document.getElementById('stone-content');
+  const subEl = document.getElementById('tab-stone-sub');
+  if(!s){
+    if(subEl) subEl.textContent='sem CSV';
+    el.innerHTML = `<div class="card"><h2>🏦 Aguardando CSV Stone</h2><div class="cap">Faça upload do extrato Stone no repo para ativar</div>
+      <p style="color:var(--ink-2);font-size:13px;line-height:1.6">
+      Nenhum extrato Stone foi carregado ainda. Para ativar esta aba:<br>
+      1. Baixe extrato CSV no portal Stone → 2. Salve como <code>data/stone_extrato.csv</code> no repo →
+      3. Rode <strong>⚡ Sincronizar Trinks</strong> ou aguarde próxima rodada horária.
+      </p></div>`;
+    return;
+  }
+  if(subEl) subEl.textContent = `${s.periodo_ini?.slice(5).replace('-','/')} — ${s.periodo_fim?.slice(5).replace('-','/')}`;
+
+  const pix = s.pix, cart = s.cartao, out = s.outros;
+
+  // KPIs Stone
+  const kpiHtml = `<section class="kpi-grid">
+    <div class="kpi"><div class="label">Recebido no período</div><div class="value accent">${brl0(pix.liquido + cart.recebiveis_liquido)}</div><div class="foot">${pix.recebidos_n} PIX + ${cart.recebiveis_n} cartão · líquido</div></div>
+    <div class="kpi k2"><div class="label">PIX (bruto Stone)</div><div class="value">${brl0(pix.bruto)}</div><div class="foot">Trinks registra ${brl0(pix.trinks_registrado_v)} · <span class="${pix.bruto-pix.trinks_registrado_v>=0?'up':'dn'}">diff ${brl0(pix.bruto-pix.trinks_registrado_v)}</span></div></div>
+    <div class="kpi k3"><div class="label">A receber D+30 (estim.)</div><div class="value">${brl0(cart.a_receber_estim)}</div><div class="foot">Vendas cartão ago = ${brl0(cart.trinks_bruto_periodo)} bruto</div></div>
+    <div class="kpi k4"><div class="label">Taxa PIX Stone</div><div class="value">${pix.taxa_pct.toFixed(3)}%</div><div class="foot">${brl0(pix.tarifa)} em tarifas · padrão 0,50-0,99%</div></div>
+  </section>`;
+
+  // Reconciliação PIX card
+  const rec = `<div class="card"><h2>Reconciliação PIX · ${s.periodo_ini?.slice(-5)} → ${s.periodo_fim?.slice(-5)}</h2>
+    <div class="cap">Match automático por data + valor (± R$ 0,50)</div>
+    <table class="simple">
+      <thead><tr><th>Fonte</th><th>Nº</th><th>Bruto</th></tr></thead>
+      <tbody>
+        <tr><td>Trinks (registrado como PIX)</td><td>${pix.trinks_registrado_n}</td><td>${brl0(pix.trinks_registrado_v)}</td></tr>
+        <tr><td>Stone (créditos PIX recebidos)</td><td>${pix.recebidos_n}</td><td>${brl0(pix.bruto)}</td></tr>
+        <tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>Diferença</td><td>${pix.recebidos_n - pix.trinks_registrado_n}</td><td>${brl0(pix.bruto - pix.trinks_registrado_v)}</td></tr>
+      </tbody>
+    </table>
+    <div class="insight">
+      ✅ <strong>${pix.matches_n} matches</strong> automáticos ·
+      🟡 <strong>${pix.orfaos_stone.length} órfãos Stone</strong> (dinheiro caiu mas não achei no Trinks) ·
+      🔴 <strong>${pix.orfaos_trinks.length} órfãos Trinks</strong> (registrado mas não caiu na conta)
+    </div>
+  </div>`;
+
+  // Órfãos Stone
+  let orfStoneHtml = '';
+  if(pix.orfaos_stone.length){
+    const rows = pix.orfaos_stone.map(o => `<tr><td>${o.data?.slice(-5).replace('-','/')}</td><td>${brl0(o.valor)}</td><td>${o.origem||'?'}</td></tr>`).join('');
+    orfStoneHtml = `<div class="card"><h2>🟡 PIX Stone sem correspondente Trinks</h2>
+      <div class="cap">Provável: venda fora do sistema · pagamento parcial · ou cliente pagou de outro origem</div>
+      <table class="simple"><thead><tr><th>Data</th><th>Valor</th><th>Origem (nome pagador)</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="insight"><strong>Total órfão:</strong> ${brl0(pix.orfaos_stone.reduce((s,o)=>s+o.valor,0))} · <strong>investigar com o time</strong></div>
+    </div>`;
+  }
+
+  // Órfãos Trinks
+  let orfTrinksHtml = '';
+  if(pix.orfaos_trinks.length){
+    const rows = pix.orfaos_trinks.map(o => `<tr><td>${o.data?.slice(-5).replace('-','/')}</td><td>${brl0(o.valor)}</td><td>${o.cliente||'?'}</td></tr>`).join('');
+    orfTrinksHtml = `<div class="card"><h2>🔴 PIX Trinks sem entrada Stone</h2>
+      <div class="cap">Cliente foi marcado como pago mas dinheiro NÃO caiu na conta Stone</div>
+      <table class="simple"><thead><tr><th>Data</th><th>Valor</th><th>Cliente Trinks</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="insight"><strong>Total:</strong> ${brl0(pix.orfaos_trinks.reduce((s,o)=>s+o.valor,0))} · <strong>possível fraude/erro de registro</strong></div>
+    </div>`;
+  }
+
+  // Recebíveis cartão
+  let cartHtml = '';
+  if(cart.recebiveis_lista.length){
+    const rows = cart.recebiveis_lista.map(r=>`<tr><td>${r.data?.slice(-5).replace('-','/')}</td><td>${brl0(r.valor)}</td></tr>`).join('');
+    cartHtml = `<div class="card"><h2>💳 Recebíveis de cartão creditados no período</h2>
+      <div class="cap">Vem em D+30 · valor já líquido de taxa · referem-se a vendas anteriores (~julho)</div>
+      <table class="simple"><thead><tr><th>Data crédito</th><th>Valor líquido</th></tr></thead><tbody>${rows}<tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL</td><td>${brl0(cart.recebiveis_liquido)}</td></tr></tbody></table>
+      <div class="insight">
+        <strong>Cartões vendidos em ago:</strong> ${brl0(cart.trinks_bruto_periodo)} bruto ·
+        <strong>Ainda a receber (D+30):</strong> ${brl0(cart.a_receber_estim)} entre 01-15/set
+      </div>
+    </div>`;
+  }
+
+  // Outros
+  const outHtml = `<div class="card"><h2>Fluxo de caixa Stone</h2>
+    <div class="cap">O que entrou e saiu da conta no período</div>
+    <table class="simple">
+      <thead><tr><th>Item</th><th>Valor</th></tr></thead>
+      <tbody>
+        <tr><td>Créditos PIX (líquido)</td><td>${brl0(pix.liquido)}</td></tr>
+        <tr><td>Créditos cartão (líquido)</td><td>${brl0(cart.recebiveis_liquido)}</td></tr>
+        <tr><td>Transferências entre contas Stone</td><td>${brl0(out.transferencias_stone)}</td></tr>
+        <tr style="color:var(--crit)"><td>Saídas via "Transação débito" (varredura auto)</td><td>−${brl0(out.saidas_transacao)}</td></tr>
+        <tr style="color:var(--crit)"><td>PIX enviados (${out.pix_enviados_n})</td><td>−${brl0(out.pix_enviados_v)}</td></tr>
+      </tbody>
+    </table>
+    <div class="insight">
+      A varredura automática move o saldo pra outra conta imediatamente após cada crédito. <strong>Confirmar destino</strong> dos ${brl0(out.saidas_transacao)} que saíram.
+    </div>
+  </div>`;
+
+  el.innerHTML = kpiHtml + rec + orfStoneHtml + orfTrinksHtml + cartHtml + outHtml;
+}
+
 async function load(showToast=false){
   const btn=document.getElementById('btn-reload');
   if(btn){btn.disabled=true;btn.textContent='🔄 Recarregando…';}
@@ -534,6 +642,7 @@ async function load(showToast=false){
     renderMensal(data);
     renderSemanal(data);
     renderDiario(data);
+    renderStone(data);
     if(!window._tabsSet){ setupTabs(); window._tabsSet=true; }
     const dt=new Date(data.gerado_em);
     const ageMin=Math.floor((Date.now()-dt.getTime())/60000);
