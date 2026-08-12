@@ -546,89 +546,110 @@ function renderStone(data){
   }
   if(subEl) subEl.textContent = `${s.periodo_ini?.slice(5).replace('-','/')} — ${s.periodo_fim?.slice(5).replace('-','/')}`;
 
-  const pix = s.pix, cart = s.cartao, out = s.outros;
+  const nc = s.nao_conciliado;
+  const p = s.por_periodo;
+  const flu = s.fluxo_caixa;
 
-  // KPIs Stone
-  const kpiHtml = `<section class="kpi-grid">
-    <div class="kpi"><div class="label">Recebido no período</div><div class="value accent">${brl0(pix.liquido + cart.recebiveis_liquido)}</div><div class="foot">${pix.recebidos_n} PIX + ${cart.recebiveis_n} cartão · líquido</div></div>
-    <div class="kpi k2"><div class="label">PIX (bruto Stone)</div><div class="value">${brl0(pix.bruto)}</div><div class="foot">Trinks registra ${brl0(pix.trinks_registrado_v)} · <span class="${pix.bruto-pix.trinks_registrado_v>=0?'up':'dn'}">diff ${brl0(pix.bruto-pix.trinks_registrado_v)}</span></div></div>
-    <div class="kpi k3"><div class="label">A receber D+30 (estim.)</div><div class="value">${brl0(cart.a_receber_estim)}</div><div class="foot">Vendas cartão ago = ${brl0(cart.trinks_bruto_periodo)} bruto</div></div>
-    <div class="kpi k4"><div class="label">Taxa PIX Stone</div><div class="value">${pix.taxa_pct.toFixed(3)}%</div><div class="foot">${brl0(pix.tarifa)} em tarifas · padrão 0,50-0,99%</div></div>
-  </section>`;
-
-  // Reconciliação PIX card
-  const rec = `<div class="card"><h2>Reconciliação PIX · ${s.periodo_ini?.slice(-5)} → ${s.periodo_fim?.slice(-5)}</h2>
-    <div class="cap">Match automático por data + valor (± R$ 0,50)</div>
-    <table class="simple">
-      <thead><tr><th>Fonte</th><th>Nº</th><th>Bruto</th></tr></thead>
-      <tbody>
-        <tr><td>Trinks (registrado como PIX)</td><td>${pix.trinks_registrado_n}</td><td>${brl0(pix.trinks_registrado_v)}</td></tr>
-        <tr><td>Stone (créditos PIX recebidos)</td><td>${pix.recebidos_n}</td><td>${brl0(pix.bruto)}</td></tr>
-        <tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>Diferença</td><td>${pix.recebidos_n - pix.trinks_registrado_n}</td><td>${brl0(pix.bruto - pix.trinks_registrado_v)}</td></tr>
-      </tbody>
-    </table>
-    <div class="insight">
-      ✅ <strong>${pix.matches_n} matches</strong> automáticos ·
-      🟡 <strong>${pix.orfaos_stone.length} órfãos Stone</strong> (dinheiro caiu mas não achei no Trinks) ·
-      🔴 <strong>${pix.orfaos_trinks.length} órfãos Trinks</strong> (registrado mas não caiu na conta)
-    </div>
-  </div>`;
-
-  // Órfãos Stone
-  let orfStoneHtml = '';
-  if(pix.orfaos_stone.length){
-    const rows = pix.orfaos_stone.map(o => `<tr><td>${o.data?.slice(-5).replace('-','/')}</td><td>${brl0(o.valor)}</td><td>${o.origem||'?'}</td></tr>`).join('');
-    orfStoneHtml = `<div class="card"><h2>🟡 PIX Stone sem correspondente Trinks</h2>
-      <div class="cap">Provável: venda fora do sistema · pagamento parcial · ou cliente pagou de outro origem</div>
-      <table class="simple"><thead><tr><th>Data</th><th>Valor</th><th>Origem (nome pagador)</th></tr></thead><tbody>${rows}</tbody></table>
-      <div class="insight"><strong>Total órfão:</strong> ${brl0(pix.orfaos_stone.reduce((s,o)=>s+o.valor,0))} · <strong>investigar com o time</strong></div>
-    </div>`;
-  }
-
-  // Órfãos Trinks
-  let orfTrinksHtml = '';
-  if(pix.orfaos_trinks.length){
-    const rows = pix.orfaos_trinks.map(o => `<tr><td>${o.data?.slice(-5).replace('-','/')}</td><td>${brl0(o.valor)}</td><td>${o.cliente||'?'}</td></tr>`).join('');
-    orfTrinksHtml = `<div class="card"><h2>🔴 PIX Trinks sem entrada Stone</h2>
-      <div class="cap">Cliente foi marcado como pago mas dinheiro NÃO caiu na conta Stone</div>
-      <table class="simple"><thead><tr><th>Data</th><th>Valor</th><th>Cliente Trinks</th></tr></thead><tbody>${rows}</tbody></table>
-      <div class="insight"><strong>Total:</strong> ${brl0(pix.orfaos_trinks.reduce((s,o)=>s+o.valor,0))} · <strong>possível fraude/erro de registro</strong></div>
-    </div>`;
-  }
-
-  // Recebíveis cartão
-  let cartHtml = '';
-  if(cart.recebiveis_lista.length){
-    const rows = cart.recebiveis_lista.map(r=>`<tr><td>${r.data?.slice(-5).replace('-','/')}</td><td>${brl0(r.valor)}</td></tr>`).join('');
-    cartHtml = `<div class="card"><h2>💳 Recebíveis de cartão creditados no período</h2>
-      <div class="cap">Vem em D+30 · valor já líquido de taxa · referem-se a vendas anteriores (~julho)</div>
-      <table class="simple"><thead><tr><th>Data crédito</th><th>Valor líquido</th></tr></thead><tbody>${rows}<tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL</td><td>${brl0(cart.recebiveis_liquido)}</td></tr></tbody></table>
-      <div class="insight">
-        <strong>Cartões vendidos em ago:</strong> ${brl0(cart.trinks_bruto_periodo)} bruto ·
-        <strong>Ainda a receber (D+30):</strong> ${brl0(cart.a_receber_estim)} entre 01-15/set
+  // ============ SEÇÃO 1: NÃO CONCILIADO — PRIORIDADE MÁXIMA ============
+  const bloco_alerta = `
+    <div class="meta-card" style="border-top-color:var(--crit);">
+      <h2><span style="color:var(--crit)">🚨</span> Não conciliado · <span style="color:var(--crit)">${brl0(nc.total_valor_risco)}</span> em risco</h2>
+      <div class="sub">Prioridade máxima · valores fora do controle direto ou aguardando</div>
+      <div class="meta-row">
+        <div class="meta-cell" style="border-left:3px solid var(--crit);"><div class="l">🟡 Órfãos Stone</div><div class="v ${nc.orfaos_stone_n?'warn':'good'}">${brl0(nc.orfaos_stone_v)}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">${nc.orfaos_stone_n} PIX caíram sem Trinks</div></div>
+        <div class="meta-cell" style="border-left:3px solid var(--crit);"><div class="l">🔴 Órfãos Trinks</div><div class="v ${nc.orfaos_trinks_n?'crit':'good'}">${brl0(nc.orfaos_trinks_v)}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">${nc.orfaos_trinks_n} PIX registrados sem Stone</div></div>
+        <div class="meta-cell" style="border-left:3px solid var(--warn);"><div class="l">💳 A receber D+30</div><div class="v warn">${brl0(nc.a_receber_d30)}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">Cartões ago cairão em set</div></div>
+        <div class="meta-cell"><div class="l">✅ Matches</div><div class="v good">${nc.matches_consolidados}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">PIX conciliados automaticamente</div></div>
       </div>
     </div>`;
+
+  // Cards órfãos detalhados
+  let bloco_orf_stone = '';
+  if(nc.orfaos_stone && nc.orfaos_stone.length){
+    const rows = nc.orfaos_stone.map(o=>`<tr><td>${(o.data||'').slice(-5).replace('-','/')}</td><td>${brl0(o.valor)}</td><td>${(o.origem||'?').substr(0,40)}</td></tr>`).join('');
+    bloco_orf_stone = `<div class="card" style="border-left:3px solid var(--warn);">
+      <h2>🟡 PIX Stone SEM correspondente no Trinks · ${nc.orfaos_stone_n} pgtos</h2>
+      <div class="cap">Dinheiro caiu na conta mas o Trinks não tem registro dessa venda</div>
+      <table class="simple"><thead><tr><th>Data</th><th>Valor</th><th>Origem (quem pagou)</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="insight"><strong>Investigar com o time:</strong> venda fora do fluxo Trinks? Pagamento parcial? Cliente pagou 2×?</div>
+    </div>`;
   }
 
-  // Outros
-  const outHtml = `<div class="card"><h2>Fluxo de caixa Stone</h2>
-    <div class="cap">O que entrou e saiu da conta no período</div>
+  let bloco_orf_trinks = '';
+  if(nc.orfaos_trinks && nc.orfaos_trinks.length){
+    const rows = nc.orfaos_trinks.map(o=>`<tr><td>${(o.data||'').slice(-5).replace('-','/')}</td><td>${brl0(o.valor)}</td><td>${o.cliente||'?'}</td></tr>`).join('');
+    bloco_orf_trinks = `<div class="card" style="border-left:3px solid var(--crit);">
+      <h2>🔴 PIX Trinks SEM entrada na Stone · ${nc.orfaos_trinks_n} pgtos</h2>
+      <div class="cap">Cliente foi marcado como pago no Trinks mas o dinheiro NÃO caiu</div>
+      <table class="simple"><thead><tr><th>Data</th><th>Valor</th><th>Cliente Trinks</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="insight"><strong>Alerta:</strong> possível fraude, erro de registro ou pagamento para conta errada. <strong>Cobrar cliente ou corrigir registro.</strong></div>
+    </div>`;
+  }
+
+  // ============ SEÇÃO 2: KPIs POR PERÍODO ============
+  function periodo_card(nome_bonito, chave, sub){
+    const d = p[chave];
+    const total = d.pix.stone_liquido + d.cartao.stone_recebido;
+    const orfaos_periodo = (d.pix.orfaos_stone?.length || 0) + (d.pix.orfaos_trinks?.length || 0);
+    return `
+      <div class="card">
+        <h2>${nome_bonito}<span class="hi">${sub}</span></h2>
+        <div class="cap">${d.periodo_ini?.slice(5).replace('-','/')} — ${d.periodo_fim?.slice(5).replace('-','/')}</div>
+        <table class="simple">
+          <thead><tr><th>Métrica</th><th>PIX</th><th>Cartão</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr><td>Recebido líquido Stone</td><td>${brl0(d.pix.stone_liquido)}</td><td>${brl0(d.cartao.stone_recebido)}</td><td><strong>${brl0(total)}</strong></td></tr>
+            <tr><td>Bruto Stone</td><td>${brl0(d.pix.stone_bruto)}</td><td>—</td><td>${brl0(d.pix.stone_bruto)}</td></tr>
+            <tr><td>Vendido Trinks (bruto)</td><td>${brl0(d.pix.trinks_valor)}</td><td>${brl0(d.cartao.trinks_vendido)}</td><td>${brl0(d.pix.trinks_valor + d.cartao.trinks_vendido)}</td></tr>
+            <tr><td>Nº transações Stone</td><td>${d.pix.stone_n}</td><td>${d.cartao.stone_n}</td><td>${d.pix.stone_n + d.cartao.stone_n}</td></tr>
+            <tr><td>Matches PIX</td><td>${d.pix.matches_n}</td><td>—</td><td>${d.pix.matches_n}</td></tr>
+            <tr><td>Órfãos (Stone + Trinks)</td><td class="${orfaos_periodo?'dn':'up'}">${orfaos_periodo}</td><td>—</td><td class="${orfaos_periodo?'dn':'up'}">${orfaos_periodo}</td></tr>
+            <tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>A receber D+30</td><td>—</td><td>${brl0(d.cartao.a_receber_d30)}</td><td>${brl0(d.cartao.a_receber_d30)}</td></tr>
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  const bloco_periodos = `
+    <h2 style="font-family:Georgia,serif;font-size:16px;margin:24px 0 8px;color:var(--ink);">📊 Dados por período</h2>
+    <div class="grid-2b">
+      ${periodo_card('Hoje','hoje', ' · imediato')}
+      ${periodo_card('Semana','semana', ' · seg-dom')}
+    </div>
+    <div class="grid-2b">
+      ${periodo_card('Mês','mes', ' · mês corrente')}
+      ${periodo_card('Ano','ano', ' · 2026')}
+    </div>`;
+
+  // ============ SEÇÃO 3: FLUXO CAIXA + RECEBÍVEIS ============
+  const bloco_fluxo = `<div class="card">
+    <h2>💰 Fluxo de caixa Stone · consolidado</h2>
+    <div class="cap">Movimentações totais do extrato ${s.periodo_ini?.slice(5).replace('-','/')} — ${s.periodo_fim?.slice(5).replace('-','/')}</div>
     <table class="simple">
       <thead><tr><th>Item</th><th>Valor</th></tr></thead>
       <tbody>
-        <tr><td>Créditos PIX (líquido)</td><td>${brl0(pix.liquido)}</td></tr>
-        <tr><td>Créditos cartão (líquido)</td><td>${brl0(cart.recebiveis_liquido)}</td></tr>
-        <tr><td>Transferências entre contas Stone</td><td>${brl0(out.transferencias_stone)}</td></tr>
-        <tr style="color:var(--crit)"><td>Saídas via "Transação débito" (varredura auto)</td><td>−${brl0(out.saidas_transacao)}</td></tr>
-        <tr style="color:var(--crit)"><td>PIX enviados (${out.pix_enviados_n})</td><td>−${brl0(out.pix_enviados_v)}</td></tr>
+        <tr><td>Créditos PIX (líquido)</td><td class="up">${brl0(flu.entradas_pix_liq)}</td></tr>
+        <tr><td>Créditos cartão (líquido)</td><td class="up">${brl0(flu.entradas_cartao_liq)}</td></tr>
+        <tr><td>Transferências recebidas entre contas Stone</td><td class="up">${brl0(flu.transf_stone)}</td></tr>
+        <tr><td style="color:var(--crit)">Saídas "Transação débito" (varredura automática)</td><td class="dn">−${brl0(flu.saidas_transacao)}</td></tr>
+        <tr><td style="color:var(--crit)">PIX enviados (${flu.pix_enviados_n})</td><td class="dn">−${brl0(flu.pix_enviados_v)}</td></tr>
       </tbody>
     </table>
-    <div class="insight">
-      A varredura automática move o saldo pra outra conta imediatamente após cada crédito. <strong>Confirmar destino</strong> dos ${brl0(out.saidas_transacao)} que saíram.
-    </div>
+    <div class="insight"><strong>Taxa PIX efetiva Stone:</strong> ${s.taxa_pix_pct.toFixed(3)}% · <strong>Varredura automática</strong> transferiu ${brl0(flu.saidas_transacao)} para outra conta ao longo do período.</div>
   </div>`;
 
-  el.innerHTML = kpiHtml + rec + orfStoneHtml + orfTrinksHtml + cartHtml + outHtml;
+  let bloco_receb = '';
+  if(s.recebiveis_cartao && s.recebiveis_cartao.length){
+    const rows = s.recebiveis_cartao.map(r=>`<tr><td>${(r.data||'').slice(-5).replace('-','/')}</td><td>${brl0(r.valor)}</td></tr>`).join('');
+    const tot = s.recebiveis_cartao.reduce((s,r)=>s+r.valor,0);
+    bloco_receb = `<div class="card">
+      <h2>💳 Recebíveis de cartão creditados (todos)</h2>
+      <div class="cap">Créditos D+30 recebidos no extrato · valor líquido pós-taxa</div>
+      <table class="simple"><thead><tr><th>Data</th><th>Valor</th></tr></thead><tbody>${rows}<tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>TOTAL</td><td>${brl0(tot)}</td></tr></tbody></table>
+    </div>`;
+  }
+
+  el.innerHTML = bloco_alerta + bloco_orf_stone + bloco_orf_trinks + bloco_periodos + bloco_fluxo + bloco_receb;
 }
 
 async function load(showToast=false){

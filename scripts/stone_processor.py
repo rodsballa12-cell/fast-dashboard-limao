@@ -1,15 +1,35 @@
-"""Processa CSV extrato Stone e cruza com transações Trinks.
-Portable: roda tanto local quanto no GitHub Actions.
+"""Processa CSV extrato Stone e cruza com Trinks — segmentado por dia/semana/mês/ano.
 
-Se CSV_PATH existe, retorna dict com dados prontos pro JSON do dashboard.
-Se não, retorna None (aba Stone fica com placeholder).
+Retorna estrutura:
+{
+  "periodo_ini": ..., "periodo_fim": ..., "total_lancamentos": ...,
+  "nao_conciliado": {  # prioridade máxima
+    "total_valor_risco": ...,
+    "orfaos_stone": [...],       # dinheiro caiu, sem match Trinks
+    "orfaos_trinks": [...],       # registrado, não caiu
+    "a_receber_d30": ...,         # cartões em D+30
+    "vendas_sem_transacao_stone": [...],  # cartão vendido, ainda não creditou
+  },
+  "por_periodo": {
+    "hoje":   {pix:{...}, cartao:{...}, resumo:{...}},
+    "semana": {...},
+    "mes":    {...},
+    "ano":    {...}
+  },
+  "taxa_pix_pct": 0.637,
+  "fluxo_caixa": {"entradas":..., "saidas":..., "varredura":...},
+  "recebiveis_cartao": [...]
+}
 """
 from __future__ import annotations
 
 import csv
 from collections import Counter, defaultdict
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
+
+CARTAO_MEIOS = {"Mastercard", "Visa", "Elo Débito", "Maestro/Redeshop",
+                "Visa Electron", "American Express", "Elo Crédito", "Hipercard"}
 
 
 def _pv(s):
@@ -20,24 +40,91 @@ def _pv(s):
 
 def _parse_dt(s):
     if not s: return None
-    for fmt in ["%d/%m/%Y", "%d/%m/%Y %H:%M"]:
+    for fmt in ["%d/%m/%Y %H:%M", "%d/%m/%Y"]:
         try: return datetime.strptime(s[:16] if len(s) > 10 else s[:10], fmt).date()
         except: pass
     return None
 
 
-def _brl_round(v): return round(float(v or 0), 2)
+def _r(v): return round(float(v or 0), 2)
 
 
-def processar_stone_csv(csv_path: Path, transacoes_trinks: list) -> dict | None:
-    """
-    csv_path: Path para o extrato Stone (CSV portal)
-    transacoes_trinks: lista de dicts [{"data":date, "meio":str, "valor":float, "cliente":str}, ...]
-    """
+def _matchear_pix(stone_pix_list, trinks_pix_list):
+    """Match por (data, valor ±0.5). Retorna (matches, orfaos_stone, orfaos_trinks)."""
+    matches = []
+    orfaos_stone = []
+    usados_trinks = set()
+    for s in stone_pix_list:
+        ds = s["data"]
+        vs = s["valor"]
+        best_i, best_diff = None, 1e9
+        for i, t in enumerate(trinks_pix_list):
+            if i in usados_trinks: continue
+            if t["data"] != ds: continue
+            diff = abs(t["valor"] - vs)
+            if diff < best_diff and diff <= 0.5:
+                best_diff, best_i = diff, i
+        if best_i is not None:
+            usados_trinks.add(best_i)
+            matches.append({"data": ds.isoformat(), "valor": vs,
+                            "cliente_trinks": trinks_pix_list[best_i]["cliente"],
+                            "origem_stone": s["origem"]})
+        else:
+            orfaos_stone.append({"data": ds.isoformat() if ds else None,
+                                 "valor": vs, "origem": s["origem"],
+                                 "tarifa": s["tarifa"]})
+    orfaos_trinks = [
+        {"data": trinks_pix_list[i]["data"].isoformat(),
+         "valor": trinks_pix_list[i]["valor"],
+         "cliente": trinks_pix_list[i]["cliente"]}
+        for i in range(len(trinks_pix_list)) if i not in usados_trinks
+    ]
+    return matches, orfaos_stone, orfaos_trinks
+
+
+def _agregar_periodo(pix_stone, pix_trinks, cartao_stone_recebiveis, cartao_trinks_vendas):
+    """Calcula agregados de um recorte já filtrado por período."""
+    matches, orf_s, orf_t = _matchear_pix(pix_stone, pix_trinks)
+    pix_bruto = sum(x["valor"] for x in pix_stone)
+    pix_tarifa = sum(x["tarifa"] for x in pix_stone)
+    pix_trinks_tot = sum(x["valor"] for x in pix_trinks)
+    cart_recebido = sum(x["valor"] for x in cartao_stone_recebiveis)
+    cart_vendido = sum(x["valor"] for x in cartao_trinks_vendas)
+    a_receber = max(0, cart_vendido * 0.965 - cart_recebido)
+
+    return {
+        "pix": {
+            "stone_bruto": _r(pix_bruto),
+            "stone_liquido": _r(pix_bruto - pix_tarifa),
+            "stone_tarifa": _r(pix_tarifa),
+            "stone_n": len(pix_stone),
+            "trinks_valor": _r(pix_trinks_tot),
+            "trinks_n": len(pix_trinks),
+            "matches_n": len(matches),
+            "orfaos_stone": orf_s,
+            "orfaos_trinks": orf_t,
+            "diff": _r(pix_bruto - pix_trinks_tot),
+        },
+        "cartao": {
+            "stone_recebido": _r(cart_recebido),
+            "stone_n": len(cartao_stone_recebiveis),
+            "trinks_vendido": _r(cart_vendido),
+            "trinks_n": len(cartao_trinks_vendas),
+            "a_receber_d30": _r(a_receber),
+        },
+        "resumo": {
+            "recebido_total": _r(pix_bruto - pix_tarifa + cart_recebido),
+            "a_receber": _r(a_receber),
+        },
+    }
+
+
+def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | None = None) -> dict | None:
     if not csv_path.exists():
         return None
+    hoje = hoje or date.today()
 
-    # ==== Ler CSV Stone ====
+    # ==== 1. LER CSV STONE ====
     recs = []
     for enc in ["utf-8-sig", "utf-8", "latin-1", "cp1252"]:
         try:
@@ -46,14 +133,13 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list) -> dict | None:
             break
         except Exception:
             continue
-
     if not recs:
         return None
 
-    # Categorizar
-    pix_recebidos = []
-    cartao_recebiveis = []
-    transfer_stone = []
+    # Categorizar Stone
+    pix_stone_all = []
+    cartao_stone_all = []
+    transf_stone = []
     debitos_transacao = []
     pix_enviados = []
 
@@ -61,111 +147,114 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list) -> dict | None:
         tipo = r.get("Tipo", "")
         mov = r.get("Movimentação", "")
         origem = r.get("Origem", "")
-        if mov == "Crédito" and tipo == "Pix":
-            pix_recebidos.append(r)
-        elif mov == "Crédito" and tipo == "Transação" and origem and origem != "Desconhecido":
-            pix_recebidos.append(r)
+        data = _parse_dt(r.get("Data"))
+        valor = _pv(r.get("Valor"))
+        tarifa = _pv(r.get("Tarifa"))
+
+        if mov == "Crédito" and (tipo == "Pix" or (tipo == "Transação" and origem and origem != "Desconhecido")):
+            pix_stone_all.append({"data": data, "valor": valor, "tarifa": tarifa, "origem": origem or ""})
         elif mov == "Crédito" and tipo == "Recebível de Cartão":
-            cartao_recebiveis.append(r)
+            cartao_stone_all.append({"data": data, "valor": valor})
         elif mov == "Crédito" and tipo == "Transferência entre contas Stone":
-            transfer_stone.append(r)
+            transf_stone.append({"data": data, "valor": valor})
         elif mov == "Débito" and tipo == "Transação":
-            debitos_transacao.append(r)
+            debitos_transacao.append({"data": data, "valor": abs(valor)})
         elif mov == "Débito" and tipo == "Pix":
-            pix_enviados.append(r)
+            pix_enviados.append({"data": data, "valor": abs(valor)})
 
-    pix_bruto = sum(_pv(r["Valor"]) for r in pix_recebidos)
-    pix_tarifa = sum(_pv(r["Tarifa"]) for r in pix_recebidos)
-    pix_liq = pix_bruto - pix_tarifa
-    cartao_liq = sum(_pv(r["Valor"]) for r in cartao_recebiveis)
-    transf_v = sum(_pv(r["Valor"]) for r in transfer_stone)
-    saidas_v = -sum(_pv(r["Valor"]) for r in debitos_transacao)
+    datas_stone = sorted({r["data"] for r in pix_stone_all + cartao_stone_all if r["data"]})
+    ini = datas_stone[0] if datas_stone else None
+    fim = datas_stone[-1] if datas_stone else None
 
-    datas = sorted({_parse_dt(r["Data"]) for r in recs if _parse_dt(r["Data"])})
-    ini = datas[0] if datas else None
-    fim = datas[-1] if datas else None
+    # ==== 2. NORMALIZAR TRINKS ====
+    pix_trinks_all = []
+    cartao_trinks_all = []
+    for t in transacoes_trinks:
+        if not t.get("data") or not t.get("meio"): continue
+        if t["meio"] == "PIX":
+            pix_trinks_all.append({"data": t["data"], "valor": t["valor"], "cliente": t.get("cliente", "")})
+        elif t["meio"] in CARTAO_MEIOS:
+            cartao_trinks_all.append({"data": t["data"], "valor": t["valor"], "cliente": t.get("cliente", ""), "meio": t["meio"]})
 
-    # ==== Filtrar Trinks pelo mesmo período e match PIX ====
-    trinks_periodo = [t for t in transacoes_trinks
-                      if t.get("data") and ini and fim and ini <= t["data"] <= fim]
-    trinks_pix = [t for t in trinks_periodo if t["meio"] == "PIX"]
-    trinks_cartoes = [t for t in trinks_periodo if t["meio"] in
-                      ("Mastercard", "Visa", "Elo Débito", "Maestro/Redeshop",
-                       "Visa Electron", "American Express", "Elo Crédito", "Hipercard")]
+    # ==== 3. FUNÇÃO FILTRO POR PERÍODO ====
+    def filtrar(items, ini_p, fim_p):
+        return [x for x in items if x.get("data") and ini_p <= x["data"] <= fim_p]
 
-    pix_trinks_tot = sum(t["valor"] for t in trinks_pix)
-    cartao_trinks_tot = sum(t["valor"] for t in trinks_cartoes)
+    seg = hoje - timedelta(days=hoje.weekday())    # segunda da semana atual
+    dom = seg + timedelta(days=6)
+    ini_mes = date(hoje.year, hoje.month, 1)
+    from calendar import monthrange
+    fim_mes = date(hoje.year, hoje.month, monthrange(hoje.year, hoje.month)[1])
+    ini_ano = date(hoje.year, 1, 1)
+    fim_ano = date(hoje.year, 12, 31)
 
-    # Match PIX por (data, valor ± R$ 0,50)
-    matches_pix = []
-    orfaos_stone_pix = []
-    usados_trinks = set()
-    for s in pix_recebidos:
-        ds = _parse_dt(s["Data"])
-        vs = _pv(s["Valor"])
-        best_i, best_diff = None, 1e9
-        for i, t in enumerate(trinks_pix):
-            if i in usados_trinks: continue
-            if t["data"] != ds: continue
-            diff = abs(t["valor"] - vs)
-            if diff < best_diff and diff <= 0.5:
-                best_diff, best_i = diff, i
-        if best_i is not None:
-            usados_trinks.add(best_i)
-            matches_pix.append({
-                "data": ds.isoformat(), "valor": vs,
-                "cliente_trinks": trinks_pix[best_i]["cliente"],
-                "origem_stone": s.get("Origem", ""),
-            })
-        else:
-            orfaos_stone_pix.append({
-                "data": ds.isoformat() if ds else None,
-                "valor": vs, "origem": s.get("Origem", ""),
-                "tarifa": _pv(s["Tarifa"]),
-            })
-    orfaos_trinks_pix = [
-        {"data": trinks_pix[i]["data"].isoformat(), "valor": trinks_pix[i]["valor"],
-         "cliente": trinks_pix[i]["cliente"]}
-        for i in range(len(trinks_pix)) if i not in usados_trinks
-    ]
+    periodos = {
+        "hoje":   (hoje, hoje),
+        "semana": (seg, dom),
+        "mes":    (ini_mes, fim_mes),
+        "ano":    (ini_ano, fim_ano),
+    }
 
-    # Recebíveis cartão (só listagem)
-    recebiveis_lista = [{
-        "data": _parse_dt(r["Data"]).isoformat() if _parse_dt(r["Data"]) else None,
-        "valor": _pv(r["Valor"]),
-    } for r in cartao_recebiveis]
-    recebiveis_lista.sort(key=lambda x: x["data"] or "")
+    por_periodo = {}
+    for nome, (a, b) in periodos.items():
+        por_periodo[nome] = _agregar_periodo(
+            filtrar(pix_stone_all, a, b),
+            filtrar(pix_trinks_all, a, b),
+            filtrar(cartao_stone_all, a, b),
+            filtrar(cartao_trinks_all, a, b),
+        )
+        por_periodo[nome]["periodo_ini"] = a.isoformat()
+        por_periodo[nome]["periodo_fim"] = b.isoformat()
 
-    # A receber D+30 (estimativa: cartões trinks × 96,5% − já recebido)
-    a_receber_estim = max(0, cartao_trinks_tot * 0.965 - cartao_liq)
+    # ==== 4. NÃO CONCILIADO CONSOLIDADO (todo o extrato) ====
+    matches_all, orf_s_all, orf_t_all = _matchear_pix(pix_stone_all, pix_trinks_all)
+
+    # Cartões: vendas Trinks sem crédito Stone (D+30 pendente)
+    cartao_trinks_periodo = filtrar(cartao_trinks_all, ini or hoje, fim or hoje)
+    cart_stone_periodo = filtrar(cartao_stone_all, ini or hoje, fim or hoje)
+    total_vendido_cart = sum(x["valor"] for x in cartao_trinks_periodo)
+    total_recebido_cart = sum(x["valor"] for x in cart_stone_periodo)
+    a_receber_total = max(0, total_vendido_cart * 0.965 - total_recebido_cart)
+
+    valor_orf_stone = sum(o["valor"] for o in orf_s_all)
+    valor_orf_trinks = sum(o["valor"] for o in orf_t_all)
+    total_risco = valor_orf_stone + valor_orf_trinks + a_receber_total
+
+    nao_conciliado = {
+        "total_valor_risco": _r(total_risco),
+        "orfaos_stone_n": len(orf_s_all),
+        "orfaos_stone_v": _r(valor_orf_stone),
+        "orfaos_stone": orf_s_all[:50],
+        "orfaos_trinks_n": len(orf_t_all),
+        "orfaos_trinks_v": _r(valor_orf_trinks),
+        "orfaos_trinks": orf_t_all[:50],
+        "a_receber_d30": _r(a_receber_total),
+        "matches_consolidados": len(matches_all),
+    }
+
+    # ==== 5. FLUXO CAIXA + META ====
+    tot_pix_bruto = sum(x["valor"] for x in pix_stone_all)
+    tot_pix_tarifa = sum(x["tarifa"] for x in pix_stone_all)
+    tot_cart_liq = sum(x["valor"] for x in cartao_stone_all)
+    fluxo = {
+        "entradas_pix_liq": _r(tot_pix_bruto - tot_pix_tarifa),
+        "entradas_cartao_liq": _r(tot_cart_liq),
+        "transf_stone": _r(sum(x["valor"] for x in transf_stone)),
+        "saidas_transacao": _r(sum(x["valor"] for x in debitos_transacao)),
+        "pix_enviados_v": _r(sum(x["valor"] for x in pix_enviados)),
+        "pix_enviados_n": len(pix_enviados),
+    }
+
+    recebiveis_lista = [{"data": r["data"].isoformat() if r["data"] else None, "valor": _r(r["valor"])}
+                       for r in sorted(cartao_stone_all, key=lambda x: x["data"] or date.min)]
 
     return {
         "periodo_ini": ini.isoformat() if ini else None,
         "periodo_fim": fim.isoformat() if fim else None,
         "total_lancamentos": len(recs),
-        "pix": {
-            "recebidos_n": len(pix_recebidos),
-            "bruto": _brl_round(pix_bruto),
-            "tarifa": _brl_round(pix_tarifa),
-            "liquido": _brl_round(pix_liq),
-            "taxa_pct": round(pix_tarifa / max(pix_bruto, 1) * 100, 3),
-            "trinks_registrado_n": len(trinks_pix),
-            "trinks_registrado_v": _brl_round(pix_trinks_tot),
-            "matches_n": len(matches_pix),
-            "orfaos_stone": orfaos_stone_pix[:30],
-            "orfaos_trinks": orfaos_trinks_pix[:30],
-        },
-        "cartao": {
-            "recebiveis_n": len(cartao_recebiveis),
-            "recebiveis_liquido": _brl_round(cartao_liq),
-            "trinks_bruto_periodo": _brl_round(cartao_trinks_tot),
-            "a_receber_estim": _brl_round(a_receber_estim),
-            "recebiveis_lista": recebiveis_lista,
-        },
-        "outros": {
-            "transferencias_stone": _brl_round(transf_v),
-            "saidas_transacao": _brl_round(saidas_v),
-            "pix_enviados_n": len(pix_enviados),
-            "pix_enviados_v": _brl_round(sum(_pv(r["Valor"]) for r in pix_enviados)),
-        },
+        "taxa_pix_pct": round(tot_pix_tarifa / max(tot_pix_bruto, 1) * 100, 3),
+        "nao_conciliado": nao_conciliado,
+        "por_periodo": por_periodo,
+        "fluxo_caixa": fluxo,
+        "recebiveis_cartao": recebiveis_lista,
     }
