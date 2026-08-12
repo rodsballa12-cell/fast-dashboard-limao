@@ -33,9 +33,9 @@ CARTAO_MEIOS = {"Mastercard", "Visa", "Elo Débito", "Maestro/Redeshop",
 
 # Modalidade Stone: débito cai em D+1 · crédito 1x cai em D+30
 DEBITO_MEIOS = {"Elo Débito", "Maestro/Redeshop", "Visa Electron"}
-# Taxas Stone padrão 2026 (MDR sobre venda · antecipação sobre valor a receber)
-TAXA_MDR = {"debito": 0.0149, "credito1x": 0.0289}
-TAXA_ANTECIPACAO_MENSAL = 0.0199  # 1,99% a.m. = 0,0663%/dia
+# Taxas Stone oficiais SIIBELLO (StoneCode 162989011) — MDR sobre venda · antecipação sobre valor a receber
+TAXA_MDR = {"debito": 0.0146, "credito1x": 0.0208}
+TAXA_ANTECIPACAO_MENSAL = 0.0166  # Automática 1,66% a.m. (Pontual seria 2,26%)
 
 
 def _pv(s):
@@ -415,7 +415,7 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
             "custo_pct": round((custo_antec_debito + custo_antec_credito) / max(debito_liq_espera + credito_liq_espera, 1) * 100, 2),
         },
         "taxa_antecipacao_mensal_pct": TAXA_ANTECIPACAO_MENSAL * 100,
-        "obs": "Cálculo com taxas Stone padrão 2026 e mix real Trinks. TODAS as vendas são 1x (zero parcelamento).",
+        "obs": "Taxas Stone oficiais SIIBELLO (Débito 1,46% · Crédito 1x 2,08% · Antecipação Automática 1,66%). TODAS as vendas são 1x (zero parcelamento).",
     }
 
     # ==== 7. GAP TEMPORAL Trinks × Stone (vendas apos ultimo lancamento CSV) ====
