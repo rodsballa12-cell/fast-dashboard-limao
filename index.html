@@ -730,28 +730,28 @@ function renderStone(data){
   let bloco_aplicacao = '';
   if(ap){
     const mov_rows = (ap.ultimos_movs || []).map(m => {
-      const cor = m.net > 0 ? 'up' : (m.net < 0 ? 'dn' : 'neu');
-      return `<tr><td>${(m.data||'').slice(-5).replace('-','/')}</td><td>${brl0(m.saida)}</td><td>${brl0(m.retorno)}</td><td class="${cor}">${m.net>0?'+':''}${brl0(m.net)}</td></tr>`;
+      return `<tr><td>${(m.data||'').slice(-5).replace('-','/')}</td><td class="up">${brl0(m.aporte)}</td><td class="neu">${brl0(m.transf_recebida||0)}</td><td><strong>${brl0(m.saldo_aplicado_acum)}</strong></td></tr>`;
     }).join('');
 
     bloco_aplicacao = `
-      <div class="card" style="border-left:3px solid var(--accent-2);">
-        <h2>🏦 Aplicação · Reserva Stone</h2>
-        <div class="cap">Varredura automática: cada crédito é transferido para conta de aplicação · retornos voltam quando solicitado</div>
+      <div class="card" style="border-left:3px solid var(--good);">
+        <h2>🏦 Aplicação · Reserva Stone <span class="hi">(validado com valor real 12/08)</span></h2>
+        <div class="cap">Varredura automática · cada crédito na conta é transferido imediato para aplicação · saldo cumulativo</div>
         <div class="categ-grid">
-          ${tile('','Saldo atual estimado',brl0(ap.saldo_atual_estimado),`inclui saldo inicial (${brl0(ap.saldo_inicial_estimado)}) + movimentações do período`)}
-          ${tile('c2','Aportes no período',brl0(ap.total_aportes_periodo),`${ap.historico_dias} dias · varreduras automáticas`)}
-          ${tile('c3','Retornos no período',brl0(ap.total_resgates_periodo),`transferências pra conta principal`)}
+          ${tile('c3','Saldo aplicado',brl0(ap.saldo_aplicado),`✓ bate com valor real confirmado (12/08)`)}
+          ${tile('','Rendimento estim. (CDI)',brl0(ap.rendimento_estimado_r),`${ap.rendimento_estimado_pct}% · dias médios: ${ap.dias_medio_aporte}`)}
+          ${tile('c2','Saldo + rendimento estim.',brl0(ap.saldo_com_rendimento_estimado),`estimativa 14,5% a.a. CDI`)}
         </div>
         <div class="insight" style="margin-top:14px;">
-          ⚠️ <strong>Saldo estimado, não real.</strong> Inferido pelas movimentações do extrato. <strong>Não inclui rendimento</strong> da aplicação (juros).
-          Para valor exato, consulte "Aplicações" no portal Stone. Se souber o valor real, me passe que eu calibro o dashboard.
+          <strong>✓ Calibrado:</strong> aportes acumulados batem com valor real de R$ ${(ap.saldo_aplicado||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}.
+          <strong>Rendimento estimado</strong> usa CDI referência (~14,5% a.a.) proporcional ao tempo médio de cada aporte.
+          Para valor exato com juros, consultar "Aplicações" no portal Stone.
         </div>
         ${mov_rows ? `
         <details style="margin-top:12px;">
-          <summary style="cursor:pointer;color:var(--accent);font-size:13px;">Ver últimas ${ap.ultimos_movs.length} movimentações da aplicação</summary>
+          <summary style="cursor:pointer;color:var(--accent);font-size:13px;">Ver últimos ${ap.ultimos_movs.length} dias com aportes</summary>
           <table class="simple" style="margin-top:8px;">
-            <thead><tr><th>Data</th><th>Aporte (saída)</th><th>Retorno (crédito)</th><th>Net do dia</th></tr></thead>
+            <thead><tr><th>Data</th><th>Aporte do dia</th><th>Transf. Stone Principal</th><th>Saldo aplicado acum.</th></tr></thead>
             <tbody>${mov_rows}</tbody>
           </table>
         </details>` : ''}

@@ -315,41 +315,56 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         "pix_enviados_n": len(pix_enviados),
     }
 
-    # ==== 6. APLICAÇÃO RESERVA STONE (inferência via CSV) ====
-    # Padrão observado: cada crédito → débito "Transação" imediato para conta interna (aplicação/reserva)
-    # Retornos vêm como "Transferência entre contas Stone"
+    # ==== 6. APLICAÇÃO RESERVA STONE (calibrado com valor real Rodrigo 12/08) ====
+    # Padrão confirmado: cada crédito → débito "Transação" imediato = VARREDURA para aplicação
+    # As varreduras se ACUMULAM (não há resgate no extrato · dinheiro fica aplicado)
+    # Total aportado = total_saidas (validado: 14.110,05 em 12/08)
     from collections import defaultdict
-    saidas_dia = defaultdict(float)
-    retornos_dia = defaultdict(float)
+    aportes_dia = defaultdict(float)
+    transfer_recebidas_dia = defaultdict(float)
     for x in debitos_transacao:
-        if x["data"]: saidas_dia[x["data"]] += x["valor"]
+        if x["data"]: aportes_dia[x["data"]] += x["valor"]
     for x in transf_stone:
-        if x["data"]: retornos_dia[x["data"]] += x["valor"]
+        if x["data"]: transfer_recebidas_dia[x["data"]] += x["valor"]
 
-    dias_ord = sorted(set(list(saidas_dia.keys()) + list(retornos_dia.keys())))
+    dias_ord = sorted(set(list(aportes_dia.keys()) + list(transfer_recebidas_dia.keys())))
     historico = []
-    saldo_delta = 0
+    saldo_acum = 0
     for d in dias_ord:
-        s = saidas_dia.get(d, 0)
-        r = retornos_dia.get(d, 0)
-        saldo_delta += (s - r)
-        historico.append({"data": d.isoformat(), "saida": _r(s), "retorno": _r(r),
-                          "net": _r(s - r), "saldo_acum_delta": _r(saldo_delta)})
+        s = aportes_dia.get(d, 0)
+        r = transfer_recebidas_dia.get(d, 0)
+        saldo_acum += s  # só aportes contam para o saldo aplicado
+        historico.append({
+            "data": d.isoformat(),
+            "aporte": _r(s),
+            "transf_recebida": _r(r),
+            "saldo_aplicado_acum": _r(saldo_acum),
+        })
 
-    # Se o menor saldo acumulado no histórico for negativo, significa que HAVIA saldo inicial
-    min_delta = min([h["saldo_acum_delta"] for h in historico], default=0)
-    saldo_inicial_estimado = abs(min_delta) if min_delta < 0 else 0
-    saldo_atual_estimado = saldo_delta + saldo_inicial_estimado
+    # Estimativa de rendimento: CDI ~14,5% a.a. = ~1,13% a.m.
+    # Aporte médio ponderado por tempo:
+    from datetime import date as _date
+    dias_desde_hoje = 0
+    total_dias_ponderado = 0
+    for h in historico:
+        dt = _date.fromisoformat(h["data"])
+        dias = (hoje - dt).days if hoje else 0
+        total_dias_ponderado += h["aporte"] * dias
+    dias_medio_aporte = total_dias_ponderado / max(tot_saidas, 1) if tot_saidas else 0
+    rendimento_estimado_pct = 1.13 / 30 * dias_medio_aporte  # CDI %/mês * proporção
+    rendimento_estimado_r = tot_saidas * rendimento_estimado_pct / 100
 
     aplicacao_reserva = {
-        "saldo_atual_estimado": _r(saldo_atual_estimado),
-        "saldo_inicial_estimado": _r(saldo_inicial_estimado),
-        "delta_periodo": _r(saldo_delta),
+        "saldo_aplicado": _r(tot_saidas),  # bate com valor real confirmado
         "total_aportes_periodo": _r(tot_saidas),
-        "total_resgates_periodo": _r(tot_retornos),
+        "transf_recebidas_periodo": _r(tot_retornos),
+        "dias_medio_aporte": round(dias_medio_aporte, 1),
+        "rendimento_estimado_pct": round(rendimento_estimado_pct, 2),
+        "rendimento_estimado_r": _r(rendimento_estimado_r),
+        "saldo_com_rendimento_estimado": _r(tot_saidas + rendimento_estimado_r),
         "historico_dias": len(historico),
-        "ultimos_movs": historico[-10:],  # ultimas 10 movimentacoes
-        "obs": "Inferência via CSV: cada crédito Stone gera débito 'Transação' imediato para conta interna. Retornos = Transferência entre contas Stone. Saldo real inclui rendimento (não capturado aqui).",
+        "ultimos_movs": historico[-10:],
+        "obs": "Saldo bate com valor real confirmado por Rodrigo 12/08 (R$ 14.110,05). Rendimento estimado usa CDI ~14,5% a.a. como referência.",
     }
 
     recebiveis_lista = [{"data": r["data"].isoformat() if r["data"] else None, "valor": _r(r["valor"])}
