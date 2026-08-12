@@ -547,11 +547,31 @@ function renderStone(data){
 
   // Alerta de cobertura parcial (loja abriu 23/07 · se ini > 23/07, tem gap)
   const auditEl = document.getElementById('stone-audit');
-  if(auditEl && s.periodo_ini && s.periodo_ini > '2026-07-23'){
+  const gap = s.gap_trinks_stone;
+
+  // Prioridade 1: gap ATUAL entre Trinks vivo × Stone snapshot
+  if(auditEl && gap && gap.ultima_data_stone){
+    const horas = gap.horas_desatualizado;
+    const dias = Math.floor(horas / 24);
+    const desat_txt = dias > 0 ? `${dias} dia${dias>1?'s':''} atrás` : `${Math.round(horas)}h atrás`;
+    if(gap.vendas_trinks_apos_n > 0){
+      // Tem vendas Trinks APÓS última mov Stone → gap real
+      auditEl.style.borderLeftColor = 'var(--warn)';
+      auditEl.innerHTML = `<div>⚠️</div><div style="color:var(--warn);">
+        <strong>Gap Trinks × Stone:</strong> CSV Stone atualizado até <strong>${gap.ultima_data_stone.slice(-8).replace('T',' ')}</strong> (${desat_txt}) ·
+        <strong style="color:var(--crit)">${gap.vendas_trinks_apos_n} vendas novas no Trinks (${brl0(gap.vendas_trinks_apos_v)})</strong> ainda não têm contrapartida no extrato Stone.
+        <br><small>Isso é esperado — o Trinks é ao vivo, o CSV Stone é snapshot manual. Suba CSV atualizado para reconciliar as novas vendas.</small>
+      </div>`;
+    } else {
+      auditEl.style.borderLeftColor = 'var(--good)';
+      auditEl.innerHTML = `<div>✅</div><div><strong>Reconciliação em dia:</strong> CSV Stone (até ${gap.ultima_data_stone.slice(-8).replace('T',' ')}) inclui todas as vendas Trinks até o momento.</div>`;
+    }
+  } else if(auditEl && s.periodo_ini && s.periodo_ini > '2026-07-23'){
+    // Prioridade 2: cobertura parcial de dias iniciais
     const ini_br = s.periodo_ini.slice(-5).replace('-','/');
     const fim_br = s.periodo_fim.slice(-5).replace('-','/');
     const dias_gap = Math.round((new Date(s.periodo_ini) - new Date('2026-07-23'))/(1000*60*60*24));
-    auditEl.innerHTML = `<div>⚠️</div><div style="color:var(--warn);"><strong>Cobertura parcial:</strong> CSV Stone cobre ${ini_br} → ${fim_br}. Loja abriu 23/07/2026 — <strong>faltam ${dias_gap} dias</strong> (23/07 a ${s.periodo_ini.slice(-5).replace('-','/')} não estão neste extrato). Baixe CSV com período estendido para reconciliação completa.</div>`;
+    auditEl.innerHTML = `<div>⚠️</div><div style="color:var(--warn);"><strong>Cobertura parcial:</strong> CSV Stone cobre ${ini_br} → ${fim_br}. Loja abriu 23/07/2026 — <strong>faltam ${dias_gap} dias</strong>. Baixe CSV com período estendido para reconciliação completa.</div>`;
   }
 
   const nc = s.nao_conciliado;
@@ -758,7 +778,33 @@ function renderStone(data){
       </div>`;
   }
 
-  el.innerHTML = bloco_alerta + bloco_orf_stone + bloco_orf_trinks + bloco_periodos + bloco_dinheiro + bloco_aplicacao + bloco_fluxo + bloco_receb;
+  // ============ CARD GAP TRINKS × STONE (vendas ao vivo sem contrapartida) ============
+  let bloco_gap = '';
+  if(gap && gap.vendas_trinks_apos_n > 0){
+    const rows = gap.vendas_apos_lista.map(v =>
+      `<tr><td>${(v.data||'').slice(-5).replace('-','/')}</td><td>${v.meio}</td><td>${brl0(v.valor)}</td><td>${v.cliente||'?'}</td></tr>`
+    ).join('');
+    bloco_gap = `
+      <div class="card" style="border-left:3px solid var(--warn);">
+        <h2>⚠️ Vendas ao vivo · Trinks após último CSV Stone</h2>
+        <div class="cap">Vendas registradas no Trinks APÓS ${(gap.ultima_data_stone||'').slice(-8).replace('T',' ')} — ainda sem contrapartida no extrato Stone (esperado até você subir novo CSV)</div>
+        <div class="categ-grid">
+          ${tile('','Vendas novas',gap.vendas_trinks_apos_n+'',`transações Trinks pós-CSV`)}
+          ${tile('c2','Valor bruto',brl0(gap.vendas_trinks_apos_v),`aguardando novo extrato Stone p/ reconciliar`)}
+          ${tile('c3','CSV desatualizado há',gap.horas_desatualizado.toFixed(1)+'h',`última movimentação: ${(gap.ultima_data_stone||'').slice(-8).replace('T',' ')}`)}
+        </div>
+        <table class="simple" style="margin-top:14px;">
+          <thead><tr><th>Data</th><th>Meio</th><th>Valor</th><th>Cliente</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div class="insight">
+          <strong>Não são órfãos.</strong> São vendas mais recentes que o snapshot Stone que você me passou.
+          <br><strong>Para conciliar:</strong> baixe CSV Stone atualizado no portal → me envia → dashboard reconcilia automático.
+        </div>
+      </div>`;
+  }
+
+  el.innerHTML = bloco_alerta + bloco_gap + bloco_orf_stone + bloco_orf_trinks + bloco_periodos + bloco_dinheiro + bloco_aplicacao + bloco_fluxo + bloco_receb;
 }
 
 async function load(showToast=false){

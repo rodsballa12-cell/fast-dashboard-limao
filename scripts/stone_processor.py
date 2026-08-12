@@ -418,6 +418,48 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         "obs": "Cálculo com taxas Stone padrão 2026 e mix real Trinks. TODAS as vendas são 1x (zero parcelamento).",
     }
 
+    # ==== 7. GAP TEMPORAL Trinks × Stone (vendas apos ultimo lancamento CSV) ====
+    # Trinks é ao vivo · CSV Stone é snapshot manual. Vendas Trinks feitas APÓS a última
+    # movimentação do CSV Stone naturalmente NÃO aparecem na reconciliação.
+    from datetime import datetime as _dt
+    ultima_dt_stone = None
+    for row in recs:
+        try:
+            data_str = row.get("Data", "")[:16]
+            for fmt in ["%d/%m/%Y %H:%M", "%d/%m/%Y"]:
+                try:
+                    dt_row = _dt.strptime(data_str, fmt)
+                    if ultima_dt_stone is None or dt_row > ultima_dt_stone:
+                        ultima_dt_stone = dt_row
+                    break
+                except: pass
+        except: pass
+
+    vendas_apos = []
+    if ultima_dt_stone:
+        limite = ultima_dt_stone
+        for t in transacoes_trinks:
+            if not t.get("data") or not t.get("meio"): continue
+            # apenas meios que passam pela Stone (PIX + cartões)
+            if t["meio"] not in (list(CARTAO_MEIOS) + ["PIX"]): continue
+            # data > última movimentação Stone
+            t_dt = _dt.combine(t["data"], _dt.min.time())
+            if t_dt > limite:
+                vendas_apos.append({
+                    "data": t["data"].isoformat(),
+                    "valor": _r(t["valor"]),
+                    "meio": t["meio"],
+                    "cliente": t.get("cliente", ""),
+                })
+
+    gap_trinks_stone = {
+        "ultima_data_stone": ultima_dt_stone.isoformat() if ultima_dt_stone else None,
+        "vendas_trinks_apos_n": len(vendas_apos),
+        "vendas_trinks_apos_v": _r(sum(x["valor"] for x in vendas_apos)),
+        "vendas_apos_lista": vendas_apos[:50],
+        "horas_desatualizado": round((datetime.now() - ultima_dt_stone).total_seconds() / 3600, 1) if ultima_dt_stone else 0,
+    }
+
     return {
         "periodo_ini": ini.isoformat() if ini else None,
         "periodo_fim": fim.isoformat() if fim else None,
@@ -429,4 +471,5 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         "recebiveis_cartao": recebiveis_lista,
         "antecipacao_analise": antecipacao,
         "aplicacao_reserva": aplicacao_reserva,
+        "gap_trinks_stone": gap_trinks_stone,
     }
