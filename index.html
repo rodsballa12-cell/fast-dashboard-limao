@@ -698,7 +698,6 @@ async function load(showToast=false){
 // ============= SINCRONIZAR COM TRINKS (GitHub Actions) =============
 // Token fica em localStorage (só no seu browser · nunca no HTML público)
 function sanitizeToken(t){
-  // remove BOM, espaços, quebras de linha e qualquer caractere não-ASCII imprimível
   return (t||'').replace(/[^\x20-\x7E]/g,'').replace(/\s+/g,'').trim();
 }
 function getToken(){
@@ -706,18 +705,33 @@ function getToken(){
   if(t){
     const clean = sanitizeToken(t);
     if(clean !== t){ localStorage.setItem('gh_token', clean); t = clean; }
+    if(t.length < 20){ localStorage.removeItem('gh_token'); t = null; }  // token inválido salvo
   }
   if(!t){
-    const raw = prompt('Cole o Personal Access Token do GitHub (só precisa 1×, fica no seu browser):\n\nCriar em: github.com/settings/tokens/new\n- Nota: fast-dashboard sync\n- Expiration: no expiration\n- Scopes: apenas "workflow"');
+    const raw = prompt('🔑 SYNC EM TEMPO REAL (opcional)\n\nColar Personal Access Token do GitHub para forçar sync imediato (fica no seu browser · só desta vez).\n\n📌 Se cancelar: sem problema · o botão "🔄 Recarregar" já traz dados frescos (GitHub Actions atualiza automático de hora em hora).\n\nComo gerar: github.com/settings/tokens/new · scope: workflow');
+    if(raw === null) return null;  // usuário cancelou
     t = sanitizeToken(raw);
-    if(t) localStorage.setItem('gh_token', t);
+    if(t && t.length >= 20) localStorage.setItem('gh_token', t);
+    else return null;
   }
   return t;
 }
+// Botão auxiliar: resetar token salvo
+function resetToken(){
+  if(confirm('Remover token GitHub salvo neste browser?')){
+    localStorage.removeItem('gh_token');
+    toast('✅ Token removido do browser');
+  }
+}
+window.resetToken = resetToken;  // acessível pelo console: resetToken()
 async function sincronizarTrinks(){
   const btn=document.getElementById('btn-sync');
   const token=getToken();
-  if(!token){toast('Cancelado · token não fornecido', true); return;}
+  if(!token){
+    // silencia se usuário cancelou · sugere alternativa
+    toast(`ℹ️ <strong>Sync não configurado</strong><br><small>Sem problema · <strong>🔄 Recarregar</strong> já traz dados frescos (GitHub Actions atualiza sozinho de hora em hora).</small>`);
+    return;
+  }
   btn.disabled=true;
   btn.textContent='⚡ Disparando…';
   try {
