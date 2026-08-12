@@ -440,13 +440,12 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         limite = ultima_dt_stone
         for t in transacoes_trinks:
             if not t.get("data") or not t.get("meio"): continue
-            # apenas meios que passam pela Stone (PIX + cartões)
             if t["meio"] not in (list(CARTAO_MEIOS) + ["PIX"]): continue
-            # data > última movimentação Stone
-            t_dt = _dt.combine(t["data"], _dt.min.time())
+            # usa datetime completo se disponível, senão fim do dia
+            t_dt = t.get("data_hora") or _dt.combine(t["data"], _dt.max.time())
             if t_dt > limite:
                 vendas_apos.append({
-                    "data": t["data"].isoformat(),
+                    "data": t_dt.isoformat(timespec="minutes") if hasattr(t_dt, 'isoformat') else t["data"].isoformat(),
                     "valor": _r(t["valor"]),
                     "meio": t["meio"],
                     "cliente": t.get("cliente", ""),

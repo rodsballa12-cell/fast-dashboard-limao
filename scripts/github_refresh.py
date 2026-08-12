@@ -367,15 +367,18 @@ def main():
         trinks_tx = []
         for tr in transac:
             dt = None
+            dt_full = None
             try:
                 if tr.get("dataHora"):
-                    dt = datetime.fromisoformat(tr["dataHora"]).date()
+                    dt_full = datetime.fromisoformat(tr["dataHora"])
+                    dt = dt_full.date()
             except Exception:
                 pass
             cli = (tr.get("cliente") or {}).get("nome", "")
             for fp in (tr.get("formasPagamentos") or []):
                 trinks_tx.append({
                     "data": dt,
+                    "data_hora": dt_full,  # datetime completo (para gap temporal)
                     "meio": fp.get("nome", ""),
                     "valor": float(fp.get("valor") or 0),
                     "cliente": cli,
