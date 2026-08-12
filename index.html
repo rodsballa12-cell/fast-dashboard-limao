@@ -597,22 +597,22 @@ function renderStone(data){
   // ============ SEÇÃO 2: KPIs POR PERÍODO ============
   function periodo_card(nome_bonito, chave, sub){
     const d = p[chave];
-    const total = d.pix.stone_liquido + d.cartao.stone_recebido;
+    const din = d.dinheiro || {total:0, n:0};
+    const total = d.pix.stone_liquido + d.cartao.stone_recebido + din.total;
     const orfaos_periodo = (d.pix.orfaos_stone?.length || 0) + (d.pix.orfaos_trinks?.length || 0);
     return `
       <div class="card">
         <h2>${nome_bonito}<span class="hi">${sub}</span></h2>
         <div class="cap">${d.periodo_ini?.slice(5).replace('-','/')} — ${d.periodo_fim?.slice(5).replace('-','/')}</div>
         <table class="simple">
-          <thead><tr><th>Métrica</th><th>PIX</th><th>Cartão</th><th>Total</th></tr></thead>
+          <thead><tr><th>Métrica</th><th>PIX</th><th>Cartão</th><th>💵 Dinheiro</th><th>Total</th></tr></thead>
           <tbody>
-            <tr><td>Recebido líquido Stone</td><td>${brl0(d.pix.stone_liquido)}</td><td>${brl0(d.cartao.stone_recebido)}</td><td><strong>${brl0(total)}</strong></td></tr>
-            <tr><td>Bruto Stone</td><td>${brl0(d.pix.stone_bruto)}</td><td>—</td><td>${brl0(d.pix.stone_bruto)}</td></tr>
-            <tr><td>Vendido Trinks (bruto)</td><td>${brl0(d.pix.trinks_valor)}</td><td>${brl0(d.cartao.trinks_vendido)}</td><td>${brl0(d.pix.trinks_valor + d.cartao.trinks_vendido)}</td></tr>
-            <tr><td>Nº transações Stone</td><td>${d.pix.stone_n}</td><td>${d.cartao.stone_n}</td><td>${d.pix.stone_n + d.cartao.stone_n}</td></tr>
-            <tr><td>Matches PIX</td><td>${d.pix.matches_n}</td><td>—</td><td>${d.pix.matches_n}</td></tr>
-            <tr><td>Órfãos (Stone + Trinks)</td><td class="${orfaos_periodo?'dn':'up'}">${orfaos_periodo}</td><td>—</td><td class="${orfaos_periodo?'dn':'up'}">${orfaos_periodo}</td></tr>
-            <tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>A receber D+30</td><td>—</td><td>${brl0(d.cartao.a_receber_d30)}</td><td>${brl0(d.cartao.a_receber_d30)}</td></tr>
+            <tr><td>Recebido líquido</td><td>${brl0(d.pix.stone_liquido)}</td><td>${brl0(d.cartao.stone_recebido)}</td><td>${brl0(din.total)}</td><td><strong>${brl0(total)}</strong></td></tr>
+            <tr><td>Bruto Trinks</td><td>${brl0(d.pix.trinks_valor)}</td><td>${brl0(d.cartao.trinks_vendido)}</td><td>${brl0(din.total)}</td><td>${brl0(d.pix.trinks_valor + d.cartao.trinks_vendido + din.total)}</td></tr>
+            <tr><td>Nº transações</td><td>${d.pix.stone_n}</td><td>${d.cartao.stone_n}</td><td>${din.n}</td><td>${d.pix.stone_n + d.cartao.stone_n + din.n}</td></tr>
+            <tr><td>Matches PIX</td><td>${d.pix.matches_n}</td><td>—</td><td>—</td><td>${d.pix.matches_n}</td></tr>
+            <tr><td>Órfãos PIX</td><td class="${orfaos_periodo?'dn':'up'}">${orfaos_periodo}</td><td>—</td><td>—</td><td class="${orfaos_periodo?'dn':'up'}">${orfaos_periodo}</td></tr>
+            <tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>A receber D+30</td><td>—</td><td>${brl0(d.cartao.a_receber_d30)}</td><td>—</td><td>${brl0(d.cartao.a_receber_d30)}</td></tr>
           </tbody>
         </table>
       </div>`;
@@ -657,7 +657,45 @@ function renderStone(data){
     </div>`;
   }
 
-  el.innerHTML = bloco_alerta + bloco_orf_stone + bloco_orf_trinks + bloco_periodos + bloco_fluxo + bloco_receb;
+  // ============ SEÇÃO CAIXA EM DINHEIRO ============
+  // consolidado do mês + lista das transações (Dinheiro não passa Stone, fica físico)
+  const din_mes = p.mes.dinheiro || {total:0, n:0, transacoes:[]};
+  const din_ano = p.ano.dinheiro || {total:0, n:0, transacoes:[]};
+  const din_semana = p.semana.dinheiro || {total:0, n:0, transacoes:[]};
+  const din_hoje = p.hoje.dinheiro || {total:0, n:0, transacoes:[]};
+  let bloco_dinheiro = `
+    <div class="card" style="border-left:3px solid var(--good);">
+      <h2>💵 Caixa em dinheiro · físico (não passa Stone)</h2>
+      <div class="cap">Total recebido em espécie · fica no caixa da loja · precisa depósito manual</div>
+      <div class="categ-grid">
+        ${tile('c3','Hoje', brl0(din_hoje.total), `${din_hoje.n} transações em espécie`)}
+        ${tile('c3','Semana', brl0(din_semana.total), `${din_semana.n} transações`)}
+        ${tile('c3','Mês', brl0(din_mes.total), `${din_mes.n} transações · precisam ir p/ conta`)}
+      </div>
+      <table class="simple" style="margin-top:14px;">
+        <thead><tr><th>Período</th><th>Nº transações</th><th>Total em espécie</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Hoje</td><td>${din_hoje.n}</td><td>${brl0(din_hoje.total)}</td><td>${din_hoje.total>0?'💵 no caixa físico':'—'}</td></tr>
+          <tr><td>Semana</td><td>${din_semana.n}</td><td>${brl0(din_semana.total)}</td><td>${din_semana.total>0?'💵 no caixa físico':'—'}</td></tr>
+          <tr><td>Mês</td><td>${din_mes.n}</td><td>${brl0(din_mes.total)}</td><td>${din_mes.total>0?'⚠️ acumulado · confirmar depósito':'—'}</td></tr>
+          <tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>Ano 2026</td><td>${din_ano.n}</td><td>${brl0(din_ano.total)}</td><td>—</td></tr>
+        </tbody>
+      </table>
+      ${din_mes.transacoes && din_mes.transacoes.length ? `
+      <details style="margin-top:12px;">
+        <summary style="cursor:pointer;color:var(--accent);font-size:13px;">Ver ${din_mes.transacoes.length} transações em dinheiro do mês</summary>
+        <table class="simple" style="margin-top:8px;">
+          <thead><tr><th>Data</th><th>Cliente</th><th>Valor</th></tr></thead>
+          <tbody>${din_mes.transacoes.map(t=>`<tr><td>${(t.data||'').slice(-5).replace('-','/')}</td><td>${t.cliente||'?'}</td><td>${brl0(t.valor)}</td></tr>`).join('')}</tbody>
+        </table>
+      </details>` : ''}
+      <div class="insight">
+        <strong>Atenção:</strong> dinheiro em espécie ${din_mes.total>0?`(${brl0(din_mes.total)} acumulado no mês)`:'ainda zerado no mês'} não aparece no extrato Stone.
+        ${din_mes.total>500?'<strong>Valor alto acumulado</strong> — recomendado depositar em conta para reduzir risco de perda/furto.':''}
+      </div>
+    </div>`;
+
+  el.innerHTML = bloco_alerta + bloco_orf_stone + bloco_orf_trinks + bloco_periodos + bloco_dinheiro + bloco_fluxo + bloco_receb;
 }
 
 async function load(showToast=false){

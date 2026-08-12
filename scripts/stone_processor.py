@@ -123,7 +123,7 @@ def _matchear_pix(stone_pix_list, trinks_pix_list):
     return matches, orfaos_stone, orfaos_trinks
 
 
-def _agregar_periodo(pix_stone, pix_trinks, cartao_stone_recebiveis, cartao_trinks_vendas):
+def _agregar_periodo(pix_stone, pix_trinks, cartao_stone_recebiveis, cartao_trinks_vendas, dinheiro_trinks=None):
     """Calcula agregados de um recorte já filtrado por período."""
     matches, orf_s, orf_t = _matchear_pix(pix_stone, pix_trinks)
     pix_bruto = sum(x["valor"] for x in pix_stone)
@@ -132,6 +132,8 @@ def _agregar_periodo(pix_stone, pix_trinks, cartao_stone_recebiveis, cartao_trin
     cart_recebido = sum(x["valor"] for x in cartao_stone_recebiveis)
     cart_vendido = sum(x["valor"] for x in cartao_trinks_vendas)
     a_receber = max(0, cart_vendido * 0.965 - cart_recebido)
+    din = dinheiro_trinks or []
+    din_total = sum(x["valor"] for x in din)
 
     return {
         "pix": {
@@ -153,8 +155,15 @@ def _agregar_periodo(pix_stone, pix_trinks, cartao_stone_recebiveis, cartao_trin
             "trinks_n": len(cartao_trinks_vendas),
             "a_receber_d30": _r(a_receber),
         },
+        "dinheiro": {
+            "total": _r(din_total),
+            "n": len(din),
+            "transacoes": [{"data": x["data"].isoformat() if x.get("data") else None,
+                            "valor": _r(x["valor"]),
+                            "cliente": x.get("cliente", "")} for x in din],
+        },
         "resumo": {
-            "recebido_total": _r(pix_bruto - pix_tarifa + cart_recebido),
+            "recebido_total": _r(pix_bruto - pix_tarifa + cart_recebido + din_total),
             "a_receber": _r(a_receber),
         },
     }
@@ -210,12 +219,17 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     # ==== 2. NORMALIZAR TRINKS ====
     pix_trinks_all = []
     cartao_trinks_all = []
+    dinheiro_trinks_all = []
     for t in transacoes_trinks:
         if not t.get("data") or not t.get("meio"): continue
         if t["meio"] == "PIX":
             pix_trinks_all.append({"data": t["data"], "valor": t["valor"], "cliente": t.get("cliente", "")})
         elif t["meio"] in CARTAO_MEIOS:
             cartao_trinks_all.append({"data": t["data"], "valor": t["valor"], "cliente": t.get("cliente", ""), "meio": t["meio"]})
+        elif t["meio"] == "Dinheiro":
+            # ignora entradas negativas (troco)
+            if t["valor"] > 0:
+                dinheiro_trinks_all.append({"data": t["data"], "valor": t["valor"], "cliente": t.get("cliente", "")})
 
     # ==== 3. FUNÇÃO FILTRO POR PERÍODO ====
     def filtrar(items, ini_p, fim_p):
@@ -243,6 +257,7 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
             filtrar(pix_trinks_all, a, b),
             filtrar(cartao_stone_all, a, b),
             filtrar(cartao_trinks_all, a, b),
+            filtrar(dinheiro_trinks_all, a, b),
         )
         por_periodo[nome]["periodo_ini"] = a.isoformat()
         por_periodo[nome]["periodo_fim"] = b.isoformat()
