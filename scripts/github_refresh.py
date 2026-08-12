@@ -339,7 +339,20 @@ def main():
     real_pre_atual = sum(m["caixa"] for k, m in meses.items() if k < f"{hoje.year}-{hoje.month:02d}")
     meses_rest = 12 - hoje.month + 1
     meta_ano_valor = round(real_pre_atual + META_MENSAL * meses_rest, 2)
-    meta_ano = calc_meta(a_anual["kpis"]["caixa"], meta_ano_valor, hoje.month, 12) if meta_ano_valor > 0 else {}
+
+    # dias operacionais reais desde abertura da loja (23/07/26) até 31/12/26 · exclui domingos
+    def _dias_op(ini_d: date, fim_d: date) -> int:
+        n, d = 0, ini_d
+        while d <= fim_d:
+            if d.weekday() != 6: n += 1
+            d += timedelta(days=1)
+        return n
+
+    data_abertura = date(2026, 7, 23)
+    fim_ano_dt = date(2026, 12, 31)
+    dias_op_total = _dias_op(data_abertura, fim_ano_dt)
+    dias_op_realizados = _dias_op(data_abertura, min(hoje, fim_ano_dt))
+    meta_ano = calc_meta(a_anual["kpis"]["caixa"], meta_ano_valor, dias_op_realizados, dias_op_total) if meta_ano_valor > 0 else {}
 
     def hora_media(hora_list, dias):
         return [{"h": x["h"], "media": round(x["n"] / max(dias, 1), 2), "n_total": x["n"]} for x in hora_list]
