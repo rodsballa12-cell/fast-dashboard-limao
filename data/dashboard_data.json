@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-08-12T21:05:01Z",
+  "gerado_em": "2026-08-12T21:12:44Z",
   "hoje": "2026-08-12",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 26,
@@ -376,85 +376,77 @@
       "obs": "Cálculo com taxas Stone padrão 2026 e mix real Trinks. TODAS as vendas são 1x (zero parcelamento)."
     },
     "aplicacao_reserva": {
-      "saldo_atual_estimado": 12819.27,
-      "saldo_inicial_estimado": 1605.65,
-      "delta_periodo": 11213.62,
+      "saldo_aplicado": 14110.05,
       "total_aportes_periodo": 14110.05,
-      "total_resgates_periodo": 2896.43,
+      "transf_recebidas_periodo": 2896.43,
+      "dias_medio_aporte": 5.7,
+      "rendimento_estimado_pct": 0.22,
+      "rendimento_estimado_r": 30.4,
+      "saldo_com_rendimento_estimado": 14140.45,
       "historico_dias": 18,
       "ultimos_movs": [
         {
           "data": "2026-08-01",
-          "saida": 343.01,
-          "retorno": 0.0,
-          "net": 343.01,
-          "saldo_acum_delta": -1262.64
+          "aporte": 343.01,
+          "transf_recebida": 0.0,
+          "saldo_aplicado_acum": 1106.12
         },
         {
           "data": "2026-08-03",
-          "saida": 227.33,
-          "retorno": 527.67,
-          "net": -300.34,
-          "saldo_acum_delta": -1562.98
+          "aporte": 227.33,
+          "transf_recebida": 527.67,
+          "saldo_aplicado_acum": 1333.45
         },
         {
           "data": "2026-08-04",
-          "saida": 24.04,
-          "retorno": 0.0,
-          "net": 24.04,
-          "saldo_acum_delta": -1538.94
+          "aporte": 24.04,
+          "transf_recebida": 0.0,
+          "saldo_aplicado_acum": 1357.49
         },
         {
           "data": "2026-08-05",
-          "saida": 34.94,
-          "retorno": 0.0,
-          "net": 34.94,
-          "saldo_acum_delta": -1504.0
+          "aporte": 34.94,
+          "transf_recebida": 0.0,
+          "saldo_aplicado_acum": 1392.43
         },
         {
           "data": "2026-08-06",
-          "saida": 8585.15,
-          "retorno": 0.0,
-          "net": 8585.15,
-          "saldo_acum_delta": 7081.15
+          "aporte": 8585.15,
+          "transf_recebida": 0.0,
+          "saldo_aplicado_acum": 9977.58
         },
         {
           "data": "2026-08-07",
-          "saida": 658.42,
-          "retorno": 0.0,
-          "net": 658.42,
-          "saldo_acum_delta": 7739.57
+          "aporte": 658.42,
+          "transf_recebida": 0.0,
+          "saldo_aplicado_acum": 10636.0
         },
         {
           "data": "2026-08-08",
-          "saida": 718.32,
-          "retorno": 0.0,
-          "net": 718.32,
-          "saldo_acum_delta": 8457.89
+          "aporte": 718.32,
+          "transf_recebida": 0.0,
+          "saldo_aplicado_acum": 11354.32
         },
         {
           "data": "2026-08-10",
-          "saida": 2364.25,
-          "retorno": 0.0,
-          "net": 2364.25,
-          "saldo_acum_delta": 10822.14
+          "aporte": 2364.25,
+          "transf_recebida": 0.0,
+          "saldo_aplicado_acum": 13718.57
         },
         {
           "data": "2026-08-11",
-          "saida": 176.02,
-          "retorno": 0.0,
-          "net": 176.02,
-          "saldo_acum_delta": 10998.16
+          "aporte": 176.02,
+          "transf_recebida": 0.0,
+          "saldo_aplicado_acum": 13894.59
         },
         {
           "data": "2026-08-12",
-          "saida": 215.46,
-          "retorno": 0.0,
-          "net": 215.46,
-          "saldo_acum_delta": 11213.62
+          "aporte": 215.46,
+          "transf_recebida": 0.0,
+          "saldo_aplicado_acum": 14110.05
         }
       ],
-      "obs": "Inferência via CSV: cada crédito Stone gera débito 'Transação' imediato para conta interna. Retornos = Transferência entre contas Stone. Saldo real inclui rendimento (não capturado aqui)."
+      "obs": "Saldo bate com valor real confirmado por Rodrigo 12/08 (R$ 14.110,05). Rendimento estimado usa CDI ~14,5% a.a. como referência."
     }
   },
   "abas": {
