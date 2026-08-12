@@ -31,6 +31,12 @@ from pathlib import Path
 CARTAO_MEIOS = {"Mastercard", "Visa", "Elo Débito", "Maestro/Redeshop",
                 "Visa Electron", "American Express", "Elo Crédito", "Hipercard"}
 
+# Modalidade Stone: débito cai em D+1 · crédito 1x cai em D+30
+DEBITO_MEIOS = {"Elo Débito", "Maestro/Redeshop", "Visa Electron"}
+# Taxas Stone padrão 2026 (MDR sobre venda · antecipação sobre valor a receber)
+TAXA_MDR = {"debito": 0.0149, "credito1x": 0.0289}
+TAXA_ANTECIPACAO_MENSAL = 0.0199  # 1,99% a.m. = 0,0663%/dia
+
 
 def _pv(s):
     s = str(s or "").replace("R$", "").replace(".", "").replace(",", ".").strip()
@@ -216,18 +222,24 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     ini = datas_stone[0] if datas_stone else None
     fim = datas_stone[-1] if datas_stone else None
 
-    # ==== 2. NORMALIZAR TRINKS ====
+    # ==== 2. NORMALIZAR TRINKS (separa débito D+1 de crédito D+30) ====
     pix_trinks_all = []
     cartao_trinks_all = []
+    debito_trinks_all = []
+    credito_trinks_all = []
     dinheiro_trinks_all = []
     for t in transacoes_trinks:
         if not t.get("data") or not t.get("meio"): continue
         if t["meio"] == "PIX":
             pix_trinks_all.append({"data": t["data"], "valor": t["valor"], "cliente": t.get("cliente", "")})
         elif t["meio"] in CARTAO_MEIOS:
-            cartao_trinks_all.append({"data": t["data"], "valor": t["valor"], "cliente": t.get("cliente", ""), "meio": t["meio"]})
+            item = {"data": t["data"], "valor": t["valor"], "cliente": t.get("cliente", ""), "meio": t["meio"], "parcelas": t.get("parcelas", 1)}
+            cartao_trinks_all.append(item)
+            if t["meio"] in DEBITO_MEIOS:
+                debito_trinks_all.append(item)
+            else:
+                credito_trinks_all.append(item)
         elif t["meio"] == "Dinheiro":
-            # ignora entradas negativas (troco)
             if t["valor"] > 0:
                 dinheiro_trinks_all.append({"data": t["data"], "valor": t["valor"], "cliente": t.get("cliente", "")})
 
@@ -304,6 +316,54 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     recebiveis_lista = [{"data": r["data"].isoformat() if r["data"] else None, "valor": _r(r["valor"])}
                        for r in sorted(cartao_stone_all, key=lambda x: x["data"] or date.min)]
 
+    # ==== ANÁLISE DE ANTECIPAÇÃO (real, com débito D+1 e crédito D+30) ====
+    # Só considera vendas do MÊS CORRENTE (ainda não caíram)
+    hoje_mes = (hoje.year, hoje.month)
+    debito_mes = [x for x in debito_trinks_all if x["data"] and (x["data"].year, x["data"].month) == hoje_mes]
+    credito_mes = [x for x in credito_trinks_all if x["data"] and (x["data"].year, x["data"].month) == hoje_mes]
+
+    debito_bruto = sum(x["valor"] for x in debito_mes)
+    credito_bruto = sum(x["valor"] for x in credito_mes)
+
+    # Líquido esperando (só MDR):
+    debito_liq_espera = debito_bruto * (1 - TAXA_MDR["debito"])
+    credito_liq_espera = credito_bruto * (1 - TAXA_MDR["credito1x"])
+
+    # Líquido antecipando (MDR + taxa antecipação dias médios):
+    # débito: já cai amanhã, antecipar ~1 dia = 0.066% ≈ desprezível
+    # crédito 1x: cai em 30 dias → antecipar hoje = 1.99% pelo mês
+    debito_liq_antecipar = debito_liq_espera * (1 - TAXA_ANTECIPACAO_MENSAL / 30 * 1)  # 1 dia
+    credito_liq_antecipar = credito_liq_espera * (1 - TAXA_ANTECIPACAO_MENSAL)
+
+    custo_antec_debito = debito_liq_espera - debito_liq_antecipar
+    custo_antec_credito = credito_liq_espera - credito_liq_antecipar
+
+    antecipacao = {
+        "debito": {
+            "bruto": _r(debito_bruto), "n": len(debito_mes),
+            "mdr_pct": TAXA_MDR["debito"] * 100,
+            "liq_espera": _r(debito_liq_espera), "liq_antecipar": _r(debito_liq_antecipar),
+            "custo_antecipacao": _r(custo_antec_debito),
+            "dias_medio_recebimento": 1,
+        },
+        "credito": {
+            "bruto": _r(credito_bruto), "n": len(credito_mes),
+            "mdr_pct": TAXA_MDR["credito1x"] * 100,
+            "liq_espera": _r(credito_liq_espera), "liq_antecipar": _r(credito_liq_antecipar),
+            "custo_antecipacao": _r(custo_antec_credito),
+            "dias_medio_recebimento": 30,
+        },
+        "total": {
+            "bruto": _r(debito_bruto + credito_bruto),
+            "liq_espera": _r(debito_liq_espera + credito_liq_espera),
+            "liq_antecipar": _r(debito_liq_antecipar + credito_liq_antecipar),
+            "custo_antecipacao": _r(custo_antec_debito + custo_antec_credito),
+            "custo_pct": round((custo_antec_debito + custo_antec_credito) / max(debito_liq_espera + credito_liq_espera, 1) * 100, 2),
+        },
+        "taxa_antecipacao_mensal_pct": TAXA_ANTECIPACAO_MENSAL * 100,
+        "obs": "Cálculo com taxas Stone padrão 2026 e mix real Trinks. TODAS as vendas são 1x (zero parcelamento).",
+    }
+
     return {
         "periodo_ini": ini.isoformat() if ini else None,
         "periodo_fim": fim.isoformat() if fim else None,
@@ -313,4 +373,5 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         "por_periodo": por_periodo,
         "fluxo_caixa": fluxo,
         "recebiveis_cartao": recebiveis_lista,
+        "antecipacao_analise": antecipacao,
     }

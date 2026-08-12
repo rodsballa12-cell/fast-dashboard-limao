@@ -564,11 +564,8 @@ function renderStone(data){
   const status_ico = risco_real > 0 ? '🚨' : '✅';
   const status_txt = risco_real > 0 ? `${brl0(risco_real)} em risco real` : 'sem risco · reconciliação 100%';
 
-  // Estimativa antecipação Stone (taxa média ~2.5%/mês sobre valor bruto D+30)
-  const bruto_receber = nc.a_receber_d30 / 0.965;  // desfaz taxa D+30 pra estimar bruto
-  const taxa_antecipacao = 0.025;  // 2.5% aproximado
-  const receber_antecipado = nc.a_receber_d30 * (1 - taxa_antecipacao);
-  const custo_antecipacao = nc.a_receber_d30 - receber_antecipado;
+  // Análise de antecipação REAL (via stone_processor.py)
+  const antec = s.antecipacao_analise || null;
 
   const bloco_alerta = `
     <div class="meta-card" style="border-top-color:${cor_topo};">
@@ -582,22 +579,27 @@ function renderStone(data){
       </div>
     </div>
 
+    ${antec ? `
     <div class="card" style="border-left:3px solid var(--accent-2);">
-      <h2>💡 Oportunidade · Antecipação de recebíveis Stone</h2>
-      <div class="cap">Você tem <strong>${brl0(nc.a_receber_d30)}</strong> a receber em ~30 dias. Poderia antecipar hoje.</div>
+      <h2>💡 Análise real de antecipação Stone · vendas do mês</h2>
+      <div class="cap">Baseado em mix real Trinks (${antec.total.bruto>0 ? 'todas as vendas 1x, zero parcelamento' : 'sem vendas de cartão no mês'}) + taxas Stone padrão 2026</div>
       <table class="simple">
-        <thead><tr><th>Cenário</th><th>Valor recebido</th><th>Custo</th><th>Quando cai</th></tr></thead>
+        <thead><tr><th>Modalidade</th><th>Nº vendas</th><th>Bruto</th><th>MDR</th><th>Cai em</th><th>Liq. esperando</th><th>Liq. antecipando</th><th>Custo antec.</th></tr></thead>
         <tbody>
-          <tr><td>Aguardar D+30 (atual)</td><td>${brl0(nc.a_receber_d30)}</td><td>Zero</td><td>Set/2026</td></tr>
-          <tr><td>Antecipar hoje (taxa ~2,5%)</td><td>${brl0(receber_antecipado)}</td><td>−${brl0(custo_antecipacao)}</td><td>Hoje</td></tr>
+          <tr><td>Débito (D+1)</td><td>${antec.debito.n}</td><td>${brl0(antec.debito.bruto)}</td><td>${antec.debito.mdr_pct.toFixed(2)}%</td><td>1 dia</td><td>${brl0(antec.debito.liq_espera)}</td><td>${brl0(antec.debito.liq_antecipar)}</td><td class="neu">${brl0(antec.debito.custo_antecipacao)} <em>(irrisório)</em></td></tr>
+          <tr><td>Crédito 1x (D+30)</td><td>${antec.credito.n}</td><td>${brl0(antec.credito.bruto)}</td><td>${antec.credito.mdr_pct.toFixed(2)}%</td><td>30 dias</td><td>${brl0(antec.credito.liq_espera)}</td><td>${brl0(antec.credito.liq_antecipar)}</td><td class="dn">${brl0(antec.credito.custo_antecipacao)}</td></tr>
+          <tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>TOTAL cartão</td><td>${antec.debito.n + antec.credito.n}</td><td>${brl0(antec.total.bruto)}</td><td>—</td><td>—</td><td>${brl0(antec.total.liq_espera)}</td><td>${brl0(antec.total.liq_antecipar)}</td><td>${brl0(antec.total.custo_antecipacao)} (${antec.total.custo_pct.toFixed(2)}%)</td></tr>
         </tbody>
       </table>
       <div class="insight">
-        <strong>Fluxo de caixa:</strong> antecipar dá ${brl0(receber_antecipado)} imediato ao custo de ${brl0(custo_antecipacao)} em taxa.
-        Vale se: (1) precisa capital pra oportunidade que rende >2,5%/mês (ex: giro Advisory a ~1,5%), ou (2) tem CashMe/dívida ao qual pagar antecipado gera economia.
-        <strong>Se está com folga de caixa</strong>, esperar D+30 é grátis. <em>Não é risco — é escolha financeira.</em>
+        <strong>Taxa Stone antecipação: ${antec.taxa_antecipacao_mensal_pct.toFixed(2)}% a.m.</strong> · <strong>MDR</strong>: 1,49% débito · 2,89% crédito 1x.
+        <br><strong>Débito não vale antecipar</strong> (cai em 1 dia · custo desprezível).
+        <br><strong>Crédito compensa antecipar SE:</strong>
+        <br>• Precisa capital pra oportunidade que rende <strong>>${antec.taxa_antecipacao_mensal_pct.toFixed(2)}%/mês</strong> (giro Advisory 1,5% <span class="dn">NÃO compensa</span>)
+        <br>• Tem CashMe/dívida com juros >${antec.taxa_antecipacao_mensal_pct.toFixed(2)}%/mês (nesse caso <span class="up">COMPENSA</span> quitar antecipado)
+        <br>• <em>Com folga de caixa, esperar 30 dias é grátis — não é risco</em>.
       </div>
-    </div>`;
+    </div>` : ''}`;
 
   // Cards órfãos detalhados
   let bloco_orf_stone = '';
