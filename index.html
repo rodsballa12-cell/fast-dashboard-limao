@@ -678,6 +678,18 @@ async function load(showToast=false){
     const ageMin=Math.floor((Date.now()-dt.getTime())/60000);
     const chipUpd=document.getElementById('chip-updated');
     chipUpd.innerHTML=`<span class="dot"></span> Dados de ${dt.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}`;
+    // Monitor de cota API: alerta se consumo anômalo (>500 req)
+    const cota = data.cota_api || {};
+    if(cota.totalUtilizado){
+      const uso = cota.totalUtilizado;
+      const total = cota.cotaTotal || 10000;
+      const pct_uso = uso/total*100;
+      const dias_mes = new Date().getDate();
+      const media_dia = uso/Math.max(dias_mes,1);
+      if(uso > 3000 || media_dia > 200){
+        toast(`⚠️ <strong>Cota API alta</strong><br><small>${uso}/${total} usadas (${pct_uso.toFixed(1)}%) · média ${media_dia.toFixed(0)}/dia · <strong>investigar uso anômalo</strong></small>`, true);
+      }
+    }
     // idade: verde <65min, amarelo <180min, vermelho >180min
     const chipAge=document.getElementById('chip-age');
     chipAge.style.display='';
