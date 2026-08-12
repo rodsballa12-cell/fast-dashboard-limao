@@ -50,13 +50,17 @@ def _r(v): return round(float(v or 0), 2)
 
 
 def _matchear_pix(stone_pix_list, trinks_pix_list):
-    """Match por (data, valor ±0.5). Retorna (matches, orfaos_stone, orfaos_trinks)."""
+    """Match em 2 passes:
+       1) 1:1 exato por (data, valor ±0.5)
+       2) Composto: 1 Trinks = soma de N Stones do MESMO DIA (ex: pagou em 2 PIX)
+    Retorna (matches, orfaos_stone, orfaos_trinks)."""
     matches = []
-    orfaos_stone = []
     usados_trinks = set()
-    for s in stone_pix_list:
-        ds = s["data"]
-        vs = s["valor"]
+    usados_stone = set()
+
+    # --- PASS 1: match 1:1 exato ---
+    for si, s in enumerate(stone_pix_list):
+        ds = s["data"]; vs = s["valor"]
         best_i, best_diff = None, 1e9
         for i, t in enumerate(trinks_pix_list):
             if i in usados_trinks: continue
@@ -66,13 +70,50 @@ def _matchear_pix(stone_pix_list, trinks_pix_list):
                 best_diff, best_i = diff, i
         if best_i is not None:
             usados_trinks.add(best_i)
-            matches.append({"data": ds.isoformat(), "valor": vs,
-                            "cliente_trinks": trinks_pix_list[best_i]["cliente"],
-                            "origem_stone": s["origem"]})
-        else:
-            orfaos_stone.append({"data": ds.isoformat() if ds else None,
-                                 "valor": vs, "origem": s["origem"],
-                                 "tarifa": s["tarifa"]})
+            usados_stone.add(si)
+            matches.append({
+                "data": ds.isoformat(), "valor": vs,
+                "cliente_trinks": trinks_pix_list[best_i]["cliente"],
+                "origem_stone": s["origem"], "tipo": "1:1",
+            })
+
+    # --- PASS 2: match composto (múltiplos Stones = 1 Trinks) ---
+    # Para cada Trinks órfão, procurar subset de Stones órfãos do mesmo dia que somem o valor
+    from itertools import combinations
+    for ti, t in enumerate(trinks_pix_list):
+        if ti in usados_trinks: continue
+        stones_dia = [(si, stone_pix_list[si]) for si in range(len(stone_pix_list))
+                      if si not in usados_stone and stone_pix_list[si]["data"] == t["data"]]
+        if len(stones_dia) < 2: continue  # composição precisa 2+
+        # tenta combinações de 2 a 4 elementos (evita explosão combinatória)
+        achou = None
+        for tam in range(2, min(5, len(stones_dia) + 1)):
+            for combo in combinations(stones_dia, tam):
+                soma = sum(x[1]["valor"] for x in combo)
+                if abs(soma - t["valor"]) <= 0.5:
+                    achou = combo
+                    break
+            if achou: break
+        if achou:
+            usados_trinks.add(ti)
+            for si, _ in achou:
+                usados_stone.add(si)
+            origens = " + ".join(f"{x[1]['origem']} R$ {x[1]['valor']:.0f}" for x in achou)
+            matches.append({
+                "data": t["data"].isoformat(),
+                "valor": sum(x[1]["valor"] for x in achou),
+                "cliente_trinks": t["cliente"],
+                "origem_stone": f"[COMPOSTO {len(achou)}×] {origens}",
+                "tipo": f"composto_{len(achou)}",
+            })
+
+    # --- ÓRFÃOS finais ---
+    orfaos_stone = [
+        {"data": stone_pix_list[si]["data"].isoformat() if stone_pix_list[si]["data"] else None,
+         "valor": stone_pix_list[si]["valor"], "origem": stone_pix_list[si]["origem"],
+         "tarifa": stone_pix_list[si]["tarifa"]}
+        for si in range(len(stone_pix_list)) if si not in usados_stone
+    ]
     orfaos_trinks = [
         {"data": trinks_pix_list[i]["data"].isoformat(),
          "valor": trinks_pix_list[i]["valor"],
