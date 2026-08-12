@@ -558,16 +558,44 @@ function renderStone(data){
   const p = s.por_periodo;
   const flu = s.fluxo_caixa;
 
-  // ============ SEÇÃO 1: NÃO CONCILIADO — PRIORIDADE MÁXIMA ============
+  // ============ SEÇÃO 1: STATUS RECONCILIAÇÃO ============
+  const risco_real = nc.orfaos_stone_v + nc.orfaos_trinks_v;
+  const cor_topo = risco_real > 0 ? 'var(--crit)' : 'var(--good)';
+  const status_ico = risco_real > 0 ? '🚨' : '✅';
+  const status_txt = risco_real > 0 ? `${brl0(risco_real)} em risco real` : 'sem risco · reconciliação 100%';
+
+  // Estimativa antecipação Stone (taxa média ~2.5%/mês sobre valor bruto D+30)
+  const bruto_receber = nc.a_receber_d30 / 0.965;  // desfaz taxa D+30 pra estimar bruto
+  const taxa_antecipacao = 0.025;  // 2.5% aproximado
+  const receber_antecipado = nc.a_receber_d30 * (1 - taxa_antecipacao);
+  const custo_antecipacao = nc.a_receber_d30 - receber_antecipado;
+
   const bloco_alerta = `
-    <div class="meta-card" style="border-top-color:var(--crit);">
-      <h2><span style="color:var(--crit)">🚨</span> Não conciliado · <span style="color:var(--crit)">${brl0(nc.total_valor_risco)}</span> em risco</h2>
-      <div class="sub">Prioridade máxima · valores fora do controle direto ou aguardando</div>
+    <div class="meta-card" style="border-top-color:${cor_topo};">
+      <h2><span style="color:${cor_topo}">${status_ico}</span> Status reconciliação · <span style="color:${cor_topo}">${status_txt}</span></h2>
+      <div class="sub">Separado por natureza · risco real vs recebíveis aguardando</div>
       <div class="meta-row">
-        <div class="meta-cell" style="border-left:3px solid var(--crit);"><div class="l">🟡 Órfãos Stone</div><div class="v ${nc.orfaos_stone_n?'warn':'good'}">${brl0(nc.orfaos_stone_v)}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">${nc.orfaos_stone_n} PIX caíram sem Trinks</div></div>
-        <div class="meta-cell" style="border-left:3px solid var(--crit);"><div class="l">🔴 Órfãos Trinks</div><div class="v ${nc.orfaos_trinks_n?'crit':'good'}">${brl0(nc.orfaos_trinks_v)}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">${nc.orfaos_trinks_n} PIX registrados sem Stone</div></div>
-        <div class="meta-cell" style="border-left:3px solid var(--warn);"><div class="l">💳 A receber D+30</div><div class="v warn">${brl0(nc.a_receber_d30)}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">Cartões ago cairão em set</div></div>
-        <div class="meta-cell"><div class="l">✅ Matches</div><div class="v good">${nc.matches_consolidados}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">PIX conciliados automaticamente</div></div>
+        <div class="meta-cell" style="border-left:3px solid ${nc.orfaos_stone_n?'var(--warn)':'var(--good)'};"><div class="l">🟡 Órfãos Stone</div><div class="v ${nc.orfaos_stone_n?'warn':'good'}">${brl0(nc.orfaos_stone_v)}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">${nc.orfaos_stone_n} PIX Stone sem Trinks</div></div>
+        <div class="meta-cell" style="border-left:3px solid ${nc.orfaos_trinks_n?'var(--crit)':'var(--good)'};"><div class="l">🔴 Órfãos Trinks</div><div class="v ${nc.orfaos_trinks_n?'crit':'good'}">${brl0(nc.orfaos_trinks_v)}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">${nc.orfaos_trinks_n} PIX Trinks sem Stone</div></div>
+        <div class="meta-cell" style="border-left:3px solid var(--good);"><div class="l">🟢 Aguardando D+30</div><div class="v good">${brl0(nc.a_receber_d30)}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">Recebível normal · cartão cai em ~30d</div></div>
+        <div class="meta-cell" style="border-left:3px solid var(--accent);"><div class="l">✅ Conciliados</div><div class="v" style="color:var(--accent)">${nc.matches_consolidados}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">PIX matcheados automaticamente</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="border-left:3px solid var(--accent-2);">
+      <h2>💡 Oportunidade · Antecipação de recebíveis Stone</h2>
+      <div class="cap">Você tem <strong>${brl0(nc.a_receber_d30)}</strong> a receber em ~30 dias. Poderia antecipar hoje.</div>
+      <table class="simple">
+        <thead><tr><th>Cenário</th><th>Valor recebido</th><th>Custo</th><th>Quando cai</th></tr></thead>
+        <tbody>
+          <tr><td>Aguardar D+30 (atual)</td><td>${brl0(nc.a_receber_d30)}</td><td>Zero</td><td>Set/2026</td></tr>
+          <tr><td>Antecipar hoje (taxa ~2,5%)</td><td>${brl0(receber_antecipado)}</td><td>−${brl0(custo_antecipacao)}</td><td>Hoje</td></tr>
+        </tbody>
+      </table>
+      <div class="insight">
+        <strong>Fluxo de caixa:</strong> antecipar dá ${brl0(receber_antecipado)} imediato ao custo de ${brl0(custo_antecipacao)} em taxa.
+        Vale se: (1) precisa capital pra oportunidade que rende >2,5%/mês (ex: giro Advisory a ~1,5%), ou (2) tem CashMe/dívida ao qual pagar antecipado gera economia.
+        <strong>Se está com folga de caixa</strong>, esperar D+30 é grátis. <em>Não é risco — é escolha financeira.</em>
       </div>
     </div>`;
 
