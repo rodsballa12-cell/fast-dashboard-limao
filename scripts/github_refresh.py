@@ -360,6 +360,7 @@ def main():
                 "hora_media": hora_media(a_anual["hora_abs"], a_anual["kpis"]["dias_op"]),
                 "ranking_prof": a_anual["ranking_prof"], "ranking_serv": a_anual["ranking_serv"],
                 "meios_pagamento": a_anual["meios_pagamento"], "descontos": a_anual["descontos"],
+                "clientes_top": a_anual["clientes_top"],
             },
             "mensal": {
                 "kpis": a_mensal["kpis"], "meta": meta_mensal, "categorias": a_mensal["categorias"],
@@ -377,12 +378,14 @@ def main():
                 "hora_media": hora_media(a_semanal["hora_abs"], a_semanal["kpis"]["dias_op"]),
                 "ranking_prof": a_semanal["ranking_prof"], "ranking_serv": a_semanal["ranking_serv"],
                 "meios_pagamento": a_semanal["meios_pagamento"],
+                "clientes_top": a_semanal["clientes_top"],
             },
             "diario": {
                 "kpis": {**a_diario["kpis"], "dia_semana": DOW_NOMES[hoje.weekday()], "data": hoje.isoformat()},
                 "meta": meta_dia, "categorias": a_diario["categorias"],
                 "hora_abs": a_diario["hora_abs"], "ranking_prof": a_diario["ranking_prof"],
                 "ranking_serv": a_diario["ranking_serv"], "meios_pagamento": a_diario["meios_pagamento"],
+                "clientes_top": a_diario["clientes_top"],
             },
         },
     }

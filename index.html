@@ -154,6 +154,7 @@
       <div id="anual-categorias"></div>
       <div id="anual-meses"></div>
       <div id="anual-ltv"></div>
+      <div id="anual-topcli"></div>
       <div id="anual-rentabilidade"></div>
       <div id="anual-hora"></div>
     </div>
@@ -172,6 +173,7 @@
         <div id="mensal-prof"></div>
         <div id="mensal-meios"></div>
       </div>
+      <div id="mensal-topcli"></div>
     </div>
 
     <!-- SEMANAL -->
@@ -186,6 +188,7 @@
         <div id="semanal-prof"></div>
         <div id="semanal-meios"></div>
       </div>
+      <div id="semanal-topcli"></div>
     </div>
 
     <!-- DIÁRIO -->
@@ -200,6 +203,7 @@
         <div id="diario-serv"></div>
       </div>
       <div id="diario-meios"></div>
+      <div id="diario-topcli"></div>
     </div>
 
     <footer>
@@ -346,6 +350,24 @@ function renderMeiosPagamento(container_id, titulo, subtitle, meios){
   renderTable(container_id, titulo, subtitle, ['Meio','Nº','Valor','%'], rows);
 }
 
+function renderTopClientes(container_id, titulo, subtitle, clientes, insight){
+  if(!clientes || !clientes.length){
+    document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div style="color:var(--ink-3);font-size:13px;padding:12px 0;">Nenhum cliente atendido neste período ainda.</div></div>`;
+    return;
+  }
+  const rows = clientes.slice(0,10).map((c,i)=>`<tr><td>${i+1}</td><td>${c.nome}</td><td style="text-align:right">${c.n}</td></tr>`).join('');
+  document.getElementById(container_id).innerHTML=`
+    <div class="card">
+      <h2>👤 Top Clientes · direcionamento</h2>
+      <div class="cap">${subtitle}</div>
+      <table class="simple">
+        <thead><tr><th style="width:30px">#</th><th>Cliente</th><th style="text-align:right">Visitas</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      ${insight?'<div class="insight">'+insight+'</div>':''}
+    </div>`;
+}
+
 function renderCategTile(container_id, titulo, subtitle, categorias){
   const c=categorias||{};
   const tiles=[
@@ -396,6 +418,8 @@ function renderAnual(data){
   renderTable('anual-rentabilidade','⚡ Rentabilidade por hora · serviços','R$/hora de cadeira ocupada',['Serviço','Qtd','Min','Ticket','R$/hora'],rentRows);
 
   renderBarsHora('anual-hora','Por hora do dia · 2026 <span class="hi">(média trans/dia · '+k.dias_op+'d op.)</span>','Média de transações por hora',a.hora_media,true,'');
+
+  renderTopClientes('anual-topcli','Top Clientes · 2026','Ranking por nº de visitas · direcionamento CRM anual', a.clientes_top || [], '<strong>Concentração da base:</strong> use para priorizar fidelização/relacionamento dos clientes de alta frequência.');
 }
 
 function renderMensal(data){
@@ -435,6 +459,7 @@ function renderMensal(data){
   renderBarsHora('mensal-hora','Por hora do dia <span class="hi">(média trans/dia · '+k.dias_op+'d op.)</span>','Média de transações',m.hora_media,true,'');
   renderRankingProf('mensal-prof','Ranking · profissionais','Por receita gerada',m.ranking_prof);
   renderMeiosPagamento('mensal-meios','Meios de pagamento','Valor recebido',m.meios_pagamento);
+  renderTopClientes('mensal-topcli','Top Clientes · mês','Quem mais voltou no mês corrente · direcionamento retenção', m.clientes_top || [], '<strong>Ação sugerida:</strong> agradecer pessoalmente/WhatsApp a quem voltou 3+ vezes no mês. Se algum sumiu do ranking vs. mês anterior, investigar.');
 }
 
 function renderSemanal(data){
@@ -452,6 +477,7 @@ function renderSemanal(data){
   renderBarsHora('semanal-hora','Por hora do dia <span class="hi">(média · '+k.dias_op+'d op.)</span>','Média de transações/dia',s.hora_media,true,'');
   renderRankingProf('semanal-prof','Ranking · profissionais','Por receita gerada',s.ranking_prof);
   renderMeiosPagamento('semanal-meios','Meios de pagamento','Valor recebido',s.meios_pagamento);
+  renderTopClientes('semanal-topcli','Top Clientes · semana','Quem mais visitou nesta semana · direcionamento operacional', s.clientes_top || [], '<strong>Prioridade da equipe:</strong> quem apareceu 2+ vezes na semana merece tratamento VIP na próxima visita.');
 }
 
 function renderDiario(data){
@@ -471,6 +497,7 @@ function renderDiario(data){
   const sRows=d.ranking_serv.map(s=>[s.nome,s.n,brl0(s.v)]);
   renderTable('diario-serv','Serviços realizados hoje','Tipos e volumes',['Serviço','Qtd','Receita'],sRows);
   renderMeiosPagamento('diario-meios','Meios de pagamento · hoje','Fechados até agora',d.meios_pagamento);
+  renderTopClientes('diario-topcli','Top Clientes · hoje','Quem passou por aqui hoje · direcionamento imediato', d.clientes_top || [], '<strong>Ação agora:</strong> se algum cliente-chave está aqui hoje, alinhe a equipe para atenção especial antes de sair.');
 }
 
 // ============= TABS =============
