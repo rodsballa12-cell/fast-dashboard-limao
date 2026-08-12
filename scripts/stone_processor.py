@@ -304,13 +304,52 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     tot_pix_bruto = sum(x["valor"] for x in pix_stone_all)
     tot_pix_tarifa = sum(x["tarifa"] for x in pix_stone_all)
     tot_cart_liq = sum(x["valor"] for x in cartao_stone_all)
+    tot_saidas = sum(x["valor"] for x in debitos_transacao)
+    tot_retornos = sum(x["valor"] for x in transf_stone)
     fluxo = {
         "entradas_pix_liq": _r(tot_pix_bruto - tot_pix_tarifa),
         "entradas_cartao_liq": _r(tot_cart_liq),
-        "transf_stone": _r(sum(x["valor"] for x in transf_stone)),
-        "saidas_transacao": _r(sum(x["valor"] for x in debitos_transacao)),
+        "transf_stone": _r(tot_retornos),
+        "saidas_transacao": _r(tot_saidas),
         "pix_enviados_v": _r(sum(x["valor"] for x in pix_enviados)),
         "pix_enviados_n": len(pix_enviados),
+    }
+
+    # ==== 6. APLICAÇÃO RESERVA STONE (inferência via CSV) ====
+    # Padrão observado: cada crédito → débito "Transação" imediato para conta interna (aplicação/reserva)
+    # Retornos vêm como "Transferência entre contas Stone"
+    from collections import defaultdict
+    saidas_dia = defaultdict(float)
+    retornos_dia = defaultdict(float)
+    for x in debitos_transacao:
+        if x["data"]: saidas_dia[x["data"]] += x["valor"]
+    for x in transf_stone:
+        if x["data"]: retornos_dia[x["data"]] += x["valor"]
+
+    dias_ord = sorted(set(list(saidas_dia.keys()) + list(retornos_dia.keys())))
+    historico = []
+    saldo_delta = 0
+    for d in dias_ord:
+        s = saidas_dia.get(d, 0)
+        r = retornos_dia.get(d, 0)
+        saldo_delta += (s - r)
+        historico.append({"data": d.isoformat(), "saida": _r(s), "retorno": _r(r),
+                          "net": _r(s - r), "saldo_acum_delta": _r(saldo_delta)})
+
+    # Se o menor saldo acumulado no histórico for negativo, significa que HAVIA saldo inicial
+    min_delta = min([h["saldo_acum_delta"] for h in historico], default=0)
+    saldo_inicial_estimado = abs(min_delta) if min_delta < 0 else 0
+    saldo_atual_estimado = saldo_delta + saldo_inicial_estimado
+
+    aplicacao_reserva = {
+        "saldo_atual_estimado": _r(saldo_atual_estimado),
+        "saldo_inicial_estimado": _r(saldo_inicial_estimado),
+        "delta_periodo": _r(saldo_delta),
+        "total_aportes_periodo": _r(tot_saidas),
+        "total_resgates_periodo": _r(tot_retornos),
+        "historico_dias": len(historico),
+        "ultimos_movs": historico[-10:],  # ultimas 10 movimentacoes
+        "obs": "Inferência via CSV: cada crédito Stone gera débito 'Transação' imediato para conta interna. Retornos = Transferência entre contas Stone. Saldo real inclui rendimento (não capturado aqui).",
     }
 
     recebiveis_lista = [{"data": r["data"].isoformat() if r["data"] else None, "valor": _r(r["valor"])}
@@ -374,4 +413,5 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         "fluxo_caixa": fluxo,
         "recebiveis_cartao": recebiveis_lista,
         "antecipacao_analise": antecipacao,
+        "aplicacao_reserva": aplicacao_reserva,
     }
