@@ -209,7 +209,7 @@
 
     <!-- STONE -->
     <div class="panel" id="tab-stone">
-      <div class="audit"><div>🏦</div><div>Reconciliação <strong>Trinks × Stone</strong>. CSV do portal Stone processado. Cartões trabalham em <strong>D+30</strong>.</div></div>
+      <div class="audit" id="stone-audit"><div>🏦</div><div>Reconciliação <strong>Trinks × Stone</strong>. Cartões trabalham em <strong>D+30</strong>.</div></div>
       <div id="stone-content"></div>
     </div>
 
@@ -545,6 +545,15 @@ function renderStone(data){
     return;
   }
   if(subEl) subEl.textContent = `${s.periodo_ini?.slice(5).replace('-','/')} — ${s.periodo_fim?.slice(5).replace('-','/')}`;
+
+  // Alerta de cobertura parcial (loja abriu 23/07 · se ini > 23/07, tem gap)
+  const auditEl = document.getElementById('stone-audit');
+  if(auditEl && s.periodo_ini && s.periodo_ini > '2026-07-23'){
+    const ini_br = s.periodo_ini.slice(-5).replace('-','/');
+    const fim_br = s.periodo_fim.slice(-5).replace('-','/');
+    const dias_gap = Math.round((new Date(s.periodo_ini) - new Date('2026-07-23'))/(1000*60*60*24));
+    auditEl.innerHTML = `<div>⚠️</div><div style="color:var(--warn);"><strong>Cobertura parcial:</strong> CSV Stone cobre ${ini_br} → ${fim_br}. Loja abriu 23/07/2026 — <strong>faltam ${dias_gap} dias</strong> (23/07 a ${s.periodo_ini.slice(-5).replace('-','/')} não estão neste extrato). Baixe CSV com período estendido para reconciliação completa.</div>`;
+  }
 
   const nc = s.nao_conciliado;
   const p = s.por_periodo;
