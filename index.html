@@ -127,8 +127,7 @@
       <span class="chip" id="chip-updated">carregando…</span>
       <span class="chip" id="chip-age" style="display:none;"></span>
       <span class="chip" id="chip-live" style="display:none;"></span>
-      <button id="btn-reload" class="btn-refresh" title="Recarrega os dados publicados">🔄 Recarregar</button>
-      <button id="btn-sync" class="btn-refresh btn-sync" title="Dispara nova captura na API Trinks (leva ~1min)">⚡ Sincronizar Trinks</button>
+      <button id="btn-reload" class="btn-refresh btn-sync" title="Puxa dados frescos do servidor (dados atualizam sozinhos de hora em hora)">🔄 Atualizar dados</button>
     </div>
   </header>
 
@@ -663,7 +662,7 @@ function renderStone(data){
 
 async function load(showToast=false){
   const btn=document.getElementById('btn-reload');
-  if(btn){btn.disabled=true;btn.textContent='🔄 Recarregando…';}
+  if(btn){btn.disabled=true;btn.textContent='🔄 Atualizando…';}
   try {
     const resp = await fetch('data/dashboard_data.json?_='+Date.now(), {cache:'no-store'});
     if(!resp.ok) throw new Error('HTTP '+resp.status);
@@ -703,7 +702,7 @@ async function load(showToast=false){
     if(showToast) toast(`❌ <strong>Erro</strong> ao recarregar: ${e.message}`, true);
     else document.getElementById('loading').innerHTML=`<div style="color:var(--crit)">❌ Erro ao carregar dados: ${e.message}<br><small>Tenta recarregar a página em 1 min.</small></div>`;
   } finally {
-    if(btn){btn.disabled=false;btn.textContent='🔄 Recarregar';}
+    if(btn){btn.disabled=false;btn.textContent='🔄 Atualizar dados';}
   }
 }
 
@@ -780,7 +779,7 @@ async function sincronizarTrinks(){
 
 // ============= BINDINGS =============
 document.getElementById('btn-reload').addEventListener('click', ()=>load(true));
-document.getElementById('btn-sync').addEventListener('click', sincronizarTrinks);
+// btn-sync removido do UI para simplificar. Sync forçado é feito via chat com Claude quando necessário.
 
 // auto-refresh a cada 5min (se aba visível)
 load();
