@@ -435,6 +435,16 @@ def main():
         },
     }
 
+    # ==== INSIGHTS acionaveis por aba ====
+    try:
+        from insights import gerar_insights
+        payload["insights"] = gerar_insights(payload)
+        n_total = sum(len(v) for v in payload["insights"].values())
+        print(f"[insights] {n_total} recomendacoes geradas nas 5 abas")
+    except Exception as e:
+        print(f"[insights] erro: {e}")
+        payload["insights"] = {}
+
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
     OUT_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"[github_refresh] OK · {OUT_JSON}")

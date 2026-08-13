@@ -99,6 +99,24 @@
   .xaxis-dia span:not(:nth-child(5n+1)){visibility:hidden;}
   .insight{background:var(--surface-2);border-left:3px solid var(--accent);border-radius:6px;padding:12px 14px;margin-top:14px;font-size:13px;color:var(--ink);}
   .insight strong{color:var(--accent);}
+  .insights-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;box-shadow:var(--shadow);margin-bottom:16px;}
+  .insights-box h3{font-family:Georgia,serif;font-size:14px;font-weight:600;margin:0 0 12px;color:var(--ink);display:flex;align-items:center;gap:8px;}
+  .insights-box h3 .badge-count{background:var(--accent);color:#000;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:800;}
+  .insight-card{background:var(--surface-2);border-radius:8px;padding:12px 14px;margin-bottom:10px;border-left:4px solid var(--ink-3);}
+  .insight-card:last-child{margin-bottom:0;}
+  .insight-card.critico{border-left-color:var(--crit);}
+  .insight-card.atencao{border-left-color:var(--warn);}
+  .insight-card.oportunidade{border-left-color:var(--good);}
+  .insight-card.info{border-left-color:var(--accent);}
+  .insight-card .ic-head{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+  .insight-card .ic-tag{font-size:9.5px;padding:2px 7px;border-radius:3px;font-weight:800;letter-spacing:.05em;}
+  .insight-card.critico .ic-tag{background:var(--crit);color:#fff;}
+  .insight-card.atencao .ic-tag{background:var(--warn);color:#000;}
+  .insight-card.oportunidade .ic-tag{background:var(--good);color:#000;}
+  .insight-card.info .ic-tag{background:var(--accent);color:#000;}
+  .insight-card .ic-body{font-size:12.5px;color:var(--ink-2);line-height:1.5;margin-bottom:6px;}
+  .insight-card .ic-acao{font-size:12px;color:var(--ink);border-top:1px dashed var(--border);padding-top:6px;margin-top:6px;}
+  .insight-card .ic-acao::before{content:'→ ';color:var(--accent);font-weight:800;}
   #loading{display:flex;align-items:center;justify-content:center;min-height:400px;color:var(--ink-3);font-size:14px;}
   .spinner{width:30px;height:30px;border:3px solid var(--surface-2);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin-right:12px;}
   @keyframes spin{to{transform:rotate(360deg);}}
@@ -149,6 +167,7 @@
     <!-- ANUAL -->
     <div class="panel" id="tab-anual">
       <div class="audit"><div>ℹ️</div><div>Consolidado <strong>2026</strong>. Loja abriu 23/07. Cresce a cada mês fechado.</div></div>
+      <div id="anual-insights"></div>
       <div id="anual-meta"></div>
       <div id="anual-kpis"></div>
       <div id="anual-categorias"></div>
@@ -162,6 +181,7 @@
     <!-- MENSAL -->
     <div class="panel active" id="tab-mensal">
       <div class="audit"><div>✓</div><div><strong>Dados vivos.</strong> Caixa = <code>Σ(formasPagamentos.valor)</code>. Fonte: API Trinks (refresh 1×/h).</div></div>
+      <div id="mensal-insights"></div>
       <div id="mensal-meta"></div>
       <div id="mensal-kpis"></div>
       <div id="mensal-categorias"></div>
@@ -179,6 +199,7 @@
     <!-- SEMANAL -->
     <div class="panel" id="tab-semanal">
       <div class="audit"><div>📊</div><div>Semana corrente (seg–dom). Domingo fechado.</div></div>
+      <div id="semanal-insights"></div>
       <div id="semanal-meta"></div>
       <div id="semanal-kpis"></div>
       <div id="semanal-categorias"></div>
@@ -194,6 +215,7 @@
     <!-- DIÁRIO -->
     <div class="panel" id="tab-diario">
       <div class="audit"><div>🔴</div><div><strong>HOJE ao vivo.</strong> Números crescem ao longo do dia (Task Scheduler refresh 1×/h).</div></div>
+      <div id="diario-insights"></div>
       <div id="diario-meta"></div>
       <div id="diario-kpis"></div>
       <div id="diario-categorias"></div>
@@ -209,6 +231,7 @@
     <!-- STONE -->
     <div class="panel" id="tab-stone">
       <div class="audit" id="stone-audit"><div>🏦</div><div>Reconciliação <strong>Trinks × Stone</strong>. Cartões trabalham em <strong>D+30</strong>.</div></div>
+      <div id="stone-insights"></div>
       <div id="stone-content"></div>
     </div>
 
@@ -384,10 +407,33 @@ function renderCategTile(container_id, titulo, subtitle, categorias){
   document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="categ-grid">${tiles}</div></div>`;
 }
 
+// ============= RENDER INSIGHTS =============
+function renderInsights(container_id, titulo_aba, insights){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  if(!insights || insights.length === 0){ el.innerHTML=''; return; }
+  // ordenar por severidade: critico > atencao > oportunidade > info
+  const ordem = {critico:0, atencao:1, oportunidade:2, info:3};
+  const sorted = [...insights].sort((a,b)=>(ordem[a.tipo]??9)-(ordem[b.tipo]??9));
+  const cards = sorted.map(i=>{
+    const tag = {critico:'CRÍTICO',atencao:'ATENÇÃO',oportunidade:'OPORTUNIDADE',info:'INFO'}[i.tipo] || 'INFO';
+    return `<div class="insight-card ${i.tipo}">
+      <div class="ic-head"><span class="ic-tag">${tag}</span>${i.titulo}</div>
+      <div class="ic-body">${i.texto}</div>
+      ${i.acao ? `<div class="ic-acao">${i.acao}</div>` : ''}
+    </div>`;
+  }).join('');
+  el.innerHTML = `<div class="insights-box">
+    <h3>🎯 Ações Recomendadas · ${titulo_aba} <span class="badge-count">${sorted.length}</span></h3>
+    ${cards}
+  </div>`;
+}
+
 // ============= RENDER POR ABA =============
 function renderAnual(data){
   const a=data.abas.anual;
   const k=a.kpis;
+  renderInsights('anual-insights','Anual 2026',(data.insights||{}).anual);
   renderKPIs('anual-kpis',[
     {label:'Caixa · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
     {label:'Receita competência',value:brl0(k.receita_serv),foot:`${k.atend_fin} atend finalizados`},
@@ -432,6 +478,7 @@ function renderMensal(data){
   const m=data.abas.mensal, k=m.kpis;
   document.getElementById('tab-mensal-sub').textContent='meta '+brl0(data.meta_mensal_valor/1000)+'k';
   if(k.em_atendimento>0){document.getElementById('chip-live').style.display='';document.getElementById('chip-live').innerHTML=`<span class="dot"></span> ${k.em_atendimento} em atendim.`;document.getElementById('chip-live').className='chip live';}
+  renderInsights('mensal-insights','Mês corrente',(data.insights||{}).mensal);
   renderKPIs('mensal-kpis',[
     {label:'Caixa · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent'},
     {label:'Atendimentos',value:k.atend_fin+'',foot:`${k.clientes_unicos} únicos · ${pct(k.taxa_canc)} cancel`},
@@ -471,6 +518,7 @@ function renderMensal(data){
 function renderSemanal(data){
   const s=data.abas.semanal, k=s.kpis;
   document.getElementById('tab-semanal-sub').textContent=fmtDate(k.periodo_ini).slice(0,5)+'–'+fmtDate(k.periodo_fim).slice(0,5);
+  renderInsights('semanal-insights','Semana corrente',(data.insights||{}).semanal);
   renderKPIs('semanal-kpis',[
     {label:'Caixa · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent'},
     {label:'Atendimentos',value:k.atend_fin+'',foot:`${k.clientes_unicos} únicos · ${pct(k.taxa_canc)} cancel`},
@@ -489,6 +537,7 @@ function renderSemanal(data){
 function renderDiario(data){
   const d=data.abas.diario, k=d.kpis;
   document.getElementById('tab-diario-sub').textContent=fmtDate(k.data)+' '+k.dia_semana;
+  renderInsights('diario-insights','Hoje',(data.insights||{}).diario);
   renderKPIs('diario-kpis',[
     {label:'Caixa · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent'},
     {label:'Atendimentos',value:k.atend_fin+'',foot:`+${k.em_atendimento} em atend · ${k.clientes_unicos} únicos`},
@@ -533,6 +582,7 @@ function renderStone(data){
   const s = data.stone;
   const el = document.getElementById('stone-content');
   const subEl = document.getElementById('tab-stone-sub');
+  renderInsights('stone-insights','Stone · Reconciliação',(data.insights||{}).stone);
   if(!s){
     if(subEl) subEl.textContent='sem CSV';
     el.innerHTML = `<div class="card"><h2>🏦 Aguardando CSV Stone</h2><div class="cap">Faça upload do extrato Stone no repo para ativar</div>
