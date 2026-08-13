@@ -1,1465 +1,267 @@
 {
-  "gerado_em": "2026-08-13T00:32:17Z",
-  "hoje": "2026-08-12",
-  "meta_mensal_valor": 60000,
-  "dias_op_mes": 26,
-  "cota_api_placeholder": {
-    "total": 10000
+  "kpis": {
+    "receita_servicos": 12305.1,
+    "atendimentos": 188,
+    "ticket_medio": 65.45,
+    "cancelamentos": 12,
+    "taxa_cancelamento": 5.7,
+    "total_agendamentos": 209,
+    "clientes_unicos_atendidos": 95,
+    "base_clientes": 152,
+    "vendas_produtos": 356.0,
+    "transacoes_totalpagar": 13548.1,
+    "caixa_recebido": 13551.1,
+    "descontos_totais": 0.0,
+    "diff_agend_vs_caixa": -1246.0,
+    "ticket_por_transacao_caixa": 139.7
   },
-  "abas": {
-    "anual": {
-      "kpis": {
-        "caixa": 18806.1,
-        "receita_serv": 21108.1,
-        "atend_fin": 317,
-        "n_trans": 160,
-        "ticket_trans": 117.54,
-        "taxa_canc": 7.6,
-        "dias_op": 16,
-        "clientes_unicos": 154
-      },
-      "meta": {
-        "meta": 305255.0,
-        "realizado": 18806.1,
-        "pct": 6.2,
-        "falta": 286448.9,
-        "dias_realizados": 8,
-        "dias_total": 12,
-        "dias_restantes": 4,
-        "necessario_dia": 71612.23,
-        "ritmo_dia": 2350.76,
-        "projecao": 28209.15,
-        "projecao_pct": 9.2
-      },
-      "categorias": {
-        "pacotes": {
-          "v": 2849.0,
-          "n": 7,
-          "pct": 15.1
-        },
-        "servicos": {
-          "v": 18094.1,
-          "n": 273,
-          "pct": 96.2
-        },
-        "produtos": {
-          "v": 593.0,
-          "n": 7,
-          "pct": 3.2
-        }
-      },
-      "meses": {
-        "2026-07": {
-          "caixa": 5255.0,
-          "receita_serv": 8803.0,
-          "atend_fin": 129,
-          "clientes_unicos": 68,
-          "n_trans": 63,
-          "ticket_trans": 83.41,
-          "taxa_canc": 10.3,
-          "categorias": {
-            "pacotes": {
-              "v": 0.0,
-              "n": 0,
-              "pct": 0.0
-            },
-            "servicos": {
-              "v": 7751.0,
-              "n": 111,
-              "pct": 147.5
-            },
-            "produtos": {
-              "v": 237.0,
-              "n": 3,
-              "pct": 4.5
-            }
-          },
-          "vendas_produtos": 237.0,
-          "dias_op": 8
-        },
-        "2026-08": {
-          "caixa": 13551.1,
-          "receita_serv": 12305.1,
-          "atend_fin": 188,
-          "clientes_unicos": 95,
-          "n_trans": 97,
-          "ticket_trans": 139.7,
-          "taxa_canc": 5.7,
-          "categorias": {
-            "pacotes": {
-              "v": 2849.0,
-              "n": 7,
-              "pct": 21.0
-            },
-            "servicos": {
-              "v": 10343.1,
-              "n": 162,
-              "pct": 76.3
-            },
-            "produtos": {
-              "v": 356.0,
-              "n": 4,
-              "pct": 2.6
-            }
-          },
-          "vendas_produtos": 356.0,
-          "dias_op": 8
-        }
-      },
-      "top_ltv": {
-        "total_clientes": 154,
-        "receita_total": 21108.1,
-        "uma_vez": 78,
-        "duas_mais": 76,
-        "pareto20_v": 9271.1,
-        "pareto20_pct": 43.9,
-        "pareto20_n": 30,
-        "top": [
-          {
-            "nome": "Nathalia Daniele Bomtempo Garcia",
-            "n": 16,
-            "v": 1054.0
-          },
-          {
-            "nome": "Daniela Rodrigues",
-            "n": 9,
-            "v": 906.0
-          },
-          {
-            "nome": "Grabrielly Baltazar ",
-            "n": 5,
-            "v": 501.0
-          },
-          {
-            "nome": "Rosangela Siqueira De Pinho Garcia",
-            "n": 6,
-            "v": 407.0
-          },
-          {
-            "nome": "Tatiana Donzelli",
-            "n": 4,
-            "v": 397.0
-          },
-          {
-            "nome": "Sandra Sandri",
-            "n": 4,
-            "v": 384.0
-          },
-          {
-            "nome": "Lucas De Pinho Garcia",
-            "n": 8,
-            "v": 338.0
-          },
-          {
-            "nome": "Monique Cardoso Gomes ",
-            "n": 6,
-            "v": 328.0
-          },
-          {
-            "nome": "Thamyres Caldro Matos",
-            "n": 3,
-            "v": 283.0
-          },
-          {
-            "nome": "Fernanda Oliveira",
-            "n": 5,
-            "v": 277.0
-          },
-          {
-            "nome": "Michele Nunes Da Silva ",
-            "n": 2,
-            "v": 268.0
-          },
-          {
-            "nome": "Sandra Morais ",
-            "n": 3,
-            "v": 259.0
-          },
-          {
-            "nome": "Jessica Cerruti",
-            "n": 4,
-            "v": 252.0
-          },
-          {
-            "nome": "Rosangela Aparecida Pereira",
-            "n": 4,
-            "v": 252.0
-          },
-          {
-            "nome": "Rejane Bernado Costa",
-            "n": 3,
-            "v": 242.1
-          }
-        ]
-      },
-      "rentabilidade_hora": [
-        {
-          "nome": "APLICAÇÃO - FRESH MINT",
-          "n": 9,
-          "v": 315.0,
-          "min_medio": 3,
-          "ticket": 35.0,
-          "rs_hora": 700.0
-        },
-        {
-          "nome": "FAST LED TERAPIA",
-          "n": 1,
-          "v": 69.0,
-          "min_medio": 7,
-          "ticket": 69.0,
-          "rs_hora": 591.43
-        },
-        {
-          "nome": "FAST CHAPINHA",
-          "n": 1,
-          "v": 79.0,
-          "min_medio": 10,
-          "ticket": 79.0,
-          "rs_hora": 474.0
-        },
-        {
-          "nome": "FAST RETOQUE",
-          "n": 4,
-          "v": 746.0,
-          "min_medio": 30,
-          "ticket": 186.5,
-          "rs_hora": 373.0
-        },
-        {
-          "nome": "FAST HIDRATAÇÃO - FAST MASK",
-          "n": 30,
-          "v": 1595.5,
-          "min_medio": 10,
-          "ticket": 53.18,
-          "rs_hora": 319.1
-        },
-        {
-          "nome": "FAST RECONSTRUÇÃO - BELLE RECOVERY",
-          "n": 2,
-          "v": 260.0,
-          "min_medio": 25,
-          "ticket": 130.0,
-          "rs_hora": 312.0
-        },
-        {
-          "nome": "PLÁSTICA DOS PÉS",
-          "n": 1,
-          "v": 93.0,
-          "min_medio": 20,
-          "ticket": 93.0,
-          "rs_hora": 279.0
-        },
-        {
-          "nome": "FAST MAKE CASUAL",
-          "n": 6,
-          "v": 834.0,
-          "min_medio": 30,
-          "ticket": 139.0,
-          "rs_hora": 278.0
-        },
-        {
-          "nome": "PLÁSTICA DOS PÉS VIP",
-          "n": 2,
-          "v": 258.0,
-          "min_medio": 30,
-          "ticket": 129.0,
-          "rs_hora": 258.0
-        },
-        {
-          "nome": "BUÇO",
-          "n": 5,
-          "v": 210.0,
-          "min_medio": 10,
-          "ticket": 42.0,
-          "rs_hora": 252.0
-        },
-        {
-          "nome": "FAST LAVAGEM",
-          "n": 1,
-          "v": 40.0,
-          "min_medio": 10,
-          "ticket": 40.0,
-          "rs_hora": 240.0
-        },
-        {
-          "nome": "FAST UMECTAÇÃO - OLEO NUTRITIVO",
-          "n": 5,
-          "v": 374.5,
-          "min_medio": 20,
-          "ticket": 74.9,
-          "rs_hora": 224.7
-        },
-        {
-          "nome": "CILIOS - UNIDADE",
-          "n": 3,
-          "v": 105.0,
-          "min_medio": 10,
-          "ticket": 35.0,
-          "rs_hora": 210.0
-        },
-        {
-          "nome": "FAST MAKE VIP",
-          "n": 4,
-          "v": 716.0,
-          "min_medio": 60,
-          "ticket": 179.0,
-          "rs_hora": 179.0
-        },
-        {
-          "nome": "FAST ESCOVA MEGA HAIR -MODELADA",
-          "n": 1,
-          "v": 129.0,
-          "min_medio": 50,
-          "ticket": 129.0,
-          "rs_hora": 154.8
-        }
-      ],
-      "hora_media": [
-        {
-          "h": 8,
-          "media": 0.06,
-          "n_total": 1
-        },
-        {
-          "h": 9,
-          "media": 0.12,
-          "n_total": 2
-        },
-        {
-          "h": 10,
-          "media": 0.38,
-          "n_total": 6
-        },
-        {
-          "h": 11,
-          "media": 0.81,
-          "n_total": 13
-        },
-        {
-          "h": 12,
-          "media": 0.69,
-          "n_total": 11
-        },
-        {
-          "h": 13,
-          "media": 0.69,
-          "n_total": 11
-        },
-        {
-          "h": 14,
-          "media": 0.62,
-          "n_total": 10
-        },
-        {
-          "h": 15,
-          "media": 0.75,
-          "n_total": 12
-        },
-        {
-          "h": 16,
-          "media": 1.06,
-          "n_total": 17
-        },
-        {
-          "h": 17,
-          "media": 1.62,
-          "n_total": 26
-        },
-        {
-          "h": 18,
-          "media": 1.25,
-          "n_total": 20
-        },
-        {
-          "h": 19,
-          "media": 1.31,
-          "n_total": 21
-        },
-        {
-          "h": 20,
-          "media": 0.62,
-          "n_total": 10
-        }
-      ],
-      "ranking_prof": [
-        {
-          "nome": "Erika Thais Pereira Melim",
-          "n": 57,
-          "v": 4535.0
-        },
-        {
-          "nome": "Giovanna Guedes Da Silva",
-          "n": 62,
-          "v": 4031.0
-        },
-        {
-          "nome": "Katyane Augusta Muniz",
-          "n": 32,
-          "v": 2694.1
-        },
-        {
-          "nome": "Gabriela Cristina Da Silva",
-          "n": 37,
-          "v": 2202.0
-        },
-        {
-          "nome": "Thaise Moreno",
-          "n": 31,
-          "v": 2196.0
-        },
-        {
-          "nome": "Jeniffer Roberta De Oliveira Felix",
-          "n": 17,
-          "v": 1309.0
-        },
-        {
-          "nome": "Tais Cristina Leite Cabral",
-          "n": 22,
-          "v": 1051.0
-        },
-        {
-          "nome": "Patricia Helena Ferreira",
-          "n": 12,
-          "v": 642.0
-        },
-        {
-          "nome": "Andy Alexia Lera Colanere",
-          "n": 11,
-          "v": 633.0
-        },
-        {
-          "nome": "Lidiane Quiteria Da Silva",
-          "n": 9,
-          "v": 535.0
-        },
-        {
-          "nome": "Julia Kathleen Souza Da Silva",
-          "n": 11,
-          "v": 494.0
-        },
-        {
-          "nome": "Aline Dos Santos Gonzaga",
-          "n": 4,
-          "v": 233.0
-        }
-      ],
-      "ranking_serv": [
-        {
-          "nome": "FAST ESCOVA - LISA",
-          "n": 83,
-          "v": 5584.0,
-          "min": 3735
-        },
-        {
-          "nome": "FAST ESCOVA - MODELADA",
-          "n": 33,
-          "v": 3251.1,
-          "min": 1485
-        },
-        {
-          "nome": "MÃOS",
-          "n": 50,
-          "v": 2021.0,
-          "min": 1500
-        },
-        {
-          "nome": "FAST HIDRATAÇÃO - FAST MASK",
-          "n": 30,
-          "v": 1595.5,
-          "min": 300
-        },
-        {
-          "nome": "PÉS E MÃOS",
-          "n": 19,
-          "v": 1577.0,
-          "min": 1140
-        },
-        {
-          "nome": "PÉS",
-          "n": 21,
-          "v": 983.0,
-          "min": 630
-        },
-        {
-          "nome": "FAST MAKE CASUAL",
-          "n": 6,
-          "v": 834.0,
-          "min": 180
-        },
-        {
-          "nome": "DESIGN SOBRANCELHAS",
-          "n": 13,
-          "v": 780.0,
-          "min": 390
-        },
-        {
-          "nome": "FAST RETOQUE",
-          "n": 4,
-          "v": 746.0,
-          "min": 120
-        },
-        {
-          "nome": "FAST MAKE VIP",
-          "n": 4,
-          "v": 716.0,
-          "min": 240
-        },
-        {
-          "nome": "FAST UMECTAÇÃO - OLEO NUTRITIVO",
-          "n": 5,
-          "v": 374.5,
-          "min": 100
-        },
-        {
-          "nome": "FAST ESCOVA MEGA HAIR - LISA",
-          "n": 3,
-          "v": 327.0,
-          "min": 135
-        }
-      ],
-      "meios_pagamento": [
-        {
-          "nome": "Mastercard",
-          "n": 40,
-          "v": 5646.0,
-          "pct": 30.0
-        },
-        {
-          "nome": "PIX",
-          "n": 36,
-          "v": 5631.0,
-          "pct": 29.9
-        },
-        {
-          "nome": "Visa",
-          "n": 25,
-          "v": 3256.0,
-          "pct": 17.3
-        },
-        {
-          "nome": "Maestro/Redeshop",
-          "n": 24,
-          "v": 2538.0,
-          "pct": 13.5
-        },
-        {
-          "nome": "Visa Electron",
-          "n": 13,
-          "v": 1070.1,
-          "pct": 5.7
-        },
-        {
-          "nome": "Dinheiro",
-          "n": 7,
-          "v": 492.0,
-          "pct": 2.6
-        },
-        {
-          "nome": "Elo Débito",
-          "n": 3,
-          "v": 173.0,
-          "pct": 0.9
-        }
-      ],
-      "descontos": -2733.0
+  "por_dia": [
+    {
+      "d": 1,
+      "n": 63,
+      "v": 4167.0
     },
-    "mensal": {
-      "kpis": {
-        "caixa": 13551.1,
-        "receita_serv": 12305.1,
-        "atend_fin": 188,
-        "n_trans": 97,
-        "ticket_trans": 139.7,
-        "taxa_canc": 5.7,
-        "dias_op": 8,
-        "clientes_unicos": 95,
-        "em_atendimento": 0
-      },
-      "meta": {
-        "meta": 60000,
-        "realizado": 13551.1,
-        "pct": 22.6,
-        "falta": 46448.9,
-        "dias_realizados": 8,
-        "dias_total": 26,
-        "dias_restantes": 18,
-        "necessario_dia": 2580.49,
-        "ritmo_dia": 1693.89,
-        "projecao": 44041.08,
-        "projecao_pct": 73.4
-      },
-      "categorias": {
-        "pacotes": {
-          "v": 2849.0,
-          "n": 7,
-          "pct": 21.0
-        },
-        "servicos": {
-          "v": 10343.1,
-          "n": 162,
-          "pct": 76.3
-        },
-        "produtos": {
-          "v": 356.0,
-          "n": 4,
-          "pct": 2.6
-        }
-      },
-      "novos_vs_recorr": {
-        "novos": {
-          "clientes": 78,
-          "atend": 160,
-          "receita": 10449.0
-        },
-        "recorrentes": {
-          "clientes": 9,
-          "atend": 20,
-          "receita": 1074.1
-        }
-      },
-      "rentabilidade_hora": [
-        {
-          "nome": "APLICAÇÃO - FRESH MINT",
-          "n": 3,
-          "v": 105.0,
-          "min_medio": 3,
-          "ticket": 35.0,
-          "rs_hora": 700.0
-        },
-        {
-          "nome": "FAST CHAPINHA",
-          "n": 1,
-          "v": 79.0,
-          "min_medio": 10,
-          "ticket": 79.0,
-          "rs_hora": 474.0
-        },
-        {
-          "nome": "FAST RETOQUE",
-          "n": 4,
-          "v": 746.0,
-          "min_medio": 30,
-          "ticket": 186.5,
-          "rs_hora": 373.0
-        },
-        {
-          "nome": "FAST HIDRATAÇÃO - FAST MASK",
-          "n": 23,
-          "v": 1066.5,
-          "min_medio": 10,
-          "ticket": 46.37,
-          "rs_hora": 278.22
-        },
-        {
-          "nome": "FAST MAKE CASUAL",
-          "n": 5,
-          "v": 675.0,
-          "min_medio": 30,
-          "ticket": 135.0,
-          "rs_hora": 270.0
-        },
-        {
-          "nome": "PLÁSTICA DOS PÉS VIP",
-          "n": 1,
-          "v": 129.0,
-          "min_medio": 30,
-          "ticket": 129.0,
-          "rs_hora": 258.0
-        },
-        {
-          "nome": "BUÇO",
-          "n": 3,
-          "v": 105.0,
-          "min_medio": 10,
-          "ticket": 35.0,
-          "rs_hora": 210.0
-        },
-        {
-          "nome": "CILIOS - UNIDADE",
-          "n": 3,
-          "v": 105.0,
-          "min_medio": 10,
-          "ticket": 35.0,
-          "rs_hora": 210.0
-        },
-        {
-          "nome": "FAST MAKE VIP",
-          "n": 3,
-          "v": 527.0,
-          "min_medio": 60,
-          "ticket": 175.67,
-          "rs_hora": 175.67
-        },
-        {
-          "nome": "FAST ESCOVA MEGA HAIR -MODELADA",
-          "n": 1,
-          "v": 129.0,
-          "min_medio": 50,
-          "ticket": 129.0,
-          "rs_hora": 154.8
-        },
-        {
-          "nome": "FAST ESCOVA MEGA HAIR - LISA",
-          "n": 2,
-          "v": 218.0,
-          "min_medio": 45,
-          "ticket": 109.0,
-          "rs_hora": 145.33
-        },
-        {
-          "nome": "PINTURA DE SOBRANCELHAS - HENNA",
-          "n": 1,
-          "v": 35.0,
-          "min_medio": 15,
-          "ticket": 35.0,
-          "rs_hora": 140.0
-        },
-        {
-          "nome": "FAST ESCOVA - MODELADA",
-          "n": 14,
-          "v": 1370.1,
-          "min_medio": 45,
-          "ticket": 97.86,
-          "rs_hora": 130.49
-        },
-        {
-          "nome": "DESIGN SOBRANCELHAS",
-          "n": 10,
-          "v": 600.0,
-          "min_medio": 30,
-          "ticket": 60.0,
-          "rs_hora": 120.0
-        },
-        {
-          "nome": "ADICIONAL ESCOVA MODELADORA",
-          "n": 6,
-          "v": 120.0,
-          "min_medio": 10,
-          "ticket": 20.0,
-          "rs_hora": 120.0
-        }
-      ],
-      "por_dia_mes": [
-        {
-          "d": 1,
-          "n": 63,
-          "v": 4167.0
-        },
-        {
-          "d": 3,
-          "n": 7,
-          "v": 581.0
-        },
-        {
-          "d": 4,
-          "n": 4,
-          "v": 209.0
-        },
-        {
-          "d": 5,
-          "n": 5,
-          "v": 376.0
-        },
-        {
-          "d": 6,
-          "n": 22,
-          "v": 1443.0
-        },
-        {
-          "d": 7,
-          "n": 31,
-          "v": 1686.0
-        },
-        {
-          "d": 8,
-          "n": 44,
-          "v": 2804.1
-        },
-        {
-          "d": 12,
-          "n": 12,
-          "v": 1039.0
-        }
-      ],
-      "hora_media": [
-        {
-          "h": 8,
-          "media": 0.12,
-          "n_total": 1
-        },
-        {
-          "h": 9,
-          "media": 0.12,
-          "n_total": 1
-        },
-        {
-          "h": 10,
-          "media": 0.5,
-          "n_total": 4
-        },
-        {
-          "h": 11,
-          "media": 1.12,
-          "n_total": 9
-        },
-        {
-          "h": 12,
-          "media": 1.0,
-          "n_total": 8
-        },
-        {
-          "h": 13,
-          "media": 1.0,
-          "n_total": 8
-        },
-        {
-          "h": 14,
-          "media": 0.62,
-          "n_total": 5
-        },
-        {
-          "h": 15,
-          "media": 0.75,
-          "n_total": 6
-        },
-        {
-          "h": 16,
-          "media": 1.88,
-          "n_total": 15
-        },
-        {
-          "h": 17,
-          "media": 1.62,
-          "n_total": 13
-        },
-        {
-          "h": 18,
-          "media": 1.12,
-          "n_total": 9
-        },
-        {
-          "h": 19,
-          "media": 1.75,
-          "n_total": 14
-        },
-        {
-          "h": 20,
-          "media": 0.5,
-          "n_total": 4
-        }
-      ],
-      "ranking_prof": [
-        {
-          "nome": "Erika Thais Pereira Melim",
-          "n": 34,
-          "v": 2820.0
-        },
-        {
-          "nome": "Giovanna Guedes Da Silva",
-          "n": 30,
-          "v": 1952.0
-        },
-        {
-          "nome": "Katyane Augusta Muniz",
-          "n": 20,
-          "v": 1666.1
-        },
-        {
-          "nome": "Gabriela Cristina Da Silva",
-          "n": 26,
-          "v": 1570.0
-        },
-        {
-          "nome": "Thaise Moreno",
-          "n": 12,
-          "v": 797.0
-        },
-        {
-          "nome": "Tais Cristina Leite Cabral",
-          "n": 17,
-          "v": 780.0
-        },
-        {
-          "nome": "Andy Alexia Lera Colanere",
-          "n": 11,
-          "v": 633.0
-        },
-        {
-          "nome": "Jeniffer Roberta De Oliveira Felix",
-          "n": 9,
-          "v": 633.0
-        },
-        {
-          "nome": "Julia Kathleen Souza Da Silva",
-          "n": 11,
-          "v": 494.0
-        },
-        {
-          "nome": "Lidiane Quiteria Da Silva",
-          "n": 8,
-          "v": 456.0
-        },
-        {
-          "nome": "Aline Dos Santos Gonzaga",
-          "n": 4,
-          "v": 233.0
-        },
-        {
-          "nome": "Gisele Ismene Teixeira",
-          "n": 4,
-          "v": 224.0
-        }
-      ],
-      "ranking_serv": [
-        {
-          "nome": "FAST ESCOVA - LISA",
-          "n": 55,
-          "v": 3436.5,
-          "min": 2475
-        },
-        {
-          "nome": "FAST ESCOVA - MODELADA",
-          "n": 14,
-          "v": 1370.1,
-          "min": 630
-        },
-        {
-          "nome": "PÉS E MÃOS",
-          "n": 15,
-          "v": 1245.0,
-          "min": 900
-        },
-        {
-          "nome": "FAST HIDRATAÇÃO - FAST MASK",
-          "n": 23,
-          "v": 1066.5,
-          "min": 230
-        },
-        {
-          "nome": "MÃOS",
-          "n": 26,
-          "v": 940.0,
-          "min": 780
-        },
-        {
-          "nome": "FAST RETOQUE",
-          "n": 4,
-          "v": 746.0,
-          "min": 120
-        },
-        {
-          "nome": "FAST MAKE CASUAL",
-          "n": 5,
-          "v": 675.0,
-          "min": 150
-        },
-        {
-          "nome": "DESIGN SOBRANCELHAS",
-          "n": 10,
-          "v": 600.0,
-          "min": 300
-        },
-        {
-          "nome": "FAST MAKE VIP",
-          "n": 3,
-          "v": 527.0,
-          "min": 180
-        },
-        {
-          "nome": "PÉS",
-          "n": 6,
-          "v": 282.0,
-          "min": 180
-        },
-        {
-          "nome": "FAST PENTEADO",
-          "n": 2,
-          "v": 238.0,
-          "min": 120
-        },
-        {
-          "nome": "FAST ESCOVA MEGA HAIR - LISA",
-          "n": 2,
-          "v": 218.0,
-          "min": 90
-        }
-      ],
-      "meios_pagamento": [
-        {
-          "nome": "PIX",
-          "n": 26,
-          "v": 4420.0,
-          "pct": 32.6
-        },
-        {
-          "nome": "Mastercard",
-          "n": 24,
-          "v": 4192.0,
-          "pct": 30.9
-        },
-        {
-          "nome": "Visa",
-          "n": 18,
-          "v": 2252.0,
-          "pct": 16.6
-        },
-        {
-          "nome": "Maestro/Redeshop",
-          "n": 16,
-          "v": 1513.0,
-          "pct": 11.2
-        },
-        {
-          "nome": "Visa Electron",
-          "n": 7,
-          "v": 635.1,
-          "pct": 4.7
-        },
-        {
-          "nome": "Dinheiro",
-          "n": 5,
-          "v": 445.0,
-          "pct": 3.3
-        },
-        {
-          "nome": "Elo Débito",
-          "n": 2,
-          "v": 94.0,
-          "pct": 0.7
-        }
-      ],
-      "descontos": 0.0,
-      "clientes_top": [
-        {
-          "nome": "Daniela Rodrigues",
-          "n": 9
-        },
-        {
-          "nome": "Fernanda Oliveira",
-          "n": 5
-        },
-        {
-          "nome": "Nathalia Daniele Bomtempo Garcia",
-          "n": 5
-        },
-        {
-          "nome": "Grabrielly Baltazar ",
-          "n": 5
-        },
-        {
-          "nome": "Juscnete Vieira ",
-          "n": 4
-        },
-        {
-          "nome": "Maria Pereira Barbolsa",
-          "n": 4
-        },
-        {
-          "nome": "Rosangela Siqueira De Pinho Garcia",
-          "n": 4
-        },
-        {
-          "nome": "Alice Vitoria Silva Dutra ",
-          "n": 4
-        },
-        {
-          "nome": "Josicleia Lira Almeida",
-          "n": 4
-        },
-        {
-          "nome": "Lucas De Pinho Garcia",
-          "n": 4
-        }
-      ]
+    {
+      "d": 3,
+      "n": 7,
+      "v": 581.0
     },
-    "semanal": {
-      "kpis": {
-        "caixa": 0.0,
-        "atend_fin": 12,
-        "n_trans": 0,
-        "ticket_trans": 0.0,
-        "dias_op": 1,
-        "clientes_unicos": 11,
-        "taxa_canc": 0.0,
-        "periodo_ini": "2026-08-10",
-        "periodo_fim": "2026-08-16"
-      },
-      "meta": {
-        "meta": 13846.15,
-        "realizado": 0.0,
-        "pct": 0.0,
-        "falta": 13846.15,
-        "dias_realizados": 1,
-        "dias_total": 6,
-        "dias_restantes": 5,
-        "necessario_dia": 2769.23,
-        "ritmo_dia": 0.0,
-        "projecao": 0.0,
-        "projecao_pct": 0.0
-      },
-      "categorias": {
-        "pacotes": {
-          "v": 0.0,
-          "n": 0,
-          "pct": 0.0
-        },
-        "servicos": {
-          "v": 0.0,
-          "n": 0,
-          "pct": 0.0
-        },
-        "produtos": {
-          "v": 0.0,
-          "n": 0,
-          "pct": 0.0
-        }
-      },
-      "por_dow": [
-        {
-          "nome": "Seg",
-          "n": 0,
-          "v": 0.0
-        },
-        {
-          "nome": "Ter",
-          "n": 0,
-          "v": 0.0
-        },
-        {
-          "nome": "Qua",
-          "n": 12,
-          "v": 1039.0
-        },
-        {
-          "nome": "Qui",
-          "n": 0,
-          "v": 0.0
-        },
-        {
-          "nome": "Sex",
-          "n": 0,
-          "v": 0.0
-        },
-        {
-          "nome": "Sáb",
-          "n": 0,
-          "v": 0.0
-        },
-        {
-          "nome": "Dom",
-          "n": 0,
-          "v": 0.0
-        }
-      ],
-      "hora_media": [
-        {
-          "h": 8,
-          "media": 0.0,
-          "n_total": 0
-        },
-        {
-          "h": 9,
-          "media": 0.0,
-          "n_total": 0
-        },
-        {
-          "h": 10,
-          "media": 0.0,
-          "n_total": 0
-        },
-        {
-          "h": 11,
-          "media": 0.0,
-          "n_total": 0
-        },
-        {
-          "h": 12,
-          "media": 0.0,
-          "n_total": 0
-        },
-        {
-          "h": 13,
-          "media": 0.0,
-          "n_total": 0
-        },
-        {
-          "h": 14,
-          "media": 0.0,
-          "n_total": 0
-        },
-        {
-          "h": 15,
-          "media": 0.0,
-          "n_total": 0
-        },
-        {
-          "h": 16,
-          "media": 0.0,
-          "n_total": 0
-        },
-        {
-          "h": 17,
-          "media": 0.0,
-          "n_total": 0
-        },
-        {
-          "h": 18,
-          "media": 0.0,
-          "n_total": 0
-        },
-        {
-          "h": 19,
-          "media": 0.0,
-          "n_total": 0
-        },
-        {
-          "h": 20,
-          "media": 0.0,
-          "n_total": 0
-        }
-      ],
-      "ranking_prof": [
-        {
-          "nome": "Erika Thais Pereira Melim",
-          "n": 4,
-          "v": 486.0
-        },
-        {
-          "nome": "Andy Alexia Lera Colanere",
-          "n": 2,
-          "v": 178.0
-        },
-        {
-          "nome": "Tais Cristina Leite Cabral",
-          "n": 3,
-          "v": 166.0
-        },
-        {
-          "nome": "Giovanna Guedes Da Silva",
-          "n": 2,
-          "v": 162.0
-        },
-        {
-          "nome": "Gabriela Cristina Da Silva",
-          "n": 1,
-          "v": 47.0
-        }
-      ],
-      "ranking_serv": [
-        {
-          "nome": "PÉS E MÃOS",
-          "n": 3,
-          "v": 249.0,
-          "min": 180
-        },
-        {
-          "nome": "FAST ESCOVA - LISA",
-          "n": 3,
-          "v": 237.0,
-          "min": 135
-        },
-        {
-          "nome": "FAST ESCOVA - MODELADA",
-          "n": 2,
-          "v": 198.0,
-          "min": 90
-        },
-        {
-          "nome": "FAST RETOQUE",
-          "n": 1,
-          "v": 189.0,
-          "min": 30
-        },
-        {
-          "nome": "FAST MAKE CASUAL",
-          "n": 1,
-          "v": 119.0,
-          "min": 30
-        },
-        {
-          "nome": "MÃOS",
-          "n": 2,
-          "v": 47.0,
-          "min": 60
-        }
-      ],
-      "meios_pagamento": []
+    {
+      "d": 4,
+      "n": 4,
+      "v": 209.0
     },
-    "diario": {
-      "kpis": {
-        "caixa": 0.0,
-        "receita_serv": 1039.0,
-        "atend_fin": 12,
-        "n_trans": 0,
-        "ticket_trans": 0.0,
-        "clientes_unicos": 11,
-        "em_atendimento": 0,
-        "dia_semana": "Qua",
-        "data": "2026-08-12"
-      },
-      "meta": {
-        "meta": 2307.69,
-        "realizado": 0.0,
-        "pct": 0.0,
-        "falta": 2307.69,
-        "dias_realizados": 1,
-        "dias_total": 1,
-        "dias_restantes": 0,
-        "necessario_dia": 0,
-        "ritmo_dia": 0.0,
-        "projecao": 0.0,
-        "projecao_pct": 0.0
-      },
-      "categorias": {
-        "pacotes": {
-          "v": 0.0,
-          "n": 0,
-          "pct": 0.0
-        },
-        "servicos": {
-          "v": 0.0,
-          "n": 0,
-          "pct": 0.0
-        },
-        "produtos": {
-          "v": 0.0,
-          "n": 0,
-          "pct": 0.0
-        }
-      },
-      "hora_abs": [
-        {
-          "h": 8,
-          "n": 0,
-          "v": 0
-        },
-        {
-          "h": 9,
-          "n": 0,
-          "v": 0
-        },
-        {
-          "h": 10,
-          "n": 0,
-          "v": 0
-        },
-        {
-          "h": 11,
-          "n": 0,
-          "v": 0
-        },
-        {
-          "h": 12,
-          "n": 0,
-          "v": 0
-        },
-        {
-          "h": 13,
-          "n": 0,
-          "v": 0
-        },
-        {
-          "h": 14,
-          "n": 0,
-          "v": 0
-        },
-        {
-          "h": 15,
-          "n": 0,
-          "v": 0
-        },
-        {
-          "h": 16,
-          "n": 0,
-          "v": 0
-        },
-        {
-          "h": 17,
-          "n": 0,
-          "v": 0
-        },
-        {
-          "h": 18,
-          "n": 0,
-          "v": 0
-        },
-        {
-          "h": 19,
-          "n": 0,
-          "v": 0
-        },
-        {
-          "h": 20,
-          "n": 0,
-          "v": 0
-        }
-      ],
-      "ranking_prof": [
-        {
-          "nome": "Erika Thais Pereira Melim",
-          "n": 4,
-          "v": 486.0
-        },
-        {
-          "nome": "Andy Alexia Lera Colanere",
-          "n": 2,
-          "v": 178.0
-        },
-        {
-          "nome": "Tais Cristina Leite Cabral",
-          "n": 3,
-          "v": 166.0
-        },
-        {
-          "nome": "Giovanna Guedes Da Silva",
-          "n": 2,
-          "v": 162.0
-        },
-        {
-          "nome": "Gabriela Cristina Da Silva",
-          "n": 1,
-          "v": 47.0
-        }
-      ],
-      "ranking_serv": [
-        {
-          "nome": "PÉS E MÃOS",
-          "n": 3,
-          "v": 249.0,
-          "min": 180
-        },
-        {
-          "nome": "FAST ESCOVA - LISA",
-          "n": 3,
-          "v": 237.0,
-          "min": 135
-        },
-        {
-          "nome": "FAST ESCOVA - MODELADA",
-          "n": 2,
-          "v": 198.0,
-          "min": 90
-        },
-        {
-          "nome": "FAST RETOQUE",
-          "n": 1,
-          "v": 189.0,
-          "min": 30
-        },
-        {
-          "nome": "FAST MAKE CASUAL",
-          "n": 1,
-          "v": 119.0,
-          "min": 30
-        },
-        {
-          "nome": "MÃOS",
-          "n": 2,
-          "v": 47.0,
-          "min": 60
-        }
-      ],
-      "meios_pagamento": []
+    {
+      "d": 5,
+      "n": 5,
+      "v": 376.0
+    },
+    {
+      "d": 6,
+      "n": 22,
+      "v": 1443.0
+    },
+    {
+      "d": 7,
+      "n": 31,
+      "v": 1686.0
+    },
+    {
+      "d": 8,
+      "n": 44,
+      "v": 2804.1
+    },
+    {
+      "d": 12,
+      "n": 12,
+      "v": 1039.0
     }
-  }
+  ],
+  "profissionais": [
+    {
+      "nome": "Erika Thais Pereira Melim",
+      "n": 34,
+      "v": 2820.0
+    },
+    {
+      "nome": "Giovanna Guedes Da Silva",
+      "n": 30,
+      "v": 1952.0
+    },
+    {
+      "nome": "Katyane Augusta Muniz",
+      "n": 20,
+      "v": 1666.1
+    },
+    {
+      "nome": "Gabriela Cristina Da Silva",
+      "n": 26,
+      "v": 1570.0
+    },
+    {
+      "nome": "Thaise Moreno",
+      "n": 12,
+      "v": 797.0
+    },
+    {
+      "nome": "Tais Cristina Leite Cabral",
+      "n": 17,
+      "v": 780.0
+    },
+    {
+      "nome": "Andy Alexia Lera Colanere",
+      "n": 11,
+      "v": 633.0
+    },
+    {
+      "nome": "Jeniffer Roberta De Oliveira Felix",
+      "n": 9,
+      "v": 633.0
+    },
+    {
+      "nome": "Julia Kathleen Souza Da Silva",
+      "n": 11,
+      "v": 494.0
+    },
+    {
+      "nome": "Lidiane Quiteria Da Silva",
+      "n": 8,
+      "v": 456.0
+    },
+    {
+      "nome": "Aline Dos Santos Gonzaga",
+      "n": 4,
+      "v": 233.0
+    },
+    {
+      "nome": "Gisele Ismene Teixeira",
+      "n": 4,
+      "v": 224.0
+    },
+    {
+      "nome": "Sandra Margarete Da Silva",
+      "n": 2,
+      "v": 47.0
+    }
+  ],
+  "servicos_top": [
+    {
+      "nome": "FAST ESCOVA - LISA",
+      "n": 55,
+      "v": 3436.5
+    },
+    {
+      "nome": "FAST ESCOVA - MODELADA",
+      "n": 14,
+      "v": 1370.1
+    },
+    {
+      "nome": "PÉS E MÃOS",
+      "n": 15,
+      "v": 1245.0
+    },
+    {
+      "nome": "FAST HIDRATAÇÃO - FAST MASK",
+      "n": 23,
+      "v": 1066.5
+    },
+    {
+      "nome": "MÃOS",
+      "n": 26,
+      "v": 940.0
+    },
+    {
+      "nome": "FAST RETOQUE",
+      "n": 4,
+      "v": 746.0
+    },
+    {
+      "nome": "FAST MAKE CASUAL",
+      "n": 5,
+      "v": 675.0
+    },
+    {
+      "nome": "DESIGN SOBRANCELHAS",
+      "n": 10,
+      "v": 600.0
+    },
+    {
+      "nome": "FAST MAKE VIP",
+      "n": 3,
+      "v": 527.0
+    },
+    {
+      "nome": "PÉS",
+      "n": 6,
+      "v": 282.0
+    }
+  ],
+  "clientes_top": [
+    {
+      "nome": "Daniela Rodrigues",
+      "n": 9
+    },
+    {
+      "nome": "Fernanda Oliveira",
+      "n": 5
+    },
+    {
+      "nome": "Nathalia Daniele Bomtempo Garcia",
+      "n": 5
+    },
+    {
+      "nome": "Grabrielly Baltazar ",
+      "n": 5
+    },
+    {
+      "nome": "Juscnete Vieira ",
+      "n": 4
+    },
+    {
+      "nome": "Maria Pereira Barbolsa",
+      "n": 4
+    },
+    {
+      "nome": "Rosangela Siqueira De Pinho Garcia",
+      "n": 4
+    },
+    {
+      "nome": "Alice Vitoria Silva Dutra ",
+      "n": 4
+    },
+    {
+      "nome": "Josicleia Lira Almeida",
+      "n": 4
+    },
+    {
+      "nome": "Lucas De Pinho Garcia",
+      "n": 4
+    }
+  ],
+  "formas_pagamento": [
+    {
+      "nome": "PIX",
+      "n": 26,
+      "v": 4420.0
+    },
+    {
+      "nome": "Mastercard",
+      "n": 24,
+      "v": 4192.0
+    },
+    {
+      "nome": "Visa",
+      "n": 18,
+      "v": 2252.0
+    },
+    {
+      "nome": "Maestro/Redeshop",
+      "n": 16,
+      "v": 1513.0
+    },
+    {
+      "nome": "Visa Electron",
+      "n": 7,
+      "v": 635.1
+    },
+    {
+      "nome": "Dinheiro",
+      "n": 5,
+      "v": 445.0
+    },
+    {
+      "nome": "Elo Débito",
+      "n": 2,
+      "v": 94.0
+    }
+  ],
+  "periodo": "2026-08",
+  "gerado_em": "2026-08-12T21:35:50",
+  "cota": {
+    "plano": "Plano Padrao",
+    "total": 10000,
+    "usadas": 1774,
+    "saldo": 8226
+  },
+  "proxima_execucao_prevista": "de 1h em 1h (Task Scheduler)"
 }
