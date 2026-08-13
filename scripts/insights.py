@@ -190,8 +190,8 @@ def _insights_mensal(aba):
     # 4. Novos vs recorrentes
     nvr = aba.get("novos_vs_recorr") or {}
     if nvr:
-        n_novos = nvr.get("novos", 0)
-        n_recorr = nvr.get("recorrentes", 0)
+        n_novos = (nvr.get("novos") or {}).get("clientes", 0)
+        n_recorr = (nvr.get("recorrentes") or {}).get("clientes", 0)
         total = n_novos + n_recorr
         if total > 0:
             pct_recorr = (n_recorr / total) * 100
