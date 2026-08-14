@@ -1,13 +1,13 @@
 {
-  "gerado_em": "2026-08-14T15:38:17Z",
+  "gerado_em": "2026-08-14T18:00:43Z",
   "hoje": "2026-08-14",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 26,
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 3126,
-    "saldoRestante": 6874
+    "totalUtilizado": 3146,
+    "saldoRestante": 6854
   },
   "stone": {
     "periodo_ini": "2026-07-24",
@@ -59,9 +59,9 @@
         "cartao": {
           "stone_recebido": 0.0,
           "stone_n": 0,
-          "trinks_vendido": 0.0,
-          "trinks_n": 0,
-          "a_receber_d30": 0.0
+          "trinks_vendido": 158.0,
+          "trinks_n": 2,
+          "a_receber_d30": 152.47
         },
         "dinheiro": {
           "total": 0.0,
@@ -70,7 +70,7 @@
         },
         "resumo": {
           "recebido_total": 0.0,
-          "a_receber": 0.0
+          "a_receber": 152.47
         },
         "periodo_ini": "2026-08-14",
         "periodo_fim": "2026-08-14"
@@ -102,9 +102,9 @@
         "cartao": {
           "stone_recebido": 2421.9,
           "stone_n": 5,
-          "trinks_vendido": 3390.0,
-          "trinks_n": 26,
-          "a_receber_d30": 849.45
+          "trinks_vendido": 3548.0,
+          "trinks_n": 28,
+          "a_receber_d30": 1001.92
         },
         "dinheiro": {
           "total": 318.0,
@@ -129,7 +129,7 @@
         },
         "resumo": {
           "recebido_total": 3073.73,
-          "a_receber": 849.45
+          "a_receber": 1001.92
         },
         "periodo_ini": "2026-08-10",
         "periodo_fim": "2026-08-16"
@@ -161,9 +161,9 @@
         "cartao": {
           "stone_recebido": 3553.03,
           "stone_n": 10,
-          "trinks_vendido": 13517.1,
-          "trinks_n": 106,
-          "a_receber_d30": 9490.97
+          "trinks_vendido": 13675.1,
+          "trinks_n": 108,
+          "a_receber_d30": 9643.44
         },
         "dinheiro": {
           "total": 763.0,
@@ -213,7 +213,7 @@
         },
         "resumo": {
           "recebido_total": 9297.11,
-          "a_receber": 9490.97
+          "a_receber": 9643.44
         },
         "periodo_ini": "2026-08-01",
         "periodo_fim": "2026-08-31"
@@ -245,9 +245,9 @@
         "cartao": {
           "stone_recebido": 5069.36,
           "stone_n": 18,
-          "trinks_vendido": 18836.1,
-          "trinks_n": 155,
-          "a_receber_d30": 13107.48
+          "trinks_vendido": 18994.1,
+          "trinks_n": 157,
+          "a_receber_d30": 13259.95
         },
         "dinheiro": {
           "total": 813.0,
@@ -302,7 +302,7 @@
         },
         "resumo": {
           "recebido_total": 12066.62,
-          "a_receber": 13107.48
+          "a_receber": 13259.95
         },
         "periodo_ini": "2026-01-01",
         "periodo_fim": "2026-12-31"
@@ -392,29 +392,29 @@
     ],
     "antecipacao_analise": {
       "debito": {
-        "bruto": 3958.1,
-        "n": 41,
+        "bruto": 4037.1,
+        "n": 42,
         "mdr_pct": 1.46,
-        "liq_espera": 3900.31,
-        "liq_antecipar": 3898.15,
-        "custo_antecipacao": 2.16,
+        "liq_espera": 3978.16,
+        "liq_antecipar": 3975.96,
+        "custo_antecipacao": 2.2,
         "dias_medio_recebimento": 1
       },
       "credito": {
-        "bruto": 9559.0,
-        "n": 65,
+        "bruto": 9638.0,
+        "n": 66,
         "mdr_pct": 2.08,
-        "liq_espera": 9360.17,
-        "liq_antecipar": 9204.79,
-        "custo_antecipacao": 155.38,
+        "liq_espera": 9437.53,
+        "liq_antecipar": 9280.87,
+        "custo_antecipacao": 156.66,
         "dias_medio_recebimento": 30
       },
       "total": {
-        "bruto": 13517.1,
-        "liq_espera": 13260.48,
-        "liq_antecipar": 13102.95,
-        "custo_antecipacao": 157.54,
-        "custo_pct": 1.19
+        "bruto": 13675.1,
+        "liq_espera": 13415.69,
+        "liq_antecipar": 13256.82,
+        "custo_antecipacao": 158.86,
+        "custo_pct": 1.18
       },
       "taxa_antecipacao_mensal_pct": 1.66,
       "obs": "Taxas Stone oficiais SIIBELLO (Débito 1,46% · Crédito 1x 2,08% · Antecipação Automática 1,66%). TODAS as vendas são 1x (zero parcelamento)."
@@ -494,9 +494,21 @@
     },
     "gap_trinks_stone": {
       "ultima_data_stone": "2026-08-12T12:16:00",
-      "vendas_trinks_apos_n": 18,
-      "vendas_trinks_apos_v": 2009.0,
+      "vendas_trinks_apos_n": 20,
+      "vendas_trinks_apos_v": 2167.0,
       "vendas_apos_lista": [
+        {
+          "data": "2026-08-14T14:39",
+          "valor": 79.0,
+          "meio": "Mastercard",
+          "cliente": "Neide Duarte "
+        },
+        {
+          "data": "2026-08-14T13:59",
+          "valor": 79.0,
+          "meio": "Elo Débito",
+          "cliente": "Jessica Lins "
+        },
         {
           "data": "2026-08-14T11:50",
           "valor": 198.0,
@@ -606,47 +618,47 @@
           "cliente": "Mariana Domingues Tavara"
         }
       ],
-      "horas_desatualizado": 51.4
+      "horas_desatualizado": 50.7
     }
   },
   "abas": {
     "anual": {
       "kpis": {
-        "caixa": 26130.1,
-        "receita_serv": 23910.1,
-        "atend_fin": 371,
+        "caixa": 26288.1,
+        "receita_serv": 24068.1,
+        "atend_fin": 373,
         "atend_canc": 29,
-        "atend_total": 402,
-        "n_trans": 222,
-        "ticket_trans": 117.7,
+        "atend_total": 404,
+        "n_trans": 224,
+        "ticket_trans": 117.36,
         "taxa_canc": 7.2,
         "dias_op": 20,
-        "clientes_unicos": 178,
+        "clientes_unicos": 179,
         "em_atendimento": 1
       },
       "meta": {
         "meta": 306577.0,
-        "realizado": 26130.1,
-        "pct": 8.5,
-        "falta": 280446.9,
+        "realizado": 26288.1,
+        "pct": 8.6,
+        "falta": 280288.9,
         "dias_realizados": 20,
         "dias_total": 139,
         "dias_restantes": 119,
-        "necessario_dia": 2356.7,
-        "ritmo_dia": 1306.5,
-        "projecao": 181604.19,
-        "projecao_pct": 59.2
+        "necessario_dia": 2355.37,
+        "ritmo_dia": 1314.4,
+        "projecao": 182702.29,
+        "projecao_pct": 59.6
       },
       "categorias": {
         "pacotes": {
           "v": 4258.0,
           "n": 11,
-          "pct": 16.3
+          "pct": 16.2
         },
         "servicos": {
-          "v": 23910.1,
-          "n": 371,
-          "pct": 91.5
+          "v": 24068.1,
+          "n": 373,
+          "pct": 91.6
         },
         "produtos": {
           "v": 692.0,
@@ -683,23 +695,23 @@
           "dias_op": 8
         },
         "2026-08": {
-          "caixa": 19553.1,
-          "receita_serv": 15107.1,
-          "atend_fin": 242,
-          "clientes_unicos": 120,
-          "n_trans": 148,
-          "ticket_trans": 132.12,
+          "caixa": 19711.1,
+          "receita_serv": 15265.1,
+          "atend_fin": 244,
+          "clientes_unicos": 122,
+          "n_trans": 150,
+          "ticket_trans": 131.41,
           "taxa_canc": 5.4,
           "categorias": {
             "pacotes": {
               "v": 3988.0,
               "n": 10,
-              "pct": 20.4
+              "pct": 20.2
             },
             "servicos": {
-              "v": 15107.1,
-              "n": 242,
-              "pct": 77.3
+              "v": 15265.1,
+              "n": 244,
+              "pct": 77.4
             },
             "produtos": {
               "v": 455.0,
@@ -711,13 +723,13 @@
         }
       },
       "top_ltv": {
-        "total_clientes": 178,
-        "receita_total": 23910.1,
+        "total_clientes": 179,
+        "receita_total": 24068.1,
         "uma_vez": 94,
-        "duas_mais": 84,
+        "duas_mais": 85,
         "pareto20_n": 35,
         "pareto20_v": 10838.1,
-        "pareto20_pct": 45.3,
+        "pareto20_pct": 45.0,
         "top": [
           {
             "nome": "Nathalia Daniele Bomtempo Garcia",
@@ -946,13 +958,13 @@
         },
         {
           "h": 13,
-          "media": 0.65,
-          "n_total": 13
+          "media": 0.7,
+          "n_total": 14
         },
         {
           "h": 14,
-          "media": 0.7,
-          "n_total": 14
+          "media": 0.75,
+          "n_total": 15
         },
         {
           "h": 15,
@@ -998,8 +1010,8 @@
         },
         {
           "nome": "Gabriela Cristina Da Silva",
-          "n": 45,
-          "v": 2843.0
+          "n": 46,
+          "v": 2922.0
         },
         {
           "nome": "Katyane Augusta Muniz",
@@ -1050,9 +1062,9 @@
       "ranking_serv": [
         {
           "nome": "FAST ESCOVA - LISA",
-          "n": 96,
-          "v": 6334.5,
-          "min": 4320
+          "n": 98,
+          "v": 6492.5,
+          "min": 4410
         },
         {
           "nome": "FAST ESCOVA - MODELADA",
@@ -1124,27 +1136,27 @@
       "meios_pagamento": [
         {
           "nome": "Mastercard",
-          "n": 60,
-          "v": 8800.0,
-          "pct": 33.7
+          "n": 61,
+          "v": 8879.0,
+          "pct": 33.8
         },
         {
           "nome": "PIX",
           "n": 44,
           "v": 6505.0,
-          "pct": 24.9
+          "pct": 24.7
         },
         {
           "nome": "Visa",
           "n": 35,
           "v": 4180.0,
-          "pct": 16.0
+          "pct": 15.9
         },
         {
           "nome": "Maestro/Redeshop",
           "n": 37,
           "v": 3953.0,
-          "pct": 15.1
+          "pct": 15.0
         },
         {
           "nome": "Visa Electron",
@@ -1160,9 +1172,9 @@
         },
         {
           "nome": "Elo Débito",
-          "n": 4,
-          "v": 252.0,
-          "pct": 1.0
+          "n": 5,
+          "v": 331.0,
+          "pct": 1.3
         },
         {
           "nome": "American Express",
@@ -1217,41 +1229,41 @@
     },
     "mensal": {
       "kpis": {
-        "caixa": 19553.1,
-        "receita_serv": 15107.1,
-        "atend_fin": 242,
+        "caixa": 19711.1,
+        "receita_serv": 15265.1,
+        "atend_fin": 244,
         "atend_canc": 14,
-        "atend_total": 257,
-        "n_trans": 148,
-        "ticket_trans": 132.12,
+        "atend_total": 259,
+        "n_trans": 150,
+        "ticket_trans": 131.41,
         "taxa_canc": 5.4,
         "dias_op": 12,
-        "clientes_unicos": 120,
+        "clientes_unicos": 122,
         "em_atendimento": 1
       },
       "meta": {
         "meta": 60000,
-        "realizado": 19553.1,
-        "pct": 32.6,
-        "falta": 40446.9,
+        "realizado": 19711.1,
+        "pct": 32.9,
+        "falta": 40288.9,
         "dias_realizados": 12,
         "dias_total": 26,
         "dias_restantes": 14,
-        "necessario_dia": 2889.06,
-        "ritmo_dia": 1629.42,
-        "projecao": 42365.05,
-        "projecao_pct": 70.6
+        "necessario_dia": 2877.78,
+        "ritmo_dia": 1642.59,
+        "projecao": 42707.38,
+        "projecao_pct": 71.2
       },
       "categorias": {
         "pacotes": {
           "v": 3988.0,
           "n": 10,
-          "pct": 20.4
+          "pct": 20.2
         },
         "servicos": {
-          "v": 15107.1,
-          "n": 242,
-          "pct": 77.3
+          "v": 15265.1,
+          "n": 244,
+          "pct": 77.4
         },
         "produtos": {
           "v": 455.0,
@@ -1261,14 +1273,14 @@
       },
       "novos_vs_recorr": {
         "novos": {
-          "clientes": 110,
-          "atend": 213,
-          "receita": 13660.0
+          "clientes": 111,
+          "atend": 214,
+          "receita": 13739.0
         },
         "recorrentes": {
-          "clientes": 10,
-          "atend": 29,
-          "receita": 1447.1
+          "clientes": 11,
+          "atend": 30,
+          "receita": 1526.1
         }
       },
       "rentabilidade_hora": [
@@ -1451,8 +1463,8 @@
         },
         {
           "d": 14,
-          "n": 2,
-          "v": 198.0
+          "n": 4,
+          "v": 356.0
         }
       ],
       "hora_media": [
@@ -1483,13 +1495,13 @@
         },
         {
           "h": 13,
-          "media": 0.83,
-          "n_total": 10
+          "media": 0.92,
+          "n_total": 11
         },
         {
           "h": 14,
-          "media": 0.75,
-          "n_total": 9
+          "media": 0.83,
+          "n_total": 10
         },
         {
           "h": 15,
@@ -1530,8 +1542,8 @@
         },
         {
           "nome": "Gabriela Cristina Da Silva",
-          "n": 34,
-          "v": 2211.0
+          "n": 35,
+          "v": 2290.0
         },
         {
           "nome": "Giovanna Guedes Da Silva",
@@ -1587,9 +1599,9 @@
       "ranking_serv": [
         {
           "nome": "FAST ESCOVA - LISA",
-          "n": 68,
-          "v": 4187.0,
-          "min": 3060
+          "n": 70,
+          "v": 4345.0,
+          "min": 3150
         },
         {
           "nome": "FAST ESCOVA - MODELADA",
@@ -1661,33 +1673,33 @@
       "meios_pagamento": [
         {
           "nome": "Mastercard",
-          "n": 40,
-          "v": 6785.0,
-          "pct": 34.7
+          "n": 41,
+          "v": 6864.0,
+          "pct": 34.8
         },
         {
           "nome": "PIX",
           "n": 34,
           "v": 5294.0,
-          "pct": 27.1
+          "pct": 26.9
         },
         {
           "nome": "Maestro/Redeshop",
           "n": 28,
           "v": 2849.0,
-          "pct": 14.6
+          "pct": 14.5
         },
         {
           "nome": "Visa",
           "n": 24,
           "v": 2675.0,
-          "pct": 13.7
+          "pct": 13.6
         },
         {
           "nome": "Visa Electron",
           "n": 10,
           "v": 936.1,
-          "pct": 4.8
+          "pct": 4.7
         },
         {
           "nome": "Dinheiro",
@@ -1697,9 +1709,9 @@
         },
         {
           "nome": "Elo Débito",
-          "n": 3,
-          "v": 173.0,
-          "pct": 0.9
+          "n": 4,
+          "v": 252.0,
+          "pct": 1.3
         },
         {
           "nome": "American Express",
@@ -1754,48 +1766,48 @@
     },
     "semanal": {
       "kpis": {
-        "caixa": 4304.0,
-        "receita_serv": 3066.0,
-        "atend_fin": 53,
+        "caixa": 4462.0,
+        "receita_serv": 3224.0,
+        "atend_fin": 55,
         "atend_canc": 2,
-        "atend_total": 56,
-        "n_trans": 36,
-        "ticket_trans": 119.56,
-        "taxa_canc": 3.6,
+        "atend_total": 58,
+        "n_trans": 38,
+        "ticket_trans": 117.42,
+        "taxa_canc": 3.4,
         "dias_op": 5,
-        "clientes_unicos": 33,
+        "clientes_unicos": 35,
         "em_atendimento": 1,
         "periodo_ini": "2026-08-10",
         "periodo_fim": "2026-08-16"
       },
       "meta": {
         "meta": 13846.15,
-        "realizado": 4304.0,
-        "pct": 31.1,
-        "falta": 9542.15,
+        "realizado": 4462.0,
+        "pct": 32.2,
+        "falta": 9384.15,
         "dias_realizados": 5,
         "dias_total": 6,
         "dias_restantes": 1,
-        "necessario_dia": 9542.15,
-        "ritmo_dia": 860.8,
-        "projecao": 5164.8,
-        "projecao_pct": 37.3
+        "necessario_dia": 9384.15,
+        "ritmo_dia": 892.4,
+        "projecao": 5354.4,
+        "projecao_pct": 38.7
       },
       "categorias": {
         "pacotes": {
           "v": 1139.0,
           "n": 3,
-          "pct": 26.5
+          "pct": 25.5
         },
         "servicos": {
-          "v": 3066.0,
-          "n": 53,
-          "pct": 71.2
+          "v": 3224.0,
+          "n": 55,
+          "pct": 72.3
         },
         "produtos": {
           "v": 99.0,
           "n": 1,
-          "pct": 2.3
+          "pct": 2.2
         }
       },
       "por_dow": [
@@ -1821,8 +1833,8 @@
         },
         {
           "nome": "Sex",
-          "n": 2,
-          "v": 198.0
+          "n": 4,
+          "v": 356.0
         },
         {
           "nome": "Sáb",
@@ -1863,13 +1875,13 @@
         },
         {
           "h": 13,
-          "media": 0.4,
-          "n_total": 2
+          "media": 0.6,
+          "n_total": 3
         },
         {
           "h": 14,
-          "media": 0.8,
-          "n_total": 4
+          "media": 1.0,
+          "n_total": 5
         },
         {
           "h": 15,
@@ -1910,8 +1922,8 @@
         },
         {
           "nome": "Gabriela Cristina Da Silva",
-          "n": 6,
-          "v": 427.0
+          "n": 7,
+          "v": 506.0
         },
         {
           "nome": "Tais Cristina Leite Cabral",
@@ -1939,6 +1951,11 @@
           "v": 130.0
         },
         {
+          "nome": "Niedja Rafaelle Leite Nunes",
+          "n": 1,
+          "v": 79.0
+        },
+        {
           "nome": "Bianca Doria Araujo Santos",
           "n": 1,
           "v": 79.0
@@ -1952,9 +1969,9 @@
       "ranking_serv": [
         {
           "nome": "FAST ESCOVA - LISA",
-          "n": 12,
-          "v": 750.5,
-          "min": 540
+          "n": 14,
+          "v": 908.5,
+          "min": 630
         },
         {
           "nome": "PÉS E MÃOS",
@@ -2026,48 +2043,48 @@
       "meios_pagamento": [
         {
           "nome": "Mastercard",
-          "n": 12,
-          "v": 2093.0,
-          "pct": 48.6
+          "n": 13,
+          "v": 2172.0,
+          "pct": 48.7
         },
         {
           "nome": "Maestro/Redeshop",
           "n": 6,
           "v": 672.0,
-          "pct": 15.6
+          "pct": 15.1
         },
         {
           "nome": "PIX",
           "n": 6,
           "v": 617.0,
-          "pct": 14.3
+          "pct": 13.8
         },
         {
           "nome": "Visa",
           "n": 5,
           "v": 368.0,
-          "pct": 8.6
+          "pct": 8.2
         },
         {
           "nome": "Dinheiro",
           "n": 4,
           "v": 297.0,
-          "pct": 6.9
+          "pct": 6.7
+        },
+        {
+          "nome": "Elo Débito",
+          "n": 2,
+          "v": 158.0,
+          "pct": 3.5
         },
         {
           "nome": "American Express",
           "n": 1,
           "v": 99.0,
-          "pct": 2.3
+          "pct": 2.2
         },
         {
           "nome": "Visa Electron",
-          "n": 1,
-          "v": 79.0,
-          "pct": 1.8
-        },
-        {
-          "nome": "Elo Débito",
           "n": 1,
           "v": 79.0,
           "pct": 1.8
@@ -2111,39 +2128,39 @@
           "n": 2
         },
         {
-          "nome": "Ezeleide Matias ",
+          "nome": "Neide Duarte ",
           "n": 1
         }
       ]
     },
     "diario": {
       "kpis": {
-        "caixa": 198.0,
-        "receita_serv": 198.0,
-        "atend_fin": 2,
+        "caixa": 356.0,
+        "receita_serv": 356.0,
+        "atend_fin": 4,
         "atend_canc": 0,
-        "atend_total": 3,
-        "n_trans": 1,
-        "ticket_trans": 198.0,
+        "atend_total": 5,
+        "n_trans": 3,
+        "ticket_trans": 118.67,
         "taxa_canc": 0.0,
         "dias_op": 1,
-        "clientes_unicos": 1,
+        "clientes_unicos": 3,
         "em_atendimento": 1,
         "dia_semana": "Sex",
         "data": "2026-08-14"
       },
       "meta": {
         "meta": 2307.69,
-        "realizado": 198.0,
-        "pct": 8.6,
-        "falta": 2109.69,
+        "realizado": 356.0,
+        "pct": 15.4,
+        "falta": 1951.69,
         "dias_realizados": 1,
         "dias_total": 1,
         "dias_restantes": 0,
         "necessario_dia": 0.0,
-        "ritmo_dia": 198.0,
-        "projecao": 198.0,
-        "projecao_pct": 8.6
+        "ritmo_dia": 356.0,
+        "projecao": 356.0,
+        "projecao_pct": 15.4
       },
       "categorias": {
         "pacotes": {
@@ -2152,8 +2169,8 @@
           "pct": 0.0
         },
         "servicos": {
-          "v": 198.0,
-          "n": 2,
+          "v": 356.0,
+          "n": 4,
           "pct": 100.0
         },
         "produtos": {
@@ -2190,13 +2207,13 @@
         },
         {
           "h": 13,
-          "n": 0,
-          "v": 0.0
+          "n": 1,
+          "v": 79.0
         },
         {
           "h": 14,
-          "n": 0,
-          "v": 0.0
+          "n": 1,
+          "v": 79.0
         },
         {
           "h": 15,
@@ -2231,17 +2248,28 @@
       ],
       "ranking_prof": [
         {
+          "nome": "Gabriela Cristina Da Silva",
+          "n": 2,
+          "v": 158.0
+        },
+        {
           "nome": "Erika Thais Pereira Melim",
           "n": 1,
           "v": 119.0
         },
         {
-          "nome": "Gabriela Cristina Da Silva",
+          "nome": "Niedja Rafaelle Leite Nunes",
           "n": 1,
           "v": 79.0
         }
       ],
       "ranking_serv": [
+        {
+          "nome": "FAST ESCOVA - LISA",
+          "n": 2,
+          "v": 158.0,
+          "min": 90
+        },
         {
           "nome": "FAST MAKE CASUAL",
           "n": 1,
@@ -2260,13 +2288,33 @@
           "nome": "PIX",
           "n": 1,
           "v": 198.0,
-          "pct": 100.0
+          "pct": 55.6
+        },
+        {
+          "nome": "Mastercard",
+          "n": 1,
+          "v": 79.0,
+          "pct": 22.2
+        },
+        {
+          "nome": "Elo Débito",
+          "n": 1,
+          "v": 79.0,
+          "pct": 22.2
         }
       ],
       "clientes_top": [
         {
           "nome": "Daniela Rodrigues",
           "n": 2
+        },
+        {
+          "nome": "Neide Duarte ",
+          "n": 1
+        },
+        {
+          "nome": "Jessica Lins ",
+          "n": 1
         }
       ]
     }
@@ -2276,7 +2324,7 @@
       {
         "tipo": "atencao",
         "titulo": "Ritmo do dia abaixo do esperado",
-        "texto": "Só 9% da meta às 15h. Restam ~5h úteis.",
+        "texto": "Só 15% da meta às 15h. Restam ~5h úteis.",
         "acao": "Priorizar walk-ins · confirmar agenda restante · combo do dia"
       },
       {
@@ -2284,13 +2332,25 @@
         "titulo": "Horas de pico ainda por vir hoje",
         "texto": "Média semanal indica 17h, 18h como picos. Preparar equipe/estoque.",
         "acao": "Confirmar profissionais nas próximas horas de pico"
+      },
+      {
+        "tipo": "oportunidade",
+        "titulo": "Produto sub-vendido hoje",
+        "texto": "Produtos = 0.0% do caixa (meta ≥ 8%). Cada cliente é upsell.",
+        "acao": "Ofertar produto complementar ao final de cada atendimento"
+      },
+      {
+        "tipo": "atencao",
+        "titulo": "3 profissional(is) sem atendimento",
+        "texto": "Gabriela Cristina Da Silva, Erika Thais Pereira Melim, Niedja Rafaelle Leite Nunes sem receita hoje. Verificar se estão de folga ou com agenda vazia.",
+        "acao": "Realocar demanda · promover slots livres via WhatsApp"
       }
     ],
     "semanal": [
       {
         "tipo": "atencao",
         "titulo": "Semana abaixo da meta",
-        "texto": "Projeção R$ 5.164,80 (37%). Precisa R$ 9.542,15/dia (média atual: R$ 860,80/dia).",
+        "texto": "Projeção R$ 5.354,40 (39%). Precisa R$ 9.384,15/dia (média atual: R$ 892,40/dia).",
         "acao": "Ativar campanha WhatsApp · combo semana"
       }
     ],
@@ -2298,25 +2358,25 @@
       {
         "tipo": "critico",
         "titulo": "Mês projeta ABAIXO de 80% da meta",
-        "texto": "Projeção R$ 42.365,05 (71%). Ritmo R$ 1.629,42/dia vs R$ 2.889,06/dia (gap R$ 1.259,64/dia).",
+        "texto": "Projeção R$ 42.707,38 (71%). Ritmo R$ 1.642,59/dia vs R$ 2.877,78/dia (gap R$ 1.235,19/dia).",
         "acao": "Ação imediata: campanha de reativação · combo dos 14 dias restantes"
       },
       {
         "tipo": "atencao",
         "titulo": "Taxa de cancelamento 5.4% (meta ≤ 5%)",
-        "texto": "~14 atendimentos cancelados no mês, receita perdida ~R$ 1.825,10.",
+        "texto": "~14 atendimentos cancelados no mês, receita perdida ~R$ 1.830,29.",
         "acao": "Política de confirmação 24h antes via WhatsApp · cobrar sinal em serviços longos"
       },
       {
         "tipo": "atencao",
-        "titulo": "Retenção baixa: 8% recorrentes",
-        "texto": "110 novos · 10 recorrentes. Meta ≥ 60%. Custo de aquisição sobe.",
+        "titulo": "Retenção baixa: 9% recorrentes",
+        "texto": "111 novos · 11 recorrentes. Meta ≥ 60%. Custo de aquisição sobe.",
         "acao": "Programa fidelidade · agendar retorno na saída · WhatsApp em D+30"
       },
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos 2.3% do caixa. Se chegasse a 8%, seriam +R$ 1.109,25/mês.",
+        "texto": "Produtos 2.3% do caixa. Se chegasse a 8%, seriam +R$ 1.121,89/mês.",
         "acao": "Vitrine visível · treinar recepção para upsell no checkout"
       }
     ],
@@ -2324,7 +2384,7 @@
       {
         "tipo": "atencao",
         "titulo": "Ritmo anual abaixo da meta",
-        "texto": "Projeção R$ 181.604,19 (59%). Precisa R$ 2.356,70/dia (atual R$ 1.306,50).",
+        "texto": "Projeção R$ 182.702,29 (60%). Precisa R$ 2.355,37/dia (atual R$ 1.314,40).",
         "acao": "Revisar precificação · escalar marketing digital"
       }
     ],
@@ -2332,7 +2392,7 @@
       {
         "tipo": "oportunidade",
         "titulo": "Antecipar D+30 tem custo real baixo",
-        "texto": "A receber: R$ 9.490,97. Antecipação: R$ 157,55 (1,66%). Custo de oportunidade: R$ 107,70 (CDI). Custo líquido: R$ 49,85.",
+        "texto": "A receber: R$ 9.643,44. Antecipação: R$ 160,08 (1,66%). Custo de oportunidade: R$ 109,43 (CDI). Custo líquido: R$ 50,65.",
         "acao": "Vale antecipar se caixa for reinvestido em algo >= CDI · senão, deixar cair no D+30"
       },
       {
