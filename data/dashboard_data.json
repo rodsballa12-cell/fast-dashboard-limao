@@ -1,13 +1,13 @@
 {
-  "gerado_em": "2026-08-14T15:00:27Z",
+  "gerado_em": "2026-08-14T15:38:17Z",
   "hoje": "2026-08-14",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 26,
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 3096,
-    "saldoRestante": 6904
+    "totalUtilizado": 3126,
+    "saldoRestante": 6874
   },
   "stone": {
     "periodo_ini": "2026-07-24",
@@ -606,7 +606,7 @@
           "cliente": "Mariana Domingues Tavara"
         }
       ],
-      "horas_desatualizado": 47.7
+      "horas_desatualizado": 51.4
     }
   },
   "abas": {
@@ -616,13 +616,13 @@
         "receita_serv": 23910.1,
         "atend_fin": 371,
         "atend_canc": 29,
-        "atend_total": 401,
+        "atend_total": 402,
         "n_trans": 222,
         "ticket_trans": 117.7,
         "taxa_canc": 7.2,
         "dias_op": 20,
         "clientes_unicos": 178,
-        "em_atendimento": 0
+        "em_atendimento": 1
       },
       "meta": {
         "meta": 306577.0,
@@ -689,7 +689,7 @@
           "clientes_unicos": 120,
           "n_trans": 148,
           "ticket_trans": 132.12,
-          "taxa_canc": 5.5,
+          "taxa_canc": 5.4,
           "categorias": {
             "pacotes": {
               "v": 3988.0,
@@ -1221,13 +1221,13 @@
         "receita_serv": 15107.1,
         "atend_fin": 242,
         "atend_canc": 14,
-        "atend_total": 256,
+        "atend_total": 257,
         "n_trans": 148,
         "ticket_trans": 132.12,
-        "taxa_canc": 5.5,
+        "taxa_canc": 5.4,
         "dias_op": 12,
         "clientes_unicos": 120,
-        "em_atendimento": 0
+        "em_atendimento": 1
       },
       "meta": {
         "meta": 60000,
@@ -1758,13 +1758,13 @@
         "receita_serv": 3066.0,
         "atend_fin": 53,
         "atend_canc": 2,
-        "atend_total": 55,
+        "atend_total": 56,
         "n_trans": 36,
         "ticket_trans": 119.56,
         "taxa_canc": 3.6,
         "dias_op": 5,
         "clientes_unicos": 33,
-        "em_atendimento": 0,
+        "em_atendimento": 1,
         "periodo_ini": "2026-08-10",
         "periodo_fim": "2026-08-16"
       },
@@ -2122,13 +2122,13 @@
         "receita_serv": 198.0,
         "atend_fin": 2,
         "atend_canc": 0,
-        "atend_total": 2,
+        "atend_total": 3,
         "n_trans": 1,
         "ticket_trans": 198.0,
         "taxa_canc": 0.0,
         "dias_op": 1,
         "clientes_unicos": 1,
-        "em_atendimento": 0,
+        "em_atendimento": 1,
         "dia_semana": "Sex",
         "data": "2026-08-14"
       },
@@ -2274,6 +2274,12 @@
   "insights": {
     "diario": [
       {
+        "tipo": "atencao",
+        "titulo": "Ritmo do dia abaixo do esperado",
+        "texto": "Só 9% da meta às 15h. Restam ~5h úteis.",
+        "acao": "Priorizar walk-ins · confirmar agenda restante · combo do dia"
+      },
+      {
         "tipo": "info",
         "titulo": "Horas de pico ainda por vir hoje",
         "texto": "Média semanal indica 17h, 18h como picos. Preparar equipe/estoque.",
@@ -2297,8 +2303,8 @@
       },
       {
         "tipo": "atencao",
-        "titulo": "Taxa de cancelamento 5.5% (meta ≤ 5%)",
-        "texto": "~14 atendimentos cancelados no mês, receita perdida ~R$ 1.860,86.",
+        "titulo": "Taxa de cancelamento 5.4% (meta ≤ 5%)",
+        "texto": "~14 atendimentos cancelados no mês, receita perdida ~R$ 1.825,10.",
         "acao": "Política de confirmação 24h antes via WhatsApp · cobrar sinal em serviços longos"
       },
       {
