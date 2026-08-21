@@ -390,17 +390,35 @@ def main():
         stone_data = None
 
     # === Auditoria de cancelados com valor > 0 (walk-in only) ===
-    # Preço mediano por serviço (base: atendimentos finalizados) para detectar valor atípico
+    # Preço mediano por serviço · POR MÊS (respeita correções de tabela)
     from statistics import median
     from unicodedata import normalize as _norm
-    servico_precos = defaultdict(list)
+    servico_precos_mes = defaultdict(lambda: defaultdict(list))  # {ym: {serv: [valores]}}
+    servico_precos_geral = defaultdict(list)                     # fallback global
     for a in agend:
         if (a.get("status") or {}).get("nome") == "Finalizado":
             v = float(a.get("valor") or 0)
             s = (a.get("servico") or {}).get("nome") or ""
-            if v > 0 and s:
-                servico_precos[s].append(v)
-    preco_mediano = {s: median(vs) for s, vs in servico_precos.items() if len(vs) >= 2}
+            dt_iso = (a.get("dataHoraInicio") or "")[:7]  # YYYY-MM
+            if v > 0 and s and dt_iso:
+                servico_precos_mes[dt_iso][s].append(v)
+                servico_precos_geral[s].append(v)
+    preco_mediano_mes = {
+        ym: {s: median(vs) for s, vs in servs.items() if len(vs) >= 2}
+        for ym, servs in servico_precos_mes.items()
+    }
+    preco_mediano_geral = {s: median(vs) for s, vs in servico_precos_geral.items() if len(vs) >= 2}
+
+    def _preco_ref(serv, data_iso):
+        """Retorna o preço mediano do serviço no MÊS do cancelamento (fallback: geral)."""
+        if not serv:
+            return None
+        if data_iso:
+            ym = data_iso[:7]
+            p = preco_mediano_mes.get(ym, {}).get(serv)
+            if p:
+                return p
+        return preco_mediano_geral.get(serv)
 
     # Índice Stone: (data_iso, valor_rounded) → lista de origens (nome do pagador)
     def _dstr_to_iso(s):
@@ -465,8 +483,8 @@ def main():
             # Flag 1: sem profissional atribuído
             sem_prof = not prof.strip()
 
-            # Flag 2: valor atípico (só faz sentido se tem valor)
-            preco_ref = preco_mediano.get(serv)
+            # Flag 2: valor atípico — compara com mediana do MÊS do cancelamento
+            preco_ref = _preco_ref(serv, data_iso)
             valor_atipico = False
             if not valor_zero and preco_ref and preco_ref > 0:
                 valor_atipico = abs(v - preco_ref) / preco_ref > 0.20
