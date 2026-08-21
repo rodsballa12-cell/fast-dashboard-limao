@@ -1,13 +1,13 @@
 {
-  "gerado_em": "2026-08-21T22:37:46Z",
+  "gerado_em": "2026-08-21T22:55:07Z",
   "hoje": "2026-08-21",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 26,
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 5787,
-    "saldoRestante": 4213
+    "totalUtilizado": 5824,
+    "saldoRestante": 4176
   },
   "stone": {
     "periodo_ini": "2026-07-24",
@@ -15,14 +15,14 @@
     "total_lancamentos": 185,
     "taxa_pix_pct": 0.64,
     "nao_conciliado": {
-      "total_valor_risco": 17753.33,
+      "total_valor_risco": 17989.76,
       "orfaos_stone_n": 0,
       "orfaos_stone_v": 0.0,
       "orfaos_stone": [],
       "orfaos_trinks_n": 0,
       "orfaos_trinks_v": 0.0,
       "orfaos_trinks": [],
-      "a_receber_d30": 17753.33,
+      "a_receber_d30": 17989.76,
       "matches_consolidados": 53
     },
     "por_periodo": {
@@ -42,9 +42,9 @@
         "cartao": {
           "stone_recebido": 132.04,
           "stone_n": 1,
-          "trinks_vendido": 1951.0,
-          "trinks_n": 13,
-          "a_receber_d30": 1750.67
+          "trinks_vendido": 2196.0,
+          "trinks_n": 14,
+          "a_receber_d30": 1987.1
         },
         "dinheiro": {
           "total": 90.0,
@@ -59,7 +59,7 @@
         },
         "resumo": {
           "recebido_total": 320.4,
-          "a_receber": 1750.67
+          "a_receber": 1987.1
         },
         "periodo_ini": "2026-08-21",
         "periodo_fim": "2026-08-21"
@@ -80,9 +80,9 @@
         "cartao": {
           "stone_recebido": 1649.87,
           "stone_n": 8,
-          "trinks_vendido": 3746.0,
-          "trinks_n": 30,
-          "a_receber_d30": 1965.02
+          "trinks_vendido": 3991.0,
+          "trinks_n": 31,
+          "a_receber_d30": 2201.45
         },
         "dinheiro": {
           "total": 362.0,
@@ -107,7 +107,7 @@
         },
         "resumo": {
           "recebido_total": 2385.45,
-          "a_receber": 1965.02
+          "a_receber": 2201.45
         },
         "periodo_ini": "2026-08-17",
         "periodo_fim": "2026-08-23"
@@ -128,9 +128,9 @@
         "cartao": {
           "stone_recebido": 5805.96,
           "stone_n": 21,
-          "trinks_vendido": 21104.1,
-          "trinks_n": 166,
-          "a_receber_d30": 14559.5
+          "trinks_vendido": 21349.1,
+          "trinks_n": 167,
+          "a_receber_d30": 14795.92
         },
         "dinheiro": {
           "total": 1225.0,
@@ -200,7 +200,7 @@
         },
         "resumo": {
           "recebido_total": 13406.97,
-          "a_receber": 14559.5
+          "a_receber": 14795.92
         },
         "periodo_ini": "2026-08-01",
         "periodo_fim": "2026-08-31"
@@ -221,9 +221,9 @@
         "cartao": {
           "stone_recebido": 7322.29,
           "stone_n": 29,
-          "trinks_vendido": 26423.1,
-          "trinks_n": 215,
-          "a_receber_d30": 18176.0
+          "trinks_vendido": 26668.1,
+          "trinks_n": 216,
+          "a_receber_d30": 18412.43
         },
         "dinheiro": {
           "total": 1275.0,
@@ -298,7 +298,7 @@
         },
         "resumo": {
           "recebido_total": 16176.48,
-          "a_receber": 18176.0
+          "a_receber": 18412.43
         },
         "periodo_ini": "2026-01-01",
         "periodo_fim": "2026-12-31"
@@ -432,12 +432,12 @@
     ],
     "antecipacao_analise": {
       "debito": {
-        "bruto": 6299.1,
-        "n": 67,
+        "bruto": 6544.1,
+        "n": 68,
         "mdr_pct": 1.46,
-        "liq_espera": 6207.13,
-        "liq_antecipar": 6203.7,
-        "custo_antecipacao": 3.43,
+        "liq_espera": 6448.56,
+        "liq_antecipar": 6444.99,
+        "custo_antecipacao": 3.57,
         "dias_medio_recebimento": 1
       },
       "credito": {
@@ -450,11 +450,11 @@
         "dias_medio_recebimento": 30
       },
       "total": {
-        "bruto": 21104.1,
-        "liq_espera": 20704.19,
-        "liq_antecipar": 20460.1,
-        "custo_antecipacao": 244.09,
-        "custo_pct": 1.18
+        "bruto": 21349.1,
+        "liq_espera": 20945.61,
+        "liq_antecipar": 20701.39,
+        "custo_antecipacao": 244.22,
+        "custo_pct": 1.17
       },
       "taxa_antecipacao_mensal_pct": 1.66,
       "obs": "Taxas Stone oficiais SIIBELLO (Débito 1,46% · Crédito 1x 2,08% · Antecipação Automática 1,66%). TODAS as vendas são 1x (zero parcelamento)."
@@ -534,9 +534,15 @@
     },
     "gap_trinks_stone": {
       "ultima_data_stone": "2026-08-21T16:55:00",
-      "vendas_trinks_apos_n": 5,
-      "vendas_trinks_apos_v": 866.0,
+      "vendas_trinks_apos_n": 6,
+      "vendas_trinks_apos_v": 1111.0,
       "vendas_apos_lista": [
+        {
+          "data": "2026-08-21T19:53",
+          "valor": 245.0,
+          "meio": "Maestro/Redeshop",
+          "cliente": "Roberta toledo"
+        },
         {
           "data": "2026-08-21T19:31",
           "valor": 330.0,
@@ -568,7 +574,7 @@
           "cliente": "marcia Regina Araujo Neto "
         }
       ],
-      "horas_desatualizado": 5.7
+      "horas_desatualizado": 6.0
     }
   },
   "auditoria_cancelados": {
@@ -1102,46 +1108,46 @@
   "abas": {
     "anual": {
       "kpis": {
-        "caixa": 35271.1,
-        "receita_serv": 31835.1,
-        "atend_fin": 497,
+        "caixa": 35516.1,
+        "receita_serv": 32080.1,
+        "atend_fin": 500,
         "atend_canc": 37,
         "atend_total": 541,
-        "n_trans": 300,
-        "ticket_trans": 117.57,
+        "n_trans": 301,
+        "ticket_trans": 117.99,
         "taxa_canc": 6.8,
         "dias_op": 26,
-        "clientes_unicos": 230,
-        "em_atendimento": 6
+        "clientes_unicos": 231,
+        "em_atendimento": 3
       },
       "meta": {
         "meta": 306577.0,
-        "realizado": 35271.1,
-        "pct": 11.5,
-        "falta": 271305.9,
+        "realizado": 35516.1,
+        "pct": 11.6,
+        "falta": 271060.9,
         "dias_realizados": 26,
         "dias_total": 139,
         "dias_restantes": 113,
-        "necessario_dia": 2400.94,
-        "ritmo_dia": 1356.58,
-        "projecao": 188564.73,
-        "projecao_pct": 61.5
+        "necessario_dia": 2398.77,
+        "ritmo_dia": 1366.0,
+        "projecao": 189874.53,
+        "projecao_pct": 61.9
       },
       "categorias": {
         "pacotes": {
           "v": 5453.0,
           "n": 15,
-          "pct": 15.5
+          "pct": 15.4
         },
         "servicos": {
-          "v": 31835.1,
-          "n": 497,
+          "v": 32080.1,
+          "n": 500,
           "pct": 90.3
         },
         "produtos": {
           "v": 692.0,
           "n": 8,
-          "pct": 2.0
+          "pct": 1.9
         }
       },
       "meses": {
@@ -1173,23 +1179,23 @@
           "dias_op": 8
         },
         "2026-08": {
-          "caixa": 28694.1,
-          "receita_serv": 23032.1,
-          "atend_fin": 368,
-          "clientes_unicos": 176,
-          "n_trans": 226,
-          "ticket_trans": 126.97,
+          "caixa": 28939.1,
+          "receita_serv": 23277.1,
+          "atend_fin": 371,
+          "clientes_unicos": 177,
+          "n_trans": 227,
+          "ticket_trans": 127.49,
           "taxa_canc": 5.6,
           "categorias": {
             "pacotes": {
               "v": 5183.0,
               "n": 14,
-              "pct": 18.1
+              "pct": 17.9
             },
             "servicos": {
-              "v": 23032.1,
-              "n": 368,
-              "pct": 80.3
+              "v": 23277.1,
+              "n": 371,
+              "pct": 80.4
             },
             "produtos": {
               "v": 455.0,
@@ -1201,13 +1207,13 @@
         }
       },
       "top_ltv": {
-        "total_clientes": 230,
-        "receita_total": 31835.1,
+        "total_clientes": 231,
+        "receita_total": 32080.1,
         "uma_vez": 108,
-        "duas_mais": 122,
+        "duas_mais": 123,
         "pareto20_n": 46,
-        "pareto20_v": 14589.1,
-        "pareto20_pct": 45.8,
+        "pareto20_v": 14652.1,
+        "pareto20_pct": 45.7,
         "top": [
           {
             "nome": "Nathalia Daniele Bomtempo Garcia",
@@ -1361,11 +1367,11 @@
         },
         {
           "nome": "PLÁSTICA DOS PÉS VIP",
-          "n": 4,
-          "v": 496.0,
+          "n": 5,
+          "v": 615.0,
           "min_medio": 30,
-          "ticket": 124.0,
-          "rs_hora": 248.0
+          "ticket": 123.0,
+          "rs_hora": 246.0
         },
         {
           "nome": "FAST LAVAGEM",
@@ -1466,8 +1472,8 @@
         },
         {
           "h": 19,
-          "media": 1.58,
-          "n_total": 41
+          "media": 1.62,
+          "n_total": 42
         },
         {
           "h": 20,
@@ -1488,8 +1494,8 @@
         },
         {
           "nome": "Thaise Moreno",
-          "n": 50,
-          "v": 3435.0
+          "n": 51,
+          "v": 3514.0
         },
         {
           "nome": "Gabriela Cristina Da Silva",
@@ -1503,8 +1509,8 @@
         },
         {
           "nome": "Tais Cristina Leite Cabral",
-          "n": 52,
-          "v": 1977.0
+          "n": 54,
+          "v": 2143.0
         },
         {
           "nome": "Andy Alexia Lera Colanere",
@@ -1540,9 +1546,9 @@
       "ranking_serv": [
         {
           "nome": "FAST ESCOVA - LISA",
-          "n": 128,
-          "v": 8418.16,
-          "min": 5760
+          "n": 129,
+          "v": 8497.16,
+          "min": 5805
         },
         {
           "nome": "FAST ESCOVA - MODELADA",
@@ -1576,9 +1582,9 @@
         },
         {
           "nome": "PÉS",
-          "n": 35,
-          "v": 1322.0,
-          "min": 1050
+          "n": 36,
+          "v": 1369.0,
+          "min": 1080
         },
         {
           "nome": "FAST RETOQUE",
@@ -1599,16 +1605,16 @@
           "min": 540
         },
         {
+          "nome": "PLÁSTICA DOS PÉS VIP",
+          "n": 5,
+          "v": 615.0,
+          "min": 150
+        },
+        {
           "nome": "FAST ESCOVA MEGA HAIR - LISA",
           "n": 5,
           "v": 545.0,
           "min": 225
-        },
-        {
-          "nome": "PLÁSTICA DOS PÉS VIP",
-          "n": 4,
-          "v": 496.0,
-          "min": 120
         }
       ],
       "meios_pagamento": [
@@ -1616,37 +1622,37 @@
           "nome": "Mastercard",
           "n": 82,
           "v": 12171.0,
-          "pct": 34.5
+          "pct": 34.3
         },
         {
           "nome": "PIX",
           "n": 53,
           "v": 7628.0,
-          "pct": 21.6
+          "pct": 21.5
         },
         {
           "nome": "Visa",
           "n": 45,
           "v": 5678.0,
-          "pct": 16.1
+          "pct": 16.0
         },
         {
           "nome": "Maestro/Redeshop",
-          "n": 52,
-          "v": 5322.0,
-          "pct": 15.1
+          "n": 53,
+          "v": 5567.0,
+          "pct": 15.7
         },
         {
           "nome": "Visa Electron",
           "n": 24,
           "v": 2245.1,
-          "pct": 6.4
+          "pct": 6.3
         },
         {
           "nome": "Dinheiro",
           "n": 17,
           "v": 1221.0,
-          "pct": 3.5
+          "pct": 3.4
         },
         {
           "nome": "Elo Débito",
@@ -1719,41 +1725,41 @@
     },
     "mensal": {
       "kpis": {
-        "caixa": 28694.1,
-        "receita_serv": 23032.1,
-        "atend_fin": 368,
+        "caixa": 28939.1,
+        "receita_serv": 23277.1,
+        "atend_fin": 371,
         "atend_canc": 22,
         "atend_total": 396,
-        "n_trans": 226,
-        "ticket_trans": 126.97,
+        "n_trans": 227,
+        "ticket_trans": 127.49,
         "taxa_canc": 5.6,
         "dias_op": 18,
-        "clientes_unicos": 176,
-        "em_atendimento": 6
+        "clientes_unicos": 177,
+        "em_atendimento": 3
       },
       "meta": {
         "meta": 60000,
-        "realizado": 28694.1,
-        "pct": 47.8,
-        "falta": 31305.9,
+        "realizado": 28939.1,
+        "pct": 48.2,
+        "falta": 31060.9,
         "dias_realizados": 18,
         "dias_total": 26,
         "dias_restantes": 8,
-        "necessario_dia": 3913.24,
-        "ritmo_dia": 1594.12,
-        "projecao": 41447.03,
-        "projecao_pct": 69.1
+        "necessario_dia": 3882.61,
+        "ritmo_dia": 1607.73,
+        "projecao": 41800.92,
+        "projecao_pct": 69.7
       },
       "categorias": {
         "pacotes": {
           "v": 5183.0,
           "n": 14,
-          "pct": 18.1
+          "pct": 17.9
         },
         "servicos": {
-          "v": 23032.1,
-          "n": 368,
-          "pct": 80.3
+          "v": 23277.1,
+          "n": 371,
+          "pct": 80.4
         },
         "produtos": {
           "v": 455.0,
@@ -1763,9 +1769,9 @@
       },
       "novos_vs_recorr": {
         "novos": {
-          "clientes": 162,
-          "atend": 324,
-          "receita": 20782.0
+          "clientes": 163,
+          "atend": 327,
+          "receita": 21027.0
         },
         "recorrentes": {
           "clientes": 14,
@@ -1824,11 +1830,11 @@
         },
         {
           "nome": "PLÁSTICA DOS PÉS VIP",
-          "n": 3,
-          "v": 367.0,
+          "n": 4,
+          "v": 486.0,
           "min_medio": 30,
-          "ticket": 122.33,
-          "rs_hora": 244.67
+          "ticket": 121.5,
+          "rs_hora": 243.0
         },
         {
           "nome": "FAST BABYLISS",
@@ -1983,8 +1989,8 @@
         },
         {
           "d": 21,
-          "n": 27,
-          "v": 1569.0
+          "n": 30,
+          "v": 1814.0
         }
       ],
       "hora_media": [
@@ -2045,8 +2051,8 @@
         },
         {
           "h": 19,
-          "media": 1.83,
-          "n_total": 33
+          "media": 1.89,
+          "n_total": 34
         },
         {
           "h": 20,
@@ -2077,13 +2083,13 @@
         },
         {
           "nome": "Thaise Moreno",
-          "n": 31,
-          "v": 2036.0
+          "n": 32,
+          "v": 2115.0
         },
         {
           "nome": "Tais Cristina Leite Cabral",
-          "n": 47,
-          "v": 1706.0
+          "n": 49,
+          "v": 1872.0
         },
         {
           "nome": "Andy Alexia Lera Colanere",
@@ -2119,9 +2125,9 @@
       "ranking_serv": [
         {
           "nome": "FAST ESCOVA - LISA",
-          "n": 100,
-          "v": 6270.66,
-          "min": 4500
+          "n": 101,
+          "v": 6349.66,
+          "min": 4545
         },
         {
           "nome": "PÉS E MÃOS",
@@ -2173,21 +2179,21 @@
         },
         {
           "nome": "PÉS",
-          "n": 20,
-          "v": 621.0,
-          "min": 600
+          "n": 21,
+          "v": 668.0,
+          "min": 630
+        },
+        {
+          "nome": "PLÁSTICA DOS PÉS VIP",
+          "n": 4,
+          "v": 486.0,
+          "min": 120
         },
         {
           "nome": "FAST ESCOVA MEGA HAIR - LISA",
           "n": 4,
           "v": 436.0,
           "min": 180
-        },
-        {
-          "nome": "PLÁSTICA DOS PÉS VIP",
-          "n": 3,
-          "v": 367.0,
-          "min": 90
         }
       ],
       "meios_pagamento": [
@@ -2195,31 +2201,31 @@
           "nome": "Mastercard",
           "n": 62,
           "v": 10156.0,
-          "pct": 35.4
+          "pct": 35.1
         },
         {
           "nome": "PIX",
           "n": 43,
           "v": 6417.0,
-          "pct": 22.4
+          "pct": 22.2
         },
         {
           "nome": "Maestro/Redeshop",
-          "n": 43,
-          "v": 4218.0,
-          "pct": 14.7
+          "n": 44,
+          "v": 4463.0,
+          "pct": 15.4
         },
         {
           "nome": "Visa",
           "n": 34,
           "v": 4173.0,
-          "pct": 14.5
+          "pct": 14.4
         },
         {
           "nome": "Visa Electron",
           "n": 16,
           "v": 1629.1,
-          "pct": 5.7
+          "pct": 5.6
         },
         {
           "nome": "Dinheiro",
@@ -2237,7 +2243,7 @@
           "nome": "Elo Crédito",
           "n": 1,
           "v": 330.0,
-          "pct": 1.2
+          "pct": 1.1
         },
         {
           "nome": "American Express",
@@ -2298,43 +2304,43 @@
     },
     "semanal": {
       "kpis": {
-        "caixa": 4453.0,
-        "receita_serv": 3892.0,
-        "atend_fin": 63,
+        "caixa": 4698.0,
+        "receita_serv": 4137.0,
+        "atend_fin": 66,
         "atend_canc": 4,
         "atend_total": 73,
-        "n_trans": 42,
-        "ticket_trans": 106.02,
+        "n_trans": 43,
+        "ticket_trans": 109.26,
         "taxa_canc": 5.5,
         "dias_op": 5,
-        "clientes_unicos": 36,
-        "em_atendimento": 6,
+        "clientes_unicos": 37,
+        "em_atendimento": 3,
         "periodo_ini": "2026-08-17",
         "periodo_fim": "2026-08-23"
       },
       "meta": {
         "meta": 13846.15,
-        "realizado": 4453.0,
-        "pct": 32.2,
-        "falta": 9393.15,
+        "realizado": 4698.0,
+        "pct": 33.9,
+        "falta": 9148.15,
         "dias_realizados": 5,
         "dias_total": 6,
         "dias_restantes": 1,
-        "necessario_dia": 9393.15,
-        "ritmo_dia": 890.6,
-        "projecao": 5343.6,
-        "projecao_pct": 38.6
+        "necessario_dia": 9148.15,
+        "ritmo_dia": 939.6,
+        "projecao": 5637.6,
+        "projecao_pct": 40.7
       },
       "categorias": {
         "pacotes": {
           "v": 540.0,
           "n": 2,
-          "pct": 12.1
+          "pct": 11.5
         },
         "servicos": {
-          "v": 3892.0,
-          "n": 63,
-          "pct": 87.4
+          "v": 4137.0,
+          "n": 66,
+          "pct": 88.1
         },
         "produtos": {
           "v": 0.0,
@@ -2365,8 +2371,8 @@
         },
         {
           "nome": "Sex",
-          "n": 27,
-          "v": 1569.0
+          "n": 30,
+          "v": 1814.0
         },
         {
           "nome": "Sáb",
@@ -2437,8 +2443,8 @@
         },
         {
           "h": 19,
-          "media": 1.6,
-          "n_total": 8
+          "media": 1.8,
+          "n_total": 9
         },
         {
           "h": 20,
@@ -2454,13 +2460,13 @@
         },
         {
           "nome": "Thaise Moreno",
-          "n": 5,
-          "v": 586.0
+          "n": 6,
+          "v": 665.0
         },
         {
           "nome": "Tais Cristina Leite Cabral",
-          "n": 15,
-          "v": 455.0
+          "n": 17,
+          "v": 621.0
         },
         {
           "nome": "Raphaela Da Silva Farias",
@@ -2501,9 +2507,9 @@
       "ranking_serv": [
         {
           "nome": "FAST ESCOVA - LISA",
-          "n": 13,
-          "v": 859.16,
-          "min": 585
+          "n": 14,
+          "v": 938.16,
+          "min": 630
         },
         {
           "nome": "PÉS E MÃOS",
@@ -2542,28 +2548,28 @@
           "min": 50
         },
         {
+          "nome": "PLÁSTICA DOS PÉS VIP",
+          "n": 2,
+          "v": 238.0,
+          "min": 60
+        },
+        {
+          "nome": "PÉS",
+          "n": 6,
+          "v": 151.0,
+          "min": 180
+        },
+        {
           "nome": "FAST PENTEADO",
           "n": 1,
           "v": 119.0,
           "min": 60
         },
         {
-          "nome": "PLÁSTICA DOS PÉS VIP",
-          "n": 1,
-          "v": 119.0,
-          "min": 30
-        },
-        {
           "nome": "FAST NUTRI",
           "n": 2,
           "v": 108.66,
           "min": 30
-        },
-        {
-          "nome": "PÉS",
-          "n": 5,
-          "v": 104.0,
-          "min": 150
         },
         {
           "nome": "DESIGN SOBRANCELHAS",
@@ -2577,49 +2583,49 @@
           "nome": "Mastercard",
           "n": 13,
           "v": 1957.0,
-          "pct": 43.9
+          "pct": 41.7
         },
         {
           "nome": "Maestro/Redeshop",
-          "n": 8,
-          "v": 675.0,
-          "pct": 15.2
+          "n": 9,
+          "v": 920.0,
+          "pct": 19.6
         },
         {
           "nome": "Visa Electron",
           "n": 3,
           "v": 433.0,
-          "pct": 9.7
+          "pct": 9.2
         },
         {
           "nome": "PIX",
           "n": 4,
           "v": 376.0,
-          "pct": 8.4
+          "pct": 8.0
         },
         {
           "nome": "Dinheiro",
           "n": 5,
           "v": 332.0,
-          "pct": 7.5
+          "pct": 7.1
         },
         {
           "nome": "Elo Crédito",
           "n": 1,
           "v": 330.0,
-          "pct": 7.4
+          "pct": 7.0
         },
         {
           "nome": "Visa",
           "n": 4,
           "v": 316.0,
-          "pct": 7.1
+          "pct": 6.7
         },
         {
           "nome": "Elo Débito",
           "n": 1,
           "v": 35.0,
-          "pct": 0.8
+          "pct": 0.7
         },
         {
           "nome": "Crédito de Cliente",
@@ -2640,6 +2646,10 @@
         {
           "nome": "Riviane Rafik",
           "n": 4
+        },
+        {
+          "nome": "Roberta Toledo",
+          "n": 3
         },
         {
           "nome": "Juliana Cavalieri",
@@ -2664,52 +2674,48 @@
         {
           "nome": "Gabriella Martins ",
           "n": 2
-        },
-        {
-          "nome": "Elaine Donato",
-          "n": 2
         }
       ]
     },
     "diario": {
       "kpis": {
-        "caixa": 2130.0,
-        "receita_serv": 1569.0,
-        "atend_fin": 27,
+        "caixa": 2375.0,
+        "receita_serv": 1814.0,
+        "atend_fin": 30,
         "atend_canc": 4,
         "atend_total": 37,
-        "n_trans": 20,
-        "ticket_trans": 106.5,
+        "n_trans": 21,
+        "ticket_trans": 113.1,
         "taxa_canc": 10.8,
         "dias_op": 1,
-        "clientes_unicos": 15,
-        "em_atendimento": 6,
+        "clientes_unicos": 16,
+        "em_atendimento": 3,
         "dia_semana": "Sex",
         "data": "2026-08-21"
       },
       "meta": {
         "meta": 2307.69,
-        "realizado": 2130.0,
-        "pct": 92.3,
-        "falta": 177.69,
+        "realizado": 2375.0,
+        "pct": 102.9,
+        "falta": -67.31,
         "dias_realizados": 1,
         "dias_total": 1,
         "dias_restantes": 0,
         "necessario_dia": 0.0,
-        "ritmo_dia": 2130.0,
-        "projecao": 2130.0,
-        "projecao_pct": 92.3
+        "ritmo_dia": 2375.0,
+        "projecao": 2375.0,
+        "projecao_pct": 102.9
       },
       "categorias": {
         "pacotes": {
           "v": 540.0,
           "n": 2,
-          "pct": 25.4
+          "pct": 22.7
         },
         "servicos": {
-          "v": 1569.0,
-          "n": 27,
-          "pct": 73.7
+          "v": 1814.0,
+          "n": 30,
+          "pct": 76.4
         },
         "produtos": {
           "v": 0.0,
@@ -2775,8 +2781,8 @@
         },
         {
           "h": 19,
-          "n": 1,
-          "v": 330.0
+          "n": 2,
+          "v": 575.0
         },
         {
           "h": 20,
@@ -2796,19 +2802,19 @@
           "v": 336.0
         },
         {
+          "nome": "Tais Cristina Leite Cabral",
+          "n": 9,
+          "v": 296.0
+        },
+        {
           "nome": "Raphaela Da Silva Farias",
           "n": 4,
           "v": 260.0
         },
         {
-          "nome": "Tais Cristina Leite Cabral",
-          "n": 7,
-          "v": 130.0
-        },
-        {
           "nome": "Thaise Moreno",
-          "n": 1,
-          "v": 99.0
+          "n": 2,
+          "v": 178.0
         },
         {
           "nome": "Andy Alexia Lera Colanere",
@@ -2819,9 +2825,9 @@
       "ranking_serv": [
         {
           "nome": "FAST ESCOVA - LISA",
-          "n": 5,
-          "v": 329.16,
-          "min": 225
+          "n": 6,
+          "v": 408.16,
+          "min": 270
         },
         {
           "nome": "FAST MAKE VIP",
@@ -2848,6 +2854,12 @@
           "min": 180
         },
         {
+          "nome": "PLÁSTICA DOS PÉS VIP",
+          "n": 1,
+          "v": 119.0,
+          "min": 30
+        },
+        {
           "nome": "FAST PENTEADO",
           "n": 1,
           "v": 119.0,
@@ -2872,22 +2884,16 @@
           "min": 15
         },
         {
+          "nome": "PÉS",
+          "n": 3,
+          "v": 47.0,
+          "min": 90
+        },
+        {
           "nome": "FAST HIDRATAÇÃO - FAST MASK",
           "n": 1,
           "v": 39.5,
           "min": 10
-        },
-        {
-          "nome": "ADICIONAL ESCOVA MODELADORA",
-          "n": 1,
-          "v": 20.0,
-          "min": 10
-        },
-        {
-          "nome": "PÉS",
-          "n": 2,
-          "v": 0.0,
-          "min": 60
         }
       ],
       "meios_pagamento": [
@@ -2895,43 +2901,43 @@
           "nome": "Mastercard",
           "n": 5,
           "v": 876.0,
-          "pct": 41.1
+          "pct": 36.9
+        },
+        {
+          "nome": "Maestro/Redeshop",
+          "n": 5,
+          "v": 525.0,
+          "pct": 22.1
         },
         {
           "nome": "Visa Electron",
           "n": 2,
           "v": 386.0,
-          "pct": 18.1
+          "pct": 16.3
         },
         {
           "nome": "Elo Crédito",
           "n": 1,
           "v": 330.0,
-          "pct": 15.5
-        },
-        {
-          "nome": "Maestro/Redeshop",
-          "n": 4,
-          "v": 280.0,
-          "pct": 13.1
+          "pct": 13.9
         },
         {
           "nome": "PIX",
           "n": 1,
           "v": 99.0,
-          "pct": 4.6
+          "pct": 4.2
         },
         {
           "nome": "Dinheiro",
           "n": 2,
           "v": 80.0,
-          "pct": 3.8
+          "pct": 3.4
         },
         {
           "nome": "Visa",
           "n": 1,
           "v": 79.0,
-          "pct": 3.7
+          "pct": 3.3
         }
       ],
       "clientes_top": [
@@ -2942,6 +2948,10 @@
         {
           "nome": "Riviane Rafik",
           "n": 4
+        },
+        {
+          "nome": "Roberta Toledo",
+          "n": 3
         },
         {
           "nome": "Juliana Cavalieri",
@@ -2970,27 +2980,30 @@
         {
           "nome": "Tamires Novaes",
           "n": 1
-        },
-        {
-          "nome": "Marcia Regina Araujo Neto ",
-          "n": 1
         }
       ]
     }
   },
   "insights": {
-    "diario": [],
+    "diario": [
+      {
+        "tipo": "oportunidade",
+        "titulo": "Meta do dia batida",
+        "texto": "Caixa R$ 2.375,00 já superou a meta diária de R$ 2.307,69 (103%).",
+        "acao": "Toda venda daqui pra frente é margem pura. Oferecer produto adicional pra levar ticket médio pra cima."
+      }
+    ],
     "semanal": [
       {
         "tipo": "atencao",
         "titulo": "Semana abaixo da meta",
-        "texto": "Projeção R$ 5.343,60 (39%). Gap de R$ 8.502,55/dia para os 1 dias restantes.",
+        "texto": "Projeção R$ 5.637,60 (41%). Gap de R$ 8.208,55/dia para os 1 dias restantes.",
         "acao": "Ativar campanha WhatsApp pras top 20 clientes AGORA — retorno médio 3-4 walk-ins no fim de semana."
       },
       {
         "tipo": "oportunidade",
-        "titulo": "Sex rende 3.6× Qui",
-        "texto": "Sex: R$ 1.569,00/dia · Qui: R$ 436,00/dia.",
+        "titulo": "Sex rende 4.2× Qui",
+        "texto": "Sex: R$ 1.814,00/dia · Qui: R$ 436,00/dia.",
         "acao": "Reforçar equipe no Sex. No Qui, testar promoção ou reduzir 1 profissional pra cortar custo."
       }
     ],
@@ -2998,25 +3011,25 @@
       {
         "tipo": "critico",
         "titulo": "Mês projeta ABAIXO de 80% da meta",
-        "texto": "Projeção R$ 41.447,03 (69%). Ritmo R$ 1.594,12/dia vs necessário R$ 3.913,24/dia. Gap: R$ 2.319,12/dia.",
+        "texto": "Projeção R$ 41.800,92 (70%). Ritmo R$ 1.607,73/dia vs necessário R$ 3.882,61/dia. Gap: R$ 2.274,88/dia.",
         "acao": "Restam 8 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
       },
       {
         "tipo": "oportunidade",
-        "titulo": "Ritmo/dia +94% vs mês anterior",
-        "texto": "Este mês: R$ 1.594,12/dia. Mês anterior: R$ 822,12/dia.",
+        "titulo": "Ritmo/dia +96% vs mês anterior",
+        "texto": "Este mês: R$ 1.607,73/dia. Mês anterior: R$ 822,12/dia.",
         "acao": "Aumento consistente — vale entender o que mudou (equipe? campanha? sazonalidade?) e replicar."
       },
       {
         "tipo": "atencao",
         "titulo": "Retenção baixa (8% recorrentes)",
-        "texto": "162 novos vs 14 recorrentes. Novos gastam R$ 20.782,00, recorrentes R$ 2.250,10.",
+        "texto": "163 novos vs 14 recorrentes. Novos gastam R$ 21.027,00, recorrentes R$ 2.250,10.",
         "acao": "Loja abriu há pouco — normal ter muitos novos. Prioridade: fazer o cliente novo voltar. Cartão fidelidade + mensagem 20 dias após primeira visita costuma trazer 30% de volta."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos = 1.6% do caixa (R$ 455,00). Se chegasse a 8%, seriam +R$ 1.840,53/mês.",
+        "texto": "Produtos = 1.6% do caixa (R$ 455,00). Se chegasse a 8%, seriam +R$ 1.860,13/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       }
     ],
@@ -3024,13 +3037,13 @@
       {
         "tipo": "atencao",
         "titulo": "Ritmo anual bem abaixo da meta",
-        "texto": "Projeção R$ 188.564,73 (62%). Precisa R$ 2.400,94/dia (atual R$ 1.356,58). Gap: R$ 118.012,27.",
+        "texto": "Projeção R$ 189.874,53 (62%). Precisa R$ 2.398,77/dia (atual R$ 1.366,00). Gap: R$ 116.702,47.",
         "acao": "Meta anual está agressiva pro ritmo atual. Duas rotas: (a) reduzir meta pra algo alcançável, (b) investir em captação — vale calcular custo por cliente novo primeiro."
       },
       {
         "tipo": "info",
         "titulo": "Sazonalidade: Ago > Jul",
-        "texto": "Ago: R$ 28.694,10 · Jul: R$ 6.577,00.",
+        "texto": "Ago: R$ 28.939,10 · Jul: R$ 6.577,00.",
         "acao": "Prevê-se queda em Jul: preparar promoção antecipada ou combo especial pra suavizar."
       },
       {
@@ -3042,15 +3055,15 @@
       {
         "tipo": "oportunidade",
         "titulo": "108 clientes vieram apenas 1 vez (47%)",
-        "texto": "Base tem 230 clientes únicos. Se converter 20% desses 108 numa segunda visita, são ~21 clientes a mais recorrentes.",
+        "texto": "Base tem 231 clientes únicos. Se converter 20% desses 108 numa segunda visita, são ~21 clientes a mais recorrentes.",
         "acao": "Campanha de reativação com voucher (R$ 30 off na próxima visita) pra quem só veio uma vez — investimento baixo, retorno alto."
       }
     ],
     "stone": [
       {
         "tipo": "info",
-        "titulo": "R$ 14.559,50 a receber em cartão (D+30)",
-        "texto": "Antecipar tudo hoje custaria R$ 241,69 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 165,22 (CDI). Custo real da antecipação: R$ 76,47.",
+        "titulo": "R$ 14.795,92 a receber em cartão (D+30)",
+        "texto": "Antecipar tudo hoje custaria R$ 245,61 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 167,90 (CDI). Custo real da antecipação: R$ 77,71.",
         "acao": "Só antecipa se tem uso melhor pro dinheiro que render >14,5% a.a. Caso contrário, é mais barato esperar D+30."
       },
       {
