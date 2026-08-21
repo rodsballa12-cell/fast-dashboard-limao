@@ -389,6 +389,20 @@ def main():
         print(f"[stone] erro: {e}")
         stone_data = None
 
+    # Auditoria de cancelados com valor > 0 (potencial red flag walk-in only)
+    canc_com_valor = []
+    for a in agend:
+        if (a.get("status") or {}).get("nome") == "Cancelado" and float(a.get("valor") or 0) > 0:
+            dt = a.get("dataHoraInicio", "")
+            canc_com_valor.append({
+                "data": dt,
+                "valor": float(a["valor"]),
+                "profissional": (a.get("profissional") or {}).get("nome", ""),
+                "cliente": (a.get("cliente") or {}).get("nome", ""),
+                "servico": (a.get("servico") or {}).get("nome", ""),
+            })
+    canc_com_valor.sort(key=lambda x: x["data"])
+
     payload = {
         # UTC com sufixo Z para JavaScript interpretar corretamente
         "gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00","Z"),
@@ -397,6 +411,11 @@ def main():
         "dias_op_mes": DIAS_OP_MES,
         "cota_api": cota_final,
         "stone": stone_data,
+        "auditoria_cancelados": {
+            "n_com_valor": len(canc_com_valor),
+            "v_total": round(sum(x["valor"] for x in canc_com_valor), 2),
+            "lista": canc_com_valor,
+        },
         "abas": {
             "anual": {
                 "kpis": a_anual["kpis"], "meta": meta_ano, "categorias": a_anual["categorias"],
