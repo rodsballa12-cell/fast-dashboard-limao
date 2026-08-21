@@ -438,6 +438,12 @@ def main():
         except Exception:
             pass
 
+    # Data de corte: dia da inauguração (23/07) — cancelamentos até essa data
+    # são testes de setup do Trinks. Filtrados da auditoria mas contados no total_excluidos.
+    DATA_INAUGURACAO = "2026-07-23"
+    canc_excluidos_inaug = 0
+    canc_excluidos_valor = 0.0
+
     canc_com_valor = []
     for a in agend:
         if (a.get("status") or {}).get("nome") == "Cancelado" and float(a.get("valor") or 0) > 0:
@@ -447,6 +453,12 @@ def main():
             cli = (a.get("cliente") or {}).get("nome") or ""
             serv = (a.get("servico") or {}).get("nome") or ""
             data_iso = dt.split("T")[0] if dt else None
+
+            # Filtra testes de inauguração (até 23/07 inclusive)
+            if data_iso and data_iso <= DATA_INAUGURACAO:
+                canc_excluidos_inaug += 1
+                canc_excluidos_valor += v
+                continue
 
             # Flag 1: sem profissional atribuído
             sem_prof = not prof.strip()
@@ -516,6 +528,9 @@ def main():
         "auditoria_cancelados": {
             "n_com_valor": len(canc_com_valor),
             "v_total": round(sum(x["valor"] for x in canc_com_valor), 2),
+            "excluidos_inauguracao_n": canc_excluidos_inaug,
+            "excluidos_inauguracao_v": round(canc_excluidos_valor, 2),
+            "data_corte": "2026-07-23",
             "resumo_risco": dict(resumo_risco),
             "por_profissional": sorted(
                 [{"nome": p, "n": d["n"], "v": round(d["v"], 2)} for p, d in canc_por_prof.items()],
