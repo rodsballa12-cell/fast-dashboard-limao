@@ -438,15 +438,15 @@ function renderAnual(data){
     {label:'Caixa · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
     {label:'Receita competência',value:brl0(k.receita_serv),foot:`${k.atend_fin} atend finalizados`},
     {label:'Ticket transação',value:brl(k.ticket_trans),foot:`${k.n_trans} notas`},
-    {label:'Cancelamento',value:pct(k.taxa_canc),foot:`${k.clientes_unicos} clientes únicos`}
+    {label:'Clientes únicos',value:k.clientes_unicos+'',foot:`${k.atend_fin} atend · ${(k.atend_fin/Math.max(k.clientes_unicos,1)).toFixed(1)} visita/cliente`}
   ]);
   if(a.meta && a.meta.meta) renderMetaProgress('anual-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
   renderCategoriasMeta('anual-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0);
 
   // Tabela mensal
   const meses=Object.entries(a.meses||{}).sort();
-  const mrows=meses.map(([ym,m])=>[ym,m.dias_op,brl0(m.caixa),brl0(m.receita_serv),m.atend_fin,m.clientes_unicos,brl(m.ticket_trans),pct(m.taxa_canc)]);
-  renderTable('anual-meses','Tabela mensal detalhada','Consolidado por mês',['Mês','Dias','Caixa','Receita','Atend','Únicos','Ticket','Cancel'],mrows);
+  const mrows=meses.map(([ym,m])=>[ym,m.dias_op,brl0(m.caixa),brl0(m.receita_serv),m.atend_fin,m.clientes_unicos,brl(m.ticket_trans)]);
+  renderTable('anual-meses','Tabela mensal detalhada','Consolidado por mês',['Mês','Dias','Caixa','Receita','Atend','Únicos','Ticket'],mrows);
 
   // LTV
   const ltv=a.top_ltv;
@@ -481,7 +481,7 @@ function renderMensal(data){
   renderInsights('mensal-insights','Mês corrente',(data.insights||{}).mensal);
   renderKPIs('mensal-kpis',[
     {label:'Caixa · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent'},
-    {label:'Atendimentos',value:k.atend_fin+'',foot:`${k.clientes_unicos} únicos · ${pct(k.taxa_canc)} cancel`},
+    {label:'Atendimentos',value:k.atend_fin+'',foot:`${k.clientes_unicos} clientes únicos`},
     {label:'Ticket transação',value:brl(k.ticket_trans),foot:`descontos ${brl0(m.descontos*-1)}`},
     {label:'Dias operados',value:k.dias_op+'',foot:`de ${data.dias_op_mes} totais no mês`}
   ]);
@@ -521,7 +521,7 @@ function renderSemanal(data){
   renderInsights('semanal-insights','Semana corrente',(data.insights||{}).semanal);
   renderKPIs('semanal-kpis',[
     {label:'Caixa · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent'},
-    {label:'Atendimentos',value:k.atend_fin+'',foot:`${k.clientes_unicos} únicos · ${pct(k.taxa_canc)} cancel`},
+    {label:'Atendimentos',value:k.atend_fin+'',foot:`${k.clientes_unicos} clientes únicos`},
     {label:'Ticket transação',value:brl(k.ticket_trans),foot:'padrão varejo'},
     {label:'Dias operados',value:k.dias_op+'',foot:'de 6 (seg–sáb)'}
   ]);
