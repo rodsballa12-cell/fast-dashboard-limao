@@ -167,7 +167,7 @@
 
     <!-- ANUAL -->
     <div class="panel" id="tab-anual">
-      <div class="audit"><div>ℹ️</div><div>Consolidado <strong>2026</strong>. Loja abriu 23/07. Cresce a cada mês fechado.</div></div>
+      <div class="audit"><div>📅</div><div><strong>Panorama do ano.</strong> Loja abriu 23/07/2026. Foco: bater a meta mensal → meta anual segue junto. Compare meses fechados para ver a evolução real.</div></div>
       <div id="anual-insights"></div>
       <div id="anual-meta"></div>
       <div id="anual-kpis"></div>
@@ -181,7 +181,7 @@
 
     <!-- MENSAL -->
     <div class="panel active" id="tab-mensal">
-      <div class="audit"><div>✓</div><div><strong>Dados vivos.</strong> Caixa = <code>Σ(formasPagamentos.valor)</code>. Fonte: API Trinks (refresh 1×/h).</div></div>
+      <div class="audit"><div>🎯</div><div><strong>Onde você está no mês.</strong> Recomendações abaixo mostram o que ajustar antes do fechamento pra bater meta.</div></div>
       <div id="mensal-insights"></div>
       <div id="mensal-meta"></div>
       <div id="mensal-kpis"></div>
@@ -199,7 +199,7 @@
 
     <!-- SEMANAL -->
     <div class="panel" id="tab-semanal">
-      <div class="audit"><div>📊</div><div>Semana corrente (seg–dom). Domingo fechado.</div></div>
+      <div class="audit"><div>📊</div><div><strong>Semana corrente</strong> (seg–sáb · dom fechado). Use para decidir escala do próximo sábado e campanhas rápidas de WhatsApp.</div></div>
       <div id="semanal-insights"></div>
       <div id="semanal-meta"></div>
       <div id="semanal-kpis"></div>
@@ -215,7 +215,7 @@
 
     <!-- DIÁRIO -->
     <div class="panel" id="tab-diario">
-      <div class="audit"><div>🔴</div><div><strong>HOJE ao vivo.</strong> Números crescem ao longo do dia (Task Scheduler refresh 1×/h).</div></div>
+      <div class="audit"><div>🔴</div><div><strong>HOJE em tempo real</strong> (atualiza 1×/h). Use para decisões de escala AGORA: chamar reforço, liberar profissional ocioso, empurrar walk-in nos horários mais fracos.</div></div>
       <div id="diario-insights"></div>
       <div id="diario-meta"></div>
       <div id="diario-kpis"></div>
@@ -231,7 +231,8 @@
 
     <!-- AUDITORIA -->
     <div class="panel" id="tab-auditoria">
-      <div class="audit"><div>🛡️</div><div><strong>Detecção de anomalias.</strong> Loja é walk-in only — cancelamentos com valor > 0 são analisados por 3 vetores: match Stone (nome do pagador bate?), profissional atribuído, valor vs preço-tabela do serviço.</div></div>
+      <div class="audit"><div>🛡️</div><div><strong>Controle de risco financeiro.</strong> Como a loja é walk-in only, cancelamento com valor > 0 é sempre suspeito e precisa justificativa. Aqui você vê caso a caso.</div></div>
+      <div id="auditoria-insights"></div>
       <div id="auditoria-resumo"></div>
       <div id="auditoria-por-prof"></div>
       <div id="auditoria-lista"></div>
@@ -239,7 +240,7 @@
 
     <!-- STONE -->
     <div class="panel" id="tab-stone">
-      <div class="audit" id="stone-audit"><div>🏦</div><div>Reconciliação <strong>Trinks × Stone</strong>. Cartões trabalham em <strong>D+30</strong>.</div></div>
+      <div class="audit" id="stone-audit"><div>🏦</div><div><strong>O que a loja vendeu vs o dinheiro que caiu.</strong> Cartão de crédito leva 30 dias pra virar caixa. Aqui você vê o fluxo real e decide se vale antecipar.</div></div>
       <div id="stone-insights"></div>
       <div id="stone-content"></div>
     </div>
@@ -332,7 +333,7 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
   document.getElementById(container_id).innerHTML=`
     <div class="card">
       <h2>Detalhamento por categoria · Meta vs Realizado ${titulo}</h2>
-      <div class="cap">Meta ${brl0(meta_valor)} fatiada na proporção (21/76/3) + projeção linear</div>
+      <div class="cap">Meta ${brl0(meta_valor)} distribuída pelo mix histórico da loja (21% pacotes · 76% serviços · 3% produtos). Projeção assume ritmo atual até o fim do período.</div>
       <div class="categ-grid">${tiles}</div>
       <table class="simple"><thead><tr><th>Categoria</th><th>Meta</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção</th></tr></thead><tbody>${tabela_rows}${total_row}</tbody></table>
     </div>`;
@@ -463,7 +464,7 @@ function renderAnual(data){
   document.getElementById('anual-ltv').innerHTML=`
     <div class="card">
       <h2>💎 Top clientes · LTV 2026 <span class="hi">(${ltv.total_clientes} únicos)</span></h2>
-      <div class="cap">Concentração de receita · Pareto revelador</div>
+      <div class="cap">Quem paga a conta da loja. Se o top 20 sai, quanto machuca?</div>
       <div class="categ-grid">
         ${tile('','Total únicos',ltv.total_clientes+'',`R$ ${(ltv.receita_total/Math.max(ltv.total_clientes,1)).toFixed(0)} LTV médio`)}
         ${tile('c2','Pareto top 20%',ltv.pareto20_n+' clientes',`${brl0(ltv.pareto20_v)} · <span class="up">${pct(ltv.pareto20_pct)}</span>`)}
@@ -504,7 +505,7 @@ function renderMensal(data){
   document.getElementById('mensal-novos').innerHTML=`
     <div class="card">
       <h2>🆕 Novos vs Recorrentes · mês</h2>
-      <div class="cap">Aquisição vs retenção</div>
+      <div class="cap">Fazer novo é caro. Fazer o novo voltar é o que sustenta a operação.</div>
       <div class="categ-grid">
         ${tile('','Clientes NOVOS',nvr.novos.clientes+'',`${nvr.novos.atend} atend · <strong>${brl0(nvr.novos.receita)}</strong>`)}
         ${tile('c2','Recorrentes',nvr.recorrentes.clientes+'',`${nvr.recorrentes.atend} atend · ${brl0(nvr.recorrentes.receita)}`)}
@@ -593,6 +594,7 @@ function renderAuditoria(data){
   const resumoEl = document.getElementById('auditoria-resumo');
   const profEl = document.getElementById('auditoria-por-prof');
   const listaEl = document.getElementById('auditoria-lista');
+  renderInsights('auditoria-insights','Auditoria · risco financeiro',(data.insights||{}).auditoria);
 
   if(!aud || !aud.lista){
     if(subEl) subEl.textContent = 'sem dados';
@@ -620,7 +622,7 @@ function renderAuditoria(data){
 
   resumoEl.innerHTML = `<div class="card">
     <h2>🛡️ Resumo de risco</h2>
-    <div class="cap">Cancelamentos com valor > R$ 0 · walk-in only · classificação automática</div>
+    <div class="cap">Cada cancelamento com valor é analisado automaticamente contra 3 vetores de risco financeiro</div>
     <div class="categ-grid" style="grid-template-columns:repeat(5,1fr)">${criticoTile}${tiles.join('')}</div>
     <div class="insight"><strong>Regras:</strong> <span style="color:var(--crit)">CRÍTICO</span> = Stone recebeu R$ igual no mesmo dia e nome do pagador bate com cliente cancelado (2+ tokens). <span style="color:var(--accent)">REVISAR</span> = valor+dia batem no Stone mas nome não confere (colisão provável). <span style="color:var(--warn)">ATENÇÃO</span> = sem prof atribuído OU valor diverge ±20% do preço mediano do serviço. <span style="color:var(--good)">OK</span> = cancelamento legítimo sem sinal.</div>
   </div>`;
@@ -664,7 +666,7 @@ function renderAuditoria(data){
   }).join('');
   listaEl.innerHTML = `<div class="card">
     <h2>Lista completa · ${aud.n_com_valor} cancelamentos com valor</h2>
-    <div class="cap">Ordenado por data (mais recente primeiro)</div>
+    <div class="cap">Mais recentes primeiro. Linhas vermelhas exigem ação hoje. Amarelas e laranjas valem revisão semanal.</div>
     <table class="simple">
       <thead><tr><th>Risco</th><th>Data</th><th>Valor</th><th>Profissional</th><th>Cliente</th><th>Serviço</th><th>Flags</th></tr></thead>
       <tbody>${rowsLista}</tbody>
@@ -747,7 +749,7 @@ function renderStone(data){
     ${antec ? `
     <div class="card" style="border-left:3px solid var(--accent-2);">
       <h2>💡 Análise real de antecipação Stone · vendas do mês</h2>
-      <div class="cap">Baseado em mix real Trinks (${antec.total.bruto>0 ? 'todas as vendas 1x, zero parcelamento' : 'sem vendas de cartão no mês'}) + taxas Stone padrão 2026</div>
+      <div class="cap">Baseado nas vendas reais do mês (${antec.total.bruto>0 ? 'todas 1× sem parcelamento' : 'sem cartão no mês'}) + taxas oficiais SIIBELLO</div>
       <table class="simple">
         <thead><tr><th>Modalidade</th><th>Nº vendas</th><th>Bruto</th><th>MDR</th><th>Cai em</th><th>Liq. esperando</th><th>Liq. antecipando</th><th>Custo antec.</th></tr></thead>
         <tbody>
@@ -772,7 +774,7 @@ function renderStone(data){
     const rows = nc.orfaos_stone.map(o=>`<tr><td>${(o.data||'').slice(-5).replace('-','/')}</td><td>${brl0(o.valor)}</td><td>${(o.origem||'?').substr(0,40)}</td></tr>`).join('');
     bloco_orf_stone = `<div class="card" style="border-left:3px solid var(--warn);">
       <h2>🟡 PIX Stone SEM correspondente no Trinks · ${nc.orfaos_stone_n} pgtos</h2>
-      <div class="cap">Dinheiro caiu na conta mas o Trinks não tem registro dessa venda</div>
+      <div class="cap">Dinheiro entrou na conta Stone, mas a venda não foi lançada no Trinks — DRE fica furado se não corrigir</div>
       <table class="simple"><thead><tr><th>Data</th><th>Valor</th><th>Origem (quem pagou)</th></tr></thead><tbody>${rows}</tbody></table>
       <div class="insight"><strong>Investigar com o time:</strong> venda fora do fluxo Trinks? Pagamento parcial? Cliente pagou 2×?</div>
     </div>`;
@@ -783,7 +785,7 @@ function renderStone(data){
     const rows = nc.orfaos_trinks.map(o=>`<tr><td>${(o.data||'').slice(-5).replace('-','/')}</td><td>${brl0(o.valor)}</td><td>${o.cliente||'?'}</td></tr>`).join('');
     bloco_orf_trinks = `<div class="card" style="border-left:3px solid var(--crit);">
       <h2>🔴 PIX Trinks SEM entrada na Stone · ${nc.orfaos_trinks_n} pgtos</h2>
-      <div class="cap">Cliente foi marcado como pago no Trinks mas o dinheiro NÃO caiu</div>
+      <div class="cap">Sistema marca como recebido, mas o PIX ainda não caiu na Stone — cliente pode ter enviado errado ou não pagou</div>
       <table class="simple"><thead><tr><th>Data</th><th>Valor</th><th>Cliente Trinks</th></tr></thead><tbody>${rows}</tbody></table>
       <div class="insight"><strong>Alerta:</strong> possível fraude, erro de registro ou pagamento para conta errada. <strong>Cobrar cliente ou corrigir registro.</strong></div>
     </div>`;
@@ -847,7 +849,7 @@ function renderStone(data){
     const tot = s.recebiveis_cartao.reduce((s,r)=>s+r.valor,0);
     bloco_receb = `<div class="card">
       <h2>💳 Recebíveis de cartão creditados (todos)</h2>
-      <div class="cap">Créditos D+30 recebidos no extrato · valor líquido pós-taxa</div>
+      <div class="cap">Vendas de cartão que já caíram na conta (30 dias após a venda) · valor líquido descontada a taxa</div>
       <table class="simple"><thead><tr><th>Data</th><th>Valor</th></tr></thead><tbody>${rows}<tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>TOTAL</td><td>${brl0(tot)}</td></tr></tbody></table>
     </div>`;
   }
@@ -861,7 +863,7 @@ function renderStone(data){
   let bloco_dinheiro = `
     <div class="card" style="border-left:3px solid var(--good);">
       <h2>💵 Caixa em dinheiro · físico (não passa Stone)</h2>
-      <div class="cap">Total recebido em espécie · fica no caixa da loja · precisa depósito manual</div>
+      <div class="cap">Dinheiro na mão · não passa pelo Stone · precisa auditar caixa físico semanalmente e depositar</div>
       <div class="categ-grid">
         ${tile('c3','Hoje', brl0(din_hoje.total), `${din_hoje.n} transações em espécie`)}
         ${tile('c3','Semana', brl0(din_semana.total), `${din_semana.n} transações`)}
@@ -901,7 +903,7 @@ function renderStone(data){
     bloco_aplicacao = `
       <div class="card" style="border-left:3px solid var(--good);">
         <h2>🏦 Aplicação · Reserva Stone <span class="hi">(validado com valor real 12/08)</span></h2>
-        <div class="cap">Varredura automática · cada crédito na conta é transferido imediato para aplicação · saldo cumulativo</div>
+        <div class="cap">Todo dinheiro que cai na Stone é transferido automaticamente pra reserva — este é o saldo total protegido</div>
         <div class="categ-grid">
           ${tile('c3','Saldo aplicado',brl0(ap.saldo_aplicado),`✓ bate com valor real confirmado (12/08)`)}
           ${tile('','Rendimento estim. (CDI)',brl0(ap.rendimento_estimado_r),`${ap.rendimento_estimado_pct}% · dias médios: ${ap.dias_medio_aporte}`)}
@@ -932,7 +934,7 @@ function renderStone(data){
     bloco_gap = `
       <div class="card" style="border-left:3px solid var(--warn);">
         <h2>⚠️ Vendas ao vivo · Trinks após último CSV Stone</h2>
-        <div class="cap">Vendas registradas no Trinks APÓS ${(gap.ultima_data_stone||'').slice(-8).replace('T',' ')} — ainda sem contrapartida no extrato Stone (esperado até você subir novo CSV)</div>
+        <div class="cap">Vendas registradas no Trinks depois de ${(gap.ultima_data_stone||'').slice(-8).replace('T',' ')} — Stone ainda não foi baixado. Normal até você subir o extrato novo</div>
         <div class="categ-grid">
           ${tile('','Vendas novas',gap.vendas_trinks_apos_n+'',`transações Trinks pós-CSV`)}
           ${tile('c2','Valor bruto',brl0(gap.vendas_trinks_apos_v),`aguardando novo extrato Stone p/ reconciliar`)}
