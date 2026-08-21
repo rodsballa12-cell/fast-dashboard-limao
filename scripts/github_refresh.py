@@ -407,8 +407,13 @@ def main():
         try: return datetime.strptime(s.split()[0], "%d/%m/%Y").date().isoformat()
         except Exception: return None
     def _norm_nome(s):
+        # remove acentos, normaliza pra minúsculo, tokeniza por palavra
         s = _norm("NFKD", (s or "").lower()).encode("ascii", "ignore").decode()
-        return " ".join(c for c in s if c.isalnum() or c == " ").split()
+        # substitui não-alfanuméricos por espaço, split, filtra stop-tokens curtos/comuns
+        import re as _re
+        stop = {"da", "de", "do", "das", "dos", "e", "ltda", "ltd", "sa", "junior", "jr"}
+        tokens = _re.findall(r"[a-z0-9]+", s)
+        return [t for t in tokens if len(t) >= 3 and t not in stop]
 
     stone_idx = defaultdict(list)
     if stone_data:
