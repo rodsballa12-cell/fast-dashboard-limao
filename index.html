@@ -162,6 +162,7 @@
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="semanal">Semanal<span class="subn" id="tab-semanal-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="diario">Diário<span class="subn" id="tab-diario-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="stone">🏦 Stone<span class="subn" id="tab-stone-sub"></span></button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="auditoria">🛡️ Auditoria<span class="subn" id="tab-auditoria-sub"></span></button>
     </div>
 
     <!-- ANUAL -->
@@ -226,6 +227,14 @@
       </div>
       <div id="diario-meios"></div>
       <div id="diario-topcli"></div>
+    </div>
+
+    <!-- AUDITORIA -->
+    <div class="panel" id="tab-auditoria">
+      <div class="audit"><div>🛡️</div><div><strong>Detecção de anomalias.</strong> Loja é walk-in only — cancelamentos com valor > 0 são analisados por 3 vetores: match Stone (nome do pagador bate?), profissional atribuído, valor vs preço-tabela do serviço.</div></div>
+      <div id="auditoria-resumo"></div>
+      <div id="auditoria-por-prof"></div>
+      <div id="auditoria-lista"></div>
     </div>
 
     <!-- STONE -->
@@ -577,6 +586,92 @@ function toast(msg, isError=false){
   t._timer=setTimeout(()=>t.className='',5000);
 }
 
+// ============= AUDITORIA =============
+function renderAuditoria(data){
+  const aud = data.auditoria_cancelados;
+  const subEl = document.getElementById('tab-auditoria-sub');
+  const resumoEl = document.getElementById('auditoria-resumo');
+  const profEl = document.getElementById('auditoria-por-prof');
+  const listaEl = document.getElementById('auditoria-lista');
+
+  if(!aud || !aud.lista){
+    if(subEl) subEl.textContent = 'sem dados';
+    resumoEl.innerHTML = '<div class="card"><h2>🛡️ Auditoria</h2><div class="cap">Dados de auditoria não disponíveis (rode o refresh)</div></div>';
+    profEl.innerHTML = ''; listaEl.innerHTML = '';
+    return;
+  }
+
+  const r = aud.resumo_risco || {};
+  const criticos = r.critico || 0;
+  const revisar  = r.revisar || 0;
+  const atencao  = r.atencao || 0;
+  if(subEl) subEl.textContent = criticos > 0 ? `⚠️ ${criticos} crítico` : `${aud.n_com_valor} eventos`;
+
+  // KPIs de resumo
+  const tiles = [
+    tile('', 'Cancelados c/ valor', aud.n_com_valor+'', `total R$ ${aud.v_total.toFixed(2)}`),
+    tile('c3', 'Sem risco (OK)', (r.ok||0)+'', 'nenhuma flag'),
+    tile('c2', 'Atenção operacional', atencao+'', 'sem prof OU valor atípico'),
+    tile('', 'Revisar (Stone hit)', revisar+'', 'match valor+dia · nome não bate'),
+  ];
+  const criticoTile = criticos > 0
+    ? `<div class="categ-tile" style="border-left-color:var(--crit)"><div class="n" style="color:var(--crit)">CRÍTICO — SKIMMING?</div><div class="v" style="color:var(--crit)">${criticos}</div><div class="d">nome do pagador Stone BATE com cliente cancelado</div></div>`
+    : `<div class="categ-tile" style="border-left-color:var(--good)"><div class="n" style="color:var(--good)">CRÍTICO — SKIMMING?</div><div class="v" style="color:var(--good)">0</div><div class="d">✅ nenhum match nome-para-nome</div></div>`;
+
+  resumoEl.innerHTML = `<div class="card">
+    <h2>🛡️ Resumo de risco</h2>
+    <div class="cap">Cancelamentos com valor > R$ 0 · walk-in only · classificação automática</div>
+    <div class="categ-grid" style="grid-template-columns:repeat(5,1fr)">${criticoTile}${tiles.join('')}</div>
+    <div class="insight"><strong>Regras:</strong> <span style="color:var(--crit)">CRÍTICO</span> = Stone recebeu R$ igual no mesmo dia e nome do pagador bate com cliente cancelado (2+ tokens). <span style="color:var(--accent)">REVISAR</span> = valor+dia batem no Stone mas nome não confere (colisão provável). <span style="color:var(--warn)">ATENÇÃO</span> = sem prof atribuído OU valor diverge ±20% do preço mediano do serviço. <span style="color:var(--good)">OK</span> = cancelamento legítimo sem sinal.</div>
+  </div>`;
+
+  // Ranking por profissional
+  const pr = aud.por_profissional || [];
+  const rowsProf = pr.map(p => [p.nome || '—', p.n, brl0(p.v)]);
+  renderTable('auditoria-por-prof', 'Cancelados por profissional', 'ordenado por valor total cancelado', ['Profissional', 'N', 'Valor'], rowsProf);
+
+  // Lista completa
+  const riscoStyle = {
+    critico: 'style="background:rgba(255,59,48,.10);border-left:3px solid var(--crit)"',
+    revisar: 'style="background:rgba(255,203,5,.08);border-left:3px solid var(--accent)"',
+    atencao: 'style="background:rgba(255,149,0,.08);border-left:3px solid var(--warn)"',
+    ok: '',
+  };
+  const riscoBadge = {
+    critico: '<span style="background:var(--crit);color:#fff;font-size:9.5px;padding:1px 6px;border-radius:3px;font-weight:800">CRÍTICO</span>',
+    revisar: '<span style="background:var(--accent);color:#000;font-size:9.5px;padding:1px 6px;border-radius:3px;font-weight:800">REVISAR</span>',
+    atencao: '<span style="background:var(--warn);color:#000;font-size:9.5px;padding:1px 6px;border-radius:3px;font-weight:800">ATENÇÃO</span>',
+    ok: '<span style="color:var(--ink-3);font-size:10px">ok</span>',
+  };
+  const rowsLista = aud.lista.map(x => {
+    const dt = new Date(x.data);
+    const dtStr = isNaN(dt.getTime()) ? x.data.slice(0,10) : dt.toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+    const flags = [];
+    if(x.match_por_nome) flags.push(`<span class="dn">🚨 Stone: ${x.stone_match_nomes.join('; ')}</span>`);
+    else if(x.stone_match_n > 0) flags.push(`<span style="color:var(--warn);font-weight:700">↔ Stone: ${x.stone_match_nomes.slice(0,2).join('; ')}${x.stone_match_nomes.length>2?'…':''}</span>`);
+    if(x.sem_prof) flags.push('<span style="color:var(--warn);font-weight:700">👤 sem prof</span>');
+    if(x.valor_atipico && x.preco_ref) flags.push(`<span style="color:var(--warn);font-weight:700">💰 ref R$ ${x.preco_ref.toFixed(2)}</span>`);
+    if(flags.length===0) flags.push('<span class="neu">—</span>');
+    return `<tr ${riscoStyle[x.risco]||''}>
+      <td>${riscoBadge[x.risco]||''}</td>
+      <td>${dtStr}</td>
+      <td>${brl(x.valor)}</td>
+      <td>${x.profissional || '<span class="dn">—</span>'}</td>
+      <td>${x.cliente || '—'}</td>
+      <td>${x.servico || '—'}</td>
+      <td>${flags.join('<br>')}</td>
+    </tr>`;
+  }).join('');
+  listaEl.innerHTML = `<div class="card">
+    <h2>Lista completa · ${aud.n_com_valor} cancelamentos com valor</h2>
+    <div class="cap">Ordenado por data (mais recente primeiro)</div>
+    <table class="simple">
+      <thead><tr><th>Risco</th><th>Data</th><th>Valor</th><th>Profissional</th><th>Cliente</th><th>Serviço</th><th>Flags</th></tr></thead>
+      <tbody>${rowsLista}</tbody>
+    </table>
+  </div>`;
+}
+
 // ============= LOAD =============
 function renderStone(data){
   const s = data.stone;
@@ -869,6 +964,7 @@ async function load(showToast=false){
     renderSemanal(data);
     renderDiario(data);
     renderStone(data);
+    renderAuditoria(data);
     if(!window._tabsSet){ setupTabs(); window._tabsSet=true; }
     const dt=new Date(data.gerado_em);
     const ageMin=Math.floor((Date.now()-dt.getTime())/60000);
