@@ -609,10 +609,12 @@ function renderAuditoria(data){
   const atencao  = r.atencao || 0;
   if(subEl) subEl.textContent = criticos > 0 ? `⚠️ ${criticos} crítico` : `${aud.n_com_valor} eventos`;
 
+  const info = r.info || 0;
+  const semValor = aud.lista.filter(x => x.valor_zero).length;
   // KPIs de resumo
   const tiles = [
-    tile('', 'Cancelados c/ valor', aud.n_com_valor+'', `total R$ ${aud.v_total.toFixed(2)}`),
-    tile('c3', 'Sem risco (OK)', (r.ok||0)+'', 'nenhuma flag'),
+    tile('', 'Total cancelamentos', aud.n_com_valor+'', `${semValor} sem cobrança · R$ ${aud.v_total.toFixed(2)} com valor`),
+    tile('c3', 'Sem risco (OK)', ((r.ok||0)+info)+'', 'nenhuma flag'),
     tile('c2', 'Atenção operacional', atencao+'', 'sem prof OU valor atípico'),
     tile('', 'Revisar (Stone hit)', revisar+'', 'match valor+dia · nome não bate'),
   ];
@@ -642,15 +644,24 @@ function renderAuditoria(data){
     critico: 'style="background:rgba(255,59,48,.10);border-left:3px solid var(--crit)"',
     revisar: 'style="background:rgba(255,203,5,.08);border-left:3px solid var(--accent)"',
     atencao: 'style="background:rgba(255,149,0,.08);border-left:3px solid var(--warn)"',
+    info:    'style="background:rgba(120,120,120,.04)"',
     ok: '',
   };
   const riscoBadge = {
     critico: '<span style="background:var(--crit);color:#fff;font-size:9.5px;padding:1px 6px;border-radius:3px;font-weight:800">CRÍTICO</span>',
     revisar: '<span style="background:var(--accent);color:#000;font-size:9.5px;padding:1px 6px;border-radius:3px;font-weight:800">REVISAR</span>',
     atencao: '<span style="background:var(--warn);color:#000;font-size:9.5px;padding:1px 6px;border-radius:3px;font-weight:800">ATENÇÃO</span>',
+    info:    '<span style="color:var(--ink-3);font-size:10px">sem valor</span>',
     ok: '<span style="color:var(--ink-3);font-size:10px">ok</span>',
   };
-  const rowsLista = aud.lista.map(x => {
+  // Ordena: risco primeiro (crit > revisar > atencao > info > ok), depois data desc
+  const ordemRisco = {critico:0, revisar:1, atencao:2, ok:3, info:4};
+  const listaOrd = [...aud.lista].sort((a,b) => {
+    const dr = (ordemRisco[a.risco]||9) - (ordemRisco[b.risco]||9);
+    if(dr !== 0) return dr;
+    return (b.data || '').localeCompare(a.data || '');
+  });
+  const rowsLista = listaOrd.map(x => {
     const dt = new Date(x.data);
     const dtStr = isNaN(dt.getTime()) ? x.data.slice(0,10) : dt.toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
     const flags = [];
@@ -658,20 +669,23 @@ function renderAuditoria(data){
     else if(x.stone_match_n > 0) flags.push(`<span style="color:var(--warn);font-weight:700">↔ Stone: ${x.stone_match_nomes.slice(0,2).join('; ')}${x.stone_match_nomes.length>2?'…':''}</span>`);
     if(x.sem_prof) flags.push('<span style="color:var(--warn);font-weight:700">👤 sem prof</span>');
     if(x.valor_atipico && x.preco_ref) flags.push(`<span style="color:var(--warn);font-weight:700">💰 ref R$ ${x.preco_ref.toFixed(2)}</span>`);
+    if(x.valor_zero) flags.push('<span style="color:var(--ink-3)">sem cobrança (walk-in não convertido)</span>');
     if(flags.length===0) flags.push('<span class="neu">—</span>');
+    const valorCell = x.valor_zero ? '<span style="color:var(--ink-3)">R$ 0,00</span>' : brl(x.valor);
     return `<tr ${riscoStyle[x.risco]||''}>
       <td>${riscoBadge[x.risco]||''}</td>
       <td>${dtStr}</td>
-      <td>${brl(x.valor)}</td>
+      <td>${valorCell}</td>
       <td>${x.profissional || '<span class="dn">—</span>'}</td>
       <td>${x.cliente || '—'}</td>
       <td>${x.servico || '—'}</td>
       <td>${flags.join('<br>')}</td>
     </tr>`;
   }).join('');
+  const totalTitulo = `${aud.n_com_valor} cancelamentos (${aud.lista.filter(x=>x.valor_zero).length} sem cobrança)`;
   listaEl.innerHTML = `<div class="card">
-    <h2>Lista completa · ${aud.n_com_valor} cancelamentos com valor</h2>
-    <div class="cap">Mais recentes primeiro. Linhas vermelhas exigem ação hoje. Amarelas e laranjas valem revisão semanal.</div>
+    <h2>Lista completa · ${totalTitulo}</h2>
+    <div class="cap">Ordenado por risco (crítico→revisar→atenção→ok→sem valor). Linhas vermelhas exigem ação hoje.</div>
     <table class="simple">
       <thead><tr><th>Risco</th><th>Data</th><th>Valor</th><th>Profissional</th><th>Cliente</th><th>Serviço</th><th>Flags</th></tr></thead>
       <tbody>${rowsLista}</tbody>

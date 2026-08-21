@@ -446,9 +446,9 @@ def main():
 
     canc_com_valor = []
     for a in agend:
-        if (a.get("status") or {}).get("nome") == "Cancelado" and float(a.get("valor") or 0) > 0:
+        if (a.get("status") or {}).get("nome") == "Cancelado":
             dt = a.get("dataHoraInicio", "")
-            v = float(a["valor"])
+            v = float(a.get("valor") or 0)
             prof = (a.get("profissional") or {}).get("nome") or ""
             cli = (a.get("cliente") or {}).get("nome") or ""
             serv = (a.get("servico") or {}).get("nome") or ""
@@ -460,33 +460,40 @@ def main():
                 canc_excluidos_valor += v
                 continue
 
+            valor_zero = v == 0
+
             # Flag 1: sem profissional atribuído
             sem_prof = not prof.strip()
 
-            # Flag 2: valor atípico (diverge do preço mediano do serviço em >20%)
+            # Flag 2: valor atípico (só faz sentido se tem valor)
             preco_ref = preco_mediano.get(serv)
             valor_atipico = False
-            if preco_ref and preco_ref > 0:
+            if not valor_zero and preco_ref and preco_ref > 0:
                 valor_atipico = abs(v - preco_ref) / preco_ref > 0.20
 
-            # Flag 3: match Stone (mesmo dia + valor)
-            stone_matches = stone_idx.get((data_iso, round(v, 2)), []) if data_iso else []
-            # Analisa se algum nome bate com o cliente (indicaria skimming real)
-            cli_tokens = set(_norm_nome(cli))
+            # Flag 3: match Stone (só faz sentido se tem valor)
+            stone_matches = []
             match_por_nome = False
-            for m in stone_matches:
-                orig_tokens = set(_norm_nome(m["origem"]))
-                if cli_tokens & orig_tokens and len(cli_tokens & orig_tokens) >= 2:
-                    match_por_nome = True
-                    break
+            if not valor_zero:
+                stone_matches = stone_idx.get((data_iso, round(v, 2)), []) if data_iso else []
+                cli_tokens = set(_norm_nome(cli))
+                for m in stone_matches:
+                    orig_tokens = set(_norm_nome(m["origem"]))
+                    if cli_tokens & orig_tokens and len(cli_tokens & orig_tokens) >= 2:
+                        match_por_nome = True
+                        break
 
-            # Nível de risco
+            # Nível de risco (valor_zero = 'info' por padrão, exceto se sem prof também)
             if match_por_nome:
-                risco = "critico"   # skimming confirmado (nome bate)
+                risco = "critico"
             elif stone_matches and not valor_atipico:
-                risco = "revisar"   # valor comum, colisão possível
+                risco = "revisar"
+            elif valor_zero and sem_prof:
+                risco = "atencao"       # zero valor E sem prof — anomalia dupla
+            elif valor_zero:
+                risco = "info"          # zero valor · walk-in que não virou venda
             elif sem_prof or valor_atipico:
-                risco = "atencao"   # anomalia operacional
+                risco = "atencao"
             else:
                 risco = "ok"
 
@@ -498,6 +505,7 @@ def main():
                 "servico": serv,
                 "sem_prof": sem_prof,
                 "valor_atipico": valor_atipico,
+                "valor_zero": valor_zero,
                 "preco_ref": preco_ref,
                 "stone_match_n": len(stone_matches),
                 "stone_match_nomes": [m["origem"] for m in stone_matches],
