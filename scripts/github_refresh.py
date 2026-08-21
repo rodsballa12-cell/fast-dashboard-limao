@@ -389,6 +389,122 @@ def main():
         print(f"[stone] erro: {e}")
         stone_data = None
 
+    # === Auditoria de cancelados com valor > 0 (walk-in only) ===
+    # Preço mediano por serviço (base: atendimentos finalizados) para detectar valor atípico
+    from statistics import median
+    from unicodedata import normalize as _norm
+    servico_precos = defaultdict(list)
+    for a in agend:
+        if (a.get("status") or {}).get("nome") == "Finalizado":
+            v = float(a.get("valor") or 0)
+            s = (a.get("servico") or {}).get("nome") or ""
+            if v > 0 and s:
+                servico_precos[s].append(v)
+    preco_mediano = {s: median(vs) for s, vs in servico_precos.items() if len(vs) >= 2}
+
+    # Índice Stone: (data_iso, valor_rounded) → lista de origens (nome do pagador)
+    def _dstr_to_iso(s):
+        try: return datetime.strptime(s.split()[0], "%d/%m/%Y").date().isoformat()
+        except Exception: return None
+    def _norm_nome(s):
+        # remove acentos, normaliza pra minúsculo, tokeniza por palavra
+        s = _norm("NFKD", (s or "").lower()).encode("ascii", "ignore").decode()
+        # substitui não-alfanuméricos por espaço, split, filtra stop-tokens curtos/comuns
+        import re as _re
+        stop = {"da", "de", "do", "das", "dos", "e", "ltda", "ltd", "sa", "junior", "jr"}
+        tokens = _re.findall(r"[a-z0-9]+", s)
+        return [t for t in tokens if len(t) >= 3 and t not in stop]
+
+    stone_idx = defaultdict(list)
+    if stone_data:
+        try:
+            import csv as _csv
+            with open(STONE_CSV, encoding="utf-8") as fh:
+                rows = list(_csv.reader(fh))
+            hdr = rows[0]; icol = {c: i for i, c in enumerate(hdr)}
+            for r in rows[1:]:
+                if not r or len(r) < 8: continue
+                if r[0] == "Crédito" and r[1] in ("Transação", "Pix", "Recebível de Cartão"):
+                    d = _dstr_to_iso(r[icol["Data"]])
+                    if not d: continue
+                    try:
+                        v = float(r[2].replace(".", "").replace(",", ".").replace("R$", "").strip())
+                    except Exception:
+                        continue
+                    stone_idx[(d, round(v, 2))].append({
+                        "origem": r[icol["Origem"]],
+                        "tipo": r[1],
+                    })
+        except Exception:
+            pass
+
+    canc_com_valor = []
+    for a in agend:
+        if (a.get("status") or {}).get("nome") == "Cancelado" and float(a.get("valor") or 0) > 0:
+            dt = a.get("dataHoraInicio", "")
+            v = float(a["valor"])
+            prof = (a.get("profissional") or {}).get("nome") or ""
+            cli = (a.get("cliente") or {}).get("nome") or ""
+            serv = (a.get("servico") or {}).get("nome") or ""
+            data_iso = dt.split("T")[0] if dt else None
+
+            # Flag 1: sem profissional atribuído
+            sem_prof = not prof.strip()
+
+            # Flag 2: valor atípico (diverge do preço mediano do serviço em >20%)
+            preco_ref = preco_mediano.get(serv)
+            valor_atipico = False
+            if preco_ref and preco_ref > 0:
+                valor_atipico = abs(v - preco_ref) / preco_ref > 0.20
+
+            # Flag 3: match Stone (mesmo dia + valor)
+            stone_matches = stone_idx.get((data_iso, round(v, 2)), []) if data_iso else []
+            # Analisa se algum nome bate com o cliente (indicaria skimming real)
+            cli_tokens = set(_norm_nome(cli))
+            match_por_nome = False
+            for m in stone_matches:
+                orig_tokens = set(_norm_nome(m["origem"]))
+                if cli_tokens & orig_tokens and len(cli_tokens & orig_tokens) >= 2:
+                    match_por_nome = True
+                    break
+
+            # Nível de risco
+            if match_por_nome:
+                risco = "critico"   # skimming confirmado (nome bate)
+            elif stone_matches and not valor_atipico:
+                risco = "revisar"   # valor comum, colisão possível
+            elif sem_prof or valor_atipico:
+                risco = "atencao"   # anomalia operacional
+            else:
+                risco = "ok"
+
+            canc_com_valor.append({
+                "data": dt,
+                "valor": v,
+                "profissional": prof,
+                "cliente": cli,
+                "servico": serv,
+                "sem_prof": sem_prof,
+                "valor_atipico": valor_atipico,
+                "preco_ref": preco_ref,
+                "stone_match_n": len(stone_matches),
+                "stone_match_nomes": [m["origem"] for m in stone_matches],
+                "match_por_nome": match_por_nome,
+                "risco": risco,
+            })
+    canc_com_valor.sort(key=lambda x: x["data"], reverse=True)
+
+    # Agregações
+    canc_por_prof = defaultdict(lambda: {"n": 0, "v": 0.0})
+    canc_por_serv = defaultdict(lambda: {"n": 0, "v": 0.0})
+    for x in canc_com_valor:
+        p = x["profissional"] or "—"
+        s = x["servico"] or "—"
+        canc_por_prof[p]["n"] += 1; canc_por_prof[p]["v"] += x["valor"]
+        canc_por_serv[s]["n"] += 1; canc_por_serv[s]["v"] += x["valor"]
+
+    resumo_risco = Counter(x["risco"] for x in canc_com_valor)
+
     payload = {
         # UTC com sufixo Z para JavaScript interpretar corretamente
         "gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00","Z"),
@@ -397,6 +513,20 @@ def main():
         "dias_op_mes": DIAS_OP_MES,
         "cota_api": cota_final,
         "stone": stone_data,
+        "auditoria_cancelados": {
+            "n_com_valor": len(canc_com_valor),
+            "v_total": round(sum(x["valor"] for x in canc_com_valor), 2),
+            "resumo_risco": dict(resumo_risco),
+            "por_profissional": sorted(
+                [{"nome": p, "n": d["n"], "v": round(d["v"], 2)} for p, d in canc_por_prof.items()],
+                key=lambda x: -x["v"],
+            ),
+            "por_servico": sorted(
+                [{"nome": s, "n": d["n"], "v": round(d["v"], 2)} for s, d in canc_por_serv.items()],
+                key=lambda x: -x["v"],
+            ),
+            "lista": canc_com_valor,
+        },
         "abas": {
             "anual": {
                 "kpis": a_anual["kpis"], "meta": meta_ano, "categorias": a_anual["categorias"],
