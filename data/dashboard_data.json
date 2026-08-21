@@ -1,13 +1,13 @@
 {
-  "gerado_em": "2026-08-21T21:53:20Z",
+  "gerado_em": "2026-08-21T22:08:21Z",
   "hoje": "2026-08-21",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 26,
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 5725,
-    "saldoRestante": 4275
+    "totalUtilizado": 5731,
+    "saldoRestante": 4269
   },
   "stone": {
     "periodo_ini": "2026-07-24",
@@ -562,14 +562,14 @@
           "cliente": "marcia Regina Araujo Neto "
         }
       ],
-      "horas_desatualizado": 5.0
+      "horas_desatualizado": 5.2
     }
   },
   "auditoria_cancelados": {
-    "n_com_valor": 36,
-    "v_total": 2225.5,
+    "n_com_valor": 37,
+    "v_total": 2304.5,
     "resumo_risco": {
-      "ok": 17,
+      "ok": 18,
       "atencao": 15,
       "revisar": 4
     },
@@ -578,6 +578,11 @@
         "nome": "—",
         "n": 12,
         "v": 679.0
+      },
+      {
+        "nome": "GABRIELA CRISTINA DA SILVA ",
+        "n": 5,
+        "v": 331.0
       },
       {
         "nome": "GIOVANNA GUEDES DA SILVA ",
@@ -593,11 +598,6 @@
         "nome": "TAIS CRISTINA LEITE CABRAL",
         "n": 4,
         "v": 260.0
-      },
-      {
-        "nome": "GABRIELA CRISTINA DA SILVA ",
-        "n": 4,
-        "v": 252.0
       },
       {
         "nome": "THAISE MORENO",
@@ -633,8 +633,8 @@
       },
       {
         "nome": "FAST ESCOVA - LISA",
-        "n": 6,
-        "v": 434.5
+        "n": 7,
+        "v": 513.5
       },
       {
         "nome": "FAST MAKE CASUAL",
@@ -678,6 +678,20 @@
       }
     ],
     "lista": [
+      {
+        "data": "2026-08-21T17:40:00",
+        "valor": 79.0,
+        "profissional": "GABRIELA CRISTINA DA SILVA ",
+        "cliente": "Rose Citty",
+        "servico": "FAST ESCOVA - LISA",
+        "sem_prof": false,
+        "valor_atipico": false,
+        "preco_ref": 79.0,
+        "stone_match_n": 0,
+        "stone_match_nomes": [],
+        "match_por_nome": false,
+        "risco": "ok"
+      },
       {
         "data": "2026-08-21T14:47:00",
         "valor": 47.0,
@@ -1200,11 +1214,11 @@
         "caixa": 34941.1,
         "receita_serv": 31505.1,
         "atend_fin": 493,
-        "atend_canc": 36,
-        "atend_total": 538,
+        "atend_canc": 37,
+        "atend_total": 539,
         "n_trans": 299,
         "ticket_trans": 116.86,
-        "taxa_canc": 6.7,
+        "taxa_canc": 6.9,
         "dias_op": 26,
         "clientes_unicos": 229,
         "em_atendimento": 8
@@ -1274,7 +1288,7 @@
           "clientes_unicos": 175,
           "n_trans": 225,
           "ticket_trans": 126.06,
-          "taxa_canc": 5.3,
+          "taxa_canc": 5.6,
           "categorias": {
             "pacotes": {
               "v": 5183.0,
@@ -1811,11 +1825,11 @@
         "caixa": 28364.1,
         "receita_serv": 22702.1,
         "atend_fin": 364,
-        "atend_canc": 21,
-        "atend_total": 393,
+        "atend_canc": 22,
+        "atend_total": 394,
         "n_trans": 225,
         "ticket_trans": 126.06,
-        "taxa_canc": 5.3,
+        "taxa_canc": 5.6,
         "dias_op": 18,
         "clientes_unicos": 175,
         "em_atendimento": 8
@@ -2384,11 +2398,11 @@
         "caixa": 4123.0,
         "receita_serv": 3562.0,
         "atend_fin": 59,
-        "atend_canc": 3,
-        "atend_total": 70,
+        "atend_canc": 4,
+        "atend_total": 71,
         "n_trans": 41,
         "ticket_trans": 100.56,
-        "taxa_canc": 4.3,
+        "taxa_canc": 5.6,
         "dias_op": 5,
         "clientes_unicos": 35,
         "em_atendimento": 8,
@@ -2753,11 +2767,11 @@
         "caixa": 1800.0,
         "receita_serv": 1239.0,
         "atend_fin": 23,
-        "atend_canc": 3,
-        "atend_total": 34,
+        "atend_canc": 4,
+        "atend_total": 35,
         "n_trans": 19,
         "ticket_trans": 94.74,
-        "taxa_canc": 8.8,
+        "taxa_canc": 11.4,
         "dias_op": 1,
         "clientes_unicos": 14,
         "em_atendimento": 8,
@@ -3045,74 +3059,99 @@
     }
   },
   "insights": {
-    "diario": [
-      {
-        "tipo": "oportunidade",
-        "titulo": "Produto sub-vendido hoje",
-        "texto": "Produtos = 0.0% do caixa (meta ≥ 8%). Cada cliente é upsell.",
-        "acao": "Ofertar produto complementar ao final de cada atendimento"
-      },
-      {
-        "tipo": "atencao",
-        "titulo": "5 profissional(is) sem atendimento",
-        "texto": "Erika Thais Pereira Melim, Regina Matheus, Raphaela Da Silva Farias sem receita hoje. Verificar se estão de folga ou com agenda vazia.",
-        "acao": "Realocar demanda · promover slots livres via WhatsApp"
-      }
-    ],
+    "diario": [],
     "semanal": [
       {
         "tipo": "atencao",
         "titulo": "Semana abaixo da meta",
-        "texto": "Projeção R$ 4.947,60 (36%). Precisa R$ 9.723,15/dia (média atual: R$ 824,60/dia).",
-        "acao": "Ativar campanha WhatsApp · combo semana"
+        "texto": "Projeção R$ 4.947,60 (36%). Gap de R$ 8.898,55/dia para os 1 dias restantes.",
+        "acao": "Ativar campanha WhatsApp pras top 20 clientes AGORA — retorno médio 3-4 walk-ins no fim de semana."
+      },
+      {
+        "tipo": "oportunidade",
+        "titulo": "Sex rende 2.8× Qui",
+        "texto": "Sex: R$ 1.239,00/dia · Qui: R$ 436,00/dia.",
+        "acao": "Reforçar equipe no Sex. No Qui, testar promoção ou reduzir 1 profissional pra cortar custo."
       }
     ],
     "mensal": [
       {
         "tipo": "critico",
         "titulo": "Mês projeta ABAIXO de 80% da meta",
-        "texto": "Projeção R$ 40.970,37 (68%). Ritmo R$ 1.575,78/dia vs R$ 3.954,49/dia (gap R$ 2.378,71/dia).",
-        "acao": "Ação imediata: campanha de reativação · combo dos 8 dias restantes"
+        "texto": "Projeção R$ 40.970,37 (68%). Ritmo R$ 1.575,78/dia vs necessário R$ 3.954,49/dia. Gap: R$ 2.378,71/dia.",
+        "acao": "Restam 8 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
+      },
+      {
+        "tipo": "oportunidade",
+        "titulo": "Ritmo/dia +92% vs mês anterior",
+        "texto": "Este mês: R$ 1.575,78/dia. Mês anterior: R$ 822,12/dia.",
+        "acao": "Aumento consistente — vale entender o que mudou (equipe? campanha? sazonalidade?) e replicar."
       },
       {
         "tipo": "atencao",
-        "titulo": "Taxa de cancelamento 5.3% (meta ≤ 5%)",
-        "texto": "~20 atendimentos cancelados no mês, receita perdida ~R$ 2.568,06.",
-        "acao": "Política de confirmação 24h antes via WhatsApp · cobrar sinal em serviços longos"
-      },
-      {
-        "tipo": "atencao",
-        "titulo": "Retenção baixa: 8% recorrentes",
-        "texto": "161 novos · 14 recorrentes. Meta ≥ 60%. Custo de aquisição sobe.",
-        "acao": "Programa fidelidade · agendar retorno na saída · WhatsApp em D+30"
+        "titulo": "Retenção baixa (8% recorrentes)",
+        "texto": "161 novos vs 14 recorrentes. Novos gastam R$ 20.452,00, recorrentes R$ 2.250,10.",
+        "acao": "Loja abriu há pouco — normal ter muitos novos. Prioridade: fazer o cliente novo voltar. Cartão fidelidade + mensagem 20 dias após primeira visita costuma trazer 30% de volta."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos 1.6% do caixa. Se chegasse a 8%, seriam +R$ 1.814,13/mês.",
-        "acao": "Vitrine visível · treinar recepção para upsell no checkout"
+        "texto": "Produtos = 1.6% do caixa (R$ 455,00). Se chegasse a 8%, seriam +R$ 1.814,13/mês.",
+        "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       }
     ],
     "anual": [
       {
         "tipo": "atencao",
-        "titulo": "Ritmo anual abaixo da meta",
-        "texto": "Projeção R$ 186.800,50 (61%). Precisa R$ 2.403,86/dia (atual R$ 1.343,89).",
-        "acao": "Revisar precificação · escalar marketing digital"
+        "titulo": "Ritmo anual bem abaixo da meta",
+        "texto": "Projeção R$ 186.800,50 (61%). Precisa R$ 2.403,86/dia (atual R$ 1.343,89). Gap: R$ 119.776,50.",
+        "acao": "Meta anual está agressiva pro ritmo atual. Duas rotas: (a) reduzir meta pra algo alcançável, (b) investir em captação — vale calcular custo por cliente novo primeiro."
+      },
+      {
+        "tipo": "info",
+        "titulo": "Sazonalidade: Ago > Jul",
+        "texto": "Ago: R$ 28.364,10 · Jul: R$ 6.577,00.",
+        "acao": "Prevê-se queda em Jul: preparar promoção antecipada ou combo especial pra suavizar."
+      },
+      {
+        "tipo": "info",
+        "titulo": "Top 10 clientes = R$ 6.290,00 (18% do ano)",
+        "texto": "Média por cliente top: R$ 629,00. Adquirir 1 novo cliente equivalente dá muito mais trabalho do que reter esses 10.",
+        "acao": "Programa VIP: agenda prioritária + serviço-cortesia trimestral + surpresa de aniversário. Custo baixo, impacto alto."
+      },
+      {
+        "tipo": "oportunidade",
+        "titulo": "108 clientes vieram apenas 1 vez (47%)",
+        "texto": "Base tem 229 clientes únicos. Se converter 20% desses 108 numa segunda visita, são ~21 clientes a mais recorrentes.",
+        "acao": "Campanha de reativação com voucher (R$ 30 off na próxima visita) pra quem só veio uma vez — investimento baixo, retorno alto."
       }
     ],
     "stone": [
       {
-        "tipo": "oportunidade",
-        "titulo": "Antecipar D+30 tem custo real baixo",
-        "texto": "A receber: R$ 14.241,05. Antecipação: R$ 236,40 (1,66%). Custo de oportunidade: R$ 161,60 (CDI). Custo líquido: R$ 74,80.",
-        "acao": "Vale antecipar se caixa for reinvestido em algo >= CDI · senão, deixar cair no D+30"
+        "tipo": "info",
+        "titulo": "R$ 14.241,05 a receber em cartão (D+30)",
+        "texto": "Antecipar tudo hoje custaria R$ 236,40 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 161,60 (CDI). Custo real da antecipação: R$ 74,80.",
+        "acao": "Só antecipa se tem uso melhor pro dinheiro que render >14,5% a.a. Caso contrário, é mais barato esperar D+30."
       },
       {
         "tipo": "info",
         "titulo": "Aplicação Stone: R$ 17.757,91",
-        "texto": "Rendimento estimado ~R$ 201,51/mês (CDI). Compara com custo antecipação.",
-        "acao": "Verificar se aplicação Stone rende ≥ CDI · senão migrar para Tesouro/CDB"
+        "texto": "Rendendo cerca de R$ 201,51/mês se estiver acompanhando o CDI (14,5% a.a.). Bom hedge contra a antecipação.",
+        "acao": "Confirmar no app Stone que a aplicação bate CDI. Se render menos, migrar pra Tesouro Selic ou CDB de banco digital (mesma liquidez, rendimento igual/melhor)."
+      }
+    ],
+    "auditoria": [
+      {
+        "tipo": "atencao",
+        "titulo": "4 cancelamento(s) com valor/dia que batem no Stone",
+        "texto": "Valor cancelado bate com um recebimento Stone do mesmo dia, mas o nome não confere. Provável colisão estatística (R$ 79 e R$ 47 são comuns), mas vale conferir.",
+        "acao": "Revisar cada linha da aba Auditoria. Se for coincidência, sem ação. Se aparecerem 2+ envolvendo mesma profissional, aprofundar."
+      },
+      {
+        "tipo": "atencao",
+        "titulo": "15 cancelamento(s) com anomalia operacional",
+        "texto": "Distribuição: 12 sem profissional atribuída · 6 com valor fora do padrão.",
+        "acao": "Sem profissional → provavelmente registro velho do setup inicial da loja. Valor atípico → pode ser cortesia, meia porção ou erro de lançamento — perguntar à profissional."
       }
     ]
   }
