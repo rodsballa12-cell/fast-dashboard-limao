@@ -146,13 +146,21 @@ def analisar(agend, transac, ini: date, fim: date):
     )[:12]
 
     rent_hora = []
+    total_caixa_ref = max(caixa, 1)
     for k, v in serv.items():
         if v["min"] > 0:
+            horas_total = v["min"] / 60
+            pct_fat = v["v"] / total_caixa_ref * 100
+            # Confiança da amostra — n<3 = amostra pequena (pode enganar)
+            conf = "alta" if v["n"] >= 5 else ("media" if v["n"] >= 3 else "baixa")
             rent_hora.append({
                 "nome": k, "n": v["n"], "v": brl_round(v["v"]),
                 "min_medio": round(v["min"] / max(v["n"], 1)),
                 "ticket": brl_round(v["v"] / max(v["n"], 1)),
                 "rs_hora": brl_round(v["v"] / v["min"] * 60),
+                "horas_total": round(horas_total, 1),
+                "pct_faturamento": round(pct_fat, 1),
+                "confianca": conf,
             })
     rent_hora.sort(key=lambda x: -x["rs_hora"])
 
@@ -593,6 +601,7 @@ def main():
                 "por_dow": a_semanal["por_dow"],
                 "hora_media": hora_media(a_semanal["hora_abs"], a_semanal["kpis"]["dias_op"]),
                 "ranking_prof": a_semanal["ranking_prof"], "ranking_serv": a_semanal["ranking_serv"],
+                "rentabilidade_hora": a_semanal["rentabilidade_hora"],
                 "meios_pagamento": a_semanal["meios_pagamento"],
                 "clientes_top": a_semanal["clientes_top"],
             },
@@ -600,7 +609,9 @@ def main():
                 "kpis": {**a_diario["kpis"], "dia_semana": DOW_NOMES[hoje.weekday()], "data": hoje.isoformat()},
                 "meta": meta_dia, "categorias": a_diario["categorias"],
                 "hora_abs": a_diario["hora_abs"], "ranking_prof": a_diario["ranking_prof"],
-                "ranking_serv": a_diario["ranking_serv"], "meios_pagamento": a_diario["meios_pagamento"],
+                "ranking_serv": a_diario["ranking_serv"],
+                "rentabilidade_hora": a_diario["rentabilidade_hora"],
+                "meios_pagamento": a_diario["meios_pagamento"],
                 "clientes_top": a_diario["clientes_top"],
             },
         },

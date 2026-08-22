@@ -204,6 +204,7 @@
       <div id="semanal-meta"></div>
       <div id="semanal-kpis"></div>
       <div id="semanal-categorias"></div>
+      <div id="semanal-rentabilidade"></div>
       <div id="semanal-dow"></div>
       <div id="semanal-hora"></div>
       <div class="grid-2b">
@@ -220,6 +221,7 @@
       <div id="diario-meta"></div>
       <div id="diario-kpis"></div>
       <div id="diario-categorias"></div>
+      <div id="diario-rentabilidade"></div>
       <div id="diario-hora"></div>
       <div class="grid-2b">
         <div id="diario-prof"></div>
@@ -384,6 +386,76 @@ function renderRankingProf(container_id, titulo, subtitle, prof_list){
   renderTable(container_id, titulo, subtitle, ['Profissional','Atend','Receita'], rows);
 }
 
+// ============= RENTABILIDADE POR HORA =============
+// Reutilizável nas 4 abas (anual, mensal, semanal, diario)
+function renderRentabilidade(container_id, titulo, periodo_label, lista){
+  if(!lista || lista.length===0){
+    document.getElementById(container_id).innerHTML = `<div class="card"><h2>⚡ Rentabilidade por hora · ${periodo_label}</h2><div class="cap">Sem atendimentos com duração registrada neste período.</div></div>`;
+    return;
+  }
+  // Separar: amostras confiáveis (n≥3) vs pequenas (n<3, mostra abaixo)
+  const conf = lista.filter(s => s.confianca !== 'baixa');
+  const baixa = lista.filter(s => s.confianca === 'baixa');
+
+  // Thresholds contextuais: mediana dos confiáveis define "bom vs médio"
+  const rshs = conf.map(s => s.rs_hora).sort((a,b)=>a-b);
+  const median = rshs.length ? rshs[Math.floor(rshs.length/2)] : 100;
+  const p75 = rshs.length ? rshs[Math.floor(rshs.length*0.75)] : 200;
+  const corRSH = v => v >= p75 ? 'up' : (v >= median ? 'neu' : 'dn');
+
+  // Total horas cadeira e maior contribuinte
+  const totalHoras = lista.reduce((s,x)=>s+x.horas_total, 0);
+  const anchor = [...lista].sort((a,b)=>b.pct_faturamento - a.pct_faturamento)[0];
+  const gold   = conf[0]; // maior R$/h com confiança
+
+  const confBadge = c => c==='alta'
+    ? ''
+    : (c==='media'
+        ? '<span style="background:var(--warn);color:#000;font-size:8.5px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:800">n baixo</span>'
+        : '<span style="background:var(--ink-3);color:#fff;font-size:8.5px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:800">amostra 1</span>');
+
+  const rowLines = arr => arr.map(s => `<tr>
+    <td>${s.nome}${confBadge(s.confianca)}</td>
+    <td>${s.n}</td>
+    <td>${s.min_medio} min</td>
+    <td>${brl(s.ticket)}</td>
+    <td><strong class="${corRSH(s.rs_hora)}">${brl(s.rs_hora)}</strong></td>
+    <td>${s.horas_total.toFixed(1)}h</td>
+    <td>${s.pct_faturamento.toFixed(1)}%</td>
+  </tr>`).join('');
+
+  const tblConf = conf.length ? `
+    <table class="simple" style="margin-bottom:12px">
+      <thead><tr><th>Serviço</th><th>Qtd</th><th>Min/atend</th><th>Ticket</th><th>R$/hora</th><th>Horas cadeira</th><th>% faturamento</th></tr></thead>
+      <tbody>${rowLines(conf)}</tbody>
+    </table>` : '';
+
+  const tblBaixa = baixa.length ? `
+    <details style="margin-top:6px"><summary style="cursor:pointer;font-size:11.5px;color:var(--ink-3)">Amostras pequenas (n=1 · não use pra decisão) — ${baixa.length} serviços</summary>
+      <table class="simple" style="margin-top:8px;opacity:.75">
+        <thead><tr><th>Serviço</th><th>Qtd</th><th>Min/atend</th><th>Ticket</th><th>R$/hora</th><th>Horas cadeira</th><th>% faturamento</th></tr></thead>
+        <tbody>${rowLines(baixa)}</tbody>
+      </table>
+    </details>` : '';
+
+  const insight = conf.length ? `<div class="insight">
+    <strong>Como ler:</strong> R$/hora = quanto a cadeira rende por hora ocupada com aquele serviço.
+    Verde = acima do 75º percentil da loja (R$ ${p75.toFixed(0)}+). Vermelho = abaixo da mediana (R$ ${median.toFixed(0)}).
+    <br><br>
+    <strong>💎 Maior R$/hora com volume:</strong> ${gold ? `${gold.nome} rende <strong>${brl(gold.rs_hora)}/h</strong> (${gold.n} atendimentos).` : '—'}
+    ${anchor ? `<br><strong>🎯 Âncora do faturamento:</strong> ${anchor.nome} = ${anchor.pct_faturamento.toFixed(1)}% do caixa (${anchor.horas_total.toFixed(0)}h ocupadas) a ${brl(anchor.rs_hora)}/h.` : ''}
+    <br><strong>Ação:</strong> se a âncora tem R$/h baixo (${anchor && corRSH(anchor.rs_hora)==='dn' ? 'é o caso' : 'não é o caso aqui'}), casar com o maior R$/h como upsell para elevar ticket sem consumir mais cadeira.
+  </div>` : '';
+
+  document.getElementById(container_id).innerHTML = `<div class="card">
+    <h2>⚡ Rentabilidade por hora · ${periodo_label} <span class="hi">(${totalHoras.toFixed(0)}h cadeira ocupada)</span></h2>
+    <div class="cap">Ordenado por R$/hora. Amostras com n<3 separadas embaixo (estatística fraca).</div>
+    ${tblConf}
+    ${tblBaixa}
+    ${insight}
+  </div>`;
+}
+
 function renderMeiosPagamento(container_id, titulo, subtitle, meios){
   const rows=meios.map(m=>[m.nome,m.n,brl0(m.v),pct(m.pct)]);
   renderTable(container_id, titulo, subtitle, ['Meio','Nº','Valor','%'], rows);
@@ -474,10 +546,7 @@ function renderAnual(data){
       <tbody>${rows.map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('')}</tbody></table>
     </div>`;
 
-  // Rentabilidade
-  const rent=a.rentabilidade_hora||[];
-  const rentRows=rent.map(s=>[s.nome,s.n,s.min_medio,brl0(s.ticket),`<span class="${s.rs_hora>=250?'up':(s.rs_hora>=100?'warn':'dn')}">${brl(s.rs_hora)}</span>`]);
-  renderTable('anual-rentabilidade','⚡ Rentabilidade por hora · serviços','R$/hora de cadeira ocupada',['Serviço','Qtd','Min','Ticket','R$/hora'],rentRows);
+  renderRentabilidade('anual-rentabilidade', 'Rentabilidade', '2026', a.rentabilidade_hora || []);
 
   renderBarsHora('anual-hora','Por hora do dia · 2026 <span class="hi">(média trans/dia · '+k.dias_op+'d op.)</span>','Média de transações por hora',a.hora_media,true,'');
 
@@ -513,10 +582,7 @@ function renderMensal(data){
       </div>
     </div>`;
 
-  // Rentabilidade
-  const rent=m.rentabilidade_hora||[];
-  const rentRows=rent.map(s=>[s.nome,s.n,s.min_medio,brl0(s.ticket),`<span class="${s.rs_hora>=250?'up':(s.rs_hora>=100?'warn':'dn')}">${brl(s.rs_hora)}</span>`]);
-  renderTable('mensal-rentabilidade','⚡ Rentabilidade por hora · mês','R$/hora de cadeira ocupada',['Serviço','Qtd','Min','Ticket','R$/hora'],rentRows);
+  renderRentabilidade('mensal-rentabilidade', 'Rentabilidade', 'mês', m.rentabilidade_hora || []);
 
   renderBarsDia('mensal-dia','Por dia do mês','Receita competência por dia',m.por_dia_mes,'');
   renderBarsHora('mensal-hora','Por hora do dia <span class="hi">(média trans/dia · '+k.dias_op+'d op.)</span>','Média de transações',m.hora_media,true,'');
@@ -537,6 +603,7 @@ function renderSemanal(data){
   ]);
   renderMetaProgress('semanal-meta','Meta Semanal',s.meta,'Meta mensal ÷ dias oper. × dias da semana');
   renderCategoriasMeta('semanal-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao);
+  renderRentabilidade('semanal-rentabilidade', 'Rentabilidade', 'semana', s.rentabilidade_hora || []);
   renderBarsDow('semanal-dow','Por dia da semana','Caixa por dia · onde a receita se concentra',s.por_dow,'');
   renderBarsHora('semanal-hora','Por hora do dia <span class="hi">(média · '+k.dias_op+'d op.)</span>','Média de transações/dia',s.hora_media,true,'');
   renderRankingProf('semanal-prof','Ranking · profissionais','Por receita gerada',s.ranking_prof);
@@ -556,6 +623,7 @@ function renderDiario(data){
   ]);
   renderMetaProgress('diario-meta','Meta Diária',d.meta,'Meta mensal ÷ dias operacionais');
   renderCategoriasMeta('diario-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao);
+  renderRentabilidade('diario-rentabilidade', 'Rentabilidade', 'hoje', d.rentabilidade_hora || []);
   renderBarsHora('diario-hora','Por hora · hoje <span class="hi">(absoluto · 1 dia)</span>','Transações fechadas até agora',d.hora_abs,false,'');
   renderRankingProf('diario-prof','Profissionais hoje','Trabalhando agora',d.ranking_prof);
 
