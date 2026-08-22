@@ -169,8 +169,12 @@ def analisar(agend, transac, ini: date, fim: date):
                 "confianca": conf,
                 "tipo": tipo,  # "cadeira" (serviço exclusivo) | "addon" (paralelo a outro)
             })
-    # Ordena: cadeira primeiro (por R$/h desc), depois addons (por R$/h desc)
-    rent_hora.sort(key=lambda x: (0 if x["tipo"] == "cadeira" else 1, -x["rs_hora"]))
+    # Ordena: cadeira primeiro (por R$/h desc), depois addons (por valor desc)
+    rent_hora.sort(key=lambda x: (0 if x["tipo"] == "cadeira" else 1, -x["rs_hora"] if x["tipo"]=="cadeira" else -x["v"]))
+    # Limita a 15 cadeira + todos add-ons (add-ons são poucos: aplicações, tratamentos rápidos)
+    cadeira_top = [x for x in rent_hora if x["tipo"] == "cadeira"][:15]
+    addons_all  = [x for x in rent_hora if x["tipo"] == "addon"]
+    rent_hora = cadeira_top + addons_all
 
     by_dow = defaultdict(lambda: {"n": 0, "v": 0.0})
     for a in fin:
@@ -220,7 +224,7 @@ def analisar(agend, transac, ini: date, fim: date):
         "por_dia_mes": dia_list,
         "ranking_prof": ranking_prof,
         "ranking_serv": ranking_serv,
-        "rentabilidade_hora": rent_hora[:15],
+        "rentabilidade_hora": rent_hora,
         "clientes_top": top_cli,
         "descontos": brl_round(descontos),
         "trocos": brl_round(trocos),
