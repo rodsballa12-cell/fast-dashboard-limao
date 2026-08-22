@@ -340,9 +340,18 @@ def main():
     clientes = list(t.paginate("/v1/clientes"))
     print(f"  {len(clientes)} clientes")
     cad_map = {}
+    aniv_map = {}  # {id: (mm, dd, nome)}
     for c in clientes:
-        if c.get("id") and c.get("dataCadastro"):
-            try: cad_map[c["id"]] = datetime.fromisoformat(c["dataCadastro"])
+        cid = c.get("id")
+        if not cid: continue
+        if c.get("dataCadastro"):
+            try: cad_map[cid] = datetime.fromisoformat(c["dataCadastro"])
+            except Exception: pass
+        # Aniversário — Trinks usa dataNascimento
+        if c.get("dataNascimento"):
+            try:
+                dn = datetime.fromisoformat(c["dataNascimento"])
+                aniv_map[cid] = (dn.month, dn.day, c.get("nome") or "")
             except Exception: pass
 
     # Análises por período
@@ -411,6 +420,70 @@ def main():
         "n_alerta": len(churn_candidatos),
         "ltv_em_risco": brl_round(sum(c["ltv"] for c in churn_candidatos)),
         "top": churn_candidatos[:20],
+    }
+
+    # === Aniversariantes próximos (14 dias) ===
+    aniversariantes = []
+    for cid, (mm, dd, nome) in aniv_map.items():
+        # Ignora sem visita registrada (não é cliente ativo)
+        if cid not in cli_visitas: continue
+        try:
+            aniv_ano = date(hoje.year, mm, dd)
+        except ValueError:
+            continue  # 29/fev em ano não-bissexto
+        delta = (aniv_ano - hoje).days
+        if delta < 0:
+            # já passou este ano, olha ano que vem
+            try:
+                aniv_ano = date(hoje.year + 1, mm, dd)
+                delta = (aniv_ano - hoje).days
+            except ValueError:
+                continue
+        if 0 <= delta <= 14:
+            aniversariantes.append({
+                "cliente": (nome or "").title(),
+                "data_aniv": f"{dd:02d}/{mm:02d}",
+                "dias": delta,
+                "n_visitas": len(cli_visitas.get(cid, [])),
+                "ltv": brl_round(cli_valor.get(cid, 0)),
+            })
+    aniversariantes.sort(key=lambda x: (x["dias"], -x["ltv"]))
+
+    # === Cross-sell: clientes recorrentes (2+ visitas) que ainda não fizeram serviços populares ===
+    # Popularidade: serviço com >= 30 atendimentos no ano é "popular"
+    from collections import Counter as _Cnt
+    serv_pop = _Cnt()
+    cli_servs = defaultdict(set)  # {id: set(serv_nome)}
+    for a in agend:
+        if (a.get("status") or {}).get("nome") != "Finalizado": continue
+        s = (a.get("servico") or {}).get("nome")
+        cid = (a.get("cliente") or {}).get("id")
+        if s: serv_pop[s] += 1
+        if s and cid: cli_servs[cid].add(s)
+    servs_populares = {s for s, n in serv_pop.items() if n >= 30}
+
+    # Pra cada cliente recorrente (2+ visitas), listar até 3 populares que nunca fez
+    cross_sell = []
+    for cid, visitas in cli_visitas.items():
+        if len(visitas) < 2: continue
+        feitos = cli_servs.get(cid, set())
+        nao_feitos = servs_populares - feitos
+        if not nao_feitos: continue
+        # Ordena por popularidade (mais popular primeiro)
+        recomendados = sorted(nao_feitos, key=lambda s: -serv_pop[s])[:3]
+        cross_sell.append({
+            "cliente": cli_nome.get(cid, "").title(),
+            "n_visitas": len(visitas),
+            "ltv": brl_round(cli_valor.get(cid, 0)),
+            "ja_faz": sorted(feitos & servs_populares, key=lambda s: -serv_pop[s])[:2],
+            "recomendar": recomendados,
+        })
+    # Ordena por LTV — clientes valiosos primeiro
+    cross_sell.sort(key=lambda x: -x["ltv"])
+    cross_sell_data = {
+        "servs_populares": sorted(servs_populares, key=lambda s: -serv_pop[s]),
+        "n_clientes_com_oportunidade": len(cross_sell),
+        "top": cross_sell[:20],
     }
 
     # meses do ano
@@ -679,6 +752,8 @@ def main():
                 "meios_pagamento": a_anual["meios_pagamento"], "descontos": a_anual["descontos"],
                 "clientes_top": a_anual["clientes_top"],
                 "churn_early": churn,
+                "cross_sell": cross_sell_data,
+                "aniversariantes": aniversariantes,
             },
             "mensal": {
                 "kpis": a_mensal["kpis"], "meta": meta_mensal, "categorias": a_mensal["categorias"],

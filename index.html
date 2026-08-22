@@ -43,6 +43,8 @@
   .tab-btn[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);font-weight:700;}
   .tab-btn .subn{color:var(--ink-3);font-size:10.5px;margin-left:6px;font-weight:400;}
   .panel{display:none;} .panel.active{display:block;}
+  .periodo-panel{display:none;} .periodo-panel.active{display:block;}
+  .periodo-btn[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);font-weight:700;}
   .audit{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--ink-2);display:flex;gap:10px;align-items:flex-start;}
   .audit strong{color:var(--ink);}
   .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
@@ -157,16 +159,22 @@
 
   <div id="content" style="display:none;">
     <div class="tabs" role="tablist">
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="anual">Anual · 2026</button>
-      <button class="tab-btn" role="tab" aria-selected="true"  data-tab="mensal">Mensal<span class="subn" id="tab-mensal-sub"></span></button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="semanal">Semanal<span class="subn" id="tab-semanal-sub"></span></button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="diario">Diário<span class="subn" id="tab-diario-sub"></span></button>
+      <button class="tab-btn" role="tab" aria-selected="true" data-tab="painel">📊 Painel<span class="subn" id="tab-painel-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="stone">🏦 Stone<span class="subn" id="tab-stone-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="auditoria">🛡️ Auditoria<span class="subn" id="tab-auditoria-sub"></span></button>
     </div>
 
+    <!-- PAINEL — engloba os 4 períodos com seletor -->
+    <div class="panel active" id="tab-painel">
+      <div class="tabs" role="tablist" style="border-bottom:0;margin-bottom:14px">
+        <button class="tab-btn periodo-btn" role="tab" aria-selected="false" data-periodo="anual" style="padding:8px 14px;font-size:12.5px">📅 Ano · 2026</button>
+        <button class="tab-btn periodo-btn" role="tab" aria-selected="true"  data-periodo="mensal" style="padding:8px 14px;font-size:12.5px">🎯 Mês<span class="subn" id="tab-mensal-sub"></span></button>
+        <button class="tab-btn periodo-btn" role="tab" aria-selected="false" data-periodo="semanal" style="padding:8px 14px;font-size:12.5px">📊 Semana<span class="subn" id="tab-semanal-sub"></span></button>
+        <button class="tab-btn periodo-btn" role="tab" aria-selected="false" data-periodo="diario" style="padding:8px 14px;font-size:12.5px">🔴 Hoje<span class="subn" id="tab-diario-sub"></span></button>
+      </div>
+
     <!-- ANUAL -->
-    <div class="panel" id="tab-anual">
+    <div class="periodo-panel" id="periodo-anual">
       <div class="audit"><div>📅</div><div><strong>Panorama do ano.</strong> Loja abriu 23/07/2026. Foco: bater a meta mensal → meta anual segue junto. Compare meses fechados para ver a evolução real.</div></div>
       <div id="anual-insights"></div>
       <div id="anual-meta"></div>
@@ -175,6 +183,8 @@
       <div id="anual-categorias"></div>
       <div id="anual-novos"></div>
       <div id="anual-churn"></div>
+      <div id="anual-cross-sell"></div>
+      <div id="anual-aniv"></div>
       <div id="anual-meses"></div>
       <div id="anual-ltv"></div>
       <div id="anual-topcli"></div>
@@ -183,7 +193,7 @@
     </div>
 
     <!-- MENSAL -->
-    <div class="panel active" id="tab-mensal">
+    <div class="periodo-panel active" id="periodo-mensal">
       <div class="audit"><div>🎯</div><div><strong>Onde você está no mês.</strong> Recomendações abaixo mostram o que ajustar antes do fechamento pra bater meta.</div></div>
       <div id="mensal-insights"></div>
       <div id="mensal-meta"></div>
@@ -202,7 +212,7 @@
     </div>
 
     <!-- SEMANAL -->
-    <div class="panel" id="tab-semanal">
+    <div class="periodo-panel" id="periodo-semanal">
       <div class="audit"><div>📊</div><div><strong>Semana corrente</strong> (seg–sáb · dom fechado). Use para decidir escala do próximo sábado e campanhas rápidas de WhatsApp.</div></div>
       <div id="semanal-insights"></div>
       <div id="semanal-meta"></div>
@@ -222,7 +232,7 @@
     </div>
 
     <!-- DIÁRIO -->
-    <div class="panel" id="tab-diario">
+    <div class="periodo-panel" id="periodo-diario">
       <div class="audit"><div>🔴</div><div><strong>HOJE — atualiza 4×/dia</strong> (12h, 15h, 18h, 21h BRT). Use para decisões de escala nos checkpoints: almoço, meio da tarde, fim de tarde e fim do dia.</div></div>
       <div id="diario-insights"></div>
       <div id="diario-meta"></div>
@@ -238,6 +248,7 @@
       <div id="diario-meios"></div>
       <div id="diario-topcli"></div>
     </div>
+    </div><!-- /tab-painel -->
 
     <!-- AUDITORIA -->
     <div class="panel" id="tab-auditoria">
@@ -573,6 +584,61 @@ function renderNovosRecorr(container_id, nvr, periodo){
   </div>`;
 }
 
+// ============= ANIVERSARIANTES =============
+function renderAniversariantes(container_id, lista){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  if(!lista || lista.length === 0){
+    el.innerHTML = `<div class="card"><h2>🎂 Aniversariantes próximos (14 dias)</h2><div class="cap">Nenhum cliente ativo faz aniversário na próxima quinzena.</div></div>`;
+    return;
+  }
+  const rows = lista.map(a => `<tr>
+    <td>${a.cliente}</td>
+    <td>${a.data_aniv}</td>
+    <td>${a.dias === 0 ? '<strong class="up">HOJE!</strong>' : (a.dias === 1 ? '<strong>amanhã</strong>' : `em ${a.dias}d`)}</td>
+    <td>${a.n_visitas}</td>
+    <td>${brl0(a.ltv)}</td>
+  </tr>`).join('');
+  el.innerHTML = `<div class="card">
+    <h2>🎂 Aniversariantes próximos <span class="hi">(${lista.length} nos próximos 14 dias)</span></h2>
+    <div class="cap">Clientes ativos que fazem aniversário em breve. Momento perfeito para mensagem pessoal + cortesia — retenção máxima com esforço mínimo.</div>
+    <table class="simple">
+      <thead><tr><th>Cliente</th><th>Data</th><th>Quando</th><th>Visitas</th><th>LTV</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+// ============= CROSS-SELL =============
+function renderCrossSell(container_id, cs){
+  const el = document.getElementById(container_id);
+  if(!el || !cs || !cs.top || cs.top.length === 0){ if(el) el.innerHTML = ''; return; }
+  const rows = cs.top.map(c => `<tr>
+    <td>${c.cliente}</td>
+    <td>${c.n_visitas}</td>
+    <td>${brl0(c.ltv)}</td>
+    <td>${(c.ja_faz || []).join(', ') || '—'}</td>
+    <td><strong>${(c.recomendar || []).join(', ')}</strong></td>
+  </tr>`).join('');
+  el.innerHTML = `<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h2 style="margin:0">🎯 Cross-sell · oportunidades <span class="hi">(${cs.n_clientes_com_oportunidade} clientes)</span></h2>
+      <button id="btn-csv-crosssell" class="btn-refresh">⬇ CSV</button>
+    </div>
+    <div class="cap">Clientes recorrentes (2+ visitas) que nunca fizeram serviços populares (≥30 atendimentos no ano). Ordenados por LTV — atacar de cima pra baixo.</div>
+    <table class="simple">
+      <thead><tr><th>Cliente</th><th>Visitas</th><th>LTV</th><th>Já faz</th><th>Recomendar</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="insight"><strong>Ação:</strong> na próxima visita de cada um do top 10, a recepção oferece 1 dos serviços recomendados com 15% off. Conversão típica: 25-35% na primeira exposição.</div>
+  </div>`;
+  document.getElementById('btn-csv-crosssell')?.addEventListener('click', () => {
+    csvExport('cross-sell-oportunidades.csv',
+      ['Cliente','Visitas','LTV','Ja faz','Recomendar'],
+      cs.top.map(c => [c.cliente, c.n_visitas, c.ltv, (c.ja_faz||[]).join(' | '), (c.recomendar||[]).join(' | ')]));
+  });
+}
+
 // ============= CHURN EARLY WARNING =============
 function renderChurn(container_id, churn){
   const el = document.getElementById(container_id);
@@ -738,6 +804,10 @@ function renderAnual(data){
 
   // Novos vs Recorrentes (anual)
   if(a.novos_vs_recorr) renderNovosRecorr('anual-novos', a.novos_vs_recorr, 'ano');
+
+  // Cross-sell + Aniversariantes
+  renderCrossSell('anual-cross-sell', a.cross_sell);
+  renderAniversariantes('anual-aniv', a.aniversariantes);
 }
 
 function renderMensal(data){
@@ -814,14 +884,24 @@ function renderDiario(data){
 
 // ============= TABS =============
 function setupTabs(){
-  const btns=document.querySelectorAll('.tab-btn');
-  const panels=document.querySelectorAll('.panel');
-  btns.forEach(b=>b.addEventListener('click',()=>{
-    btns.forEach(x=>x.setAttribute('aria-selected','false'));
-    panels.forEach(p=>p.classList.remove('active'));
+  // Abas top-level (Painel, Stone, Auditoria)
+  const topBtns = document.querySelectorAll('.tab-btn:not(.periodo-btn)');
+  const topPanels = document.querySelectorAll('#content > .panel');
+  topBtns.forEach(b => b.addEventListener('click', () => {
+    topBtns.forEach(x => x.setAttribute('aria-selected','false'));
+    topPanels.forEach(p => p.classList.remove('active'));
     b.setAttribute('aria-selected','true');
     document.getElementById('tab-'+b.dataset.tab).classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
+  }));
+  // Pills de período dentro de Painel
+  const perBtns = document.querySelectorAll('.periodo-btn');
+  const perPanels = document.querySelectorAll('.periodo-panel');
+  perBtns.forEach(b => b.addEventListener('click', () => {
+    perBtns.forEach(x => x.setAttribute('aria-selected','false'));
+    perPanels.forEach(p => p.classList.remove('active'));
+    b.setAttribute('aria-selected','true');
+    document.getElementById('periodo-'+b.dataset.periodo).classList.add('active');
   }));
 }
 

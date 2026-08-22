@@ -377,7 +377,27 @@ def _insights_anual(aba):
             f"Clientes que vieram 3+ vezes e não voltam há 14+ dias. Top: {nomes} (e mais {n_alerta-3}).",
             f"Ver aba Anual > Clientes em risco. Mensagem personalizada + voucher pode salvar 30-40% do LTV — potencial resgate {_fmt(ltv_risco*0.35)}."))
 
-    # 6. Utilização de cadeira anual
+    # 6. Aniversariantes próximos (semana)
+    aniv = aba.get("aniversariantes") or []
+    aniv_semana = [a for a in aniv if a.get("dias", 999) <= 7]
+    if aniv_semana:
+        top = aniv_semana[:3]
+        nomes = ", ".join(f"{a['cliente'].split()[0]} ({a['data_aniv']})" for a in top)
+        ins.append(_mk("oportunidade", f"{len(aniv_semana)} aniversariante(s) nos próximos 7 dias",
+            f"Top: {nomes}. LTV combinado {_fmt(sum(a['ltv'] for a in aniv_semana))}.",
+            "Mensagem personalizada de aniversário com voucher/cortesia — momento perfeito de reativação e fidelização."))
+
+    # 7. Cross-sell — quantos clientes recorrentes têm oportunidade
+    cs = aba.get("cross_sell") or {}
+    n_oport = cs.get("n_clientes_com_oportunidade", 0)
+    if n_oport >= 5:
+        top_serv = (cs.get("servs_populares") or [])[:3]
+        top_serv_str = ", ".join(top_serv) if top_serv else "os populares"
+        ins.append(_mk("oportunidade", f"{n_oport} clientes recorrentes com espaço para cross-sell",
+            f"Nunca experimentaram serviços populares (ex: {top_serv_str}). Se 20% aceitar, aumenta ticket médio significativamente.",
+            "Ver aba Anual > Cross-sell. Priorizar top 10 por LTV — recepção pode oferecer no fechamento."))
+
+    # 8. Utilização de cadeira anual
     k = aba.get("kpis", {})
     util = k.get("utilizacao_pct", 0)
     if k.get("dias_op", 0) >= 30 and util > 0:
