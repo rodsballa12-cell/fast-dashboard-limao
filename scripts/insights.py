@@ -108,6 +108,19 @@ def _insights_semanal(aba, mes_por_dow=None):
     ins = []
     k = aba.get("kpis", {})
     m = aba.get("meta", {})
+    ant = aba.get("semana_anterior") or {}
+
+    # 0. Semana × semana anterior (comparação tática)
+    if ant.get("caixa", 0) > 0 and k.get("dias_op", 0) > 0 and ant.get("dias_op", 0) > 0:
+        media_atu = k.get("caixa", 0) / k["dias_op"]
+        media_ant = ant["caixa"] / ant["dias_op"]
+        delta_pct = (media_atu / media_ant - 1) * 100 if media_ant > 0 else 0
+        if abs(delta_pct) >= 10:
+            tipo = "oportunidade" if delta_pct > 0 else "atencao"
+            sinal = "+" if delta_pct > 0 else ""
+            ins.append(_mk(tipo, f"Ritmo/dia {sinal}{delta_pct:.0f}% vs semana passada",
+                f"Esta semana: {_fmt(media_atu)}/dia · semana anterior ({ant.get('periodo_ini','')[-5:]}-{ant.get('periodo_fim','')[-5:]}): {_fmt(media_ant)}/dia.",
+                "Aumento — investigar o que gerou pra replicar (equipe, campanha, dia da semana)." if delta_pct > 0 else "Queda — checar se algo mudou (feriado, doença, chuva). Ativar top clientes."))
 
     # 1. Meta semanal → projeção
     if m.get("meta") and m.get("dias_realizados", 0) > 0:
@@ -144,17 +157,32 @@ def _insights_semanal(aba, mes_por_dow=None):
                     f"{melhor['nome']}: {_fmt(melhor['v'])}/dia · {pior['nome']}: {_fmt(pior['v'])}/dia.",
                     f"Reforçar equipe no {melhor['nome']}. No {pior['nome']}, testar promoção ou reduzir 1 profissional pra cortar custo."))
 
-    # 3. Concentração em 1 profissional
+    # 3. Concentração em 1 profissional (com ticket médio)
     ranking = aba.get("ranking_prof") or []
     if len(ranking) >= 2:
         total = sum(p.get("v", 0) for p in ranking)
         if total > 0:
             top = ranking[0]
             pct_top = top.get("v", 0) / total * 100
+            tkt_top = top.get("ticket_medio", 0)
             if pct_top >= 40:
-                ins.append(_mk("atencao", f"Concentração em {top.get('nome','?').split()[0]}",
-                    f"{top['nome']} = {pct_top:.0f}% da receita da semana ({_fmt(top['v'])}). Se ficar doente ou pedir demissão, cai muita coisa junto.",
-                    "Treinar 2ª profissional pros serviços que ela mais faz. Distribuir walk-ins de forma mais equilibrada nas próximas semanas."))
+                ins.append(_mk("atencao", f"Concentração em {top.get('nome','?').split()[0]} ({pct_top:.0f}%)",
+                    f"{top['nome']} = {_fmt(top['v'])} (ticket médio {_fmt(tkt_top)}). Se ficar doente, cai muita coisa junto.",
+                    "Treinar 2ª profissional pros serviços que ela mais faz. Distribuir walk-ins mais equilibrado nas próximas semanas."))
+
+    # 4. Utilização de cadeira
+    util = k.get("utilizacao_pct", 0)
+    n_prof = k.get("n_prof_ativos", 0)
+    horas_oc = k.get("horas_ocupadas", 0)
+    if n_prof > 0 and horas_oc > 0:
+        if util < 30:
+            ins.append(_mk("oportunidade", f"Cadeira ocupada só {util:.0f}%",
+                f"{n_prof} profissional(is) rodaram {horas_oc:.0f}h esta semana de {int(k.get('capacidade_horas',0))}h de capacidade.",
+                "Capacidade ociosa alta — cabe MAIS walk-in sem contratar. Ativar WhatsApp/story."))
+        elif util >= 75:
+            ins.append(_mk("atencao", f"Cadeira em {util:.0f}% — chegando no teto",
+                f"{n_prof} profissional(is) · {horas_oc:.0f}h ocupadas de {int(k.get('capacidade_horas',0))}h.",
+                "Perto da lotação. Se demanda continuar, contratar 1 profissional a mais ou aumentar preço nos horários de pico."))
 
     return ins
 
@@ -249,6 +277,19 @@ def _insights_mensal(aba, mes_anterior=None):
             f"Produtos = {prod.get('pct',0):.1f}% do caixa ({_fmt(prod.get('v',0))}). Se chegasse a {META_CATEG_PRODUTOS_PCT}%, seriam +{_fmt(potencial)}/mês.",
             "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."))
 
+    # 5b. Utilização de cadeira do mês
+    util = k.get("utilizacao_pct", 0)
+    n_prof = k.get("n_prof_ativos", 0)
+    if k.get("dias_op", 0) >= 5 and util > 0:
+        if util < 30:
+            ins.append(_mk("oportunidade", f"Cadeira ocupada só {util:.0f}% no mês",
+                f"{n_prof} profissional(is) · {int(k.get('horas_ocupadas',0))}h ocupadas de {int(k.get('capacidade_horas',0))}h possíveis.",
+                "Muito espaço pra mais walk-ins sem custo adicional. Priorizar marketing e ofertas de atração."))
+        elif util >= 70:
+            ins.append(_mk("atencao", f"Cadeira em {util:.0f}% do mês",
+                f"Próximo do limite. Filas ou recusas podem começar.",
+                "Considerar mais 1 profissional ou aumentar preço nas horas de pico pra segurar demanda."))
+
     # 6. Concentração top clientes (LTV)
     top_cli = aba.get("clientes_top") or []
     if len(top_cli) >= 5 and caixa > 0:
@@ -324,6 +365,30 @@ def _insights_anual(aba):
             ins.append(_mk("oportunidade", f"{uma} clientes vieram apenas 1 vez ({pct_uma:.0f}%)",
                 f"Base tem {total} clientes únicos. Se converter 20% desses {uma} numa segunda visita, são ~{int(uma*0.2)} clientes a mais recorrentes.",
                 "Campanha de reativação com voucher (R$ 30 off na próxima visita) pra quem só veio uma vez — investimento baixo, retorno alto."))
+
+    # 5. Churn early warning (clientes de valor sumindo)
+    churn = aba.get("churn_early") or {}
+    n_alerta = churn.get("n_alerta", 0)
+    ltv_risco = churn.get("ltv_em_risco", 0)
+    if n_alerta >= 3:
+        top_churn = churn.get("top", [])[:3]
+        nomes = ", ".join(c.get("cliente","?").split()[0] for c in top_churn)
+        ins.append(_mk("critico", f"{n_alerta} clientes de valor sumidos (LTV {_fmt(ltv_risco)})",
+            f"Clientes que vieram 3+ vezes e não voltam há 14+ dias. Top: {nomes} (e mais {n_alerta-3}).",
+            f"Ver aba Anual > Clientes em risco. Mensagem personalizada + voucher pode salvar 30-40% do LTV — potencial resgate {_fmt(ltv_risco*0.35)}."))
+
+    # 6. Utilização de cadeira anual
+    k = aba.get("kpis", {})
+    util = k.get("utilizacao_pct", 0)
+    if k.get("dias_op", 0) >= 30 and util > 0:
+        if util < 25:
+            ins.append(_mk("oportunidade", f"Utilização média cadeira: {util:.0f}%",
+                f"Ao longo do ano, {int(k.get('horas_ocupadas',0))}h ocupadas de {int(k.get('capacidade_horas',0))}h de capacidade.",
+                "Há bastante gordura pra crescer sem contratar. Foco em captação (marketing local/instagram)."))
+        elif util >= 70:
+            ins.append(_mk("atencao", f"Utilização alta: {util:.0f}%",
+                f"Perto do teto operacional ({int(k.get('capacidade_horas',0))}h capacidade).",
+                "Pra crescer sem perder qualidade: contratar mais 1 profissional OU aumentar preço nos horários de pico."))
 
     return ins
 

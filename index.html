@@ -171,7 +171,10 @@
       <div id="anual-insights"></div>
       <div id="anual-meta"></div>
       <div id="anual-kpis"></div>
+      <div id="anual-utilizacao"></div>
       <div id="anual-categorias"></div>
+      <div id="anual-novos"></div>
+      <div id="anual-churn"></div>
       <div id="anual-meses"></div>
       <div id="anual-ltv"></div>
       <div id="anual-topcli"></div>
@@ -185,6 +188,7 @@
       <div id="mensal-insights"></div>
       <div id="mensal-meta"></div>
       <div id="mensal-kpis"></div>
+      <div id="mensal-utilizacao"></div>
       <div id="mensal-categorias"></div>
       <div id="mensal-novos"></div>
       <div id="mensal-rentabilidade"></div>
@@ -203,7 +207,10 @@
       <div id="semanal-insights"></div>
       <div id="semanal-meta"></div>
       <div id="semanal-kpis"></div>
+      <div id="semanal-comparacao"></div>
+      <div id="semanal-utilizacao"></div>
       <div id="semanal-categorias"></div>
+      <div id="semanal-novos"></div>
       <div id="semanal-rentabilidade"></div>
       <div id="semanal-dow"></div>
       <div id="semanal-hora"></div>
@@ -220,6 +227,7 @@
       <div id="diario-insights"></div>
       <div id="diario-meta"></div>
       <div id="diario-kpis"></div>
+      <div id="diario-utilizacao"></div>
       <div id="diario-categorias"></div>
       <div id="diario-rentabilidade"></div>
       <div id="diario-hora"></div>
@@ -381,9 +389,17 @@ function renderBarsHora(container_id, titulo, subtitle, hora_data, is_media, ins
   document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="bars-hora">${bars}</div><div class="xaxis-hora">${axis}</div>${insight?'<div class="insight">'+insight+'</div>':''}</div>`;
 }
 
-function renderRankingProf(container_id, titulo, subtitle, prof_list){
-  const rows=prof_list.slice(0,10).map(p=>[p.nome,p.n,brl0(p.v)]);
-  renderTable(container_id, titulo, subtitle, ['Profissional','Atend','Receita'], rows);
+function renderRankingProf(container_id, titulo, subtitle, prof_list, total_n){
+  const rows=prof_list.slice(0,10).map(p=>[
+    p.nome, p.n, brl0(p.v),
+    brl(p.ticket_medio || (p.n ? p.v/p.n : 0)),
+    (p.horas_trab || 0).toFixed(1) + 'h'
+  ]);
+  const totalBadge = (total_n && total_n > prof_list.slice(0,10).length)
+    ? ` <span style="color:var(--ink-3);font-size:11px;font-weight:400">(top 10 de ${total_n})</span>`
+    : '';
+  renderTable(container_id, titulo + totalBadge, subtitle,
+    ['Profissional','Atend','Receita','Ticket médio','Horas trab'], rows);
 }
 
 // ============= RENTABILIDADE POR HORA =============
@@ -514,6 +530,110 @@ function renderCategTile(container_id, titulo, subtitle, categorias){
   document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="categ-grid">${tiles}</div></div>`;
 }
 
+// ============= UTILIZAÇÃO DE CADEIRA =============
+function renderUtilizacao(container_id, periodo, kpis){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  const util = kpis.utilizacao_pct;
+  if(util === undefined || !kpis.n_prof_ativos){ el.innerHTML = ''; return; }
+  const cor = util >= 70 ? 'warn' : (util < 30 ? 'dn' : 'up');
+  const status = util >= 70 ? '⚠️ Alta — perto do teto' : (util < 30 ? '💡 Baixa — capacidade ociosa' : '✅ Saudável');
+  const acao = util >= 70
+    ? 'Perto do limite operacional. Contratar 1 profissional a mais OU aumentar preço nos horários de pico.'
+    : (util < 30
+      ? 'Muita capacidade ociosa. Investir em captação (Instagram, WhatsApp, indicação) — cabe muito mais cliente sem custo extra.'
+      : 'Utilização saudável (30-70%). Espaço pra crescer sem estresse operacional.');
+  el.innerHTML = `<div class="card">
+    <h2>🪑 Utilização de cadeira · ${periodo}</h2>
+    <div class="cap">Quanto da capacidade operacional está sendo usado</div>
+    <div class="categ-grid" style="grid-template-columns:repeat(4,1fr)">
+      ${tile('','Utilização', `<span class="${cor}">${util.toFixed(0)}%</span>`, status)}
+      ${tile('c2','Horas ocupadas', kpis.horas_ocupadas.toFixed(0)+'h', `de ${kpis.capacidade_horas}h de capacidade`)}
+      ${tile('c3','Profissionais ativos', kpis.n_prof_ativos+'', 'atenderam ≥1 no período')}
+      ${tile('','Cadeira/prof', (kpis.horas_ocupadas/Math.max(kpis.n_prof_ativos,1)).toFixed(0)+'h', 'média por profissional')}
+    </div>
+    <div class="insight"><strong>${status}:</strong> ${acao}</div>
+  </div>`;
+}
+
+// ============= NOVOS vs RECORRENTES =============
+function renderNovosRecorr(container_id, nvr, periodo){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  const total_c = nvr.novos.clientes + nvr.recorrentes.clientes;
+  const rec_pct = total_c > 0 ? nvr.recorrentes.clientes/total_c*100 : 0;
+  el.innerHTML = `<div class="card">
+    <h2>🆕 Novos vs Recorrentes · ${periodo}</h2>
+    <div class="cap">Fazer novo é caro. Fazer o novo voltar é o que sustenta a operação.</div>
+    <div class="categ-grid">
+      ${tile('','Clientes NOVOS', nvr.novos.clientes+'', `${nvr.novos.atend} atend · <strong>${brl0(nvr.novos.receita)}</strong>`)}
+      ${tile('c2','Recorrentes', nvr.recorrentes.clientes+'', `${nvr.recorrentes.atend} atend · ${brl0(nvr.recorrentes.receita)}`)}
+      ${tile('c3','Taxa retenção', pct(rec_pct), `${nvr.recorrentes.clientes} de ${total_c} clientes ativos`)}
+    </div>
+  </div>`;
+}
+
+// ============= CHURN EARLY WARNING =============
+function renderChurn(container_id, churn){
+  const el = document.getElementById(container_id);
+  if(!el || !churn) return;
+  if(!churn.n_alerta){
+    el.innerHTML = `<div class="card"><h2>🛟 Clientes em risco de churn</h2><div class="cap">Base saudável · zero clientes de valor sumidos</div></div>`;
+    return;
+  }
+  const rows = (churn.top || []).map(c => `<tr>
+    <td>${c.cliente}</td>
+    <td>${c.n_visitas}</td>
+    <td>${brl0(c.ltv)}</td>
+    <td>${c.ultima_visita.slice(-5).replace('-','/')}</td>
+    <td><span class="dn">${c.dias_sem_vir}d</span></td>
+  </tr>`).join('');
+  el.innerHTML = `<div class="card">
+    <h2>🛟 Clientes em risco de churn <span class="hi">(${churn.n_alerta} alertas · LTV em risco ${brl0(churn.ltv_em_risco)})</span></h2>
+    <div class="cap">Clientes com ≥3 visitas que não voltam há 14+ dias. Ordenados por LTV. Mensagem personalizada + voucher costuma resgatar 30-40%.</div>
+    <table class="simple">
+      <thead><tr><th>Cliente</th><th>Visitas</th><th>LTV</th><th>Última</th><th>Sem vir</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="insight"><strong>Ação sugerida:</strong> mandar WhatsApp pessoal aos 5 primeiros hoje (não campanha em massa). Oferecer R$ 20-30 de desconto na próxima visita. Retorno médio esperado: ${brl0(churn.ltv_em_risco * 0.35)}.</div>
+  </div>`;
+}
+
+// ============= COMPARAÇÃO SEMANA × SEMANA ANTERIOR =============
+function renderComparacaoSemana(container_id, atual, anterior){
+  const el = document.getElementById(container_id);
+  if(!el || !anterior || !anterior.caixa) return;
+  const media_atu = atual.dias_op > 0 ? atual.caixa/atual.dias_op : 0;
+  const media_ant = anterior.dias_op > 0 ? anterior.caixa/anterior.dias_op : 0;
+  const delta_caixa = atual.caixa - anterior.caixa;
+  const delta_pct = anterior.caixa > 0 ? (atual.caixa/anterior.caixa - 1)*100 : 0;
+  const delta_media_pct = media_ant > 0 ? (media_atu/media_ant - 1)*100 : 0;
+  const sinal_c = delta_caixa >= 0 ? '+' : '';
+  const cor_c = delta_caixa >= 0 ? 'up' : 'dn';
+  el.innerHTML = `<div class="card">
+    <h2>📈 Semana × Semana anterior</h2>
+    <div class="cap">Comparação com ${anterior.periodo_ini.slice(-5).replace('-','/')} — ${anterior.periodo_fim.slice(-5).replace('-','/')}</div>
+    <div class="categ-grid" style="grid-template-columns:repeat(4,1fr)">
+      ${tile('','Caixa esta semana', brl0(atual.caixa), `<span class="${cor_c}">${sinal_c}${brl0(delta_caixa)}</span> vs anterior`)}
+      ${tile('c2','Média/dia atual', brl0(media_atu), `<span class="${cor_c}">${sinal_c}${delta_media_pct.toFixed(0)}%</span> vs anterior (${brl0(media_ant)}/dia)`)}
+      ${tile('c3','Atendimentos', atual.atend_fin+'', `${anterior.atend_fin} sem passada · <span class="${atual.atend_fin>=anterior.atend_fin?'up':'dn'}">${atual.atend_fin-anterior.atend_fin>=0?'+':''}${atual.atend_fin-anterior.atend_fin}</span>`)}
+      ${tile('','Ticket', brl(atual.ticket_trans), `${brl(anterior.ticket_trans)} sem passada`)}
+    </div>
+  </div>`;
+}
+
+// ============= EXPORT CSV =============
+function csvExport(filename, headers, rows){
+  const esc = s => { const t = String(s ?? ''); return /[",\n]/.test(t) ? '"'+t.replace(/"/g,'""')+'"' : t; };
+  const lines = [headers.map(esc).join(',')];
+  for(const r of rows) lines.push(r.map(esc).join(','));
+  const blob = new Blob(['﻿' + lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+  setTimeout(()=>{document.body.removeChild(a); URL.revokeObjectURL(url);}, 100);
+}
+
 // ============= RENDER INSIGHTS =============
 function renderInsights(container_id, titulo_aba, insights){
   const el = document.getElementById(container_id);
@@ -576,6 +696,15 @@ function renderAnual(data){
   renderBarsHora('anual-hora','Por hora do dia · 2026 <span class="hi">(média trans/dia · '+k.dias_op+'d op.)</span>','Média de transações por hora',a.hora_media,true,'');
 
   renderTopClientes('anual-topcli','Top Clientes · 2026','Ranking por nº de visitas · direcionamento CRM anual', a.clientes_top || [], '<strong>Concentração da base:</strong> use para priorizar fidelização/relacionamento dos clientes de alta frequência.');
+
+  // Churn early warning
+  renderChurn('anual-churn', a.churn_early);
+
+  // Utilização de cadeira
+  renderUtilizacao('anual-utilizacao', 'ano', k);
+
+  // Novos vs Recorrentes (anual)
+  if(a.novos_vs_recorr) renderNovosRecorr('anual-novos', a.novos_vs_recorr, 'ano');
 }
 
 function renderMensal(data){
@@ -587,31 +716,19 @@ function renderMensal(data){
     {label:'Caixa · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent'},
     {label:'Atendimentos',value:k.atend_fin+'',foot:`${k.clientes_unicos} clientes únicos`},
     {label:'Ticket transação',value:brl(k.ticket_trans),foot:`descontos ${brl0(m.descontos*-1)}`},
-    {label:'Dias operados',value:k.dias_op+'',foot:`de ${data.dias_op_mes} totais no mês`}
+    {label:'Utilização cadeira',value:(k.utilizacao_pct||0).toFixed(0)+'%',foot:`${k.n_prof_ativos||0} prof · ${k.dias_op}d de ${data.dias_op_mes}`}
   ]);
   renderMetaProgress('mensal-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
+  renderUtilizacao('mensal-utilizacao', 'mês', k);
   renderCategoriasMeta('mensal-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao);
 
-  // Novos vs Recorrentes
-  const nvr=m.novos_vs_recorr;
-  const total_c=nvr.novos.clientes+nvr.recorrentes.clientes;
-  const rec_pct=total_c>0?nvr.recorrentes.clientes/total_c*100:0;
-  document.getElementById('mensal-novos').innerHTML=`
-    <div class="card">
-      <h2>🆕 Novos vs Recorrentes · mês</h2>
-      <div class="cap">Fazer novo é caro. Fazer o novo voltar é o que sustenta a operação.</div>
-      <div class="categ-grid">
-        ${tile('','Clientes NOVOS',nvr.novos.clientes+'',`${nvr.novos.atend} atend · <strong>${brl0(nvr.novos.receita)}</strong>`)}
-        ${tile('c2','Recorrentes',nvr.recorrentes.clientes+'',`${nvr.recorrentes.atend} atend · ${brl0(nvr.recorrentes.receita)}`)}
-        ${tile('c3','Taxa retenção',pct(rec_pct),`${nvr.recorrentes.clientes} de ${total_c} clientes ativos`)}
-      </div>
-    </div>`;
+  if(m.novos_vs_recorr) renderNovosRecorr('mensal-novos', m.novos_vs_recorr, 'mês');
 
   renderRentabilidade('mensal-rentabilidade', 'Rentabilidade', 'mês', m.rentabilidade_hora || []);
 
   renderBarsDia('mensal-dia','Por dia do mês','Receita competência por dia',m.por_dia_mes,'');
   renderBarsHora('mensal-hora','Por hora do dia <span class="hi">(média trans/dia · '+k.dias_op+'d op.)</span>','Média de transações',m.hora_media,true,'');
-  renderRankingProf('mensal-prof','Ranking · profissionais','Por receita gerada',m.ranking_prof);
+  renderRankingProf('mensal-prof','Ranking · profissionais','Ordenado por receita · ticket médio revela quem faz upsell',m.ranking_prof, m.ranking_prof_total_n);
   renderMeiosPagamento('mensal-meios','Meios de pagamento','Valor recebido',m.meios_pagamento);
   renderTopClientes('mensal-topcli','Top Clientes · mês','Quem mais voltou no mês corrente · direcionamento retenção', m.clientes_top || [], '<strong>Ação sugerida:</strong> agradecer pessoalmente/WhatsApp a quem voltou 3+ vezes no mês. Se algum sumiu do ranking vs. mês anterior, investigar.');
 }
@@ -627,11 +744,14 @@ function renderSemanal(data){
     {label:'Dias operados',value:k.dias_op+'',foot:'de 6 (seg–sáb)'}
   ]);
   renderMetaProgress('semanal-meta','Meta Semanal',s.meta,'Meta mensal ÷ dias oper. × dias da semana');
+  renderComparacaoSemana('semanal-comparacao', k, s.semana_anterior);
+  renderUtilizacao('semanal-utilizacao', 'semana', k);
   renderCategoriasMeta('semanal-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao);
+  if(s.novos_vs_recorr) renderNovosRecorr('semanal-novos', s.novos_vs_recorr, 'semana');
   renderRentabilidade('semanal-rentabilidade', 'Rentabilidade', 'semana', s.rentabilidade_hora || []);
   renderBarsDow('semanal-dow','Por dia da semana','Caixa por dia · onde a receita se concentra',s.por_dow,'');
   renderBarsHora('semanal-hora','Por hora do dia <span class="hi">(média · '+k.dias_op+'d op.)</span>','Média de transações/dia',s.hora_media,true,'');
-  renderRankingProf('semanal-prof','Ranking · profissionais','Por receita gerada',s.ranking_prof);
+  renderRankingProf('semanal-prof','Ranking · profissionais','Ordenado por receita da semana',s.ranking_prof, s.ranking_prof_total_n);
   renderMeiosPagamento('semanal-meios','Meios de pagamento','Valor recebido',s.meios_pagamento);
   renderTopClientes('semanal-topcli','Top Clientes · semana','Quem mais visitou nesta semana · direcionamento operacional', s.clientes_top || [], '<strong>Prioridade da equipe:</strong> quem apareceu 2+ vezes na semana merece tratamento VIP na próxima visita.');
 }
@@ -647,10 +767,11 @@ function renderDiario(data){
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
   ]);
   renderMetaProgress('diario-meta','Meta Diária',d.meta,'Meta mensal ÷ dias operacionais');
+  renderUtilizacao('diario-utilizacao', 'hoje', k);
   renderCategoriasMeta('diario-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao);
   renderRentabilidade('diario-rentabilidade', 'Rentabilidade', 'hoje', d.rentabilidade_hora || []);
   renderBarsHora('diario-hora','Por hora · hoje <span class="hi">(absoluto · 1 dia)</span>','Transações fechadas até agora',d.hora_abs,false,'');
-  renderRankingProf('diario-prof','Profissionais hoje','Trabalhando agora',d.ranking_prof);
+  renderRankingProf('diario-prof','Profissionais hoje','Trabalhando agora',d.ranking_prof, d.ranking_prof_total_n);
 
   const sRows=d.ranking_serv.map(s=>[s.nome,s.n,brl0(s.v)]);
   renderTable('diario-serv','Serviços realizados hoje','Tipos e volumes',['Serviço','Qtd','Receita'],sRows);
@@ -777,13 +898,25 @@ function renderAuditoria(data){
   }).join('');
   const totalTitulo = `${aud.n_com_valor} cancelamentos (${aud.lista.filter(x=>x.valor_zero).length} sem cobrança)`;
   listaEl.innerHTML = `<div class="card">
-    <h2>Lista completa · ${totalTitulo}</h2>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h2 style="margin:0">Lista completa · ${totalTitulo}</h2>
+      <button id="btn-csv-audit" class="btn-refresh">⬇ Baixar CSV</button>
+    </div>
     <div class="cap">Ordenado por risco (crítico→revisar→atenção→ok→sem valor). Linhas vermelhas exigem ação hoje.</div>
     <table class="simple">
       <thead><tr><th>Risco</th><th>Data</th><th>Valor</th><th>Profissional</th><th>Cliente</th><th>Serviço</th><th>Flags</th></tr></thead>
       <tbody>${rowsLista}</tbody>
     </table>
   </div>`;
+  document.getElementById('btn-csv-audit')?.addEventListener('click', () => {
+    csvExport('auditoria-cancelamentos.csv',
+      ['Risco','Data','Valor','Profissional','Cliente','Serviço','Sem prof','Valor atípico','Preço ref','Stone match','Match por nome'],
+      listaOrd.map(x => [
+        x.risco, x.data, x.valor, x.profissional, x.cliente, x.servico,
+        x.sem_prof?'sim':'nao', x.valor_atipico?'sim':'nao',
+        x.preco_ref||'', x.stone_match_nomes.join(' | '), x.match_por_nome?'sim':'nao'
+      ]));
+  });
 }
 
 // ============= LOAD =============

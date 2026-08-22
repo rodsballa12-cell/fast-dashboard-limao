@@ -124,15 +124,29 @@ def analisar(agend, transac, ini: date, fim: date):
         hora_c[dt.hour] += 1
         hora_v[dt.hour] += float(t.get("totalPagar") or 0)
 
-    # rankings
-    prof = defaultdict(lambda: {"n": 0, "v": 0.0})
+    # rankings — inclui ticket médio e minutos ocupados
+    prof = defaultdict(lambda: {"n": 0, "v": 0.0, "min": 0})
     for a in fin:
         nome = ((a.get("profissional") or {}).get("nome") or "").strip().title() or "—"
-        prof[nome]["n"] += 1; prof[nome]["v"] += float(a.get("valor") or 0)
-    ranking_prof = sorted(
-        [{"nome": k, "n": v["n"], "v": brl_round(v["v"])} for k, v in prof.items()],
+        prof[nome]["n"] += 1
+        prof[nome]["v"] += float(a.get("valor") or 0)
+        prof[nome]["min"] += int(a.get("duracaoEmMinutos") or 0)
+    n_prof_ativos = len(prof)  # profissionais que atenderam alguém no período
+    ranking_prof_full = sorted(
+        [{"nome": k, "n": v["n"], "v": brl_round(v["v"]),
+          "ticket_medio": brl_round(v["v"] / max(v["n"], 1)),
+          "horas_trab": round(v["min"] / 60, 1)} for k, v in prof.items()],
         key=lambda x: -x["v"]
-    )[:12]
+    )
+    ranking_prof = ranking_prof_full[:12]
+    ranking_prof_total_n = len(ranking_prof_full)  # útil pra badge "de N total"
+
+    # === Utilização de cadeira ===
+    # capacidade = n_prof × 12h úteis (8h-20h) × dias_op
+    HORAS_UTEIS_DIA = 12
+    capacidade_horas = n_prof_ativos * HORAS_UTEIS_DIA * max(dias_com_op, 1)
+    horas_ocupadas = sum(v["min"] for v in prof.values()) / 60
+    utilizacao_pct = min(100, horas_ocupadas / max(capacidade_horas, 1) * 100)
 
     serv = defaultdict(lambda: {"n": 0, "v": 0.0, "min": 0})
     for a in fin:
@@ -212,6 +226,10 @@ def analisar(agend, transac, ini: date, fim: date):
             "dias_op": dias_com_op,
             "clientes_unicos": unicos,
             "em_atendimento": len(em_at),
+            "n_prof_ativos": n_prof_ativos,
+            "horas_ocupadas": round(horas_ocupadas, 1),
+            "capacidade_horas": capacidade_horas,
+            "utilizacao_pct": round(utilizacao_pct, 1),
         },
         "categorias": {
             "pacotes": {"v": brl_round(pac_v), "n": pac_n, "pct": round(pac_v / max(caixa, 1) * 100, 1)},
@@ -223,6 +241,7 @@ def analisar(agend, transac, ini: date, fim: date):
         "por_dow": dow_list,
         "por_dia_mes": dia_list,
         "ranking_prof": ranking_prof,
+        "ranking_prof_total_n": ranking_prof_total_n,
         "ranking_serv": ranking_serv,
         "rentabilidade_hora": rent_hora,
         "clientes_top": top_cli,
@@ -335,8 +354,64 @@ def main():
     fin_mes = [a for a in agend if (a.get("status") or {}).get("nome") == "Finalizado"
                and a.get("dataHoraInicio")
                and ini_mes <= datetime.fromisoformat(a["dataHoraInicio"]).date() <= fim_mes]
-    nvr = novos_vs_recorr(fin_mes, cad_map, ini_mes)
+    nvr_mes = novos_vs_recorr(fin_mes, cad_map, ini_mes)
+
+    # novos_vs_recorr também pra semanal e anual
+    fin_sem = [a for a in agend if (a.get("status") or {}).get("nome") == "Finalizado"
+               and a.get("dataHoraInicio") and seg <= datetime.fromisoformat(a["dataHoraInicio"]).date() <= dom]
+    nvr_sem = novos_vs_recorr(fin_sem, cad_map, seg)
+    fin_ano = [a for a in agend if (a.get("status") or {}).get("nome") == "Finalizado"
+               and a.get("dataHoraInicio") and ini_ano <= datetime.fromisoformat(a["dataHoraInicio"]).date() <= fim_ano]
+    nvr_ano = novos_vs_recorr(fin_ano, cad_map, ini_ano)
+
     ltv_ano = top_ltv(agend, ini_ano, fim_ano)
+
+    # === Semana anterior (pra comparação semana × semana) ===
+    seg_ant = seg - timedelta(days=7)
+    dom_ant = seg_ant + timedelta(days=6)
+    a_sem_ant = analisar(agend, transac, seg_ant, dom_ant)
+    semana_anterior = {
+        "periodo_ini": seg_ant.isoformat(), "periodo_fim": dom_ant.isoformat(),
+        "caixa": a_sem_ant["kpis"]["caixa"], "atend_fin": a_sem_ant["kpis"]["atend_fin"],
+        "n_trans": a_sem_ant["kpis"]["n_trans"], "ticket_trans": a_sem_ant["kpis"]["ticket_trans"],
+        "dias_op": a_sem_ant["kpis"]["dias_op"],
+    }
+
+    # === Churn early warning: clientes ≥3 visitas nos primeiros 30 dias e sumidos há 14+ dias ===
+    churn_candidatos = []
+    cli_visitas = defaultdict(list)  # {id: [dates]}
+    cli_nome = {}
+    cli_valor = defaultdict(float)
+    for a in agend:
+        if (a.get("status") or {}).get("nome") != "Finalizado": continue
+        cid = (a.get("cliente") or {}).get("id")
+        if cid is None: continue
+        try:
+            dt = datetime.fromisoformat(a["dataHoraInicio"]).date()
+        except Exception:
+            continue
+        cli_visitas[cid].append(dt)
+        cli_nome[cid] = (a.get("cliente") or {}).get("nome") or ""
+        cli_valor[cid] += float(a.get("valor") or 0)
+    for cid, datas in cli_visitas.items():
+        if len(datas) < 3: continue
+        datas_sorted = sorted(datas)
+        ultima = datas_sorted[-1]
+        dias_sem_vir = (hoje - ultima).days
+        if dias_sem_vir >= 14:
+            churn_candidatos.append({
+                "cliente": cli_nome[cid].title(),
+                "n_visitas": len(datas),
+                "ltv": brl_round(cli_valor[cid]),
+                "ultima_visita": ultima.isoformat(),
+                "dias_sem_vir": dias_sem_vir,
+            })
+    churn_candidatos.sort(key=lambda x: -x["ltv"])
+    churn = {
+        "n_alerta": len(churn_candidatos),
+        "ltv_em_risco": brl_round(sum(c["ltv"] for c in churn_candidatos)),
+        "top": churn_candidatos[:20],
+    }
 
     # meses do ano
     meses = {}
@@ -595,35 +670,46 @@ def main():
             "anual": {
                 "kpis": a_anual["kpis"], "meta": meta_ano, "categorias": a_anual["categorias"],
                 "meses": meses, "top_ltv": ltv_ano,
+                "novos_vs_recorr": nvr_ano,
                 "rentabilidade_hora": a_anual["rentabilidade_hora"],
                 "hora_media": hora_media(a_anual["hora_abs"], a_anual["kpis"]["dias_op"]),
-                "ranking_prof": a_anual["ranking_prof"], "ranking_serv": a_anual["ranking_serv"],
+                "ranking_prof": a_anual["ranking_prof"],
+                "ranking_prof_total_n": a_anual.get("ranking_prof_total_n", 0),
+                "ranking_serv": a_anual["ranking_serv"],
                 "meios_pagamento": a_anual["meios_pagamento"], "descontos": a_anual["descontos"],
                 "clientes_top": a_anual["clientes_top"],
+                "churn_early": churn,
             },
             "mensal": {
                 "kpis": a_mensal["kpis"], "meta": meta_mensal, "categorias": a_mensal["categorias"],
-                "novos_vs_recorr": nvr, "rentabilidade_hora": a_mensal["rentabilidade_hora"],
+                "novos_vs_recorr": nvr_mes, "rentabilidade_hora": a_mensal["rentabilidade_hora"],
                 "por_dia_mes": a_mensal["por_dia_mes"],
                 "hora_media": hora_media(a_mensal["hora_abs"], a_mensal["kpis"]["dias_op"]),
-                "ranking_prof": a_mensal["ranking_prof"], "ranking_serv": a_mensal["ranking_serv"],
+                "ranking_prof": a_mensal["ranking_prof"],
+                "ranking_prof_total_n": a_mensal.get("ranking_prof_total_n", 0),
+                "ranking_serv": a_mensal["ranking_serv"],
                 "meios_pagamento": a_mensal["meios_pagamento"], "descontos": a_mensal["descontos"],
                 "clientes_top": a_mensal["clientes_top"],
             },
             "semanal": {
                 "kpis": {**a_semanal["kpis"], "periodo_ini": seg.isoformat(), "periodo_fim": dom.isoformat()},
                 "meta": meta_sem, "categorias": a_semanal["categorias"],
+                "novos_vs_recorr": nvr_sem,
                 "por_dow": a_semanal["por_dow"],
                 "hora_media": hora_media(a_semanal["hora_abs"], a_semanal["kpis"]["dias_op"]),
-                "ranking_prof": a_semanal["ranking_prof"], "ranking_serv": a_semanal["ranking_serv"],
+                "ranking_prof": a_semanal["ranking_prof"],
+                "ranking_prof_total_n": a_semanal.get("ranking_prof_total_n", 0),
+                "ranking_serv": a_semanal["ranking_serv"],
                 "rentabilidade_hora": a_semanal["rentabilidade_hora"],
                 "meios_pagamento": a_semanal["meios_pagamento"],
                 "clientes_top": a_semanal["clientes_top"],
+                "semana_anterior": semana_anterior,
             },
             "diario": {
                 "kpis": {**a_diario["kpis"], "dia_semana": DOW_NOMES[hoje.weekday()], "data": hoje.isoformat()},
                 "meta": meta_dia, "categorias": a_diario["categorias"],
                 "hora_abs": a_diario["hora_abs"], "ranking_prof": a_diario["ranking_prof"],
+                "ranking_prof_total_n": a_diario.get("ranking_prof_total_n", 0),
                 "ranking_serv": a_diario["ranking_serv"],
                 "rentabilidade_hora": a_diario["rentabilidade_hora"],
                 "meios_pagamento": a_diario["meios_pagamento"],
