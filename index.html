@@ -541,29 +541,56 @@ function renderCategTile(container_id, titulo, subtitle, categorias){
   document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="categ-grid">${tiles}</div></div>`;
 }
 
-// ============= UTILIZAÇÃO DE CADEIRA =============
-function renderUtilizacao(container_id, periodo, kpis){
+// ============= UTILIZAÇÃO POR CADEIRA FÍSICA (por tipo) =============
+// Modelo PJ: capacidade é do IMÓVEL (cadeiras físicas), não das profissionais.
+function renderUtilizacao(container_id, periodo, kpis, aba){
   const el = document.getElementById(container_id);
   if(!el) return;
-  const util = kpis.utilizacao_pct;
-  if(util === undefined || !kpis.n_prof_ativos){ el.innerHTML = ''; return; }
-  const cor = util >= 70 ? 'warn' : (util < 30 ? 'dn' : 'up');
-  const status = util >= 70 ? '⚠️ Alta — perto do teto' : (util < 30 ? '💡 Baixa — capacidade ociosa' : '✅ Saudável');
-  const acao = util >= 70
-    ? 'Perto do limite operacional. Contratar 1 profissional a mais OU aumentar preço nos horários de pico.'
-    : (util < 30
-      ? 'Muita capacidade ociosa. Investir em captação (Instagram, WhatsApp, indicação) — cabe muito mais cliente sem custo extra.'
-      : 'Utilização saudável (30-70%). Espaço pra crescer sem estresse operacional.');
+  const cad = (aba || {}).cadeiras_utilizacao;
+  const dens = (aba || {}).densidade_hora;
+  if(!cad){ el.innerHTML = ''; return; }
+  const rsHora = kpis.rs_hora_salao || 0;
+  const horasOp = kpis.horas_operacao_periodo || 0;
+  const utilAgr = kpis.utilizacao_agregada_pct || 0;
+
+  const corUtil = v => v >= 75 ? 'warn' : (v < 25 ? 'dn' : 'up');
+  const rotulo = t => ({cabelo:'💇 Cabelo', maquiagem:'💄 Maquiagem/Rosto', unhas:'💅 Unhas', outro:'Outros'})[t] || t;
+
+  const cadeirasHTML = Object.entries(cad).filter(([t,d]) => d.n_cadeiras > 0 || d.horas_ocupadas > 0).map(([t, d]) => {
+    const barPct = Math.min(100, d.utilizacao_pct);
+    const cor = corUtil(d.utilizacao_pct);
+    return `<div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+        <span><strong>${rotulo(t)}</strong> <span style="color:var(--ink-3)">(${d.n_cadeiras || 0} cadeiras)</span></span>
+        <span class="${cor}"><strong>${d.utilizacao_pct.toFixed(0)}%</strong> · ${d.horas_ocupadas.toFixed(0)}h de ${d.capacidade_horas.toFixed(0)}h</span>
+      </div>
+      <div style="height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden;border:1px solid var(--border)">
+        <div style="height:100%;width:${barPct}%;background:${cor==='warn'?'var(--warn)':(cor==='dn'?'var(--crit)':'var(--good)')};transition:width .3s"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Densidade horária (máx e mín)
+  let densInsight = '';
+  if(dens && dens.length){
+    const nonZero = dens.filter(d => d.media_simultaneos > 0);
+    if(nonZero.length){
+      const pico = nonZero.reduce((a,b) => a.media_simultaneos > b.media_simultaneos ? a : b);
+      const vale = nonZero.reduce((a,b) => a.media_simultaneos < b.media_simultaneos ? a : b);
+      densInsight = `<br><strong>📊 Densidade média:</strong> pico às <strong>${pico.h}h</strong> (${pico.media_simultaneos.toFixed(1)} clientes simultâneos) · vale às <strong>${vale.h}h</strong> (${vale.media_simultaneos.toFixed(1)}).`;
+    }
+  }
+
   el.innerHTML = `<div class="card">
-    <h2>🪑 Utilização de cadeira · ${periodo}</h2>
-    <div class="cap">Quanto da capacidade operacional está sendo usado</div>
-    <div class="categ-grid" style="grid-template-columns:repeat(4,1fr)">
-      ${tile('','Utilização', `<span class="${cor}">${util.toFixed(0)}%</span>`, status)}
-      ${tile('c2','Horas ocupadas', kpis.horas_ocupadas.toFixed(0)+'h', `de ${kpis.capacidade_horas}h de capacidade`)}
-      ${tile('c3','Profissionais ativos', kpis.n_prof_ativos+'', 'atenderam ≥1 no período')}
-      ${tile('','Cadeira/prof', (kpis.horas_ocupadas/Math.max(kpis.n_prof_ativos,1)).toFixed(0)+'h', 'média por profissional')}
+    <h2>🪑 Ocupação por tipo de cadeira · ${periodo}</h2>
+    <div class="cap">Capacidade do IMÓVEL (cadeiras físicas × horas de operação). Independe de quantas profissionais atendem — mostra se o espaço está sendo bem usado.</div>
+    <div class="categ-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+      ${tile('','Utilização geral', `<span class="${corUtil(utilAgr)}">${utilAgr.toFixed(0)}%</span>`, `${Object.values(cad).reduce((s,d)=>s+(d.horas_ocupadas||0),0).toFixed(0)}h ocupadas de ${Object.values(cad).reduce((s,d)=>s+(d.capacidade_horas||0),0).toFixed(0)}h`)}
+      ${tile('c2','R$/hora do salão', brl(rsHora), `${horasOp}h de operação no período`)}
+      ${tile('c3','Tipo mais ocupado', Object.entries(cad).filter(([t])=>t!=='outro').sort((a,b)=>b[1].utilizacao_pct-a[1].utilizacao_pct)[0]?.[0] || '—', 'onde está o gargalo')}
     </div>
-    <div class="insight"><strong>${status}:</strong> ${acao}</div>
+    ${cadeirasHTML}
+    <div class="insight"><strong>Como ler:</strong> ${utilAgr < 25 ? 'Utilização baixa — há espaço pra crescer sem obra/reforma.' : (utilAgr >= 75 ? 'Alta — considerar mais cadeiras ou preço premium nos horários de pico.' : 'Saudável — espaço para crescer sem estresse.')} ${densInsight}</div>
   </div>`;
 }
 
@@ -800,7 +827,7 @@ function renderAnual(data){
   renderChurn('anual-churn', a.churn_early);
 
   // Utilização de cadeira
-  renderUtilizacao('anual-utilizacao', 'ano', k);
+  renderUtilizacao('anual-utilizacao', 'ano', k, a);
 
   // Novos vs Recorrentes (anual)
   if(a.novos_vs_recorr) renderNovosRecorr('anual-novos', a.novos_vs_recorr, 'ano');
@@ -819,10 +846,10 @@ function renderMensal(data){
     {label:'Caixa · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent'},
     {label:'Atendimentos',value:k.atend_fin+'',foot:`${k.clientes_unicos} clientes únicos`},
     {label:'Ticket transação',value:brl(k.ticket_trans),foot:`descontos ${brl0(m.descontos*-1)}`},
-    {label:'Utilização cadeira',value:(k.utilizacao_pct||0).toFixed(0)+'%',foot:`${k.n_prof_ativos||0} prof · ${k.dias_op}d de ${data.dias_op_mes}`}
+    {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
   ]);
   renderMetaProgress('mensal-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
-  renderUtilizacao('mensal-utilizacao', 'mês', k);
+  renderUtilizacao('mensal-utilizacao', 'mês', k, m);
   renderCategoriasMeta('mensal-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao);
 
   if(m.novos_vs_recorr) renderNovosRecorr('mensal-novos', m.novos_vs_recorr, 'mês');
@@ -848,7 +875,7 @@ function renderSemanal(data){
   ]);
   renderMetaProgress('semanal-meta','Meta Semanal',s.meta,'Meta mensal ÷ dias oper. × dias da semana');
   renderComparacaoSemana('semanal-comparacao', k, s.semana_anterior);
-  renderUtilizacao('semanal-utilizacao', 'semana', k);
+  renderUtilizacao('semanal-utilizacao', 'semana', k, s);
   renderCategoriasMeta('semanal-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao);
   if(s.novos_vs_recorr) renderNovosRecorr('semanal-novos', s.novos_vs_recorr, 'semana');
   renderRentabilidade('semanal-rentabilidade', 'Rentabilidade', 'semana', s.rentabilidade_hora || []);
@@ -870,7 +897,7 @@ function renderDiario(data){
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
   ]);
   renderMetaProgress('diario-meta','Meta Diária',d.meta,'Meta mensal ÷ dias operacionais');
-  renderUtilizacao('diario-utilizacao', 'hoje', k);
+  renderUtilizacao('diario-utilizacao', 'hoje', k, d);
   renderCategoriasMeta('diario-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao);
   renderRentabilidade('diario-rentabilidade', 'Rentabilidade', 'hoje', d.rentabilidade_hora || []);
   renderBarsHora('diario-hora','Por hora · hoje <span class="hi">(absoluto · 1 dia)</span>','Transações fechadas até agora',d.hora_abs,false,'');

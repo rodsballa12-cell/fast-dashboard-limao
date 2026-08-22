@@ -27,6 +27,27 @@ DOW_NOMES = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_JSON = REPO_ROOT / "data" / "dashboard_data.json"
 STONE_CSV = REPO_ROOT / "data" / "stone_extrato.csv"
+CONFIG_JSON = REPO_ROOT / "data" / "config.json"
+
+# Config da loja (cadeiras físicas, horas de operação, mapping serviço→cadeira)
+try:
+    _cfg = json.loads(CONFIG_JSON.read_text(encoding="utf-8"))
+except Exception:
+    _cfg = {}
+CADEIRAS_FIS = _cfg.get("cadeiras") or {"cabelo": 5, "maquiagem": 3, "unhas": 8}
+HORAS_OPERACAO_DIA = _cfg.get("horas_operacao_dia", 12)
+CADEIRA_KEYWORDS = _cfg.get("cadeira_por_servico_keywords") or {}
+
+
+def classificar_cadeira(nome_serv):
+    """Retorna 'cabelo' | 'maquiagem' | 'unhas' | 'outro' pelo nome do serviço."""
+    if not nome_serv: return "outro"
+    n = nome_serv.upper()
+    for tipo, kws in CADEIRA_KEYWORDS.items():
+        for kw in kws:
+            if kw.upper() in n:
+                return tipo
+    return "outro"
 
 
 class Trinks:
@@ -141,12 +162,67 @@ def analisar(agend, transac, ini: date, fim: date):
     ranking_prof = ranking_prof_full[:12]
     ranking_prof_total_n = len(ranking_prof_full)  # útil pra badge "de N total"
 
-    # === Utilização de cadeira ===
-    # capacidade = n_prof × 12h úteis (8h-20h) × dias_op
-    HORAS_UTEIS_DIA = 12
-    capacidade_horas = n_prof_ativos * HORAS_UTEIS_DIA * max(dias_com_op, 1)
-    horas_ocupadas = sum(v["min"] for v in prof.values()) / 60
-    utilizacao_pct = min(100, horas_ocupadas / max(capacidade_horas, 1) * 100)
+    # === Utilização de CADEIRA FÍSICA (por tipo) ===
+    # Modelo PJ: capacidade é do imóvel, não das profissionais.
+    # Denominador: N cadeiras físicas × horas de operação × dias operados
+    # Numerador: soma de duração dos atendimentos que usam esse tipo de cadeira
+    ocup_por_cadeira = {tipo: 0.0 for tipo in CADEIRAS_FIS}
+    ocup_por_cadeira["outro"] = 0.0
+    for a in fin:
+        s = (a.get("servico") or {}).get("nome") or ""
+        min_a = int(a.get("duracaoEmMinutos") or 0)
+        tipo = classificar_cadeira(s)
+        ocup_por_cadeira[tipo] += min_a / 60
+
+    cadeiras_detalhe = {}
+    dias_ref = max(dias_com_op, 1)
+    for tipo, n_cad in CADEIRAS_FIS.items():
+        cap_h = n_cad * HORAS_OPERACAO_DIA * dias_ref
+        oc_h = ocup_por_cadeira.get(tipo, 0)
+        util_pct = min(100, oc_h / max(cap_h, 1) * 100)
+        cadeiras_detalhe[tipo] = {
+            "n_cadeiras": n_cad,
+            "capacidade_horas": round(cap_h, 1),
+            "horas_ocupadas": round(oc_h, 1),
+            "utilizacao_pct": round(util_pct, 1),
+        }
+    # Agregado
+    total_ocup = sum(ocup_por_cadeira.values())
+    total_cap = sum(v["capacidade_horas"] for v in cadeiras_detalhe.values())
+    util_agregada = min(100, total_ocup / max(total_cap, 1) * 100)
+
+    # === R$/hora útil do salão ===
+    horas_operacao_periodo = HORAS_OPERACAO_DIA * dias_ref
+    rs_hora_salao = caixa / max(horas_operacao_periodo, 1)
+
+    # === Densidade horária (média atendimentos simultâneos por hora do dia) ===
+    # Pra cada atendimento, alocar sua duração nas horas afetadas
+    from collections import defaultdict as _dd
+    ocup_por_hora = _dd(float)  # {hora: horas-cliente totais nessa hora do dia}
+    for a in fin:
+        dt = a.get("dataHoraInicio")
+        min_a = int(a.get("duracaoEmMinutos") or 0)
+        if not dt or min_a <= 0: continue
+        try:
+            inicio = datetime.fromisoformat(dt)
+        except Exception:
+            continue
+        # Distribuir min_a entre as horas afetadas
+        restante = min_a
+        pos = inicio
+        while restante > 0:
+            h = pos.hour
+            fim_hora = pos.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
+            gap_min = (fim_hora - pos).total_seconds() / 60
+            uso = min(restante, gap_min)
+            ocup_por_hora[h] += uso / 60
+            restante -= uso
+            pos = fim_hora
+    # Média por hora (dividido por dias)
+    densidade_hora = [
+        {"h": h, "media_simultaneos": round(ocup_por_hora.get(h, 0) / dias_ref, 2)}
+        for h in range(8, 21)
+    ]
 
     serv = defaultdict(lambda: {"n": 0, "v": 0.0, "min": 0})
     for a in fin:
@@ -227,10 +303,12 @@ def analisar(agend, transac, ini: date, fim: date):
             "clientes_unicos": unicos,
             "em_atendimento": len(em_at),
             "n_prof_ativos": n_prof_ativos,
-            "horas_ocupadas": round(horas_ocupadas, 1),
-            "capacidade_horas": capacidade_horas,
-            "utilizacao_pct": round(utilizacao_pct, 1),
+            "rs_hora_salao": brl_round(rs_hora_salao),
+            "horas_operacao_periodo": round(horas_operacao_periodo, 0),
+            "utilizacao_agregada_pct": round(util_agregada, 1),
         },
+        "cadeiras_utilizacao": cadeiras_detalhe,
+        "densidade_hora": densidade_hora,
         "categorias": {
             "pacotes": {"v": brl_round(pac_v), "n": pac_n, "pct": round(pac_v / max(caixa, 1) * 100, 1)},
             "servicos": {"v": brl_round(serv_v), "n": serv_n, "pct": round(serv_v / max(caixa, 1) * 100, 1)},
@@ -751,6 +829,8 @@ def main():
                 "ranking_serv": a_anual["ranking_serv"],
                 "meios_pagamento": a_anual["meios_pagamento"], "descontos": a_anual["descontos"],
                 "clientes_top": a_anual["clientes_top"],
+                "cadeiras_utilizacao": a_anual["cadeiras_utilizacao"],
+                "densidade_hora": a_anual["densidade_hora"],
                 "churn_early": churn,
                 "cross_sell": cross_sell_data,
                 "aniversariantes": aniversariantes,
@@ -765,6 +845,8 @@ def main():
                 "ranking_serv": a_mensal["ranking_serv"],
                 "meios_pagamento": a_mensal["meios_pagamento"], "descontos": a_mensal["descontos"],
                 "clientes_top": a_mensal["clientes_top"],
+                "cadeiras_utilizacao": a_mensal["cadeiras_utilizacao"],
+                "densidade_hora": a_mensal["densidade_hora"],
             },
             "semanal": {
                 "kpis": {**a_semanal["kpis"], "periodo_ini": seg.isoformat(), "periodo_fim": dom.isoformat()},
@@ -779,6 +861,8 @@ def main():
                 "meios_pagamento": a_semanal["meios_pagamento"],
                 "clientes_top": a_semanal["clientes_top"],
                 "semana_anterior": semana_anterior,
+                "cadeiras_utilizacao": a_semanal["cadeiras_utilizacao"],
+                "densidade_hora": a_semanal["densidade_hora"],
             },
             "diario": {
                 "kpis": {**a_diario["kpis"], "dia_semana": DOW_NOMES[hoje.weekday()], "data": hoje.isoformat()},
@@ -789,6 +873,8 @@ def main():
                 "rentabilidade_hora": a_diario["rentabilidade_hora"],
                 "meios_pagamento": a_diario["meios_pagamento"],
                 "clientes_top": a_diario["clientes_top"],
+                "cadeiras_utilizacao": a_diario["cadeiras_utilizacao"],
+                "densidade_hora": a_diario["densidade_hora"],
             },
         },
     }

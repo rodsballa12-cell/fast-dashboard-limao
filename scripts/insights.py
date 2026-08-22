@@ -170,19 +170,16 @@ def _insights_semanal(aba, mes_por_dow=None):
                     f"{top['nome']} = {_fmt(top['v'])} (ticket médio {_fmt(tkt_top)}). Se ficar doente, cai muita coisa junto.",
                     "Treinar 2ª profissional pros serviços que ela mais faz. Distribuir walk-ins mais equilibrado nas próximas semanas."))
 
-    # 4. Utilização de cadeira
-    util = k.get("utilizacao_pct", 0)
-    n_prof = k.get("n_prof_ativos", 0)
-    horas_oc = k.get("horas_ocupadas", 0)
-    if n_prof > 0 and horas_oc > 0:
-        if util < 30:
-            ins.append(_mk("oportunidade", f"Cadeira ocupada só {util:.0f}%",
-                f"{n_prof} profissional(is) rodaram {horas_oc:.0f}h esta semana de {int(k.get('capacidade_horas',0))}h de capacidade.",
-                "Capacidade ociosa alta — cabe MAIS walk-in sem contratar. Ativar WhatsApp/story."))
-        elif util >= 75:
-            ins.append(_mk("atencao", f"Cadeira em {util:.0f}% — chegando no teto",
-                f"{n_prof} profissional(is) · {horas_oc:.0f}h ocupadas de {int(k.get('capacidade_horas',0))}h.",
-                "Perto da lotação. Se demanda continuar, contratar 1 profissional a mais ou aumentar preço nos horários de pico."))
+    # 4. Ocupação de cadeiras físicas (por tipo)
+    cad = aba.get("cadeiras_utilizacao") or {}
+    if cad:
+        for tipo, d in cad.items():
+            if tipo == "outro" or not d.get("n_cadeiras"): continue
+            util = d.get("utilizacao_pct", 0)
+            if util >= 75:
+                ins.append(_mk("atencao", f"Cadeira de {tipo} em {util:.0f}% (semana)",
+                    f"{d['horas_ocupadas']:.0f}h ocupadas de {d['capacidade_horas']:.0f}h ({d['n_cadeiras']} cadeiras físicas).",
+                    f"Perto da lotação em {tipo}. Considerar mais cadeira ou preço premium nos horários de pico."))
 
     return ins
 
@@ -277,18 +274,23 @@ def _insights_mensal(aba, mes_anterior=None):
             f"Produtos = {prod.get('pct',0):.1f}% do caixa ({_fmt(prod.get('v',0))}). Se chegasse a {META_CATEG_PRODUTOS_PCT}%, seriam +{_fmt(potencial)}/mês.",
             "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."))
 
-    # 5b. Utilização de cadeira do mês
-    util = k.get("utilizacao_pct", 0)
-    n_prof = k.get("n_prof_ativos", 0)
-    if k.get("dias_op", 0) >= 5 and util > 0:
-        if util < 30:
-            ins.append(_mk("oportunidade", f"Cadeira ocupada só {util:.0f}% no mês",
-                f"{n_prof} profissional(is) · {int(k.get('horas_ocupadas',0))}h ocupadas de {int(k.get('capacidade_horas',0))}h possíveis.",
-                "Muito espaço pra mais walk-ins sem custo adicional. Priorizar marketing e ofertas de atração."))
-        elif util >= 70:
-            ins.append(_mk("atencao", f"Cadeira em {util:.0f}% do mês",
-                f"Próximo do limite. Filas ou recusas podem começar.",
-                "Considerar mais 1 profissional ou aumentar preço nas horas de pico pra segurar demanda."))
+    # 5b. Ocupação de cadeiras (por tipo) do mês
+    cad = aba.get("cadeiras_utilizacao") or {}
+    if k.get("dias_op", 0) >= 5 and cad:
+        # Insight agregado
+        util_agr = k.get("utilizacao_agregada_pct", 0)
+        if util_agr < 25:
+            ins.append(_mk("oportunidade", f"Ocupação geral do salão: {util_agr:.0f}%",
+                f"Muito espaço físico ocioso. Rs/hora salão: {_fmt(k.get('rs_hora_salao',0))}.",
+                "Investir em captação pra encher os slots vazios — sem obra, sem contratar."))
+        # Por tipo (se algum tá alto)
+        for tipo, d in cad.items():
+            if tipo == "outro" or not d.get("n_cadeiras"): continue
+            u = d.get("utilizacao_pct", 0)
+            if u >= 70:
+                ins.append(_mk("atencao", f"Cadeira de {tipo} em {u:.0f}% (mês)",
+                    f"{d['horas_ocupadas']:.0f}h ocupadas de {d['capacidade_horas']:.0f}h em {d['n_cadeiras']} cadeiras.",
+                    f"Gargalo em {tipo}. Considerar mais cadeira ou preço premium nos horários de pico dessa área."))
 
     # 6. Concentração top clientes (LTV)
     top_cli = aba.get("clientes_top") or []
@@ -397,18 +399,16 @@ def _insights_anual(aba):
             f"Nunca experimentaram serviços populares (ex: {top_serv_str}). Se 20% aceitar, aumenta ticket médio significativamente.",
             "Ver aba Anual > Cross-sell. Priorizar top 10 por LTV — recepção pode oferecer no fechamento."))
 
-    # 8. Utilização de cadeira anual
+    # 8. Ocupação de cadeiras anual (por tipo)
     k = aba.get("kpis", {})
-    util = k.get("utilizacao_pct", 0)
-    if k.get("dias_op", 0) >= 30 and util > 0:
-        if util < 25:
-            ins.append(_mk("oportunidade", f"Utilização média cadeira: {util:.0f}%",
-                f"Ao longo do ano, {int(k.get('horas_ocupadas',0))}h ocupadas de {int(k.get('capacidade_horas',0))}h de capacidade.",
-                "Há bastante gordura pra crescer sem contratar. Foco em captação (marketing local/instagram)."))
-        elif util >= 70:
-            ins.append(_mk("atencao", f"Utilização alta: {util:.0f}%",
-                f"Perto do teto operacional ({int(k.get('capacidade_horas',0))}h capacidade).",
-                "Pra crescer sem perder qualidade: contratar mais 1 profissional OU aumentar preço nos horários de pico."))
+    cad = aba.get("cadeiras_utilizacao") or {}
+    if k.get("dias_op", 0) >= 20 and cad:
+        util_agr = k.get("utilizacao_agregada_pct", 0)
+        rs_hora = k.get("rs_hora_salao", 0)
+        if util_agr < 25:
+            ins.append(_mk("info", f"Ocupação geral do salão: {util_agr:.0f}% (ano)",
+                f"R$/hora média do salão: {_fmt(rs_hora)}. Muito espaço pra crescer usando as cadeiras que já existem.",
+                "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."))
 
     return ins
 
