@@ -54,7 +54,13 @@ class Trinks:
     def __init__(self):
         api_key = os.environ["TRINKS_API_KEY"]
         eid = os.environ["TRINKS_ESTABELECIMENTO_ID"]
-        self.headers = {"X-Api-Key": api_key, "estabelecimentoId": eid, "Accept": "application/json"}
+        # User-Agent: alguns WAFs bloqueiam requests sem UA (retornando 500 em vez de 403)
+        self.headers = {
+            "X-Api-Key": api_key,
+            "estabelecimentoId": eid,
+            "Accept": "application/json",
+            "User-Agent": "FAST-Dashboard-Limao/1.0 (+https://github.com/rodsballa12-cell/fast-dashboard-limao)",
+        }
         self.s = requests.Session()
         self._last = 0.0
 
@@ -83,6 +89,10 @@ class Trinks:
                 print(f"[trinks] {path} 429 rate-limit · aguarda {delay}s")
                 time.sleep(delay); continue
             if 500 <= r.status_code < 600:
+                # Log corpo da resposta na PRIMEIRA tentativa pra revelar o que Trinks retorna
+                if i == 0:
+                    body_preview = (r.text or "")[:500].replace("\n", " ")
+                    print(f"[trinks] {path} {r.status_code} · body: {body_preview!r}")
                 delay = 10 * (i + 1)
                 print(f"[trinks] {path} {r.status_code} · aguarda {delay}s")
                 time.sleep(delay); continue
