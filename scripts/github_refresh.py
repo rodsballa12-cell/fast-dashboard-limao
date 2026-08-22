@@ -92,7 +92,13 @@ class Trinks:
             page += 1
 
     def consumo(self):
-        return self.get("/v1/consumo")
+        # Não-fatal: se o endpoint de cota falhar, retornar estrutura vazia
+        # em vez de matar o pipeline inteiro (só telemetria).
+        try:
+            return self.get("/v1/consumo")
+        except Exception as e:
+            print(f"[consumo] falhou (não-fatal): {e}")
+            return {"plano": "desconhecido", "cotaTotal": 0, "totalUtilizado": 0, "saldoRestante": 0}
 
 
 def brl_round(v): return round(float(v or 0), 2)
