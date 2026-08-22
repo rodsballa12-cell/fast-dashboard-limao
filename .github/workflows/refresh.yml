@@ -3,7 +3,9 @@ name: Refresh Dashboard Data
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 * * * *'  # backup horário (Task Scheduler local é o principal)
+    # 4×/dia · 12h, 15h, 18h, 21h BRT (= 15h, 18h, 21h, 00h UTC)
+    # Reduz consumo API Trinks e chega em horários de checkpoint do dia
+    - cron: '0 15,18,21,0 * * *'
 
 permissions:
   contents: write
