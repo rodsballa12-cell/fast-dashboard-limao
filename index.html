@@ -623,11 +623,44 @@ function renderComparacaoSemana(container_id, atual, anterior){
 }
 
 // ============= EXPORT CSV =============
-function csvExport(filename, headers, rows){
+// Se `window.claude.use('downloads')` estiver disponível (artifact viewer),
+// usa a API oficial. Fora dele (browser normal servindo o index.html), cai
+// no download por blob URL.
+async function csvExport(filename, headers, rows){
   const esc = s => { const t = String(s ?? ''); return /[",\n]/.test(t) ? '"'+t.replace(/"/g,'""')+'"' : t; };
   const lines = [headers.map(esc).join(',')];
   for(const r of rows) lines.push(r.map(esc).join(','));
-  const blob = new Blob(['﻿' + lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const conteudo = '﻿' + lines.join('\n');
+
+  const dl = window.claude && typeof window.claude.use === 'function'
+    ? await window.claude.use('downloads').catch(() => null)
+    : null;
+
+  if(dl){
+    // Artifact viewer — usa a API oficial. Se csv não estiver na allowlist, tenta txt.
+    try {
+      await dl.save({filename, data: conteudo});
+      toast(`✅ CSV baixado: ${filename}`);
+    } catch(err){
+      if(err && err.code === 'extension_not_enabled'){
+        const alt = filename.replace(/\.csv$/i, '.txt');
+        try {
+          await dl.save({filename: alt, data: conteudo});
+          toast(`✅ Baixado como TXT: ${alt}`);
+        } catch(e2){
+          toast(`❌ Download recusado: ${e2.code || 'unknown'}`, true);
+        }
+      } else if(err && err.code === 'declined'){
+        // silêncio — usuário cancelou
+      } else {
+        toast(`❌ Download falhou: ${err?.code || 'unknown'}`, true);
+      }
+    }
+    return;
+  }
+
+  // Fallback: browser direto — blob URL
+  const blob = new Blob([conteudo], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = filename; document.body.appendChild(a); a.click();
