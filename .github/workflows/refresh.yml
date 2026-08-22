@@ -3,9 +3,9 @@ name: Refresh Dashboard Data
 on:
   workflow_dispatch:
   schedule:
-    # 4×/dia · 12h, 15h, 18h, 21h BRT (= 15h, 18h, 21h, 00h UTC)
-    # Reduz consumo API Trinks e chega em horários de checkpoint do dia
-    - cron: '0 15,18,21,0 * * *'
+    # 5×/dia · 00h, 12h, 15h, 18h, 21h BRT (= 03h, 15h, 18h, 21h, 00h UTC)
+    # 00h BRT garante que o "hoje" já esteja fresco ao virar do dia
+    - cron: '0 3,15,18,21,0 * * *'
 
 permissions:
   contents: write
