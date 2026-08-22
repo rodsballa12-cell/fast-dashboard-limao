@@ -1,13 +1,13 @@
 {
-  "gerado_em": "2026-08-21T21:49:15-03:00",
+  "gerado_em": "2026-08-21T22:19:47-03:00",
   "hoje": "2026-08-21",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 26,
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 6052,
-    "saldoRestante": 3948
+    "totalUtilizado": 6074,
+    "saldoRestante": 3926
   },
   "stone": {
     "periodo_ini": "2026-07-24",
@@ -580,7 +580,7 @@
           "cliente": "marcia Regina Araujo Neto "
         }
       ],
-      "horas_desatualizado": 7.9
+      "horas_desatualizado": 8.4
     }
   },
   "auditoria_cancelados": {
@@ -1124,7 +1124,11 @@
         "taxa_canc": 6.8,
         "dias_op": 26,
         "clientes_unicos": 233,
-        "em_atendimento": 0
+        "em_atendimento": 0,
+        "n_prof_ativos": 20,
+        "horas_ocupadas": 284.9,
+        "capacidade_horas": 6240,
+        "utilizacao_pct": 4.6
       },
       "meta": {
         "meta": 306577.0,
@@ -1297,6 +1301,18 @@
             "v": 277.0
           }
         ]
+      },
+      "novos_vs_recorr": {
+        "novos": {
+          "clientes": 233,
+          "atend": 504,
+          "receita": 32365.1
+        },
+        "recorrentes": {
+          "clientes": 0,
+          "atend": 0,
+          "receita": 0.0
+        }
       },
       "rentabilidade_hora": [
         {
@@ -1659,64 +1675,89 @@
         {
           "nome": "Erika Thais Pereira Melim",
           "n": 98,
-          "v": 7528.0
+          "v": 7528.0,
+          "ticket_medio": 76.82,
+          "horas_trab": 51.7
         },
         {
           "nome": "Giovanna Guedes Da Silva",
           "n": 65,
-          "v": 4221.0
+          "v": 4221.0,
+          "ticket_medio": 64.94,
+          "horas_trab": 35.1
         },
         {
           "nome": "Thaise Moreno",
           "n": 51,
-          "v": 3514.0
+          "v": 3514.0,
+          "ticket_medio": 68.9,
+          "horas_trab": 26.9
         },
         {
           "nome": "Gabriela Cristina Da Silva",
           "n": 53,
-          "v": 3239.0
+          "v": 3239.0,
+          "ticket_medio": 61.11,
+          "horas_trab": 31.1
         },
         {
           "nome": "Katyane Augusta Muniz",
           "n": 39,
-          "v": 3168.1
+          "v": 3168.1,
+          "ticket_medio": 81.23,
+          "horas_trab": 26.0
         },
         {
           "nome": "Tais Cristina Leite Cabral",
           "n": 55,
-          "v": 2184.5
+          "v": 2184.5,
+          "ticket_medio": 39.72,
+          "horas_trab": 33.3
         },
         {
           "nome": "Andy Alexia Lera Colanere",
           "n": 26,
-          "v": 1460.0
+          "v": 1460.0,
+          "ticket_medio": 56.15,
+          "horas_trab": 14.2
         },
         {
           "nome": "Jeniffer Roberta De Oliveira Felix",
           "n": 17,
-          "v": 1309.0
+          "v": 1309.0,
+          "ticket_medio": 77.0,
+          "horas_trab": 9.2
         },
         {
           "nome": "Raphaela Da Silva Farias",
           "n": 19,
-          "v": 1218.5
+          "v": 1218.5,
+          "ticket_medio": 64.13,
+          "horas_trab": 12.3
         },
         {
           "nome": "Regina Matheus",
           "n": 12,
-          "v": 940.0
+          "v": 940.0,
+          "ticket_medio": 78.33,
+          "horas_trab": 7.2
         },
         {
           "nome": "Patricia Helena Ferreira",
           "n": 12,
-          "v": 642.0
+          "v": 642.0,
+          "ticket_medio": 53.5,
+          "horas_trab": 6.3
         },
         {
           "nome": "Bianca Doria Araujo Santos",
           "n": 8,
-          "v": 535.0
+          "v": 535.0,
+          "ticket_medio": 66.88,
+          "horas_trab": 4.9
         }
       ],
+      "ranking_prof_total_n": 20,
       "ranking_serv": [
         {
           "nome": "FAST ESCOVA - LISA",
@@ -1895,7 +1936,153 @@
           "nome": "Juscnete Vieira ",
           "n": 5
         }
-      ]
+      ],
+      "churn_early": {
+        "n_alerta": 25,
+        "ltv_em_risco": 5208.0,
+        "top": [
+          {
+            "cliente": "Tatiana Donzelli",
+            "n_visitas": 4,
+            "ltv": 397.0,
+            "ultima_visita": "2026-07-23",
+            "dias_sem_vir": 29
+          },
+          {
+            "cliente": "Sandra Sandri",
+            "n_visitas": 4,
+            "ltv": 384.0,
+            "ultima_visita": "2026-08-06",
+            "dias_sem_vir": 15
+          },
+          {
+            "cliente": "Monique Cardoso Gomes ",
+            "n_visitas": 6,
+            "ltv": 328.0,
+            "ultima_visita": "2026-08-01",
+            "dias_sem_vir": 20
+          },
+          {
+            "cliente": "Thamyres Caldro Matos",
+            "n_visitas": 3,
+            "ltv": 283.0,
+            "ultima_visita": "2026-08-01",
+            "dias_sem_vir": 20
+          },
+          {
+            "cliente": "Sandra Morais ",
+            "n_visitas": 3,
+            "ltv": 259.0,
+            "ultima_visita": "2026-08-01",
+            "dias_sem_vir": 20
+          },
+          {
+            "cliente": "Jessica Cerruti",
+            "n_visitas": 4,
+            "ltv": 252.0,
+            "ultima_visita": "2026-08-07",
+            "dias_sem_vir": 14
+          },
+          {
+            "cliente": "Rosangela Aparecida Pereira",
+            "n_visitas": 4,
+            "ltv": 252.0,
+            "ultima_visita": "2026-07-23",
+            "dias_sem_vir": 29
+          },
+          {
+            "cliente": "Amanda Prado De Lima ",
+            "n_visitas": 3,
+            "ltv": 225.0,
+            "ultima_visita": "2026-07-23",
+            "dias_sem_vir": 29
+          },
+          {
+            "cliente": "Sabrina Herculano Da Silva",
+            "n_visitas": 4,
+            "ltv": 222.0,
+            "ultima_visita": "2026-08-01",
+            "dias_sem_vir": 20
+          },
+          {
+            "cliente": "Juliana Olmedo Consul Metidieri ",
+            "n_visitas": 3,
+            "ltv": 218.0,
+            "ultima_visita": "2026-08-07",
+            "dias_sem_vir": 14
+          },
+          {
+            "cliente": "Josicleia Lira Almeida",
+            "n_visitas": 4,
+            "ltv": 209.0,
+            "ultima_visita": "2026-08-07",
+            "dias_sem_vir": 14
+          },
+          {
+            "cliente": "Rosangela Negreiros ",
+            "n_visitas": 3,
+            "ltv": 205.0,
+            "ultima_visita": "2026-08-06",
+            "dias_sem_vir": 15
+          },
+          {
+            "cliente": "Larissa Comitto",
+            "n_visitas": 3,
+            "ltv": 193.0,
+            "ultima_visita": "2026-07-23",
+            "dias_sem_vir": 29
+          },
+          {
+            "cliente": "Ana Paula De Cantos Silva",
+            "n_visitas": 3,
+            "ltv": 193.0,
+            "ultima_visita": "2026-07-23",
+            "dias_sem_vir": 29
+          },
+          {
+            "cliente": "Rose Ferreira",
+            "n_visitas": 3,
+            "ltv": 182.0,
+            "ultima_visita": "2026-07-31",
+            "dias_sem_vir": 21
+          },
+          {
+            "cliente": "Ciria Thais De Oliveira Lima",
+            "n_visitas": 4,
+            "ltv": 182.0,
+            "ultima_visita": "2026-07-28",
+            "dias_sem_vir": 24
+          },
+          {
+            "cliente": "Rafaela Rocha De Camargo ",
+            "n_visitas": 4,
+            "ltv": 182.0,
+            "ultima_visita": "2026-07-25",
+            "dias_sem_vir": 27
+          },
+          {
+            "cliente": "Critane Sayuri",
+            "n_visitas": 3,
+            "ltv": 165.0,
+            "ultima_visita": "2026-07-24",
+            "dias_sem_vir": 28
+          },
+          {
+            "cliente": "Naiara Lima",
+            "n_visitas": 3,
+            "ltv": 162.0,
+            "ultima_visita": "2026-07-30",
+            "dias_sem_vir": 22
+          },
+          {
+            "cliente": "Karina Diego Carrara",
+            "n_visitas": 3,
+            "ltv": 158.0,
+            "ultima_visita": "2026-08-07",
+            "dias_sem_vir": 14
+          }
+        ]
+      }
     },
     "mensal": {
       "kpis": {
@@ -1909,7 +2096,11 @@
         "taxa_canc": 5.5,
         "dias_op": 18,
         "clientes_unicos": 179,
-        "em_atendimento": 0
+        "em_atendimento": 0,
+        "n_prof_ativos": 18,
+        "horas_ocupadas": 215.0,
+        "capacidade_horas": 3888,
+        "utilizacao_pct": 5.5
       },
       "meta": {
         "meta": 60000,
@@ -2382,64 +2573,89 @@
         {
           "nome": "Erika Thais Pereira Melim",
           "n": 75,
-          "v": 5813.0
+          "v": 5813.0,
+          "ticket_medio": 77.51,
+          "horas_trab": 38.9
         },
         {
           "nome": "Gabriela Cristina Da Silva",
           "n": 42,
-          "v": 2607.0
+          "v": 2607.0,
+          "ticket_medio": 62.07,
+          "horas_trab": 24.8
         },
         {
           "nome": "Giovanna Guedes Da Silva",
           "n": 33,
-          "v": 2142.0
+          "v": 2142.0,
+          "ticket_medio": 64.91,
+          "horas_trab": 18.6
         },
         {
           "nome": "Katyane Augusta Muniz",
           "n": 27,
-          "v": 2140.1
+          "v": 2140.1,
+          "ticket_medio": 79.26,
+          "horas_trab": 17.9
         },
         {
           "nome": "Thaise Moreno",
           "n": 32,
-          "v": 2115.0
+          "v": 2115.0,
+          "ticket_medio": 66.09,
+          "horas_trab": 17.2
         },
         {
           "nome": "Tais Cristina Leite Cabral",
           "n": 50,
-          "v": 1913.5
+          "v": 1913.5,
+          "ticket_medio": 38.27,
+          "horas_trab": 30.3
         },
         {
           "nome": "Andy Alexia Lera Colanere",
           "n": 26,
-          "v": 1460.0
+          "v": 1460.0,
+          "ticket_medio": 56.15,
+          "horas_trab": 14.2
         },
         {
           "nome": "Raphaela Da Silva Farias",
           "n": 19,
-          "v": 1218.5
+          "v": 1218.5,
+          "ticket_medio": 64.13,
+          "horas_trab": 12.3
         },
         {
           "nome": "Regina Matheus",
           "n": 12,
-          "v": 940.0
+          "v": 940.0,
+          "ticket_medio": 78.33,
+          "horas_trab": 7.2
         },
         {
           "nome": "Jeniffer Roberta De Oliveira Felix",
           "n": 9,
-          "v": 633.0
+          "v": 633.0,
+          "ticket_medio": 70.33,
+          "horas_trab": 5.6
         },
         {
           "nome": "Bianca Doria Araujo Santos",
           "n": 8,
-          "v": 535.0
+          "v": 535.0,
+          "ticket_medio": 66.88,
+          "horas_trab": 4.9
         },
         {
           "nome": "Julia Kathleen Souza Da Silva",
           "n": 11,
-          "v": 494.0
+          "v": 494.0,
+          "ticket_medio": 44.91,
+          "horas_trab": 5.5
         }
       ],
+      "ranking_prof_total_n": 18,
       "ranking_serv": [
         {
           "nome": "FAST ESCOVA - LISA",
@@ -2633,6 +2849,10 @@
         "dias_op": 5,
         "clientes_unicos": 39,
         "em_atendimento": 0,
+        "n_prof_ativos": 10,
+        "horas_ocupadas": 39.6,
+        "capacidade_horas": 600,
+        "utilizacao_pct": 6.6,
         "periodo_ini": "2026-08-17",
         "periodo_fim": "2026-08-23"
       },
@@ -2664,6 +2884,18 @@
           "v": 0.0,
           "n": 0,
           "pct": 0.0
+        }
+      },
+      "novos_vs_recorr": {
+        "novos": {
+          "clientes": 30,
+          "atend": 52,
+          "receita": 3392.0
+        },
+        "recorrentes": {
+          "clientes": 9,
+          "atend": 18,
+          "receita": 1030.0
         }
       },
       "por_dow": [
@@ -2774,54 +3006,75 @@
         {
           "nome": "Erika Thais Pereira Melim",
           "n": 17,
-          "v": 1145.0
+          "v": 1145.0,
+          "ticket_medio": 67.35,
+          "horas_trab": 8.7
         },
         {
           "nome": "Raphaela Da Silva Farias",
           "n": 9,
-          "v": 675.5
+          "v": 675.5,
+          "ticket_medio": 75.06,
+          "horas_trab": 6.3
         },
         {
           "nome": "Thaise Moreno",
           "n": 6,
-          "v": 665.0
+          "v": 665.0,
+          "ticket_medio": 110.83,
+          "horas_trab": 3.2
         },
         {
           "nome": "Tais Cristina Leite Cabral",
           "n": 18,
-          "v": 662.5
+          "v": 662.5,
+          "ticket_medio": 36.81,
+          "horas_trab": 10.3
         },
         {
           "nome": "Regina Matheus",
           "n": 7,
-          "v": 415.0
+          "v": 415.0,
+          "ticket_medio": 59.29,
+          "horas_trab": 3.8
         },
         {
           "nome": "Andy Alexia Lera Colanere",
           "n": 6,
-          "v": 352.0
+          "v": 352.0,
+          "ticket_medio": 58.67,
+          "horas_trab": 3.1
         },
         {
           "nome": "Gabriela Cristina Da Silva",
           "n": 3,
-          "v": 223.0
+          "v": 223.0,
+          "ticket_medio": 74.33,
+          "horas_trab": 1.5
         },
         {
           "nome": "Katyane Augusta Muniz",
           "n": 2,
-          "v": 158.0
+          "v": 158.0,
+          "ticket_medio": 79.0,
+          "horas_trab": 1.5
         },
         {
           "nome": "Bianca Doria Araujo Santos",
           "n": 1,
-          "v": 79.0
+          "v": 79.0,
+          "ticket_medio": 79.0,
+          "horas_trab": 0.8
         },
         {
           "nome": "Eliana Sampaio Cerqueira",
           "n": 1,
-          "v": 47.0
+          "v": 47.0,
+          "ticket_medio": 47.0,
+          "horas_trab": 0.5
         }
       ],
+      "ranking_prof_total_n": 10,
       "ranking_serv": [
         {
           "nome": "FAST ESCOVA - LISA",
@@ -3223,7 +3476,16 @@
           "nome": "Mariana Armani",
           "n": 3
         }
-      ]
+      ],
+      "semana_anterior": {
+        "periodo_ini": "2026-08-10",
+        "periodo_fim": "2026-08-16",
+        "caixa": 8992.0,
+        "atend_fin": 116,
+        "n_trans": 72,
+        "ticket_trans": 124.89,
+        "dias_op": 6
+      }
     },
     "diario": {
       "kpis": {
@@ -3238,6 +3500,10 @@
         "dias_op": 1,
         "clientes_unicos": 18,
         "em_atendimento": 0,
+        "n_prof_ativos": 6,
+        "horas_ocupadas": 20.8,
+        "capacidade_horas": 72,
+        "utilizacao_pct": 28.8,
         "dia_semana": "Sex",
         "data": "2026-08-21"
       },
@@ -3342,34 +3608,47 @@
         {
           "nome": "Erika Thais Pereira Melim",
           "n": 8,
-          "v": 665.0
+          "v": 665.0,
+          "ticket_medio": 83.12,
+          "horas_trab": 5.0
         },
         {
           "nome": "Raphaela Da Silva Farias",
           "n": 7,
-          "v": 503.5
+          "v": 503.5,
+          "ticket_medio": 71.93,
+          "horas_trab": 5.0
         },
         {
           "nome": "Tais Cristina Leite Cabral",
           "n": 10,
-          "v": 337.5
+          "v": 337.5,
+          "ticket_medio": 33.75,
+          "horas_trab": 5.5
         },
         {
           "nome": "Regina Matheus",
           "n": 6,
-          "v": 336.0
+          "v": 336.0,
+          "ticket_medio": 56.0,
+          "horas_trab": 3.0
         },
         {
           "nome": "Thaise Moreno",
           "n": 2,
-          "v": 178.0
+          "v": 178.0,
+          "ticket_medio": 89.0,
+          "horas_trab": 1.5
         },
         {
           "nome": "Andy Alexia Lera Colanere",
           "n": 1,
-          "v": 79.0
+          "v": 79.0,
+          "ticket_medio": 79.0,
+          "horas_trab": 0.8
         }
       ],
+      "ranking_prof_total_n": 6,
       "ranking_serv": [
         {
           "nome": "FAST ESCOVA - LISA",
@@ -3702,6 +3981,12 @@
     "semanal": [
       {
         "tipo": "atencao",
+        "titulo": "Ritmo/dia -34% vs semana passada",
+        "texto": "Esta semana: R$ 996,60/dia · semana anterior (08-10-08-16): R$ 1.498,67/dia.",
+        "acao": "Queda — checar se algo mudou (feriado, doença, chuva). Ativar top clientes."
+      },
+      {
+        "tipo": "atencao",
         "titulo": "Semana abaixo da meta",
         "texto": "Projeção R$ 5.979,60 (43%). Gap de R$ 7.866,55/dia para os 1 dias restantes.",
         "acao": "Ativar campanha WhatsApp pras top 20 clientes AGORA — retorno médio 3-4 walk-ins no fim de semana."
@@ -3711,6 +3996,12 @@
         "titulo": "Sex rende 4.8× Qui",
         "texto": "Sex: R$ 2.099,00/dia · Qui: R$ 436,00/dia.",
         "acao": "Reforçar equipe no Sex. No Qui, testar promoção ou reduzir 1 profissional pra cortar custo."
+      },
+      {
+        "tipo": "oportunidade",
+        "titulo": "Cadeira ocupada só 7%",
+        "texto": "10 profissional(is) rodaram 40h esta semana de 600h de capacidade.",
+        "acao": "Capacidade ociosa alta — cabe MAIS walk-in sem contratar. Ativar WhatsApp/story."
       }
     ],
     "mensal": [
@@ -3737,6 +4028,12 @@
         "titulo": "Produtos sub-vendidos no mês",
         "texto": "Produtos = 1.6% do caixa (R$ 455,00). Se chegasse a 8%, seriam +R$ 1.882,93/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
+      },
+      {
+        "tipo": "oportunidade",
+        "titulo": "Cadeira ocupada só 6% no mês",
+        "texto": "18 profissional(is) · 215h ocupadas de 3888h possíveis.",
+        "acao": "Muito espaço pra mais walk-ins sem custo adicional. Priorizar marketing e ofertas de atração."
       }
     ],
     "anual": [
@@ -3763,6 +4060,12 @@
         "titulo": "109 clientes vieram apenas 1 vez (47%)",
         "texto": "Base tem 233 clientes únicos. Se converter 20% desses 109 numa segunda visita, são ~21 clientes a mais recorrentes.",
         "acao": "Campanha de reativação com voucher (R$ 30 off na próxima visita) pra quem só veio uma vez — investimento baixo, retorno alto."
+      },
+      {
+        "tipo": "critico",
+        "titulo": "25 clientes de valor sumidos (LTV R$ 5.208,00)",
+        "texto": "Clientes que vieram 3+ vezes e não voltam há 14+ dias. Top: Tatiana, Sandra, Monique (e mais 22).",
+        "acao": "Ver aba Anual > Clientes em risco. Mensagem personalizada + voucher pode salvar 30-40% do LTV — potencial resgate R$ 1.822,80."
       }
     ],
     "stone": [
