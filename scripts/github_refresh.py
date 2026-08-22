@@ -64,20 +64,33 @@ class Trinks:
             time.sleep(MIN_INTERVAL - dt)
         self._last = time.time()
 
-    def get(self, path, params=None, retries=3):
+    def get(self, path, params=None, retries=6):
         url = BASE_URL + path
+        last_status = None
         for i in range(retries):
             self._throttle()
-            r = self.s.get(url, headers=self.headers, params=params, timeout=30)
+            try:
+                r = self.s.get(url, headers=self.headers, params=params, timeout=45)
+            except requests.exceptions.RequestException as e:
+                # Timeout/conexão — backoff exponencial (2, 4, 8, 16, 32, 64s)
+                delay = 2 ** (i + 1)
+                print(f"[trinks] {path} tentativa {i+1}/{retries} · {type(e).__name__}: {e} · aguarda {delay}s")
+                time.sleep(delay)
+                continue
+            last_status = r.status_code
             if r.status_code == 429:
-                time.sleep(15 * (i + 1)); continue
+                delay = 30 * (i + 1)
+                print(f"[trinks] {path} 429 rate-limit · aguarda {delay}s")
+                time.sleep(delay); continue
             if 500 <= r.status_code < 600:
-                time.sleep(5 * (i + 1)); continue
+                delay = 10 * (i + 1)
+                print(f"[trinks] {path} {r.status_code} · aguarda {delay}s")
+                time.sleep(delay); continue
             if r.status_code == 404:
                 return {"data": [], "totalPages": 0}
             r.raise_for_status()
             return r.json()
-        raise RuntimeError(f"Falha após {retries}: {url}")
+        raise RuntimeError(f"Falha após {retries}: {url} (último status: {last_status})")
 
     def paginate(self, path, params=None):
         params = dict(params or {}); params.setdefault("pageSize", 100)
