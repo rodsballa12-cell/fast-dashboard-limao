@@ -145,24 +145,32 @@ def analisar(agend, transac, ini: date, fim: date):
         key=lambda x: -x["v"]
     )[:12]
 
+    # Rentabilidade por hora de CADEIRA
+    # Serviços com duração muito baixa (<15 min médio) são add-ons/produtos aplicados
+    # em paralelo a outro serviço — não consomem cadeira exclusiva. Marcados como
+    # tipo="addon" e mostrados em seção separada (não competem no ranking R$/h).
+    MIN_CADEIRA_EXCLUSIVA = 15  # abaixo disso = add-on/aplicação, não ocupa cadeira
     rent_hora = []
     total_caixa_ref = max(caixa, 1)
     for k, v in serv.items():
         if v["min"] > 0:
+            min_medio = round(v["min"] / max(v["n"], 1))
             horas_total = v["min"] / 60
             pct_fat = v["v"] / total_caixa_ref * 100
-            # Confiança da amostra — n<3 = amostra pequena (pode enganar)
             conf = "alta" if v["n"] >= 5 else ("media" if v["n"] >= 3 else "baixa")
+            tipo = "addon" if min_medio < MIN_CADEIRA_EXCLUSIVA else "cadeira"
             rent_hora.append({
                 "nome": k, "n": v["n"], "v": brl_round(v["v"]),
-                "min_medio": round(v["min"] / max(v["n"], 1)),
+                "min_medio": min_medio,
                 "ticket": brl_round(v["v"] / max(v["n"], 1)),
                 "rs_hora": brl_round(v["v"] / v["min"] * 60),
                 "horas_total": round(horas_total, 1),
                 "pct_faturamento": round(pct_fat, 1),
                 "confianca": conf,
+                "tipo": tipo,  # "cadeira" (serviço exclusivo) | "addon" (paralelo a outro)
             })
-    rent_hora.sort(key=lambda x: -x["rs_hora"])
+    # Ordena: cadeira primeiro (por R$/h desc), depois addons (por R$/h desc)
+    rent_hora.sort(key=lambda x: (0 if x["tipo"] == "cadeira" else 1, -x["rs_hora"]))
 
     by_dow = defaultdict(lambda: {"n": 0, "v": 0.0})
     for a in fin:
@@ -284,7 +292,10 @@ def novos_vs_recorr(fin_mes, cadastro_map, ini_mes: date):
 
 def main():
     t = Trinks()
-    hoje = date.today()
+    # Sempre operar no fuso de Brasília (UTC-3, sem DST desde 2019)
+    from datetime import timezone as _tz
+    BRT = _tz(timedelta(hours=-3))
+    hoje = datetime.now(BRT).date()
     ini_ano = date(hoje.year, 1, 1)
     fim_ano = date(hoje.year, 12, 31)
     ini_mes = date(hoje.year, hoje.month, 1)
@@ -553,7 +564,7 @@ def main():
 
     payload = {
         # UTC com sufixo Z para JavaScript interpretar corretamente
-        "gerado_em": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00","Z"),
+        "gerado_em": datetime.now(BRT).isoformat(timespec="seconds"),
         "hoje": hoje.isoformat(),
         "meta_mensal_valor": META_MENSAL,
         "dias_op_mes": DIAS_OP_MES,

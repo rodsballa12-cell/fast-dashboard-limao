@@ -9,7 +9,9 @@ Tipos: critico > atencao > oportunidade > info
 """
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, timezone
+
+BRT = timezone(timedelta(hours=-3))  # Brasília sem DST
 
 CDI_ANUAL = 0.145
 CDI_MENSAL = (1 + CDI_ANUAL) ** (1/12) - 1  # ~1,133% a.m.
@@ -47,7 +49,7 @@ def _insights_diario(aba, hora_media_semanal, hoje: date):
     ins = []
     k = aba.get("kpis", {})
     m = aba.get("meta", {})
-    hora_now = datetime.now().hour
+    hora_now = datetime.now(BRT).hour
 
     # 1. Ritmo do dia vs meta diária
     if m.get("meta"):
@@ -431,7 +433,7 @@ def gerar_insights(payload):
     abas = payload.get("abas") or {}
     stone = payload.get("stone")
     aud = payload.get("auditoria_cancelados")
-    hoje = date.today()
+    hoje = datetime.now(BRT).date()
 
     hora_media_sem = abas.get("semanal", {}).get("hora_media") or []
     semanal_por_dow = abas.get("semanal", {}).get("por_dow")

@@ -387,26 +387,27 @@ function renderRankingProf(container_id, titulo, subtitle, prof_list){
 }
 
 // ============= RENTABILIDADE POR HORA =============
-// Reutilizável nas 4 abas (anual, mensal, semanal, diario)
+// Separa serviços de cadeira exclusiva (bloqueiam cadeira) vs add-ons (aplicações em paralelo)
 function renderRentabilidade(container_id, titulo, periodo_label, lista){
   if(!lista || lista.length===0){
     document.getElementById(container_id).innerHTML = `<div class="card"><h2>⚡ Rentabilidade por hora · ${periodo_label}</h2><div class="cap">Sem atendimentos com duração registrada neste período.</div></div>`;
     return;
   }
-  // Separar: amostras confiáveis (n≥3) vs pequenas (n<3, mostra abaixo)
-  const conf = lista.filter(s => s.confianca !== 'baixa');
-  const baixa = lista.filter(s => s.confianca === 'baixa');
+  const cadeira = lista.filter(s => s.tipo === 'cadeira');
+  const addons  = lista.filter(s => s.tipo === 'addon');
 
-  // Thresholds contextuais: mediana dos confiáveis define "bom vs médio"
+  // Confiáveis (n≥3) só entre cadeira, pra thresholds e ranking
+  const conf = cadeira.filter(s => s.confianca !== 'baixa');
+  const baixa = cadeira.filter(s => s.confianca === 'baixa');
+
   const rshs = conf.map(s => s.rs_hora).sort((a,b)=>a-b);
   const median = rshs.length ? rshs[Math.floor(rshs.length/2)] : 100;
   const p75 = rshs.length ? rshs[Math.floor(rshs.length*0.75)] : 200;
   const corRSH = v => v >= p75 ? 'up' : (v >= median ? 'neu' : 'dn');
 
-  // Total horas cadeira e maior contribuinte
-  const totalHoras = lista.reduce((s,x)=>s+x.horas_total, 0);
-  const anchor = [...lista].sort((a,b)=>b.pct_faturamento - a.pct_faturamento)[0];
-  const gold   = conf[0]; // maior R$/h com confiança
+  const totalHorasCadeira = cadeira.reduce((s,x)=>s+x.horas_total, 0);
+  const anchor = [...cadeira].sort((a,b)=>b.pct_faturamento - a.pct_faturamento)[0];
+  const gold   = conf[0];
 
   const confBadge = c => c==='alta'
     ? ''
@@ -424,35 +425,59 @@ function renderRentabilidade(container_id, titulo, periodo_label, lista){
     <td>${s.pct_faturamento.toFixed(1)}%</td>
   </tr>`).join('');
 
+  // Tabela de add-ons: R$/hora não faz sentido (não bloqueia cadeira). Mostrar valor total.
+  const rowLinesAddon = arr => arr.map(s => `<tr>
+    <td>${s.nome}${confBadge(s.confianca)}</td>
+    <td>${s.n}</td>
+    <td>${s.min_medio} min</td>
+    <td>${brl(s.ticket)}</td>
+    <td><strong>${brl0(s.v)}</strong></td>
+    <td>${s.pct_faturamento.toFixed(1)}%</td>
+  </tr>`).join('');
+
   const tblConf = conf.length ? `
     <table class="simple" style="margin-bottom:12px">
       <thead><tr><th>Serviço</th><th>Qtd</th><th>Min/atend</th><th>Ticket</th><th>R$/hora</th><th>Horas cadeira</th><th>% faturamento</th></tr></thead>
       <tbody>${rowLines(conf)}</tbody>
-    </table>` : '';
+    </table>` : '<p style="color:var(--ink-3);font-size:13px">Sem serviços de cadeira com amostra suficiente (n≥3).</p>';
 
   const tblBaixa = baixa.length ? `
-    <details style="margin-top:6px"><summary style="cursor:pointer;font-size:11.5px;color:var(--ink-3)">Amostras pequenas (n=1 · não use pra decisão) — ${baixa.length} serviços</summary>
+    <details style="margin-top:6px"><summary style="cursor:pointer;font-size:11.5px;color:var(--ink-3)">Serviços de cadeira com amostra pequena (n=1) — ${baixa.length} itens</summary>
       <table class="simple" style="margin-top:8px;opacity:.75">
         <thead><tr><th>Serviço</th><th>Qtd</th><th>Min/atend</th><th>Ticket</th><th>R$/hora</th><th>Horas cadeira</th><th>% faturamento</th></tr></thead>
         <tbody>${rowLines(baixa)}</tbody>
       </table>
     </details>` : '';
 
+  const totalAddonV = addons.reduce((s,x)=>s+x.v, 0);
+  const totalAddonN = addons.reduce((s,x)=>s+x.n, 0);
+  const tblAddons = addons.length ? `
+    <div style="margin-top:18px;padding-top:14px;border-top:1px dashed var(--border)">
+      <h3 style="font-family:Georgia,serif;font-size:14px;margin:0 0 4px;color:var(--ink)">🧴 Add-ons e aplicações rápidas <span style="color:var(--ink-3);font-size:11px;font-weight:400">(rodam em paralelo · não bloqueiam cadeira)</span></h3>
+      <div class="cap">R$/hora não se aplica — são vendas casadas com o serviço principal. Mostrando volume total.</div>
+      <table class="simple">
+        <thead><tr><th>Add-on</th><th>Qtd</th><th>Min/atend</th><th>Ticket</th><th>Valor total</th><th>% faturamento</th></tr></thead>
+        <tbody>${rowLinesAddon(addons)}</tbody>
+      </table>
+      <div style="font-size:11.5px;color:var(--ink-3);margin-top:6px">Total add-ons: ${totalAddonN}× · ${brl0(totalAddonV)}</div>
+    </div>` : '';
+
   const insight = conf.length ? `<div class="insight">
-    <strong>Como ler:</strong> R$/hora = quanto a cadeira rende por hora ocupada com aquele serviço.
-    Verde = acima do 75º percentil da loja (R$ ${p75.toFixed(0)}+). Vermelho = abaixo da mediana (R$ ${median.toFixed(0)}).
+    <strong>Como ler:</strong> R$/hora = quanto a cadeira rende por hora ocupada. Serviços com &lt;15 min de duração (aplicação/produto) foram movidos pra seção "add-ons" abaixo — eles rodam em paralelo e não bloqueiam a cadeira, então R$/hora infla e distorce.
+    Verde = ≥ R$ ${p75.toFixed(0)}/h (top 25% da loja). Vermelho = abaixo de R$ ${median.toFixed(0)}/h (mediana).
     <br><br>
-    <strong>💎 Maior R$/hora com volume:</strong> ${gold ? `${gold.nome} rende <strong>${brl(gold.rs_hora)}/h</strong> (${gold.n} atendimentos).` : '—'}
-    ${anchor ? `<br><strong>🎯 Âncora do faturamento:</strong> ${anchor.nome} = ${anchor.pct_faturamento.toFixed(1)}% do caixa (${anchor.horas_total.toFixed(0)}h ocupadas) a ${brl(anchor.rs_hora)}/h.` : ''}
-    <br><strong>Ação:</strong> se a âncora tem R$/h baixo (${anchor && corRSH(anchor.rs_hora)==='dn' ? 'é o caso' : 'não é o caso aqui'}), casar com o maior R$/h como upsell para elevar ticket sem consumir mais cadeira.
+    ${gold ? `<strong>💎 Melhor rentabilidade real:</strong> ${gold.nome} rende <strong>${brl(gold.rs_hora)}/h</strong> com ${gold.n} atendimentos.` : ''}
+    ${anchor ? `<br><strong>🎯 Âncora do faturamento:</strong> ${anchor.nome} = ${anchor.pct_faturamento.toFixed(1)}% do caixa (${anchor.horas_total.toFixed(0)}h de cadeira ocupada) a ${brl(anchor.rs_hora)}/h.` : ''}
+    ${(anchor && corRSH(anchor.rs_hora)==='dn') ? '<br><strong>Ação:</strong> a âncora rende pouco por hora — casar com o melhor R$/h como combo aumenta ticket sem consumir mais cadeira.' : ''}
   </div>` : '';
 
   document.getElementById(container_id).innerHTML = `<div class="card">
-    <h2>⚡ Rentabilidade por hora · ${periodo_label} <span class="hi">(${totalHoras.toFixed(0)}h cadeira ocupada)</span></h2>
-    <div class="cap">Ordenado por R$/hora. Amostras com n<3 separadas embaixo (estatística fraca).</div>
+    <h2>⚡ Rentabilidade por hora · ${periodo_label} <span class="hi">(${totalHorasCadeira.toFixed(0)}h cadeira ocupada)</span></h2>
+    <div class="cap">Serviços de cadeira exclusiva ordenados por R$/hora. Aplicações rápidas (&lt;15 min) em seção separada — não bloqueiam cadeira.</div>
     ${tblConf}
     ${tblBaixa}
     ${insight}
+    ${tblAddons}
   </div>`;
 }
 
@@ -731,7 +756,7 @@ function renderAuditoria(data){
   });
   const rowsLista = listaOrd.map(x => {
     const dt = new Date(x.data);
-    const dtStr = isNaN(dt.getTime()) ? x.data.slice(0,10) : dt.toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+    const dtStr = isNaN(dt.getTime()) ? x.data.slice(0,10) : dt.toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo'});
     const flags = [];
     if(x.match_por_nome) flags.push(`<span class="dn">🚨 Stone: ${x.stone_match_nomes.join('; ')}</span>`);
     else if(x.stone_match_n > 0) flags.push(`<span style="color:var(--warn);font-weight:700">↔ Stone: ${x.stone_match_nomes.slice(0,2).join('; ')}${x.stone_match_nomes.length>2?'…':''}</span>`);
@@ -1058,7 +1083,7 @@ async function load(showToast=false){
     const dt=new Date(data.gerado_em);
     const ageMin=Math.floor((Date.now()-dt.getTime())/60000);
     const chipUpd=document.getElementById('chip-updated');
-    chipUpd.innerHTML=`<span class="dot"></span> Dados de ${dt.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}`;
+    chipUpd.innerHTML=`<span class="dot"></span> Dados de ${dt.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} (BRT)`;
     // Monitor de cota API: alerta se consumo anômalo (>500 req)
     const cota = data.cota_api || {};
     if(cota.totalUtilizado){
