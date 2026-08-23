@@ -908,22 +908,36 @@ function renderParcelas(container_id, parcelas){
 function renderProfExecutor(container_id, exec_ranking){
   const el = document.getElementById(container_id);
   if(!el || !exec_ranking || exec_ranking.length === 0){ if(el) el.innerHTML = ''; return; }
-  const rows = exec_ranking.slice(0,15).map((p,i)=>`<tr>
-    <td>${i+1}</td>
-    <td>${p.nome}</td>
-    <td style="text-align:right;">${p.n_serv}</td>
-    <td style="text-align:right;">${brl0(p.v)}</td>
-    <td style="text-align:right;">${brl(p.ticket_medio_serv)}</td>
-  </tr>`).join('');
+  const desligados = exec_ranking.filter(p => p.nome.startsWith('Prof desligado'));
+  const ativos = exec_ranking.filter(p => !p.nome.startsWith('Prof desligado'));
+  const total_desl = desligados.reduce((s,p)=>s+p.v, 0);
+  const total_ativ = ativos.reduce((s,p)=>s+p.v, 0);
+  const total = total_desl + total_ativ;
+  const pct_desl = total>0 ? (total_desl/total*100).toFixed(0) : 0;
+  const rows = exec_ranking.slice(0,15).map((p,i)=>{
+    const cor = p.nome.startsWith('Prof desligado') ? 'var(--muted)' : '';
+    return `<tr style="color:${cor}">
+      <td>${i+1}</td>
+      <td>${p.nome}</td>
+      <td style="text-align:right;">${p.n_serv}</td>
+      <td style="text-align:right;">${brl0(p.v)}</td>
+      <td style="text-align:right;">${brl(p.ticket_medio_serv)}</td>
+    </tr>`;
+  }).join('');
   el.innerHTML = `<div class="card">
-    <h2>🛠 Executores reais dos serviços · idProfissionalQueRealizouServico</h2>
-    <div class="cap">Quem <strong>executou</strong> o serviço (fonte: transação Trinks), não quem estava na comanda. Se houver divergência com o ranking oficial de profissionais, é sinal de troca de escala não registrada ou anomalia.</div>
-    <table class="simple">
+    <h2>🛠 Executores reais dos serviços</h2>
+    <div class="cap">Quem <strong>executou</strong> o serviço no Trinks (campo <code>idProfissionalQueRealizouServico</code>), não quem estava na comanda. <strong>Profs "desligados"</strong> = ID que não existe mais no cadastro do Trinks (foram deletados, provavelmente equipe da fase inicial).</div>
+    <div class="categ-grid">
+      ${tile('','Ativos', ativos.length+'', brl0(total_ativ), 'accent')}
+      ${tile('c3','Desligados', desligados.length+'', `${brl0(total_desl)} · ${pct_desl}% do total`)}
+      ${tile('c2','Total executado', brl0(total), 'soma de todas as linhas de serviço')}
+    </div>
+    <table class="simple" style="margin-top:12px;">
       <thead><tr><th>#</th><th>Executor</th><th>Serviços</th><th>Receita executada</th><th>Ticket / serv</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
     <div class="insight" style="margin-top:12px;">
-      <strong>Uso:</strong> comparar esse ranking com o de profissionais na aba Painel. Nome que aparece só aqui = executor sem comanda no nome (verificar).
+      <strong>Anti-fraude:</strong> se você reconhecer um "Prof desligado" que ainda deveria estar no cadastro, é sinal de que o registro no Trinks foi apagado incorretamente. Investigar acesso admin.
     </div>
   </div>`;
 }

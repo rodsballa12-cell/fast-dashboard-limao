@@ -551,22 +551,6 @@ def main():
             print(f"  [warn] /v1/profissionais ativo={ativo_flag} falhou: {e}")
     analisar._prof_id_nome_cache = prof_map_global
     print(f"  {len(prof_map_global)} profissionais mapeados (ativos + desligados)")
-    # Diagnóstico: pega 1 ID de executor de uma transação recente e tenta rota individual
-    for tx in transac[:200]:
-        for s in (tx.get("servicos") or []):
-            eid = s.get("idProfissionalQueRealizouServico")
-            if eid and eid not in prof_map_global:
-                try:
-                    r = t.get(f"/v1/profissionais/{eid}")
-                    print(f"[diag] /v1/profissionais/{eid} keys: {sorted(r.keys()) if isinstance(r, dict) else 'não-dict'}")
-                    if isinstance(r, dict):
-                        print(f"[diag] /v1/profissionais/{eid} amostra: {json.dumps({k:r.get(k) for k in list(r.keys())[:6]}, ensure_ascii=False, default=str)[:300]}")
-                except Exception as e:
-                    print(f"[diag] /v1/profissionais/{eid} erro: {e}")
-                break
-        else:
-            continue
-        break
 
     # === ENRIQUECIMENTO: buscar clienteDetalhes via /v1/clientes/{id} (com cache) ===
     # A rota lista traz o básico, mas /v1/clientes/{id} traz dataNascimento, endereço,
