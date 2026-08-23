@@ -250,9 +250,8 @@ def analisar(agend, transac, ini: date, fim: date):
     # de escala ou anomalia de setup. Também dá o ranking REAL de execução por serviço.
     exec_agg = defaultdict(lambda: {"n": 0, "v": 0.0})
     exec_por_serv_receita = defaultdict(float)  # {(id_exec, nome_serv): valor}
-    divergencias_prof = []  # transações onde executor ≠ comanda
-    # Map id_prof → nome usando agend
-    prof_id_nome = {}
+    # Map id_prof → nome. Primeiro do agend (rápido); IDs órfãos ficam como "ID XXX"
+    prof_id_nome = getattr(analisar, "_prof_id_nome_cache", None) or {}
     for a in fin:
         pid = (a.get("profissional") or {}).get("id")
         pnome = (a.get("profissional") or {}).get("nome") or ""
@@ -537,6 +536,21 @@ def main():
     print("[fetch] clientes...")
     clientes = list(t.paginate("/v1/clientes"))
     print(f"  {len(clientes)} clientes")
+    # Profissionais — mapa completo id→nome (usado pra resolver executores nas transações)
+    print("[fetch] profissionais...")
+    try:
+        prof_lista = list(t.paginate("/v1/profissionais"))
+        prof_map_global = {}
+        for p in prof_lista:
+            pid = p.get("id")
+            nome = (p.get("nome") or "").strip().title()
+            if pid and nome: prof_map_global[pid] = nome
+        # Cacheia no analisar() pra ser usado antes que fin popule agend nomes
+        analisar._prof_id_nome_cache = prof_map_global
+        print(f"  {len(prof_map_global)} profissionais mapeados")
+    except Exception as e:
+        print(f"  [warn] /v1/profissionais falhou: {e}")
+        analisar._prof_id_nome_cache = {}
 
     # === ENRIQUECIMENTO: buscar clienteDetalhes via /v1/clientes/{id} (com cache) ===
     # A rota lista traz o básico, mas /v1/clientes/{id} traz dataNascimento, endereço,
