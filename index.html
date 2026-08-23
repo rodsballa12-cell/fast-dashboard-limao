@@ -179,6 +179,7 @@
       <div id="anual-insights"></div>
       <div id="anual-meta"></div>
       <div id="anual-kpis"></div>
+      <div id="anual-ticket-meta"></div>
       <div id="anual-utilizacao"></div>
       <div id="anual-categorias"></div>
       <div id="anual-novos"></div>
@@ -198,6 +199,7 @@
       <div id="mensal-insights"></div>
       <div id="mensal-meta"></div>
       <div id="mensal-kpis"></div>
+      <div id="mensal-ticket-meta"></div>
       <div id="mensal-utilizacao"></div>
       <div id="mensal-categorias"></div>
       <div id="mensal-novos"></div>
@@ -217,6 +219,7 @@
       <div id="semanal-insights"></div>
       <div id="semanal-meta"></div>
       <div id="semanal-kpis"></div>
+      <div id="semanal-ticket-meta"></div>
       <div id="semanal-comparacao"></div>
       <div id="semanal-utilizacao"></div>
       <div id="semanal-categorias"></div>
@@ -237,6 +240,7 @@
       <div id="diario-insights"></div>
       <div id="diario-meta"></div>
       <div id="diario-kpis"></div>
+      <div id="diario-ticket-meta"></div>
       <div id="diario-utilizacao"></div>
       <div id="diario-categorias"></div>
       <div id="diario-rentabilidade"></div>
@@ -298,6 +302,44 @@ function kpiCard(cls_,label,value,foot,accent){
 // ============= RENDER GENÉRICOS =============
 function renderKPIs(container_id, kpis){
   document.getElementById(container_id).innerHTML='<section class="kpi-grid">'+kpis.map((k,i)=>kpiCard('k'+(i+1)||'',k.label,k.value,k.foot,k.accent)).join('')+'</section>';
+}
+
+function renderTicketMeta(container_id, periodo_label, kpis){
+  if(!kpis || !kpis.ticket_meta) return;
+  const meta = kpis.ticket_meta;
+  const real = kpis.ticket_medio || 0;
+  const pct_v = Math.min(kpis.ticket_atingimento_pct || 0, 130);
+  const gap = kpis.ticket_gap_por_atend || 0;
+  const cor = real>=meta?'up':(real>=meta*0.8?'warn':'dn');
+  const cor_bar = real>=meta?'#22c55e':(real>=meta*0.7?'#f59e0b':'#ef4444');
+  const atend = kpis.atend_fin || 0;
+  const upside = gap>0 ? gap * atend : 0;
+  const acao = real>=meta
+    ? `<strong class="up">Ticket acima da meta.</strong> Manter mix — verificar se pode subir preços de serviços âncora sem perder volume.`
+    : gap<=15
+      ? `<strong>Faltam ${brl(gap)} por atendimento pra bater a meta.</strong> Cross-sell de add-on (LED, hidratação, esmaltação) resolve. Aplicado nos ${atend} atend do período = <strong class="up">+${brl0(upside)}</strong>.`
+      : `<strong class="warn">Gap grande de ${brl(gap)} por atendimento.</strong> Mix atual é muito "fast" (serviço rápido). Reforçar combo cabelo+hidratação+esmalte. Se ${atend} atend do período tivessem batido a meta: <strong class="up">+${brl0(upside)}</strong>.`;
+  const html = `
+    <section class="meta-card">
+      <h2><span style="color:var(--accent)">🎫</span> Ticket médio ${periodo_label} · meta franquia <span style="color:var(--accent)">${brl(meta)}</span></h2>
+      <div class="sub">Benchmark FAST Escova (rede) = R$ ${meta} por atendimento. Meta é indicador de saúde do mix — mais serviço por cliente, menos "só escova".</div>
+      <div class="progress"><div class="progress-fill" style="width:${Math.min(pct_v,100)}%; background:${cor_bar};"></div></div>
+      <div class="progress-labels"><span>R$ 0</span><span class="now">▲ ${brl(real)} · <span class="${cor}">${pct(kpis.ticket_atingimento_pct)}</span></span><span>${brl(meta)}</span></div>
+      <div class="meta-row" style="margin-top:20px;">
+        <div class="meta-cell"><div class="l">Ticket atual</div><div class="v ${cor}">${brl(real)}</div></div>
+        <div class="meta-cell"><div class="l">Meta franquia</div><div class="v">${brl(meta)}</div></div>
+        <div class="meta-cell"><div class="l">Gap por atend</div><div class="v ${gap>0?'warn':'up'}">${gap>0?brl(gap):'—'}</div></div>
+        <div class="meta-cell"><div class="l">Atendimentos</div><div class="v">${atend}</div></div>
+      </div>
+      <div class="meta-row">
+        <div class="meta-cell"><div class="l">Caixa atual</div><div class="v accent">${brl0(kpis.caixa)}</div></div>
+        <div class="meta-cell"><div class="l">Caixa se batesse meta</div><div class="v">${brl0(meta*atend)}</div></div>
+        <div class="meta-cell"><div class="l">Upside potencial</div><div class="v ${upside>0?'up':''}">${upside>0?'+'+brl0(upside):'—'}</div></div>
+        <div class="meta-cell"><div class="l">Atingimento</div><div class="v ${cor}">${pct(kpis.ticket_atingimento_pct)}</div></div>
+      </div>
+      <div class="cap" style="margin-top:14px;padding:10px 12px;background:var(--surface-2);border-radius:8px;">${acao}</div>
+    </section>`;
+  document.getElementById(container_id).innerHTML = html;
 }
 
 function renderMetaProgress(container_id, titulo, meta, subtitle){
@@ -794,6 +836,7 @@ function renderAnual(data){
     {label:'Clientes únicos',value:k.clientes_unicos+'',foot:`${k.atend_fin} atend · ${(k.atend_fin/Math.max(k.clientes_unicos,1)).toFixed(1)} visita/cliente`}
   ]);
   if(a.meta && a.meta.meta) renderMetaProgress('anual-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
+  renderTicketMeta('anual-ticket-meta', 'ano', k);
   renderCategoriasMeta('anual-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0);
 
   // Tabela mensal
@@ -849,6 +892,7 @@ function renderMensal(data){
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
   ]);
   renderMetaProgress('mensal-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
+  renderTicketMeta('mensal-ticket-meta', 'mês', k);
   renderUtilizacao('mensal-utilizacao', 'mês', k, m);
   renderCategoriasMeta('mensal-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao);
 
@@ -874,6 +918,7 @@ function renderSemanal(data){
     {label:'Dias operados',value:k.dias_op+'',foot:'de 6 (seg–sáb)'}
   ]);
   renderMetaProgress('semanal-meta','Meta Semanal',s.meta,'Meta mensal ÷ dias oper. × dias da semana');
+  renderTicketMeta('semanal-ticket-meta', 'semana', k);
   renderComparacaoSemana('semanal-comparacao', k, s.semana_anterior);
   renderUtilizacao('semanal-utilizacao', 'semana', k, s);
   renderCategoriasMeta('semanal-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao);
@@ -897,6 +942,7 @@ function renderDiario(data){
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
   ]);
   renderMetaProgress('diario-meta','Meta Diária',d.meta,'Meta mensal ÷ dias operacionais');
+  renderTicketMeta('diario-ticket-meta', 'hoje', k);
   renderUtilizacao('diario-utilizacao', 'hoje', k, d);
   renderCategoriasMeta('diario-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao);
   renderRentabilidade('diario-rentabilidade', 'Rentabilidade', 'hoje', d.rentabilidade_hora || []);

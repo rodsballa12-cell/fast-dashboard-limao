@@ -22,6 +22,7 @@ BASE_URL = "https://api.trinks.com"
 MIN_INTERVAL = 1.05
 META_MENSAL = 60000
 DIAS_OP_MES = 26
+TICKET_META = 140  # meta de ticket médio por atendimento (benchmark franquia FAST Escova)
 DOW_NOMES = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -327,6 +328,10 @@ def analisar(agend, transac, ini: date, fim: date):
             "atend_total": len(ag),
             "n_trans": len(tr),
             "ticket_trans": brl_round(caixa / max(len(tr), 1)),
+            "ticket_medio": brl_round(caixa / max(len(fin), 1)),
+            "ticket_meta": TICKET_META,
+            "ticket_atingimento_pct": round((caixa / max(len(fin), 1)) / TICKET_META * 100, 1),
+            "ticket_gap_por_atend": brl_round(TICKET_META - (caixa / max(len(fin), 1))),
             "taxa_canc": round(len(canc) / max(len(ag), 1) * 100, 1),
             "dias_op": dias_com_op,
             "clientes_unicos": unicos,
@@ -490,6 +495,7 @@ def main():
         "periodo_ini": seg_ant.isoformat(), "periodo_fim": dom_ant.isoformat(),
         "caixa": a_sem_ant["kpis"]["caixa"], "atend_fin": a_sem_ant["kpis"]["atend_fin"],
         "n_trans": a_sem_ant["kpis"]["n_trans"], "ticket_trans": a_sem_ant["kpis"]["ticket_trans"],
+        "ticket_medio": a_sem_ant["kpis"]["ticket_medio"],
         "dias_op": a_sem_ant["kpis"]["dias_op"],
     }
 
