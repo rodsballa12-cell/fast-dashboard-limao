@@ -141,6 +141,12 @@ def analisar(agend, transac, ini: date, fim: date):
     receita_serv = sum(float(a.get("valor") or 0) for a in fin)
     dias_com_op = len({datetime.fromisoformat(a["dataHoraInicio"]).date() for a in fin})
     unicos = len({(a.get("cliente") or {}).get("id") for a in fin if (a.get("cliente") or {}).get("id")})
+    # clientes-dia = ticket médio do Trinks (1 cliente em 1 dia = 1 visita)
+    # mesmo cliente com N serviços no mesmo dia conta como 1; se voltar noutro dia, +1
+    cliente_dia = {((a.get("cliente") or {}).get("id"),
+                    datetime.fromisoformat(a["dataHoraInicio"]).date())
+                   for a in fin if (a.get("cliente") or {}).get("id")}
+    n_cliente_dia = len(cliente_dia)
 
     # Categorias + caixa via transações
     caixa = 0.0
@@ -328,10 +334,11 @@ def analisar(agend, transac, ini: date, fim: date):
             "atend_total": len(ag),
             "n_trans": len(tr),
             "ticket_trans": brl_round(caixa / max(len(tr), 1)),
-            "ticket_medio": brl_round(caixa / max(len(fin), 1)),
+            "cliente_dia": n_cliente_dia,
+            "ticket_medio": brl_round(caixa / max(n_cliente_dia, 1)),
             "ticket_meta": TICKET_META,
-            "ticket_atingimento_pct": round((caixa / max(len(fin), 1)) / TICKET_META * 100, 1),
-            "ticket_gap_por_atend": brl_round(TICKET_META - (caixa / max(len(fin), 1))),
+            "ticket_atingimento_pct": round((caixa / max(n_cliente_dia, 1)) / TICKET_META * 100, 1),
+            "ticket_gap_por_atend": brl_round(TICKET_META - (caixa / max(n_cliente_dia, 1))),
             "taxa_canc": round(len(canc) / max(len(ag), 1) * 100, 1),
             "dias_op": dias_com_op,
             "clientes_unicos": unicos,

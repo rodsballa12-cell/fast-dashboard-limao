@@ -312,30 +312,38 @@ function renderTicketMeta(container_id, periodo_label, kpis){
   const gap = kpis.ticket_gap_por_atend || 0;
   const cor = real>=meta?'up':(real>=meta*0.8?'warn':'dn');
   const cor_bar = real>=meta?'#22c55e':(real>=meta*0.7?'#f59e0b':'#ef4444');
+  const visitas = kpis.cliente_dia || 0;
   const atend = kpis.atend_fin || 0;
-  const upside = gap>0 ? gap * atend : 0;
+  const serv_por_visita = visitas>0 ? (atend/visitas).toFixed(2) : '—';
+  const upside = gap>0 ? gap * visitas : 0;
   const acao = real>=meta
     ? `<strong class="up">Ticket acima da meta.</strong> Manter mix — verificar se pode subir preços de serviços âncora sem perder volume.`
     : gap<=15
-      ? `<strong>Faltam ${brl(gap)} por atendimento pra bater a meta.</strong> Cross-sell de add-on (LED, hidratação, esmaltação) resolve. Aplicado nos ${atend} atend do período = <strong class="up">+${brl0(upside)}</strong>.`
-      : `<strong class="warn">Gap grande de ${brl(gap)} por atendimento.</strong> Mix atual é muito "fast" (serviço rápido). Reforçar combo cabelo+hidratação+esmalte. Se ${atend} atend do período tivessem batido a meta: <strong class="up">+${brl0(upside)}</strong>.`;
+      ? `<strong>Faltam ${brl(gap)} por visita pra bater a meta.</strong> Cross-sell de add-on (LED, hidratação, esmaltação) resolve. Aplicado nas ${visitas} visitas do período = <strong class="up">+${brl0(upside)}</strong>.`
+      : `<strong class="warn">Gap grande de ${brl(gap)} por visita.</strong> Mix atual é muito "fast" — média de ${serv_por_visita} serviço por visita. Reforçar combo cabelo+hidratação+esmalte. Se ${visitas} visitas do período tivessem batido a meta: <strong class="up">+${brl0(upside)}</strong>.`;
   const html = `
     <section class="meta-card">
       <h2><span style="color:var(--accent)">🎫</span> Ticket médio ${periodo_label} · meta franquia <span style="color:var(--accent)">${brl(meta)}</span></h2>
-      <div class="sub">Benchmark FAST Escova (rede) = R$ ${meta} por atendimento. Meta é indicador de saúde do mix — mais serviço por cliente, menos "só escova".</div>
+      <div class="sub">Benchmark FAST Escova (rede) = R$ ${meta} <strong>por visita</strong> (mesmo cliente-mesmo dia = 1 visita, igual ao Trinks). Indicador de saúde do mix — mais serviço por visita, menos "só escova".</div>
       <div class="progress"><div class="progress-fill" style="width:${Math.min(pct_v,100)}%; background:${cor_bar};"></div></div>
       <div class="progress-labels"><span>R$ 0</span><span class="now">▲ ${brl(real)} · <span class="${cor}">${pct(kpis.ticket_atingimento_pct)}</span></span><span>${brl(meta)}</span></div>
       <div class="meta-row" style="margin-top:20px;">
-        <div class="meta-cell"><div class="l">Ticket atual</div><div class="v ${cor}">${brl(real)}</div></div>
+        <div class="meta-cell"><div class="l">Ticket / visita</div><div class="v ${cor}">${brl(real)}</div></div>
         <div class="meta-cell"><div class="l">Meta franquia</div><div class="v">${brl(meta)}</div></div>
-        <div class="meta-cell"><div class="l">Gap por atend</div><div class="v ${gap>0?'warn':'up'}">${gap>0?brl(gap):'—'}</div></div>
-        <div class="meta-cell"><div class="l">Atendimentos</div><div class="v">${atend}</div></div>
+        <div class="meta-cell"><div class="l">Gap por visita</div><div class="v ${gap>0?'warn':'up'}">${gap>0?brl(gap):'—'}</div></div>
+        <div class="meta-cell"><div class="l">Visitas (cliente-dia)</div><div class="v">${visitas}</div></div>
       </div>
       <div class="meta-row">
+        <div class="meta-cell"><div class="l">Atend (linhas serviço)</div><div class="v">${atend}</div></div>
+        <div class="meta-cell"><div class="l">Serv/visita</div><div class="v">${serv_por_visita}</div></div>
         <div class="meta-cell"><div class="l">Caixa atual</div><div class="v accent">${brl0(kpis.caixa)}</div></div>
-        <div class="meta-cell"><div class="l">Caixa se batesse meta</div><div class="v">${brl0(meta*atend)}</div></div>
+        <div class="meta-cell"><div class="l">Caixa se batesse meta</div><div class="v">${brl0(meta*visitas)}</div></div>
+      </div>
+      <div class="meta-row">
         <div class="meta-cell"><div class="l">Upside potencial</div><div class="v ${upside>0?'up':''}">${upside>0?'+'+brl0(upside):'—'}</div></div>
         <div class="meta-cell"><div class="l">Atingimento</div><div class="v ${cor}">${pct(kpis.ticket_atingimento_pct)}</div></div>
+        <div class="meta-cell"><div class="l">&nbsp;</div><div class="v">&nbsp;</div></div>
+        <div class="meta-cell"><div class="l">&nbsp;</div><div class="v">&nbsp;</div></div>
       </div>
       <div class="cap" style="margin-top:14px;padding:10px 12px;background:var(--surface-2);border-radius:8px;">${acao}</div>
     </section>`;
