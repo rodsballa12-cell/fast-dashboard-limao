@@ -489,22 +489,29 @@ def main():
         svs = (transac[0].get("servicos") or [])
         if svs: print(f"[diag] transacao.servicos[0] keys: {sorted(svs[0].keys())}")
     if clientes:
-        print(f"[diag] cliente keys: {sorted(clientes[0].keys())}")
-        # Cliente com aniversário/detalhes pra ver a estrutura real
-        for c in clientes[:5]:
+        # Presença de campos importantes através de TODOS clientes
+        n_tel = sum(1 for c in clientes if c.get("telefones"))
+        n_email = sum(1 for c in clientes if c.get("email"))
+        n_det = sum(1 for c in clientes if isinstance(c.get("clienteDetalhes"), dict) and c.get("clienteDetalhes"))
+        n_tag = sum(1 for c in clientes if c.get("etiquetasAssociadas"))
+        print(f"[diag] cliente presença: telefones={n_tel}/{len(clientes)} · email={n_email} · clienteDetalhes={n_det} · etiquetas={n_tag}")
+
+        # Primeiro cliente COM detalhes
+        for c in clientes:
             cd = c.get("clienteDetalhes")
             if isinstance(cd, dict) and cd:
                 print(f"[diag] cliente.clienteDetalhes keys: {sorted(cd.keys())}")
-                print(f"[diag] cliente.clienteDetalhes sample: {json.dumps({k: cd.get(k) for k in list(cd.keys())[:8]}, ensure_ascii=False, default=str)[:400]}")
+                print(f"[diag] cliente.clienteDetalhes sample: {json.dumps(cd, ensure_ascii=False, default=str)[:600]}")
                 break
-        tags = c.get("etiquetasAssociadas")
-        if isinstance(tags, list) and tags:
-            print(f"[diag] cliente.etiquetasAssociadas[0] type: {type(tags[0]).__name__} · sample: {json.dumps(tags[0], ensure_ascii=False, default=str)[:200]}")
-        # verifica tel/email formato
-        for c in clientes[:5]:
-            if c.get("telefones"):
-                print(f"[diag] cliente.telefones[0] type: {type(c['telefones'][0]).__name__} · sample: {json.dumps(c['telefones'][0], ensure_ascii=False, default=str)[:200]}")
-                break
+        # Teste: buscar 1 cliente com detalhes explícitos via /v1/clientes/{id}
+        cid_teste = clientes[0].get("id")
+        if cid_teste:
+            try:
+                det = t.get(f"/v1/clientes/{cid_teste}")
+                print(f"[diag] /v1/clientes/{{id}} keys: {sorted(det.keys()) if isinstance(det, dict) else 'não-dict'}")
+                if isinstance(det, dict) and det.get("clienteDetalhes"):
+                    print(f"[diag] /v1/clientes/{{id}}.clienteDetalhes: {json.dumps(det['clienteDetalhes'], ensure_ascii=False, default=str)[:400]}")
+            except Exception as e: print(f"[diag] /v1/clientes/{{id}} falhou: {e}")
     cad_map = {}
     aniv_map = {}  # {id: (mm, dd, nome)}
     for c in clientes:
