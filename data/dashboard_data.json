@@ -1,13 +1,101 @@
 {
-  "gerado_em": "2026-08-23T07:12:32-03:00",
+  "gerado_em": "2026-08-23T07:19:36-03:00",
   "hoje": "2026-08-23",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 26,
+  "sazonalidade": {
+    "peso_dow": {
+      "Seg": 7.8,
+      "Ter": 4.4,
+      "Qua": 8.4,
+      "Qui": 16.6,
+      "Sex": 18.7,
+      "Sáb": 44.1,
+      "Dom": 0.0
+    },
+    "meta_dia_por_dow": {
+      "Seg": 933.31,
+      "Ter": 661.96,
+      "Qua": 1263.23,
+      "Qui": 2489.24,
+      "Sex": 2808.03,
+      "Sáb": 5288.72,
+      "Dom": 0.0
+    },
+    "n_dias_dow_mes": {
+      "Seg": 5,
+      "Ter": 4,
+      "Qua": 4,
+      "Qui": 4,
+      "Sex": 4,
+      "Sáb": 5,
+      "Dom": 5
+    },
+    "curva_horaria": [
+      {
+        "h": 8,
+        "pct_acum": 0.1
+      },
+      {
+        "h": 9,
+        "pct_acum": 1.5
+      },
+      {
+        "h": 10,
+        "pct_acum": 4.1
+      },
+      {
+        "h": 11,
+        "pct_acum": 11.4
+      },
+      {
+        "h": 12,
+        "pct_acum": 17.7
+      },
+      {
+        "h": 13,
+        "pct_acum": 25.6
+      },
+      {
+        "h": 14,
+        "pct_acum": 33.5
+      },
+      {
+        "h": 15,
+        "pct_acum": 41.1
+      },
+      {
+        "h": 16,
+        "pct_acum": 49.0
+      },
+      {
+        "h": 17,
+        "pct_acum": 61.8
+      },
+      {
+        "h": 18,
+        "pct_acum": 74.7
+      },
+      {
+        "h": 19,
+        "pct_acum": 88.4
+      },
+      {
+        "h": 20,
+        "pct_acum": 99.5
+      },
+      {
+        "h": 21,
+        "pct_acum": 100.0
+      }
+    ],
+    "amostra_dias_ano": 27
+  },
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 6394,
-    "saldoRestante": 3606
+    "totalUtilizado": 6399,
+    "saldoRestante": 3601
   },
   "stone": {
     "periodo_ini": "2026-07-24",
@@ -905,7 +993,7 @@
           "cliente": "marcia Regina Araujo Neto "
         }
       ],
-      "horas_desatualizado": 41.3
+      "horas_desatualizado": 41.4
     }
   },
   "auditoria_cancelados": {
@@ -3704,29 +3792,29 @@
         "horas_operacao_periodo": 72,
         "utilizacao_agregada_pct": 6.1,
         "ticket_meta": 0.0,
-        "ticket_meta_periodo": 187.11,
+        "ticket_meta_periodo": 181.68,
         "ticket_atingimento_pct": 0.0,
         "ticket_gap_por_atend": 0.0,
         "visitas_projetadas": 74,
         "visitas_restantes": 0,
         "ticket_meta_status": "encerrado_deficit",
-        "ticket_meta_deficit_caixa": 5679.15,
+        "ticket_meta_deficit_caixa": 5277.49,
         "ticket_meta_supera_caixa": 0.0,
         "periodo_ini": "2026-08-17",
         "periodo_fim": "2026-08-23"
       },
       "meta": {
-        "meta": 13846.15,
+        "meta": 13444.49,
         "realizado": 8167.0,
-        "pct": 59.0,
-        "falta": 5679.15,
+        "pct": 60.7,
+        "falta": 5277.49,
         "dias_realizados": 6,
         "dias_total": 6,
         "dias_restantes": 0,
         "necessario_dia": 0.0,
         "ritmo_dia": 1361.17,
         "projecao": 8167.0,
-        "projecao_pct": 59.0
+        "projecao_pct": 60.7
       },
       "categorias": {
         "pacotes": {
@@ -4656,7 +4744,7 @@
       {
         "tipo": "atencao",
         "titulo": "Semana abaixo da meta",
-        "texto": "Projeção R$ 8.167,00 (59%). Gap de R$ -1.361,17/dia para os 0 dias restantes.",
+        "texto": "Projeção R$ 8.167,00 (61%). Gap de R$ -1.361,17/dia para os 0 dias restantes.",
         "acao": "Ativar campanha WhatsApp pras top 20 clientes AGORA — retorno médio 3-4 walk-ins no fim de semana."
       },
       {
