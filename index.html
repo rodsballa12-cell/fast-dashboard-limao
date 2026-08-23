@@ -243,6 +243,7 @@
       <div id="diario-insights"></div>
       <div id="diario-meta"></div>
       <div id="diario-kpis"></div>
+      <div id="diario-pace"></div>
       <div id="diario-sazonalidade"></div>
       <div id="diario-ticket-meta"></div>
       <div id="diario-utilizacao"></div>
@@ -306,6 +307,91 @@ function kpiCard(cls_,label,value,foot,accent){
 // ============= RENDER GENÉRICOS =============
 function renderKPIs(container_id, kpis){
   document.getElementById(container_id).innerHTML='<section class="kpi-grid">'+kpis.map((k,i)=>kpiCard('k'+(i+1)||'',k.label,k.value,k.foot,k.accent)).join('')+'</section>';
+}
+
+function renderPaceIntraday(container_id, pace, curva_horaria){
+  if(!pace || !pace.opera_hoje || pace.meta_dia <= 0){
+    document.getElementById(container_id).innerHTML = '';
+    return;
+  }
+  const meta = pace.meta_dia;
+  const esperado = pace.meta_esperada_agora;
+  const real = pace.realizado_agora;
+  const pct_esp = pace.pct_esperado_agora;
+  const pct_real = meta>0 ? real/meta*100 : 0;
+  const delta = pace.pace_delta;
+  const ratio = pace.pace_ratio_pct;
+  const projecao = pace.projecao_dia;
+  const cor = ratio>=100?'up':(ratio>=80?'warn':'dn');
+  const cor_bar = ratio>=100?'#22c55e':(ratio>=80?'#f59e0b':'#ef4444');
+  const status = ratio>=110 ? '🟢 ADIANTE' : (ratio>=90 ? '🟡 NO RITMO' : (ratio>=60 ? '🟠 ATRÁS' : '🔴 MUITO ATRÁS'));
+  const acao = ratio>=110
+    ? `<strong class="up">Ritmo excelente</strong> — no fim do dia, projeção é ${brl0(projecao)} (${(projecao/meta*100).toFixed(0)}% da meta). Manter fluxo e não afrouxar depois das ${Math.floor(pace.hora_atual_num)}h.`
+    : ratio>=90
+      ? `<strong>No pace</strong> — projeção de ${brl0(projecao)} (${(projecao/meta*100).toFixed(0)}% da meta). Se manter o ritmo até o fechamento, bate.`
+      : ratio>=60
+        ? `<strong class="warn">Atrasado em ${brl0(-delta)}</strong>. Projeção linear: ${brl0(projecao)} (${(projecao/meta*100).toFixed(0)}% da meta). Puxar cliente com WhatsApp/oferta no restante do dia pra recuperar.`
+        : `<strong class="dn">Muito abaixo do esperado.</strong> Já são ${pace.hora_atual_str} e falta ${brl0(-delta)} pra estar no pace. Projeção de fim de dia: ${brl0(projecao)}. Cliente pouco/quadro ocioso — ação imediata (post no story, ligar recorrentes) ou aceitar dia fraco e concentrar em amanhã.`;
+
+  // Mini curva visual: SVG com curva esperada + ponto atual
+  let curva_svg = '';
+  if(curva_horaria && curva_horaria.length > 0){
+    const w = 400, h = 60, pad = 10;
+    const xs = curva_horaria.map(p => p.h);
+    const min_h = xs[0], max_h = xs[xs.length-1]+1;
+    const scale_x = (x) => pad + (x - min_h) / (max_h - min_h) * (w - 2*pad);
+    const scale_y = (y) => h - pad - (y/100) * (h - 2*pad);
+    let path = `M ${scale_x(min_h)} ${scale_y(0)}`;
+    curva_horaria.forEach(p => { path += ` L ${scale_x(p.h+1)} ${scale_y(p.pct_acum)}`; });
+    const now_x = scale_x(pace.hora_atual_num);
+    const now_y_esperado = scale_y(pct_esp);
+    const now_y_real = scale_y(Math.min(pct_real, 100));
+    // Marcas horárias
+    let marks = '';
+    for(let h_mark = min_h; h_mark <= max_h; h_mark += 2){
+      const x = scale_x(h_mark);
+      marks += `<line x1="${x}" y1="${h-pad}" x2="${x}" y2="${h-pad+3}" stroke="var(--muted)" stroke-width="1"/>`;
+      marks += `<text x="${x}" y="${h-pad+13}" fill="var(--muted)" font-size="9" text-anchor="middle">${h_mark}h</text>`;
+    }
+    curva_svg = `
+      <svg viewBox="0 0 ${w} ${h+18}" width="100%" style="max-width:500px;">
+        <path d="${path}" fill="none" stroke="var(--accent)" stroke-width="1.5" opacity="0.6" stroke-dasharray="3 2"/>
+        <line x1="${now_x}" y1="${pad}" x2="${now_x}" y2="${h-pad}" stroke="${cor_bar}" stroke-width="1.5"/>
+        <circle cx="${now_x}" cy="${now_y_esperado}" r="3" fill="var(--accent)" opacity="0.7"/>
+        <circle cx="${now_x}" cy="${now_y_real}" r="5" fill="${cor_bar}" stroke="var(--surface)" stroke-width="1.5"/>
+        ${marks}
+      </svg>`;
+  }
+
+  const html = `
+    <section class="meta-card">
+      <h2><span style="color:${cor_bar}">🕒</span> Pace intraday · ${pace.hora_atual_str} · <span class="${cor}">${status}</span></h2>
+      <div class="sub">Curva histórica de fechamento por hora × realizado até agora. Mostra se o dia está adiantado ou atrasado em tempo real.</div>
+      <div class="progress"><div class="progress-fill" style="width:${Math.min(pct_real,100)}%; background:${cor_bar};"></div></div>
+      <div class="progress-labels">
+        <span>R$ 0 · 0h</span>
+        <span class="now">▲ ${brl0(real)} · ${pct_real.toFixed(0)}% da meta (esperado ${pct_esp.toFixed(0)}%)</span>
+        <span>${brl0(meta)} · fim</span>
+      </div>
+      <div class="meta-row" style="margin-top:20px;">
+        <div class="meta-cell"><div class="l">Realizado agora</div><div class="v accent">${brl0(real)}</div></div>
+        <div class="meta-cell"><div class="l">Esperado às ${pace.hora_atual_str}</div><div class="v">${brl0(esperado)}</div></div>
+        <div class="meta-cell"><div class="l">Delta</div><div class="v ${delta>=0?'up':'dn'}">${delta>=0?'+':'−'}${brl0(Math.abs(delta))}</div></div>
+        <div class="meta-cell"><div class="l">Ritmo vs pace</div><div class="v ${cor}">${ratio.toFixed(0)}%</div></div>
+      </div>
+      <div class="meta-row">
+        <div class="meta-cell"><div class="l">Meta do dia</div><div class="v">${brl0(meta)}</div></div>
+        <div class="meta-cell"><div class="l">% esperado até agora</div><div class="v">${pct_esp.toFixed(0)}%</div></div>
+        <div class="meta-cell"><div class="l">Projeção fim do dia</div><div class="v ${projecao>=meta?'up':(projecao>=meta*0.8?'warn':'dn')}">${brl0(projecao)}</div></div>
+        <div class="meta-cell"><div class="l">Falta pra meta</div><div class="v ${projecao>=meta?'up':'warn'}">${brl0(Math.max(meta-real,0))}</div></div>
+      </div>
+      ${curva_svg ? `<div style="margin-top:14px;text-align:center;background:var(--surface-2);padding:12px;border-radius:8px;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Curva esperada (tracejado) · Agora: <span style="color:${cor_bar}">●</span> real · <span style="color:var(--accent)">●</span> esperado</div>
+        ${curva_svg}
+      </div>` : ''}
+      <div class="cap" style="margin-top:14px;padding:10px 12px;background:var(--surface-2);border-radius:8px;">${acao}</div>
+    </section>`;
+  document.getElementById(container_id).innerHTML = html;
 }
 
 function renderSazonalidade(container_id, sazon, hoje_dow_nome, contexto){
@@ -1044,6 +1130,7 @@ function renderDiario(data){
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
   ]);
   renderMetaProgress('diario-meta','Meta Diária',d.meta,'Meta mensal ÷ dias operacionais');
+  renderPaceIntraday('diario-pace', k.pace_intraday, (data.sazonalidade||{}).curva_horaria);
   renderSazonalidade('diario-sazonalidade', data.sazonalidade, k.dia_semana||null, 'Meta de HOJE (' + (k.dia_semana||'') + ') = <strong>' + brl0(d.meta.meta||0) + '</strong>. Não é a média geral — é o valor que cabe a esse dia da semana no total do mês, respeitando o padrão histórico.');
   renderTicketMeta('diario-ticket-meta', 'hoje', k);
   renderUtilizacao('diario-utilizacao', 'hoje', k, d);

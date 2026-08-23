@@ -730,6 +730,50 @@ def main():
     meta_dia_valor = meta_dia_por_dow[hoje.weekday()] if opera_no_dia(hoje) else 0.0
     meta_dia = calc_meta(a_diario["kpis"]["caixa"], meta_dia_valor, 1, 1)
 
+    # === PACE INTRADAY: combina curva horária + hora atual ===
+    # "Às 15h você já deveria ter feito X% da meta do dia".
+    # A curva horária foi calculada acima com base no histórico anual (pct acum do caixa por hora).
+    # Aqui interpolamos pra hora atual pra dar leitura em tempo real.
+    agora = datetime.now(BRT)
+    hora_atual = agora.hour + agora.minute / 60.0
+    caixa_hoje = a_diario["kpis"].get("caixa", 0)
+    # pct esperado até agora, interpolando linearmente entre horas cheias
+    pct_esperado_agora = 0.0
+    if opera_no_dia(hoje) and meta_dia_valor > 0 and curva_horaria:
+        # curva_horaria vai de 8h a 21h com pct_acum ao final de cada hora
+        # Ex: {"h": 15, "pct_acum": 45.0} = ao FIM das 15h, 45% do caixa acumulado
+        # Antes de 8h: 0%. Após 21h: 100%. Entre h e h+1: interpolação linear.
+        if hora_atual <= curva_horaria[0]["h"]:
+            pct_esperado_agora = 0.0
+        elif hora_atual >= curva_horaria[-1]["h"] + 1:
+            pct_esperado_agora = 100.0
+        else:
+            for i, ponto in enumerate(curva_horaria):
+                pct_fim_hora = ponto["pct_acum"]
+                pct_ini_hora = curva_horaria[i-1]["pct_acum"] if i > 0 else 0.0
+                if hora_atual < ponto["h"] + 1:
+                    frac = hora_atual - ponto["h"]
+                    if frac < 0: frac = 0
+                    pct_esperado_agora = pct_ini_hora + (pct_fim_hora - pct_ini_hora) * frac
+                    break
+    meta_esperada_agora = meta_dia_valor * pct_esperado_agora / 100 if meta_dia_valor > 0 else 0
+    pace_delta = caixa_hoje - meta_esperada_agora
+    pace_ratio = (caixa_hoje / meta_esperada_agora * 100) if meta_esperada_agora > 0 else (100.0 if caixa_hoje == 0 else 0)
+    # Projeção do fim do dia: caixa_atual / pct_esperado_agora = projeção linear
+    projecao_dia = (caixa_hoje / pct_esperado_agora * 100) if pct_esperado_agora > 5 else 0
+    a_diario["kpis"]["pace_intraday"] = {
+        "hora_atual_str": agora.strftime("%H:%M"),
+        "hora_atual_num": round(hora_atual, 2),
+        "pct_esperado_agora": round(pct_esperado_agora, 1),
+        "meta_dia": brl_round(meta_dia_valor),
+        "meta_esperada_agora": brl_round(meta_esperada_agora),
+        "realizado_agora": brl_round(caixa_hoje),
+        "pace_delta": brl_round(pace_delta),
+        "pace_ratio_pct": round(pace_ratio, 1),
+        "projecao_dia": brl_round(projecao_dia),
+        "opera_hoje": opera_no_dia(hoje),
+    }
+
     # Meta da SEMANA: soma das metas dos dias reais da semana (respeita pesos + início dom).
     dias_op_sem_real = sum(1 for i in range(7) if opera_no_dia(seg + timedelta(days=i)))
     meta_sem_valor = 0
