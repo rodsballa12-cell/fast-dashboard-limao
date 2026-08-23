@@ -25,8 +25,22 @@ from __future__ import annotations
 
 import csv
 from collections import Counter, defaultdict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+
+# BRT (UTC-3, sem horário de verão desde 2019). Todo o processador opera em BRT
+# — datas do CSV Stone vêm sem timezone e são tratadas como local BRT.
+BRT = timezone(timedelta(hours=-3))
+
+
+def _hoje_brt() -> date:
+    """Data de hoje em Brasília, independente do TZ do sistema (container = UTC)."""
+    return datetime.now(BRT).date()
+
+
+def _agora_brt_naive() -> datetime:
+    """Datetime naive representando 'agora' em BRT — pra comparar com CSV naive."""
+    return datetime.now(BRT).replace(tzinfo=None)
 
 CARTAO_MEIOS = {"Mastercard", "Visa", "Elo Débito", "Maestro/Redeshop",
                 "Visa Electron", "American Express", "Elo Crédito", "Hipercard"}
@@ -178,7 +192,7 @@ def _agregar_periodo(pix_stone, pix_trinks, cartao_stone_recebiveis, cartao_trin
 def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | None = None) -> dict | None:
     if not csv_path.exists():
         return None
-    hoje = hoje or date.today()
+    hoje = hoje or _hoje_brt()  # BRT · container roda UTC, date.today() daria dia +1 entre 21-00h BRT
 
     # ==== 1. LER CSV STONE ====
     recs = []
@@ -456,7 +470,7 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         "vendas_trinks_apos_n": len(vendas_apos),
         "vendas_trinks_apos_v": _r(sum(x["valor"] for x in vendas_apos)),
         "vendas_apos_lista": vendas_apos[:50],
-        "horas_desatualizado": round((datetime.now() - ultima_dt_stone).total_seconds() / 3600, 1) if ultima_dt_stone else 0,
+        "horas_desatualizado": round((_agora_brt_naive() - ultima_dt_stone).total_seconds() / 3600, 1) if ultima_dt_stone else 0,
     }
 
     return {

@@ -30,6 +30,29 @@ STONE_CSV = REPO_ROOT / "data" / "stone_extrato.csv"
 CONFIG_JSON = REPO_ROOT / "data" / "config.json"
 CLIENTES_CACHE = REPO_ROOT / "data" / "clientes_detalhes.json"
 
+# TIMEZONE: todo o pipeline opera em Brasília (UTC-3, sem DST desde 2019).
+# Container do GitHub Actions roda em UTC, então nunca usar date.today() ou
+# datetime.now() sem timezone — sempre datetime.now(BRT).
+BRT = timezone(timedelta(hours=-3))
+
+
+def parse_trinks_dt(s):
+    """Parse defensivo de dataHoraInicio do Trinks.
+
+    Hoje Trinks retorna ISO naive tipo "2026-08-22T17:32:00" (BRT local).
+    Se um dia mudar pra vir com 'Z' ou '+00:00' (UTC), converte pra BRT antes
+    de devolver — protege .date(), .hour, comparações etc contra shift de 3h
+    silencioso. Aceita None e retorna None.
+    """
+    if not s:
+        return None
+    dt = datetime.fromisoformat(s.replace("Z", "+00:00")) if isinstance(s, str) else s
+    if dt.tzinfo is not None:
+        # veio com timezone → converte pra BRT e joga fora o tzinfo
+        # (código atual assume naive-BRT em todas as comparações)
+        dt = dt.astimezone(BRT).replace(tzinfo=None)
+    return dt
+
 # Config da loja (cadeiras físicas, horas de operação, mapping serviço→cadeira)
 try:
     _cfg = json.loads(CONFIG_JSON.read_text(encoding="utf-8"))
@@ -512,9 +535,7 @@ def novos_vs_recorr(fin_mes, cadastro_map, ini_mes: date):
 
 def main():
     t = Trinks()
-    # Sempre operar no fuso de Brasília (UTC-3, sem DST desde 2019)
-    from datetime import timezone as _tz
-    BRT = _tz(timedelta(hours=-3))
+    # BRT global no módulo (ver definição no topo)
     hoje = datetime.now(BRT).date()
     ini_ano = date(hoje.year, 1, 1)
     fim_ano = date(hoje.year, 12, 31)
@@ -1292,7 +1313,7 @@ def main():
                     "valor": float(fp.get("valor") or 0),
                     "cliente": cli,
                 })
-        stone_data = processar_stone_csv(STONE_CSV, trinks_tx)
+        stone_data = processar_stone_csv(STONE_CSV, trinks_tx, hoje=hoje)  # hoje em BRT
         print(f"[stone] {'OK · ' + str(stone_data['total_lancamentos']) + ' lancamentos' if stone_data else 'sem CSV · aba vazia'}")
         # Enriquece aplicacao_reserva com meta + rendimento previsto do config
         _res_cfg = _cfg.get("reserva_stone") or {}
@@ -1479,7 +1500,7 @@ def main():
     resumo_risco = Counter(x["risco"] for x in canc_com_valor)
 
     payload = {
-        # UTC com sufixo Z para JavaScript interpretar corretamente
+        # BRT com offset explícito (-03:00) — JS new Date() interpreta correto
         "gerado_em": datetime.now(BRT).isoformat(timespec="seconds"),
         "hoje": hoje.isoformat(),
         "meta_mensal_valor": META_MENSAL,

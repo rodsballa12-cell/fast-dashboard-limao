@@ -1915,7 +1915,8 @@ async function load(showToast=false){
       const uso = cota.totalUtilizado;
       const total = cota.cotaTotal || 10000;
       const pct_uso = uso/total*100;
-      const dias_mes = new Date().getDate();
+      // Dia do mês em BRT (não no fuso do browser)
+      const dias_mes = parseInt(new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit'}).format(new Date()), 10);
       const media_dia = uso/Math.max(dias_mes,1);
       if(uso > 3000 || media_dia > 200){
         toast(`⚠️ <strong>Cota API alta</strong><br><small>${uso}/${total} usadas (${pct_uso.toFixed(1)}%) · média ${media_dia.toFixed(0)}/dia · <strong>investigar uso anômalo</strong></small>`, true);
@@ -1929,7 +1930,7 @@ async function load(showToast=false){
     else{chipAge.className='chip stale';chipAge.innerHTML=`<span class="dot"></span> há ${Math.floor(ageMin/60)}h${ageMin%60}m ⚠️ desatualizado`;}
     document.getElementById('loading').style.display='none';
     document.getElementById('content').style.display='';
-    if(showToast) toast(`✅ Dados recarregados<br><small>Snapshot de ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} · idade ${ageMin} min</small>`);
+    if(showToast) toast(`✅ Dados recarregados<br><small>Snapshot de ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} BRT · idade ${ageMin} min</small>`);
   } catch(e){
     if(showToast) toast(`❌ <strong>Erro</strong> ao recarregar: ${e.message}`, true);
     else document.getElementById('loading').innerHTML=`<div style="color:var(--crit)">❌ Erro ao carregar dados: ${e.message}<br><small>Tenta recarregar a página em 1 min.</small></div>`;
