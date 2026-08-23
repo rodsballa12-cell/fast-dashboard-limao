@@ -179,7 +179,6 @@
       <div id="anual-insights"></div>
       <div id="anual-meta"></div>
       <div id="anual-kpis"></div>
-      <div id="anual-sazonalidade"></div>
       <div id="anual-ticket-meta"></div>
       <div id="anual-utilizacao"></div>
       <div id="anual-categorias"></div>
@@ -200,7 +199,6 @@
       <div id="mensal-insights"></div>
       <div id="mensal-meta"></div>
       <div id="mensal-kpis"></div>
-      <div id="mensal-sazonalidade"></div>
       <div id="mensal-ticket-meta"></div>
       <div id="mensal-utilizacao"></div>
       <div id="mensal-categorias"></div>
@@ -221,7 +219,6 @@
       <div id="semanal-insights"></div>
       <div id="semanal-meta"></div>
       <div id="semanal-kpis"></div>
-      <div id="semanal-sazonalidade"></div>
       <div id="semanal-ticket-meta"></div>
       <div id="semanal-comparacao"></div>
       <div id="semanal-utilizacao"></div>
@@ -244,7 +241,6 @@
       <div id="diario-meta"></div>
       <div id="diario-kpis"></div>
       <div id="diario-pace"></div>
-      <div id="diario-sazonalidade"></div>
       <div id="diario-ticket-meta"></div>
       <div id="diario-utilizacao"></div>
       <div id="diario-categorias"></div>
@@ -390,53 +386,6 @@ function renderPaceIntraday(container_id, pace, curva_horaria){
         ${curva_svg}
       </div>` : ''}
       <div class="cap" style="margin-top:14px;padding:10px 12px;background:var(--surface-2);border-radius:8px;">${acao}</div>
-    </section>`;
-  document.getElementById(container_id).innerHTML = html;
-}
-
-function renderSazonalidade(container_id, sazon, hoje_dow_nome, contexto){
-  if(!sazon || !sazon.peso_dow) return;
-  const dows = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
-  const pesos = sazon.peso_dow || {};
-  const metas = sazon.meta_dia_por_dow || {};
-  const ndias = sazon.n_dias_dow_mes || {};
-  const horas = sazon.horas_por_dow || {};
-  const dom_ativo = sazon.domingo_ativo_no_mes;
-  const dom_ini = sazon.data_inicio_domingo;
-  const max_peso = Math.max(...dows.map(d => pesos[d]||0));
-  const barras = dows.map(d => {
-    const p = pesos[d]||0;
-    const m = metas[d]||0;
-    const n = ndias[d]||0;
-    const h = horas[d]||0;
-    const w = max_peso>0 ? (p/max_peso*100) : 0;
-    const inativo = h===0 || (d==='Dom' && !dom_ativo);
-    const cor = d===hoje_dow_nome ? 'var(--accent)' : inativo ? '#334155' : (p>25?'#22c55e':(p>10?'#f59e0b':'#64748b'));
-    const hoje_flag = d===hoje_dow_nome ? '<span class="hi" style="color:var(--accent);margin-left:6px;">◀ HOJE</span>' : '';
-    const badge_novo = (d==='Dom' && dom_ativo) ? '<span class="hi" style="color:#22c55e;margin-left:6px;font-size:10px;">✨ NOVO</span>' : '';
-    const status = inativo ? '<span style="color:var(--muted);font-size:11px;">fechado</span>' : `${h}h`;
-    return `
-      <div style="display:grid;grid-template-columns:70px 1fr 70px 90px 60px 60px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--surface-2);${inativo?'opacity:0.55;':''}">
-        <div><strong>${d}</strong>${hoje_flag}${badge_novo}</div>
-        <div style="height:14px;background:var(--surface-2);border-radius:4px;overflow:hidden;">
-          <div style="width:${w}%;height:100%;background:${cor};"></div>
-        </div>
-        <div style="text-align:right;font-variant-numeric:tabular-nums;">${p.toFixed(1)}%</div>
-        <div style="text-align:right;font-variant-numeric:tabular-nums;color:${inativo?'var(--muted)':'var(--accent)'};">${inativo?'—':brl0(m)}</div>
-        <div style="text-align:right;font-variant-numeric:tabular-nums;">${n} dias</div>
-        <div style="text-align:right;font-size:12px;color:var(--muted);">${status}</div>
-      </div>`;
-  }).join('');
-  const nota_dom = dom_ini ? `<div style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:13px;">🕘 <strong>Domingo</strong>: operação inicia em <strong>${fmtDate(dom_ini)}</strong>, jornada 9h–15h (${horas['Dom']||6}h). Peso ainda estimado (proporcional às horas). Refina automaticamente após ≥3 domingos observados.</div>` : '';
-  const html = `
-    <section class="card">
-      <h2>📊 Sazonalidade — meta ajustada por dia da semana</h2>
-      <div class="cap">${contexto || 'Meta mensal <strong>R$ ' + (60000).toLocaleString('pt-BR') + '</strong> distribuída pelo peso histórico de cada dia (baseado em ' + (sazon.amostra_dias_ano||0) + ' dias observados). Não faz sentido esperar o mesmo de terça e sábado — a meta reflete o padrão real.'}</div>
-      <div style="display:grid;grid-template-columns:70px 1fr 70px 90px 60px 60px;gap:10px;padding-bottom:8px;border-bottom:2px solid var(--surface-2);font-size:12px;color:var(--muted);">
-        <div>DOW</div><div>Peso relativo</div><div style="text-align:right;">% do mês</div><div style="text-align:right;">Meta/dia</div><div style="text-align:right;">Ocorrências</div><div style="text-align:right;">Jornada</div>
-      </div>
-      ${barras}
-      ${nota_dom}
     </section>`;
   document.getElementById(container_id).innerHTML = html;
 }
@@ -1021,7 +970,6 @@ function renderAnual(data){
     {label:'Clientes únicos',value:k.clientes_unicos+'',foot:`${k.atend_fin} atend · ${(k.atend_fin/Math.max(k.clientes_unicos,1)).toFixed(1)} visita/cliente`}
   ]);
   if(a.meta && a.meta.meta) renderMetaProgress('anual-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
-  renderSazonalidade('anual-sazonalidade', data.sazonalidade, null, 'Distribuição da meta mensal pelo peso histórico de cada dia da semana (ano ' + (new Date(data.hoje).getFullYear()) + '). Base para as metas diária e semanal.');
   renderTicketMeta('anual-ticket-meta', 'ano', k);
   renderCategoriasMeta('anual-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0);
 
@@ -1078,7 +1026,6 @@ function renderMensal(data){
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
   ]);
   renderMetaProgress('mensal-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
-  renderSazonalidade('mensal-sazonalidade', data.sazonalidade, null);
   renderTicketMeta('mensal-ticket-meta', 'mês', k);
   renderUtilizacao('mensal-utilizacao', 'mês', k, m);
   renderCategoriasMeta('mensal-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao);
@@ -1104,8 +1051,7 @@ function renderSemanal(data){
     {label:'Ticket transação',value:brl(k.ticket_trans),foot:'padrão varejo'},
     {label:'Dias operados',value:k.dias_op+'',foot:'de 6 (seg–sáb)'}
   ]);
-  renderMetaProgress('semanal-meta','Meta Semanal',s.meta,'Meta mensal ÷ dias oper. × dias da semana');
-  renderSazonalidade('semanal-sazonalidade', data.sazonalidade, k.dia_semana||null, 'Meta desta semana <strong>' + brl0(s.meta.meta||0) + '</strong> = soma das metas de cada dia (seg-sáb) ponderadas pelo peso histórico do dia da semana.');
+  renderMetaProgress('semanal-meta','Meta Semanal',s.meta,'Soma das metas diárias dos dias da semana (cada dia ponderado pelo peso histórico do DOW)');
   renderTicketMeta('semanal-ticket-meta', 'semana', k);
   renderComparacaoSemana('semanal-comparacao', k, s.semana_anterior);
   renderUtilizacao('semanal-utilizacao', 'semana', k, s);
@@ -1129,9 +1075,8 @@ function renderDiario(data){
     {label:'Ticket transação',value:k.n_trans>0?brl(k.ticket_trans):'—',foot:'hoje'},
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
   ]);
-  renderMetaProgress('diario-meta','Meta Diária',d.meta,'Meta mensal ÷ dias operacionais');
+  renderMetaProgress('diario-meta','Meta Diária',d.meta,'Meta específica do dia da semana atual (peso histórico do DOW × META_MENSAL, respeitando jornada)');
   renderPaceIntraday('diario-pace', k.pace_intraday, (data.sazonalidade||{}).curva_horaria);
-  renderSazonalidade('diario-sazonalidade', data.sazonalidade, k.dia_semana||null, 'Meta de HOJE (' + (k.dia_semana||'') + ') = <strong>' + brl0(d.meta.meta||0) + '</strong>. Não é a média geral — é o valor que cabe a esse dia da semana no total do mês, respeitando o padrão histórico.');
   renderTicketMeta('diario-ticket-meta', 'hoje', k);
   renderUtilizacao('diario-utilizacao', 'hoje', k, d);
   renderCategoriasMeta('diario-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao);
