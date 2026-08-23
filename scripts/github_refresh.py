@@ -684,21 +684,22 @@ def main():
         n_op = sum(1 for i in range(7) if HORAS_POR_DOW[i] > 0)
         peso_dow = {i: (1/n_op if HORAS_POR_DOW[i] > 0 else 0) for i in range(7)}
 
-    # META por DOW no mês corrente: só distribui pra dias que operam nesse mês.
+    # META por DOW no mês corrente: escala capacidade natural pra bater META_MENSAL.
+    # Racional: cada dow tem uma capacidade estimada de caixa/dia (caixa_medio_dow).
+    # Soma dessas capacidades × n_dias_no_mês = caixa esperado natural. Se ≠ META_MENSAL,
+    # aplica scale_factor uniforme pra todos. Assim domingo recebe SEU share proporcional
+    # às horas (6h), não uma concentração matemática irreal.
     n_dias_dow_mes = {i: 0 for i in range(7)}
     for d in range(1, monthrange(hoje.year, hoje.month)[1] + 1):
         dt = date(hoje.year, hoje.month, d)
         if opera_no_dia(dt):
             n_dias_dow_mes[dt.weekday()] += 1
-    # Renormaliza peso considerando só dows que efetivamente operam esse mês (evita jogar
-    # peso pra domingo se ele ainda não começou no mês corrente)
-    peso_mes = {i: (peso_dow[i] if n_dias_dow_mes[i] > 0 else 0) for i in range(7)}
-    soma_mes = sum(peso_mes.values()) or 1
-    peso_mes_norm = {i: peso_mes[i] / soma_mes for i in range(7)}
+    caixa_esperado_natural = sum(caixa_medio_dow[i] * n_dias_dow_mes[i] for i in range(7))
+    scale_factor = (META_MENSAL / caixa_esperado_natural) if caixa_esperado_natural > 0 else 1.0
     meta_dia_por_dow = {}
     for i in range(7):
-        if n_dias_dow_mes[i] > 0 and peso_mes_norm[i] > 0:
-            meta_dia_por_dow[i] = round(META_MENSAL * peso_mes_norm[i] / n_dias_dow_mes[i], 2)
+        if n_dias_dow_mes[i] > 0 and caixa_medio_dow[i] > 0:
+            meta_dia_por_dow[i] = round(caixa_medio_dow[i] * scale_factor, 2)
         else:
             meta_dia_por_dow[i] = 0.0
 
@@ -725,8 +726,8 @@ def main():
     dias_op_mes_real = dias_operacionais_no_mes(hoje.year, hoje.month)
     meta_mensal = calc_meta(a_mensal["kpis"]["caixa"], META_MENSAL, a_mensal["kpis"]["dias_op"], dias_op_mes_real)
 
-    # Meta do DIA: usa peso do dow de hoje. Se dow não opera (peso 0), meta = 0.
-    meta_dia_valor = meta_dia_por_dow[hoje.weekday()]
+    # Meta do DIA: se hoje não é dia operacional (ex: dom antes de DATA_INICIO_DOM), meta = 0.
+    meta_dia_valor = meta_dia_por_dow[hoje.weekday()] if opera_no_dia(hoje) else 0.0
     meta_dia = calc_meta(a_diario["kpis"]["caixa"], meta_dia_valor, 1, 1)
 
     # Meta da SEMANA: soma das metas dos dias reais da semana (respeita pesos + início dom).
