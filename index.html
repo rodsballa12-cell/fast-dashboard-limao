@@ -305,43 +305,48 @@ function renderKPIs(container_id, kpis){
 }
 
 function renderTicketMeta(container_id, periodo_label, kpis){
-  if(!kpis || !kpis.ticket_meta) return;
-  const meta = kpis.ticket_meta;
+  if(!kpis || kpis.ticket_meta === undefined) return;
+  const alvo_rest = kpis.ticket_meta || 0;              // ticket que as visitas RESTANTES precisam
+  const alvo_periodo = kpis.ticket_meta_periodo || 0;   // ticket médio pra período todo bater meta
   const real = kpis.ticket_medio || 0;
-  const pct_v = Math.min(kpis.ticket_atingimento_pct || 0, 130);
   const gap = kpis.ticket_gap_por_atend || 0;
-  const cor = real>=meta?'up':(real>=meta*0.8?'warn':'dn');
-  const cor_bar = real>=meta?'#22c55e':(real>=meta*0.7?'#f59e0b':'#ef4444');
+  const ating = kpis.ticket_atingimento_pct || 0;
+  const cor = real>=alvo_rest?'up':(real>=alvo_rest*0.85?'warn':'dn');
+  const cor_bar = real>=alvo_rest?'#22c55e':(real>=alvo_rest*0.85?'#f59e0b':'#ef4444');
   const visitas = kpis.cliente_dia || 0;
+  const vis_proj = kpis.visitas_projetadas || 0;
+  const vis_rest = kpis.visitas_restantes || 0;
   const atend = kpis.atend_fin || 0;
   const serv_por_visita = visitas>0 ? (atend/visitas).toFixed(2) : '—';
-  const upside = gap>0 ? gap * visitas : 0;
-  const acao = real>=meta
-    ? `<strong class="up">Ticket acima da meta.</strong> Manter mix — verificar se pode subir preços de serviços âncora sem perder volume.`
-    : gap<=15
-      ? `<strong>Faltam ${brl(gap)} por visita pra bater a meta.</strong> Cross-sell de add-on (LED, hidratação, esmaltação) resolve. Aplicado nas ${visitas} visitas do período = <strong class="up">+${brl0(upside)}</strong>.`
-      : `<strong class="warn">Gap grande de ${brl(gap)} por visita.</strong> Mix atual é muito "fast" — média de ${serv_por_visita} serviço por visita. Reforçar combo cabelo+hidratação+esmalte. Se ${visitas} visitas do período tivessem batido a meta: <strong class="up">+${brl0(upside)}</strong>.`;
+  const upside_rest = gap>0 && vis_rest>0 ? gap * vis_rest : 0;
+  const acao = alvo_rest<=0
+    ? `<strong class="up">Meta de caixa já batida.</strong> Ticket atual já garantiu o número — cada visita adicional é upside puro.`
+    : real>=alvo_rest
+      ? `<strong class="up">Ticket atual (${brl(real)}) já supera o necessário (${brl(alvo_rest)}) pra bater meta.</strong> Manter mix e volume até o fim do período. Verificar se dá pra puxar mais visitas sem perder ticket.`
+      : gap<=10
+        ? `<strong>Faltam ${brl(gap)} por visita nas próximas ${vis_rest} pra bater meta.</strong> Ajuste pequeno — 1 add-on em cada 2 visitas resolve. Impacto se conseguir: <strong class="up">+${brl0(upside_rest)}</strong>.`
+        : `<strong class="warn">Precisa levantar ticket de ${brl(real)} → ${brl(alvo_rest)} nas próximas ${vis_rest} visitas.</strong> Gap de <strong>${brl(gap)}/visita</strong>. Mix atual: ${serv_por_visita} serv/visita. Alternativas: (a) combo cabelo+hidratação+esmalte, (b) puxar mais visitas com ticket atual (aí precisa ${Math.ceil((alvo_rest*vis_rest)/(real||1))} visitas restantes em vez de ${vis_rest}).`;
   const html = `
     <section class="meta-card">
-      <h2><span style="color:var(--accent)">🎫</span> Ticket médio ${periodo_label} · meta franquia <span style="color:var(--accent)">${brl(meta)}</span></h2>
-      <div class="sub">Benchmark FAST Escova (rede) = R$ ${meta} <strong>por visita</strong> (mesmo cliente-mesmo dia = 1 visita, igual ao Trinks). Indicador de saúde do mix — mais serviço por visita, menos "só escova".</div>
-      <div class="progress"><div class="progress-fill" style="width:${Math.min(pct_v,100)}%; background:${cor_bar};"></div></div>
-      <div class="progress-labels"><span>R$ 0</span><span class="now">▲ ${brl(real)} · <span class="${cor}">${pct(kpis.ticket_atingimento_pct)}</span></span><span>${brl(meta)}</span></div>
+      <h2><span style="color:var(--accent)">🎫</span> Ticket ${periodo_label} · alvo derivado da meta <span style="color:var(--accent)">${brl(alvo_rest)}</span> / visita</h2>
+      <div class="sub">Alvo <strong>não é fixo</strong> — é calculado como <em>caixa que falta ÷ visitas projetadas restantes</em>, no ritmo atual. Se atrair mais visitas, o alvo cai; se puxar menos, sobe. Base: 1 visita = 1 cliente em 1 dia (padrão Trinks).</div>
+      <div class="progress"><div class="progress-fill" style="width:${Math.min(ating,100)}%; background:${cor_bar};"></div></div>
+      <div class="progress-labels"><span>R$ 0</span><span class="now">▲ ${brl(real)} · <span class="${cor}">${pct(ating)}</span> do alvo</span><span>${brl(alvo_rest)}</span></div>
       <div class="meta-row" style="margin-top:20px;">
-        <div class="meta-cell"><div class="l">Ticket / visita</div><div class="v ${cor}">${brl(real)}</div></div>
-        <div class="meta-cell"><div class="l">Meta franquia</div><div class="v">${brl(meta)}</div></div>
-        <div class="meta-cell"><div class="l">Gap por visita</div><div class="v ${gap>0?'warn':'up'}">${gap>0?brl(gap):'—'}</div></div>
-        <div class="meta-cell"><div class="l">Visitas (cliente-dia)</div><div class="v">${visitas}</div></div>
+        <div class="meta-cell"><div class="l">Ticket atual</div><div class="v ${cor}">${brl(real)}</div></div>
+        <div class="meta-cell"><div class="l">Alvo restante</div><div class="v accent">${brl(alvo_rest)}</div></div>
+        <div class="meta-cell"><div class="l">Gap / visita</div><div class="v ${gap>0?'warn':'up'}">${gap>0?brl(gap):'zero'}</div></div>
+        <div class="meta-cell"><div class="l">Alvo médio período</div><div class="v">${brl(alvo_periodo)}</div></div>
       </div>
       <div class="meta-row">
-        <div class="meta-cell"><div class="l">Atend (linhas serviço)</div><div class="v">${atend}</div></div>
+        <div class="meta-cell"><div class="l">Visitas atuais</div><div class="v">${visitas}</div></div>
+        <div class="meta-cell"><div class="l">Visitas projetadas</div><div class="v">${vis_proj}</div></div>
+        <div class="meta-cell"><div class="l">Visitas restantes</div><div class="v">${vis_rest}</div></div>
         <div class="meta-cell"><div class="l">Serv/visita</div><div class="v">${serv_por_visita}</div></div>
-        <div class="meta-cell"><div class="l">Caixa atual</div><div class="v accent">${brl0(kpis.caixa)}</div></div>
-        <div class="meta-cell"><div class="l">Caixa se batesse meta</div><div class="v">${brl0(meta*visitas)}</div></div>
       </div>
       <div class="meta-row">
-        <div class="meta-cell"><div class="l">Upside potencial</div><div class="v ${upside>0?'up':''}">${upside>0?'+'+brl0(upside):'—'}</div></div>
-        <div class="meta-cell"><div class="l">Atingimento</div><div class="v ${cor}">${pct(kpis.ticket_atingimento_pct)}</div></div>
+        <div class="meta-cell"><div class="l">Caixa atual</div><div class="v accent">${brl0(kpis.caixa)}</div></div>
+        <div class="meta-cell"><div class="l">Impacto restante</div><div class="v ${upside_rest>0?'warn':'up'}">${upside_rest>0?brl0(upside_rest)+' pra fechar':'—'}</div></div>
         <div class="meta-cell"><div class="l">&nbsp;</div><div class="v">&nbsp;</div></div>
         <div class="meta-cell"><div class="l">&nbsp;</div><div class="v">&nbsp;</div></div>
       </div>

@@ -22,7 +22,6 @@ BASE_URL = "https://api.trinks.com"
 MIN_INTERVAL = 1.05
 META_MENSAL = 60000
 DIAS_OP_MES = 26
-TICKET_META = 140  # meta de ticket médio por atendimento (benchmark franquia FAST Escova)
 DOW_NOMES = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -336,9 +335,6 @@ def analisar(agend, transac, ini: date, fim: date):
             "ticket_trans": brl_round(caixa / max(len(tr), 1)),
             "cliente_dia": n_cliente_dia,
             "ticket_medio": brl_round(caixa / max(n_cliente_dia, 1)),
-            "ticket_meta": TICKET_META,
-            "ticket_atingimento_pct": round((caixa / max(n_cliente_dia, 1)) / TICKET_META * 100, 1),
-            "ticket_gap_por_atend": brl_round(TICKET_META - (caixa / max(n_cliente_dia, 1))),
             "taxa_canc": round(len(canc) / max(len(ag), 1) * 100, 1),
             "dias_op": dias_com_op,
             "clientes_unicos": unicos,
@@ -644,6 +640,36 @@ def main():
     dias_op_total = _dias_op(data_abertura, fim_ano_dt)
     dias_op_realizados = _dias_op(data_abertura, min(hoje, fim_ano_dt))
     meta_ano = calc_meta(a_anual["kpis"]["caixa"], meta_ano_valor, dias_op_realizados, dias_op_total) if meta_ano_valor > 0 else {}
+
+    # === Ticket meta OPERACIONAL: derivado da meta de caixa e das visitas projetadas ===
+    # Racional: se o ritmo de visitas atual continuar até o fim do período, quanto precisa
+    # cada visita render pra bater a meta de caixa? Esse é o alvo REAL de ticket, não
+    # um número fixo. Se a loja atrai muitas visitas, o ticket alvo cai; se atrai poucas,
+    # o ticket alvo sobe. Assim o alvo se auto-ajusta ao mix operacional real.
+    def _inject_ticket_meta(aba_kpis, meta_periodo, dias_realizados, dias_total):
+        v_atual = aba_kpis.get("cliente_dia", 0)
+        ritmo_visitas = v_atual / max(dias_realizados, 1)
+        visitas_proj = round(ritmo_visitas * dias_total)
+        meta_v = meta_periodo.get("meta", 0)
+        realizado = meta_periodo.get("realizado", 0)
+        falta_caixa = max(meta_v - realizado, 0)
+        visitas_rest = max(visitas_proj - v_atual, 0)
+        ticket_alvo_restante = falta_caixa / visitas_rest if visitas_rest else 0
+        ticket_alvo_total = meta_v / max(visitas_proj, 1)
+        ticket_atual = aba_kpis.get("ticket_medio", 0)
+        gap = max(ticket_alvo_restante - ticket_atual, 0)
+        aba_kpis["ticket_meta"] = brl_round(ticket_alvo_restante)  # o ticket que as visitas RESTANTES precisam
+        aba_kpis["ticket_meta_periodo"] = brl_round(ticket_alvo_total)  # média necessária no período todo
+        aba_kpis["ticket_atingimento_pct"] = round(ticket_atual / max(ticket_alvo_restante, 1) * 100, 1) if ticket_alvo_restante > 0 else 100.0
+        aba_kpis["ticket_gap_por_atend"] = brl_round(gap)
+        aba_kpis["visitas_projetadas"] = visitas_proj
+        aba_kpis["visitas_restantes"] = visitas_rest
+
+    _inject_ticket_meta(a_diario["kpis"], meta_dia, 1, 1)
+    _inject_ticket_meta(a_semanal["kpis"], meta_sem, a_semanal["kpis"]["dias_op"], dias_op_sem)
+    _inject_ticket_meta(a_mensal["kpis"], meta_mensal, a_mensal["kpis"]["dias_op"], DIAS_OP_MES)
+    if meta_ano_valor > 0:
+        _inject_ticket_meta(a_anual["kpis"], meta_ano, dias_op_realizados, dias_op_total)
 
     def hora_media(hora_list, dias):
         return [{"h": x["h"], "media": round(x["n"] / max(dias, 1), 2), "n_total": x["n"]} for x in hora_list]
