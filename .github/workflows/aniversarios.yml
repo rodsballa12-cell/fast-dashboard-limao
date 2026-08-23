@@ -41,6 +41,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Garante que a label existe (idempotente)
+          gh label create aniversario --color FFB6C1 --description "Fila de aprovação de aniversários" 2>/dev/null || true
           BODY=$(cat data/.issue_body.md)
           DATA=$(date -u -d '-3 hours' +'%d/%m/%Y')
           N="${{ steps.fila.outputs.n_aniv }}"
