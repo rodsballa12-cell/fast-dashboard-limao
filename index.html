@@ -191,6 +191,7 @@
       <!-- 3. QUALIDADE DO MIX -->
       <div id="anual-ticket-meta"></div>
       <div id="anual-categorias"></div>
+      <div id="anual-categoria-native"></div>
       <div id="anual-novos"></div>
       <div id="anual-rentabilidade"></div>
       <!-- 4. OPERAÇÃO -->
@@ -296,11 +297,13 @@
       <div id="clientes-snapshot"></div>
       <!-- 2. AÇÕES AGORA -->
       <div id="clientes-obs-alertas"></div>
+      <div id="clientes-obs-agend"></div>
       <div id="clientes-aniv"></div>
       <div id="clientes-churn"></div>
       <div id="clientes-cross-sell"></div>
       <!-- 3. QUALIDADE DE CADASTRO -->
       <div id="clientes-cadastro"></div>
+      <div id="clientes-executor"></div>
       <!-- 4. SEGMENTAÇÃO -->
       <div id="clientes-seg-canal"></div>
       <div id="clientes-seg-bairro"></div>
@@ -317,6 +320,7 @@
       <div id="auditoria-insights"></div>
       <div id="auditoria-resumo"></div>
       <div id="auditoria-por-prof"></div>
+      <div id="auditoria-executor"></div>
       <div id="auditoria-lista"></div>
     </div>
 
@@ -324,6 +328,7 @@
     <div class="panel" id="tab-stone">
       <div class="audit" id="stone-audit"><div>🏦</div><div><strong>O que a loja vendeu vs o dinheiro que caiu.</strong> Cartão de crédito leva 30 dias pra virar caixa. Aqui você vê o fluxo real e decide se vale antecipar.</div></div>
       <div id="stone-insights"></div>
+      <div id="stone-parcelas"></div>
       <div id="stone-content"></div>
     </div>
 
@@ -855,6 +860,117 @@ function renderNovosRecorr(container_id, nvr, periodo){
 }
 
 // ============= ANIVERSARIANTES =============
+function renderParcelas(container_id, parcelas){
+  const el = document.getElementById(container_id);
+  if(!el || !parcelas || parcelas.length === 0){ if(el) el.innerHTML = ''; return; }
+  // Agrupa por meio + calcula projeção cash-flow (cartão parcelado = recebimento diluído)
+  const total = parcelas.reduce((s,p)=>s+p.v, 0) || 1;
+  const rows = parcelas.map(p => {
+    const meio_lower = (p.meio||'').toLowerCase();
+    const eh_cartao = meio_lower.includes('cartao') || meio_lower.includes('cartão') || meio_lower.includes('credit') || meio_lower.includes('debit');
+    const dias_previsto = eh_cartao ? (30 * Math.max(p.parcelas,1)) : 0;
+    const label_prazo = dias_previsto > 0 ? `D+${dias_previsto}` : 'imediato';
+    const cor = dias_previsto === 0 ? '#22c55e' : (dias_previsto <= 30 ? '#f59e0b' : '#ef4444');
+    const p_texto = p.parcelas === 1 ? '1x (à vista)' : `${p.parcelas}x`;
+    const pct_r = (p.v/total*100).toFixed(1);
+    return `<tr>
+      <td>${p.meio}</td>
+      <td><strong>${p_texto}</strong></td>
+      <td style="text-align:right;">${p.n}</td>
+      <td style="text-align:right;">${brl0(p.v)}</td>
+      <td style="text-align:right;">${pct_r}%</td>
+      <td style="text-align:right;color:${cor};font-weight:600;">${label_prazo}</td>
+      <td style="text-align:right;">${dias_previsto>0 ? brl0(p.v/Math.max(p.parcelas,1)) : '—'}</td>
+    </tr>`;
+  }).join('');
+  // Insights
+  const parc_v = parcelas.filter(p=>p.parcelas>1).reduce((s,p)=>s+p.v,0);
+  const avista = parcelas.filter(p=>p.parcelas===1).reduce((s,p)=>s+p.v,0);
+  const pct_parcelado = (parc_v/total*100).toFixed(0);
+  el.innerHTML = `<div class="card">
+    <h2>💰 Cash-flow por parcelamento</h2>
+    <div class="cap">O valor recebido não é imediato quando a venda é parcelada. Cartão 1x cai em D+30, 3x cai em 3 parcelas mensais. Aqui você vê o cronograma real esperado.</div>
+    <div class="categ-grid">
+      ${tile('','À vista (PIX + dinheiro + 1x)', brl0(avista), `${(avista/total*100).toFixed(0)}% da receita`, 'up')}
+      ${tile('c2','Parcelado 2x+', brl0(parc_v), `${pct_parcelado}% da receita · caixa diluído`)}
+      ${tile('c3','Parcela média por venda parcelada', parc_v>0 ? brl0(parc_v / parcelas.filter(p=>p.parcelas>1).reduce((s,p)=>s+p.v/p.parcelas*p.n,0) * total / parc_v ) : '—', 'valor cai por mês')}
+    </div>
+    <table class="simple">
+      <thead><tr><th>Meio</th><th>Parcelas</th><th>N</th><th>Valor total</th><th>% Rec</th><th>Prazo (est.)</th><th>Valor / parcela</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="insight" style="margin-top:12px;">
+      <strong>Antecipação Stone:</strong> se ${pct_parcelado}% do caixa está parcelado, decisão é o custo (~1,66%/mês) vs necessidade de capital. Com fluxo saudável, evitar antecipação de rotina — custo mata margem.
+    </div>
+  </div>`;
+}
+
+function renderProfExecutor(container_id, exec_ranking){
+  const el = document.getElementById(container_id);
+  if(!el || !exec_ranking || exec_ranking.length === 0){ if(el) el.innerHTML = ''; return; }
+  const rows = exec_ranking.slice(0,15).map((p,i)=>`<tr>
+    <td>${i+1}</td>
+    <td>${p.nome}</td>
+    <td style="text-align:right;">${p.n_serv}</td>
+    <td style="text-align:right;">${brl0(p.v)}</td>
+    <td style="text-align:right;">${brl(p.ticket_medio_serv)}</td>
+  </tr>`).join('');
+  el.innerHTML = `<div class="card">
+    <h2>🛠 Executores reais dos serviços · idProfissionalQueRealizouServico</h2>
+    <div class="cap">Quem <strong>executou</strong> o serviço (fonte: transação Trinks), não quem estava na comanda. Se houver divergência com o ranking oficial de profissionais, é sinal de troca de escala não registrada ou anomalia.</div>
+    <table class="simple">
+      <thead><tr><th>#</th><th>Executor</th><th>Serviços</th><th>Receita executada</th><th>Ticket / serv</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="insight" style="margin-top:12px;">
+      <strong>Uso:</strong> comparar esse ranking com o de profissionais na aba Painel. Nome que aparece só aqui = executor sem comanda no nome (verificar).
+    </div>
+  </div>`;
+}
+
+function renderCategoriaNativa(container_id, categorias){
+  const el = document.getElementById(container_id);
+  if(!el || !categorias || categorias.length === 0){ if(el) el.innerHTML = ''; return; }
+  const rows = categorias.slice(0,15).map(c=>`<tr>
+    <td>${c.nome}</td>
+    <td style="text-align:right;">${c.n}</td>
+    <td style="text-align:right;">${brl0(c.v)}</td>
+    <td style="text-align:right;">${c.pct_receita}%</td>
+  </tr>`).join('');
+  el.innerHTML = `<div class="card">
+    <h2>🏷 Categorias nativas Trinks</h2>
+    <div class="cap">Agregação vinda do próprio Trinks (campo <code>servicos[].categoria</code>). Complementa a classificação por cadeira física — mostra como a loja organiza o menu no sistema.</div>
+    <table class="simple">
+      <thead><tr><th>Categoria</th><th>Vendas</th><th>Receita</th><th>%</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+function renderObsAgend(container_id, lista){
+  const el = document.getElementById(container_id);
+  if(!el || !lista || lista.length === 0){ if(el) el.innerHTML = ''; return; }
+  const waLink = tel => tel ? `<a href="https://wa.me/${tel.replace(/\D/g,'')}" target="_blank" style="color:#22c55e;text-decoration:none;font-weight:600;">📱</a>` : '';
+  const rows = lista.slice(0,20).map(o=>{
+    const notes = o.observacoes.map(x=>`<div style="font-size:11.5px;padding:3px 0;"><strong style="color:${x.tipo==='est'?'#f59e0b':'#3b82f6'}">${x.tipo==='est'?'EST':'CLI'}:</strong> ${x.texto.slice(0,120)}</div>`).join('');
+    return `<tr>
+      <td>${o.cliente}</td>
+      <td>${o.n_visitas}</td>
+      <td>${brl0(o.ltv)}</td>
+      <td style="max-width:400px;">${notes}</td>
+      <td>${waLink(o.telefone)}</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<div class="card">
+    <h2>📝 Observações por atendimento <span class="hi">(${lista.length} clientes com nota)</span></h2>
+    <div class="cap">Notas registradas em atendimentos: EST = estabelecimento (equipe), CLI = cliente (preferência dita por ele). Contexto operacional pra pré-atendimento — checar antes de chamar o cliente.</div>
+    <table class="simple">
+      <thead><tr><th>Cliente</th><th>Visitas</th><th>LTV</th><th>Observações</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
 function renderClientesSnapshot(container_id, snap){
   const el = document.getElementById(container_id);
   if(!el || !snap) return;
@@ -1168,6 +1284,7 @@ function renderAnual(data){
   renderBarsHora('anual-hora','⏱ Fluxo típico do dia · 2026 <span class="hi">('+k.dias_op+' dias op.)</span>','Curva média · define escala e horário de campanhas',a.hora_media,true,'');
   renderUtilizacao('anual-utilizacao', 'ano', k, a);
   if(a.novos_vs_recorr) renderNovosRecorr('anual-novos', a.novos_vs_recorr, 'ano');
+  renderCategoriaNativa('anual-categoria-native', a.categoria_native);
 }
 
 function renderClientes(data){
@@ -1180,12 +1297,14 @@ function renderClientes(data){
 
   // 2. Ações AGORA
   renderObsAlertas('clientes-obs-alertas', a.obs_alertas);
+  renderObsAgend('clientes-obs-agend', a.obs_agend_alertas);
   renderAniversariantes('clientes-aniv', a.aniversariantes);
   renderChurn('clientes-churn', a.churn_early);
   renderCrossSell('clientes-cross-sell', a.cross_sell);
 
-  // 3. Qualidade de cadastro
+  // 3. Qualidade de cadastro + executor real
   renderClientesCadastro('clientes-cadastro', a.clientes_cadastro);
+  renderProfExecutor('clientes-executor', a.ranking_prof_executor);
 
   // 4. Segmentação
   renderSegmentacao('clientes-seg-canal',
@@ -1416,6 +1535,10 @@ function renderAuditoria(data){
     if(x.valor_zero) flags.push('<span style="color:var(--ink-3)">sem cobrança (walk-in não convertido)</span>');
     if(flags.length===0) flags.push('<span class="neu">—</span>');
     const valorCell = x.valor_zero ? '<span style="color:var(--ink-3)">R$ 0,00</span>' : brl(x.valor);
+    const obsChunks = [];
+    if(x.obs_estabelecimento) obsChunks.push(`<span style="color:#f59e0b;font-size:10.5px;"><strong>EST:</strong> ${x.obs_estabelecimento.slice(0,100)}</span>`);
+    if(x.obs_cliente) obsChunks.push(`<span style="color:#3b82f6;font-size:10.5px;"><strong>CLI:</strong> ${x.obs_cliente.slice(0,100)}</span>`);
+    const obsCell = obsChunks.length ? obsChunks.join('<br>') : '<span style="color:var(--ink-3);font-size:10px;">—</span>';
     return `<tr ${riscoStyle[x.risco]||''}>
       <td>${riscoBadge[x.risco]||''}</td>
       <td>${dtStr}</td>
@@ -1424,6 +1547,7 @@ function renderAuditoria(data){
       <td>${x.cliente || '—'}</td>
       <td>${x.servico || '—'}</td>
       <td>${flags.join('<br>')}</td>
+      <td style="max-width:260px;">${obsCell}</td>
     </tr>`;
   }).join('');
   const totalTitulo = `${aud.n_com_valor} cancelamentos (${aud.lista.filter(x=>x.valor_zero).length} sem cobrança)`;
@@ -1434,10 +1558,12 @@ function renderAuditoria(data){
     </div>
     <div class="cap">Ordenado por risco (crítico→revisar→atenção→ok→sem valor). Linhas vermelhas exigem ação hoje.</div>
     <table class="simple">
-      <thead><tr><th>Risco</th><th>Data</th><th>Valor</th><th>Profissional</th><th>Cliente</th><th>Serviço</th><th>Flags</th></tr></thead>
+      <thead><tr><th>Risco</th><th>Data</th><th>Valor</th><th>Profissional</th><th>Cliente</th><th>Serviço</th><th>Flags</th><th>Observações</th></tr></thead>
       <tbody>${rowsLista}</tbody>
     </table>
   </div>`;
+  // Ranking executor (idProfissionalQueRealizouServico) — cross-reference contra ranking prof
+  renderProfExecutor('auditoria-executor', (data.abas.anual||{}).ranking_prof_executor);
   document.getElementById('btn-csv-audit')?.addEventListener('click', () => {
     csvExport('auditoria-cancelamentos.csv',
       ['Risco','Data','Valor','Profissional','Cliente','Serviço','Sem prof','Valor atípico','Preço ref','Stone match','Match por nome'],
@@ -1455,6 +1581,8 @@ function renderStone(data){
   const el = document.getElementById('stone-content');
   const subEl = document.getElementById('tab-stone-sub');
   renderInsights('stone-insights','Stone · Reconciliação',(data.insights||{}).stone);
+  // Cash-flow por parcelamento (Trinks) — sempre renderiza mesmo sem stone csv
+  renderParcelas('stone-parcelas', (data.abas.anual||{}).parcelas);
   if(!s){
     if(subEl) subEl.textContent='sem CSV';
     el.innerHTML = `<div class="card"><h2>🏦 Aguardando CSV Stone</h2><div class="cap">Faça upload do extrato Stone no repo para ativar</div>

@@ -174,6 +174,10 @@ def analisar(agend, transac, ini: date, fim: date):
     descontos = 0.0
     trocos = 0.0
     mp_c = Counter(); mp_v = defaultdict(float)
+    # PARCELAS por meio: {(meio, parcelas): {"n": count, "v": valor_total}}
+    parcelas_agg = defaultdict(lambda: {"n": 0, "v": 0.0})
+    # CATEGORIA nativa Trinks vinda de transacao.servicos[].categoria
+    categoria_native = defaultdict(lambda: {"n": 0, "v": 0.0})
     hora_c = defaultdict(int); hora_v = defaultdict(float)
 
     for t in tr:
@@ -182,6 +186,10 @@ def analisar(agend, transac, ini: date, fim: date):
             caixa += v
             nome = fp.get("nome") or "outros"
             mp_c[nome] += 1; mp_v[nome] += v
+            # Parcelas: 1 = à vista, >1 = parcelado (relevante pra cash-flow cartão)
+            parc = int(fp.get("parcelas") or 1)
+            parcelas_agg[(nome, parc)]["n"] += 1
+            parcelas_agg[(nome, parc)]["v"] += v
         for p in (t.get("pacotes") or []):
             q = int(p.get("quantidade") or 1)
             pac_v += float(p.get("valorUnitario") or 0) * q
@@ -193,11 +201,31 @@ def analisar(agend, transac, ini: date, fim: date):
         for s in (t.get("servicos") or []):
             serv_v += float(s.get("preco") or 0)
             serv_n += 1
+            # Categoria nativa Trinks (quando presente)
+            cat = s.get("categoria") or ""
+            if isinstance(cat, dict): cat = cat.get("nome") or ""
+            cat = (cat or "sem categoria").strip().title()
+            categoria_native[cat]["n"] += 1
+            categoria_native[cat]["v"] += float(s.get("preco") or 0)
         descontos += float(t.get("descontos") or 0)
         trocos += float(t.get("troco") or 0)
         dt = datetime.fromisoformat(t["dataHora"])
         hora_c[dt.hour] += 1
         hora_v[dt.hour] += float(t.get("totalPagar") or 0)
+
+    # Formatar parcelas pro payload
+    parcelas_list = sorted(
+        [{"meio": meio, "parcelas": p, "n": v["n"], "v": brl_round(v["v"])}
+         for (meio, p), v in parcelas_agg.items()],
+        key=lambda x: (-x["v"], x["meio"], x["parcelas"])
+    )
+    # Categoria nativa formatada e ordenada por receita
+    categoria_native_list = sorted(
+        [{"nome": k, "n": v["n"], "v": brl_round(v["v"]),
+          "pct_receita": round(v["v"] / max(caixa, 1) * 100, 1)}
+         for k, v in categoria_native.items()],
+        key=lambda x: -x["v"]
+    )
 
     # rankings — inclui ticket médio e minutos ocupados
     prof = defaultdict(lambda: {"n": 0, "v": 0.0, "min": 0})
@@ -215,6 +243,39 @@ def analisar(agend, transac, ini: date, fim: date):
     )
     ranking_prof = ranking_prof_full[:12]
     ranking_prof_total_n = len(ranking_prof_full)  # útil pra badge "de N total"
+
+    # === PROFISSIONAL EXECUTOR (idProfissionalQueRealizouServico) ===
+    # Vem da TRANSAÇÃO (não do agendamento). Compara com o prof da comanda pra detectar
+    # divergências: comanda no nome de A, executado por B → verificar se é troca legítima
+    # de escala ou anomalia de setup. Também dá o ranking REAL de execução por serviço.
+    exec_agg = defaultdict(lambda: {"n": 0, "v": 0.0})
+    exec_por_serv_receita = defaultdict(float)  # {(id_exec, nome_serv): valor}
+    divergencias_prof = []  # transações onde executor ≠ comanda
+    # Map id_prof → nome usando agend
+    prof_id_nome = {}
+    for a in fin:
+        pid = (a.get("profissional") or {}).get("id")
+        pnome = (a.get("profissional") or {}).get("nome") or ""
+        if pid: prof_id_nome[pid] = pnome.strip().title()
+    for tx in tr:
+        prof_comanda_id = None
+        pc = (tx.get("cliente") or {})
+        # Comanda: usar todos servicos → primeiro executor pra pegar dono da comanda? Trinks não expõe.
+        # Vamos coletar por linha de serviço.
+        for s in (tx.get("servicos") or []):
+            exec_id = s.get("idProfissionalQueRealizouServico")
+            if not exec_id: continue
+            nome_exec = prof_id_nome.get(exec_id, f"ID {exec_id}")
+            v = float(s.get("preco") or 0)
+            exec_agg[nome_exec]["n"] += 1
+            exec_agg[nome_exec]["v"] += v
+            exec_por_serv_receita[(nome_exec, s.get("nome") or "sem")] += v
+    ranking_prof_executor = sorted(
+        [{"nome": k, "n_serv": v["n"], "v": brl_round(v["v"]),
+          "ticket_medio_serv": brl_round(v["v"] / max(v["n"], 1))}
+         for k, v in exec_agg.items()],
+        key=lambda x: -x["v"]
+    )
 
     # === Utilização de CADEIRA FÍSICA (por tipo) ===
     # Modelo PJ: capacidade é do imóvel, não das profissionais.
@@ -376,11 +437,14 @@ def analisar(agend, transac, ini: date, fim: date):
         "por_dia_mes": dia_list,
         "ranking_prof": ranking_prof,
         "ranking_prof_total_n": ranking_prof_total_n,
+        "ranking_prof_executor": ranking_prof_executor,
         "ranking_serv": ranking_serv,
         "rentabilidade_hora": rent_hora,
         "clientes_top": top_cli,
         "descontos": brl_round(descontos),
         "trocos": brl_round(trocos),
+        "parcelas": parcelas_list,
+        "categoria_native": categoria_native_list,
     }
 
 
@@ -785,6 +849,35 @@ def main():
         "n_aniv_14d": len(aniversariantes),
         "n_obs_vip": len(obs_alertas),
     }
+
+    # === Observações por agendamento (finalizados) — VIP notes agregadas ===
+    # Cliente com obs de estabelecimento em ≥1 atendimento vira alerta de contexto.
+    obs_por_cliente_agend = defaultdict(list)  # {cid: [obs_est/obs_cli, ...]}
+    for a in fin_ano:
+        cid = (a.get("cliente") or {}).get("id")
+        if not cid: continue
+        oe = (a.get("observacoesDoEstabelecimento") or "").strip()
+        if oe: obs_por_cliente_agend[cid].append(("est", oe))
+        oc = (a.get("observacoesDoCliente") or "").strip()
+        if oc: obs_por_cliente_agend[cid].append(("cli", oc))
+    obs_agend_alertas = []
+    for cid, obss in obs_por_cliente_agend.items():
+        nome = (cli_nome.get(cid) or "").title() or "cliente sem nome"
+        # dedup textos iguais
+        vistos = set(); unicas = []
+        for tipo, txt in obss:
+            k = (tipo, txt.lower()[:80])
+            if k in vistos: continue
+            vistos.add(k); unicas.append((tipo, txt))
+        obs_agend_alertas.append({
+            "cliente": nome,
+            "n_observacoes": len(unicas),
+            "n_visitas": len(cli_visitas.get(cid, [])),
+            "ltv": brl_round(cli_valor.get(cid, 0)),
+            "telefone": tel_map.get(cid, ""),
+            "observacoes": [{"tipo": t, "texto": x} for t, x in unicas[:5]],
+        })
+    obs_agend_alertas.sort(key=lambda x: (-x["n_visitas"], -x["ltv"]))
 
     # === QUALIDADE de cadastro (cobertura de campos no Trinks) ===
     clientes_cadastro = {
@@ -1317,6 +1410,9 @@ def main():
             else:
                 risco = "ok"
 
+            # Observações do agendamento (contexto do cancelamento)
+            obs_cli = (a.get("observacoesDoCliente") or "").strip()
+            obs_est = (a.get("observacoesDoEstabelecimento") or "").strip()
             canc_com_valor.append({
                 "data": dt,
                 "valor": v,
@@ -1331,6 +1427,8 @@ def main():
                 "stone_match_nomes": [m["origem"] for m in stone_matches],
                 "match_por_nome": match_por_nome,
                 "risco": risco,
+                "obs_cliente": obs_cli[:200] if obs_cli else "",
+                "obs_estabelecimento": obs_est[:200] if obs_est else "",
             })
     canc_com_valor.sort(key=lambda x: x["data"], reverse=True)
 
@@ -1407,6 +1505,7 @@ def main():
                 "seg_genero": seg_genero,
                 "seg_bairro": seg_bairro,
                 "obs_alertas": obs_alertas[:30],
+                "obs_agend_alertas": obs_agend_alertas[:30],
                 "clientes_snapshot": clientes_snapshot,
                 "clientes_cadastro": clientes_cadastro,
             },
