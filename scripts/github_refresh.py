@@ -257,14 +257,14 @@ def analisar(agend, transac, ini: date, fim: date):
         pnome = (a.get("profissional") or {}).get("nome") or ""
         if pid: prof_id_nome[pid] = pnome.strip().title()
     for tx in tr:
-        prof_comanda_id = None
-        pc = (tx.get("cliente") or {})
-        # Comanda: usar todos servicos → primeiro executor pra pegar dono da comanda? Trinks não expõe.
-        # Vamos coletar por linha de serviço.
         for s in (tx.get("servicos") or []):
             exec_id = s.get("idProfissionalQueRealizouServico")
             if not exec_id: continue
-            nome_exec = prof_id_nome.get(exec_id, f"ID {exec_id}")
+            nome_exec = prof_id_nome.get(exec_id)
+            if not nome_exec:
+                # Prof desligado (ID não retorna em /v1/profissionais).
+                # Marcador claro em vez de "ID 723073" cru.
+                nome_exec = f"Prof desligado #{exec_id}"
             v = float(s.get("preco") or 0)
             exec_agg[nome_exec]["n"] += 1
             exec_agg[nome_exec]["v"] += v
@@ -537,20 +537,20 @@ def main():
     clientes = list(t.paginate("/v1/clientes"))
     print(f"  {len(clientes)} clientes")
     # Profissionais — mapa completo id→nome (usado pra resolver executores nas transações)
+    # Trinks retorna só ativos por default; passamos ativo=false pra pegar desligados também
     print("[fetch] profissionais...")
-    try:
-        prof_lista = list(t.paginate("/v1/profissionais"))
-        prof_map_global = {}
-        for p in prof_lista:
-            pid = p.get("id")
-            nome = (p.get("nome") or "").strip().title()
-            if pid and nome: prof_map_global[pid] = nome
-        # Cacheia no analisar() pra ser usado antes que fin popule agend nomes
-        analisar._prof_id_nome_cache = prof_map_global
-        print(f"  {len(prof_map_global)} profissionais mapeados")
-    except Exception as e:
-        print(f"  [warn] /v1/profissionais falhou: {e}")
-        analisar._prof_id_nome_cache = {}
+    prof_map_global = {}
+    for ativo_flag in ("true", "false"):
+        try:
+            prof_lista = list(t.paginate("/v1/profissionais", {"ativo": ativo_flag}))
+            for p in prof_lista:
+                pid = p.get("id")
+                nome = (p.get("nome") or "").strip().title()
+                if pid and nome: prof_map_global[pid] = nome
+        except Exception as e:
+            print(f"  [warn] /v1/profissionais ativo={ativo_flag} falhou: {e}")
+    analisar._prof_id_nome_cache = prof_map_global
+    print(f"  {len(prof_map_global)} profissionais mapeados (ativos + desligados)")
 
     # === ENRIQUECIMENTO: buscar clienteDetalhes via /v1/clientes/{id} (com cache) ===
     # A rota lista traz o básico, mas /v1/clientes/{id} traz dataNascimento, endereço,
