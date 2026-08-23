@@ -684,24 +684,105 @@ def main():
         n_op = sum(1 for i in range(7) if HORAS_POR_DOW[i] > 0)
         peso_dow = {i: (1/n_op if HORAS_POR_DOW[i] > 0 else 0) for i in range(7)}
 
-    # META por DOW no mês corrente: escala capacidade natural pra bater META_MENSAL.
-    # Racional: cada dow tem uma capacidade estimada de caixa/dia (caixa_medio_dow).
-    # Soma dessas capacidades × n_dias_no_mês = caixa esperado natural. Se ≠ META_MENSAL,
-    # aplica scale_factor uniforme pra todos. Assim domingo recebe SEU share proporcional
-    # às horas (6h), não uma concentração matemática irreal.
+    # === PESO SEMANA-DO-MÊS: capta semana forte (pós-pagamento) vs fraca (final do mês) ===
+    def sem_do_mes(d: date) -> int:
+        return (d.day - 1) // 7 + 1  # 1..5
+
+    sem_v_per_mes = defaultdict(lambda: defaultdict(float))  # {(y,m): {sem_num: caixa}}
+    for a in fin_ano:
+        try:
+            dt = datetime.fromisoformat(a["dataHoraInicio"]).date()
+            sem_v_per_mes[(dt.year, dt.month)][sem_do_mes(dt)] += float(a.get("valor") or 0)
+        except Exception: pass
+    today_ym = (hoje.year, hoje.month)
+    meses_fechados = [ym for ym in sem_v_per_mes if ym < today_ym and sum(sem_v_per_mes[ym].values()) > 0]
+    if len(meses_fechados) >= 2:
+        fracoes_sem = defaultdict(list)
+        for ym in meses_fechados:
+            tot = sum(sem_v_per_mes[ym].values())
+            for sem_n, v in sem_v_per_mes[ym].items():
+                fracoes_sem[sem_n].append(v / tot)
+        peso_sem_mes = {sem_n: sum(f) / len(f) for sem_n, f in fracoes_sem.items()}
+        # Normaliza
+        tot_pesos = sum(peso_sem_mes.values()) or 1
+        peso_sem_mes = {k: v / tot_pesos for k, v in peso_sem_mes.items()}
+        fonte_sem_mes = f"histórico ({len(meses_fechados)} meses fechados)"
+    else:
+        peso_sem_mes = {i: 1.0 for i in range(1, 6)}  # uniforme = passa direto
+        fonte_sem_mes = f"uniforme (aguarda ≥2 meses fechados · atual: {len(meses_fechados)})"
+
+    # === PESO MÊS-DO-ANO: para 2027 em diante, com histórico de 2026 ===
+    # (dez/jul costumam ser mais fortes em beleza)
+    mes_v_hist_ano = defaultdict(lambda: defaultdict(float))  # {ano: {mes: caixa}}
+    for a in fin_ano:
+        try:
+            dt = datetime.fromisoformat(a["dataHoraInicio"]).date()
+            mes_v_hist_ano[dt.year][dt.month] += float(a.get("valor") or 0)
+        except Exception: pass
+    anos_fechados = [y for y, meses in mes_v_hist_ano.items()
+                     if y < hoje.year and len(meses) >= 10]  # exigir pelo menos 10 meses do ano
+    if anos_fechados:
+        fracoes_mes = defaultdict(list)
+        for y in anos_fechados:
+            tot_ano = sum(mes_v_hist_ano[y].values())
+            for m, v in mes_v_hist_ano[y].items():
+                fracoes_mes[m].append(v / tot_ano)
+        peso_mes_ano = {m: sum(f) / len(f) for m, f in fracoes_mes.items()}
+        for m in range(1, 13):
+            peso_mes_ano.setdefault(m, sum(peso_mes_ano.values()) / max(len(peso_mes_ano), 1))
+        tot_pm = sum(peso_mes_ano.values()) or 1
+        peso_mes_ano = {m: v / tot_pm for m, v in peso_mes_ano.items()}
+        fonte_mes_ano = f"histórico ({len(anos_fechados)} anos fechados)"
+    else:
+        peso_mes_ano = {m: 1/12 for m in range(1, 13)}
+        fonte_mes_ano = "uniforme (aguarda ≥1 ano fechado · framework pronto pra 2027)"
+
+    # === META POR DATA no mês corrente ===
+    # Capacidade base de cada data = caixa_medio_dow × peso_semana_do_mes (aplicado a cada dia real).
+    # Depois escala uniformemente pra bater META_MENSAL. Assim cada dia individual do mês recebe uma
+    # meta específica que respeita 3 fatores: dia da semana, posição no mês, e horas de operação.
+    capacidade_por_data = {}
     n_dias_dow_mes = {i: 0 for i in range(7)}
-    for d in range(1, monthrange(hoje.year, hoje.month)[1] + 1):
-        dt = date(hoje.year, hoje.month, d)
-        if opera_no_dia(dt):
-            n_dias_dow_mes[dt.weekday()] += 1
-    caixa_esperado_natural = sum(caixa_medio_dow[i] * n_dias_dow_mes[i] for i in range(7))
-    scale_factor = (META_MENSAL / caixa_esperado_natural) if caixa_esperado_natural > 0 else 1.0
-    meta_dia_por_dow = {}
-    for i in range(7):
-        if n_dias_dow_mes[i] > 0 and caixa_medio_dow[i] > 0:
-            meta_dia_por_dow[i] = round(caixa_medio_dow[i] * scale_factor, 2)
-        else:
-            meta_dia_por_dow[i] = 0.0
+    for d_num in range(1, monthrange(hoje.year, hoje.month)[1] + 1):
+        dt = date(hoje.year, hoje.month, d_num)
+        if not opera_no_dia(dt):
+            capacidade_por_data[dt] = 0.0
+            continue
+        dow = dt.weekday()
+        sm = sem_do_mes(dt)
+        # peso normalizado por número típico de semanas no mês (4-5) — evita concentração espúria
+        peso_sem = peso_sem_mes.get(sm, 1.0)
+        capacidade_por_data[dt] = caixa_medio_dow[dow] * peso_sem
+        n_dias_dow_mes[dow] += 1
+
+    total_cap = sum(capacidade_por_data.values())
+    scale_factor = (META_MENSAL / total_cap) if total_cap > 0 else 1.0
+    meta_por_data = {dt: round(cap * scale_factor, 2) for dt, cap in capacidade_por_data.items()}
+
+    # Meta média por DOW (pra card sazonalidade / retrocompat)
+    dow_meta_soma = {i: 0.0 for i in range(7)}
+    for dt, m in meta_por_data.items():
+        if m > 0: dow_meta_soma[dt.weekday()] += m
+    meta_dia_por_dow = {i: round(dow_meta_soma[i] / n_dias_dow_mes[i], 2) if n_dias_dow_mes[i] > 0 else 0.0 for i in range(7)}
+
+    # Semanas-do-mês agregadas (pra expor no payload)
+    sem_mes_agg = defaultdict(lambda: {"n_dias": 0, "meta_total": 0.0, "datas": []})
+    for dt, m in meta_por_data.items():
+        if m > 0:
+            sm = sem_do_mes(dt)
+            sem_mes_agg[sm]["n_dias"] += 1
+            sem_mes_agg[sm]["meta_total"] += m
+            sem_mes_agg[sm]["datas"].append(dt.isoformat())
+    sem_mes_meta = [
+        {
+            "sem_do_mes": sm,
+            "n_dias": v["n_dias"],
+            "meta_total": brl_round(v["meta_total"]),
+            "peso_pct": round(peso_sem_mes.get(sm, 0) * 100, 1),
+            "datas": v["datas"],
+        }
+        for sm, v in sorted(sem_mes_agg.items())
+    ]
 
     # Curva horária esperada (pct do caixa do dia acumulado até hora H)
     # Fonte: hora_abs anual dividido por total. Usamos como pace guide intraday.
@@ -726,8 +807,8 @@ def main():
     dias_op_mes_real = dias_operacionais_no_mes(hoje.year, hoje.month)
     meta_mensal = calc_meta(a_mensal["kpis"]["caixa"], META_MENSAL, a_mensal["kpis"]["dias_op"], dias_op_mes_real)
 
-    # Meta do DIA: se hoje não é dia operacional (ex: dom antes de DATA_INICIO_DOM), meta = 0.
-    meta_dia_valor = meta_dia_por_dow[hoje.weekday()] if opera_no_dia(hoje) else 0.0
+    # Meta do DIA: valor específico da data (respeita dow + peso da semana-do-mês).
+    meta_dia_valor = meta_por_data.get(hoje, 0.0) if opera_no_dia(hoje) else 0.0
     meta_dia = calc_meta(a_diario["kpis"]["caixa"], meta_dia_valor, 1, 1)
 
     # === PACE INTRADAY: combina curva horária + hora atual ===
@@ -774,20 +855,31 @@ def main():
         "opera_hoje": opera_no_dia(hoje),
     }
 
-    # Meta da SEMANA: soma das metas dos dias reais da semana (respeita pesos + início dom).
+    # Meta da SEMANA: soma das metas ESPECÍFICAS por data dos dias da semana atual.
+    # Se semana cruzar fronteira de mês, os dias fora do mês corrente ficam sem meta ainda —
+    # meta reflete a fatia do mês corrente. Fallback: divisão flat se meta_por_data vazio.
     dias_op_sem_real = sum(1 for i in range(7) if opera_no_dia(seg + timedelta(days=i)))
-    meta_sem_valor = 0
+    meta_sem_valor = 0.0
     for i in range(7):
         d = seg + timedelta(days=i)
         if opera_no_dia(d):
-            meta_sem_valor += meta_dia_por_dow[d.weekday()]
+            meta_sem_valor += meta_por_data.get(d, 0.0)
     if meta_sem_valor == 0:
         meta_sem_valor = round(META_MENSAL / max(dias_op_mes_real, 1) * dias_op_sem_real, 2)
     meta_sem = calc_meta(a_semanal["kpis"]["caixa"], round(meta_sem_valor, 2),
                          a_semanal["kpis"]["dias_op"], dias_op_sem_real)
+
+    # META ANO: com histórico de meses fechados (2027+), usa peso_mes_ano pra ponderar
+    # o restante do ano. Sem histórico: mantém extrapolação META_MENSAL × meses_rest.
     real_pre_atual = sum(m["caixa"] for k, m in meses.items() if k < f"{hoje.year}-{hoje.month:02d}")
-    meses_rest = 12 - hoje.month + 1
-    meta_ano_valor = round(real_pre_atual + META_MENSAL * meses_rest, 2)
+    meses_rest = 12 - hoje.month + 1  # inclui mês atual
+    if fonte_mes_ano.startswith("histórico"):
+        # META_ANUAL_TOTAL = META_MENSAL × 12 (equivalente ao target anual). Distribui pelo peso_mes.
+        meta_anual_alvo = META_MENSAL * 12
+        meta_dos_meses_rest = sum(meta_anual_alvo * peso_mes_ano.get(m, 1/12) for m in range(hoje.month, 13))
+        meta_ano_valor = round(real_pre_atual + meta_dos_meses_rest, 2)
+    else:
+        meta_ano_valor = round(real_pre_atual + META_MENSAL * meses_rest, 2)
 
     # dias operacionais reais desde abertura da loja (23/07/26) até 31/12/26
     # · exclui domingos antes de DATA_INICIO_DOM; inclui a partir daí
@@ -1052,6 +1144,12 @@ def main():
             "amostra_dias_ano": len(dias_vistos),
             "data_inicio_domingo": _dom_ini_str,
             "domingo_ativo_no_mes": n_dias_dow_mes[6] > 0,
+            "peso_sem_do_mes": {str(k): round(v*100, 1) for k, v in peso_sem_mes.items()},
+            "sem_mes_meta": sem_mes_meta,
+            "fonte_sem_mes": fonte_sem_mes,
+            "peso_mes_ano": {m: round(peso_mes_ano.get(m, 0)*100, 1) for m in range(1, 13)},
+            "fonte_mes_ano": fonte_mes_ano,
+            "meta_por_data": {dt.isoformat(): m for dt, m in meta_por_data.items() if m > 0},
         },
         "cota_api": cota_final,
         "stone": stone_data,
