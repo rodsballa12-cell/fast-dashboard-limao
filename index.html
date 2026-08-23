@@ -179,6 +179,7 @@
       <div id="anual-insights"></div>
       <div id="anual-meta"></div>
       <div id="anual-kpis"></div>
+      <div id="anual-sazonalidade"></div>
       <div id="anual-ticket-meta"></div>
       <div id="anual-utilizacao"></div>
       <div id="anual-categorias"></div>
@@ -199,6 +200,7 @@
       <div id="mensal-insights"></div>
       <div id="mensal-meta"></div>
       <div id="mensal-kpis"></div>
+      <div id="mensal-sazonalidade"></div>
       <div id="mensal-ticket-meta"></div>
       <div id="mensal-utilizacao"></div>
       <div id="mensal-categorias"></div>
@@ -219,6 +221,7 @@
       <div id="semanal-insights"></div>
       <div id="semanal-meta"></div>
       <div id="semanal-kpis"></div>
+      <div id="semanal-sazonalidade"></div>
       <div id="semanal-ticket-meta"></div>
       <div id="semanal-comparacao"></div>
       <div id="semanal-utilizacao"></div>
@@ -240,6 +243,7 @@
       <div id="diario-insights"></div>
       <div id="diario-meta"></div>
       <div id="diario-kpis"></div>
+      <div id="diario-sazonalidade"></div>
       <div id="diario-ticket-meta"></div>
       <div id="diario-utilizacao"></div>
       <div id="diario-categorias"></div>
@@ -302,6 +306,44 @@ function kpiCard(cls_,label,value,foot,accent){
 // ============= RENDER GENÉRICOS =============
 function renderKPIs(container_id, kpis){
   document.getElementById(container_id).innerHTML='<section class="kpi-grid">'+kpis.map((k,i)=>kpiCard('k'+(i+1)||'',k.label,k.value,k.foot,k.accent)).join('')+'</section>';
+}
+
+function renderSazonalidade(container_id, sazon, hoje_dow_nome, contexto){
+  if(!sazon || !sazon.peso_dow) return;
+  const dows = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const pesos = sazon.peso_dow || {};
+  const metas = sazon.meta_dia_por_dow || {};
+  const ndias = sazon.n_dias_dow_mes || {};
+  // Barra proporcional
+  const max_peso = Math.max(...dows.map(d => pesos[d]||0));
+  const barras = dows.map(d => {
+    const p = pesos[d]||0;
+    const m = metas[d]||0;
+    const n = ndias[d]||0;
+    const w = max_peso>0 ? (p/max_peso*100) : 0;
+    const cor = d===hoje_dow_nome ? 'var(--accent)' : (p>25?'#22c55e':(p>10?'#f59e0b':'#64748b'));
+    const hoje_flag = d===hoje_dow_nome ? '<span class="hi" style="color:var(--accent);margin-left:6px;">◀ HOJE</span>' : '';
+    return `
+      <div style="display:grid;grid-template-columns:60px 1fr 90px 90px 60px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--surface-2);">
+        <div><strong>${d}</strong>${hoje_flag}</div>
+        <div style="height:14px;background:var(--surface-2);border-radius:4px;overflow:hidden;">
+          <div style="width:${w}%;height:100%;background:${cor};"></div>
+        </div>
+        <div style="text-align:right;font-variant-numeric:tabular-nums;">${p.toFixed(1)}%</div>
+        <div style="text-align:right;font-variant-numeric:tabular-nums;color:var(--accent);">${brl0(m)}</div>
+        <div style="text-align:right;font-variant-numeric:tabular-nums;">${n} dias</div>
+      </div>`;
+  }).join('');
+  const html = `
+    <section class="card">
+      <h2>📊 Sazonalidade — meta ajustada por dia da semana</h2>
+      <div class="cap">${contexto || 'Meta mensal <strong>R$ ' + (60000).toLocaleString('pt-BR') + '</strong> distribuída pelo peso histórico de cada dia (baseado em ' + (sazon.amostra_dias_ano||0) + ' dias observados). Não faz sentido esperar o mesmo de terça e sábado. Sáb concentra ~45% do caixa — a meta reflete isso.'}</div>
+      <div style="display:grid;grid-template-columns:60px 1fr 90px 90px 60px;gap:10px;padding-bottom:8px;border-bottom:2px solid var(--surface-2);font-size:12px;color:var(--muted);">
+        <div>DOW</div><div>Peso relativo</div><div style="text-align:right;">% do mês</div><div style="text-align:right;">Meta/dia</div><div style="text-align:right;">Ocorrências</div>
+      </div>
+      ${barras}
+    </section>`;
+  document.getElementById(container_id).innerHTML = html;
 }
 
 function renderTicketMeta(container_id, periodo_label, kpis){
@@ -884,6 +926,7 @@ function renderAnual(data){
     {label:'Clientes únicos',value:k.clientes_unicos+'',foot:`${k.atend_fin} atend · ${(k.atend_fin/Math.max(k.clientes_unicos,1)).toFixed(1)} visita/cliente`}
   ]);
   if(a.meta && a.meta.meta) renderMetaProgress('anual-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
+  renderSazonalidade('anual-sazonalidade', data.sazonalidade, null, 'Distribuição da meta mensal pelo peso histórico de cada dia da semana (ano ' + (new Date(data.hoje).getFullYear()) + '). Base para as metas diária e semanal.');
   renderTicketMeta('anual-ticket-meta', 'ano', k);
   renderCategoriasMeta('anual-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0);
 
@@ -940,6 +983,7 @@ function renderMensal(data){
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
   ]);
   renderMetaProgress('mensal-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
+  renderSazonalidade('mensal-sazonalidade', data.sazonalidade, null);
   renderTicketMeta('mensal-ticket-meta', 'mês', k);
   renderUtilizacao('mensal-utilizacao', 'mês', k, m);
   renderCategoriasMeta('mensal-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao);
@@ -966,6 +1010,7 @@ function renderSemanal(data){
     {label:'Dias operados',value:k.dias_op+'',foot:'de 6 (seg–sáb)'}
   ]);
   renderMetaProgress('semanal-meta','Meta Semanal',s.meta,'Meta mensal ÷ dias oper. × dias da semana');
+  renderSazonalidade('semanal-sazonalidade', data.sazonalidade, k.dia_semana||null, 'Meta desta semana <strong>' + brl0(s.meta.meta||0) + '</strong> = soma das metas de cada dia (seg-sáb) ponderadas pelo peso histórico do dia da semana.');
   renderTicketMeta('semanal-ticket-meta', 'semana', k);
   renderComparacaoSemana('semanal-comparacao', k, s.semana_anterior);
   renderUtilizacao('semanal-utilizacao', 'semana', k, s);
@@ -990,6 +1035,7 @@ function renderDiario(data){
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
   ]);
   renderMetaProgress('diario-meta','Meta Diária',d.meta,'Meta mensal ÷ dias operacionais');
+  renderSazonalidade('diario-sazonalidade', data.sazonalidade, k.dia_semana||null, 'Meta de HOJE (' + (k.dia_semana||'') + ') = <strong>' + brl0(d.meta.meta||0) + '</strong>. Não é a média geral — é o valor que cabe a esse dia da semana no total do mês, respeitando o padrão histórico.');
   renderTicketMeta('diario-ticket-meta', 'hoje', k);
   renderUtilizacao('diario-utilizacao', 'hoje', k, d);
   renderCategoriasMeta('diario-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao);

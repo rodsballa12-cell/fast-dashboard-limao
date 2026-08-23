@@ -617,11 +617,83 @@ def main():
                 "dias_op": am["kpis"]["dias_op"],
             }
 
+    # === SAZONALIDADE: pesos por dia da semana + curva horária ===
+    # Fonte: histórico anual acumulado (por_dow do ano). Se ainda não temos ≥3 ocorrências
+    # de algum dow, usamos peso uniforme como fallback.
+    dow_hist_v = {i: 0.0 for i in range(7)}  # seg=0 ... dom=6
+    dow_hist_n = {i: 0 for i in range(7)}    # nº de dias observados
+    for a in fin_ano:
+        try:
+            dt = datetime.fromisoformat(a["dataHoraInicio"]).date()
+            dow_hist_v[dt.weekday()] += float(a.get("valor") or 0)
+        except Exception: pass
+    dias_vistos = {datetime.fromisoformat(a["dataHoraInicio"]).date() for a in fin_ano if a.get("dataHoraInicio")}
+    for d in dias_vistos:
+        dow_hist_n[d.weekday()] += 1
+
+    # Peso normalizado por DOW = caixa médio de 1 dia daquele dow / soma dos caixas médios (seg-sáb).
+    # Domingo = 0 (fechado). Se um dow ainda não tem dado, usa 1/6 uniforme.
+    caixa_medio_dow = {}
+    for i in range(6):  # seg-sáb (dom fica fora)
+        if dow_hist_n[i] >= 3:
+            caixa_medio_dow[i] = dow_hist_v[i] / dow_hist_n[i]
+        else:
+            caixa_medio_dow[i] = 0  # marca como "sem dado suficiente"
+    if all(v == 0 for v in caixa_medio_dow.values()):
+        # sem dado nenhum → uniforme
+        peso_dow = {i: 1/6 for i in range(6)}
+    else:
+        # dias sem dado suficiente ganham a média dos dias que têm dado
+        media_conhecidos = sum(v for v in caixa_medio_dow.values() if v > 0) / max(sum(1 for v in caixa_medio_dow.values() if v > 0), 1)
+        for i in range(6):
+            if caixa_medio_dow[i] == 0: caixa_medio_dow[i] = media_conhecidos
+        total = sum(caixa_medio_dow.values())
+        peso_dow = {i: caixa_medio_dow[i] / total for i in range(6)}
+    peso_dow[6] = 0.0  # dom fechado
+
+    # META por DOW no mês corrente: distribui META_MENSAL pelos pesos, respeitando quantos
+    # dias de cada DOW há no mês. Ex: se sáb pesa 40% e o mês tem 4 sábados, cada sáb = 40%*60k/4 = 6k.
+    n_dias_dow_mes = {i: 0 for i in range(7)}
+    for d in range(1, monthrange(hoje.year, hoje.month)[1] + 1):
+        n_dias_dow_mes[date(hoje.year, hoje.month, d).weekday()] += 1
+    meta_dia_por_dow = {}
+    for i in range(7):
+        if n_dias_dow_mes[i] > 0 and peso_dow[i] > 0:
+            meta_dia_por_dow[i] = round(META_MENSAL * peso_dow[i] / n_dias_dow_mes[i], 2)
+        else:
+            meta_dia_por_dow[i] = 0.0
+
+    # Curva horária esperada (pct do caixa do dia acumulado até hora H)
+    # Fonte: hora_abs anual dividido por total. Usamos como pace guide intraday.
+    hora_v_hist = Counter()
+    for tr in transac:
+        if not tr.get("dataHora"): continue
+        try:
+            dt = datetime.fromisoformat(tr["dataHora"])
+            if not (ini_ano <= dt.date() <= fim_ano): continue
+            v = sum(float(fp.get("valor") or 0) for fp in (tr.get("formasPagamentos") or []))
+            hora_v_hist[dt.hour] += v
+        except Exception: pass
+    total_hora_hist = sum(hora_v_hist.values()) or 1
+    curva_horaria = []
+    acum = 0
+    for h in range(8, 22):
+        acum += hora_v_hist.get(h, 0)
+        curva_horaria.append({"h": h, "pct_acum": round(acum / total_hora_hist * 100, 1)})
+
     # metas
     meta_mensal = calc_meta(a_mensal["kpis"]["caixa"], META_MENSAL, a_mensal["kpis"]["dias_op"], DIAS_OP_MES)
-    meta_dia = calc_meta(a_diario["kpis"]["caixa"], round(META_MENSAL / DIAS_OP_MES, 2), 1, 1)
+
+    # Meta do DIA: usa peso do dow de hoje. Fallback pra média se dow=dom (0).
+    meta_dia_valor = meta_dia_por_dow[hoje.weekday()] or round(META_MENSAL / DIAS_OP_MES, 2)
+    meta_dia = calc_meta(a_diario["kpis"]["caixa"], meta_dia_valor, 1, 1)
+
+    # Meta da SEMANA: soma das metas dos dias reais da semana (respeita pesos).
     dias_op_sem = 6
-    meta_sem = calc_meta(a_semanal["kpis"]["caixa"], round(META_MENSAL / DIAS_OP_MES * dias_op_sem, 2),
+    meta_sem_valor = sum(meta_dia_por_dow[(seg + timedelta(days=i)).weekday()] for i in range(7))
+    if meta_sem_valor == 0:
+        meta_sem_valor = round(META_MENSAL / DIAS_OP_MES * dias_op_sem, 2)
+    meta_sem = calc_meta(a_semanal["kpis"]["caixa"], round(meta_sem_valor, 2),
                          a_semanal["kpis"]["dias_op"], dias_op_sem)
     real_pre_atual = sum(m["caixa"] for k, m in meses.items() if k < f"{hoje.year}-{hoje.month:02d}")
     meses_rest = 12 - hoje.month + 1
@@ -880,6 +952,13 @@ def main():
         "hoje": hoje.isoformat(),
         "meta_mensal_valor": META_MENSAL,
         "dias_op_mes": DIAS_OP_MES,
+        "sazonalidade": {
+            "peso_dow": {DOW_NOMES[i]: round(peso_dow[i]*100, 1) for i in range(7)},
+            "meta_dia_por_dow": {DOW_NOMES[i]: meta_dia_por_dow[i] for i in range(7)},
+            "n_dias_dow_mes": {DOW_NOMES[i]: n_dias_dow_mes[i] for i in range(7)},
+            "curva_horaria": curva_horaria,
+            "amostra_dias_ano": len(dias_vistos),
+        },
         "cota_api": cota_final,
         "stone": stone_data,
         "auditoria_cancelados": {
