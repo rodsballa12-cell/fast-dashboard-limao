@@ -27,8 +27,20 @@ META_API_BASE = "https://graph.facebook.com/v20.0"
 
 
 def parse_comando(cmd: str, ids_disponiveis: set[int]) -> tuple[str, set[int]]:
-    """Retorna (acao, set_de_ids). acao ∈ {'approve','skip'}."""
-    cmd = (cmd or "").strip().lower()
+    """Retorna (acao, set_de_ids). acao ∈ {'approve','skip'}.
+
+    Lê só a PRIMEIRA linha do comentário — ignora assinaturas/rodapés
+    que muitas ferramentas (Claude Code, bots) appendam automaticamente.
+    """
+    raw = (cmd or "").strip()
+    # Primeira linha "útil" — pula linhas em branco e separadores markdown
+    for linha in raw.splitlines():
+        linha = linha.strip()
+        if linha and not linha.startswith("---"):
+            cmd = linha.lower()
+            break
+    else:
+        cmd = ""
     if not cmd:
         return "unknown", set()
     if cmd.startswith("skip"):
