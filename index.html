@@ -166,6 +166,7 @@
   <div id="content" style="display:none;">
     <div class="tabs" role="tablist">
       <button class="tab-btn" role="tab" aria-selected="true" data-tab="painel">📊 Painel<span class="subn" id="tab-painel-sub"></span></button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="clientes">👥 Clientes<span class="subn" id="tab-clientes-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="stone">🏦 Stone<span class="subn" id="tab-stone-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="auditoria">🛡️ Auditoria<span class="subn" id="tab-auditoria-sub"></span></button>
     </div>
@@ -179,34 +180,23 @@
         <button class="tab-btn periodo-btn" role="tab" aria-selected="false" data-periodo="diario" style="padding:8px 14px;font-size:12.5px">🔴 Hoje<span class="subn" id="tab-diario-sub"></span></button>
       </div>
 
-    <!-- ANUAL · foco: planejamento estratégico + base de clientes -->
+    <!-- ANUAL · foco: evolução financeira, mix, operação -->
     <div class="periodo-panel" id="periodo-anual">
-      <div class="audit"><div>📅</div><div><strong>Panorama do ano · decisões estratégicas.</strong> Loja abriu 23/07/2026. Aqui: evolução mês-a-mês, quem é a base do LTV, quem está em risco, campanhas de CRM.</div></div>
+      <div class="audit"><div>📅</div><div><strong>Panorama do ano · evolução financeira.</strong> Loja abriu 23/07/2026. Aqui: trajetória mês-a-mês, mix, rentabilidade. Base de clientes fica na aba <strong>Clientes</strong>.</div></div>
       <!-- 1. CONTEXTO: onde estamos vs onde queremos -->
       <div id="anual-kpis"></div>
       <div id="anual-meta"></div>
       <!-- 2. TRAJETÓRIA: evolução do ano -->
       <div id="anual-meses"></div>
-      <!-- 3. AÇÕES DE CRM (mais operacional) -->
-      <div id="anual-obs-alertas"></div>
-      <div id="anual-aniv"></div>
-      <div id="anual-churn"></div>
-      <div id="anual-cross-sell"></div>
-      <!-- 4. BASE DE CLIENTES -->
-      <div id="anual-ltv"></div>
-      <div id="anual-seg-canal"></div>
-      <div id="anual-seg-bairro"></div>
-      <div id="anual-seg-genero"></div>
-      <div id="anual-topcli"></div>
-      <div id="anual-novos"></div>
-      <!-- 5. QUALIDADE DO MIX -->
+      <!-- 3. QUALIDADE DO MIX -->
       <div id="anual-ticket-meta"></div>
       <div id="anual-categorias"></div>
+      <div id="anual-novos"></div>
       <div id="anual-rentabilidade"></div>
-      <!-- 6. OPERAÇÃO -->
+      <!-- 4. OPERAÇÃO -->
       <div id="anual-utilizacao"></div>
       <div id="anual-hora"></div>
-      <!-- 7. LEITURA AUTOMÁTICA (embaixo, secundário) -->
+      <!-- 5. LEITURA AUTOMÁTICA (embaixo, secundário) -->
       <div id="anual-insights"></div>
     </div>
 
@@ -298,6 +288,28 @@
       <div id="diario-insights"></div>
     </div>
     </div><!-- /tab-painel -->
+
+    <!-- CLIENTES · CRM completo -->
+    <div class="panel" id="tab-clientes">
+      <div class="audit"><div>👥</div><div><strong>Gestão de relacionamento.</strong> Base viva: quem está a bordo, quem precisa ser resgatado, quem faz aniversário, de onde vieram e onde investir pra atrair mais como eles. Ações imediatas no topo.</div></div>
+      <!-- 1. SNAPSHOT da base -->
+      <div id="clientes-snapshot"></div>
+      <!-- 2. AÇÕES AGORA -->
+      <div id="clientes-obs-alertas"></div>
+      <div id="clientes-aniv"></div>
+      <div id="clientes-churn"></div>
+      <div id="clientes-cross-sell"></div>
+      <!-- 3. QUALIDADE DE CADASTRO -->
+      <div id="clientes-cadastro"></div>
+      <!-- 4. SEGMENTAÇÃO -->
+      <div id="clientes-seg-canal"></div>
+      <div id="clientes-seg-bairro"></div>
+      <div id="clientes-seg-genero"></div>
+      <!-- 5. RANKING E BASE FINANCEIRA -->
+      <div id="clientes-ltv"></div>
+      <div id="clientes-topcli"></div>
+      <div id="clientes-novos"></div>
+    </div>
 
     <!-- AUDITORIA -->
     <div class="panel" id="tab-auditoria">
@@ -843,6 +855,72 @@ function renderNovosRecorr(container_id, nvr, periodo){
 }
 
 // ============= ANIVERSARIANTES =============
+function renderClientesSnapshot(container_id, snap){
+  const el = document.getElementById(container_id);
+  if(!el || !snap) return;
+  const pct = (a,b) => b>0 ? (a/b*100).toFixed(0)+'%' : '—';
+  const cor30 = snap.ativos_30d / snap.total_base > 0.4 ? '#22c55e' : (snap.ativos_30d / snap.total_base > 0.25 ? '#f59e0b' : '#ef4444');
+  el.innerHTML = `<div class="card">
+    <h2>📊 Base de clientes · snapshot</h2>
+    <div class="cap">Estado vivo da base — foto do agora. Ativos = com visita nos últimos N dias. Recorrentes = 2+ visitas totais.</div>
+    <div class="categ-grid">
+      ${tile('','Base total', snap.total_base+'', `${snap.n_recorrentes} recorrentes · ${snap.n_uma_vez} só 1 visita`, 'accent')}
+      ${tile('c2','Ativos 30 dias', `<span style="color:${cor30}">${snap.ativos_30d}</span>`, `${pct(snap.ativos_30d, snap.total_base)} da base`)}
+      ${tile('','Novos (últ 30d)', snap.novos_30d+'', `taxa aquisição: ${pct(snap.novos_30d, snap.total_base)}/mês`)}
+      ${tile('c3','Dormentes 60d+', `<span class="dn">${snap.dormentes_60d}</span>`, `LTV parado em ${pct(snap.dormentes_60d, snap.total_base)} da base`)}
+    </div>
+    <div class="meta-row" style="margin-top:14px;">
+      <div class="meta-cell"><div class="l">Ativos 60d</div><div class="v">${snap.ativos_60d}</div></div>
+      <div class="meta-cell"><div class="l">Ativos 90d</div><div class="v">${snap.ativos_90d}</div></div>
+      <div class="meta-cell"><div class="l">LTV médio</div><div class="v accent">${brl0(snap.ltv_medio)}</div></div>
+      <div class="meta-cell"><div class="l">Ticket / visita</div><div class="v">${brl0(snap.ticket_medio_visita)}</div></div>
+    </div>
+    <div class="meta-row">
+      <div class="meta-cell"><div class="l">Freq média visitas</div><div class="v">${snap.freq_media_visitas}</div></div>
+      <div class="meta-cell"><div class="l">% recorrentes</div><div class="v">${snap.pct_recorrentes}%</div></div>
+      <div class="meta-cell"><div class="l">Alertas churn</div><div class="v ${snap.n_alerta_churn>0?'dn':'up'}">${snap.n_alerta_churn}</div></div>
+      <div class="meta-cell"><div class="l">Aniversários 14d</div><div class="v ${snap.n_aniv_14d>0?'warn':''}">${snap.n_aniv_14d}</div></div>
+    </div>
+    <div class="insight" style="margin-top:14px;">
+      <strong>Direcionamento:</strong> ${snap.dormentes_60d > snap.ativos_30d ?
+        `mais dormentes (${snap.dormentes_60d}) que ativos 30d (${snap.ativos_30d}) — prioridade é resgatar antes de captar. Ver aba Churn.` :
+        `base saudável — ativos 30d (${snap.ativos_30d}) supera dormentes (${snap.dormentes_60d}). Foco na aquisição e cross-sell.`}
+    </div>
+  </div>`;
+}
+
+function renderClientesCadastro(container_id, cad){
+  const el = document.getElementById(container_id);
+  if(!el || !cad || !cad.cobertura) return;
+  const campos = [
+    {k:'telefone', nome:'Telefone', ctx:'contato pra WhatsApp/campanhas'},
+    {k:'data_nasc', nome:'Data nascimento', ctx:'aniversariantes'},
+    {k:'genero', nome:'Gênero', ctx:'segmentação demográfica'},
+    {k:'email', nome:'E-mail', ctx:'campanhas escaladas'},
+    {k:'canal_aquisicao', nome:'Canal aquisição (comoNosConheceu)', ctx:'saber onde investir marketing'},
+    {k:'bairro', nome:'Bairro (endereço)', ctx:'geolocalização + panfleto local'},
+  ];
+  const rows = campos.map(c => {
+    const p = cad.cobertura[c.k] || 0;
+    const cor = p >= 80 ? '#22c55e' : (p >= 40 ? '#f59e0b' : '#ef4444');
+    const acao = p >= 80 ? 'OK' : (p >= 40 ? 'Melhorar' : 'CADASTRAR');
+    return `<div style="display:grid;grid-template-columns:180px 1fr 60px 90px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--surface-2);">
+      <div><strong>${c.nome}</strong><div style="font-size:11px;color:var(--muted)">${c.ctx}</div></div>
+      <div style="height:14px;background:var(--surface-2);border-radius:4px;overflow:hidden;"><div style="width:${p}%;height:100%;background:${cor};"></div></div>
+      <div style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:${cor}">${p.toFixed(0)}%</div>
+      <div style="text-align:right;font-size:11px;color:${cor};font-weight:700;">${acao}</div>
+    </div>`;
+  }).join('');
+  el.innerHTML = `<div class="card">
+    <h2>🔬 Qualidade de cadastro · o que preencher no Trinks</h2>
+    <div class="cap">Cobertura de cada campo na base ativa (${cad.total} clientes). Sem os dados abaixo, insights de segmentação e ações CRM ficam parciais. Meta: 80%+ em cada.</div>
+    ${rows}
+    <div class="insight" style="margin-top:14px;">
+      <strong>Ação recepção:</strong> na próxima visita de cada cliente, checar se telefone/data-nasc estão preenchidos. Perguntar "de onde nos conheceu?" (canal) e bairro é 20s por cliente. Em 30 dias você tem cobertura suficiente pra decidir marketing baseado em dado.
+    </div>
+  </div>`;
+}
+
 function renderSegmentacao(container_id, titulo, subtitulo, seg, sem_dado_label){
   const el = document.getElementById(container_id);
   if(!el || !seg) return;
@@ -1086,55 +1164,63 @@ function renderAnual(data){
   const mrows=meses.map(([ym,m])=>[ym,m.dias_op,brl0(m.caixa),brl0(m.receita_serv),m.atend_fin,m.clientes_unicos,brl(m.ticket_trans)]);
   renderTable('anual-meses','📅 Trajetória do ano · mês a mês','Compare meses fechados vs corrente — vê se está acelerando ou perdendo tração',['Mês','Dias','Caixa','Receita','Atend','Únicos','Ticket'],mrows);
 
-  // LTV
-  const ltv=a.top_ltv;
-  const rows=ltv.top.map((c,i)=>[i+1,c.nome,c.n,brl0(c.v)]);
-  document.getElementById('anual-ltv').innerHTML=`
-    <div class="card">
-      <h2>💎 LTV · quem sustenta a receita 2026 <span class="hi">(${ltv.total_clientes} únicos)</span></h2>
-      <div class="cap">Quem paga a conta da loja. Se o top 20 sai, quanto machuca?</div>
-      <div class="categ-grid">
-        ${tile('','Total únicos',ltv.total_clientes+'',`R$ ${(ltv.receita_total/Math.max(ltv.total_clientes,1)).toFixed(0)} LTV médio`)}
-        ${tile('c2','Pareto top 20%',ltv.pareto20_n+' clientes',`${brl0(ltv.pareto20_v)} · <span class="up">${pct(ltv.pareto20_pct)}</span>`)}
-        ${tile('c3','Só 1 visita (churn?)',ltv.uma_vez+'',`<span class="dn">${ltv.total_clientes>0?(ltv.uma_vez/ltv.total_clientes*100).toFixed(0):0}% da base</span>`)}
-      </div>
-      <table class="simple"><thead><tr><th>#</th><th>Cliente</th><th>Visitas</th><th>LTV</th></tr></thead>
-      <tbody>${rows.map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('')}</tbody></table>
-    </div>`;
-
   renderRentabilidade('anual-rentabilidade', '💰 Rentabilidade por serviço', '2026 · R$/hora ao lado do volume revela onde há upside real', a.rentabilidade_hora || []);
-
   renderBarsHora('anual-hora','⏱ Fluxo típico do dia · 2026 <span class="hi">('+k.dias_op+' dias op.)</span>','Curva média · define escala e horário de campanhas',a.hora_media,true,'');
-
-  renderTopClientes('anual-topcli','⭐ Base fiel · ranking de visitas 2026','Foco de retenção — perder um destes machuca o LTV', a.clientes_top || [], '<strong>Concentração da base:</strong> priorize fidelização/relacionamento com quem visita alto — perder um destes = perder receita recorrente.');
-
-  // Churn early warning
-  renderChurn('anual-churn', a.churn_early);
-
-  // Utilização de cadeira
   renderUtilizacao('anual-utilizacao', 'ano', k, a);
-
-  // Novos vs Recorrentes (anual)
   if(a.novos_vs_recorr) renderNovosRecorr('anual-novos', a.novos_vs_recorr, 'ano');
+}
 
-  // Cross-sell + Aniversariantes
-  renderCrossSell('anual-cross-sell', a.cross_sell);
-  renderAniversariantes('anual-aniv', a.aniversariantes);
-  // Alertas VIP (alergias/preferências/observações)
-  renderObsAlertas('anual-obs-alertas', a.obs_alertas);
-  // Segmentação
-  renderSegmentacao('anual-seg-canal',
+function renderClientes(data){
+  const a = data.abas.anual;
+  const snap = a.clientes_snapshot;
+  document.getElementById('tab-clientes-sub').textContent = snap ? `${snap.total_base} base · ${snap.ativos_30d} ativos 30d` : '';
+
+  // 1. Snapshot da base
+  renderClientesSnapshot('clientes-snapshot', snap);
+
+  // 2. Ações AGORA
+  renderObsAlertas('clientes-obs-alertas', a.obs_alertas);
+  renderAniversariantes('clientes-aniv', a.aniversariantes);
+  renderChurn('clientes-churn', a.churn_early);
+  renderCrossSell('clientes-cross-sell', a.cross_sell);
+
+  // 3. Qualidade de cadastro
+  renderClientesCadastro('clientes-cadastro', a.clientes_cadastro);
+
+  // 4. Segmentação
+  renderSegmentacao('clientes-seg-canal',
     '📢 Canal de aquisição · comoNosConheceu',
     'De onde os clientes vieram — onde investir marketing pra puxar mais como esses',
     a.seg_canal, 'canal cadastrado');
-  renderSegmentacao('anual-seg-bairro',
+  renderSegmentacao('clientes-seg-bairro',
     '📍 Bairros de origem · geolocalização',
     'Concentração geográfica da base — panfleto local, parcerias com estabelecimentos vizinhos',
     a.seg_bairro, 'endereço');
-  renderSegmentacao('anual-seg-genero',
+  renderSegmentacao('clientes-seg-genero',
     '👤 Público por gênero',
     'Perfil da base — informa mix de serviços, comunicação, produtos parceiros',
     a.seg_genero, 'gênero');
+
+  // 5. Ranking / Base financeira
+  const ltv = a.top_ltv || {};
+  const ltv_rows = (ltv.top || []).map((c,i)=>[i+1,c.nome,c.n,brl0(c.v)]);
+  document.getElementById('clientes-ltv').innerHTML = `
+    <div class="card">
+      <h2>💎 LTV · quem sustenta a receita 2026 <span class="hi">(${ltv.total_clientes||0} únicos)</span></h2>
+      <div class="cap">Quem paga a conta da loja. Se o top 20 sai, quanto machuca? Perder aqui = receita recorrente perdida.</div>
+      <div class="categ-grid">
+        ${tile('','Total únicos', (ltv.total_clientes||0)+'', `R$ ${((ltv.receita_total||0)/Math.max(ltv.total_clientes||1,1)).toFixed(0)} LTV médio`)}
+        ${tile('c2','Pareto top 20%', (ltv.pareto20_n||0)+' clientes', `${brl0(ltv.pareto20_v||0)} · <span class="up">${pct(ltv.pareto20_pct||0)}</span>`)}
+        ${tile('c3','Só 1 visita (churn?)', (ltv.uma_vez||0)+'', `<span class="dn">${(ltv.total_clientes||0)>0?((ltv.uma_vez||0)/ltv.total_clientes*100).toFixed(0):0}% da base</span>`)}
+      </div>
+      <table class="simple"><thead><tr><th>#</th><th>Cliente</th><th>Visitas</th><th>LTV</th></tr></thead>
+      <tbody>${ltv_rows.map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('')}</tbody></table>
+    </div>`;
+
+  renderTopClientes('clientes-topcli', '⭐ Base fiel · ranking de visitas 2026', 'Foco de retenção — perder um destes machuca o LTV',
+    a.clientes_top || [], '<strong>Concentração da base:</strong> priorize fidelização/relacionamento com quem visita alto — perder um destes = perder receita recorrente.');
+
+  if(a.novos_vs_recorr) renderNovosRecorr('clientes-novos', a.novos_vs_recorr, 'ano');
 }
 
 function renderMensal(data){
@@ -1654,6 +1740,7 @@ async function load(showToast=false){
     renderMensal(data);
     renderSemanal(data);
     renderDiario(data);
+    renderClientes(data);
     renderStone(data);
     renderAuditoria(data);
     if(!window._tabsSet){ setupTabs(); window._tabsSet=true; }

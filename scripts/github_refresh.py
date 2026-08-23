@@ -748,6 +748,57 @@ def main():
             })
     obs_alertas.sort(key=lambda x: -x["ltv"])
 
+    # === SNAPSHOT da base pra aba Clientes (CRM) ===
+    # Estado da base: total, ativos (janelas), dormentes, novos recentes, LTV/ticket médio
+    total_base = len(ativos_ids)
+    ultima_visita_por_id = {cid: max(v) for cid, v in cli_visitas.items() if v}
+    def _janela(dias):
+        limite = hoje - timedelta(days=dias)
+        return sum(1 for cid, uv in ultima_visita_por_id.items() if uv >= limite)
+    ativos_30d = _janela(30)
+    ativos_60d = _janela(60)
+    ativos_90d = _janela(90)
+    dormentes_60d = total_base - ativos_60d  # não vem há 60+ dias
+    novos_30d_ids = {cid for cid, dc in cad_map.items() if dc.date() >= hoje - timedelta(days=30)}
+    ltv_por_id = {cid: cli_valor.get(cid, 0) for cid in ativos_ids}
+    ltv_medio = sum(ltv_por_id.values()) / max(total_base, 1)
+    total_visitas = sum(len(v) for v in cli_visitas.values())
+    ticket_medio_visita = sum(ltv_por_id.values()) / max(total_visitas, 1)
+    freq_media = total_visitas / max(total_base, 1)
+    n_uma_vez = sum(1 for v in cli_visitas.values() if len(v) == 1)
+    n_recorrentes = total_base - n_uma_vez
+
+    clientes_snapshot = {
+        "total_base": total_base,
+        "ativos_30d": ativos_30d,
+        "ativos_60d": ativos_60d,
+        "ativos_90d": ativos_90d,
+        "dormentes_60d": dormentes_60d,
+        "novos_30d": len(novos_30d_ids),
+        "n_uma_vez": n_uma_vez,
+        "n_recorrentes": n_recorrentes,
+        "pct_recorrentes": round(n_recorrentes / max(total_base, 1) * 100, 1),
+        "ltv_medio": brl_round(ltv_medio),
+        "ticket_medio_visita": brl_round(ticket_medio_visita),
+        "freq_media_visitas": round(freq_media, 2),
+        "n_alerta_churn": len(churn_candidatos),
+        "n_aniv_14d": len(aniversariantes),
+        "n_obs_vip": len(obs_alertas),
+    }
+
+    # === QUALIDADE de cadastro (cobertura de campos no Trinks) ===
+    clientes_cadastro = {
+        "total": total_base,
+        "cobertura": {
+            "telefone": round(sum(1 for cid in ativos_ids if tel_map.get(cid)) / max(total_base, 1) * 100, 1),
+            "email": round(sum(1 for cid in ativos_ids if email_map.get(cid)) / max(total_base, 1) * 100, 1),
+            "data_nasc": round(sum(1 for cid in ativos_ids if cid in aniv_map) / max(total_base, 1) * 100, 1),
+            "genero": round(sum(1 for cid in ativos_ids if genero_map.get(cid)) / max(total_base, 1) * 100, 1),
+            "canal_aquisicao": round(sum(1 for cid in ativos_ids if canal_map.get(cid)) / max(total_base, 1) * 100, 1),
+            "bairro": round(sum(1 for cid in ativos_ids if bairro_map.get(cid)) / max(total_base, 1) * 100, 1),
+        }
+    }
+
     # === Cross-sell: clientes recorrentes (2+ visitas) que ainda não fizeram serviços populares ===
     # Popularidade: serviço com >= 30 atendimentos no ano é "popular"
     from collections import Counter as _Cnt
@@ -1356,6 +1407,8 @@ def main():
                 "seg_genero": seg_genero,
                 "seg_bairro": seg_bairro,
                 "obs_alertas": obs_alertas[:30],
+                "clientes_snapshot": clientes_snapshot,
+                "clientes_cadastro": clientes_cadastro,
             },
             "mensal": {
                 "kpis": a_mensal["kpis"], "meta": meta_mensal, "categorias": a_mensal["categorias"],
