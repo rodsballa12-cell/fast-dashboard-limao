@@ -520,6 +520,43 @@ def main():
         "dias_op": a_sem_ant["kpis"]["dias_op"],
     }
 
+    # === Mês anterior (pra deltas dos KPIs mensais) ===
+    if hoje.month == 1:
+        ini_mes_ant = date(hoje.year - 1, 12, 1)
+    else:
+        ini_mes_ant = date(hoje.year, hoje.month - 1, 1)
+    fim_mes_ant = date(ini_mes_ant.year, ini_mes_ant.month, monthrange(ini_mes_ant.year, ini_mes_ant.month)[1])
+    a_mes_ant = analisar(agend, transac, ini_mes_ant, fim_mes_ant)
+    mes_anterior_kpis = {
+        "periodo_ini": ini_mes_ant.isoformat(), "periodo_fim": fim_mes_ant.isoformat(),
+        "caixa": a_mes_ant["kpis"]["caixa"], "atend_fin": a_mes_ant["kpis"]["atend_fin"],
+        "cliente_dia": a_mes_ant["kpis"]["cliente_dia"], "ticket_medio": a_mes_ant["kpis"]["ticket_medio"],
+    }
+
+    # === Mesmo DOW semana passada (pra delta do diário) ===
+    hoje_ant = hoje - timedelta(days=7)
+    a_dia_ant = analisar(agend, transac, hoje_ant, hoje_ant)
+    dia_anterior_kpis = {
+        "data": hoje_ant.isoformat(),
+        "caixa": a_dia_ant["kpis"]["caixa"], "atend_fin": a_dia_ant["kpis"]["atend_fin"],
+        "cliente_dia": a_dia_ant["kpis"]["cliente_dia"], "ticket_medio": a_dia_ant["kpis"]["ticket_medio"],
+    }
+
+    def _delta_pct(atual, ant):
+        if not ant or ant == 0:
+            return None
+        return round((atual - ant) / ant * 100, 1)
+
+    # Injeta deltas nos KPIs de cada aba
+    for aba, ant in [(a_mensal, mes_anterior_kpis), (a_semanal, semana_anterior),
+                     (a_diario, dia_anterior_kpis)]:
+        k = aba["kpis"]
+        k["caixa_delta_pct"] = _delta_pct(k.get("caixa", 0), ant.get("caixa", 0))
+        k["atend_delta_pct"] = _delta_pct(k.get("atend_fin", 0), ant.get("atend_fin", 0))
+        k["cliente_dia_delta_pct"] = _delta_pct(k.get("cliente_dia", 0), ant.get("cliente_dia", 0))
+        k["ticket_delta_pct"] = _delta_pct(k.get("ticket_medio", 0), ant.get("ticket_medio", 0))
+        k["periodo_ant_ref"] = ant
+
     # === Churn early warning: clientes ≥3 visitas nos primeiros 30 dias e sumidos há 14+ dias ===
     churn_candidatos = []
     cli_visitas = defaultdict(list)  # {id: [dates]}
