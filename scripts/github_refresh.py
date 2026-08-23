@@ -28,6 +28,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_JSON = REPO_ROOT / "data" / "dashboard_data.json"
 STONE_CSV = REPO_ROOT / "data" / "stone_extrato.csv"
 CONFIG_JSON = REPO_ROOT / "data" / "config.json"
+CLIENTES_CACHE = REPO_ROOT / "data" / "clientes_detalhes.json"
 
 # Config da loja (cadeiras físicas, horas de operação, mapping serviço→cadeira)
 try:
@@ -473,59 +474,93 @@ def main():
     clientes = list(t.paginate("/v1/clientes"))
     print(f"  {len(clientes)} clientes")
 
-    # === DIAGNÓSTICO: mapa de campos disponíveis (apenas 1 amostra por endpoint) ===
-    if agend:
-        print(f"[diag] agendamento keys: {sorted(agend[0].keys())}")
-        s = agend[0].get("servico") or {}
-        if isinstance(s, dict): print(f"[diag] agendamento.servico keys: {sorted(s.keys())}")
-        c = agend[0].get("cliente") or {}
-        if isinstance(c, dict): print(f"[diag] agendamento.cliente keys: {sorted(c.keys())}")
-        p = agend[0].get("profissional") or {}
-        if isinstance(p, dict): print(f"[diag] agendamento.profissional keys: {sorted(p.keys())}")
-    if transac:
-        print(f"[diag] transacao keys: {sorted(transac[0].keys())}")
-        fps = (transac[0].get("formasPagamentos") or [])
-        if fps: print(f"[diag] transacao.formasPagamentos[0] keys: {sorted(fps[0].keys())}")
-        svs = (transac[0].get("servicos") or [])
-        if svs: print(f"[diag] transacao.servicos[0] keys: {sorted(svs[0].keys())}")
-    if clientes:
-        # Presença de campos importantes através de TODOS clientes
-        n_tel = sum(1 for c in clientes if c.get("telefones"))
-        n_email = sum(1 for c in clientes if c.get("email"))
-        n_det = sum(1 for c in clientes if isinstance(c.get("clienteDetalhes"), dict) and c.get("clienteDetalhes"))
-        n_tag = sum(1 for c in clientes if c.get("etiquetasAssociadas"))
-        print(f"[diag] cliente presença: telefones={n_tel}/{len(clientes)} · email={n_email} · clienteDetalhes={n_det} · etiquetas={n_tag}")
-
-        # Primeiro cliente COM detalhes
-        for c in clientes:
-            cd = c.get("clienteDetalhes")
-            if isinstance(cd, dict) and cd:
-                print(f"[diag] cliente.clienteDetalhes keys: {sorted(cd.keys())}")
-                print(f"[diag] cliente.clienteDetalhes sample: {json.dumps(cd, ensure_ascii=False, default=str)[:600]}")
-                break
-        # Teste: buscar 1 cliente com detalhes explícitos via /v1/clientes/{id}
-        cid_teste = clientes[0].get("id")
-        if cid_teste:
+    # === ENRIQUECIMENTO: buscar clienteDetalhes via /v1/clientes/{id} (com cache) ===
+    # A rota lista traz o básico, mas /v1/clientes/{id} traz dataNascimento, endereço,
+    # comoNosConheceu, gênero, cpf, email, etc. Cachear em data/clientes_detalhes.json
+    # pra não queimar cota a cada refresh.
+    detalhes_cache = {}
+    if CLIENTES_CACHE.exists():
+        try:
+            detalhes_cache = json.loads(CLIENTES_CACHE.read_text(encoding="utf-8"))
+        except Exception:
+            detalhes_cache = {}
+    ids_hoje = {str(c.get("id")) for c in clientes if c.get("id")}
+    ids_ja_cacheados = set(detalhes_cache.keys())
+    ids_novos = list(ids_hoje - ids_ja_cacheados)
+    # Cache miss → buscar. Limite defensivo (evita queimar cota se ID list explode)
+    MAX_FETCH_POR_RUN = 200
+    if len(ids_novos) > MAX_FETCH_POR_RUN:
+        print(f"[detalhes] {len(ids_novos)} clientes novos; limitando a {MAX_FETCH_POR_RUN} nesta run")
+        ids_novos = ids_novos[:MAX_FETCH_POR_RUN]
+    if ids_novos:
+        print(f"[detalhes] buscando {len(ids_novos)} clientes novos via /v1/clientes/{{id}}")
+        for i, cid in enumerate(ids_novos, 1):
             try:
-                det = t.get(f"/v1/clientes/{cid_teste}")
-                print(f"[diag] /v1/clientes/{{id}} keys: {sorted(det.keys()) if isinstance(det, dict) else 'não-dict'}")
-                if isinstance(det, dict) and det.get("clienteDetalhes"):
-                    print(f"[diag] /v1/clientes/{{id}}.clienteDetalhes: {json.dumps(det['clienteDetalhes'], ensure_ascii=False, default=str)[:400]}")
-            except Exception as e: print(f"[diag] /v1/clientes/{{id}} falhou: {e}")
+                det = t.get(f"/v1/clientes/{cid}")
+                if isinstance(det, dict):
+                    detalhes_cache[cid] = det
+                if i % 25 == 0:
+                    print(f"  {i}/{len(ids_novos)}...")
+            except Exception as e:
+                print(f"  [detalhes] {cid} falhou: {e}")
+        # Persistir cache
+        CLIENTES_CACHE.write_text(json.dumps(detalhes_cache, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"[detalhes] cache atualizado · total {len(detalhes_cache)} clientes")
     cad_map = {}
-    aniv_map = {}  # {id: (mm, dd, nome)}
+    aniv_map = {}         # {id: (mm, dd, nome)}
+    tel_map = {}          # {id: "+55 11 9XXXX-XXXX"}
+    canal_map = {}        # {id: comoNosConheceu} · Instagram/WhatsApp/indicação
+    genero_map = {}       # {id: F|M|Outro}
+    bairro_map = {}       # {id: bairro}
+    obs_map = {}          # {id: observacoes} · alergias, preferências
+    email_map = {}
     for c in clientes:
         cid = c.get("id")
         if not cid: continue
         if c.get("dataCadastro"):
             try: cad_map[cid] = datetime.fromisoformat(c["dataCadastro"])
             except Exception: pass
-        # Aniversário — Trinks usa dataNascimento
-        if c.get("dataNascimento"):
+        # Telefone (formato: {"ddi":"55","ddd":"11","telefone":"XXX"})
+        tels = c.get("telefones") or []
+        if tels and isinstance(tels[0], dict):
+            t0 = tels[0]
+            ddi = t0.get("ddi") or "55"; ddd = t0.get("ddd") or ""; num = t0.get("telefone") or ""
+            if num:
+                # Formato brasileiro padrão
+                if len(num) == 9: num_fmt = f"{num[:5]}-{num[5:]}"
+                elif len(num) == 8: num_fmt = f"{num[:4]}-{num[4:]}"
+                else: num_fmt = num
+                tel_map[cid] = f"+{ddi} ({ddd}) {num_fmt}"
+        # Detalhes ricos (do cache)
+        det = detalhes_cache.get(str(cid)) or {}
+        # dataNascimento — pode estar no top-level ou nos detalhes
+        dn_str = c.get("dataNascimento") or det.get("dataNascimento")
+        if dn_str:
             try:
-                dn = datetime.fromisoformat(c["dataNascimento"])
-                aniv_map[cid] = (dn.month, dn.day, c.get("nome") or "")
+                dn = datetime.fromisoformat(dn_str)
+                aniv_map[cid] = (dn.month, dn.day, c.get("nome") or det.get("nome") or "")
             except Exception: pass
+        # comoNosConheceu — canal de aquisição
+        canal = det.get("comoNosConheceu")
+        if canal:
+            canal_map[cid] = str(canal).strip().title() if isinstance(canal, str) else (canal.get("nome") if isinstance(canal, dict) else "")
+        # gênero / sexo
+        g = det.get("genero") or det.get("sexo")
+        if g:
+            g_str = str(g).strip().upper()[:1]
+            genero_map[cid] = g_str if g_str in "FM" else "O"
+        # endereço → bairro
+        end = det.get("endereco") or {}
+        if isinstance(end, dict):
+            bairro = end.get("bairro") or ""
+            if bairro: bairro_map[cid] = bairro.strip().title()
+        # observações
+        obs = det.get("observacoes")
+        if obs and str(obs).strip():
+            obs_map[cid] = str(obs).strip()[:200]
+        # email
+        em = c.get("email") or det.get("email")
+        if em: email_map[cid] = em
 
     # Análises por período
     a_anual = analisar(agend, transac, ini_ano, fim_ano)
@@ -625,6 +660,7 @@ def main():
                 "ltv": brl_round(cli_valor[cid]),
                 "ultima_visita": ultima.isoformat(),
                 "dias_sem_vir": dias_sem_vir,
+                "telefone": tel_map.get(cid, ""),
             })
     churn_candidatos.sort(key=lambda x: -x["ltv"])
     churn = {
@@ -657,8 +693,60 @@ def main():
                 "dias": delta,
                 "n_visitas": len(cli_visitas.get(cid, [])),
                 "ltv": brl_round(cli_valor.get(cid, 0)),
+                "telefone": tel_map.get(cid, ""),
             })
     aniversariantes.sort(key=lambda x: (x["dias"], -x["ltv"]))
+
+    # === Segmentação (canal aquisição / gênero / bairro) — só de clientes ativos no ano ===
+    ativos_ids = {cid for cid in cli_visitas.keys()}
+    ativos_receita = defaultdict(float)  # {id: receita_ano}
+    for a in fin_ano:
+        cid = (a.get("cliente") or {}).get("id")
+        if cid and cid in ativos_ids:
+            ativos_receita[cid] += float(a.get("valor") or 0)
+
+    def _agrupa_seg(mapa, ativos, receitas):
+        agg = defaultdict(lambda: {"n": 0, "receita": 0.0})
+        sem_dado = {"n": 0, "receita": 0.0}
+        for cid in ativos:
+            valor = receitas.get(cid, 0)
+            chave = mapa.get(cid)
+            if chave:
+                agg[chave]["n"] += 1
+                agg[chave]["receita"] += valor
+            else:
+                sem_dado["n"] += 1
+                sem_dado["receita"] += valor
+        total_r = sum(v["receita"] for v in agg.values()) + sem_dado["receita"] or 1
+        result = sorted(
+            [{"nome": k, "n_clientes": v["n"], "receita": brl_round(v["receita"]),
+              "pct_receita": round(v["receita"] / total_r * 100, 1),
+              "ticket_medio_cliente": brl_round(v["receita"] / max(v["n"], 1))}
+             for k, v in agg.items()],
+            key=lambda x: -x["receita"]
+        )
+        return {
+            "cobertura_pct": round((sum(v["n"] for v in agg.values()) / max(len(ativos), 1)) * 100, 1),
+            "sem_dado": {"n": sem_dado["n"], "receita": brl_round(sem_dado["receita"])},
+            "top": result,
+        }
+
+    seg_canal = _agrupa_seg(canal_map, ativos_ids, ativos_receita)
+    seg_genero = _agrupa_seg(genero_map, ativos_ids, ativos_receita)
+    seg_bairro = _agrupa_seg(bairro_map, ativos_ids, ativos_receita)
+
+    # Clientes com observações (VIP alert)
+    obs_alertas = []
+    for cid, obs in obs_map.items():
+        if cid in ativos_ids:
+            obs_alertas.append({
+                "cliente": (cli_nome.get(cid) or "").title(),
+                "obs": obs,
+                "n_visitas": len(cli_visitas.get(cid, [])),
+                "ltv": brl_round(cli_valor.get(cid, 0)),
+                "telefone": tel_map.get(cid, ""),
+            })
+    obs_alertas.sort(key=lambda x: -x["ltv"])
 
     # === Cross-sell: clientes recorrentes (2+ visitas) que ainda não fizeram serviços populares ===
     # Popularidade: serviço com >= 30 atendimentos no ano é "popular"
@@ -1264,6 +1352,10 @@ def main():
                 "churn_early": churn,
                 "cross_sell": cross_sell_data,
                 "aniversariantes": aniversariantes,
+                "seg_canal": seg_canal,
+                "seg_genero": seg_genero,
+                "seg_bairro": seg_bairro,
+                "obs_alertas": obs_alertas[:30],
             },
             "mensal": {
                 "kpis": a_mensal["kpis"], "meta": meta_mensal, "categorias": a_mensal["categorias"],
