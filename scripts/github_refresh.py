@@ -1294,6 +1294,27 @@ def main():
                 })
         stone_data = processar_stone_csv(STONE_CSV, trinks_tx)
         print(f"[stone] {'OK · ' + str(stone_data['total_lancamentos']) + ' lancamentos' if stone_data else 'sem CSV · aba vazia'}")
+        # Enriquece aplicacao_reserva com meta + rendimento previsto do config
+        _res_cfg = _cfg.get("reserva_stone") or {}
+        if stone_data and _res_cfg and stone_data.get("aplicacao_reserva"):
+            ar = stone_data["aplicacao_reserva"]
+            meta = float(_res_cfg.get("meta_objetivo") or 0)
+            rend30 = float(_res_cfg.get("rendimento_previsto_30d") or 0)
+            saldo = float(ar.get("saldo_aplicado") or 0)
+            ar["meta_objetivo"] = meta
+            ar["pct_atingimento_meta"] = round(saldo / meta * 100, 2) if meta > 0 else 0
+            ar["falta_para_meta"] = brl_round(max(meta - saldo, 0))
+            ar["rendimento_previsto_30d"] = rend30
+            ar["produto"] = _res_cfg.get("produto", "CDB Stone")
+            ar["resgate"] = _res_cfg.get("resgate", "imediato")
+            ar["ultima_conferencia_app"] = _res_cfg.get("ultima_conferencia_app", "")
+            # Projeção: quantos meses pra bater meta no ritmo atual
+            aportes_ultimos_10 = sum(m.get("aporte", 0) for m in (ar.get("ultimos_movs") or []))
+            aporte_medio_dia = aportes_ultimos_10 / max(len(ar.get("ultimos_movs") or []), 1)
+            aporte_medio_mes = aporte_medio_dia * 26  # 26 dias operacionais
+            meses_ate_meta = round(max(meta - saldo, 0) / aporte_medio_mes, 1) if aporte_medio_mes > 0 else None
+            ar["ritmo_aporte_mensal_est"] = brl_round(aporte_medio_mes)
+            ar["meses_ate_meta_est"] = meses_ate_meta
     except Exception as e:
         print(f"[stone] erro: {e}")
         stone_data = None

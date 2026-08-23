@@ -1817,20 +1817,39 @@ function renderStone(data){
       return `<tr><td>${(m.data||'').slice(-5).replace('-','/')}</td><td class="up">${brl0(m.aporte)}</td><td class="neu">${brl0(m.transf_recebida||0)}</td><td><strong>${brl0(m.saldo_aplicado_acum)}</strong></td></tr>`;
     }).join('');
 
+    // Meta objetivo (config)
+    const meta_obj = ap.meta_objetivo || 0;
+    const pct_meta = ap.pct_atingimento_meta || 0;
+    const falta = ap.falta_para_meta || 0;
+    const rend30 = ap.rendimento_previsto_30d || 0;
+    const meses = ap.meses_ate_meta_est;
+    const ritmo = ap.ritmo_aporte_mensal_est || 0;
+    const bloco_meta = meta_obj > 0 ? `
+      <div style="margin-top:14px;padding:14px;background:var(--surface-2);border-radius:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+          <strong>🎯 Meta do objetivo · ${ap.produto||'CDB'} (${ap.resgate||'imediato'})</strong>
+          <span style="color:var(--muted);font-size:12px;">Conferido no app ${(ap.ultima_conferencia_app||'').split('-').reverse().join('/')}</span>
+        </div>
+        <div class="progress"><div class="progress-fill" style="width:${Math.min(pct_meta,100)}%; background:#22c55e;"></div></div>
+        <div class="progress-labels"><span>R$ 0</span><span class="now">▲ ${brl0(ap.saldo_aplicado)} · <span class="up">${pct_meta.toFixed(1)}%</span></span><span>${brl0(meta_obj)}</span></div>
+        <div class="meta-row" style="margin-top:14px;">
+          <div class="meta-cell"><div class="l">Falta pra meta</div><div class="v warn">${brl0(falta)}</div></div>
+          <div class="meta-cell"><div class="l">Rendimento previsto 30d (app)</div><div class="v up">+${brl0(rend30)}</div></div>
+          <div class="meta-cell"><div class="l">Ritmo aporte / mês est.</div><div class="v">${brl0(ritmo)}</div></div>
+          <div class="meta-cell"><div class="l">Meses até meta (ritmo atual)</div><div class="v ${meses && meses < 24 ? 'up' : 'warn'}">${meses ? meses + ' meses' : '—'}</div></div>
+        </div>
+      </div>` : '';
+
     bloco_aplicacao = `
       <div class="card" style="border-left:3px solid var(--good);">
-        <h2>🏦 Aplicação · Reserva Stone <span class="hi">(validado com valor real 12/08)</span></h2>
-        <div class="cap">Todo dinheiro que cai na Stone é transferido automaticamente pra reserva — este é o saldo total protegido</div>
+        <h2>🏦 Reserva Stone · caixa protegido rendendo CDI</h2>
+        <div class="cap">Todo dinheiro que cai na Stone é transferido automaticamente pra reserva — este é o saldo total protegido, com resgate imediato. Rendendo 100% do CDI (~14,5% a.a.).</div>
         <div class="categ-grid">
-          ${tile('c3','Saldo aplicado',brl0(ap.saldo_aplicado),`✓ bate com valor real confirmado (12/08)`)}
+          ${tile('c3','Saldo aplicado',brl0(ap.saldo_aplicado),`✓ bate com o app Stone`)}
           ${tile('','Rendimento estim. (CDI)',brl0(ap.rendimento_estimado_r),`${ap.rendimento_estimado_pct}% · dias médios: ${ap.dias_medio_aporte}`)}
           ${tile('c2','Saldo + rendimento estim.',brl0(ap.saldo_com_rendimento_estimado),`estimativa 14,5% a.a. CDI`)}
         </div>
-        <div class="insight" style="margin-top:14px;">
-          <strong>✓ Calibrado:</strong> aportes acumulados batem com valor real de R$ ${(ap.saldo_aplicado||0).toLocaleString('pt-BR',{minimumFractionDigits:2})}.
-          <strong>Rendimento estimado</strong> usa CDI referência (~14,5% a.a.) proporcional ao tempo médio de cada aporte.
-          Para valor exato com juros, consultar "Aplicações" no portal Stone.
-        </div>
+        ${bloco_meta}
         ${mov_rows ? `
         <details style="margin-top:12px;">
           <summary style="cursor:pointer;color:var(--accent);font-size:13px;">Ver últimos ${ap.ultimos_movs.length} dias com aportes</summary>
