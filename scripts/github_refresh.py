@@ -684,8 +684,8 @@ def main():
     # metas
     meta_mensal = calc_meta(a_mensal["kpis"]["caixa"], META_MENSAL, a_mensal["kpis"]["dias_op"], DIAS_OP_MES)
 
-    # Meta do DIA: usa peso do dow de hoje. Fallback pra média se dow=dom (0).
-    meta_dia_valor = meta_dia_por_dow[hoje.weekday()] or round(META_MENSAL / DIAS_OP_MES, 2)
+    # Meta do DIA: usa peso do dow de hoje. Se dow=dom (peso 0), meta = 0 (loja fechada).
+    meta_dia_valor = meta_dia_por_dow[hoje.weekday()]
     meta_dia = calc_meta(a_diario["kpis"]["caixa"], meta_dia_valor, 1, 1)
 
     # Meta da SEMANA: soma das metas dos dias reais da semana (respeita pesos).
