@@ -472,6 +472,24 @@ def main():
     print("[fetch] clientes...")
     clientes = list(t.paginate("/v1/clientes"))
     print(f"  {len(clientes)} clientes")
+
+    # === DIAGNÓSTICO: mapa de campos disponíveis (apenas 1 amostra por endpoint) ===
+    if agend:
+        print(f"[diag] agendamento keys: {sorted(agend[0].keys())}")
+        s = agend[0].get("servico") or {}
+        if isinstance(s, dict): print(f"[diag] agendamento.servico keys: {sorted(s.keys())}")
+        c = agend[0].get("cliente") or {}
+        if isinstance(c, dict): print(f"[diag] agendamento.cliente keys: {sorted(c.keys())}")
+        p = agend[0].get("profissional") or {}
+        if isinstance(p, dict): print(f"[diag] agendamento.profissional keys: {sorted(p.keys())}")
+    if transac:
+        print(f"[diag] transacao keys: {sorted(transac[0].keys())}")
+        fps = (transac[0].get("formasPagamentos") or [])
+        if fps: print(f"[diag] transacao.formasPagamentos[0] keys: {sorted(fps[0].keys())}")
+        svs = (transac[0].get("servicos") or [])
+        if svs: print(f"[diag] transacao.servicos[0] keys: {sorted(svs[0].keys())}")
+    if clientes:
+        print(f"[diag] cliente keys: {sorted(clientes[0].keys())}")
     cad_map = {}
     aniv_map = {}  # {id: (mm, dd, nome)}
     for c in clientes:
