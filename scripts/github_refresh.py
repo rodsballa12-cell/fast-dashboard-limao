@@ -652,18 +652,32 @@ def main():
         visitas_proj = round(ritmo_visitas * dias_total)
         meta_v = meta_periodo.get("meta", 0)
         realizado = meta_periodo.get("realizado", 0)
-        falta_caixa = max(meta_v - realizado, 0)
+        falta_caixa = meta_v - realizado
         visitas_rest = max(visitas_proj - v_atual, 0)
-        ticket_alvo_restante = falta_caixa / visitas_rest if visitas_rest else 0
-        ticket_alvo_total = meta_v / max(visitas_proj, 1)
         ticket_atual = aba_kpis.get("ticket_medio", 0)
+        ticket_alvo_total = meta_v / max(visitas_proj, 1) if visitas_proj > 0 else 0
+
+        # Status da janela
+        if v_atual == 0 and dias_realizados >= dias_total:
+            status = "fechado"   # período sem operação (ex: dom)
+            ticket_alvo_restante = 0
+        elif visitas_rest == 0:
+            status = "encerrado_batido" if falta_caixa <= 0 else "encerrado_deficit"
+            ticket_alvo_restante = 0
+        else:
+            status = "em_curso"
+            ticket_alvo_restante = max(falta_caixa, 0) / visitas_rest
+
         gap = max(ticket_alvo_restante - ticket_atual, 0)
-        aba_kpis["ticket_meta"] = brl_round(ticket_alvo_restante)  # o ticket que as visitas RESTANTES precisam
-        aba_kpis["ticket_meta_periodo"] = brl_round(ticket_alvo_total)  # média necessária no período todo
-        aba_kpis["ticket_atingimento_pct"] = round(ticket_atual / max(ticket_alvo_restante, 1) * 100, 1) if ticket_alvo_restante > 0 else 100.0
+        aba_kpis["ticket_meta"] = brl_round(ticket_alvo_restante)
+        aba_kpis["ticket_meta_periodo"] = brl_round(ticket_alvo_total)
+        aba_kpis["ticket_atingimento_pct"] = round(ticket_atual / max(ticket_alvo_restante, 1) * 100, 1) if ticket_alvo_restante > 0 else (100.0 if status == "encerrado_batido" else 0.0)
         aba_kpis["ticket_gap_por_atend"] = brl_round(gap)
         aba_kpis["visitas_projetadas"] = visitas_proj
         aba_kpis["visitas_restantes"] = visitas_rest
+        aba_kpis["ticket_meta_status"] = status
+        aba_kpis["ticket_meta_deficit_caixa"] = brl_round(max(falta_caixa, 0))
+        aba_kpis["ticket_meta_supera_caixa"] = brl_round(max(-falta_caixa, 0))
 
     _inject_ticket_meta(a_diario["kpis"], meta_dia, 1, 1)
     _inject_ticket_meta(a_semanal["kpis"], meta_sem, a_semanal["kpis"]["dias_op"], dias_op_sem)
