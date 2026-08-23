@@ -36,7 +36,25 @@ except Exception:
     _cfg = {}
 CADEIRAS_FIS = _cfg.get("cadeiras") or {"cabelo": 5, "maquiagem": 3, "unhas": 8}
 HORAS_OPERACAO_DIA = _cfg.get("horas_operacao_dia", 12)
+# Jornada de operação por dow (0=seg .. 6=dom). Default: 12h seg-sáb, 0 dom.
+_horas_dow_cfg = _cfg.get("horas_operacao_por_dow") or {}
+HORAS_POR_DOW = {i: float(_horas_dow_cfg.get(str(i), HORAS_OPERACAO_DIA if i < 6 else 0)) for i in range(7)}
+# Data em que a loja passou (ou passará) a operar aos domingos. Se None ou futuro, dom = fechado.
+_dom_ini_str = _cfg.get("data_inicio_domingo")
+DATA_INICIO_DOM = date.fromisoformat(_dom_ini_str) if _dom_ini_str else None
 CADEIRA_KEYWORDS = _cfg.get("cadeira_por_servico_keywords") or {}
+
+
+def opera_no_dia(d: date) -> bool:
+    """True se a loja opera nesse dia (considera início do domingo)."""
+    if d.weekday() != 6:
+        return HORAS_POR_DOW[d.weekday()] > 0
+    return DATA_INICIO_DOM is not None and d >= DATA_INICIO_DOM and HORAS_POR_DOW[6] > 0
+
+
+def dias_operacionais_no_mes(ano: int, mes: int) -> int:
+    ultimo = monthrange(ano, mes)[1]
+    return sum(1 for d in range(1, ultimo + 1) if opera_no_dia(date(ano, mes, d)))
 
 
 def classificar_cadeira(nome_serv):
@@ -618,10 +636,10 @@ def main():
             }
 
     # === SAZONALIDADE: pesos por dia da semana + curva horária ===
-    # Fonte: histórico anual acumulado (por_dow do ano). Se ainda não temos ≥3 ocorrências
-    # de algum dow, usamos peso uniforme como fallback.
-    dow_hist_v = {i: 0.0 for i in range(7)}  # seg=0 ... dom=6
-    dow_hist_n = {i: 0 for i in range(7)}    # nº de dias observados
+    # Fonte: histórico anual acumulado. Peso ponderado por horas de operação de cada dow
+    # (dom = 6h, outros = 12h por padrão), pra domingo ser proporcionalmente estimado.
+    dow_hist_v = {i: 0.0 for i in range(7)}
+    dow_hist_n = {i: 0 for i in range(7)}
     for a in fin_ano:
         try:
             dt = datetime.fromisoformat(a["dataHoraInicio"]).date()
@@ -631,35 +649,56 @@ def main():
     for d in dias_vistos:
         dow_hist_n[d.weekday()] += 1
 
-    # Peso normalizado por DOW = caixa médio de 1 dia daquele dow / soma dos caixas médios (seg-sáb).
-    # Domingo = 0 (fechado). Se um dow ainda não tem dado, usa 1/6 uniforme.
+    # Caixa médio de 1 dia daquele dow. Precisa >=3 amostras pra usar histórico.
     caixa_medio_dow = {}
-    for i in range(6):  # seg-sáb (dom fica fora)
+    for i in range(7):
+        if HORAS_POR_DOW[i] == 0:
+            caixa_medio_dow[i] = 0
+            continue
+        # Domingo só entra se a data de início já passou (senão não tem sentido histórico)
+        if i == 6 and (not DATA_INICIO_DOM or hoje < DATA_INICIO_DOM):
+            caixa_medio_dow[i] = 0  # marca sem dado (fallback abaixo)
+            continue
         if dow_hist_n[i] >= 3:
             caixa_medio_dow[i] = dow_hist_v[i] / dow_hist_n[i]
         else:
-            caixa_medio_dow[i] = 0  # marca como "sem dado suficiente"
-    if all(v == 0 for v in caixa_medio_dow.values()):
-        # sem dado nenhum → uniforme
-        peso_dow = {i: 1/6 for i in range(6)}
-    else:
-        # dias sem dado suficiente ganham a média dos dias que têm dado
-        media_conhecidos = sum(v for v in caixa_medio_dow.values() if v > 0) / max(sum(1 for v in caixa_medio_dow.values() if v > 0), 1)
-        for i in range(6):
-            if caixa_medio_dow[i] == 0: caixa_medio_dow[i] = media_conhecidos
-        total = sum(caixa_medio_dow.values())
-        peso_dow = {i: caixa_medio_dow[i] / total for i in range(6)}
-    peso_dow[6] = 0.0  # dom fechado
+            caixa_medio_dow[i] = 0
 
-    # META por DOW no mês corrente: distribui META_MENSAL pelos pesos, respeitando quantos
-    # dias de cada DOW há no mês. Ex: se sáb pesa 40% e o mês tem 4 sábados, cada sáb = 40%*60k/4 = 6k.
+    # Fallback pra dow sem histórico: usa média do caixa/hora × horas do próprio dow.
+    # Assim domingo (6h) recebe estimativa proporcional em vez de 0 quando começa a operar.
+    dias_com_dado = [i for i in range(7) if caixa_medio_dow[i] > 0 and HORAS_POR_DOW[i] > 0]
+    if dias_com_dado:
+        caixa_hora_medio = sum(caixa_medio_dow[i] / HORAS_POR_DOW[i] for i in dias_com_dado) / len(dias_com_dado)
+        for i in range(7):
+            if caixa_medio_dow[i] == 0 and HORAS_POR_DOW[i] > 0:
+                # Só estima se o dow vai operar no mês corrente
+                if i == 6 and (not DATA_INICIO_DOM or (DATA_INICIO_DOM.year, DATA_INICIO_DOM.month) > (hoje.year, hoje.month)):
+                    continue  # dom ainda não começou nesse mês
+                caixa_medio_dow[i] = caixa_hora_medio * HORAS_POR_DOW[i]
+
+    total = sum(caixa_medio_dow.values())
+    if total > 0:
+        peso_dow = {i: caixa_medio_dow[i] / total for i in range(7)}
+    else:
+        # nenhum dado: uniforme entre dias que operam
+        n_op = sum(1 for i in range(7) if HORAS_POR_DOW[i] > 0)
+        peso_dow = {i: (1/n_op if HORAS_POR_DOW[i] > 0 else 0) for i in range(7)}
+
+    # META por DOW no mês corrente: só distribui pra dias que operam nesse mês.
     n_dias_dow_mes = {i: 0 for i in range(7)}
     for d in range(1, monthrange(hoje.year, hoje.month)[1] + 1):
-        n_dias_dow_mes[date(hoje.year, hoje.month, d).weekday()] += 1
+        dt = date(hoje.year, hoje.month, d)
+        if opera_no_dia(dt):
+            n_dias_dow_mes[dt.weekday()] += 1
+    # Renormaliza peso considerando só dows que efetivamente operam esse mês (evita jogar
+    # peso pra domingo se ele ainda não começou no mês corrente)
+    peso_mes = {i: (peso_dow[i] if n_dias_dow_mes[i] > 0 else 0) for i in range(7)}
+    soma_mes = sum(peso_mes.values()) or 1
+    peso_mes_norm = {i: peso_mes[i] / soma_mes for i in range(7)}
     meta_dia_por_dow = {}
     for i in range(7):
-        if n_dias_dow_mes[i] > 0 and peso_dow[i] > 0:
-            meta_dia_por_dow[i] = round(META_MENSAL * peso_dow[i] / n_dias_dow_mes[i], 2)
+        if n_dias_dow_mes[i] > 0 and peso_mes_norm[i] > 0:
+            meta_dia_por_dow[i] = round(META_MENSAL * peso_mes_norm[i] / n_dias_dow_mes[i], 2)
         else:
             meta_dia_por_dow[i] = 0.0
 
@@ -682,28 +721,35 @@ def main():
         curva_horaria.append({"h": h, "pct_acum": round(acum / total_hora_hist * 100, 1)})
 
     # metas
-    meta_mensal = calc_meta(a_mensal["kpis"]["caixa"], META_MENSAL, a_mensal["kpis"]["dias_op"], DIAS_OP_MES)
+    # Dias operacionais do mês real (respeita início do domingo)
+    dias_op_mes_real = dias_operacionais_no_mes(hoje.year, hoje.month)
+    meta_mensal = calc_meta(a_mensal["kpis"]["caixa"], META_MENSAL, a_mensal["kpis"]["dias_op"], dias_op_mes_real)
 
-    # Meta do DIA: usa peso do dow de hoje. Se dow=dom (peso 0), meta = 0 (loja fechada).
+    # Meta do DIA: usa peso do dow de hoje. Se dow não opera (peso 0), meta = 0.
     meta_dia_valor = meta_dia_por_dow[hoje.weekday()]
     meta_dia = calc_meta(a_diario["kpis"]["caixa"], meta_dia_valor, 1, 1)
 
-    # Meta da SEMANA: soma das metas dos dias reais da semana (respeita pesos).
-    dias_op_sem = 6
-    meta_sem_valor = sum(meta_dia_por_dow[(seg + timedelta(days=i)).weekday()] for i in range(7))
+    # Meta da SEMANA: soma das metas dos dias reais da semana (respeita pesos + início dom).
+    dias_op_sem_real = sum(1 for i in range(7) if opera_no_dia(seg + timedelta(days=i)))
+    meta_sem_valor = 0
+    for i in range(7):
+        d = seg + timedelta(days=i)
+        if opera_no_dia(d):
+            meta_sem_valor += meta_dia_por_dow[d.weekday()]
     if meta_sem_valor == 0:
-        meta_sem_valor = round(META_MENSAL / DIAS_OP_MES * dias_op_sem, 2)
+        meta_sem_valor = round(META_MENSAL / max(dias_op_mes_real, 1) * dias_op_sem_real, 2)
     meta_sem = calc_meta(a_semanal["kpis"]["caixa"], round(meta_sem_valor, 2),
-                         a_semanal["kpis"]["dias_op"], dias_op_sem)
+                         a_semanal["kpis"]["dias_op"], dias_op_sem_real)
     real_pre_atual = sum(m["caixa"] for k, m in meses.items() if k < f"{hoje.year}-{hoje.month:02d}")
     meses_rest = 12 - hoje.month + 1
     meta_ano_valor = round(real_pre_atual + META_MENSAL * meses_rest, 2)
 
-    # dias operacionais reais desde abertura da loja (23/07/26) até 31/12/26 · exclui domingos
+    # dias operacionais reais desde abertura da loja (23/07/26) até 31/12/26
+    # · exclui domingos antes de DATA_INICIO_DOM; inclui a partir daí
     def _dias_op(ini_d: date, fim_d: date) -> int:
         n, d = 0, ini_d
         while d <= fim_d:
-            if d.weekday() != 6: n += 1
+            if opera_no_dia(d): n += 1
             d += timedelta(days=1)
         return n
 
@@ -752,8 +798,8 @@ def main():
         aba_kpis["ticket_meta_supera_caixa"] = brl_round(max(-falta_caixa, 0))
 
     _inject_ticket_meta(a_diario["kpis"], meta_dia, 1, 1)
-    _inject_ticket_meta(a_semanal["kpis"], meta_sem, a_semanal["kpis"]["dias_op"], dias_op_sem)
-    _inject_ticket_meta(a_mensal["kpis"], meta_mensal, a_mensal["kpis"]["dias_op"], DIAS_OP_MES)
+    _inject_ticket_meta(a_semanal["kpis"], meta_sem, a_semanal["kpis"]["dias_op"], dias_op_sem_real)
+    _inject_ticket_meta(a_mensal["kpis"], meta_mensal, a_mensal["kpis"]["dias_op"], dias_op_mes_real)
     if meta_ano_valor > 0:
         _inject_ticket_meta(a_anual["kpis"], meta_ano, dias_op_realizados, dias_op_total)
 
@@ -951,13 +997,16 @@ def main():
         "gerado_em": datetime.now(BRT).isoformat(timespec="seconds"),
         "hoje": hoje.isoformat(),
         "meta_mensal_valor": META_MENSAL,
-        "dias_op_mes": DIAS_OP_MES,
+        "dias_op_mes": dias_op_mes_real,
         "sazonalidade": {
             "peso_dow": {DOW_NOMES[i]: round(peso_dow[i]*100, 1) for i in range(7)},
             "meta_dia_por_dow": {DOW_NOMES[i]: meta_dia_por_dow[i] for i in range(7)},
             "n_dias_dow_mes": {DOW_NOMES[i]: n_dias_dow_mes[i] for i in range(7)},
+            "horas_por_dow": {DOW_NOMES[i]: HORAS_POR_DOW[i] for i in range(7)},
             "curva_horaria": curva_horaria,
             "amostra_dias_ano": len(dias_vistos),
+            "data_inicio_domingo": _dom_ini_str,
+            "domingo_ativo_no_mes": n_dias_dow_mes[6] > 0,
         },
         "cota_api": cota_final,
         "stone": stone_data,
