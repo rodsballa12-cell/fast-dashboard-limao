@@ -173,85 +173,113 @@
         <button class="tab-btn periodo-btn" role="tab" aria-selected="false" data-periodo="diario" style="padding:8px 14px;font-size:12.5px">🔴 Hoje<span class="subn" id="tab-diario-sub"></span></button>
       </div>
 
-    <!-- ANUAL -->
+    <!-- ANUAL · foco: planejamento estratégico + base de clientes -->
     <div class="periodo-panel" id="periodo-anual">
-      <div class="audit"><div>📅</div><div><strong>Panorama do ano.</strong> Loja abriu 23/07/2026. Foco: bater a meta mensal → meta anual segue junto. Compare meses fechados para ver a evolução real.</div></div>
-      <div id="anual-insights"></div>
-      <div id="anual-meta"></div>
+      <div class="audit"><div>📅</div><div><strong>Panorama do ano · decisões estratégicas.</strong> Loja abriu 23/07/2026. Aqui: evolução mês-a-mês, quem é a base do LTV, quem está em risco, campanhas de CRM.</div></div>
+      <!-- 1. CONTEXTO: onde estamos vs onde queremos -->
       <div id="anual-kpis"></div>
-      <div id="anual-ticket-meta"></div>
-      <div id="anual-utilizacao"></div>
-      <div id="anual-categorias"></div>
-      <div id="anual-novos"></div>
+      <div id="anual-meta"></div>
+      <!-- 2. TRAJETÓRIA: evolução do ano -->
+      <div id="anual-meses"></div>
+      <!-- 3. AÇÕES DE CRM (mais operacional) -->
+      <div id="anual-aniv"></div>
       <div id="anual-churn"></div>
       <div id="anual-cross-sell"></div>
-      <div id="anual-aniv"></div>
-      <div id="anual-meses"></div>
+      <!-- 4. BASE DE CLIENTES -->
       <div id="anual-ltv"></div>
       <div id="anual-topcli"></div>
+      <div id="anual-novos"></div>
+      <!-- 5. QUALIDADE DO MIX -->
+      <div id="anual-ticket-meta"></div>
+      <div id="anual-categorias"></div>
       <div id="anual-rentabilidade"></div>
+      <!-- 6. OPERAÇÃO -->
+      <div id="anual-utilizacao"></div>
       <div id="anual-hora"></div>
+      <!-- 7. LEITURA AUTOMÁTICA (embaixo, secundário) -->
+      <div id="anual-insights"></div>
     </div>
 
-    <!-- MENSAL -->
+    <!-- MENSAL · foco: bater meta do mês, ajustar até o fechamento -->
     <div class="periodo-panel active" id="periodo-mensal">
-      <div class="audit"><div>🎯</div><div><strong>Onde você está no mês.</strong> Recomendações abaixo mostram o que ajustar antes do fechamento pra bater meta.</div></div>
-      <div id="mensal-insights"></div>
-      <div id="mensal-meta"></div>
+      <div class="audit"><div>🎯</div><div><strong>Onde você está no mês.</strong> Trajetória diária, projeção de fechamento, alavancas pra ajustar antes de fechar o mês.</div></div>
+      <!-- 1. CONTEXTO: caixa vs meta -->
       <div id="mensal-kpis"></div>
-      <div id="mensal-ticket-meta"></div>
-      <div id="mensal-utilizacao"></div>
-      <div id="mensal-categorias"></div>
-      <div id="mensal-novos"></div>
-      <div id="mensal-rentabilidade"></div>
+      <div id="mensal-meta"></div>
+      <!-- 2. TRAJETÓRIA: como o mês está desenhando -->
       <div id="mensal-dia"></div>
-      <div id="mensal-hora"></div>
+      <!-- 3. ALAVANCAS: mix, ticket, categorias -->
+      <div id="mensal-categorias"></div>
+      <div id="mensal-ticket-meta"></div>
+      <div id="mensal-novos"></div>
+      <!-- 4. RENTABILIDADE por serviço -->
+      <div id="mensal-rentabilidade"></div>
+      <!-- 5. OPERAÇÃO: quem/como/quando -->
       <div class="grid-2b">
         <div id="mensal-prof"></div>
         <div id="mensal-meios"></div>
       </div>
+      <div id="mensal-utilizacao"></div>
+      <div id="mensal-hora"></div>
+      <!-- 6. RELACIONAMENTO -->
       <div id="mensal-topcli"></div>
+      <!-- 7. LEITURA AUTOMÁTICA -->
+      <div id="mensal-insights"></div>
     </div>
 
-    <!-- SEMANAL -->
+    <!-- SEMANAL · foco: escala próx semana + campanhas curtas -->
     <div class="periodo-panel" id="periodo-semanal">
-      <div class="audit"><div>📊</div><div><strong>Semana corrente</strong> (seg–sáb · dom fechado). Use para decidir escala do próximo sábado e campanhas rápidas de WhatsApp.</div></div>
-      <div id="semanal-insights"></div>
-      <div id="semanal-meta"></div>
+      <div class="audit"><div>📊</div><div><strong>Semana corrente</strong> — decida escala e campanhas de WhatsApp. Compare com semana anterior pra ver se está acelerando ou perdendo tração.</div></div>
+      <!-- 1. CONTEXTO -->
       <div id="semanal-kpis"></div>
-      <div id="semanal-ticket-meta"></div>
+      <div id="semanal-meta"></div>
+      <!-- 2. COMPARAÇÃO (a alavanca principal da semana) -->
       <div id="semanal-comparacao"></div>
-      <div id="semanal-utilizacao"></div>
-      <div id="semanal-categorias"></div>
-      <div id="semanal-novos"></div>
-      <div id="semanal-rentabilidade"></div>
+      <!-- 3. ONDE O CAIXA SE CONCENTRA (dia da semana) -->
       <div id="semanal-dow"></div>
-      <div id="semanal-hora"></div>
+      <!-- 4. MIX + TICKET -->
+      <div id="semanal-categorias"></div>
+      <div id="semanal-ticket-meta"></div>
+      <div id="semanal-novos"></div>
+      <!-- 5. RENTABILIDADE -->
+      <div id="semanal-rentabilidade"></div>
+      <!-- 6. OPERAÇÃO -->
       <div class="grid-2b">
         <div id="semanal-prof"></div>
         <div id="semanal-meios"></div>
       </div>
+      <div id="semanal-utilizacao"></div>
+      <div id="semanal-hora"></div>
+      <!-- 7. RELACIONAMENTO -->
       <div id="semanal-topcli"></div>
+      <!-- 8. LEITURA AUTOMÁTICA -->
+      <div id="semanal-insights"></div>
     </div>
 
-    <!-- DIÁRIO -->
+    <!-- DIÁRIO · foco: decisão AGORA (chamar reforço, puxar cliente) -->
     <div class="periodo-panel" id="periodo-diario">
-      <div class="audit"><div>🔴</div><div><strong>HOJE — atualiza 5×/dia</strong> (00h/12h/15h/18h/21h BRT). O 00h zera o dia; os outros 4 são checkpoints operacionais (almoço, meio da tarde, fim de tarde, fim do dia).</div></div>
-      <div id="diario-insights"></div>
-      <div id="diario-meta"></div>
-      <div id="diario-kpis"></div>
+      <div class="audit"><div>🔴</div><div><strong>HOJE — atualiza 5×/dia</strong> (00h/12h/15h/18h/21h BRT). Checkpoints operacionais: se está atrás do pace, hora de agir.</div></div>
+      <!-- 1. AÇÃO AGORA: pace intraday + KPIs (o que mais importa em tempo real) -->
       <div id="diario-pace"></div>
-      <div id="diario-ticket-meta"></div>
-      <div id="diario-utilizacao"></div>
-      <div id="diario-categorias"></div>
-      <div id="diario-rentabilidade"></div>
-      <div id="diario-hora"></div>
+      <div id="diario-kpis"></div>
+      <div id="diario-meta"></div>
+      <!-- 2. OPERAÇÃO ATUAL: quem está trabalhando, o que está vendendo -->
       <div class="grid-2b">
         <div id="diario-prof"></div>
         <div id="diario-serv"></div>
       </div>
+      <div id="diario-hora"></div>
+      <!-- 3. MIX + PAGAMENTOS -->
+      <div id="diario-categorias"></div>
       <div id="diario-meios"></div>
+      <!-- 4. TICKET + RENTABILIDADE -->
+      <div id="diario-ticket-meta"></div>
+      <div id="diario-rentabilidade"></div>
+      <!-- 5. RELACIONAMENTO -->
       <div id="diario-topcli"></div>
+      <div id="diario-utilizacao"></div>
+      <!-- 6. LEITURA AUTOMÁTICA -->
+      <div id="diario-insights"></div>
     </div>
     </div><!-- /tab-painel -->
 
