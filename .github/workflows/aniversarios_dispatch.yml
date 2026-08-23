@@ -1,0 +1,57 @@
+name: Aniversários — dispatch por comentário
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  dispatch:
+    if: |
+      contains(github.event.issue.labels.*.name, 'aniversario') &&
+      github.event.issue.state == 'open' &&
+      (startsWith(github.event.comment.body, 'approve') || startsWith(github.event.comment.body, 'skip'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Dispatch fila
+        id: dispatch
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_PHONE_NUMBER_ID: ${{ secrets.META_PHONE_NUMBER_ID }}
+          APROVACAO_COMANDO: ${{ github.event.comment.body }}
+        run: |
+          python scripts/aniversario_dispatch.py > /tmp/out.txt 2>&1 || true
+          cat /tmp/out.txt
+          # Extrai bloco delimitado
+          awk '/<<<RESULT_INI>>>/,/<<<RESULT_FIM>>>/' /tmp/out.txt | \
+            grep -v '<<<RESULT_INI>>>' | grep -v '<<<RESULT_FIM>>>' > /tmp/relatorio.md
+          echo "---" >> /tmp/relatorio.md
+          echo "_Gerado por [Claude Code](https://claude.ai/code)_" >> /tmp/relatorio.md
+
+      - name: Comentar resultado no issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --body-file /tmp/relatorio.md
+
+      - name: Fechar issue após dispatch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue close ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }} \
+            --reason completed
