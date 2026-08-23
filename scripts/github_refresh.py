@@ -490,6 +490,21 @@ def main():
         if svs: print(f"[diag] transacao.servicos[0] keys: {sorted(svs[0].keys())}")
     if clientes:
         print(f"[diag] cliente keys: {sorted(clientes[0].keys())}")
+        # Cliente com aniversário/detalhes pra ver a estrutura real
+        for c in clientes[:5]:
+            cd = c.get("clienteDetalhes")
+            if isinstance(cd, dict) and cd:
+                print(f"[diag] cliente.clienteDetalhes keys: {sorted(cd.keys())}")
+                print(f"[diag] cliente.clienteDetalhes sample: {json.dumps({k: cd.get(k) for k in list(cd.keys())[:8]}, ensure_ascii=False, default=str)[:400]}")
+                break
+        tags = c.get("etiquetasAssociadas")
+        if isinstance(tags, list) and tags:
+            print(f"[diag] cliente.etiquetasAssociadas[0] type: {type(tags[0]).__name__} · sample: {json.dumps(tags[0], ensure_ascii=False, default=str)[:200]}")
+        # verifica tel/email formato
+        for c in clientes[:5]:
+            if c.get("telefones"):
+                print(f"[diag] cliente.telefones[0] type: {type(c['telefones'][0]).__name__} · sample: {json.dumps(c['telefones'][0], ensure_ascii=False, default=str)[:200]}")
+                break
     cad_map = {}
     aniv_map = {}  # {id: (mm, dd, nome)}
     for c in clientes:
