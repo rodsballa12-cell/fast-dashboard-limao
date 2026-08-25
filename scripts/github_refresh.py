@@ -29,6 +29,12 @@ OUT_JSON = REPO_ROOT / "data" / "dashboard_data.json"
 STONE_CSV = REPO_ROOT / "data" / "stone_extrato.csv"
 CONFIG_JSON = REPO_ROOT / "data" / "config.json"
 CLIENTES_CACHE = REPO_ROOT / "data" / "clientes_detalhes.json"
+PROF_CACHE = REPO_ROOT / "data" / "profissionais_cache.json"
+CLIENTES_LISTA_CACHE = REPO_ROOT / "data" / "clientes_lista_cache.json"
+
+# TTLs de cache (economia de API)
+TTL_PROF_HORAS = 24 * 7   # profs quase nunca mudam
+TTL_CLI_LISTA_HORAS = 12  # lista básica de clientes (só id/nome/tel) — refresh 2×/dia é suficiente
 
 # TIMEZONE: todo o pipeline opera em Brasília (UTC-3, sem DST desde 2019).
 # Container do GitHub Actions roda em UTC, então nunca usar date.today() ou
@@ -545,33 +551,69 @@ def main():
     dom = seg + timedelta(days=6)
 
     print(f"[github_refresh] Períodos: ano={ini_ano}..{fim_ano} · mês={ini_mes}..{fim_mes} · sem={seg}..{dom} · hoje={hoje}")
-    print(f"[github_refresh] Cota: {t.consumo()}")
+    # (chamada única de /v1/consumo movida pro fim do run — economiza 1 req)
 
-    # Puxar ANO INTEIRO (loja abriu 23/07, então só jul+ago-set-dez interessa)
+    _api_count = {"n": 0}  # contador local pra reportar consumo do run
+
+    def _cache_valido(path, ttl_horas):
+        """True se cache existe e é mais novo que TTL."""
+        if not path.exists(): return False
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            gerado = datetime.fromisoformat(data.get("gerado_em", "").replace("Z", "+00:00"))
+            if gerado.tzinfo is None: gerado = gerado.replace(tzinfo=BRT)
+            idade = (datetime.now(BRT) - gerado).total_seconds() / 3600
+            return idade < ttl_horas
+        except Exception: return False
+
+    def _load_cache(path):
+        return json.loads(path.read_text(encoding="utf-8")).get("payload") or []
+
+    def _save_cache(path, payload):
+        path.write_text(json.dumps({
+            "gerado_em": datetime.now(BRT).isoformat(timespec="seconds"),
+            "payload": payload,
+        }, ensure_ascii=False), encoding="utf-8")
+
+    # === AGENDAMENTOS · TRANSAÇÕES (sempre fresh · são a fonte primária) ===
     print("[fetch] agendamentos ano...")
     agend = list(t.paginate("/v1/agendamentos", {"dataInicio": ini_ano.isoformat(), "dataFim": fim_ano.isoformat()}))
     print(f"  {len(agend)} agendamentos")
     print("[fetch] transacoes ano...")
     transac = list(t.paginate("/v1/transacoes", {"dataInicio": ini_ano.isoformat(), "dataFim": fim_ano.isoformat()}))
     print(f"  {len(transac)} transações")
-    print("[fetch] clientes...")
-    clientes = list(t.paginate("/v1/clientes"))
-    print(f"  {len(clientes)} clientes")
-    # Profissionais — mapa completo id→nome (usado pra resolver executores nas transações)
-    # Trinks retorna só ativos por default; passamos ativo=false pra pegar desligados também
-    print("[fetch] profissionais...")
+
+    # === CLIENTES LISTA · cache 12h (base muda pouco durante o dia) ===
+    if _cache_valido(CLIENTES_LISTA_CACHE, TTL_CLI_LISTA_HORAS):
+        clientes = _load_cache(CLIENTES_LISTA_CACHE)
+        print(f"[fetch] clientes: {len(clientes)} (cache local · <{TTL_CLI_LISTA_HORAS}h)")
+    else:
+        print("[fetch] clientes...")
+        clientes = list(t.paginate("/v1/clientes"))
+        print(f"  {len(clientes)} clientes")
+        _save_cache(CLIENTES_LISTA_CACHE, clientes)
+
+    # === PROFISSIONAIS · cache 7 dias (mudança rara) ===
     prof_map_global = {}
-    for ativo_flag in ("true", "false"):
-        try:
-            prof_lista = list(t.paginate("/v1/profissionais", {"ativo": ativo_flag}))
-            for p in prof_lista:
-                pid = p.get("id")
-                nome = (p.get("nome") or "").strip().title()
-                if pid and nome: prof_map_global[pid] = nome
-        except Exception as e:
-            print(f"  [warn] /v1/profissionais ativo={ativo_flag} falhou: {e}")
+    if _cache_valido(PROF_CACHE, TTL_PROF_HORAS):
+        prof_map_global = _load_cache(PROF_CACHE)
+        # Converte chaves de volta pra int (JSON transforma em str)
+        prof_map_global = {int(k): v for k, v in prof_map_global.items()}
+        print(f"[fetch] profissionais: {len(prof_map_global)} (cache local · <{TTL_PROF_HORAS}h)")
+    else:
+        print("[fetch] profissionais...")
+        for ativo_flag in ("true", "false"):
+            try:
+                prof_lista = list(t.paginate("/v1/profissionais", {"ativo": ativo_flag}))
+                for p in prof_lista:
+                    pid = p.get("id")
+                    nome = (p.get("nome") or "").strip().title()
+                    if pid and nome: prof_map_global[pid] = nome
+            except Exception as e:
+                print(f"  [warn] /v1/profissionais ativo={ativo_flag} falhou: {e}")
+        _save_cache(PROF_CACHE, prof_map_global)
+        print(f"  {len(prof_map_global)} profissionais mapeados (ativos + desligados)")
     analisar._prof_id_nome_cache = prof_map_global
-    print(f"  {len(prof_map_global)} profissionais mapeados (ativos + desligados)")
 
     # === ENRIQUECIMENTO: buscar clienteDetalhes via /v1/clientes/{id} (com cache) ===
     # A rota lista traz o básico, mas /v1/clientes/{id} traz dataNascimento, endereço,
