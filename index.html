@@ -259,7 +259,7 @@
 
     <!-- DIÁRIO · foco: decisão AGORA (chamar reforço, puxar cliente) -->
     <div class="periodo-panel" id="periodo-diario">
-      <div class="audit"><div>🔴</div><div><strong>HOJE — atualiza 5×/dia</strong> (00h/12h/15h/18h/21h BRT). Checkpoints operacionais: se está atrás do pace, hora de agir.</div></div>
+      <div class="audit"><div>🔴</div><div><strong>HOJE — atualiza de hora em hora</strong> (11h→21h BRT). Checkpoints operacionais em tempo real: se está atrás do pace, hora de agir.</div></div>
       <!-- 1. AÇÃO AGORA: pace intraday + KPIs (o que mais importa em tempo real) -->
       <div id="diario-pace"></div>
       <div id="diario-kpis"></div>
@@ -333,7 +333,7 @@
     </div>
 
     <footer>
-      <div><strong>Fonte:</strong> API Trinks (<code>api.trinks.com/v1</code>) · <strong>Refresh automático:</strong> 5×/dia (00h/12h/15h/18h/21h BRT) via GitHub Actions</div>
+      <div><strong>Fonte:</strong> API Trinks (<code>api.trinks.com/v1</code>) · <strong>Refresh automático:</strong> de hora em hora, 11h→21h BRT (11×/dia) via GitHub Actions</div>
       <div style="margin-top:4px;">Caixa = <code>Σ(transacoes.formasPagamentos.valor)</code> · categorias = decomposição de <code>pacotes[] + servicos[] + produtos[]</code></div>
       <div style="margin-top:4px;"><strong>Loja abriu 23/07/2026 · Meta Ago R$ 60.000</strong></div>
     </footer>
