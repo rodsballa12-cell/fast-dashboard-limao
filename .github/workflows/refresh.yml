@@ -3,9 +3,23 @@ name: Refresh Dashboard Data
 on:
   workflow_dispatch:
   schedule:
-    # 11×/dia · toda hora cheia de 11h às 21h BRT
-    # = 14h,15h,16h,17h,18h,19h,20h,21h,22h,23h,00h UTC (00h UTC = 21h BRT do dia anterior)
-    # Consumo estimado: ~14 req/run × 11 = ~154 req/dia (~4.600/mês · 46% da cota)
+    # 11×/dia · TODA HORA CHEIA (minuto :00) das 11h às 21h BRT
+    #
+    # GitHub Actions só aceita cron em UTC — mas como BRT = UTC-3 (offset de hora
+    # inteira, sem DST desde 2019), o minuto :00 UTC bate exato com :00 BRT.
+    # Só a HORA desloca. Mapping:
+    #   14:00 UTC = 11:00 BRT
+    #   15:00 UTC = 12:00 BRT
+    #   ...
+    #   21:00 UTC = 18:00 BRT
+    #   23:00 UTC = 20:00 BRT
+    #   00:00 UTC = 21:00 BRT (dia anterior)
+    #
+    # ⚠️  GitHub pode atrasar cron em horários de pico (documentado). Fire pode
+    # sair 5-60min após o alvo. Botão manual "🔄 Atualizar dados" no dashboard
+    # supre qualquer necessidade urgente.
+    #
+    # Consumo estimado: ~14 req/run × 11 runs = ~154 req/dia (~4.600/mês · 46% da cota)
     - cron: '0 14-23,0 * * *'
 
 permissions:
