@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-08-26T13:39:45-03:00",
+  "gerado_em": "2026-08-26T15:00:43-03:00",
   "hoje": "2026-08-26",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 27,
@@ -226,8 +226,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 8975,
-    "saldoRestante": 1025
+    "totalUtilizado": 9007,
+    "saldoRestante": 993
   },
   "stone": {
     "periodo_ini": "2026-07-24",
@@ -896,7 +896,7 @@
           "cliente": "Erika Thais Pereira Melim"
         }
       ],
-      "horas_desatualizado": 86.0
+      "horas_desatualizado": 87.4
     }
   },
   "auditoria_cancelados": {
@@ -1609,15 +1609,15 @@
         "receita_serv": 36638.1,
         "atend_fin": 582,
         "atend_canc": 43,
-        "atend_total": 626,
+        "atend_total": 630,
         "n_trans": 353,
         "ticket_trans": 113.52,
         "cliente_dia": 340,
         "ticket_medio": 117.86,
-        "taxa_canc": 6.9,
+        "taxa_canc": 6.8,
         "dias_op": 30,
         "clientes_unicos": 268,
-        "em_atendimento": 0,
+        "em_atendimento": 4,
         "n_prof_ativos": 20,
         "rs_hora_salao": 111.32,
         "horas_operacao_periodo": 360,
@@ -2907,8 +2907,8 @@
           "MÃOS",
           "FAST HIDRATAÇÃO - FAST MASK",
           "FAST ESCOVA - MODELADA",
-          "PÉS",
-          "PÉS E MÃOS"
+          "PÉS E MÃOS",
+          "PÉS"
         ],
         "n_clientes_com_oportunidade": 139,
         "top": [
@@ -3670,7 +3670,7 @@
         "receita_serv": 27835.1,
         "atend_fin": 453,
         "atend_canc": 28,
-        "atend_total": 481,
+        "atend_total": 485,
         "n_trans": 279,
         "ticket_trans": 120.06,
         "cliente_dia": 267,
@@ -3678,7 +3678,7 @@
         "taxa_canc": 5.8,
         "dias_op": 22,
         "clientes_unicos": 214,
-        "em_atendimento": 0,
+        "em_atendimento": 4,
         "n_prof_ativos": 18,
         "rs_hora_salao": 126.88,
         "horas_operacao_periodo": 264,
@@ -4551,15 +4551,15 @@
         "receita_serv": 1089.0,
         "atend_fin": 24,
         "atend_canc": 3,
-        "atend_total": 27,
+        "atend_total": 31,
         "n_trans": 16,
         "ticket_trans": 68.06,
         "cliente_dia": 14,
         "ticket_medio": 77.79,
-        "taxa_canc": 11.1,
+        "taxa_canc": 9.7,
         "dias_op": 3,
         "clientes_unicos": 14,
-        "em_atendimento": 0,
+        "em_atendimento": 4,
         "n_prof_ativos": 7,
         "rs_hora_salao": 30.25,
         "horas_operacao_periodo": 36,
@@ -5107,7 +5107,7 @@
         "receita_serv": 83.0,
         "atend_fin": 1,
         "atend_canc": 0,
-        "atend_total": 1,
+        "atend_total": 5,
         "n_trans": 1,
         "ticket_trans": 83.0,
         "cliente_dia": 1,
@@ -5115,7 +5115,7 @@
         "taxa_canc": 0.0,
         "dias_op": 1,
         "clientes_unicos": 1,
-        "em_atendimento": 0,
+        "em_atendimento": 4,
         "n_prof_ativos": 1,
         "rs_hora_salao": 6.92,
         "horas_operacao_periodo": 12,
@@ -5132,15 +5132,15 @@
           "ticket_medio": 82.6
         },
         "pace_intraday": {
-          "hora_atual_str": "13:39",
-          "hora_atual_num": 13.65,
-          "pct_esperado_agora": 23.3,
+          "hora_atual_str": "15:00",
+          "hora_atual_num": 15.0,
+          "pct_esperado_agora": 34.2,
           "meta_dia": 917.32,
-          "meta_esperada_agora": 213.78,
+          "meta_esperada_agora": 313.72,
           "realizado_agora": 83.0,
-          "pace_delta": -130.78,
-          "pace_ratio_pct": 38.8,
-          "projecao_dia": 356.15,
+          "pace_delta": -230.72,
+          "pace_ratio_pct": 26.5,
+          "projecao_dia": 242.69,
           "opera_hoje": true
         },
         "ticket_meta": 0.0,
@@ -5377,9 +5377,15 @@
   "insights": {
     "diario": [
       {
+        "tipo": "atencao",
+        "titulo": "Ritmo abaixo do esperado",
+        "texto": "Só 9% da meta às 15h com 5h úteis restantes.",
+        "acao": "Postar story/status no WhatsApp com 'últimas vagas hoje' pode gerar 2-3 walk-ins na última hora."
+      },
+      {
         "tipo": "info",
         "titulo": "Picos previstos ainda hoje",
-        "texto": "Base semanal aponta 14h (1.0 clientes/hora), 15h (0.7 clientes/hora) como as próximas horas de fluxo.",
+        "texto": "Base semanal aponta 17h (0.7 clientes/hora) como as próximas horas de fluxo.",
         "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
       }
     ],
