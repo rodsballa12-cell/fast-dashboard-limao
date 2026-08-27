@@ -36,7 +36,7 @@ AGEND_DET_CACHE = REPO_ROOT / "data" / "agend_detail_cache.json"
 
 # TTLs de cache (economia de API)
 TTL_PROF_HORAS = 24 * 7   # profs quase nunca mudam
-TTL_CLI_LISTA_HORAS = 12  # lista básica de clientes (só id/nome/tel) — refresh 2×/dia é suficiente
+TTL_CLI_LISTA_HORAS = 24  # lista básica de clientes (só id/nome/tel) — 1×/dia suficiente
 TTL_CATALOGO_HORAS = 24 * 7  # serviços/produtos catálogo mudam raro
 TTL_AGEND_DET_HORAS = 72     # detalhe cancelado (quem/quando) não muda após 3d
 
@@ -181,21 +181,21 @@ def brl_round(v): return round(float(v or 0), 2)
 
 def analisar(agend, transac, ini: date, fim: date):
     """Retorna dict com kpis, categorias, hora_abs, dow, ranking_prof, ranking_serv, meios_pagamento, por_dia_mes, rentabilidade_hora, clientes_top."""
-    ag = [a for a in agend if a.get("dataHoraInicio") and ini <= datetime.fromisoformat(a["dataHoraInicio"]).date() <= fim]
+    ag = [a for a in agend if a.get("dataHoraInicio") and ini <= parse_trinks_dt(a["dataHoraInicio"]).date() <= fim]
     fin = [a for a in ag if (a.get("status") or {}).get("nome") == "Finalizado"]
     canc = [a for a in ag if (a.get("status") or {}).get("nome") == "Cancelado"]
     em_at = [a for a in ag if (a.get("status") or {}).get("nome") == "Em atendimento"]
 
-    tr = [t for t in transac if t.get("dataHora") and ini <= datetime.fromisoformat(t["dataHora"]).date() <= fim]
+    tr = [t for t in transac if t.get("dataHora") and ini <= parse_trinks_dt(t["dataHora"]).date() <= fim]
 
     # KPIs base
     receita_serv = sum(float(a.get("valor") or 0) for a in fin)
-    dias_com_op = len({datetime.fromisoformat(a["dataHoraInicio"]).date() for a in fin})
+    dias_com_op = len({parse_trinks_dt(a["dataHoraInicio"]).date() for a in fin})
     unicos = len({(a.get("cliente") or {}).get("id") for a in fin if (a.get("cliente") or {}).get("id")})
     # clientes-dia = ticket médio do Trinks (1 cliente em 1 dia = 1 visita)
     # mesmo cliente com N serviços no mesmo dia conta como 1; se voltar noutro dia, +1
     cliente_dia = {((a.get("cliente") or {}).get("id"),
-                    datetime.fromisoformat(a["dataHoraInicio"]).date())
+                    parse_trinks_dt(a["dataHoraInicio"]).date())
                    for a in fin if (a.get("cliente") or {}).get("id")}
     n_cliente_dia = len(cliente_dia)
 
@@ -242,7 +242,7 @@ def analisar(agend, transac, ini: date, fim: date):
             categoria_native[cat]["v"] += float(s.get("preco") or 0)
         descontos += float(t.get("descontos") or 0)
         trocos += float(t.get("troco") or 0)
-        dt = datetime.fromisoformat(t["dataHora"])
+        dt = parse_trinks_dt(t["dataHora"])
         hora_c[dt.hour] += 1
         hora_v[dt.hour] += float(t.get("totalPagar") or 0)
 
@@ -321,10 +321,18 @@ def analisar(agend, transac, ini: date, fim: date):
         tipo = classificar_cadeira(s)
         ocup_por_cadeira[tipo] += min_a / 60
 
+    # Capacidade DOW-aware: soma horas reais de cada dia operado no período
+    # (dom = 6h vs seg-sáb = 12h). Antes usava 12h flat → distorcia domingo pra baixo.
+    horas_operacao_periodo = 0.0
+    _cur = ini
+    while _cur <= fim:
+        if opera_no_dia(_cur):
+            horas_operacao_periodo += HORAS_POR_DOW[_cur.weekday()]
+        _cur += timedelta(days=1)
+
     cadeiras_detalhe = {}
-    dias_ref = max(dias_com_op, 1)
     for tipo, n_cad in CADEIRAS_FIS.items():
-        cap_h = n_cad * HORAS_OPERACAO_DIA * dias_ref
+        cap_h = n_cad * horas_operacao_periodo
         oc_h = ocup_por_cadeira.get(tipo, 0)
         util_pct = min(100, oc_h / max(cap_h, 1) * 100)
         cadeiras_detalhe[tipo] = {
@@ -339,7 +347,6 @@ def analisar(agend, transac, ini: date, fim: date):
     util_agregada = min(100, total_ocup / max(total_cap, 1) * 100)
 
     # === R$/hora útil do salão ===
-    horas_operacao_periodo = HORAS_OPERACAO_DIA * dias_ref
     rs_hora_salao = caixa / max(horas_operacao_periodo, 1)
 
     # === Densidade horária (média atendimentos simultâneos por hora do dia) ===
@@ -351,7 +358,7 @@ def analisar(agend, transac, ini: date, fim: date):
         min_a = int(a.get("duracaoEmMinutos") or 0)
         if not dt or min_a <= 0: continue
         try:
-            inicio = datetime.fromisoformat(dt)
+            inicio = parse_trinks_dt(dt)
         except Exception:
             continue
         # Distribuir min_a entre as horas afetadas
@@ -415,14 +422,14 @@ def analisar(agend, transac, ini: date, fim: date):
 
     by_dow = defaultdict(lambda: {"n": 0, "v": 0.0})
     for a in fin:
-        dt = datetime.fromisoformat(a["dataHoraInicio"])
+        dt = parse_trinks_dt(a["dataHoraInicio"])
         by_dow[DOW_NOMES[dt.weekday()]]["n"] += 1
         by_dow[DOW_NOMES[dt.weekday()]]["v"] += float(a.get("valor") or 0)
     dow_list = [{"nome": n, "n": by_dow[n]["n"], "v": brl_round(by_dow[n]["v"])} for n in DOW_NOMES]
 
     by_day = defaultdict(lambda: {"n": 0, "v": 0.0})
     for a in fin:
-        dt = datetime.fromisoformat(a["dataHoraInicio"])
+        dt = parse_trinks_dt(a["dataHoraInicio"])
         by_day[dt.day]["n"] += 1
         by_day[dt.day]["v"] += float(a.get("valor") or 0)
     dia_list = [{"d": d, "n": by_day[d]["n"], "v": brl_round(by_day[d]["v"])} for d in sorted(by_day)]
@@ -500,7 +507,7 @@ def top_ltv(agend, ini: date, fim: date, limite=15):
     ltv = defaultdict(lambda: {"n": 0, "v": 0.0, "nome": ""})
     for a in agend:
         if (a.get("status") or {}).get("nome") != "Finalizado": continue
-        dt = datetime.fromisoformat(a["dataHoraInicio"]).date() if a.get("dataHoraInicio") else None
+        dt = parse_trinks_dt(a["dataHoraInicio"]).date() if a.get("dataHoraInicio") else None
         if not dt or not (ini <= dt <= fim): continue
         cid = (a.get("cliente") or {}).get("id")
         if cid is None: continue
@@ -708,13 +715,19 @@ def main():
             detalhes_cache = json.loads(CLIENTES_CACHE.read_text(encoding="utf-8"))
         except Exception:
             detalhes_cache = {}
-    ids_hoje = {str(c.get("id")) for c in clientes if c.get("id")}
+    # ⚡ DEFESA DE COTA: só enriquecer IDs que realmente têm visita registrada.
+    # Base cadastrada tem MUITO cliente inativo (walk-in que passou uma vez e nunca
+    # mais). Detalhar todos queima cota sem retorno. Só quem visitou aparece nas
+    # análises → só quem visitou merece detalhe rico.
+    ids_com_visita = {str((a.get("cliente") or {}).get("id"))
+                      for a in agend if (a.get("cliente") or {}).get("id")}
+    ids_hoje = {str(c.get("id")) for c in clientes if c.get("id")} & ids_com_visita
     ids_ja_cacheados = set(detalhes_cache.keys())
     ids_novos = list(ids_hoje - ids_ja_cacheados)
     # Cache miss → buscar. Limite defensivo (evita queimar cota se ID list explode)
-    MAX_FETCH_POR_RUN = 200
+    MAX_FETCH_POR_RUN = 50  # antes 200 — reduzido pra proteger cota mensal (10k/mês)
     if len(ids_novos) > MAX_FETCH_POR_RUN:
-        print(f"[detalhes] {len(ids_novos)} clientes novos; limitando a {MAX_FETCH_POR_RUN} nesta run")
+        print(f"[detalhes] {len(ids_novos)} clientes novos c/ visita; limitando a {MAX_FETCH_POR_RUN} nesta run")
         ids_novos = ids_novos[:MAX_FETCH_POR_RUN]
     if ids_novos:
         print(f"[detalhes] buscando {len(ids_novos)} clientes novos via /v1/clientes/{{id}}")
@@ -742,7 +755,7 @@ def main():
         cid = c.get("id")
         if not cid: continue
         if c.get("dataCadastro"):
-            try: cad_map[cid] = datetime.fromisoformat(c["dataCadastro"])
+            try: cad_map[cid] = parse_trinks_dt(c["dataCadastro"])
             except Exception: pass
         # Telefone (formato: {"ddi":"55","ddd":"11","telefone":"XXX"})
         tels = c.get("telefones") or []
@@ -761,7 +774,7 @@ def main():
         dn_str = c.get("dataNascimento") or det.get("dataNascimento")
         if dn_str:
             try:
-                dn = datetime.fromisoformat(dn_str)
+                dn = parse_trinks_dt(dn_str)
                 aniv_map[cid] = (dn.month, dn.day, c.get("nome") or det.get("nome") or "")
             except Exception: pass
         # comoNosConheceu — canal de aquisição
@@ -794,15 +807,15 @@ def main():
 
     fin_mes = [a for a in agend if (a.get("status") or {}).get("nome") == "Finalizado"
                and a.get("dataHoraInicio")
-               and ini_mes <= datetime.fromisoformat(a["dataHoraInicio"]).date() <= fim_mes]
+               and ini_mes <= parse_trinks_dt(a["dataHoraInicio"]).date() <= fim_mes]
     nvr_mes = novos_vs_recorr(fin_mes, cad_map, ini_mes)
 
     # novos_vs_recorr também pra semanal e anual
     fin_sem = [a for a in agend if (a.get("status") or {}).get("nome") == "Finalizado"
-               and a.get("dataHoraInicio") and seg <= datetime.fromisoformat(a["dataHoraInicio"]).date() <= dom]
+               and a.get("dataHoraInicio") and seg <= parse_trinks_dt(a["dataHoraInicio"]).date() <= dom]
     nvr_sem = novos_vs_recorr(fin_sem, cad_map, seg)
     fin_ano = [a for a in agend if (a.get("status") or {}).get("nome") == "Finalizado"
-               and a.get("dataHoraInicio") and ini_ano <= datetime.fromisoformat(a["dataHoraInicio"]).date() <= fim_ano]
+               and a.get("dataHoraInicio") and ini_ano <= parse_trinks_dt(a["dataHoraInicio"]).date() <= fim_ano]
     nvr_ano = novos_vs_recorr(fin_ano, cad_map, ini_ano)
 
     ltv_ano = top_ltv(agend, ini_ano, fim_ano)
@@ -816,6 +829,7 @@ def main():
         "caixa": a_sem_ant["kpis"]["caixa"], "atend_fin": a_sem_ant["kpis"]["atend_fin"],
         "n_trans": a_sem_ant["kpis"]["n_trans"], "ticket_trans": a_sem_ant["kpis"]["ticket_trans"],
         "ticket_medio": a_sem_ant["kpis"]["ticket_medio"],
+        "cliente_dia": a_sem_ant["kpis"]["cliente_dia"],
         "dias_op": a_sem_ant["kpis"]["dias_op"],
     }
 
@@ -830,6 +844,7 @@ def main():
         "periodo_ini": ini_mes_ant.isoformat(), "periodo_fim": fim_mes_ant.isoformat(),
         "caixa": a_mes_ant["kpis"]["caixa"], "atend_fin": a_mes_ant["kpis"]["atend_fin"],
         "cliente_dia": a_mes_ant["kpis"]["cliente_dia"], "ticket_medio": a_mes_ant["kpis"]["ticket_medio"],
+        "dias_op": a_mes_ant["kpis"]["dias_op"],
     }
 
     # === Mesmo DOW semana passada (pra delta do diário) ===
@@ -839,6 +854,7 @@ def main():
         "data": hoje_ant.isoformat(),
         "caixa": a_dia_ant["kpis"]["caixa"], "atend_fin": a_dia_ant["kpis"]["atend_fin"],
         "cliente_dia": a_dia_ant["kpis"]["cliente_dia"], "ticket_medio": a_dia_ant["kpis"]["ticket_medio"],
+        "dias_op": a_dia_ant["kpis"]["dias_op"],
     }
 
     def _delta_pct(atual, ant):
@@ -846,14 +862,24 @@ def main():
             return None
         return round((atual - ant) / ant * 100, 1)
 
+    def _delta_pct_perdia(atual, ant, dias_atu, dias_ant):
+        """Delta normalizado por dias operados — evita comparar mês parcial × mês fechado.
+        Ticket médio já é média per capita, não normaliza."""
+        if not dias_atu or not dias_ant or not ant: return None
+        return _delta_pct(atual / dias_atu, ant / dias_ant)
+
     # Injeta deltas nos KPIs de cada aba
     for aba, ant in [(a_mensal, mes_anterior_kpis), (a_semanal, semana_anterior),
                      (a_diario, dia_anterior_kpis)]:
         k = aba["kpis"]
-        k["caixa_delta_pct"] = _delta_pct(k.get("caixa", 0), ant.get("caixa", 0))
-        k["atend_delta_pct"] = _delta_pct(k.get("atend_fin", 0), ant.get("atend_fin", 0))
-        k["cliente_dia_delta_pct"] = _delta_pct(k.get("cliente_dia", 0), ant.get("cliente_dia", 0))
+        dias_atu = k.get("dias_op", 1)
+        dias_ant = ant.get("dias_op", 1)
+        k["caixa_delta_pct"] = _delta_pct_perdia(k.get("caixa", 0), ant.get("caixa", 0), dias_atu, dias_ant)
+        k["atend_delta_pct"] = _delta_pct_perdia(k.get("atend_fin", 0), ant.get("atend_fin", 0), dias_atu, dias_ant)
+        k["cliente_dia_delta_pct"] = _delta_pct_perdia(k.get("cliente_dia", 0), ant.get("cliente_dia", 0), dias_atu, dias_ant)
         k["ticket_delta_pct"] = _delta_pct(k.get("ticket_medio", 0), ant.get("ticket_medio", 0))
+        # Delta bruto também exposto pra UI mostrar quando as duas janelas SÃO comparáveis
+        k["caixa_delta_bruto_pct"] = _delta_pct(k.get("caixa", 0), ant.get("caixa", 0))
         k["periodo_ant_ref"] = ant
 
     # === Churn early warning: clientes ≥3 visitas nos primeiros 30 dias e sumidos há 14+ dias ===
@@ -866,7 +892,7 @@ def main():
         cid = (a.get("cliente") or {}).get("id")
         if cid is None: continue
         try:
-            dt = datetime.fromisoformat(a["dataHoraInicio"]).date()
+            dt = parse_trinks_dt(a["dataHoraInicio"]).date()
         except Exception:
             continue
         cli_visitas[cid].append(dt)
@@ -986,7 +1012,10 @@ def main():
     novos_30d_ids = {cid for cid, dc in cad_map.items() if dc.date() >= hoje - timedelta(days=30)}
     ltv_por_id = {cid: cli_valor.get(cid, 0) for cid in ativos_ids}
     ltv_medio = sum(ltv_por_id.values()) / max(total_base, 1)
-    total_visitas = sum(len(v) for v in cli_visitas.values())
+    # cli_visitas guarda linhas de atendimento (múltiplos serviços/dia contam separado).
+    # Ticket médio "por visita" = cliente-dia único, alinhado com o resto do painel.
+    total_atend = sum(len(v) for v in cli_visitas.values())
+    total_visitas = sum(len(set(v)) for v in cli_visitas.values())  # cliente-dia único
     ticket_medio_visita = sum(ltv_por_id.values()) / max(total_visitas, 1)
     freq_media = total_visitas / max(total_base, 1)
     n_uma_vez = sum(1 for v in cli_visitas.values() if len(v) == 1)
@@ -1111,10 +1140,10 @@ def main():
     dow_hist_n = {i: 0 for i in range(7)}
     for a in fin_ano:
         try:
-            dt = datetime.fromisoformat(a["dataHoraInicio"]).date()
+            dt = parse_trinks_dt(a["dataHoraInicio"]).date()
             dow_hist_v[dt.weekday()] += float(a.get("valor") or 0)
         except Exception: pass
-    dias_vistos = {datetime.fromisoformat(a["dataHoraInicio"]).date() for a in fin_ano if a.get("dataHoraInicio")}
+    dias_vistos = {parse_trinks_dt(a["dataHoraInicio"]).date() for a in fin_ano if a.get("dataHoraInicio")}
     for d in dias_vistos:
         dow_hist_n[d.weekday()] += 1
 
@@ -1160,7 +1189,7 @@ def main():
     sem_v_per_mes = defaultdict(lambda: defaultdict(float))  # {(y,m): {sem_num: caixa}}
     for a in fin_ano:
         try:
-            dt = datetime.fromisoformat(a["dataHoraInicio"]).date()
+            dt = parse_trinks_dt(a["dataHoraInicio"]).date()
             sem_v_per_mes[(dt.year, dt.month)][sem_do_mes(dt)] += float(a.get("valor") or 0)
         except Exception: pass
     today_ym = (hoje.year, hoje.month)
@@ -1185,7 +1214,7 @@ def main():
     mes_v_hist_ano = defaultdict(lambda: defaultdict(float))  # {ano: {mes: caixa}}
     for a in fin_ano:
         try:
-            dt = datetime.fromisoformat(a["dataHoraInicio"]).date()
+            dt = parse_trinks_dt(a["dataHoraInicio"]).date()
             mes_v_hist_ano[dt.year][dt.month] += float(a.get("valor") or 0)
         except Exception: pass
     anos_fechados = [y for y, meses in mes_v_hist_ano.items()
@@ -1259,7 +1288,7 @@ def main():
     for tr in transac:
         if not tr.get("dataHora"): continue
         try:
-            dt = datetime.fromisoformat(tr["dataHora"])
+            dt = parse_trinks_dt(tr["dataHora"])
             if not (ini_ano <= dt.date() <= fim_ano): continue
             v = sum(float(fp.get("valor") or 0) for fp in (tr.get("formasPagamentos") or []))
             hora_v_hist[dt.hour] += v
@@ -1425,7 +1454,7 @@ def main():
             dt_full = None
             try:
                 if tr.get("dataHora"):
-                    dt_full = datetime.fromisoformat(tr["dataHora"])
+                    dt_full = parse_trinks_dt(tr["dataHora"])
                     dt = dt_full.date()
             except Exception:
                 pass

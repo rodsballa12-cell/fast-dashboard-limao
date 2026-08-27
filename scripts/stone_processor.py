@@ -477,6 +477,9 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         "periodo_ini": ini.isoformat() if ini else None,
         "periodo_fim": fim.isoformat() if fim else None,
         "total_lancamentos": len(recs),
+        # taxa cobrada pelo Stone sobre volume PIX (custo médio efetivo)
+        "pix_tarifa_pct": round(tot_pix_tarifa / max(tot_pix_bruto, 1) * 100, 3),
+        # alias de compat — some quando o front for atualizado
         "taxa_pix_pct": round(tot_pix_tarifa / max(tot_pix_bruto, 1) * 100, 3),
         "nao_conciliado": nao_conciliado,
         "por_periodo": por_periodo,

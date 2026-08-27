@@ -98,6 +98,18 @@ def _insights_diario(aba, hora_media_semanal, hoje: date):
             ins.append(_mk("oportunidade", "Ticket médio do dia baixo",
                 f"Ticket médio {_fmt(tkt)} — abaixo do saudável ({_fmt(META_TICKET_MIN)}).",
                 "Padrão do dia é serviço avulso barato. Combo escova+hidratação (R$ 120) resolve. Falar com equipe agora."))
+
+    # 5. Resumo do dia (após fechamento) — apoia planejamento do dia seguinte
+    if hora_now >= 20 and k.get("atend_fin", 0) > 0:
+        caixa_dia = k.get("caixa", 0)
+        meta_dia = m.get("meta", 0) if m else 0
+        n_vis = k.get("cliente_dia", 0)
+        tkt = k.get("ticket_medio", 0)
+        pct = m.get("pct", 0) if m else 0
+        status_meta = "batida ✅" if pct >= 100 else f"{pct:.0f}% ({_fmt(m.get('falta',0))} faltou)"
+        ins.append(_mk("info", "Fechamento do dia",
+            f"Caixa {_fmt(caixa_dia)} · {n_vis} visitas · ticket {_fmt(tkt)} · meta {status_meta}.",
+            "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."))
     return ins
 
 
@@ -451,14 +463,19 @@ def _insights_stone(stone):
             f"Antecipar tudo hoje custaria {_fmt(custo_antecip)} (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar {_fmt(gasto_oport)} (CDI). Custo real da antecipação: {_fmt(liquido)}.",
             "Só antecipa se tem uso melhor pro dinheiro que render >14,5% a.a. Caso contrário, é mais barato esperar D+30."))
 
-    # 4. Mix PIX vs Cartão
-    taxa_pix = stone.get("taxa_pix_pct", 0)
-    if taxa_pix >= 0.7:
-        ins.append(_mk("oportunidade", f"PIX = {taxa_pix*100:.0f}% dos recebimentos",
+    # 4. Mix PIX vs Cartão — share do PIX no total de recebimentos (não a tarifa!)
+    fluxo = stone.get("fluxo_caixa") or {}
+    pix_v = float(fluxo.get("pix_v") or 0)
+    debito_v = float(fluxo.get("debito_v") or 0)
+    credito_v = float(fluxo.get("credito_v") or 0)
+    total_receb = pix_v + debito_v + credito_v
+    pix_share = (pix_v / total_receb) if total_receb > 0 else 0
+    if total_receb > 0 and pix_share >= 0.5:
+        ins.append(_mk("oportunidade", f"PIX = {pix_share*100:.0f}% dos recebimentos",
             "Excelente pro fluxo: PIX cai D+0, cartão de crédito só D+30. E paga bem menos taxa.",
             "Manter incentivo ao PIX. Se rolar dar 3% de desconto por PIX ainda sobra margem — considere pra ticket alto."))
-    elif taxa_pix < 0.4:
-        ins.append(_mk("atencao", f"Só {taxa_pix*100:.0f}% em PIX",
+    elif total_receb > 0 and pix_share < 0.3:
+        ins.append(_mk("atencao", f"Só {pix_share*100:.0f}% em PIX",
             "Muito cartão significa dinheiro travado 30 dias e mais taxa (2,08% MDR + custo antecipação).",
             "Recepção deve pedir PIX PRIMEIRO. Se rolar 3-5% desconto no PIX, a margem paga o desconto e ainda melhora o fluxo."))
 
