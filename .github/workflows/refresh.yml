@@ -3,7 +3,14 @@ name: Refresh Dashboard Data
 on:
   workflow_dispatch:
   schedule:
-    # 11×/dia · a cada hora (minuto :17 UTC = :17 BRT) das 11h às 21h BRT
+    # 11 janelas de hora × 2 tentativas defasadas = até 22 fires/dia
+    # das 11h às 21h BRT. Só UMA roda de fato por hora — a segunda faz
+    # early-exit se detectar que já teve refresh nos últimos 45 min.
+    #
+    # POR QUÊ 2 CRONS: GitHub Actions pula fires silenciosamente durante
+    # picos de fila (observado 8 skips seguidos em 26/08). Um segundo
+    # fire dá segunda chance sem dobrar consumo de API (check no início
+    # do job usa `git log` no dashboard_data.json).
     #
     # GitHub Actions só aceita cron em UTC — mas como BRT = UTC-3 (offset de hora
     # inteira, sem DST desde 2019), o minuto UTC bate exato com o mesmo minuto BRT.
@@ -24,7 +31,8 @@ on:
     # ⚠️  ANTES rodava em :00 UTC — GitHub Actions concentra muita carga em
     # horários cheios e pula silenciosamente. Observado 8 skips seguidos em
     # 26/08 UTC. Movido pra :17 UTC (janela de menor demanda documentada).
-    - cron: '17 14-23,0 * * *'
+    - cron: '17 14-23,0 * * *'  # tentativa principal
+    - cron: '47 14-23,0 * * *'  # backup (early-exit se principal rodou)
 
 permissions:
   contents: write
@@ -34,21 +42,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # pra checar timestamp do último refresh commit
+
+      # Early-exit se refresh já rodou nos últimos 45 min (backup cron detecta
+      # que o principal já cumpriu o job e sai zerando consumo de API).
+      # Só aplica em fires scheduled — dispatch manual sempre roda.
+      - name: Skip if refreshed recently
+        id: recency
+        if: github.event_name == 'schedule'
+        run: |
+          last_ts=$(git log -1 --format=%ct -- data/dashboard_data.json 2>/dev/null || echo 0)
+          now=$(date -u +%s)
+          age=$((now - last_ts))
+          echo "Idade do último refresh: ${age}s"
+          if [ "$age" -lt 2700 ]; then
+            echo "SKIP=true" >> $GITHUB_OUTPUT
+            echo "⏭  Refresh recente (<45min). Backup cron faz early-exit."
+          else
+            echo "SKIP=false" >> $GITHUB_OUTPUT
+            echo "▶️  Rodando refresh (idade $((age/60)) min)."
+          fi
 
       - uses: actions/setup-python@v5
+        if: steps.recency.outputs.SKIP != 'true'
         with:
           python-version: '3.12'
 
       - name: Install deps
+        if: steps.recency.outputs.SKIP != 'true'
         run: pip install requests
 
       - name: Refresh dashboard data (fetch API Trinks)
+        if: steps.recency.outputs.SKIP != 'true'
         env:
           TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
           TRINKS_ESTABELECIMENTO_ID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID }}
         run: python scripts/github_refresh.py
 
       - name: Commit e push se houve mudança
+        if: steps.recency.outputs.SKIP != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
