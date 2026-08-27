@@ -31,10 +31,15 @@ CONFIG_JSON = REPO_ROOT / "data" / "config.json"
 CLIENTES_CACHE = REPO_ROOT / "data" / "clientes_detalhes.json"
 PROF_CACHE = REPO_ROOT / "data" / "profissionais_cache.json"
 CLIENTES_LISTA_CACHE = REPO_ROOT / "data" / "clientes_lista_cache.json"
+SERV_CACHE = REPO_ROOT / "data" / "servicos_cache.json"
+PROD_CACHE = REPO_ROOT / "data" / "produtos_cache.json"
+AGEND_DET_CACHE = REPO_ROOT / "data" / "agend_detail_cache.json"
 
 # TTLs de cache (economia de API)
 TTL_PROF_HORAS = 24 * 7   # profs quase nunca mudam
 TTL_CLI_LISTA_HORAS = 12  # lista básica de clientes (só id/nome/tel) — refresh 2×/dia é suficiente
+TTL_CATALOGO_HORAS = 24 * 7  # serviços/produtos catálogo mudam raro
+TTL_AGEND_DET_HORAS = 72     # detalhe cancelado (quem/quando) não muda após 3d
 
 # TIMEZONE: todo o pipeline opera em Brasília (UTC-3, sem DST desde 2019).
 # Container do GitHub Actions roda em UTC, então nunca usar date.today() ou
@@ -640,6 +645,56 @@ def main():
         _save_cache(PROF_CACHE, {"prof_map": prof_map_global, "prof_meta": prof_meta_global})
         print(f"  {len(prof_meta_global)} cadastros · {len(prof_map_global)} chaves indexadas (id + idProfissional)")
     analisar._prof_id_nome_cache = prof_map_global
+
+    # === CATÁLOGO SERVIÇOS · /v1/servicos (cache 7d) ===
+    # Preço-tabela oficial (source of truth) pra comparar contra preço mediano praticado.
+    # Detecta descontos sistemáticos ou serviços cobrados acima da tabela.
+    servicos_catalogo = []
+    if _cache_valido(SERV_CACHE, TTL_CATALOGO_HORAS):
+        servicos_catalogo = _load_cache(SERV_CACHE)
+        print(f"[fetch] servicos catalogo: {len(servicos_catalogo)} (cache · <{TTL_CATALOGO_HORAS}h)")
+    else:
+        print("[fetch] servicos catalogo...")
+        try:
+            servicos_catalogo = list(t.paginate("/v1/servicos"))
+            _save_cache(SERV_CACHE, servicos_catalogo)
+            print(f"  {len(servicos_catalogo)} serviços no catálogo")
+        except Exception as e:
+            print(f"  [warn] /v1/servicos falhou: {e}")
+
+    tabela_precos = {}
+    for s in servicos_catalogo:
+        nome = (s.get("nome") or "").strip()
+        preco = float(s.get("preco") or s.get("valor") or 0)
+        if nome and preco > 0:
+            tabela_precos[nome] = {"preco": preco, "duracao": s.get("duracaoEmMinutos") or 0,
+                                    "categoria": (s.get("categoria") or {}).get("nome") if isinstance(s.get("categoria"), dict) else s.get("categoria")}
+
+    # === CATÁLOGO PRODUTOS · /v1/produtos (cache 7d) ===
+    produtos_catalogo = []
+    if _cache_valido(PROD_CACHE, TTL_CATALOGO_HORAS):
+        produtos_catalogo = _load_cache(PROD_CACHE)
+        print(f"[fetch] produtos catalogo: {len(produtos_catalogo)} (cache · <{TTL_CATALOGO_HORAS}h)")
+    else:
+        print("[fetch] produtos catalogo...")
+        try:
+            produtos_catalogo = list(t.paginate("/v1/produtos"))
+            _save_cache(PROD_CACHE, produtos_catalogo)
+            print(f"  {len(produtos_catalogo)} produtos no catálogo")
+        except Exception as e:
+            print(f"  [warn] /v1/produtos falhou: {e}")
+
+    produtos_data = {
+        "n_total": len(produtos_catalogo),
+        "lista": sorted(
+            [{"nome": (p.get("nome") or "").strip(),
+              "preco": float(p.get("preco") or p.get("valor") or 0),
+              "estoque": p.get("estoque") or p.get("quantidadeEmEstoque") or 0,
+              "categoria": ((p.get("categoria") or {}).get("nome") if isinstance(p.get("categoria"), dict) else p.get("categoria")) or ""}
+             for p in produtos_catalogo if (p.get("nome") or "").strip()],
+            key=lambda x: -x["preco"]
+        )[:50],
+    }
 
     # === COMISSÕES · /v1/profissionais/comissoes ===
     # Endpoint existe (200 OK) mas está sem cadastro no Trinks hoje (totalRecords=0).
@@ -1567,6 +1622,7 @@ def main():
             obs_cli = (a.get("observacoesDoCliente") or "").strip()
             obs_est = (a.get("observacoesDoEstabelecimento") or "").strip()
             canc_com_valor.append({
+                "id": a.get("id"),
                 "data": dt,
                 "valor": v,
                 "profissional": prof,
@@ -1584,6 +1640,78 @@ def main():
                 "obs_estabelecimento": obs_est[:200] if obs_est else "",
             })
     canc_com_valor.sort(key=lambda x: x["data"], reverse=True)
+
+    # === FORENSE de cancelados suspeitos · /v1/agendamentos/{id} ===
+    # Só busca detalhe pros de risco != ok (crítico/atenção/revisar) → limita custo.
+    # Cache 72h por ID (histórico não muda depois do fato).
+    agend_det_cache = {}
+    if AGEND_DET_CACHE.exists():
+        try: agend_det_cache = json.loads(AGEND_DET_CACHE.read_text(encoding="utf-8"))
+        except Exception: agend_det_cache = {}
+    agora_iso = datetime.now(BRT).isoformat()
+    canc_top_risco = [x for x in canc_com_valor if x["risco"] in ("critico", "atencao", "revisar")][:40]
+    n_fetched = 0
+    for item in canc_top_risco:
+        aid = item.get("id")
+        if not aid: continue
+        cached = agend_det_cache.get(str(aid))
+        cache_ok = False
+        if cached:
+            try:
+                gerado = datetime.fromisoformat(cached.get("_gerado_em","").replace("Z","+00:00"))
+                if gerado.tzinfo is None: gerado = gerado.replace(tzinfo=BRT)
+                if (datetime.now(BRT) - gerado).total_seconds()/3600 < TTL_AGEND_DET_HORAS:
+                    cache_ok = True
+            except Exception: pass
+        if not cache_ok:
+            try:
+                det = t.get(f"/v1/agendamentos/{aid}")
+                if isinstance(det, dict):
+                    det["_gerado_em"] = agora_iso
+                    agend_det_cache[str(aid)] = det
+                    cached = det
+                    n_fetched += 1
+            except Exception as e:
+                print(f"  [agend/{aid}] {e}")
+                cached = None
+        if cached:
+            hist = cached.get("historicoStatus") or cached.get("historico") or []
+            criado_por = cached.get("criadoPor") or cached.get("usuarioCriacao") or (cached.get("criadoPorUsuario") or {}).get("nome")
+            cancelado_em = None
+            cancelado_por = None
+            for h in (hist if isinstance(hist, list) else []):
+                st = ((h.get("status") or {}).get("nome") if isinstance(h.get("status"), dict) else h.get("status")) or ""
+                if "cancel" in st.lower():
+                    cancelado_em = h.get("dataHora") or h.get("data")
+                    cancelado_por = h.get("usuario") or (h.get("usuarioAcao") or {}).get("nome")
+                    break
+            item["criado_por"] = criado_por
+            item["cancelado_em"] = cancelado_em
+            item["cancelado_por"] = cancelado_por
+    if n_fetched:
+        AGEND_DET_CACHE.write_text(json.dumps(agend_det_cache, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"[agend detail] {n_fetched} buscas novas · cache {len(agend_det_cache)} IDs")
+
+    # === DESVIO da tabela (preço praticado vs oficial do catálogo) ===
+    desvio_tabela = []
+    for nome, info in tabela_precos.items():
+        praticado = preco_mediano_geral.get(nome)
+        if not praticado: continue
+        tabela = info["preco"]
+        if tabela <= 0: continue
+        diff = praticado - tabela
+        pct = diff / tabela * 100
+        # Só reporta desvios ≥ 3% (evita ruído de arredondamento)
+        if abs(pct) < 3: continue
+        desvio_tabela.append({
+            "servico": nome,
+            "tabela": round(tabela, 2),
+            "praticado": round(praticado, 2),
+            "diff": round(diff, 2),
+            "pct": round(pct, 1),
+            "sinal": "desconto" if diff < 0 else "premium",
+        })
+    desvio_tabela.sort(key=lambda x: -abs(x["pct"]))
 
     # Agregações
     canc_por_prof = defaultdict(lambda: {"n": 0, "v": 0.0})
@@ -1621,6 +1749,12 @@ def main():
         "cota_api": cota_final,
         "comissoes": comissoes_data,
         "prof_meta": {str(k): v for k, v in prof_meta_global.items()},
+        "catalogo_servicos": {
+            "n_total": len(tabela_precos),
+            "desvio_tabela": desvio_tabela[:30],
+            "n_com_desvio": len(desvio_tabela),
+        },
+        "produtos": produtos_data,
         "stone": stone_data,
         "auditoria_cancelados": {
             "n_com_valor": len(canc_com_valor),

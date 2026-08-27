@@ -192,6 +192,8 @@
       <div id="anual-ticket-meta"></div>
       <div id="anual-categorias"></div>
       <div id="anual-categoria-native"></div>
+      <div id="anual-desvio-tabela"></div>
+      <div id="anual-produtos"></div>
       <div id="anual-novos"></div>
       <div id="anual-rentabilidade"></div>
       <!-- 4. OPERAÇÃO -->
@@ -985,6 +987,77 @@ function renderComissoes(container_id, comissoes, prof_meta){
   </div>`;
 }
 
+function renderDesvioTabela(container_id, cat){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  const c = cat || {};
+  if(!c.n_total){
+    el.innerHTML = `<div class="card">
+      <h2>📐 Preço praticado vs tabela</h2>
+      <div class="cap">Catálogo <code>/v1/servicos</code> ainda não carregado.</div>
+    </div>`;
+    return;
+  }
+  const dv = c.desvio_tabela || [];
+  if(!dv.length){
+    el.innerHTML = `<div class="card">
+      <h2>📐 Preço praticado vs tabela</h2>
+      <div class="cap">${c.n_total} serviço(s) no catálogo · nenhum desvio ≥ 3% detectado.</div>
+      <div class="insight">✅ Preço mediano praticado bate com a tabela oficial. Recepção está cobrando conforme cadastrado.</div>
+    </div>`;
+    return;
+  }
+  const rows = dv.map(d => {
+    const cor = d.sinal === 'desconto' ? 'var(--crit)' : 'var(--good)';
+    const sinal = d.diff >= 0 ? '+' : '';
+    return `<tr>
+      <td>${d.servico}</td>
+      <td style="text-align:right;">${brl(d.tabela)}</td>
+      <td style="text-align:right;">${brl(d.praticado)}</td>
+      <td style="text-align:right;color:${cor};font-weight:700;">${sinal}${brl(d.diff)}</td>
+      <td style="text-align:right;color:${cor};font-weight:700;">${sinal}${d.pct}%</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<div class="card">
+    <h2>📐 Preço praticado vs tabela</h2>
+    <div class="cap">${c.n_com_desvio} de ${c.n_total} serviços fogem da tabela oficial em ±3% ou mais. <strong>Desconto</strong> = cobrando menos; <strong>premium</strong> = cobrando mais.</div>
+    <table class="simple">
+      <thead><tr><th>Serviço</th><th>Tabela</th><th>Praticado</th><th>Diferença</th><th>%</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="insight" style="margin-top:12px;">
+      <strong>Ação:</strong> descontos sistemáticos ≥ 10% podem ser política de fidelização ou brecha de fluxo. Premium consistente sinaliza upsell natural.
+    </div>
+  </div>`;
+}
+
+function renderProdutos(container_id, prod){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  const p = prod || {};
+  if(!p.n_total){
+    el.innerHTML = ''; return;  // sem produtos → esconde
+  }
+  const lista = p.lista || [];
+  const rows = lista.map(x => {
+    const estoqueCor = x.estoque === 0 ? 'var(--crit)' : (x.estoque < 3 ? 'var(--warn)' : '');
+    return `<tr>
+      <td>${x.nome}</td>
+      <td>${x.categoria||'—'}</td>
+      <td style="text-align:right;">${brl(x.preco)}</td>
+      <td style="text-align:right;color:${estoqueCor};font-weight:${x.estoque<3?'700':'400'};">${x.estoque}</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<div class="card">
+    <h2>📦 Produtos catalogados</h2>
+    <div class="cap">${p.n_total} produtos ativos no Trinks · <span style="color:var(--crit)">vermelho</span> = estoque zero · <span style="color:var(--warn)">amarelo</span> = &lt; 3 unidades.</div>
+    <table class="simple">
+      <thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
 function renderCategoriaNativa(container_id, categorias){
   const el = document.getElementById(container_id);
   if(!el || !categorias || categorias.length === 0){ if(el) el.innerHTML = ''; return; }
@@ -1342,6 +1415,8 @@ function renderAnual(data){
   renderUtilizacao('anual-utilizacao', 'ano', k, a);
   if(a.novos_vs_recorr) renderNovosRecorr('anual-novos', a.novos_vs_recorr, 'ano');
   renderCategoriaNativa('anual-categoria-native', a.categoria_native);
+  renderDesvioTabela('anual-desvio-tabela', data.catalogo_servicos);
+  renderProdutos('anual-produtos', data.produtos);
 }
 
 function renderClientes(data){
@@ -1595,6 +1670,14 @@ function renderAuditoria(data){
     const obsChunks = [];
     if(x.obs_estabelecimento) obsChunks.push(`<span style="color:#f59e0b;font-size:10.5px;"><strong>EST:</strong> ${x.obs_estabelecimento.slice(0,100)}</span>`);
     if(x.obs_cliente) obsChunks.push(`<span style="color:#3b82f6;font-size:10.5px;"><strong>CLI:</strong> ${x.obs_cliente.slice(0,100)}</span>`);
+    // Forense: quem criou / quem cancelou (via /v1/agendamentos/{id})
+    if(x.cancelado_por || x.criado_por){
+      const partes = [];
+      if(x.criado_por) partes.push(`criado por <strong>${x.criado_por}</strong>`);
+      if(x.cancelado_por) partes.push(`cancelado por <strong style="color:var(--crit)">${x.cancelado_por}</strong>`);
+      if(x.cancelado_em) partes.push(`em ${x.cancelado_em.slice(0,16).replace('T',' ')}`);
+      obsChunks.push(`<span style="color:var(--ink-3);font-size:10px;">🔍 ${partes.join(' · ')}</span>`);
+    }
     const obsCell = obsChunks.length ? obsChunks.join('<br>') : '<span style="color:var(--ink-3);font-size:10px;">—</span>';
     return `<tr ${riscoStyle[x.risco]||''}>
       <td>${riscoBadge[x.risco]||''}</td>
