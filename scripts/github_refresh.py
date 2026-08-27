@@ -32,7 +32,6 @@ CLIENTES_CACHE = REPO_ROOT / "data" / "clientes_detalhes.json"
 PROF_CACHE = REPO_ROOT / "data" / "profissionais_cache.json"
 CLIENTES_LISTA_CACHE = REPO_ROOT / "data" / "clientes_lista_cache.json"
 SERV_CACHE = REPO_ROOT / "data" / "servicos_cache.json"
-PROD_CACHE = REPO_ROOT / "data" / "produtos_cache.json"
 AGEND_DET_CACHE = REPO_ROOT / "data" / "agend_detail_cache.json"
 
 # TTLs de cache (economia de API)
@@ -669,32 +668,6 @@ def main():
         if nome and preco > 0:
             tabela_precos[nome] = {"preco": preco, "duracao": s.get("duracaoEmMinutos") or 0,
                                     "categoria": (s.get("categoria") or {}).get("nome") if isinstance(s.get("categoria"), dict) else s.get("categoria")}
-
-    # === CATÁLOGO PRODUTOS · /v1/produtos (cache 7d) ===
-    produtos_catalogo = []
-    if _cache_valido(PROD_CACHE, TTL_CATALOGO_HORAS):
-        produtos_catalogo = _load_cache(PROD_CACHE)
-        print(f"[fetch] produtos catalogo: {len(produtos_catalogo)} (cache · <{TTL_CATALOGO_HORAS}h)")
-    else:
-        print("[fetch] produtos catalogo...")
-        try:
-            produtos_catalogo = list(t.paginate("/v1/produtos"))
-            _save_cache(PROD_CACHE, produtos_catalogo)
-            print(f"  {len(produtos_catalogo)} produtos no catálogo")
-        except Exception as e:
-            print(f"  [warn] /v1/produtos falhou: {e}")
-
-    produtos_data = {
-        "n_total": len(produtos_catalogo),
-        "lista": sorted(
-            [{"nome": (p.get("nome") or "").strip(),
-              "preco": float(p.get("preco") or p.get("valor") or 0),
-              "estoque": p.get("estoque") or p.get("quantidadeEmEstoque") or 0,
-              "categoria": ((p.get("categoria") or {}).get("nome") if isinstance(p.get("categoria"), dict) else p.get("categoria")) or ""}
-             for p in produtos_catalogo if (p.get("nome") or "").strip()],
-            key=lambda x: -x["preco"]
-        )[:50],
-    }
 
     # === COMISSÕES · /v1/profissionais/comissoes ===
     # Endpoint existe (200 OK) mas está sem cadastro no Trinks hoje (totalRecords=0).
@@ -1754,7 +1727,6 @@ def main():
             "desvio_tabela": desvio_tabela[:30],
             "n_com_desvio": len(desvio_tabela),
         },
-        "produtos": produtos_data,
         "stone": stone_data,
         "auditoria_cancelados": {
             "n_com_valor": len(canc_com_valor),

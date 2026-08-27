@@ -193,7 +193,6 @@
       <div id="anual-categorias"></div>
       <div id="anual-categoria-native"></div>
       <div id="anual-desvio-tabela"></div>
-      <div id="anual-produtos"></div>
       <div id="anual-novos"></div>
       <div id="anual-rentabilidade"></div>
       <!-- 4. OPERAÇÃO -->
@@ -1031,33 +1030,6 @@ function renderDesvioTabela(container_id, cat){
   </div>`;
 }
 
-function renderProdutos(container_id, prod){
-  const el = document.getElementById(container_id);
-  if(!el) return;
-  const p = prod || {};
-  if(!p.n_total){
-    el.innerHTML = ''; return;  // sem produtos → esconde
-  }
-  const lista = p.lista || [];
-  const rows = lista.map(x => {
-    const estoqueCor = x.estoque === 0 ? 'var(--crit)' : (x.estoque < 3 ? 'var(--warn)' : '');
-    return `<tr>
-      <td>${x.nome}</td>
-      <td>${x.categoria||'—'}</td>
-      <td style="text-align:right;">${brl(x.preco)}</td>
-      <td style="text-align:right;color:${estoqueCor};font-weight:${x.estoque<3?'700':'400'};">${x.estoque}</td>
-    </tr>`;
-  }).join('');
-  el.innerHTML = `<div class="card">
-    <h2>📦 Produtos catalogados</h2>
-    <div class="cap">${p.n_total} produtos ativos no Trinks · <span style="color:var(--crit)">vermelho</span> = estoque zero · <span style="color:var(--warn)">amarelo</span> = &lt; 3 unidades.</div>
-    <table class="simple">
-      <thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-  </div>`;
-}
-
 function renderCategoriaNativa(container_id, categorias){
   const el = document.getElementById(container_id);
   if(!el || !categorias || categorias.length === 0){ if(el) el.innerHTML = ''; return; }
@@ -1416,7 +1388,6 @@ function renderAnual(data){
   if(a.novos_vs_recorr) renderNovosRecorr('anual-novos', a.novos_vs_recorr, 'ano');
   renderCategoriaNativa('anual-categoria-native', a.categoria_native);
   renderDesvioTabela('anual-desvio-tabela', data.catalogo_servicos);
-  renderProdutos('anual-produtos', data.produtos);
 }
 
 function renderClientes(data){
