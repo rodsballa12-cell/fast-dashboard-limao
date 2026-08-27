@@ -594,26 +594,81 @@ def main():
         _save_cache(CLIENTES_LISTA_CACHE, clientes)
 
     # === PROFISSIONAIS · cache 7 dias (mudança rara) ===
+    # Formato do cache v2: {"prof_map": {id: nome}, "prof_meta": {id: {...}}}.
+    # prof_map indexa por AMBOS `id` e `idProfissional` (chaves diferentes que o Trinks
+    # devolve: `id` no cadastro, `idProfissional` no vínculo com estabelecimento) —
+    # resolve o bug do executor aparecer como "Prof desligado" quando idProfissional
+    # do serviço não bate com `id` do cadastro.
     prof_map_global = {}
+    prof_meta_global = {}
+    cache_ok = False
     if _cache_valido(PROF_CACHE, TTL_PROF_HORAS):
-        prof_map_global = _load_cache(PROF_CACHE)
-        # Converte chaves de volta pra int (JSON transforma em str)
-        prof_map_global = {int(k): v for k, v in prof_map_global.items()}
-        print(f"[fetch] profissionais: {len(prof_map_global)} (cache local · <{TTL_PROF_HORAS}h)")
-    else:
-        print("[fetch] profissionais...")
+        payload_cache = _load_cache(PROF_CACHE)
+        if isinstance(payload_cache, dict) and "prof_map" in payload_cache:
+            prof_map_global = {int(k): v for k, v in payload_cache["prof_map"].items()}
+            prof_meta_global = {int(k): v for k, v in (payload_cache.get("prof_meta") or {}).items()}
+            cache_ok = True
+            print(f"[fetch] profissionais: {len(prof_meta_global)} cadastros · {len(prof_map_global)} chaves (cache v2 · <{TTL_PROF_HORAS}h)")
+    if not cache_ok:
+        print("[fetch] profissionais (v2 · id + idProfissional + metadata)...")
         for ativo_flag in ("true", "false"):
             try:
                 prof_lista = list(t.paginate("/v1/profissionais", {"ativo": ativo_flag}))
                 for p in prof_lista:
                     pid = p.get("id")
+                    id_prof_vinc = p.get("idProfissional")  # chave usada em servicos[].idProfissionalQueRealizouServico
                     nome = (p.get("nome") or "").strip().title()
-                    if pid and nome: prof_map_global[pid] = nome
+                    if not nome:
+                        continue
+                    # Indexa por AMBAS as chaves apontando pro mesmo nome
+                    if pid: prof_map_global[pid] = nome
+                    if id_prof_vinc and id_prof_vinc != pid:
+                        prof_map_global[id_prof_vinc] = nome
+                    # Metadata rica pro ranking/insights (função, status, agenda, apelido)
+                    if pid:
+                        prof_meta_global[pid] = {
+                            "nome": nome,
+                            "apelido": (p.get("apelido") or "").strip(),
+                            "funcao": (p.get("funcao") or "").strip() if isinstance(p.get("funcao"), str) else ((p.get("funcao") or {}).get("nome") or "").strip(),
+                            "status": p.get("status") or ("ativo" if ativo_flag == "true" else "inativo"),
+                            "possui_agenda": bool(p.get("possuiAgenda")),
+                            "id_profissional": id_prof_vinc,
+                            "genero": (p.get("genero") or "").strip()[:1].upper(),
+                        }
             except Exception as e:
                 print(f"  [warn] /v1/profissionais ativo={ativo_flag} falhou: {e}")
-        _save_cache(PROF_CACHE, prof_map_global)
-        print(f"  {len(prof_map_global)} profissionais mapeados (ativos + desligados)")
+        _save_cache(PROF_CACHE, {"prof_map": prof_map_global, "prof_meta": prof_meta_global})
+        print(f"  {len(prof_meta_global)} cadastros · {len(prof_map_global)} chaves indexadas (id + idProfissional)")
     analisar._prof_id_nome_cache = prof_map_global
+
+    # === COMISSÕES · /v1/profissionais/comissoes ===
+    # Endpoint existe (200 OK) mas está sem cadastro no Trinks hoje (totalRecords=0).
+    # Código pronto pra ler quando comissão for cadastrada no Trinks — evita novo deploy.
+    comissoes_data = {"habilitado": False, "n_regras": 0, "regras": [], "obs": ""}
+    try:
+        cm_resp = t.get("/v1/profissionais/comissoes", {"pageSize": 200})
+        regras = cm_resp.get("data") if isinstance(cm_resp, dict) else []
+        if regras:
+            comissoes_data["habilitado"] = True
+            comissoes_data["n_regras"] = len(regras)
+            for r in regras:
+                pid = r.get("idProfissional") or r.get("id")
+                nome_prof = prof_map_global.get(pid) or (prof_meta_global.get(pid) or {}).get("nome") or f"ID {pid}"
+                comissoes_data["regras"].append({
+                    "profissional_id": pid,
+                    "profissional": nome_prof,
+                    "servico": (r.get("servico") or {}).get("nome") if isinstance(r.get("servico"), dict) else r.get("servico"),
+                    "percentual": r.get("percentual") or r.get("valorPercentual"),
+                    "valor_fixo": r.get("valorFixo"),
+                    "tipo": r.get("tipo") or r.get("tipoComissao"),
+                })
+            print(f"[comissoes] {len(regras)} regras cadastradas no Trinks")
+        else:
+            comissoes_data["obs"] = "endpoint OK mas sem regras cadastradas no Trinks"
+            print("[comissoes] endpoint OK · totalRecords=0 (cadastrar no Trinks pra ativar)")
+    except Exception as e:
+        comissoes_data["obs"] = f"falha ao ler: {type(e).__name__}"
+        print(f"[comissoes] falha (não-fatal): {e}")
 
     # === ENRIQUECIMENTO: buscar clienteDetalhes via /v1/clientes/{id} (com cache) ===
     # A rota lista traz o básico, mas /v1/clientes/{id} traz dataNascimento, endereço,
@@ -1564,6 +1619,8 @@ def main():
             "meta_por_data": {dt.isoformat(): m for dt, m in meta_por_data.items() if m > 0},
         },
         "cota_api": cota_final,
+        "comissoes": comissoes_data,
+        "prof_meta": {str(k): v for k, v in prof_meta_global.items()},
         "stone": stone_data,
         "auditoria_cancelados": {
             "n_com_valor": len(canc_com_valor),

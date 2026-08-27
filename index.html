@@ -321,6 +321,7 @@
       <div id="auditoria-resumo"></div>
       <div id="auditoria-por-prof"></div>
       <div id="auditoria-executor"></div>
+      <div id="auditoria-comissoes"></div>
       <div id="auditoria-lista"></div>
     </div>
 
@@ -939,6 +940,48 @@ function renderProfExecutor(container_id, exec_ranking){
     <div class="insight" style="margin-top:12px;">
       <strong>Anti-fraude:</strong> se você reconhecer um "Prof desligado" que ainda deveria estar no cadastro, é sinal de que o registro no Trinks foi apagado incorretamente. Investigar acesso admin.
     </div>
+  </div>`;
+}
+
+function renderComissoes(container_id, comissoes, prof_meta){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  const c = comissoes || {};
+  const meta = prof_meta || {};
+  const n_ativos = Object.values(meta).filter(p => (p.status||'').toString().toLowerCase().includes('ativ')).length;
+  const n_total = Object.keys(meta).length;
+  if(!c.habilitado){
+    el.innerHTML = `<div class="card">
+      <h2>💰 Comissões da equipe</h2>
+      <div class="cap">Endpoint <code>/v1/profissionais/comissoes</code> · leitura automática do Trinks.</div>
+      <div class="audit" style="background:#fef3c7;border-color:#f59e0b;color:#78350f;">
+        <div>⚙️</div>
+        <div>
+          <strong>Ainda não cadastrado no Trinks.</strong> ${c.obs||'aguardando regras'}.<br>
+          <span style="font-size:12px;">Base atual: <strong>${n_ativos} profs ativos</strong> de ${n_total} cadastros. Cadastre as regras de comissão em Trinks → Configurações → Profissionais → Comissões que o painel puxa automático no próximo refresh.</span>
+        </div>
+      </div>
+    </div>`;
+    return;
+  }
+  const rows = (c.regras||[]).map(r => {
+    const pct = r.percentual != null ? `${r.percentual}%` : '—';
+    const fixo = r.valor_fixo != null ? brl(r.valor_fixo) : '—';
+    return `<tr>
+      <td>${r.profissional||'—'}</td>
+      <td>${r.servico||'todos'}</td>
+      <td style="text-align:right;">${pct}</td>
+      <td style="text-align:right;">${fixo}</td>
+      <td>${r.tipo||'—'}</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<div class="card">
+    <h2>💰 Comissões cadastradas</h2>
+    <div class="cap">${c.n_regras} regra(s) lidas de <code>/v1/profissionais/comissoes</code>.</div>
+    <table class="simple">
+      <thead><tr><th>Profissional</th><th>Serviço</th><th>%</th><th>Fixo</th><th>Tipo</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
   </div>`;
 }
 
@@ -1578,6 +1621,7 @@ function renderAuditoria(data){
   </div>`;
   // Ranking executor (idProfissionalQueRealizouServico) — cross-reference contra ranking prof
   renderProfExecutor('auditoria-executor', (data.abas.anual||{}).ranking_prof_executor);
+  renderComissoes('auditoria-comissoes', data.comissoes, data.prof_meta);
   document.getElementById('btn-csv-audit')?.addEventListener('click', () => {
     csvExport('auditoria-cancelamentos.csv',
       ['Risco','Data','Valor','Profissional','Cliente','Serviço','Sem prof','Valor atípico','Preço ref','Stone match','Match por nome'],
