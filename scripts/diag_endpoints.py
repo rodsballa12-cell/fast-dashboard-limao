@@ -1,12 +1,7 @@
-r"""Diag v2 · foco em comissões + endpoints alternativos.
-
-Testa múltiplas variações de nomes que Trinks pode usar.
-Rodar com env vars TRINKS_API_KEY e TRINKS_ESTABELECIMENTO_ID.
-"""
+r"""Diag v3 · confirmar /v1/profissionais/comissoes vazio ou mal filtrado."""
 import json
 import os
 import time
-
 import requests
 
 BASE = "https://api.trinks.com"
@@ -27,75 +22,56 @@ def probe(path, params=None, label=None):
         print(f"  status: {r.status_code}")
         if r.status_code == 200:
             data = r.json()
+            print(f"  keys: {sorted(data.keys()) if isinstance(data, dict) else '(lista)'}")
             if isinstance(data, dict):
-                keys = sorted(data.keys())
-                print(f"  keys: {keys}")
-                if data.get("data"):
-                    items = data["data"]
-                    print(f"  n itens: {len(items)}")
-                    if items:
-                        it = items[0]
-                        if isinstance(it, dict):
-                            print(f"  1º item keys: {sorted(it.keys())}")
-                            print(f"  1º item: {json.dumps(it, ensure_ascii=False, default=str)[:400]}")
-                        else:
-                            print(f"  1º item: {str(it)[:200]}")
-                elif "totalRecords" in data:
-                    print(f"  totalRecords: {data.get('totalRecords')}")
-                else:
-                    print(f"  payload direto: {json.dumps(data, ensure_ascii=False, default=str)[:300]}")
+                items = data.get("data") or []
+                print(f"  totalRecords: {data.get('totalRecords')} · n items: {len(items)}")
+                if items:
+                    print(f"  1º item keys: {sorted(items[0].keys()) if isinstance(items[0], dict) else type(items[0]).__name__}")
+                    print(f"  1º item: {json.dumps(items[0], ensure_ascii=False, default=str)[:500]}")
             elif isinstance(data, list):
-                print(f"  lista · n itens: {len(data)}")
+                print(f"  lista · n={len(data)}")
                 if data:
-                    print(f"  1º item: {json.dumps(data[0], ensure_ascii=False, default=str)[:400]}")
-            else:
-                print(f"  type: {type(data).__name__} · sample: {str(data)[:200]}")
-        elif r.status_code == 400:
-            print(f"  400 (bad request · endpoint existe): {(r.text or '')[:200]}")
-        elif r.status_code == 401:
-            print(f"  401 (unauthorized · endpoint existe): {(r.text or '')[:200]}")
-        elif r.status_code == 403:
-            print(f"  403 (forbidden · endpoint existe mas sem permissão): {(r.text or '')[:200]}")
+                    print(f"  1º item: {json.dumps(data[0], ensure_ascii=False, default=str)[:500]}")
         else:
-            print(f"  body: {(r.text or '')[:150]}")
+            print(f"  body: {(r.text or '')[:200]}")
     except Exception as e:
         print(f"  exception: {type(e).__name__}: {e}")
     time.sleep(1.2)
 
 
-# === COMISSÕES · múltiplas variantes ===
-probe("/v1/comissao", {"pageSize": 5}, "COM.1 /comissao (singular)")
-probe("/v1/comissoes-profissionais", {"pageSize": 5}, "COM.2 /comissoes-profissionais")
-probe("/v1/relatorios/comissoes", {"dataInicio": "2026-08-01", "dataFim": "2026-08-31"}, "COM.3 /relatorios/comissoes")
-probe("/v1/relatorios/comissao", {"dataInicio": "2026-08-01", "dataFim": "2026-08-31"}, "COM.4 /relatorios/comissao")
-probe("/v1/relatorio/comissoes", {"dataInicio": "2026-08-01", "dataFim": "2026-08-31"}, "COM.5 /relatorio/comissoes")
-probe("/v1/comissionamento", {"pageSize": 5}, "COM.6 /comissionamento")
-probe("/v1/comissionamentos", {"pageSize": 5}, "COM.7 /comissionamentos")
-probe("/v1/profissional/comissoes", {"pageSize": 5, "dataInicio": "2026-08-01", "dataFim": "2026-08-31"}, "COM.8 /profissional/comissoes")
-probe("/v1/profissionais/comissoes", {"pageSize": 5, "dataInicio": "2026-08-01", "dataFim": "2026-08-31"}, "COM.9 /profissionais/comissoes")
+# Primeiro: pegar 1 prof ativo do cadastro pra testar com ID real
+print("[step 0] fetch profs pra pegar um ID real...")
+r = requests.get(BASE + "/v1/profissionais", headers=HEADERS, params={"pageSize": 3}, timeout=30)
+prof_id = None
+if r.status_code == 200:
+    for p in r.json().get("data", []):
+        if p.get("id"):
+            prof_id = p["id"]
+            print(f"  prof ativo achado: id={prof_id} nome={p.get('nome')}")
+            break
+time.sleep(1)
 
-# Um serviço específico — ver se traz comissão embutida
-probe("/v1/servicos/15450779", None, "COM.10 /servicos/{id} (detalhe)")
-# Um profissional específico
-probe("/v1/profissionais/49392", None, "COM.11 /profissionais/{id} (detalhe)")
+# === TESTES DE COMISSÃO ===
+probe("/v1/profissionais/comissoes", None, "T1 SEM filtros")
+probe("/v1/profissionais/comissoes", {"pageSize": 20}, "T2 só pageSize=20")
+probe("/v1/profissionais/comissoes", {"dataInicio": "2026-07-01", "dataFim": "2026-08-31"}, "T3 range amplo (jul+ago)")
+if prof_id:
+    probe(f"/v1/profissionais/{prof_id}/comissoes", None, f"T4 /profissionais/{prof_id}/comissoes")
+    probe(f"/v1/profissionais/{prof_id}", None, f"T5 /profissionais/{prof_id} (detalhe)")
 
-# === FINANCEIRO · variantes ===
-probe("/v1/financeiro", {"pageSize": 5}, "FIN.1 /financeiro")
-probe("/v1/plano-de-contas", {"pageSize": 5}, "FIN.2 /plano-de-contas")
-probe("/v1/gastos", {"pageSize": 5, "dataInicio": "2026-08-01", "dataFim": "2026-08-31"}, "FIN.3 /gastos")
-probe("/v1/notas-fiscais", {"pageSize": 5}, "FIN.4 /notas-fiscais")
-probe("/v1/relatorios/vendas", {"dataInicio": "2026-08-01", "dataFim": "2026-08-31"}, "FIN.5 /relatorios/vendas")
-probe("/v1/relatorios/financeiro", {"dataInicio": "2026-08-01", "dataFim": "2026-08-31"}, "FIN.6 /relatorios/financeiro")
+# Variantes que ainda não testei
+probe("/v1/comissoes-agendamento", {"pageSize": 5}, "T6 /comissoes-agendamento")
+probe("/v1/agendamentos/comissoes", None, "T7 /agendamentos/comissoes")
+probe("/v1/servicos-profissionais", None, "T8 /servicos-profissionais")
 
-# === OUTROS ===
-probe("/v1/carteira", {"pageSize": 5}, "OUT.1 /carteira")
-probe("/v1/wallet", {"pageSize": 5}, "OUT.2 /wallet")
-probe("/v1/anamneses", {"pageSize": 5}, "OUT.3 /anamneses")
-probe("/v1/orcamentos", {"pageSize": 5}, "OUT.4 /orcamentos")
-probe("/v1/agendamentos-online", {"pageSize": 5}, "OUT.5 /agendamentos-online")
+# Talvez comissão esteja embutida no profissional detalhe
+if prof_id:
+    r = requests.get(BASE + f"/v1/profissionais", headers=HEADERS, params={"pageSize": 50}, timeout=30)
+    if r.status_code == 200 and r.json().get("data"):
+        first = r.json()["data"][0]
+        print(f"\n=== T9 · Keys do profissional (do list) ===")
+        print(f"  keys: {sorted(first.keys())}")
+        print(f"  full: {json.dumps(first, ensure_ascii=False, default=str)[:500]}")
 
-# === UM AGENDAMENTO ESPECÍFICO — ver se traz comissão embutida ===
-# ID do primeiro agendamento (vai variar, mas testa se o endpoint /{id} existe)
-probe("/v1/agendamentos/1", None, "AGEND.1 /agendamentos/{id} (id fake)")
-
-print("\n=== FIM diag_endpoints v2 ===")
+print("\n=== FIM diag v3 ===")
