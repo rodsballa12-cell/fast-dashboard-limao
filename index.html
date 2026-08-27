@@ -152,6 +152,7 @@
     <div class="meta">
       <span class="chip" id="chip-updated">carregando…</span>
       <span class="chip" id="chip-age" style="display:none;"></span>
+      <span class="chip" id="chip-cota" style="display:none;"></span>
       <span class="chip" id="chip-live" style="display:none;"></span>
       <button id="btn-reload" class="btn-refresh btn-sync" title="Puxa dados frescos do servidor (dados atualizam sozinhos nos horários 00h/12h/15h/18h/21h BRT)">🔄 Atualizar dados</button>
     </div>
@@ -185,6 +186,7 @@
       <div class="audit"><div>📅</div><div><strong>Panorama do ano · evolução financeira.</strong> Loja abriu 23/07/2026. Aqui: trajetória mês-a-mês, mix, rentabilidade. Base de clientes fica na aba <strong>Clientes</strong>.</div></div>
       <!-- 1. CONTEXTO: onde estamos vs onde queremos -->
       <div id="anual-kpis"></div>
+      <div id="anual-ancora"></div>
       <div id="anual-meta"></div>
       <!-- 2. TRAJETÓRIA: evolução do ano -->
       <div id="anual-meses"></div>
@@ -208,6 +210,7 @@
       <!-- 1. CONTEXTO: caixa vs meta -->
       <div id="mensal-kpis"></div>
       <div id="mensal-meta"></div>
+      <div id="mensal-heatmap"></div>
       <!-- 2. TRAJETÓRIA: como o mês está desenhando -->
       <div id="mensal-dia"></div>
       <!-- 3. ALAVANCAS: mix, ticket, categorias -->
@@ -304,7 +307,6 @@
       <div id="clientes-cross-sell"></div>
       <!-- 3. QUALIDADE DE CADASTRO -->
       <div id="clientes-cadastro"></div>
-      <div id="clientes-executor"></div>
       <!-- 4. SEGMENTAÇÃO -->
       <div id="clientes-seg-canal"></div>
       <div id="clientes-seg-bairro"></div>
@@ -577,11 +579,19 @@ function renderMetaProgress(container_id, titulo, meta, subtitle){
 
 function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta_realizado, meta_projecao){
   const c=categorias||{};
+  // Mix dinâmico do próprio período (era hardcoded 21/76/3 — irreal pra loja).
+  // Se período não teve venda, cai num default plausível baseado no perfil walk-in.
+  const bruto = ['pacotes','servicos','produtos'].map(k => (c[k]||{v:0}).v || 0);
+  const tot = bruto.reduce((s,v)=>s+v,0);
+  const mixReal = tot > 0
+    ? bruto.map(v => Math.round(v/tot*100))
+    : [15, 84, 1];  // fallback baseado em perfil real da loja (não os 21/76/3 antigos)
   const rows=[
-    {k:'pacotes',nome:'Pacotes',pct_meta:21,cls_:''},
-    {k:'servicos',nome:'Serviços',pct_meta:76,cls_:'c2'},
-    {k:'produtos',nome:'Produtos',pct_meta:3,cls_:'c3'},
+    {k:'pacotes',nome:'Pacotes',pct_meta:mixReal[0],cls_:''},
+    {k:'servicos',nome:'Serviços',pct_meta:mixReal[1],cls_:'c2'},
+    {k:'produtos',nome:'Produtos',pct_meta:mixReal[2],cls_:'c3'},
   ];
+  const fonte_mix = tot > 0 ? 'mix real do período' : 'mix padrão da loja (sem venda no período pra calcular)';
   const tiles=rows.map(r=>{
     const cat=c[r.k]||{v:0,n:0,pct:0};
     const meta_cat=meta_valor*r.pct_meta/100;
@@ -604,7 +614,7 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
   document.getElementById(container_id).innerHTML=`
     <div class="card">
       <h2>Detalhamento por categoria · Meta vs Realizado ${titulo}</h2>
-      <div class="cap">Meta ${brl0(meta_valor)} distribuída pelo mix histórico da loja (21% pacotes · 76% serviços · 3% produtos). Projeção assume ritmo atual até o fim do período.</div>
+      <div class="cap">Meta ${brl0(meta_valor)} distribuída pelo <strong>${fonte_mix}</strong> (${mixReal[0]}% pacotes · ${mixReal[1]}% serviços · ${mixReal[2]}% produtos). Projeção assume ritmo atual até o fim do período.</div>
       <div class="categ-grid">${tiles}</div>
       <table class="simple"><thead><tr><th>Categoria</th><th>Meta</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção</th></tr></thead><tbody>${tabela_rows}${total_row}</tbody></table>
     </div>`;
@@ -1030,6 +1040,92 @@ function renderDesvioTabela(container_id, cat){
   </div>`;
 }
 
+function renderAncora(container_id, categoria_native, kpis){
+  const el = document.getElementById(container_id);
+  if(!el || !categoria_native || categoria_native.length === 0){ if(el) el.innerHTML = ''; return; }
+  // Top 3 categorias nativas do Trinks — a #1 é a âncora do negócio
+  const top3 = categoria_native.slice(0,3);
+  const ancora = top3[0];
+  if(!ancora || ancora.pct_receita < 20){ if(el) el.innerHTML = ''; return; }
+  const caixa_ano = (kpis||{}).caixa || 0;
+  const bars = top3.map((c, i) => {
+    const w = c.pct_receita;
+    const cor = i === 0 ? 'var(--accent)' : (i === 1 ? 'var(--good)' : 'var(--ink-3)');
+    return `<div style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">
+        <span style="font-weight:700;">${c.nome}</span>
+        <span style="color:${cor};font-weight:700;">${brl0(c.v)} · ${c.pct_receita}%</span>
+      </div>
+      <div style="background:var(--surface-2);height:8px;border-radius:4px;overflow:hidden;">
+        <div style="background:${cor};width:${w}%;height:100%;"></div>
+      </div>
+    </div>`;
+  }).join('');
+  el.innerHTML = `<div class="card" style="border-left:3px solid var(--accent);">
+    <h2>⚓ Âncora do negócio · ${ancora.nome}</h2>
+    <div class="cap"><strong>${ancora.pct_receita}% da receita anual</strong> vem de <strong>${ancora.nome}</strong> (${brl0(ancora.v)} de ${brl0(caixa_ano)}). Perda dessa categoria = perda do negócio. Todo o resto (utilização de cadeira, escala de equipe, promoção) tem que servir a essa âncora primeiro.</div>
+    ${bars}
+    <div class="insight" style="margin-top:12px;">
+      <strong>Regra de decisão:</strong> qualquer mudança de escala, promoção ou treinamento passa pelo filtro "isso ajuda ou atrapalha a #1?". Se atrapalha, custo alto — pense duas vezes.
+    </div>
+  </div>`;
+}
+
+function renderHeatmapMeta(container_id, saz, por_dia_mes, hoje_iso){
+  const el = document.getElementById(container_id);
+  if(!el || !saz || !saz.meta_por_data){ if(el) el.innerHTML = ''; return; }
+  const meta_por_data = saz.meta_por_data;  // {YYYY-MM-DD: meta}
+  const real_por_dia = {};
+  (por_dia_mes||[]).forEach(x => { real_por_dia[x.d] = x.v; });
+  const hoje = hoje_iso;
+  // Descobrir ano-mês da primeira data
+  const datas = Object.keys(meta_por_data).sort();
+  if(!datas.length){ el.innerHTML = ''; return; }
+  const [yy, mm] = datas[0].split('-').map(Number);
+  const ultimo = new Date(yy, mm, 0).getDate();
+  // Grid: 7 colunas dow (dom=0), começa no dow do dia 1
+  const dow_dia1 = new Date(yy, mm-1, 1).getDay();
+  const dowNomes = ['D','S','T','Q','Q','S','S'];
+  const cells = [];
+  for(let i=0; i<dow_dia1; i++) cells.push(`<div class="hm-cell hm-blank"></div>`);
+  for(let d=1; d<=ultimo; d++){
+    const iso = `${yy}-${String(mm).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const meta = meta_por_data[iso] || 0;
+    const real = real_por_dia[d] || 0;
+    const pct = meta > 0 ? Math.min(200, real/meta*100) : 0;
+    const isPast = iso < hoje;
+    const isToday = iso === hoje;
+    let cor = 'var(--surface-2)';
+    if(meta === 0) cor = 'var(--border)';  // não opera
+    else if(!isPast && !isToday) cor = 'var(--surface-2)';  // futuro
+    else if(pct >= 100) cor = 'rgba(52,199,89,.35)';
+    else if(pct >= 70) cor = 'rgba(255,203,5,.30)';
+    else if(pct > 0) cor = 'rgba(255,59,48,.25)';
+    else cor = 'rgba(255,59,48,.15)';  // dia passado sem venda
+    const bordaHoje = isToday ? 'border:2px solid var(--accent);' : '';
+    const label = meta === 0
+      ? `<span style="opacity:.4">${d}</span><span class="hm-sub" style="opacity:.4">—</span>`
+      : `<span>${d}</span><span class="hm-sub">${(isPast||isToday) ? `${(real/1000).toFixed(1)}k / ${(meta/1000).toFixed(1)}k` : `${(meta/1000).toFixed(1)}k`}</span>`;
+    const titulo = meta === 0
+      ? `${iso} · loja fechada`
+      : `${iso} · meta R$ ${meta.toFixed(0)} · realizado R$ ${real.toFixed(0)} (${pct.toFixed(0)}%)`;
+    cells.push(`<div class="hm-cell" style="background:${cor};${bordaHoje}" title="${titulo}">${label}</div>`);
+  }
+  el.innerHTML = `<div class="card">
+    <h2>🗓 Calendário de metas · ${String(mm).padStart(2,'0')}/${yy}</h2>
+    <div class="cap">Meta de cada dia (sazonalidade DOW + peso da semana no mês) vs realizado. <span style="color:rgba(52,199,89,1)">verde</span>=bateu · <span style="color:rgba(255,203,5,1)">amarelo</span>=70-99% · <span style="color:rgba(255,59,48,1)">vermelho</span>=abaixo de 70%. Hoje contornado em amarelo.</div>
+    <style>
+      .hm-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px;}
+      .hm-head{text-align:center;font-size:10.5px;color:var(--ink-3);padding:4px 0;font-weight:700;}
+      .hm-cell{aspect-ratio:1.4/1;border-radius:6px;padding:6px 4px;display:flex;flex-direction:column;justify-content:space-between;font-size:12px;font-weight:700;color:var(--ink);cursor:help;}
+      .hm-cell .hm-sub{font-size:9.5px;font-weight:500;opacity:.75;}
+      .hm-cell.hm-blank{background:transparent;}
+    </style>
+    <div class="hm-grid">${dowNomes.map(d=>`<div class="hm-head">${d}</div>`).join('')}</div>
+    <div class="hm-grid">${cells.join('')}</div>
+  </div>`;
+}
+
 function renderCategoriaNativa(container_id, categorias){
   const el = document.getElementById(container_id);
   if(!el || !categorias || categorias.length === 0){ if(el) el.innerHTML = ''; return; }
@@ -1085,7 +1181,7 @@ function renderClientesSnapshot(container_id, snap){
       ${tile('','Base total', snap.total_base+'', `${snap.n_recorrentes} recorrentes · ${snap.n_uma_vez} só 1 visita`, 'accent')}
       ${tile('c2','Ativos 30 dias', `<span style="color:${cor30}">${snap.ativos_30d}</span>`, `${pct(snap.ativos_30d, snap.total_base)} da base`)}
       ${tile('','Novos (últ 30d)', snap.novos_30d+'', `taxa aquisição: ${pct(snap.novos_30d, snap.total_base)}/mês`)}
-      ${tile('c3','Dormentes 60d+', `<span class="dn">${snap.dormentes_60d}</span>`, `LTV parado em ${pct(snap.dormentes_60d, snap.total_base)} da base`)}
+      ${tile(snap.dormentes_60d>0?'c3':'','Dormentes 60d+', snap.dormentes_60d>0 ? `<span class="dn">${snap.dormentes_60d}</span>` : `<span class="up">${snap.dormentes_60d}</span>`, snap.dormentes_60d>0 ? `LTV parado em ${pct(snap.dormentes_60d, snap.total_base)} da base` : `nenhum cliente sumido 60d+`)}
     </div>
     <div class="meta-row" style="margin-top:14px;">
       <div class="meta-cell"><div class="l">Ativos 60d</div><div class="v">${snap.ativos_60d}</div></div>
@@ -1100,9 +1196,13 @@ function renderClientesSnapshot(container_id, snap){
       <div class="meta-cell"><div class="l">Aniversários 14d</div><div class="v ${snap.n_aniv_14d>0?'warn':''}">${snap.n_aniv_14d}</div></div>
     </div>
     <div class="insight" style="margin-top:14px;">
-      <strong>Direcionamento:</strong> ${snap.dormentes_60d > snap.ativos_30d ?
-        `mais dormentes (${snap.dormentes_60d}) que ativos 30d (${snap.ativos_30d}) — prioridade é resgatar antes de captar. Ver aba Churn.` :
-        `base saudável — ativos 30d (${snap.ativos_30d}) supera dormentes (${snap.dormentes_60d}). Foco na aquisição e cross-sell.`}
+      <strong>Direcionamento:</strong> ${
+        snap.dormentes_60d === 0 && (snap.total_base < 300 || snap.novos_30d > snap.dormentes_60d)
+          ? `base ainda jovem — sem dormentes 60d+. Prioridade: aquisição + fidelizar 2ª visita (${snap.n_uma_vez} vieram só 1 vez).`
+          : snap.dormentes_60d > snap.ativos_30d
+            ? `mais dormentes (${snap.dormentes_60d}) que ativos 30d (${snap.ativos_30d}) — prioridade é resgatar antes de captar. Ver aba Churn.`
+            : `base saudável — ativos 30d (${snap.ativos_30d}) supera dormentes (${snap.dormentes_60d}). Foco na aquisição e cross-sell.`
+      }
     </div>
   </div>`;
 }
@@ -1373,6 +1473,7 @@ function renderAnual(data){
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`padrão Trinks`},
     {label:'Base',value:k.clientes_unicos+'',foot:`${((k.cliente_dia||0)/Math.max(k.clientes_unicos,1)).toFixed(1)} visitas/cliente médio`}
   ]);
+  renderAncora('anual-ancora', a.categoria_native, a.kpis);
   if(a.meta && a.meta.meta) renderMetaProgress('anual-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
   renderTicketMeta('anual-ticket-meta', 'ano', k);
   renderCategoriasMeta('anual-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0);
@@ -1407,7 +1508,6 @@ function renderClientes(data){
 
   // 3. Qualidade de cadastro + executor real
   renderClientesCadastro('clientes-cadastro', a.clientes_cadastro);
-  renderProfExecutor('clientes-executor', a.ranking_prof_executor);
 
   // 4. Segmentação
   renderSegmentacao('clientes-seg-canal',
@@ -1457,6 +1557,7 @@ function renderMensal(data){
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
   ]);
   renderMetaProgress('mensal-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
+  renderHeatmapMeta('mensal-heatmap', data.sazonalidade, m.por_dia_mes, data.hoje);
   renderTicketMeta('mensal-ticket-meta', 'mês', k);
   renderUtilizacao('mensal-utilizacao', 'mês', k, m);
   renderCategoriasMeta('mensal-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao);
@@ -1595,7 +1696,7 @@ function renderAuditoria(data){
   resumoEl.innerHTML = `<div class="card">
     <h2>🛡️ Resumo de risco</h2>
     <div class="cap">Cada cancelamento com valor é analisado automaticamente contra 3 vetores de risco financeiro</div>
-    <div class="categ-grid" style="grid-template-columns:repeat(5,1fr)">${criticoTile}${tiles.join('')}</div>
+    <div class="categ-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">${criticoTile}${tiles.join('')}</div>
     <div class="insight"><strong>Regras:</strong> <span style="color:var(--crit)">CRÍTICO</span> = Stone recebeu R$ igual no mesmo dia e nome do pagador bate com cliente cancelado (2+ tokens). <span style="color:var(--accent)">REVISAR</span> = valor+dia batem no Stone mas nome não confere (colisão provável). <span style="color:var(--warn)">ATENÇÃO</span> = sem prof atribuído OU valor diverge ±20% do preço mediano do serviço. <span style="color:var(--good)">OK</span> = cancelamento legítimo sem sinal.</div>
     ${excluidosNota}
   </div>`;
@@ -1774,7 +1875,7 @@ function renderStone(data){
         </tbody>
       </table>
       <div class="insight">
-        <strong>Taxa Stone antecipação: ${antec.taxa_antecipacao_mensal_pct.toFixed(2)}% a.m.</strong> · <strong>MDR</strong>: 1,49% débito · 2,89% crédito 1x.
+        <strong>Taxa Stone antecipação: ${antec.taxa_antecipacao_mensal_pct.toFixed(2)}% a.m.</strong> · <strong>MDR</strong>: 1,46% débito · 2,08% crédito 1x.
         <br><strong>Débito não vale antecipar</strong> (cai em 1 dia · custo desprezível).
         <br><strong>Crédito compensa antecipar SE:</strong>
         <br>• Precisa capital pra oportunidade que rende <strong>>${antec.taxa_antecipacao_mensal_pct.toFixed(2)}%/mês</strong> (giro Advisory 1,5% <span class="dn">NÃO compensa</span>)
@@ -2007,17 +2108,23 @@ async function load(showToast=false){
     const ageMin=Math.floor((Date.now()-dt.getTime())/60000);
     const chipUpd=document.getElementById('chip-updated');
     chipUpd.innerHTML=`<span class="dot"></span> Dados de ${dt.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} (BRT)`;
-    // Monitor de cota API: alerta se consumo anômalo (>500 req)
+    // Monitor de cota API: chip permanente no header + toast se anômalo
     const cota = data.cota_api || {};
-    if(cota.totalUtilizado){
+    const chipCota = document.getElementById('chip-cota');
+    if(cota.totalUtilizado && chipCota){
       const uso = cota.totalUtilizado;
       const total = cota.cotaTotal || 10000;
       const pct_uso = uso/total*100;
-      // Dia do mês em BRT (não no fuso do browser)
+      const restante = total - uso;
       const dias_mes = parseInt(new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit'}).format(new Date()), 10);
       const media_dia = uso/Math.max(dias_mes,1);
-      if(uso > 3000 || media_dia > 200){
-        toast(`⚠️ <strong>Cota API alta</strong><br><small>${uso}/${total} usadas (${pct_uso.toFixed(1)}%) · média ${media_dia.toFixed(0)}/dia · <strong>investigar uso anômalo</strong></small>`, true);
+      chipCota.style.display='';
+      // Cor por saúde: <70% verde, <85% amarelo, ≥85% vermelho
+      if(pct_uso >= 85){ chipCota.className='chip stale'; chipCota.innerHTML=`⚠️ Cota API ${pct_uso.toFixed(0)}% · ${restante} restantes`; }
+      else if(pct_uso >= 70){ chipCota.className='chip stale'; chipCota.innerHTML=`Cota API ${pct_uso.toFixed(0)}% · ${restante} restantes`; }
+      else { chipCota.className='chip fresh'; chipCota.innerHTML=`Cota API ${pct_uso.toFixed(0)}%`; }
+      if(restante < 1500 || media_dia > 400){
+        toast(`⚠️ <strong>Cota API baixa</strong><br><small>${uso}/${total} usadas (${pct_uso.toFixed(1)}%) · restam ${restante} · média ${media_dia.toFixed(0)}/dia</small>`, true);
       }
     }
     // idade: verde <65min, amarelo <180min, vermelho >180min
