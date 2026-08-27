@@ -372,7 +372,8 @@ def analisar(agend, transac, ini: date, fim: date):
             ocup_por_hora[h] += uso / 60
             restante -= uso
             pos = fim_hora
-    # Média por hora (dividido por dias)
+    # Média por hora (dividido por dias operados no período)
+    dias_ref = max(dias_com_op, 1)
     densidade_hora = [
         {"h": h, "media_simultaneos": round(ocup_por_hora.get(h, 0) / dias_ref, 2)}
         for h in range(8, 21)
