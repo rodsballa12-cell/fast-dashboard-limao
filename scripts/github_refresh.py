@@ -78,6 +78,25 @@ _dom_ini_str = _cfg.get("data_inicio_domingo")
 DATA_INICIO_DOM = date.fromisoformat(_dom_ini_str) if _dom_ini_str else None
 CADEIRA_KEYWORDS = _cfg.get("cadeira_por_servico_keywords") or {}
 
+# === METAS DA FRANQUEADORA (fixas, por categoria) ===
+# Franqueadora define meta MENSAL por recepcionista pra 3 categorias específicas.
+# Multiplicamos por N recepcionistas pra chegar no total da loja. O resto do
+# META_MENSAL (60k) vai pra "serviços gerais" (escova + demais serviços que não
+# são Fast Retoque). "Fast Retoque" é serviço com meta SEPARADA (não vai no bolo).
+_metas_fr = _cfg.get("metas_franqueadora") or {}
+N_RECEPCIONISTAS = int(_metas_fr.get("recepcionistas") or 1)
+_por_rec = _metas_fr.get("por_recepcionista_mensal") or {}
+METAS_CATEGORIA_MENSAL = {k: float(v) * N_RECEPCIONISTAS for k, v in _por_rec.items()}
+# servicos_gerais = META_MENSAL - (pacotes + fast_retoque + produtos)
+_subtotal_franq = sum(METAS_CATEGORIA_MENSAL.values())
+FAST_RETOQUE_KEYWORDS = [k.upper() for k in (_metas_fr.get("fast_retoque_keywords") or ["RETOQUE"])]
+
+
+def is_fast_retoque(nome_servico: str) -> bool:
+    if not nome_servico: return False
+    n = nome_servico.upper()
+    return any(kw in n for kw in FAST_RETOQUE_KEYWORDS)
+
 
 def opera_no_dia(d: date) -> bool:
     """True se a loja opera nesse dia (considera início do domingo)."""
@@ -204,6 +223,9 @@ def analisar(agend, transac, ini: date, fim: date):
     pac_v = pac_n = 0
     prod_v = prod_n = 0
     serv_v = serv_n = 0
+    # Fast Retoque: subset de serviços com meta específica da franqueadora.
+    # Continua contando dentro de serv_v (pra compat) mas também separado.
+    fast_retoque_v = 0.0; fast_retoque_n = 0
     descontos = 0.0
     trocos = 0.0
     mp_c = Counter(); mp_v = defaultdict(float)
@@ -232,8 +254,13 @@ def analisar(agend, transac, ini: date, fim: date):
             prod_v += float(p.get("valorUnitario") or 0) * q
             prod_n += q
         for s in (t.get("servicos") or []):
-            serv_v += float(s.get("preco") or 0)
+            preco_s = float(s.get("preco") or 0)
+            nome_s = s.get("nome") or ""
+            serv_v += preco_s
             serv_n += 1
+            if is_fast_retoque(nome_s):
+                fast_retoque_v += preco_s
+                fast_retoque_n += 1
             # Categoria nativa Trinks (quando presente)
             cat = s.get("categoria") or ""
             if isinstance(cat, dict): cat = cat.get("nome") or ""
@@ -470,6 +497,9 @@ def analisar(agend, transac, ini: date, fim: date):
             "pacotes": {"v": brl_round(pac_v), "n": pac_n, "pct": round(pac_v / max(caixa, 1) * 100, 1)},
             "servicos": {"v": brl_round(serv_v), "n": serv_n, "pct": round(serv_v / max(caixa, 1) * 100, 1)},
             "produtos": {"v": brl_round(prod_v), "n": prod_n, "pct": round(prod_v / max(caixa, 1) * 100, 1)},
+            "fast_retoque": {"v": brl_round(fast_retoque_v), "n": fast_retoque_n, "pct": round(fast_retoque_v / max(caixa, 1) * 100, 1)},
+            "servicos_gerais": {"v": brl_round(serv_v - fast_retoque_v), "n": max(serv_n - fast_retoque_n, 0),
+                                "pct": round(max(serv_v - fast_retoque_v, 0) / max(caixa, 1) * 100, 1)},
         },
         "meios_pagamento": meios,
         "hora_abs": hora_abs,
@@ -1750,6 +1780,18 @@ def main():
             "meta_por_data": {dt.isoformat(): m for dt, m in meta_por_data.items() if m > 0},
         },
         "cota_api": cota_final,
+        "metas_franqueadora": {
+            "recepcionistas": N_RECEPCIONISTAS,
+            "por_recepcionista_mensal": _por_rec,
+            "meta_mensal_total": META_MENSAL,
+            "categorias_mensal": {
+                "pacotes": METAS_CATEGORIA_MENSAL.get("pacotes", 0),
+                "fast_retoque": METAS_CATEGORIA_MENSAL.get("fast_retoque", 0),
+                "produtos": METAS_CATEGORIA_MENSAL.get("produtos", 0),
+                "servicos_gerais": max(META_MENSAL - _subtotal_franq, 0),
+            },
+            "subtotal_franqueadora": _subtotal_franq,
+        },
         "comissoes": comissoes_data,
         "prof_meta": {str(k): v for k, v in prof_meta_global.items()},
         "catalogo_servicos": {

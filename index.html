@@ -577,57 +577,47 @@ function renderMetaProgress(container_id, titulo, meta, subtitle){
   document.getElementById(container_id).innerHTML=html;
 }
 
-function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta_realizado, meta_projecao, mix_ancora){
+function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta_realizado, meta_projecao, metas_franq, escala){
+  // Metas FIXAS da franqueadora × N recepcionistas (config.json).
+  // Sem inferência de mix. Cada categoria tem alvo próprio, imposto de fora.
+  // `escala` escala meta mensal → período atual (ex: 0.5 = meio mês; 12 = ano).
   const c=categorias||{};
-  // Mix vem do ANUAL (mix_ancora) — reflete a realidade estratégica do negócio
-  // (âncora estável: Serviços domina, Pacotes e Produtos são secundários).
-  // Usar mix do período curto (diário/semanal) distorce: 1 venda de pacote grande
-  // vira "89% pacotes" e a meta fica absurda.
-  const ancora = mix_ancora || {};
-  const anc_bruto = ['pacotes','servicos','produtos'].map(k => (ancora[k]||{v:0}).v || 0);
-  const anc_tot = anc_bruto.reduce((s,v)=>s+v,0);
-  const bruto = ['pacotes','servicos','produtos'].map(k => (c[k]||{v:0}).v || 0);
-  const tot = bruto.reduce((s,v)=>s+v,0);
-  // Fonte na ordem: 1) mix anual estável (âncora) > 2) mix do próprio período > 3) fallback
-  let mixReal, fonte_desc;
-  if(anc_tot > 0){
-    mixReal = anc_bruto.map(v => Math.round(v/anc_tot*100));
-    fonte_desc = 'mix estratégico (ano)';
-  } else if(tot > 0){
-    mixReal = bruto.map(v => Math.round(v/tot*100));
-    fonte_desc = 'mix do período';
-  } else {
-    mixReal = [15, 84, 1];
-    fonte_desc = 'mix padrão da loja';
-  }
+  const franq = metas_franq || {};
+  const catmes = franq.categorias_mensal || {};
+  const esc = escala || 1;
+  const nrec = franq.recepcionistas || 1;
   const rows=[
-    {k:'pacotes',nome:'Pacotes',pct_meta:mixReal[0],cls_:''},
-    {k:'servicos',nome:'Serviços',pct_meta:mixReal[1],cls_:'c2'},
-    {k:'produtos',nome:'Produtos',pct_meta:mixReal[2],cls_:'c3'},
+    {k:'servicos_gerais', nome:'Serviços gerais', meta_mes: catmes.servicos_gerais || 0, cls_:'c2', desc:'escova + demais serviços (exclui Fast Retoque)'},
+    {k:'fast_retoque',    nome:'Fast Retoque',    meta_mes: catmes.fast_retoque || 0,    cls_:'',   desc:`meta oficial franqueadora · R$ ${(catmes.fast_retoque||0).toLocaleString('pt-BR')} · ${nrec} recepcionistas`},
+    {k:'pacotes',         nome:'Pacotes',         meta_mes: catmes.pacotes || 0,         cls_:'',   desc:`meta oficial franqueadora · R$ ${(catmes.pacotes||0).toLocaleString('pt-BR')} · ${nrec} recepcionistas`},
+    {k:'produtos',        nome:'Produtos',        meta_mes: catmes.produtos || 0,        cls_:'c3', desc:`meta oficial franqueadora · R$ ${(catmes.produtos||0).toLocaleString('pt-BR')} · ${nrec} recepcionistas`},
   ];
   const tiles=rows.map(r=>{
     const cat=c[r.k]||{v:0,n:0,pct:0};
-    const meta_cat=meta_valor*r.pct_meta/100;
+    const meta_cat=r.meta_mes * esc;
     const pct_ating=meta_cat>0?cat.v/meta_cat*100:0;
-    const cor=pct_ating>=100?'up':(pct_ating>=50?'warn':'dn');
+    const cor=pct_ating>=100?'up':(pct_ating>=70?'warn':'dn');
     return tile(r.cls_,r.nome,brl0(cat.v),`vs meta ${brl0(meta_cat)} · <span class="${cor}">${pct(pct_ating)}</span>`);
   }).join('');
+  const ratio_proj = meta_realizado>0 && meta_valor>0 ? meta_projecao/meta_realizado : 1;
   const proj_pct = meta_valor>0 ? meta_projecao/meta_valor*100 : 0;
   const tabela_rows=rows.map(r=>{
     const cat=c[r.k]||{v:0,n:0,pct:0};
-    const meta_cat=meta_valor*r.pct_meta/100;
+    const meta_cat=r.meta_mes * esc;
     const pct_ating=meta_cat>0?cat.v/meta_cat*100:0;
-    const proj_cat=meta_realizado>0?cat.v/meta_realizado*meta_projecao:0;
+    const proj_cat=cat.v * ratio_proj;
     const proj_pct_cat=meta_cat>0?proj_cat/meta_cat*100:0;
-    const cor=pct_ating>=100?'up':(pct_ating>=50?'warn':'dn');
+    const cor=pct_ating>=100?'up':(pct_ating>=70?'warn':'dn');
     const cor_proj=proj_pct_cat>=90?'up':(proj_pct_cat>=70?'warn':'dn');
-    return `<tr><td>${r.nome} (${r.pct_meta}%)</td><td>${brl0(meta_cat)}</td><td>${brl0(cat.v)}</td><td class="${cor}">${pct(pct_ating)}</td><td>${brl0(Math.max(meta_cat-cat.v,0))}</td><td class="${cor_proj}">${brl0(proj_cat)} (${pct(proj_pct_cat)})</td></tr>`;
+    const share_meta = meta_valor>0 ? (meta_cat/meta_valor*100).toFixed(0) : 0;
+    return `<tr title="${r.desc}"><td>${r.nome} (${share_meta}%)</td><td>${brl0(meta_cat)}</td><td>${brl0(cat.v)}</td><td class="${cor}">${pct(pct_ating)}</td><td>${brl0(Math.max(meta_cat-cat.v,0))}</td><td class="${cor_proj}">${brl0(proj_cat)} (${pct(proj_pct_cat)})</td></tr>`;
   }).join('');
   const total_row=`<tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL</td><td>${brl0(meta_valor)}</td><td>${brl0(meta_realizado)}</td><td>${pct(meta_valor>0?meta_realizado/meta_valor*100:0)}</td><td>${brl0(Math.max(meta_valor-meta_realizado,0))}</td><td>${brl0(meta_projecao)} (${pct(proj_pct)})</td></tr>`;
+  const esc_desc = esc >= 12 ? 'meta anual (12× mensal)' : esc === 1 ? 'meta cheia do mês' : `${(esc*100).toFixed(0)}% da meta mensal (proporcional ao período)`;
   document.getElementById(container_id).innerHTML=`
     <div class="card">
       <h2>Detalhamento por categoria · Meta vs Realizado ${titulo}</h2>
-      <div class="cap">Meta ${brl0(meta_valor)} distribuída pelo <strong>${fonte_desc}</strong> (${mixReal[0]}% pacotes · ${mixReal[1]}% serviços · ${mixReal[2]}% produtos). O mix estratégico anual é o fio-condutor porque mix intradiário oscila muito (1 pacote grande = 90% do dia). Projeção assume ritmo atual até o fim do período.</div>
+      <div class="cap">Metas <strong>fixas da franqueadora</strong> × ${nrec} recepcionistas — não deriva de mix estatístico. Escala aplicada: ${esc_desc}. "Serviços gerais" = resto após Pacotes+Fast Retoque+Produtos. Projeção assume ritmo atual até o fim do período.</div>
       <div class="categ-grid">${tiles}</div>
       <table class="simple"><thead><tr><th>Categoria</th><th>Meta</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção</th></tr></thead><tbody>${tabela_rows}${total_row}</tbody></table>
     </div>`;
@@ -1489,7 +1479,12 @@ function renderAnual(data){
   renderAncora('anual-ancora', a.categoria_native, a.kpis);
   if(a.meta && a.meta.meta) renderMetaProgress('anual-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
   renderTicketMeta('anual-ticket-meta', 'ano', k);
-  renderCategoriasMeta('anual-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0,a.categorias);
+  {
+    const mf = data.metas_franqueadora || {};
+    const mm = mf.meta_mensal_total || 60000;
+    const esc = (a.meta.meta||0) / mm;
+    renderCategoriasMeta('anual-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc);
+  }
 
   // Tabela mensal
   const meses=Object.entries(a.meses||{}).sort();
@@ -1573,7 +1568,11 @@ function renderMensal(data){
   renderHeatmapMeta('mensal-heatmap', data.sazonalidade, m.por_dia_mes, data.hoje);
   renderTicketMeta('mensal-ticket-meta', 'mês', k);
   renderUtilizacao('mensal-utilizacao', 'mês', k, m);
-  renderCategoriasMeta('mensal-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao,(data.abas.anual||{}).categorias);
+  {
+    const mf = data.metas_franqueadora || {};
+    const mm = mf.meta_mensal_total || 60000;
+    renderCategoriasMeta('mensal-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm);
+  }
 
   if(m.novos_vs_recorr) renderNovosRecorr('mensal-novos', m.novos_vs_recorr, 'mês');
 
@@ -1600,7 +1599,11 @@ function renderSemanal(data){
   renderTicketMeta('semanal-ticket-meta', 'semana', k);
   renderComparacaoSemana('semanal-comparacao', k, s.semana_anterior);
   renderUtilizacao('semanal-utilizacao', 'semana', k, s);
-  renderCategoriasMeta('semanal-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao,(data.abas.anual||{}).categorias);
+  {
+    const mf = data.metas_franqueadora || {};
+    const mm = mf.meta_mensal_total || 60000;
+    renderCategoriasMeta('semanal-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm);
+  }
   if(s.novos_vs_recorr) renderNovosRecorr('semanal-novos', s.novos_vs_recorr, 'semana');
   renderRentabilidade('semanal-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
   renderBarsDow('semanal-dow','📊 Onde o caixa se concentra na semana','Distribuição por dia · decide onde reforçar equipe e campanha',s.por_dow,'');
@@ -1624,7 +1627,11 @@ function renderDiario(data){
   renderPaceIntraday('diario-pace', k.pace_intraday, (data.sazonalidade||{}).curva_horaria);
   renderTicketMeta('diario-ticket-meta', 'hoje', k);
   renderUtilizacao('diario-utilizacao', 'hoje', k, d);
-  renderCategoriasMeta('diario-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao,(data.abas.anual||{}).categorias);
+  {
+    const mf = data.metas_franqueadora || {};
+    const mm = mf.meta_mensal_total || 60000;
+    renderCategoriasMeta('diario-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao, mf, d.meta.meta/mm);
+  }
   renderRentabilidade('diario-rentabilidade', '💰 Rentabilidade · R$/hora HOJE', 'sinal em tempo real do mix — dá pra empurrar serviço mais rentável no restante do dia', d.rentabilidade_hora || []);
   renderBarsHora('diario-hora','⏱ Fluxo por hora · HOJE','Onde tá vazio, onde tá cheio · decide chamar cliente pelo WhatsApp',d.hora_abs,false,'');
   renderRankingProf('diario-prof','👥 Quem está trabalhando AGORA','Ranking do dia · ordenado por receita',d.ranking_prof, d.ranking_prof_total_n);
