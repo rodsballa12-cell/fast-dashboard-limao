@@ -1391,7 +1391,7 @@ function renderSemanal(data){
     {label:'Caixa · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs sem passada'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:'vs sem passada'},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:'vs sem passada'},
-    {label:'Dias operados',value:k.dias_op+'',foot:'de 6 (seg–sáb)'}
+    {label:'Dias operados',value:k.dias_op+'',foot:`de ${s.meta.dias_total} da semana`}
   ]);
   renderMetaProgress('semanal-meta','Meta Semanal',s.meta,'Soma das metas diárias dos dias da semana (cada dia ponderado pelo peso histórico do DOW)');
   renderTicketMeta('semanal-ticket-meta', 'semana', k);
