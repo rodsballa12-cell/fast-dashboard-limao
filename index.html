@@ -577,21 +577,34 @@ function renderMetaProgress(container_id, titulo, meta, subtitle){
   document.getElementById(container_id).innerHTML=html;
 }
 
-function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta_realizado, meta_projecao){
+function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta_realizado, meta_projecao, mix_ancora){
   const c=categorias||{};
-  // Mix dinâmico do próprio período (era hardcoded 21/76/3 — irreal pra loja).
-  // Se período não teve venda, cai num default plausível baseado no perfil walk-in.
+  // Mix vem do ANUAL (mix_ancora) — reflete a realidade estratégica do negócio
+  // (âncora estável: Serviços domina, Pacotes e Produtos são secundários).
+  // Usar mix do período curto (diário/semanal) distorce: 1 venda de pacote grande
+  // vira "89% pacotes" e a meta fica absurda.
+  const ancora = mix_ancora || {};
+  const anc_bruto = ['pacotes','servicos','produtos'].map(k => (ancora[k]||{v:0}).v || 0);
+  const anc_tot = anc_bruto.reduce((s,v)=>s+v,0);
   const bruto = ['pacotes','servicos','produtos'].map(k => (c[k]||{v:0}).v || 0);
   const tot = bruto.reduce((s,v)=>s+v,0);
-  const mixReal = tot > 0
-    ? bruto.map(v => Math.round(v/tot*100))
-    : [15, 84, 1];  // fallback baseado em perfil real da loja (não os 21/76/3 antigos)
+  // Fonte na ordem: 1) mix anual estável (âncora) > 2) mix do próprio período > 3) fallback
+  let mixReal, fonte_desc;
+  if(anc_tot > 0){
+    mixReal = anc_bruto.map(v => Math.round(v/anc_tot*100));
+    fonte_desc = 'mix estratégico (ano)';
+  } else if(tot > 0){
+    mixReal = bruto.map(v => Math.round(v/tot*100));
+    fonte_desc = 'mix do período';
+  } else {
+    mixReal = [15, 84, 1];
+    fonte_desc = 'mix padrão da loja';
+  }
   const rows=[
     {k:'pacotes',nome:'Pacotes',pct_meta:mixReal[0],cls_:''},
     {k:'servicos',nome:'Serviços',pct_meta:mixReal[1],cls_:'c2'},
     {k:'produtos',nome:'Produtos',pct_meta:mixReal[2],cls_:'c3'},
   ];
-  const fonte_mix = tot > 0 ? 'mix real do período' : 'mix padrão da loja (sem venda no período pra calcular)';
   const tiles=rows.map(r=>{
     const cat=c[r.k]||{v:0,n:0,pct:0};
     const meta_cat=meta_valor*r.pct_meta/100;
@@ -614,7 +627,7 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
   document.getElementById(container_id).innerHTML=`
     <div class="card">
       <h2>Detalhamento por categoria · Meta vs Realizado ${titulo}</h2>
-      <div class="cap">Meta ${brl0(meta_valor)} distribuída pelo <strong>${fonte_mix}</strong> (${mixReal[0]}% pacotes · ${mixReal[1]}% serviços · ${mixReal[2]}% produtos). Projeção assume ritmo atual até o fim do período.</div>
+      <div class="cap">Meta ${brl0(meta_valor)} distribuída pelo <strong>${fonte_desc}</strong> (${mixReal[0]}% pacotes · ${mixReal[1]}% serviços · ${mixReal[2]}% produtos). O mix estratégico anual é o fio-condutor porque mix intradiário oscila muito (1 pacote grande = 90% do dia). Projeção assume ritmo atual até o fim do período.</div>
       <div class="categ-grid">${tiles}</div>
       <table class="simple"><thead><tr><th>Categoria</th><th>Meta</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção</th></tr></thead><tbody>${tabela_rows}${total_row}</tbody></table>
     </div>`;
@@ -1476,7 +1489,7 @@ function renderAnual(data){
   renderAncora('anual-ancora', a.categoria_native, a.kpis);
   if(a.meta && a.meta.meta) renderMetaProgress('anual-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
   renderTicketMeta('anual-ticket-meta', 'ano', k);
-  renderCategoriasMeta('anual-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0);
+  renderCategoriasMeta('anual-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0,a.categorias);
 
   // Tabela mensal
   const meses=Object.entries(a.meses||{}).sort();
@@ -1560,7 +1573,7 @@ function renderMensal(data){
   renderHeatmapMeta('mensal-heatmap', data.sazonalidade, m.por_dia_mes, data.hoje);
   renderTicketMeta('mensal-ticket-meta', 'mês', k);
   renderUtilizacao('mensal-utilizacao', 'mês', k, m);
-  renderCategoriasMeta('mensal-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao);
+  renderCategoriasMeta('mensal-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao,(data.abas.anual||{}).categorias);
 
   if(m.novos_vs_recorr) renderNovosRecorr('mensal-novos', m.novos_vs_recorr, 'mês');
 
@@ -1587,7 +1600,7 @@ function renderSemanal(data){
   renderTicketMeta('semanal-ticket-meta', 'semana', k);
   renderComparacaoSemana('semanal-comparacao', k, s.semana_anterior);
   renderUtilizacao('semanal-utilizacao', 'semana', k, s);
-  renderCategoriasMeta('semanal-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao);
+  renderCategoriasMeta('semanal-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao,(data.abas.anual||{}).categorias);
   if(s.novos_vs_recorr) renderNovosRecorr('semanal-novos', s.novos_vs_recorr, 'semana');
   renderRentabilidade('semanal-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
   renderBarsDow('semanal-dow','📊 Onde o caixa se concentra na semana','Distribuição por dia · decide onde reforçar equipe e campanha',s.por_dow,'');
@@ -1611,7 +1624,7 @@ function renderDiario(data){
   renderPaceIntraday('diario-pace', k.pace_intraday, (data.sazonalidade||{}).curva_horaria);
   renderTicketMeta('diario-ticket-meta', 'hoje', k);
   renderUtilizacao('diario-utilizacao', 'hoje', k, d);
-  renderCategoriasMeta('diario-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao);
+  renderCategoriasMeta('diario-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao,(data.abas.anual||{}).categorias);
   renderRentabilidade('diario-rentabilidade', '💰 Rentabilidade · R$/hora HOJE', 'sinal em tempo real do mix — dá pra empurrar serviço mais rentável no restante do dia', d.rentabilidade_hora || []);
   renderBarsHora('diario-hora','⏱ Fluxo por hora · HOJE','Onde tá vazio, onde tá cheio · decide chamar cliente pelo WhatsApp',d.hora_abs,false,'');
   renderRankingProf('diario-prof','👥 Quem está trabalhando AGORA','Ranking do dia · ordenado por receita',d.ranking_prof, d.ranking_prof_total_n);
