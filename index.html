@@ -132,6 +132,9 @@
   footer code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:11px;color:var(--accent);}
   @media (max-width:820px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.grid-2b{grid-template-columns:1fr;}.categ-grid{grid-template-columns:1fr;}.meta-row{grid-template-columns:repeat(2,1fr);}.brand-txt h1{font-size:18px;}.logo svg{height:44px;width:44px;}.kpi .value{font-size:24px;}.tab-btn{padding:10px 12px;font-size:12.5px;}}
 </style>
+<!-- MKT:CSS -->
+<link rel="stylesheet" href="assets/marketing.css">
+<!-- /MKT:CSS -->
 </head>
 <body>
 <div class="wrap">
@@ -169,7 +172,7 @@
       <button class="tab-btn" role="tab" aria-selected="true" data-tab="painel">📊 Painel<span class="subn" id="tab-painel-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="clientes">👥 Clientes<span class="subn" id="tab-clientes-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="stone">🏦 Stone<span class="subn" id="tab-stone-sub"></span></button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="auditoria">🛡️ Auditoria<span class="subn" id="tab-auditoria-sub"></span></button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="auditoria">🛡️ Auditoria<span class="subn" id="tab-auditoria-sub"></span></button><!-- MKT:TAB --><button class="tab-btn" role="tab" aria-selected="false" data-tab="marketing">📣 Marketing<span class="subn" id="tab-marketing-sub"></span></button><!-- /MKT:TAB -->
     </div>
 
     <!-- PAINEL — engloba os 4 períodos com seletor -->
@@ -335,6 +338,12 @@
       <div id="stone-parcelas"></div>
       <div id="stone-content"></div>
     </div>
+    <!-- MKT:PANEL -->
+    <div class="panel" id="tab-marketing">
+      <div class="audit"><div>📣</div><div>Gestão de <strong>Instagram, Facebook e Google Meu Negócio</strong>. Calendário editorial, avaliações e pauta gerada a partir dos números reais do Trinks. Dados de <code>data/marketing_data.json</code>.</div></div>
+      <div id="mk-app"><div class="card"><h2>Carregando marketing…</h2></div></div>
+    </div>
+    <!-- /MKT:PANEL -->
 
     <footer>
       <div><strong>Fonte:</strong> API Trinks (<code>api.trinks.com/v1</code>) · <strong>Refresh automático:</strong> de hora em hora, 11h→21h BRT (11×/dia) via GitHub Actions</div>
@@ -2306,5 +2315,8 @@ document.getElementById('btn-reload').addEventListener('click', refreshInteligen
 load();
 setInterval(()=>{if(!document.hidden) load();}, 5*60*1000);
 </script>
+<!-- MKT:JS -->
+<script src="assets/marketing.js"></script>
+<!-- /MKT:JS -->
 </body>
 </html>

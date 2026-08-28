@@ -1,0 +1,88 @@
+name: Refresh Marketing
+
+# Três gatilhos:
+#  - schedule: métricas de 6 em 6h; pauta do Claude 1x/dia às 08h de Brasília
+#  - push: reinjeta a aba Marketing sempre que o index.html for regenerado
+#          pelo publish_pages.py da máquina local
+#  - manual: workflow_dispatch, com opção de forçar a geração de pauta
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # métricas
+    - cron: '0 11 * * *'    # 08h BRT — métricas + pauta do Claude
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'assets/**'
+      - 'scripts/marketing_*.py'
+      - 'scripts/inject_marketing_tab.py'
+  workflow_dispatch:
+    inputs:
+      conteudo:
+        description: 'Gerar pauta e respostas com Claude'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: marketing
+  cancel-in-progress: false
+
+jobs:
+  marketing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: pip install requests anthropic
+
+      - name: Decidir se gera pauta com Claude
+        id: modo
+        run: |
+          FLAG=""
+          # o cron das 11h UTC (08h BRT) é o que gera pauta
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$(date -u +%H)" = "11" ]; then
+            FLAG="--conteudo"
+          fi
+          if [ "${{ inputs.conteudo }}" = "true" ]; then
+            FLAG="--conteudo"
+          fi
+          echo "flag=$FLAG" >> "$GITHUB_OUTPUT"
+          echo "Modo: ${FLAG:-somente métricas}"
+
+      - name: Refresh marketing (Google Meu Negócio + Meta)
+        if: github.event_name != 'push'
+        env:
+          GMN_CLIENT_ID: ${{ secrets.GMN_CLIENT_ID }}
+          GMN_CLIENT_SECRET: ${{ secrets.GMN_CLIENT_SECRET }}
+          GMN_REFRESH_TOKEN: ${{ secrets.GMN_REFRESH_TOKEN }}
+          GMN_ACCOUNT_ID: ${{ secrets.GMN_ACCOUNT_ID }}
+          GMN_LOCATION_ID: ${{ secrets.GMN_LOCATION_ID }}
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_API_VERSION: ${{ secrets.META_API_VERSION }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/marketing_refresh.py ${{ steps.modo.outputs.flag }}
+
+      - name: Reinjetar aba Marketing no index.html
+        run: python scripts/inject_marketing_tab.py
+
+      - name: Commit e push se houve mudança
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/marketing_data.json index.html
+          if git diff --cached --quiet; then
+            echo "Sem mudanças no marketing"
+          else
+            git commit -m "marketing: refresh $(date -u +'%Y-%m-%d %H:%MZ')"
+            git push
+          fi
