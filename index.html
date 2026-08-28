@@ -154,7 +154,7 @@
       <span class="chip" id="chip-age" style="display:none;"></span>
       <span class="chip" id="chip-cota" style="display:none;"></span>
       <span class="chip" id="chip-live" style="display:none;"></span>
-      <button id="btn-reload" class="btn-refresh btn-sync" title="Puxa dados frescos do servidor (dados atualizam sozinhos nos horários 00h/12h/15h/18h/21h BRT)">🔄 Atualizar dados</button>
+      <button id="btn-reload" class="btn-refresh btn-sync" title="1º clique: pede token GitHub (fica só no browser). Depois: força sync completo com API Trinks em ~1min. Sem token: só recarrega últimos dados publicados.">🔄 Atualizar dados</button>
     </div>
   </header>
 
@@ -2236,8 +2236,71 @@ async function sincronizarTrinks(){
 }
 
 // ============= BINDINGS =============
-document.getElementById('btn-reload').addEventListener('click', ()=>load(true));
-// btn-sync removido do UI para simplificar. Sync forçado é feito via chat com Claude quando necessário.
+// Botão único: se tem token salvo → dispara sync completo (workflow GitHub) e recarrega.
+// Sem token → oferece configurar. Se recusar → só recarrega o JSON atual (fallback).
+async function refreshInteligente(){
+  const btn = document.getElementById('btn-reload');
+  let token = localStorage.getItem('gh_token');
+  if(token){ token = sanitizeToken(token); if(token.length < 20) token = null; }
+
+  if(!token){
+    const raw = prompt(
+      '🔑 Ativar sync completo (1x)\n\n' +
+      'Cola aqui seu Personal Access Token do GitHub — fica salvo SÓ neste browser, ' +
+      'nunca sai do seu celular. Depois de configurado, este botão puxa dados FRESCOS ' +
+      'do Trinks em ~1min.\n\n' +
+      'Como gerar: github.com/settings/tokens/new (scope: workflow)\n\n' +
+      '📌 Se cancelar: o botão só recarrega os últimos dados publicados (que atualizam ' +
+      'sozinhos pelo cron).'
+    );
+    if(raw === null){ load(true); return; }  // cancelou → só recarrega
+    token = sanitizeToken(raw);
+    if(!token || token.length < 20){
+      toast('❌ Token inválido. Só recarrego os últimos dados publicados.', true);
+      load(true);
+      return;
+    }
+    localStorage.setItem('gh_token', token);
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⚡ Sincronizando…';
+  try {
+    const r = await fetch('https://api.github.com/repos/rodsballa12-cell/fast-dashboard-limao/actions/workflows/refresh.yml/dispatches', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': 'Bearer ' + token,
+        'X-GitHub-Api-Version': '2022-11-28',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ref: 'main' }),
+    });
+    if(r.status === 204){
+      toast('⚡ <strong>Sync disparado</strong><br><small>Puxando dados frescos do Trinks. Carrego automático em ~1min.</small>');
+      btn.textContent = '⏳ ~60s pra carregar';
+      setTimeout(() => {
+        btn.disabled = false;
+        load(true);
+      }, 70000);
+    } else if(r.status === 401){
+      localStorage.removeItem('gh_token');
+      toast('❌ Token expirado ou inválido — removi do browser. Clica de novo pra colar outro.', true);
+      btn.disabled = false;
+      btn.textContent = '🔄 Atualizar dados';
+    } else {
+      const txt = (await r.text()).slice(0, 150);
+      toast(`⚠️ Sync falhou (HTTP ${r.status}). Recarregando últimos dados publicados.<br><small>${txt}</small>`, true);
+      btn.disabled = false;
+      load(true);
+    }
+  } catch(e){
+    toast(`⚠️ Sem rede pro sync: ${e.message}. Recarregando local.`, true);
+    btn.disabled = false;
+    load(true);
+  }
+}
+document.getElementById('btn-reload').addEventListener('click', refreshInteligente);
 
 // auto-refresh a cada 5min (se aba visível)
 load();
