@@ -1,41 +1,33 @@
 name: Refresh Dashboard Data
 
+# Atualiza data/dashboard_data.json puxando dados frescos do Trinks.
+#
+# ESTRATÉGIA DE RESILIÊNCIA:
+# GitHub Actions pula fires de cron silenciosamente em horários de pico.
+# Solução: 3 fires por hora (:07, :27, :47) com early-exit — se qualquer
+# um dos 3 firar, cobre a janela. Se o primeiro rodou, os outros 2
+# detectam via `git log` (idade < 30 min) e encerram em <10s sem tocar API.
+#
+# HORÁRIO: 11h-21h BRT (14h-23h UTC + 0h UTC). BRT é UTC-3 fixo (sem DST
+# desde 2019), então o minuto UTC = minuto BRT; só a hora desloca.
+#
+# CONSUMO API: ~20 req por execução real. 11 execuções reais/dia = ~220
+# req/dia = ~6.600/mês (66% da cota de 10k). Fires de early-exit não
+# consomem nada.
+
 on:
   workflow_dispatch:
   schedule:
-    # 11 janelas de hora × 2 tentativas defasadas = até 22 fires/dia
-    # das 11h às 21h BRT. Só UMA roda de fato por hora — a segunda faz
-    # early-exit se detectar que já teve refresh nos últimos 45 min.
-    #
-    # POR QUÊ 2 CRONS: GitHub Actions pula fires silenciosamente durante
-    # picos de fila (observado 8 skips seguidos em 26/08). Um segundo
-    # fire dá segunda chance sem dobrar consumo de API (check no início
-    # do job usa `git log` no dashboard_data.json).
-    #
-    # GitHub Actions só aceita cron em UTC — mas como BRT = UTC-3 (offset de hora
-    # inteira, sem DST desde 2019), o minuto UTC bate exato com o mesmo minuto BRT.
-    # Só a HORA desloca. Mapping (com minuto :17):
-    #   14:17 UTC = 11:17 BRT
-    #   15:17 UTC = 12:17 BRT
-    #   ...
-    #   21:17 UTC = 18:17 BRT
-    #   23:17 UTC = 20:17 BRT
-    #   00:17 UTC = 21:17 BRT (dia anterior)
-    #
-    # ⚠️  GitHub pode atrasar cron em horários de pico (documentado). Fire pode
-    # sair 5-60min após o alvo. Botão manual "🔄 Atualizar dados" no dashboard
-    # supre qualquer necessidade urgente.
-    #
-    # Consumo estimado: ~14 req/run × 11 runs = ~154 req/dia (~4.600/mês · 46% da cota)
-    #
-    # ⚠️  ANTES rodava em :00 UTC — GitHub Actions concentra muita carga em
-    # horários cheios e pula silenciosamente. Observado 8 skips seguidos em
-    # 26/08 UTC. Movido pra :17 UTC (janela de menor demanda documentada).
-    - cron: '17 14-23,0 * * *'  # tentativa principal
-    - cron: '47 14-23,0 * * *'  # backup (early-exit se principal rodou)
+    - cron: '7 14-23,0 * * *'
+    - cron: '27 14-23,0 * * *'
+    - cron: '47 14-23,0 * * *'
 
 permissions:
   contents: write
+
+concurrency:
+  group: refresh-dashboard
+  cancel-in-progress: false
 
 jobs:
   refresh:
@@ -43,54 +35,57 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2  # pra checar timestamp do último refresh commit
+          fetch-depth: 2
 
-      # Early-exit se refresh já rodou nos últimos 45 min (backup cron detecta
-      # que o principal já cumpriu o job e sai zerando consumo de API).
-      # Só aplica em fires scheduled — dispatch manual sempre roda.
-      - name: Skip if refreshed recently
+      # Early-exit se dashboard_data.json foi atualizado nas últimas 30 min.
+      # Aplica só a fires scheduled — dispatch manual sempre roda.
+      - name: Check recency
         id: recency
         if: github.event_name == 'schedule'
         run: |
           last_ts=$(git log -1 --format=%ct -- data/dashboard_data.json 2>/dev/null || echo 0)
           now=$(date -u +%s)
           age=$((now - last_ts))
-          echo "Idade do último refresh: ${age}s"
-          if [ "$age" -lt 2700 ]; then
-            echo "SKIP=true" >> $GITHUB_OUTPUT
-            echo "⏭  Refresh recente (<45min). Backup cron faz early-exit."
+          age_min=$((age / 60))
+          echo "Última atualização: ${age_min} min atrás"
+          if [ "$age" -lt 1800 ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "⏭  Refresh recente (<30min) — outro cron já cobriu esta janela."
           else
-            echo "SKIP=false" >> $GITHUB_OUTPUT
-            echo "▶️  Rodando refresh (idade $((age/60)) min)."
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "▶️  Rodando refresh (idade ${age_min} min)."
           fi
 
       - uses: actions/setup-python@v5
-        if: steps.recency.outputs.SKIP != 'true'
+        if: steps.recency.outputs.skip != 'true'
         with:
           python-version: '3.12'
 
       - name: Install deps
-        if: steps.recency.outputs.SKIP != 'true'
+        if: steps.recency.outputs.skip != 'true'
         run: pip install requests
 
-      - name: Refresh dashboard data (fetch API Trinks)
-        if: steps.recency.outputs.SKIP != 'true'
+      - name: Fetch Trinks + build dashboard
+        if: steps.recency.outputs.skip != 'true'
         env:
           TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
           TRINKS_ESTABELECIMENTO_ID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID }}
         run: python scripts/github_refresh.py
 
-      - name: Commit e push se houve mudança
-        if: steps.recency.outputs.SKIP != 'true'
+      - name: Commit e push
+        if: steps.recency.outputs.skip != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/dashboard_data.json data/clientes_detalhes.json \
-                  data/profissionais_cache.json data/clientes_lista_cache.json \
-                  data/servicos_cache.json data/agend_detail_cache.json
+          git add data/dashboard_data.json \
+                  data/clientes_detalhes.json \
+                  data/profissionais_cache.json \
+                  data/clientes_lista_cache.json \
+                  data/servicos_cache.json \
+                  data/agend_detail_cache.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "Sem mudanças nos dados"
           else
-            git commit -m "refresh: dashboard $(date -u +'%Y-%m-%d %H:%MZ')"
+            git commit -m "refresh: dashboard $(TZ=America/Sao_Paulo date +'%d/%m %H:%M') BRT"
             git push
           fi
