@@ -134,6 +134,16 @@ def main():
     mc_meta = 1 - PREM["comissao"] - INSUMOS_PCT - SIMPLES
     fixo_modelo = PREM["aluguel"] + PREM["gerente"] + PREM["midia"] + PREM["beleza_boost"]         + PREM["sistemas"] + PREM["royalty_min"] + PREM["mkt_local"]
 
+    # formas de pagamento medidas em agosto (extracao local, 139 transacoes)
+    FORMAS = [
+        {"forma": "PIX e dinheiro", "valor": 9585.00, "prazo": "no mesmo dia", "taxa": 0.0064,
+         "evidencia": "45 lançamentos na Stone, tarifa média de 0,65%"},
+        {"forma": "Débito", "valor": 8660.10, "prazo": "dia seguinte", "taxa": None,
+         "evidencia": "liquidação diária"},
+        {"forma": "Crédito", "valor": 18711.00, "prazo": "dia seguinte", "taxa": None,
+         "evidencia": "21 'Recebíveis de Cartão' em 14 dos 22 dias do período, sempre pela manhã"},
+    ]
+
     # ponto de equilibrio
     # CashMe e Pronampe NAO entram: as parcelas sao pagas por pessoa fisica (definido em 29/08).
     FIXO = 41816.32 + 1300.00
@@ -175,14 +185,8 @@ def main():
         },
         "recebimento": {
             "medido_ate": "2026-08-14",
-            "linhas": [
-                {"forma": "PIX e dinheiro", "pct": 0.2593, "prazo": "no mesmo dia", "taxa": 0.0064,
-                 "evidencia": "45 lançamentos na Stone, tarifa média de 0,65%"},
-                {"forma": "Débito", "pct": 0.2343, "prazo": "dia seguinte", "taxa": None,
-                 "evidencia": "liquidação diária"},
-                {"forma": "Crédito", "pct": 0.5063, "prazo": "dia seguinte", "taxa": None,
-                 "evidencia": "21 'Recebíveis de Cartão' em 14 dos 22 dias do período, sempre pela manhã"},
-            ],
+            "linhas": [dict(l, pct=l["valor"] / sum(x["valor"] for x in FORMAS)) for l in FORMAS],
+            "total_formas": sum(l["valor"] for l in FORMAS),
             "prova": "O primeiro recebível de cartão caiu em 24/07 — um dia depois de a loja abrir. Se fosse D+30 não haveria nada para liquidar.",
             "parcelado_pct": 0.0,
             "ressalva": "O extrato da Stone traz 21 lançamentos de cartão contra 225 transações no Trinks. A cadência diária está provada; o valor total não — falta o extrato de 15/08 em diante.",

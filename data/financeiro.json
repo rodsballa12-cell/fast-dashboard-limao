@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-08-29T16:37:40-03:00",
+ "gerado_em": "2026-08-29T17:01:10-03:00",
  "baseline": "2026-08-28",
  "kpis": {
   "caixa_conta": 5060.93,
@@ -193,26 +193,30 @@
   "linhas": [
    {
     "forma": "PIX e dinheiro",
-    "pct": 0.2593,
+    "valor": 9585.0,
     "prazo": "no mesmo dia",
     "taxa": 0.0064,
-    "evidencia": "45 lançamentos na Stone, tarifa média de 0,65%"
+    "evidencia": "45 lançamentos na Stone, tarifa média de 0,65%",
+    "pct": 0.25936178330505655
    },
    {
     "forma": "Débito",
-    "pct": 0.2343,
+    "valor": 8660.1,
     "prazo": "dia seguinte",
     "taxa": null,
-    "evidencia": "liquidação diária"
+    "evidencia": "liquidação diária",
+    "pct": 0.2343347918205655
    },
    {
     "forma": "Crédito",
-    "pct": 0.5063,
+    "valor": 18711.0,
     "prazo": "dia seguinte",
     "taxa": null,
-    "evidencia": "21 'Recebíveis de Cartão' em 14 dos 22 dias do período, sempre pela manhã"
+    "evidencia": "21 'Recebíveis de Cartão' em 14 dos 22 dias do período, sempre pela manhã",
+    "pct": 0.506303424874378
    }
   ],
+  "total_formas": 36956.1,
   "prova": "O primeiro recebível de cartão caiu em 24/07 — um dia depois de a loja abrir. Se fosse D+30 não haveria nada para liquidar.",
   "parcelado_pct": 0.0,
   "ressalva": "O extrato da Stone traz 21 lançamentos de cartão contra 225 transações no Trinks. A cadência diária está provada; o valor total não — falta o extrato de 15/08 em diante."

@@ -2395,8 +2395,8 @@ function renderFinanceiro(){
 
   document.getElementById('fin-kpis').innerHTML='<section class="kpi-grid fin5">'+[
     kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), 'Conta corrente da PJ · posição de 28/08', null),
-    kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), 'Vendas ainda não liquidadas', null),
-    kpiCard('k3','RESULTADO DO MÊS', brl0(k.resultado_mes), brl0(k.resultado_mes_provisionado)+' provisionando o Simples e o royalty', null),
+    kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), '⚠️ número da premissa D+30, contrariada pela liquidação diária medida — a revisar com o extrato de 15/08 em diante', null),
+    kpiCard('k3','RESULTADO DO MÊS', brl0(k.resultado_mes), brl0(k.resultado_mes_caixa)+' pelo caixa · a diferença é Simples e royalty provisionados', null),
     kpiCard('k4','FATURAMENTO × META', finPct(atg), brl0(k.receita_mes)+' de '+brl0(k.meta_mes)+' · faltaram '+brl0(k.meta_mes-k.receita_mes), null),
     kpiCard('k5 kpi-be','FALTA PARA EMPATAR', brl0(beFalta), beBar, null),
   ].join('')+'</section>';
@@ -2486,8 +2486,9 @@ function renderFinanceiro(){
   // ---- quando o dinheiro entra ----
   h+=`<div class="card"><h2>⏱️ Quando o dinheiro entra</h2>
     <div class="cap">Medido no extrato da Stone até ${new Date(C.medido_ate+'T12:00:00').toLocaleDateString('pt-BR')}</div>
-    <table class="simple"><thead><tr><th>Forma de recebimento</th><th>% da receita</th><th>Cai quando</th><th>Evidência</th></tr></thead><tbody>
-    ${C.linhas.map(l=>`<tr><td>${l.forma}</td><td>${finPct(l.pct)}</td><td><strong>${l.prazo}</strong></td><td style="text-align:left;font-size:11.5px;color:var(--ink-2)">${l.evidencia}</td></tr>`).join('')}
+    <table class="simple"><thead><tr><th>Forma de recebimento</th><th>Valor em ago</th><th>% do total</th><th>Cai quando</th><th>Evidência</th></tr></thead><tbody>
+    ${C.linhas.map(l=>`<tr><td>${l.forma}</td><td>${brl(l.valor)}</td><td>${finPct(l.pct)}</td><td><strong>${l.prazo}</strong></td><td style="text-align:left;font-size:11.5px;color:var(--ink-2)">${l.evidencia}</td></tr>`).join('')}
+    <tr><td><strong>Total das formas medidas</strong></td><td><strong>${brl(C.total_formas)}</strong></td><td><strong>100,0%</strong></td><td colspan="2" style="text-align:left;font-size:11.5px;color:var(--ink-3)">contra ${brl(FIN.resultado.receita_real)} de receita — diferença de ${brl(C.total_formas-FIN.resultado.receita_real)}, a conferir na extração completa</td></tr>
     </tbody></table>
     <div class="insight-card" style="margin-top:12px"><strong>O modelo estava errado — e a realidade é melhor.</strong><br>
     A projeção assume 70% da receita em crédito parcelado em 6x, imobilizando capital de giro por meses.
