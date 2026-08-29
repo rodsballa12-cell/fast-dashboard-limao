@@ -399,11 +399,12 @@
       <div id="midias-alertas"></div>
       <div id="midias-status"></div>
       <div id="midias-instagram"></div>
-      <div class="tabs" role="tablist" style="margin:14px 0 10px 0;gap:6px">
+      <div class="tabs" role="tablist" style="margin:14px 0 10px 0;gap:6px;position:sticky;top:0;background:var(--bg);z-index:20;padding:6px 0;border-bottom:1px solid var(--surface-2)">
         <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="hoje" style="padding:8px 14px;font-size:12.5px">🔴 Hoje</button>
         <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="7d" style="padding:8px 14px;font-size:12.5px">📅 Semana</button>
         <button class="tab-btn midias-per-btn" role="tab" aria-selected="true"  data-per="mtd" style="padding:8px 14px;font-size:12.5px">🎯 Mês</button>
         <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="90d" style="padding:8px 14px;font-size:12.5px">📊 90 dias</button>
+        <span id="midias-atualizado" style="margin-left:auto;font-size:11px;color:var(--ink-3);align-self:center"></span>
       </div>
       <div id="midias-kpis"></div>
       <div id="midias-direcionamentos"></div>
@@ -415,7 +416,10 @@
       <div id="midias-funil"></div>
       <div id="midias-recomendacoes"></div>
       <div id="midias-insights"></div>
-      <div style="text-align:right;margin-top:14px"><button id="midias-export-btn" style="background:var(--surface-2);color:var(--ink);border:1px solid var(--ink-3);padding:8px 14px;font-size:12px;border-radius:6px;cursor:pointer">⬇️ Exportar CSV</button></div>
+      <div style="text-align:right;margin-top:14px;display:flex;gap:8px;justify-content:flex-end">
+        <button id="midias-export-btn" style="background:var(--surface-2);color:var(--ink);border:1px solid var(--ink-3);padding:8px 14px;font-size:12px;border-radius:6px;cursor:pointer">⬇️ Exportar CSV</button>
+        <button id="midias-print-btn" style="background:var(--surface-2);color:var(--ink);border:1px solid var(--ink-3);padding:8px 14px;font-size:12px;border-radius:6px;cursor:pointer">🖨️ Imprimir/PDF</button>
+      </div>
     </div>
 
     <footer>
@@ -2724,13 +2728,63 @@ function renderMidias(){
     </div>`;
   };
 
+  // Timestamp no header sticky
+  const tsEl = document.getElementById('midias-atualizado');
+  if(tsEl) tsEl.textContent = 'atualizado ' + gerado;
+
+  // Health Score consolidado (A-F)
+  const dMtd = deltas.mtd || {};
+  let score = 100;
+  const p30d = pmtd;
+  if(p30d.cpa_msg && p30d.cpa_msg > bench.cpa_msg_meta) score -= 15;
+  if(p30d.ctr_pct < bench.ctr_meta) score -= 10;
+  if(p30d.frequency >= bench.frequency_alerta) score -= 20;
+  if(p30d.frequency >= 2.8 && p30d.frequency < bench.frequency_alerta) score -= 8;
+  if(dMtd.cpa_msg_pct > 15) score -= 15;
+  if(dMtd.conversas_msg_pct < -10) score -= 15;
+  if(dMtd.gasto_pct > 20) score -= 5;
+  score = Math.max(0, score);
+  const grade = score >= 90 ? 'A' : score >= 75 ? 'B' : score >= 60 ? 'C' : score >= 40 ? 'D' : 'F';
+  const gradeColor = {A:'#22c55e', B:'#3b82f6', C:'#f59e0b', D:'#ef4444', F:'#7f1d1d'}[grade];
+  const gradeMsg = {
+    A: 'Saudável em todos os fatores. Manter estratégia.',
+    B: 'Boa performance com 1-2 pontos de atenção.',
+    C: 'Média. Vários indicadores precisam ajuste.',
+    D: 'Fraca. Ação corretiva imediata.',
+    F: 'Crítica. Parar e reavaliar estratégia toda.'
+  }[grade];
+
+  // Forecast do mês (se pill = mês)
+  const hoje = new Date();
+  const dia = hoje.getDate();
+  const diasNoMes = new Date(hoje.getFullYear(), hoje.getMonth()+1, 0).getDate();
+  const projGasto = pmtd.gasto * (diasNoMes/dia);
+  const projConversas = Math.round(pmtd.conversas_msg * (diasNoMes/dia));
+
   const per = window._midiasPer || 'mtd';
   const pMap = {'hoje':M.por_periodo.hoje, '7d':p7, 'mtd':pmtd, '90d':M.por_periodo['90d']};
   const pSel = pMap[per] || pmtd;
   const alertaPeriodo = pSel.alerta ? `<div style="margin-bottom:12px;padding:12px;background:rgba(239,68,68,.10);border-left:4px solid #ef4444;border-radius:6px;font-size:13px;color:#ef4444;font-weight:600">${pSel.alerta}</div>` : '';
   document.getElementById('midias-kpis').innerHTML = `<section class="card">
-    <h2>📊 KPIs Meta Ads · ${pSel.label}</h2>
-    <div class="cap"><strong>KPI-estrela:</strong> ${MID.kpi_estrela.explicacao}</div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;margin-bottom:14px">
+      <div>
+        <h2 style="margin:0">📊 KPIs Meta Ads · ${pSel.label}</h2>
+        <div class="cap" style="margin-top:4px"><strong>KPI-estrela:</strong> ${MID.kpi_estrela.explicacao}</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:stretch">
+        <div style="background:${gradeColor};color:#fff;padding:10px 16px;border-radius:8px;text-align:center;min-width:80px">
+          <div style="font-size:10.5px;text-transform:uppercase;font-weight:600;opacity:0.9">Health Score</div>
+          <div style="font-weight:800;font-size:32px;line-height:1">${grade}</div>
+          <div style="font-size:10.5px;opacity:0.9">${score}/100</div>
+        </div>
+        <div style="background:var(--surface-2);padding:10px 14px;border-radius:8px;max-width:220px">
+          <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:600">Forecast Ago/26</div>
+          <div style="font-weight:700;font-size:16px;margin-top:2px">${brl(projGasto,0)}</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${projConversas} conversas · se manter ritmo (dia ${dia}/${diasNoMes})</div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11.5px;color:var(--ink-2);margin-bottom:12px;padding:8px 10px;background:${gradeColor}22;border-left:3px solid ${gradeColor};border-radius:4px">💡 ${gradeMsg}</div>
     ${alertaPeriodo}
     <div style="margin-top:14px">
       ${periodoBlock(pSel, per==='7d' || per==='mtd' || per==='90d')}
@@ -3160,6 +3214,17 @@ document.getElementById('midias-export-btn').addEventListener('click', () => {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+});
+
+// Print/PDF
+document.getElementById('midias-print-btn').addEventListener('click', () => {
+  // Ativa apenas a aba Mídias antes de imprimir
+  const midias = document.getElementById('tab-midias');
+  if(midias && !midias.classList.contains('active')){
+    document.querySelectorAll('#content > .panel').forEach(p => p.classList.remove('active'));
+    midias.classList.add('active');
+  }
+  setTimeout(() => window.print(), 250);
 });
 
 // Pills de período dentro de Mídias
