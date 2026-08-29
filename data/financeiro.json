@@ -1,11 +1,11 @@
 {
- "gerado_em": "2026-08-29T16:24:33-03:00",
+ "gerado_em": "2026-08-29T16:37:40-03:00",
  "baseline": "2026-08-28",
  "kpis": {
   "caixa_conta": 5060.93,
   "a_receber_stone": 20742.9,
-  "resultado_mes": -19730.460000000006,
-  "resultado_mes_provisionado": -25817.317000000006,
+  "resultado_mes": -25817.316999999995,
+  "resultado_mes_caixa": -19730.459999999995,
   "receita_mes": 36955.1,
   "meta_mes": 60000.0
  },
@@ -33,13 +33,13 @@
      },
      {
       "cat": "Impostos sobre venda — Simples",
-      "real": 0.0,
+      "real": 2586.857,
       "esp": 2586.857,
-      "nota": "7% da receita · NÃO houve débito no razão",
+      "nota": "7% da receita · provisionado por competência, ainda não debitado",
       "prov": true
      }
     ],
-    "sub_real": 13851.289999999999,
+    "sub_real": 16438.146999999997,
     "sub_esp": 16629.795
    },
    {
@@ -113,7 +113,7 @@
     "linhas": [
      {
       "cat": "Marketing",
-      "real": 2650.0,
+      "real": 2650,
       "esp": 4400.0,
       "nota": "inclui R$ 750 da gravação da inauguração",
       "prov": false
@@ -127,13 +127,13 @@
      },
      {
       "cat": "Royalty + marketing local",
-      "real": 0.0,
+      "real": 3500.0,
       "esp": 3500.0,
-      "nota": "mínimo contratual · NÃO houve débito no razão",
+      "nota": "mínimo contratual · provisionado por competência, ainda não debitado",
       "prov": true
      }
     ],
-    "sub_real": 3110.39,
+    "sub_real": 6610.389999999999,
     "sub_esp": 8300.0
    },
    {
@@ -152,20 +152,25 @@
     "sub_esp": 0.0
    }
   ],
-  "var_real": 13851.289999999999,
+  "var_real": 16438.146999999997,
   "var_esp": 16629.795,
-  "mc_real": 23103.809999999998,
+  "mc_real": 20516.953,
   "mc_esp": 20325.305,
-  "mc_prov": 20516.953,
-  "fixo_real": 42834.270000000004,
+  "fixo_real": 46334.27,
   "fixo_esp": 32800.0,
-  "custo_real": 56685.560000000005,
+  "custo_real": 62772.416999999994,
   "custo_esp": 49429.795,
-  "res_real": -19730.460000000006,
+  "res_real": -25817.316999999995,
+  "res_caixa": -19730.459999999995,
   "res_esp_mesma_receita": -12474.695,
   "res_esp_na_meta": 199.99999999999272,
   "provisoes_nao_debitadas": 6086.857,
   "be_modelo_1loja": 59636.363636363654
+ },
+ "premissas": {
+  "comissao": 0.32,
+  "insumos": 0.06,
+  "simples": 0.07
  },
  "equilibrio": {
   "fatura_hoje": 36955.1,
@@ -173,8 +178,8 @@
   "cenarios": [
    {
     "nome": "Com a comissão de hoje",
-    "comissao": 0.3169,
-    "mc": 0.5530999999999999
+    "comissao": 0.3169354162213064,
+    "mc": 0.5530645837786936
    },
    {
     "nome": "Se a comissão subir para 40%",

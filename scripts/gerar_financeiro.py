@@ -7,7 +7,7 @@ salvo pelo Excel antes, senao as formulas nao tem valor em cache.
 Por decisao do Rodrigo (29/08): NAO expor o montante aplicado no fundo, nem o
 capital integralizado, nem o quadro de compromissos.
 """
-import json, os, datetime
+import json, os, datetime, re, unicodedata
 import openpyxl
 
 PAINEL = r"C:\Users\rods_\OneDrive\Franquia - FAST\Claude\Painel_Gestao_Financeira_SIIBELLO.xlsx"
@@ -25,18 +25,53 @@ def v(ws, cel, default=0.0):
     return x if isinstance(x, (int, float)) else default
 
 
+def _norm(x):
+    """Rotulo comparavel: sem acento, sem pontuacao, minusculo."""
+    t = unicodedata.normalize("NFKD", str(x or "")).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]+", " ", t.lower()).strip()
+
+
+def ler_pl(ws, col=3):
+    """Le o P&L por ROTULO, nao por celula fixa.
+
+    Toda vez que uma categoria nova entra no painel as linhas andam. Ler por
+    endereco ja quebrou o KPI de resultado uma vez (lia C34, virou cabecalho).
+    """
+    m = {}
+    for r in range(1, ws.max_row + 1):
+        rot, val = ws.cell(r, 1).value, ws.cell(r, col).value
+        if rot and isinstance(val, (int, float)):
+            m.setdefault(_norm(rot), val)
+    return m
+
+
+def custo(m, rotulo):
+    """Custo de agosto pelo rotulo, como valor positivo. Estoura se sumir."""
+    k = _norm(rotulo)
+    if k not in m:
+        raise KeyError("linha ausente no P&L do Excel: %r — o painel mudou de estrutura" % rotulo)
+    return -m[k]
+
+
 def main():
     wb = openpyxl.load_workbook(PAINEL, data_only=True)
     L = wb["P&L_Operacional"]
     I = wb["Integridade"]
 
-    rec = v(L, "C6")
-    comissao = -v(L, "C15")
-    gerente = -v(L, "C16")
-    clt_rec = -v(L, "C17")
-    clt_lim = -v(L, "C18")
-    vt = -v(L, "C19")
-    demais = -v(L, "C29")
+    M = ler_pl(L)
+    rec = M[_norm("Receita faturada (R$)")]
+    comissao = custo(M, "Comissão sobre produção — VARIÁVEL")
+    gerente = custo(M, "Gerente — fixo mensal")
+    clt_rec = custo(M, "Folha CLT — recepção (2 pessoas)")
+    clt_lim = custo(M, "Folha CLT — limpeza")
+    vt = custo(M, "Vale-transporte da equipe")
+    aluguel = custo(M, "Aluguel + IPTU")
+    marketing = custo(M, "Marketing (mídia, Beleza Boost, impressos, audiovisual)")
+    insumos = custo(M, "Produtos e insumos")
+    utilidades = custo(M, "Utilidades, telecom e consumo")
+    seguro = custo(M, "Seguro do imóvel")
+    franqueadora = custo(M, "Franqueadora, sistemas e taxas")
+    a_classificar = custo(M, "Outros ainda a classificar")
     # resultado NAO e lido de celula fixa: as linhas do P&L mudam quando entra
     # uma categoria nova. E calculado abaixo, a partir das proprias linhas da DRE.
 
@@ -47,8 +82,9 @@ def main():
     grupos = [
         ("VARIAVEL", "Custos variáveis — acompanham a venda", [
             ("Comissão sobre produção", comissao, PREM["comissao"] * rec, "31,7% da receita · premissa 32%"),
-            ("Produtos e insumos (CMV)", 2138.91, INSUMOS_PCT * rec, "6% da receita na premissa"),
-            ("Impostos sobre venda — Simples", 0.0, SIMPLES * rec, "7% da receita · NÃO houve débito no razão"),
+            ("Produtos e insumos (CMV)", insumos, INSUMOS_PCT * rec, "6% da receita na premissa"),
+            ("Impostos sobre venda — Simples", SIMPLES * rec, SIMPLES * rec,
+             "7% da receita · provisionado por competência, ainda não debitado", True),
         ]),
         ("PESSOAL", "Pessoal fixo — independe do faturamento", [
             ("Gerente", gerente, PREM["gerente"], "R$ 6.500/mês"),
@@ -57,18 +93,19 @@ def main():
             ("Vale-transporte", vt, 0.0, "não estava no modelo"),
         ]),
         ("OCUPACAO", "Ocupação — o imóvel das duas lojas", [
-            ("Aluguel + IPTU", 19886.18, PREM["aluguel"], "R$ 18.000/mês na premissa · 2 lojas, 1 faturando"),
-            ("Utilidades, telecom e consumo", 2851.01, None, "sem premissa no modelo"),
-            ("Seguro do imóvel", 594.98, None, "sem premissa no modelo"),
+            ("Aluguel + IPTU", aluguel, PREM["aluguel"], "R$ 18.000/mês na premissa · 2 lojas, 1 faturando"),
+            ("Utilidades, telecom e consumo", utilidades, None, "sem premissa no modelo"),
+            ("Seguro do imóvel", seguro, None, "sem premissa no modelo"),
         ]),
         ("COMERCIAL", "Comercial e franquia", [
-            ("Marketing", 2650.00, PREM["midia"] + PREM["beleza_boost"], "inclui R$ 750 da gravação da inauguração"),
-            ("Franqueadora, sistemas e taxas", 460.39, PREM["sistemas"], "Trinks + Sults"),
-            ("Royalty + marketing local", 0.0, PREM["royalty_min"] + PREM["mkt_local"],
-             "mínimo contratual · NÃO houve débito no razão"),
+            ("Marketing", marketing, PREM["midia"] + PREM["beleza_boost"], "inclui R$ 750 da gravação da inauguração"),
+            ("Franqueadora, sistemas e taxas", franqueadora, PREM["sistemas"], "Trinks + Sults"),
+            ("Royalty + marketing local", PREM["royalty_min"] + PREM["mkt_local"],
+             PREM["royalty_min"] + PREM["mkt_local"],
+             "mínimo contratual · provisionado por competência, ainda não debitado", True),
         ]),
         ("ABERTO", "Ainda sem classificação", [
-            ("Outros a classificar", 2365.43, 0.0, "13 pessoas de menor valor + R$ 265 de diversos"),
+            ("Outros a classificar", a_classificar, 0.0, "13 pessoas de menor valor + R$ 265 de diversos"),
         ]),
     ]
 
@@ -76,22 +113,22 @@ def main():
         return sum((l[i] or 0.0) for l in g[2])
 
     G = [{"id": g[0], "titulo": g[1],
-          "linhas": [{"cat": c, "real": r, "esp": e, "nota": n,
-                      "prov": r == 0.0 and (e or 0) > 0} for c, r, e, n in g[2]],
+          "linhas": [{"cat": l[0], "real": l[1], "esp": l[2], "nota": l[3],
+                      "prov": len(l) > 4 and l[4]} for l in g[2]],
           "sub_real": soma(g, 1), "sub_esp": soma(g, 2)} for g in grupos]
     gi = {g["id"]: g for g in G}
 
     var_real, var_esp = gi["VARIAVEL"]["sub_real"], gi["VARIAVEL"]["sub_esp"]
     mc_real, mc_esp = rec - var_real, rec - var_esp
-    # margem de contribuicao com o Simples provisionado — e a que sustenta o ponto de equilibrio
-    mc_prov = rec - (var_real + SIMPLES * rec)
     fixo_real = sum(gi[k]["sub_real"] for k in ("PESSOAL", "OCUPACAO", "COMERCIAL", "ABERTO"))
     fixo_esp = sum(gi[k]["sub_esp"] for k in ("PESSOAL", "OCUPACAO", "COMERCIAL", "ABERTO"))
     real_total, esp_total = var_real + fixo_real, var_esp + fixo_esp
 
-    # o que saiu de fato do caixa: exclui as duas linhas provisionadas e nao debitadas
-    prov = SIMPLES * rec + PREM["royalty_min"] + PREM["mkt_local"]
-    caixa_real = rec - real_total
+    # a DRE e por competencia: as provisoes entram no realizado.
+    # o caixa e a memoria de calculo — o que a conta corrente de fato sentiu.
+    prov = sum(l["real"] for g in G for l in g["linhas"] if l["prov"])
+    resultado = rec - real_total          # competencia
+    caixa_real = resultado + prov         # caixa
 
     # na meta, com a estrutura de custo do modelo
     mc_meta = 1 - PREM["comissao"] - INSUMOS_PCT - SIMPLES
@@ -100,6 +137,7 @@ def main():
     # ponto de equilibrio
     # CashMe e Pronampe NAO entram: as parcelas sao pagas por pessoa fisica (definido em 29/08).
     FIXO = 41816.32 + 1300.00
+    com_pct = comissao / rec
 
     d = {
         "gerado_em": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -107,8 +145,8 @@ def main():
         "kpis": {
             "caixa_conta": 5060.93,
             "a_receber_stone": 20742.90,
-            "resultado_mes": caixa_real,
-            "resultado_mes_provisionado": caixa_real - prov,
+            "resultado_mes": resultado,
+            "resultado_mes_caixa": caixa_real,
             "receita_mes": rec,
             "meta_mes": META_MES,
         },
@@ -116,21 +154,23 @@ def main():
             "receita_real": rec, "receita_meta": META_MES,
             "grupos": G,
             "var_real": var_real, "var_esp": var_esp,
-            "mc_real": mc_real, "mc_esp": mc_esp, "mc_prov": mc_prov,
+            "mc_real": mc_real, "mc_esp": mc_esp,
             "fixo_real": fixo_real, "fixo_esp": fixo_esp,
             "custo_real": real_total, "custo_esp": esp_total,
-            "res_real": caixa_real,
+            "res_real": resultado,
+            "res_caixa": caixa_real,
             "res_esp_mesma_receita": rec - esp_total,
             "res_esp_na_meta": META_MES * mc_meta - fixo_modelo,
             "provisoes_nao_debitadas": prov,
             "be_modelo_1loja": fixo_modelo / mc_meta,
         },
+        "premissas": {"comissao": PREM["comissao"], "insumos": INSUMOS_PCT, "simples": SIMPLES},
         "equilibrio": {
             "fatura_hoje": rec,
             "custo_fixo_mes": FIXO,
             "cenarios": [
-                {"nome": "Com a comissão de hoje", "comissao": 0.3169, "mc": 1 - 0.3169 - 0.06 - 0.07},
-                {"nome": "Se a comissão subir para 40%", "comissao": 0.40, "mc": 1 - 0.40 - 0.06 - 0.07},
+                {"nome": "Com a comissão de hoje", "comissao": com_pct, "mc": 1 - com_pct - INSUMOS_PCT - SIMPLES},
+                {"nome": "Se a comissão subir para 40%", "comissao": 0.40, "mc": 1 - 0.40 - INSUMOS_PCT - SIMPLES},
             ],
         },
         "recebimento": {
@@ -182,11 +222,14 @@ def main():
     print("gerado:", OUT)
     print("  receita        :", rec, "| meta:", META_MES)
     print("  margem contrib :", round(mc_real, 2), "(", round(100*mc_real/rec, 1), "%) | esp:", round(100*mc_esp/rec, 1), "%")
+    print("  CONFERE colunas: var", round(var_esp - var_real, 2), "| fixo", round(fixo_esp - fixo_real, 2),
+          "| soma", round((var_esp - var_real) + (fixo_esp - fixo_real), 2),
+          "== variacao do resultado", round(resultado - (rec - esp_total), 2))
     print("  custo fixo     :", round(fixo_real, 2), "| esperado:", round(fixo_esp, 2))
     print("  custo total    :", round(real_total, 2), "| esperado:", round(esp_total, 2))
     print("  provisoes nao debitadas:", round(prov, 2))
     print("  break-even 1 loja (modelo):", round(d["resultado"]["be_modelo_1loja"], 2))
-    print("  resultado real :", round(d["resultado"]["res_real"], 2))
+    print("  resultado (competencia):", round(resultado, 2), "| caixa:", round(caixa_real, 2))
     print("  esperado (mesma receita):", round(d["resultado"]["res_esp_mesma_receita"], 2))
     print("  esperado (na meta)      :", round(d["resultado"]["res_esp_na_meta"], 2))
 

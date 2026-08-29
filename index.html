@@ -145,6 +145,8 @@
   .be-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));border-radius:3px;}
   .be-leg{font-size:10.5px;color:var(--ink-3);line-height:1.4;}
   td.val-neg,.pc.val-neg{color:var(--crit);}
+  tr.dre-memo td{color:var(--ink-3);font-size:12px;font-style:italic;border-bottom:0;padding:8px 10px;}
+  tr.dre-memo td:nth-child(2){font-style:normal;}
   tr.dre-l td.val-neg{color:var(--ink-2);}
   tr.dre-m td.val-neg{color:var(--crit);}
   /* ---- DRE executiva ---- */
@@ -2400,72 +2402,69 @@ function renderFinanceiro(){
 
   let h='';
 
-  // ---- DRE executiva ----
+  // ---- DRE executiva (por competência) ----
   const pr=v=>v/R.receita_real;
-  // impacto no resultado: positivo = melhor que o esperado (verde) · negativo = pior (vermelho)
+  // impacto no resultado: positivo = melhor que o previsto (verde) · negativo = pior (vermelho)
   const imp=(x)=>{ if(x===null||x===undefined) return '<span class="dv-na">sem premissa</span>';
     if(Math.abs(x)<1) return '<span class="dv-na">no alvo</span>';
     return `<span class="${x>0?'dv-bom':'dv-mau'}">${x>0?'+':'−'}${brl0(Math.abs(x))}</span>`; };
   const impC=(real,esp)=> esp===null||esp===undefined ? imp(null) : imp(esp-real);  // custo: gastar menos é melhor
   const neg=v=>v<0?' val-neg':'';
   const lin=(l)=>`<tr class="dre-l${l.prov?' prov':''}"><td>${l.cat}<span class="dre-n">${l.nota}</span></td>
-      <td class="val-neg">(${brl0(l.real)})</td><td class="pc">${finPct(pr(l.real))}</td>
+      <td>(${brl0(l.real)})</td><td class="pc">${finPct(pr(l.real))}</td>
       <td>${l.esp===null?'—':'('+brl0(l.esp)+')'}</td><td class="pc">${l.esp===null?'—':finPct(pr(l.esp))}</td>
-      <td>${l.prov?'<span class="dv-prov">a provisionar</span>':impC(l.real,l.esp)}</td></tr>`;
-  // provisao nao paga nao conta como economia no subtotal
-  const sub=(rot,r,e,pv)=>`<tr class="dre-s"><td>${rot}${pv?`<span class="dre-n">impacto medido fora da provisão de ${brl0(pv)}, que não é economia</span>`:''}</td>
-      <td class="val-neg">(${brl0(r)})</td><td class="pc">${finPct(pr(r))}</td>
-      <td>(${brl0(e)})</td><td class="pc">${finPct(pr(e))}</td><td>${impC(r,e-(pv||0))}</td></tr>`;
-  const mrg=(rot,r,e,nota,impOv)=>`<tr class="dre-m"><td>${rot}${nota?`<span class="dre-n">${nota}</span>`:''}</td>
+      <td>${l.prov?'<span class="dv-prov">provisionado</span>':impC(l.real,l.esp)}</td></tr>`;
+  const sub=(rot,r,e)=>`<tr class="dre-s"><td>${rot}</td>
+      <td>(${brl0(r)})</td><td class="pc">${finPct(pr(r))}</td>
+      <td>(${brl0(e)})</td><td class="pc">${finPct(pr(e))}</td><td>${impC(r,e)}</td></tr>`;
+  const mrg=(rot,r,e,nota)=>`<tr class="dre-m"><td>${rot}${nota?`<span class="dre-n">${nota}</span>`:''}</td>
       <td class="${neg(r).trim()}">${brl(r)}</td><td class="pc${neg(r)}">${finPct(pr(r))}</td>
       <td class="${neg(e).trim()}">${brl(e)}</td><td class="pc${neg(e)}">${finPct(pr(e))}</td>
-      <td>${imp(impOv===undefined?r-e:impOv)}</td></tr>`;
+      <td>${imp(r-e)}</td></tr>`;
   const G=id=>R.grupos.find(g=>g.id===id);
   const grupo=(id)=>{ const g=G(id); return `<tr class="dre-g"><td colspan="6">${g.titulo}</td></tr>`+g.linhas.map(lin).join(''); };
-  const provG=id=>G(id).linhas.filter(l=>l.prov).reduce((a,l)=>a+(l.esp||0),0);
-  const pvVar=provG('VARIAVEL'), pvCom=provG('COMERCIAL');
-  const resProv=R.res_real-R.provisoes_nao_debitadas;
 
-  const mcR=R.mc_real/R.receita_real, mcP=R.mc_prov/R.receita_real, mcE=R.mc_esp/R.receita_real;
+  const mcR=R.mc_real/R.receita_real, mcE=R.mc_esp/R.receita_real;
   h+=`<div class="card"><h2>📊 Resultado de agosto — DRE executiva</h2>
-    <div class="cap">Receita do Trinks contra o custo do razão · a coluna <em>esperado</em> aplica as premissas do modelo à receita que de fato entrou.
-    Custos entre parênteses. Na última coluna, <span class="dv-bom">verde</span> é melhor que o previsto e <span class="dv-mau">vermelho</span> é pior — sempre medido pelo efeito no resultado.</div>
+    <div class="cap">Receita do Trinks contra o custo do razão, <strong>por competência</strong>: o que é do mês entra no mês, tenha saído do caixa ou não.
+    A coluna <em>esperado</em> aplica as premissas do modelo à receita que de fato entrou. Custos entre parênteses.
+    Na última coluna, <span class="dv-bom">verde</span> é melhor que o previsto e <span class="dv-mau">vermelho</span> é pior — sempre medido pelo efeito no resultado.</div>
 
     <div class="dre-ind">
-      <div><span class="il">MARGEM DE CONTRIBUIÇÃO</span><span class="iv">${finPct(mcR)}</span><span class="ic">${finPct(mcP)} provisionando o Simples · premissa ${finPct(mcE)}</span></div>
-      <div><span class="il">CUSTO VARIÁVEL</span><span class="iv">${finPct(1-mcR)}</span><span class="ic">comissão ${finPct(pr(G('VARIAVEL').linhas[0].real))} + CMV ${finPct(pr(G('VARIAVEL').linhas[1].real))} · o Simples de 7,0% ainda não foi debitado</span></div>
+      <div><span class="il">MARGEM DE CONTRIBUIÇÃO</span><span class="iv">${finPct(mcR)}</span><span class="ic">premissa ${finPct(mcE)} · sobra de cada R$ 100 vendidos</span></div>
+      <div><span class="il">CUSTO VARIÁVEL</span><span class="iv">${finPct(1-mcR)}</span><span class="ic">comissão ${finPct(pr(G('VARIAVEL').linhas[0].real))} + CMV ${finPct(pr(G('VARIAVEL').linhas[1].real))} + Simples ${finPct(pr(G('VARIAVEL').linhas[2].real))}</span></div>
       <div><span class="il">CUSTO FIXO DO MÊS</span><span class="iv">${brl0(R.fixo_real)}</span><span class="ic">${finPct(pr(R.fixo_real))} da receita · esperado ${brl0(R.fixo_esp)}</span></div>
-      <div class="neg"><span class="il">MARGEM OPERACIONAL</span><span class="iv">${finPct(pr(R.res_real))}</span><span class="ic">${brl0(R.res_real)} no mês</span></div>
+      <div class="neg"><span class="il">MARGEM OPERACIONAL</span><span class="iv">${finPct(pr(R.res_real))}</span><span class="ic">${brl0(R.res_real)} no mês · ${brl0(R.res_caixa)} pelo caixa</span></div>
     </div>
 
     <div class="dre-wrap"><table class="dre">
     <thead><tr><th>Linha</th><th colspan="2">Realizado</th><th colspan="2">Esperado</th><th>Impacto no resultado</th></tr></thead>
     <tbody>
-    <tr class="dre-r"><td>RECEITA BRUTA DE SERVIÇOS</td>
+    <tr class="dre-r"><td>RECEITA BRUTA DE SERVIÇOS<span class="dre-n">a coluna esperado aqui é a meta do mês, não a premissa de custo</span></td>
       <td>${brl(R.receita_real)}</td><td class="pc">100,0%</td>
       <td>${brl(R.receita_meta)}</td><td class="pc">—</td>
       <td>${imp(R.receita_real-R.receita_meta)}</td></tr>
     ${grupo('VARIAVEL')}
-    ${sub('(=) Total de custos variáveis', R.var_real, R.var_esp, pvVar)}
-    ${mrg('(=) MARGEM DE CONTRIBUIÇÃO', R.mc_real, R.mc_esp,
-          'o que sobra para pagar a estrutura · '+finPct(mcP)+' provisionando o Simples, e é essa que o impacto compara',
-          R.mc_prov-R.mc_esp)}
+    ${sub('(=) Total de custos variáveis', R.var_real, R.var_esp)}
+    ${mrg('(=) MARGEM DE CONTRIBUIÇÃO', R.mc_real, R.mc_esp, 'o que sobra para pagar a estrutura')}
     ${grupo('PESSOAL')}
     ${sub('Subtotal pessoal fixo', G('PESSOAL').sub_real, G('PESSOAL').sub_esp)}
     ${grupo('OCUPACAO')}
     ${sub('Subtotal ocupação', G('OCUPACAO').sub_real, G('OCUPACAO').sub_esp)}
     ${grupo('COMERCIAL')}
-    ${sub('Subtotal comercial e franquia', G('COMERCIAL').sub_real, G('COMERCIAL').sub_esp, pvCom)}
+    ${sub('Subtotal comercial e franquia', G('COMERCIAL').sub_real, G('COMERCIAL').sub_esp)}
     ${grupo('ABERTO')}
-    ${sub('(=) Total de custos fixos', R.fixo_real, R.fixo_esp, pvCom)}
-    ${mrg('(=) RESULTADO OPERACIONAL — pelo caixa', R.res_real, R.res_esp_mesma_receita, 'o que a conta corrente de fato sentiu')}
-    ${mrg('(=) RESULTADO COM AS PROVISÕES', resProv, R.res_esp_mesma_receita, 'somando o Simples e o royalty que ainda não foram debitados')}
+    ${sub('(=) Total de custos fixos', R.fixo_real, R.fixo_esp)}
+    ${mrg('(=) RESULTADO OPERACIONAL', R.res_real, R.res_esp_mesma_receita, 'EBITDA do mês, por competência')}
+    <tr class="dre-memo"><td>Memória: resultado pelo caixa<span class="dre-n">tira as ${brl0(R.provisoes_nao_debitadas)} de Simples e royalty que ainda não foram debitados</span></td>
+      <td>${brl(R.res_caixa)}</td><td class="pc">${finPct(pr(R.res_caixa))}</td>
+      <td colspan="3"></td></tr>
     </tbody></table></div>
 
-    <div class="dre-alerta">⚠️ <strong>${brl(R.provisoes_nao_debitadas)} do custo esperado não saiu do caixa</strong> — o Simples (${brl(0.07*R.receita_real)}) e o royalty mínimo (${brl(3500)}) não foram debitados em nenhum extrato. O resultado de ${brl0(R.res_real)} é o que a conta sentiu; provisionando os dois, o mês real é <strong>${brl0(R.res_real-R.provisoes_nao_debitadas)}</strong>.</div>
+    <div class="dre-alerta">⚠️ <strong>${brl(R.provisoes_nao_debitadas)} do custo do mês não saiu do caixa</strong> — o Simples (${brl(0.07*R.receita_real)}) e o royalty mínimo (${brl(3500)}) não foram debitados em nenhum extrato até 28/08. Entram na DRE porque são obrigação de agosto; a conta corrente ainda vai senti-los.</div>
 
-    <div class="fin-fonte">Duas perdas somadas: <strong>${brl0(Math.abs(R.receita_real-R.receita_meta))} de receita que não veio</strong> e <strong>${brl0(R.custo_real-R.custo_esp)} de custo acima do previsto</strong>.
-    Com a estrutura do modelo, uma loja só empata em <strong>${brl0(R.be_modelo_1loja)}</strong>/mês — a meta de ${brl0(R.receita_meta)} deixaria apenas ${brl0(R.res_esp_na_meta)} de resultado.</div></div>`;
+    <div class="fin-fonte">Confere: a coluna de impacto soma <strong>${brl0(R.var_esp-R.var_real)}</strong> nos variáveis e <strong>${brl0(R.fixo_esp-R.fixo_real)}</strong> nos fixos — juntos, exatamente os <strong>${brl0((R.var_esp-R.var_real)+(R.fixo_esp-R.fixo_real))}</strong> que separam o resultado do previsto.
+    Somando a receita que não veio (${brl0(R.receita_real-R.receita_meta)}), com a estrutura do modelo uma loja só empata em <strong>${brl0(R.be_modelo_1loja)}</strong>/mês.</div></div>`;
 
   // ---- ponto de equilibrio, simplificado ----
   const cen=E.cenarios.map(c=>{ const be=E.custo_fixo_mes/c.mc; return {...c, be, falta: be-E.fatura_hoje}; });
@@ -2475,11 +2474,13 @@ function renderFinanceiro(){
     <table class="simple"><tbody>
     <tr><td>Faturamento de agosto</td><td>${brl(E.fatura_hoje)}</td></tr>
     <tr><td>Custo fixo do mês, com as 2 lojas<div class="fin-fonte" style="margin:2px 0 0">estrutura das lojas + vale-transporte. CashMe e Pronampe não entram: as parcelas são pagas por pessoa física, não pela empresa</div></td><td>${brl(E.custo_fixo_mes)}</td></tr>
-    <tr><td>De cada R$ 100 faturados, quanto sobra para pagar esse fixo<div class="fin-fonte" style="margin:2px 0 0">tirando comissão de ${finPct(c0.comissao)}, insumos de 6% e Simples de 7%</div></td><td>${brl(c0.mc*100)}</td></tr>
+    <tr><td>De cada R$ 100 faturados, quanto sobra para pagar esse fixo<div class="fin-fonte" style="margin:2px 0 0">tirando comissão de ${finPct(c0.comissao)}, insumos de ${finPct(FIN.premissas.insumos)} e Simples de ${finPct(FIN.premissas.simples)}</div></td><td>${brl(c0.mc*100)}</td></tr>
     <tr><td><strong>Faturamento para empatar</strong></td><td><strong>${brl0(c0.be)}</strong></td></tr>
     <tr><td><strong>Quanto falta por mês</strong></td><td><strong style="color:#ef4444">${brl0(c0.falta)}</strong></td></tr>
     </tbody></table>
-    <div class="fin-fonte" style="margin-top:12px">💡 <strong>Se a comissão voltar aos ${finPct(c1.comissao)} do modelo</strong>, sobram ${brl(c1.mc*100)} de cada R$ 100 e o ponto de equilíbrio cai para <strong>${brl0(c1.be)}</strong> — <strong>${brl0(c0.be-c1.be)} a menos de faturamento necessário, todo mês</strong>.</div></div>`;
+    <div class="fin-fonte" style="margin-top:12px">💡 A comissão é a alavanca: <strong>cada ponto percentual move o ponto de equilíbrio em ${brl0(E.custo_fixo_mes/(c0.mc*c0.mc)/100)}/mês</strong>.
+    ${(()=>{ const sobe=c1.be>c0.be; return `A ${finPct(c1.comissao)} sobrariam ${brl(c1.mc*100)} de cada R$ 100 e o equilíbrio ${sobe?'subiria':'cairia'} para <strong>${brl0(c1.be)}</strong> — <strong>${brl0(Math.abs(c1.be-c0.be))} ${sobe?'a mais':'a menos'} de faturamento, todo mês</strong>.`; })()}</div>
+    <div class="fin-fonte">Base do cálculo: estrutura mensal do modelo para as 2 lojas. Em agosto o fixo realizado foi ${brl0(R.fixo_real)}, dos quais ${brl0(G('ABERTO').sub_real)} ainda sem classificação e ${brl0(3500)} de royalty provisionado — por isso os dois números não são iguais.</div></div>`;
 
   // ---- quando o dinheiro entra ----
   h+=`<div class="card"><h2>⏱️ Quando o dinheiro entra</h2>
