@@ -2539,22 +2539,52 @@ function renderMidias(){
   const cpaColor = v => !v ? 'var(--muted)' : v <= bench.cpa_msg_meta*0.7 ? '#22c55e' : v <= bench.cpa_msg_meta ? '#3b82f6' : v <= bench.cpa_msg_meta*1.3 ? '#f59e0b' : '#ef4444';
   const freqColor = v => v < 2 ? '#22c55e' : v < 2.7 ? '#3b82f6' : v < 3 ? '#f59e0b' : '#ef4444';
 
-  const periodoBlock = (p, kpi_estrela) => `<div style="background:var(--surface-2);border-radius:8px;padding:14px">
-    <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">${p.label}</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:12px">
-      <div><div style="color:var(--ink-3);font-size:10.5px">Gasto</div><div style="font-weight:700;font-size:15px">${brl(p.gasto)}</div><div style="color:var(--ink-3);font-size:10px">${brl(p.gasto/((new Date(p.fim)-new Date(p.inicio))/86400000+1),0)}/dia</div></div>
-      <div><div style="color:var(--ink-3);font-size:10.5px">Alcance</div><div style="font-weight:700;font-size:15px">${p.reach.toLocaleString('pt-BR')}</div><div style="color:var(--ink-3);font-size:10px">pessoas únicas</div></div>
-      <div><div style="color:var(--ink-3);font-size:10.5px">CTR</div><div style="font-weight:700;font-size:15px;color:${p.ctr_pct>=bench.ctr_meta?'#22c55e':'#f59e0b'}">${p.ctr_pct.toFixed(2)}%</div><div style="color:var(--ink-3);font-size:10px">meta ${bench.ctr_meta}%</div></div>
-      <div><div style="color:var(--ink-3);font-size:10.5px">CPM</div><div style="font-weight:700;font-size:15px;color:${p.cpm<=bench.cpm_meta?'#22c55e':'#f59e0b'}">${brl(p.cpm)}</div><div style="color:var(--ink-3);font-size:10px">meta ≤${brl(bench.cpm_meta)}</div></div>
-      <div><div style="color:var(--ink-3);font-size:10.5px">CPC</div><div style="font-weight:700;font-size:15px">${brl(p.cpc)}</div><div style="color:var(--ink-3);font-size:10px">todos cliques</div></div>
-      <div><div style="color:var(--ink-3);font-size:10.5px">Frequência</div><div style="font-weight:700;font-size:15px;color:${freqColor(p.frequency)}">${p.frequency.toFixed(2)}</div><div style="color:var(--ink-3);font-size:10px">alerta ≥${bench.frequency_alerta}</div></div>
-      ${kpi_estrela ? `<div style="grid-column:span 2;padding-left:10px;border-left:2px solid #22c55e">
+  const nfmt = n => (n||0).toLocaleString('pt-BR');
+  const kpiCell = (label, value, foot, color) => `<div><div style="color:var(--ink-3);font-size:10.5px">${label}</div><div style="font-weight:700;font-size:15px${color?';color:'+color:''}">${value}</div><div style="color:var(--ink-3);font-size:10px">${foot||''}</div></div>`;
+
+  const periodoBlock = (p, kpi_estrela) => {
+    const dias = (new Date(p.fim)-new Date(p.inicio))/86400000+1;
+    return `<div style="background:var(--surface-2);border-radius:8px;padding:14px">
+    <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">${p.label} · ${dias.toFixed(0)} dias</div>
+
+    ${kpi_estrela ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px dashed var(--ink-3)">
+      <div style="padding:10px;background:rgba(34,197,94,.08);border-left:3px solid #22c55e;border-radius:4px">
+        <div style="color:#22c55e;font-size:10.5px;font-weight:700;text-transform:uppercase">⭐ Conversas WhatsApp</div>
+        <div style="font-weight:700;font-size:24px">${nfmt(p.conversas_msg)}</div>
+        <div style="color:var(--ink-3);font-size:10.5px">novos leads no WA · ${(p.conversas_msg/dias).toFixed(1)}/dia</div>
+      </div>
+      <div style="padding:10px;background:rgba(34,197,94,.08);border-left:3px solid #22c55e;border-radius:4px">
         <div style="color:#22c55e;font-size:10.5px;font-weight:700;text-transform:uppercase">⭐ CPA MSG</div>
-        <div style="font-weight:700;font-size:22px;color:${cpaColor(p.cpa_msg)}">${p.cpa_msg?brl(p.cpa_msg):'—'}</div>
-        <div style="color:var(--ink-3);font-size:10px">custo/conversa WA · meta ≤${brl(bench.cpa_msg_meta)}</div>
-      </div>` : ''}
+        <div style="font-weight:700;font-size:24px;color:${cpaColor(p.cpa_msg)}">${p.cpa_msg?brl(p.cpa_msg):'—'}</div>
+        <div style="color:var(--ink-3);font-size:10.5px">custo/conversa · meta ≤${brl(bench.cpa_msg_meta)}</div>
+      </div>
+    </div>` : ''}
+
+    <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">💰 Investimento</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:12px;margin-bottom:12px">
+      ${kpiCell('Gasto', brl(p.gasto), brl(p.gasto/dias,0)+'/dia')}
+      ${kpiCell('CPM', brl(p.cpm), 'meta ≤'+brl(bench.cpm_meta), p.cpm<=bench.cpm_meta?'#22c55e':'#f59e0b')}
+      ${kpiCell('CPC (todos)', brl(p.cpc), 'todos cliques')}
+      ${kpiCell('CPC link', p.cpc_link?brl(p.cpc_link):'—', 'só cliques em link')}
     </div>
-  </div>`;
+
+    <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">📊 Volume</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:12px;margin-bottom:12px">
+      ${kpiCell('Alcance', nfmt(p.reach), 'pessoas únicas')}
+      ${kpiCell('Impressões', nfmt(p.impressoes), 'exibições')}
+      ${kpiCell('Cliques', nfmt(p.cliques), 'todos os cliques')}
+      ${kpiCell('Cliques link', nfmt(p.link_clicks), 'só links')}
+    </div>
+
+    <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">💬 Engajamento</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:12px">
+      ${kpiCell('Post engagement', nfmt(p.post_engagement), 'curtidas+coment.+shares')}
+      ${kpiCell('CTR (todos)', p.ctr_pct.toFixed(2)+'%', 'meta '+bench.ctr_meta+'%', p.ctr_pct>=bench.ctr_meta?'#22c55e':'#f59e0b')}
+      ${kpiCell('CTR link', p.link_ctr_pct?p.link_ctr_pct.toFixed(2)+'%':'—', 'só link clicks')}
+      ${kpiCell('Frequência', p.frequency.toFixed(2), 'alerta ≥'+bench.frequency_alerta, freqColor(p.frequency))}
+    </div>
+    </div>`;
+  };
 
   const per = window._midiasPer || 'mtd';
   const pMap = {'7d':p7,'30d':p30,'mtd':pmtd};
