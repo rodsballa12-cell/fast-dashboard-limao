@@ -1,0 +1,138 @@
+{
+ "gerado_em": "2026-08-29T15:10:01-03:00",
+ "baseline": "2026-08-28",
+ "caixa": {
+  "conta_corrente": 5060.93,
+  "fundo_bnp": 513965.12,
+  "total": 519026.05000000005,
+  "passivos_reconhecidos": -87750,
+  "operacional": 431276.05000000005,
+  "buffer_minimo": 80000,
+  "stone_a_receber_d30": 20742.9,
+  "stone_reserva_medida": 15070.79,
+  "stone_reserva_ate": "2026-08-14"
+ },
+ "compromissos": {
+  "capex_a_pagar": 451500.55,
+  "cartao_a_ressarcir": 251096.29000000004,
+  "cartao_proxima_fatura": 60217.48,
+  "giro_holding": 87750.0,
+  "pronampe_saldo": 223853.28,
+  "pronampe_parcela": 4663.61,
+  "cashme_divida": 1108600.7,
+  "cashme_parcela_estimada": 16092.57,
+  "obra_derik_saldo": 8475.770000000019
+ },
+ "capital": {
+  "subscrito": 750000.0,
+  "integralizado": 706000,
+  "a_integralizar": 44000,
+  "afac": 606454.99
+ },
+ "pl": {
+  "receita_ago": 36955.1,
+  "pessoal_total": -23635.66,
+  "comissao": -16426.06,
+  "gerente_fixo": -6500,
+  "vale_transporte": -709.6,
+  "demais_custos": -36226.399999999994,
+  "custo_total": -59862.06,
+  "resultado": -22906.96,
+  "resultado_pos_royalty": -26406.96
+ },
+ "break_even": [
+  {
+   "cenario": "Comissão real de agosto",
+   "comissao_pct": 0.4444,
+   "mc": 0.4256,
+   "be": 150076.36,
+   "nota": "Inclui R$ 4.713,68 pagos a duas profissionais sem produção no mês"
+  },
+  {
+   "cenario": "Só quem produziu no mês",
+   "comissao_pct": 0.3169,
+   "mc": 0.5531,
+   "be": 115480.93,
+   "nota": "Se aqueles R$ 4.713,68 forem comissão de julho paga com atraso"
+  },
+  {
+   "cenario": "Premissa do modelo",
+   "comissao_pct": 0.32,
+   "mc": 0.55,
+   "be": 116131.82,
+   "nota": "Pack v3 — comissão Escova"
+  }
+ ],
+ "recebimento": {
+  "imediato_pct": 0.2593,
+  "debito_pct": 0.2343,
+  "credito_pct": 0.5063,
+  "ciclo_dias_real": 15.4,
+  "ciclo_dias_premissa": 73.7,
+  "giro_no_be_real": 75713.9,
+  "giro_no_be_premissa": 362345.12,
+  "parcelas_1x_pct": 1.0
+ },
+ "integridade": {
+  "placar": "11 de 12 conferencias conformes",
+  "pendente": "Obra: R$ 8.277,54 a identificar"
+ },
+ "decisoes": [
+  {
+   "p": 1,
+   "sev": "crit",
+   "titulo": "Royalty devido e não pago",
+   "detalhe": "Não há débito de royalty em nenhum extrato até 28/08. O contrato da Escova cobra independentemente de inauguração — o passivo corre sem aparecer.",
+   "acao": "Levantar boletos no Sults, inclusive de meses anteriores, e provisionar o piso de R$ 5.000/mês."
+  },
+  {
+   "p": 2,
+   "sev": "crit",
+   "titulo": "Comissão: 44,4% ou 31,7%?",
+   "detalhe": "Duas profissionais receberam R$ 4.713,68 em agosto sem produção registrada. Se for comissão de julho atrasada, o modelo está calibrado; se for fixo, o ponto de equilíbrio sobe R$ 34,6 mil por mês.",
+   "acao": "Abrir o acordo de remuneração dessas duas. É a pergunta de maior valor no P&L."
+  },
+  {
+   "p": 3,
+   "sev": "crit",
+   "titulo": "Regras de comissão fora do sistema",
+   "detalhe": "O Trinks responde o endpoint de comissões, mas não há nenhuma regra cadastrada. O cálculo é manual — a dispersão individual vai de 27,9% a 110,5% sobre o que cada uma produziu.",
+   "acao": "Cadastrar as regras no Trinks para o cálculo parar de depender de planilha."
+  },
+  {
+   "p": 4,
+   "sev": "crit",
+   "titulo": "CAPEX consome o caixa livre",
+   "detalhe": "Sobram R$ 451.500,55 de CAPEX a pagar contra um caixa de R$ 519 mil que é quase todo dívida da CashMe.",
+   "acao": "Repactuar prazo com os fornecedores restantes — é o que compra os meses que a rampa precisa."
+  },
+  {
+   "p": 5,
+   "sev": "warn",
+   "titulo": "Giro da Opinião não devolvido",
+   "detalhe": "R$ 87.750 com devolução prevista para 07-08/08. O extrato até 28/08 não mostra saída para a Opinião.",
+   "acao": "Definir a data e formalizar o contrato de mútuo entre as PJs."
+  },
+  {
+   "p": 6,
+   "sev": "warn",
+   "titulo": "Pronampe com duas parcelas vencidas",
+   "detalhe": "Parcelas 1/48 (27/07) e 2/48 (27/08) sem registro de reembolso à Opinião.",
+   "acao": "Reembolsar e acertar o calendário das 46 restantes."
+  },
+  {
+   "p": 7,
+   "sev": "warn",
+   "titulo": "A receita não passa pela conta da PJ",
+   "detalhe": "Cai na Stone e fica na Reserva a 100% do CDI. O razão da conta corrente não tem uma única entrada de faturamento — o painel enxerga o capital e não enxerga a operação.",
+   "acao": "Baixar o extrato Stone de 15/08 em diante e trazer a Reserva para o painel."
+  },
+  {
+   "p": 8,
+   "sev": "ok",
+   "titulo": "O giro necessário é menor do que o modelo diz",
+   "detalhe": "Todas as vendas são em 1 parcela. O ciclo real de recebimento é de 15,4 dias contra 73,7 da premissa — o giro no ponto de equilíbrio cai de R$ 362 mil para R$ 76 mil.",
+   "acao": "Refazer a projeção de fluxo. A CashMe foi captada em parte para cobrir um giro que não existe nesse tamanho."
+  }
+ ]
+}
