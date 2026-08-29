@@ -161,6 +161,8 @@
   tr.dre-s td{font-weight:600;border-top:1px solid var(--border);border-bottom:0;color:var(--ink-2);font-size:12.5px;}
   tr.dre-m td{font-weight:700;font-size:14px;color:var(--ink);background:var(--surface-2);border-top:2px solid var(--accent);border-bottom:1px solid var(--border);padding:9px 10px;}
   tr.dre-m td .dre-n{font-weight:400;}
+  tr.dre-l.prov td:first-child{color:var(--warn);}
+  .dv-prov{color:var(--warn);font-size:11px;}
   .dv-bom{color:var(--good);} .dv-mau{color:var(--crit);} .dv-na{color:var(--ink-3);}
   .dre-alerta{margin-top:14px;background:var(--surface-2);border-left:3px solid var(--warn);border-radius:0 8px 8px 0;padding:11px 14px;font-size:12.5px;color:var(--ink-2);line-height:1.55;}
   .dre-alerta strong{color:var(--ink);}
@@ -2377,10 +2379,10 @@ function renderFinanceiro(){
   const dv=(real,esp)=>{ if(esp===null||esp===undefined) return '<span class="dv-na">—</span>';
     const d=real-esp; if(Math.abs(d)<1) return '<span class="dv-na">no alvo</span>';
     return `<span class="${d>0?'dv-mau':'dv-bom'}">${d>0?'+':''}${brl0(d)}</span>`; };
-  const lin=(l)=>`<tr class="dre-l"><td>${l.cat}<span class="dre-n">${l.nota}</span></td>
+  const lin=(l)=>`<tr class="dre-l${l.prov?' prov':''}"><td>${l.cat}<span class="dre-n">${l.nota}</span></td>
       <td>${brl(-l.real)}</td><td class="pc">${finPct(-pr(l.real))}</td>
       <td>${l.esp===null?'—':brl(-l.esp)}</td><td class="pc">${l.esp===null?'—':finPct(-pr(l.esp))}</td>
-      <td>${dv(l.real,l.esp)}</td></tr>`;
+      <td>${l.prov?'<span class="dv-prov">a provisionar</span>':dv(l.real,l.esp)}</td></tr>`;
   const sub=(rot,r,e,cls)=>`<tr class="dre-s ${cls||''}"><td>${rot}</td>
       <td>${brl(-r)}</td><td class="pc">${finPct(-pr(r))}</td>
       <td>${brl(-e)}</td><td class="pc">${finPct(-pr(e))}</td><td>${dv(r,e)}</td></tr>`;

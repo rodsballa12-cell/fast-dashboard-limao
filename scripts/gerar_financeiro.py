@@ -41,24 +41,62 @@ def main():
     resultado = v(L, "C34")
     royalty = 3500.00
 
-    # esperado: premissas do modelo aplicadas a receita realizada
-    esp = [
-        ("Comissão sobre produção", comissao, PREM["comissao"] * rec, "32% da receita — premissa Pack v3"),
-        ("Gerente — fixo", gerente, PREM["gerente"], "R$ 6.500/mês"),
-        ("Folha CLT — recepção (2 pessoas)", clt_rec, 0.0, "não estava previsto no modelo"),
-        ("Folha CLT — limpeza", clt_lim, 0.0, "não estava previsto no modelo"),
-        ("Vale-transporte", vt, 0.0, "não estava previsto no modelo"),
-        ("Aluguel + IPTU", 19886.18, PREM["aluguel"], "R$ 18.000/mês na premissa"),
-        ("Marketing", 2650.00, PREM["midia"] + PREM["beleza_boost"], "inclui R$ 750 da gravação da inauguração"),
-        ("Produtos e insumos", 2138.91, PREM["insumos"] * rec, "6% da receita"),
-        ("Franqueadora e sistemas", 460.39, PREM["sistemas"], "Trinks + Sults"),
-        ("Royalty + marketing local", 0.0, PREM["royalty_min"] + PREM["mkt_local"], "mínimo contratual — ainda não debitado"),
-        ("Utilidades, telecom e consumo", 2851.01, None, "sem premissa no modelo"),
-        ("Seguro do imóvel", 594.98, None, "sem premissa no modelo"),
-        ("Outros ainda a classificar", 2365.43, 0.0, "13 pessoas de menor valor + R$ 265 de diversos"),
+    # ---- DRE executiva: custos agrupados por natureza ----
+    # esperado = premissas do modelo aplicadas a receita REALIZADA
+    SIMPLES, INSUMOS_PCT = 0.07, PREM["insumos"]
+
+    grupos = [
+        ("VARIAVEL", "Custos variáveis — acompanham a venda", [
+            ("Comissão sobre produção", comissao, PREM["comissao"] * rec, "31,7% da receita · premissa 32%"),
+            ("Produtos e insumos (CMV)", 2138.91, INSUMOS_PCT * rec, "6% da receita na premissa"),
+            ("Impostos sobre venda — Simples", 0.0, SIMPLES * rec, "7% da receita · NÃO houve débito no razão"),
+        ]),
+        ("PESSOAL", "Pessoal fixo — independe do faturamento", [
+            ("Gerente", gerente, PREM["gerente"], "R$ 6.500/mês"),
+            ("Folha CLT — recepção (2 pessoas)", clt_rec, 0.0, "não estava no modelo"),
+            ("Folha CLT — limpeza", clt_lim, 0.0, "não estava no modelo"),
+            ("Vale-transporte", vt, 0.0, "não estava no modelo"),
+        ]),
+        ("OCUPACAO", "Ocupação — o imóvel das duas lojas", [
+            ("Aluguel + IPTU", 19886.18, PREM["aluguel"], "R$ 18.000/mês na premissa · 2 lojas, 1 faturando"),
+            ("Utilidades, telecom e consumo", 2851.01, None, "sem premissa no modelo"),
+            ("Seguro do imóvel", 594.98, None, "sem premissa no modelo"),
+        ]),
+        ("COMERCIAL", "Comercial e franquia", [
+            ("Marketing", 2650.00, PREM["midia"] + PREM["beleza_boost"], "inclui R$ 750 da gravação da inauguração"),
+            ("Franqueadora, sistemas e taxas", 460.39, PREM["sistemas"], "Trinks + Sults"),
+            ("Royalty + marketing local", 0.0, PREM["royalty_min"] + PREM["mkt_local"],
+             "mínimo contratual · NÃO houve débito no razão"),
+        ]),
+        ("ABERTO", "Ainda sem classificação", [
+            ("Outros a classificar", 2365.43, 0.0, "13 pessoas de menor valor + R$ 265 de diversos"),
+        ]),
     ]
-    esp_total = sum(e[2] for e in esp if e[2] is not None)
-    real_total = sum(e[1] for e in esp)
+
+    def soma(g, i):
+        return sum((l[i] or 0.0) for l in g[2])
+
+    G = [{"id": g[0], "titulo": g[1],
+          "linhas": [{"cat": c, "real": r, "esp": e, "nota": n,
+                      "prov": r == 0.0 and (e or 0) > 0} for c, r, e, n in g[2]],
+          "sub_real": soma(g, 1), "sub_esp": soma(g, 2)} for g in grupos]
+    gi = {g["id"]: g for g in G}
+
+    var_real, var_esp = gi["VARIAVEL"]["sub_real"], gi["VARIAVEL"]["sub_esp"]
+    mc_real, mc_esp = rec - var_real, rec - var_esp
+    # margem de contribuicao com o Simples provisionado — e a que sustenta o ponto de equilibrio
+    mc_prov = rec - (var_real + SIMPLES * rec)
+    fixo_real = sum(gi[k]["sub_real"] for k in ("PESSOAL", "OCUPACAO", "COMERCIAL", "ABERTO"))
+    fixo_esp = sum(gi[k]["sub_esp"] for k in ("PESSOAL", "OCUPACAO", "COMERCIAL", "ABERTO"))
+    real_total, esp_total = var_real + fixo_real, var_esp + fixo_esp
+
+    # o que saiu de fato do caixa: exclui as duas linhas provisionadas e nao debitadas
+    prov = SIMPLES * rec + PREM["royalty_min"] + PREM["mkt_local"]
+    caixa_real = rec - real_total
+
+    # na meta, com a estrutura de custo do modelo
+    mc_meta = 1 - PREM["comissao"] - INSUMOS_PCT - SIMPLES
+    fixo_modelo = PREM["aluguel"] + PREM["gerente"] + PREM["midia"] + PREM["beleza_boost"]         + PREM["sistemas"] + PREM["royalty_min"] + PREM["mkt_local"]
 
     # ponto de equilibrio
     # CashMe e Pronampe NAO entram: as parcelas sao pagas por pessoa fisica (definido em 29/08).
@@ -76,14 +114,16 @@ def main():
         },
         "resultado": {
             "receita_real": rec, "receita_meta": META_MES,
-            "linhas": [{"cat": c, "real": r, "esp": e, "nota": n} for c, r, e, n in esp],
+            "grupos": G,
+            "var_real": var_real, "var_esp": var_esp,
+            "mc_real": mc_real, "mc_esp": mc_esp, "mc_prov": mc_prov,
+            "fixo_real": fixo_real, "fixo_esp": fixo_esp,
             "custo_real": real_total, "custo_esp": esp_total,
-            "res_real": rec - real_total,
+            "res_real": caixa_real,
             "res_esp_mesma_receita": rec - esp_total,
-            "res_esp_na_meta": META_MES - (PREM["comissao"] * META_MES + PREM["insumos"] * META_MES
-                                           + PREM["aluguel"] + PREM["gerente"] + PREM["midia"]
-                                           + PREM["beleza_boost"] + PREM["sistemas"]
-                                           + PREM["royalty_min"] + PREM["mkt_local"]),
+            "res_esp_na_meta": META_MES * mc_meta - fixo_modelo,
+            "provisoes_nao_debitadas": prov,
+            "be_modelo_1loja": fixo_modelo / mc_meta,
         },
         "equilibrio": {
             "fatura_hoje": rec,
@@ -141,7 +181,11 @@ def main():
         json.dump(d, f, ensure_ascii=False, indent=1)
     print("gerado:", OUT)
     print("  receita        :", rec, "| meta:", META_MES)
-    print("  custo real     :", round(real_total, 2), "| esperado:", round(esp_total, 2))
+    print("  margem contrib :", round(mc_real, 2), "(", round(100*mc_real/rec, 1), "%) | esp:", round(100*mc_esp/rec, 1), "%")
+    print("  custo fixo     :", round(fixo_real, 2), "| esperado:", round(fixo_esp, 2))
+    print("  custo total    :", round(real_total, 2), "| esperado:", round(esp_total, 2))
+    print("  provisoes nao debitadas:", round(prov, 2))
+    print("  break-even 1 loja (modelo):", round(d["resultado"]["be_modelo_1loja"], 2))
     print("  resultado real :", round(d["resultado"]["res_real"], 2))
     print("  esperado (mesma receita):", round(d["resultado"]["res_esp_mesma_receita"], 2))
     print("  esperado (na meta)      :", round(d["resultado"]["res_esp_na_meta"], 2))

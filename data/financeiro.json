@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-08-29T16:03:13-03:00",
+ "gerado_em": "2026-08-29T16:15:12-03:00",
  "baseline": "2026-08-28",
  "kpis": {
   "caixa_conta": 5060.93,
@@ -11,91 +11,160 @@
  "resultado": {
   "receita_real": 36955.1,
   "receita_meta": 60000.0,
-  "linhas": [
+  "grupos": [
    {
-    "cat": "Comissão sobre produção",
-    "real": 11712.38,
-    "esp": 11825.632,
-    "nota": "32% da receita — premissa Pack v3"
+    "id": "VARIAVEL",
+    "titulo": "Custos variáveis — acompanham a venda",
+    "linhas": [
+     {
+      "cat": "Comissão sobre produção",
+      "real": 11712.38,
+      "esp": 11825.632,
+      "nota": "31,7% da receita · premissa 32%",
+      "prov": false
+     },
+     {
+      "cat": "Produtos e insumos (CMV)",
+      "real": 2138.91,
+      "esp": 2217.306,
+      "nota": "6% da receita na premissa",
+      "prov": false
+     },
+     {
+      "cat": "Impostos sobre venda — Simples",
+      "real": 0.0,
+      "esp": 2586.857,
+      "nota": "7% da receita · NÃO houve débito no razão",
+      "prov": true
+     }
+    ],
+    "sub_real": 13851.289999999999,
+    "sub_esp": 16629.795
    },
    {
-    "cat": "Gerente — fixo",
-    "real": 6500,
-    "esp": 6500.0,
-    "nota": "R$ 6.500/mês"
+    "id": "PESSOAL",
+    "titulo": "Pessoal fixo — independe do faturamento",
+    "linhas": [
+     {
+      "cat": "Gerente",
+      "real": 6500,
+      "esp": 6500.0,
+      "nota": "R$ 6.500/mês",
+      "prov": false
+     },
+     {
+      "cat": "Folha CLT — recepção (2 pessoas)",
+      "real": 4409.48,
+      "esp": 0.0,
+      "nota": "não estava no modelo",
+      "prov": false
+     },
+     {
+      "cat": "Folha CLT — limpeza",
+      "real": 2000,
+      "esp": 0.0,
+      "nota": "não estava no modelo",
+      "prov": false
+     },
+     {
+      "cat": "Vale-transporte",
+      "real": 1116.8,
+      "esp": 0.0,
+      "nota": "não estava no modelo",
+      "prov": false
+     }
+    ],
+    "sub_real": 14026.279999999999,
+    "sub_esp": 6500.0
    },
    {
-    "cat": "Folha CLT — recepção (2 pessoas)",
-    "real": 4409.48,
-    "esp": 0.0,
-    "nota": "não estava previsto no modelo"
+    "id": "OCUPACAO",
+    "titulo": "Ocupação — o imóvel das duas lojas",
+    "linhas": [
+     {
+      "cat": "Aluguel + IPTU",
+      "real": 19886.18,
+      "esp": 18000.0,
+      "nota": "R$ 18.000/mês na premissa · 2 lojas, 1 faturando",
+      "prov": false
+     },
+     {
+      "cat": "Utilidades, telecom e consumo",
+      "real": 2851.01,
+      "esp": null,
+      "nota": "sem premissa no modelo",
+      "prov": false
+     },
+     {
+      "cat": "Seguro do imóvel",
+      "real": 594.98,
+      "esp": null,
+      "nota": "sem premissa no modelo",
+      "prov": false
+     }
+    ],
+    "sub_real": 23332.170000000002,
+    "sub_esp": 18000.0
    },
    {
-    "cat": "Folha CLT — limpeza",
-    "real": 2000,
-    "esp": 0.0,
-    "nota": "não estava previsto no modelo"
+    "id": "COMERCIAL",
+    "titulo": "Comercial e franquia",
+    "linhas": [
+     {
+      "cat": "Marketing",
+      "real": 2650.0,
+      "esp": 4400.0,
+      "nota": "inclui R$ 750 da gravação da inauguração",
+      "prov": false
+     },
+     {
+      "cat": "Franqueadora, sistemas e taxas",
+      "real": 460.39,
+      "esp": 400.0,
+      "nota": "Trinks + Sults",
+      "prov": false
+     },
+     {
+      "cat": "Royalty + marketing local",
+      "real": 0.0,
+      "esp": 3500.0,
+      "nota": "mínimo contratual · NÃO houve débito no razão",
+      "prov": true
+     }
+    ],
+    "sub_real": 3110.39,
+    "sub_esp": 8300.0
    },
    {
-    "cat": "Vale-transporte",
-    "real": 1116.8,
-    "esp": 0.0,
-    "nota": "não estava previsto no modelo"
-   },
-   {
-    "cat": "Aluguel + IPTU",
-    "real": 19886.18,
-    "esp": 18000.0,
-    "nota": "R$ 18.000/mês na premissa"
-   },
-   {
-    "cat": "Marketing",
-    "real": 2650.0,
-    "esp": 4400.0,
-    "nota": "inclui R$ 750 da gravação da inauguração"
-   },
-   {
-    "cat": "Produtos e insumos",
-    "real": 2138.91,
-    "esp": 2217.306,
-    "nota": "6% da receita"
-   },
-   {
-    "cat": "Franqueadora e sistemas",
-    "real": 460.39,
-    "esp": 400.0,
-    "nota": "Trinks + Sults"
-   },
-   {
-    "cat": "Royalty + marketing local",
-    "real": 0.0,
-    "esp": 3500.0,
-    "nota": "mínimo contratual — ainda não debitado"
-   },
-   {
-    "cat": "Utilidades, telecom e consumo",
-    "real": 2851.01,
-    "esp": null,
-    "nota": "sem premissa no modelo"
-   },
-   {
-    "cat": "Seguro do imóvel",
-    "real": 594.98,
-    "esp": null,
-    "nota": "sem premissa no modelo"
-   },
-   {
-    "cat": "Outros ainda a classificar",
-    "real": 2365.43,
-    "esp": 0.0,
-    "nota": "13 pessoas de menor valor + R$ 265 de diversos"
+    "id": "ABERTO",
+    "titulo": "Ainda sem classificação",
+    "linhas": [
+     {
+      "cat": "Outros a classificar",
+      "real": 2365.43,
+      "esp": 0.0,
+      "nota": "13 pessoas de menor valor + R$ 265 de diversos",
+      "prov": false
+     }
+    ],
+    "sub_real": 2365.43,
+    "sub_esp": 0.0
    }
   ],
-  "custo_real": 56685.56,
-  "custo_esp": 46842.938,
-  "res_real": -19730.46,
-  "res_esp_mesma_receita": -9887.838000000003,
-  "res_esp_na_meta": 4400.0
+  "var_real": 13851.289999999999,
+  "var_esp": 16629.795,
+  "mc_real": 23103.809999999998,
+  "mc_esp": 20325.305,
+  "mc_prov": 20516.953,
+  "fixo_real": 42834.270000000004,
+  "fixo_esp": 32800.0,
+  "custo_real": 56685.560000000005,
+  "custo_esp": 49429.795,
+  "res_real": -19730.460000000006,
+  "res_esp_mesma_receita": -12474.695,
+  "res_esp_na_meta": 199.99999999999272,
+  "provisoes_nao_debitadas": 6086.857,
+  "be_modelo_1loja": 59636.363636363654
  },
  "equilibrio": {
   "fatura_hoje": 36955.1,
