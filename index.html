@@ -345,7 +345,7 @@
     </div>
 
     <div class="panel" id="tab-financeiro">
-      <div class="audit" id="fin-audit"><div>💰</div><div><strong>O caixa, os compromissos e o resultado do mês.</strong> A receita vem do Trinks; caixa, custo e capital vêm do painel Excel. Embaixo, os pontos que pedem decisão.</div></div>
+      <div class="audit" id="fin-audit"><div>💰</div><div><strong>O resultado do mês contra o que era esperado.</strong> A receita vem do Trinks; o custo, do razão da conta. Embaixo, os pontos que pedem decisão.</div></div>
       <div id="fin-kpis"></div>
       <div id="fin-content"></div>
       <div id="fin-decisoes"></div>
@@ -2321,68 +2321,60 @@ let FIN = null;
 function finPct(v){ return ((v||0)*100).toFixed(1).replace('.',',')+'%'; }
 
 function renderFinanceiro(){
-  if(!FIN){ document.getElementById('fin-content').innerHTML = '<div class="card"><div class="cap">Dados financeiros ainda não carregados.</div></div>'; return; }
-  const c=FIN.caixa, k=FIN.compromissos, cap=FIN.capital, p=FIN.pl, rc=FIN.recebimento;
+  if(!FIN){ document.getElementById('fin-content').innerHTML='<div class="card"><div class="cap">Dados financeiros ainda não carregados.</div></div>'; return; }
+  const k=FIN.kpis, R=FIN.resultado, E=FIN.equilibrio, C=FIN.recebimento;
+  const atg = k.receita_mes/k.meta_mes;
 
   document.getElementById('fin-kpis').innerHTML='<section class="kpi-grid">'+[
-    kpiCard('k1','CAIXA DA PJ', brl0(c.total), 'CC '+brl0(c.conta_corrente)+' + fundo '+brl0(c.fundo_bnp), null),
-    kpiCard('k2','A RECEBER · STONE', brl0(c.stone_a_receber_d30), 'Cartão de crédito, D+30', null),
-    kpiCard('k3','RESULTADO DO MÊS', brl0(p.resultado), 'Receita '+brl0(p.receita_ago)+' − custo '+brl0(-p.custo_total), null),
-    kpiCard('k4','CAPITAL INTEGRALIZADO', brl0(cap.integralizado), 'de '+brl0(cap.subscrito)+' · faltam '+brl0(cap.a_integralizar), null),
+    kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), 'Conta corrente da PJ · posição de 28/08', null),
+    kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), 'Vendas ainda não liquidadas', null),
+    kpiCard('k3','RESULTADO DO MÊS', brl0(k.resultado_mes), 'Já com o royalty mínimo provisionado', null),
+    kpiCard('k4','FATURAMENTO × META', finPct(atg), brl0(k.receita_mes)+' de '+brl0(k.meta_mes)+' · faltaram '+brl0(k.meta_mes-k.receita_mes), null),
   ].join('')+'</section>';
 
-  const lin=(r,v,cls)=>`<tr><td>${r}</td><td class="${cls||''}">${v}</td></tr>`;
   let h='';
 
-  h+=`<div class="card"><h2>💵 Onde está o dinheiro</h2><div class="cap">Posição de ${FIN.baseline} · o fundo BNP rende, mas é dinheiro de dívida</div>
+  // ---- resultado aberto vs esperado ----
+  const dv=(real,esp)=>{ if(esp===null||esp===undefined) return '<span style="color:var(--muted)">—</span>';
+    const d=real-esp; if(Math.abs(d)<1) return '<span style="color:var(--muted)">no alvo</span>';
+    const pior=d>0; return `<span style="color:${pior?'#ef4444':'#22c55e'}">${pior?'+':''}${brl(d)}</span>`; };
+
+  h+=`<div class="card"><h2>📊 Resultado de agosto — realizado × esperado</h2>
+    <div class="cap">Cada linha compara o que saiu com o que o modelo previa para essa receita</div>
+    <table class="simple"><thead><tr><th>Linha</th><th>Realizado</th><th>Esperado</th><th>Desvio</th></tr></thead><tbody>
+    <tr><td><strong>Receita faturada</strong></td><td><strong>${brl(R.receita_real)}</strong></td><td>${brl(R.receita_meta)}<div class="fin-fonte" style="margin:0">meta do mês</div></td><td><span style="color:#ef4444">${brl(R.receita_real-R.receita_meta)}</span></td></tr>
+    ${R.linhas.map(l=>`<tr><td>${l.cat}<div class="fin-fonte" style="margin:2px 0 0">${l.nota}</div></td><td>${brl(-l.real)}</td><td>${l.esp===null?'—':brl(-l.esp)}</td><td>${dv(l.real,l.esp)}</td></tr>`).join('')}
+    <tr><td><strong>Custo total</strong></td><td><strong>${brl(-R.custo_real)}</strong></td><td>${brl(-R.custo_esp)}</td><td>${dv(R.custo_real,R.custo_esp)}</td></tr>
+    <tr><td><strong>RESULTADO</strong></td><td><strong>${brl(R.res_real)}</strong></td><td><strong>${brl(R.res_esp_mesma_receita)}</strong></td><td>${dv(-R.res_real,-R.res_esp_mesma_receita)}</td></tr>
+    </tbody></table>
+    <div class="fin-fonte">Duas perdas somadas: <strong>${brl(Math.abs(R.receita_real-R.receita_meta))} de receita que não veio</strong> e <strong>${brl(R.custo_real-R.custo_esp)} de custo acima do previsto</strong>.
+    Se o faturamento tivesse batido a meta com a estrutura de custo do modelo, agosto fecharia em <strong style="color:#22c55e">${brl(R.res_esp_na_meta)}</strong>.</div></div>`;
+
+  // ---- ponto de equilibrio, simplificado ----
+  const cen=E.cenarios.map(c=>{ const be=E.custo_fixo_mes/c.mc; return {...c, be, falta: be-E.fatura_hoje}; });
+  const c0=cen[0], c1=cen[1];
+  h+=`<div class="card"><h2>🎯 Quanto precisa faturar para o mês fechar no zero</h2>
+    <div class="cap">Com as duas lojas rodando · a comissão é o único custo que sobe junto com a venda</div>
     <table class="simple"><tbody>
-    ${lin('Conta corrente XP', brl(c.conta_corrente))}
-    ${lin('Fundo BNP Paribas Match', brl(c.fundo_bnp))}
-    ${lin('<strong>Caixa total da PJ</strong>', '<strong>'+brl(c.total)+'</strong>')}
-    ${lin('(−) Passivos reconhecidos no painel', brl(c.passivos_reconhecidos))}
-    ${lin('A receber da Stone (D+30)', brl(c.stone_a_receber_d30))}
-    ${lin('Reserva Stone medida até '+c.stone_reserva_ate, brl(c.stone_reserva_medida))}
+    <tr><td>Faturamento de agosto</td><td>${brl(E.fatura_hoje)}</td></tr>
+    <tr><td>Custo fixo do mês, com as 2 lojas e as parcelas de empréstimo</td><td>${brl(E.custo_fixo_mes)}</td></tr>
+    <tr><td>De cada R$ 100 faturados, quanto sobra para pagar esse fixo<div class="fin-fonte" style="margin:2px 0 0">tirando comissão de ${finPct(c0.comissao)}, insumos de 6% e Simples de 7%</div></td><td>${brl(c0.mc*100)}</td></tr>
+    <tr><td><strong>Faturamento para empatar</strong></td><td><strong>${brl0(c0.be)}</strong></td></tr>
+    <tr><td><strong>Quanto falta por mês</strong></td><td><strong style="color:#ef4444">${brl0(c0.falta)}</strong></td></tr>
     </tbody></table>
-    <div class="fin-fonte">⚠️ A receita não passa pela conta da PJ — cai na Stone e fica na Reserva. Sem extrato de 15/08 em diante, esse pote está subestimado.</div></div>`;
+    <div class="fin-fonte" style="margin-top:12px">💡 <strong>Se a comissão voltar aos ${finPct(c1.comissao)} do modelo</strong>, sobram ${brl(c1.mc*100)} de cada R$ 100 e o ponto de equilíbrio cai para <strong>${brl0(c1.be)}</strong> — <strong>${brl0(c0.be-c1.be)} a menos de faturamento necessário, todo mês</strong>.</div></div>`;
 
-  h+=`<div class="card"><h2>📋 Compromissos em aberto</h2><div class="cap">O que ainda vai sair do caixa</div>
-    <table class="simple"><tbody>
-    ${lin('CAPEX ainda a pagar', brl(k.capex_a_pagar))}
-    ${lin('Cartão — saldo a ressarcir (PJ→PF)', brl(k.cartao_a_ressarcir))}
-    ${lin('Próxima fatura do cartão (20/09)', brl(k.cartao_proxima_fatura))}
-    ${lin('Giro da holding a devolver', brl(k.giro_holding))}
-    ${lin('Obra — saldo do Derik', brl(k.obra_derik_saldo))}
-    ${lin('Pronampe — saldo (48×'+brl(k.pronampe_parcela)+')', brl(k.pronampe_saldo))}
-    ${lin('CashMe — dívida total', brl(k.cashme_divida))}
-    ${lin('Serviço da dívida por mês', '<strong>'+brl(k.pronampe_parcela+k.cashme_parcela_estimada)+'</strong>')}
+  // ---- quando o dinheiro entra ----
+  h+=`<div class="card"><h2>⏱️ Quando o dinheiro entra</h2>
+    <div class="cap">Medido no extrato da Stone até ${new Date(C.medido_ate+'T12:00:00').toLocaleDateString('pt-BR')}</div>
+    <table class="simple"><thead><tr><th>Forma de recebimento</th><th>% da receita</th><th>Cai quando</th><th>Evidência</th></tr></thead><tbody>
+    ${C.linhas.map(l=>`<tr><td>${l.forma}</td><td>${finPct(l.pct)}</td><td><strong>${l.prazo}</strong></td><td style="text-align:left;font-size:11.5px;color:var(--ink-2)">${l.evidencia}</td></tr>`).join('')}
     </tbody></table>
-    <div class="fin-fonte">A parcela da CashMe (${brl(k.cashme_parcela_estimada)}) é estimativa: 240 meses a 1,4% a.m. Conferir no contrato.</div></div>`;
-
-  h+=`<div class="card"><h2>📊 Resultado do mês</h2><div class="cap">Receita do Trinks contra o custo lançado no razão</div>
-    <table class="simple"><thead><tr><th>Linha</th><th>Valor</th><th>% receita</th></tr></thead><tbody>
-    <tr><td>Receita faturada</td><td>${brl(p.receita_ago)}</td><td>100,0%</td></tr>
-    <tr><td>Comissão sobre produção <em>(variável)</em></td><td>${brl(p.comissao)}</td><td>${finPct(-p.comissao/p.receita_ago)}</td></tr>
-    <tr><td>Gerente — fixo</td><td>${brl(p.gerente_fixo)}</td><td>${finPct(-p.gerente_fixo/p.receita_ago)}</td></tr>
-    <tr><td>Vale-transporte</td><td>${brl(p.vale_transporte)}</td><td>${finPct(-p.vale_transporte/p.receita_ago)}</td></tr>
-    <tr><td>Demais custos operacionais</td><td>${brl(p.demais_custos)}</td><td>${finPct(-p.demais_custos/p.receita_ago)}</td></tr>
-    <tr><td><strong>Resultado operacional</strong></td><td><strong>${brl(p.resultado)}</strong></td><td><strong>${finPct(p.resultado/p.receita_ago)}</strong></td></tr>
-    <tr><td>Depois do royalty mínimo</td><td>${brl(p.resultado_pos_royalty)}</td><td>${finPct(p.resultado_pos_royalty/p.receita_ago)}</td></tr>
-    </tbody></table></div>`;
-
-  h+=`<div class="card"><h2>🎯 Quanto precisa faturar para empatar</h2><div class="cap">Com as duas lojas · só a comissão é custo variável</div>
-    <table class="simple"><thead><tr><th>Cenário</th><th>Comissão</th><th>Margem</th><th>Break-even</th></tr></thead><tbody>
-    ${FIN.break_even.map(b=>`<tr><td>${b.cenario}<div class="fin-fonte" style="margin-top:2px">${b.nota}</div></td><td>${finPct(b.comissao_pct)}</td><td>${finPct(b.mc)}</td><td><strong>${brl0(b.be)}</strong></td></tr>`).join('')}
-    </tbody></table></div>`;
-
-  h+=`<div class="card"><h2>⏱️ Quando o dinheiro entra</h2><div class="cap">Todas as vendas em 1 parcela — o modelo assumia 70% em 6x</div>
-    <table class="simple"><thead><tr><th>Item</th><th>Real</th><th>Premissa</th></tr></thead><tbody>
-    <tr><td>Imediato (PIX + dinheiro)</td><td>${finPct(rc.imediato_pct)}</td><td>10,0%</td></tr>
-    <tr><td>Débito (D+1)</td><td>${finPct(rc.debito_pct)}</td><td>20,0%</td></tr>
-    <tr><td>Crédito (D+30, 1 parcela)</td><td>${finPct(rc.credito_pct)}</td><td>70,0% em 6x</td></tr>
-    <tr><td><strong>Ciclo médio de recebimento</strong></td><td><strong>${rc.ciclo_dias_real.toString().replace('.',',')} dias</strong></td><td>${rc.ciclo_dias_premissa.toString().replace('.',',')} dias</td></tr>
-    <tr><td>Capital de giro no break-even</td><td><strong>${brl0(rc.giro_no_be_real)}</strong></td><td>${brl0(rc.giro_no_be_premissa)}</td></tr>
-    </tbody></table>
-    <div class="fin-fonte">✅ Boa notícia: o giro necessário é uma fração do que o modelo projeta. A CashMe foi captada em parte para cobrir esse giro.</div></div>`;
+    <div class="insight-card" style="margin-top:12px"><strong>O modelo estava errado — e a realidade é melhor.</strong><br>
+    A projeção assume 70% da receita em crédito parcelado em 6x, imobilizando capital de giro por meses.
+    Na prática <strong>nenhuma venda foi parcelada</strong> e o cartão liquida no dia seguinte.<br><br>
+    ${C.prova}</div>
+    <div class="fin-fonte">⚠️ ${C.ressalva}</div></div>`;
 
   document.getElementById('fin-content').innerHTML=h;
 
@@ -2394,9 +2386,8 @@ function renderFinanceiro(){
       <div class="dd">${d.detalhe}</div>
       <div class="da">→ ${d.acao}</div>
     </div>`).join('')}
-    <div class="fin-fonte">Integridade do painel Excel: ${FIN.integridade.placar} · pendente: ${FIN.integridade.pendente}</div>
+    <div class="fin-fonte">Integridade do painel Excel: ${FIN.integridade.placar}</div>
     </div>`;
-
 }
 
 async function loadFinanceiro(){
