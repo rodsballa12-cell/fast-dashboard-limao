@@ -1,64 +1,58 @@
 {
-  "gerado_em": "2026-08-29T15:15:00-03:00",
+  "gerado_em": "2026-08-29T15:45:00-03:00",
   "fonte": "Supermetrics MCP · Meta Ads + Instagram Insights",
   "kpi_estrela": {
     "nome": "Custo por conversa iniciada (WhatsApp)",
     "campo": "cost_per_new_messaging_conversation",
-    "explicacao": "Métrica-chave para o negócio FAST: mede quanto custa fazer um lead abrir conversa no WhatsApp — proxy do CAC até tracking de agendamento estar ativo."
+    "explicacao": "Métrica-chave do FAST: quanto custa fazer um lead abrir conversa no WhatsApp. Proxy do CAC até tracking de agendamento (Pixel/CAPI) estar ativo."
   },
   "instagram": {
     "handle": "fastescova.limao",
     "followers": 1732,
     "posts_total": 31,
     "url": "https://www.instagram.com/fastescova.limao/",
-    "pendente": "Métricas diárias (novos seguidores, alcance por post, engagement rate) bloqueadas por scope FB Login. Reconectar com instagram_manage_insights."
+    "pendente": "Métricas diárias (novos seguidores, engagement rate) bloqueadas por scope FB Login. Reconectar com instagram_manage_insights."
   },
   "meta_ads": {
     "ad_account_id": "act_1310973560614050",
     "ad_account_nome": "FE - LIMÃO",
     "por_periodo": {
-      "7d": {
-        "label": "Últimos 7 dias",
-        "inicio": "2026-08-23",
-        "fim": "2026-08-29",
-        "gasto": 544.41,
-        "impressoes": 64600,
-        "cliques": 887,
-        "reach": 42332,
-        "frequency": 1.53,
-        "ctr_pct": 1.37,
-        "cpm": 8.43,
-        "cpc": 0.61,
-        "cpa_msg": 8.25
-      },
-      "30d": {
-        "label": "Últimos 30 dias",
-        "inicio": "2026-07-30",
-        "fim": "2026-08-29",
-        "gasto": 2730.22,
-        "impressoes": 331132,
-        "cliques": 5067,
-        "reach": 116145,
-        "frequency": 2.85,
-        "ctr_pct": 1.53,
-        "cpm": 8.25,
-        "cpc": 0.54,
-        "cpa_msg": 6.19
-      },
-      "mtd": {
-        "label": "Mês atual (Ago/2026)",
-        "inicio": "2026-08-01",
-        "fim": "2026-08-29",
-        "gasto": 2565.31,
-        "impressoes": 311004,
-        "cliques": 4770,
-        "reach": 112167,
-        "frequency": 2.77,
-        "ctr_pct": 1.53,
-        "cpm": 8.25,
-        "cpc": 0.54
-      }
+      "7d": {"label": "Últimos 7 dias", "inicio": "2026-08-23", "fim": "2026-08-29", "gasto": 544.41, "impressoes": 64600, "cliques": 887, "reach": 42332, "frequency": 1.53, "ctr_pct": 1.37, "cpm": 8.43, "cpc": 0.61, "cpa_msg": 8.25},
+      "30d": {"label": "Últimos 30 dias", "inicio": "2026-07-30", "fim": "2026-08-29", "gasto": 2730.22, "impressoes": 331132, "cliques": 5067, "reach": 116145, "frequency": 2.85, "ctr_pct": 1.53, "cpm": 8.25, "cpc": 0.54, "cpa_msg": 6.19},
+      "mtd": {"label": "Mês atual (Ago/2026)", "inicio": "2026-08-01", "fim": "2026-08-29", "gasto": 2565.31, "impressoes": 311004, "cliques": 4770, "reach": 112167, "frequency": 2.77, "ctr_pct": 1.53, "cpm": 8.25, "cpc": 0.54}
     },
+    "serie_diaria_30d": [
+      {"data": "2026-07-30", "gasto": 84.82, "impressoes": 9813, "cliques": 154, "reach": 8960, "cpa_msg": 6.52},
+      {"data": "2026-07-31", "gasto": 80.09, "impressoes": 10315, "cliques": 143, "reach": 9320, "cpa_msg": 5.01},
+      {"data": "2026-08-01", "gasto": 89.17, "impressoes": 10767, "cliques": 137, "reach": 9705, "cpa_msg": 5.94},
+      {"data": "2026-08-02", "gasto": 93.72, "impressoes": 11799, "cliques": 139, "reach": 10725, "cpa_msg": 11.72},
+      {"data": "2026-08-03", "gasto": 112.09, "impressoes": 12893, "cliques": 143, "reach": 11986, "cpa_msg": 7.47},
+      {"data": "2026-08-04", "gasto": 96.44, "impressoes": 11876, "cliques": 179, "reach": 10868, "cpa_msg": 3.71},
+      {"data": "2026-08-05", "gasto": 101.95, "impressoes": 11058, "cliques": 213, "reach": 9922, "cpa_msg": 3.78},
+      {"data": "2026-08-06", "gasto": 83.28, "impressoes": 10854, "cliques": 209, "reach": 9746, "cpa_msg": 4.16},
+      {"data": "2026-08-07", "gasto": 78.52, "impressoes": 8805, "cliques": 147, "reach": 7735, "cpa_msg": 5.61},
+      {"data": "2026-08-08", "gasto": 90.86, "impressoes": 12001, "cliques": 185, "reach": 10941, "cpa_msg": 7.57},
+      {"data": "2026-08-09", "gasto": 93.48, "impressoes": 13397, "cliques": 183, "reach": 12215, "cpa_msg": 7.19},
+      {"data": "2026-08-10", "gasto": 97.15, "impressoes": 10809, "cliques": 158, "reach": 10042, "cpa_msg": 10.79},
+      {"data": "2026-08-11", "gasto": 130.69, "impressoes": 12364, "cliques": 265, "reach": 10455, "cpa_msg": 4.36},
+      {"data": "2026-08-12", "gasto": 115.97, "impressoes": 13057, "cliques": 275, "reach": 11457, "cpa_msg": 6.44},
+      {"data": "2026-08-13", "gasto": 95.70, "impressoes": 11599, "cliques": 210, "reach": 9740, "cpa_msg": 5.98},
+      {"data": "2026-08-14", "gasto": 81.82, "impressoes": 11022, "cliques": 168, "reach": 9823, "cpa_msg": 6.29},
+      {"data": "2026-08-15", "gasto": 78.55, "impressoes": 11335, "cliques": 169, "reach": 10484, "cpa_msg": 11.22},
+      {"data": "2026-08-16", "gasto": 90.64, "impressoes": 14327, "cliques": 192, "reach": 13602, "cpa_msg": 4.32},
+      {"data": "2026-08-17", "gasto": 101.11, "impressoes": 12784, "cliques": 186, "reach": 12006, "cpa_msg": 4.40},
+      {"data": "2026-08-18", "gasto": 128.05, "impressoes": 13012, "cliques": 203, "reach": 11108, "cpa_msg": 7.11},
+      {"data": "2026-08-19", "gasto": 107.81, "impressoes": 11826, "cliques": 213, "reach": 10574, "cpa_msg": 5.99},
+      {"data": "2026-08-20", "gasto": 76.72, "impressoes": 10689, "cliques": 161, "reach": 9944, "cpa_msg": 6.39},
+      {"data": "2026-08-21", "gasto": 77.18, "impressoes": 10130, "cliques": 148, "reach": 9176, "cpa_msg": 7.02},
+      {"data": "2026-08-22", "gasto": 94.07, "impressoes": 11957, "cliques": 161, "reach": 10421, "cpa_msg": 9.41},
+      {"data": "2026-08-23", "gasto": 106.23, "impressoes": 15611, "cliques": 180, "reach": 13772, "cpa_msg": 7.59},
+      {"data": "2026-08-24", "gasto": 103.86, "impressoes": 13949, "cliques": 171, "reach": 12191, "cpa_msg": 14.84},
+      {"data": "2026-08-25", "gasto": 122.52, "impressoes": 11960, "cliques": 179, "reach": 9933, "cpa_msg": 6.45},
+      {"data": "2026-08-26", "gasto": 107.41, "impressoes": 10284, "cliques": 181, "reach": 8410, "cpa_msg": 6.71},
+      {"data": "2026-08-27", "gasto": 10.32, "impressoes": 839, "cliques": 15, "reach": 769, "cpa_msg": null},
+      {"data": "2026-08-28", "gasto": 0, "impressoes": 0, "cliques": 0, "reach": 0, "cpa_msg": null}
+    ],
     "por_objetivo_30d": [
       {"objetivo": "ENGAJAMENTO (MSG)", "gasto": 2142.09, "share_gasto_pct": 78.5, "impressoes": 131378, "cliques": 3753, "ctr_pct": 2.86, "cpm": 16.30, "insight": "Coração da captação — puxa WhatsApp"},
       {"objetivo": "LINK CLICKS (Post IG)", "gasto": 314.19, "share_gasto_pct": 11.5, "impressoes": 31898, "cliques": 870, "ctr_pct": 2.73, "cpm": 9.85, "insight": "Reels boostado — bom engajamento"},
@@ -76,46 +70,54 @@
       {"nome": "Post IG Reels FAST OFICIAL", "objetivo": "LINK_CLICKS", "gasto": 314.19, "reach": 16286, "cliques": 870, "ctr_pct": 2.73, "cpm": 9.85, "cpc": 0.36, "frequency": 1.96, "cpa_msg": 34.91, "status": "manter"},
       {"nome": "[BRANDING] 270726", "objetivo": "AWARENESS", "gasto": 123.68, "reach": 42864, "cliques": 249, "ctr_pct": 0.33, "cpm": 1.64, "cpc": 0.50, "frequency": 1.76, "cpa_msg": null, "status": "manter"},
       {"nome": "[BRANDING] 110826", "objetivo": "AWARENESS", "gasto": 149.63, "reach": 47503, "cliques": 195, "ctr_pct": 0.21, "cpm": 1.63, "cpc": 0.77, "frequency": 1.94, "cpa_msg": null, "status": "manter"}
+    ],
+    "geografia_30d": [
+      {"regiao": "São Paulo (state)", "gasto": 2730.22, "share_pct": 100.0, "impressoes": 331132, "cliques": 5067, "ctr_pct": 1.53, "cpm": 8.25, "reach": 116145, "alerta": "Meta consolida em estado — não distingue bairros. Segmentação atual atinge SP inteira."}
+    ],
+    "demografia_30d": [
+      {"faixa": "45-54", "genero": "F", "gasto": 726.86, "share_pct": 26.6, "impressoes": 68497, "cliques": 1151, "ctr_pct": 1.68, "reach": 22929, "status": "top"},
+      {"faixa": "55-64", "genero": "F", "gasto": 570.85, "share_pct": 20.9, "impressoes": 60945, "cliques": 1131, "ctr_pct": 1.86, "reach": 19764, "status": "top"},
+      {"faixa": "35-44", "genero": "F", "gasto": 552.04, "share_pct": 20.2, "impressoes": 63369, "cliques": 921, "ctr_pct": 1.45, "reach": 22941, "status": "manter"},
+      {"faixa": "25-34", "genero": "F", "gasto": 426.74, "share_pct": 15.6, "impressoes": 80781, "cliques": 714, "ctr_pct": 0.88, "reach": 33831, "status": "cortar"},
+      {"faixa": "65+", "genero": "F", "gasto": 397.90, "share_pct": 14.6, "impressoes": 52259, "cliques": 1068, "ctr_pct": 2.04, "reach": 16275, "status": "escalar"},
+      {"faixa": "25-34", "genero": "M", "gasto": 28.52, "share_pct": 1.0, "impressoes": 3135, "cliques": 39, "ctr_pct": 1.24, "reach": 1388, "status": "manter"},
+      {"faixa": "35-44", "genero": "M", "gasto": 15.39, "share_pct": 0.6, "impressoes": 1265, "cliques": 25, "ctr_pct": 1.98, "reach": 630, "status": "manter"},
+      {"faixa": "45-54", "genero": "M", "gasto": 6.88, "share_pct": 0.3, "impressoes": 545, "cliques": 12, "ctr_pct": 2.20, "reach": 243, "status": "manter"}
+    ],
+    "placement_30d": [
+      {"plataforma": "Facebook", "posicao": "Feed", "gasto": 845.49, "share_pct": 31.0, "impressoes": 126343, "cliques": 2263, "ctr_pct": 1.79, "cpm": 6.69, "reach": 55515, "status": "escalar"},
+      {"plataforma": "Instagram", "posicao": "Feed", "gasto": 602.59, "share_pct": 22.1, "impressoes": 51716, "cliques": 643, "ctr_pct": 1.24, "cpm": 11.65, "reach": 29202, "status": "otimizar"},
+      {"plataforma": "Instagram", "posicao": "Stories", "gasto": 598.67, "share_pct": 21.9, "impressoes": 52442, "cliques": 981, "ctr_pct": 1.87, "cpm": 11.42, "reach": 27187, "status": "escalar"},
+      {"plataforma": "Facebook", "posicao": "Reels", "gasto": 296.08, "share_pct": 10.8, "impressoes": 64686, "cliques": 635, "ctr_pct": 0.98, "cpm": 4.58, "reach": 31036, "status": "revisar"},
+      {"plataforma": "Facebook", "posicao": "Stories", "gasto": 207.03, "share_pct": 7.6, "impressoes": 13217, "cliques": 204, "ctr_pct": 1.54, "cpm": 15.66, "reach": 7678, "status": "cortar"},
+      {"plataforma": "Instagram", "posicao": "Reels", "gasto": 166.35, "share_pct": 6.1, "impressoes": 20085, "cliques": 314, "ctr_pct": 1.56, "cpm": 8.28, "reach": 13774, "status": "manter"}
     ]
   },
-  "google_ads": {
-    "conectado": false,
-    "mensagem": "Aguardando login Google Ads"
-  },
-  "hubspot": {
-    "portal_id": "51943728",
-    "contatos": 0,
-    "mensagem": "CRM ativo, aguardando import da base"
-  },
-  "whatsapp_cloud_api": {
-    "conectado": false,
-    "mensagem": "Aguardando app Meta Developer (WhatsApp Business Cloud API)"
-  },
-  "benchmarks": {
-    "cpa_msg_meta": 8.00,
-    "cpa_msg_atual_30d": 6.19,
-    "ctr_meta": 1.5,
-    "ctr_atual_30d": 1.53,
-    "cpm_meta": 12.0,
-    "cpm_atual_30d": 8.25,
-    "frequency_alerta": 3.0,
-    "frequency_atual_30d": 2.85
-  },
+  "google_ads": {"conectado": false, "mensagem": "Aguardando login Google Ads"},
+  "hubspot": {"portal_id": "51943728", "contatos": 0, "mensagem": "CRM ativo, aguardando import da base"},
+  "whatsapp_cloud_api": {"conectado": false, "mensagem": "Aguardando app Meta Developer (WhatsApp Business Cloud API)"},
+  "benchmarks": {"cpa_msg_meta": 8.00, "cpa_msg_atual_30d": 6.19, "ctr_meta": 1.5, "ctr_atual_30d": 1.53, "cpm_meta": 12.0, "cpm_atual_30d": 8.25, "frequency_alerta": 3.0, "frequency_atual_30d": 2.85},
+  "direcionamentos_estrategicos": [
+    {"prioridade": "P1", "titulo": "🌎 Refinar segmentação geográfica pra raio 5-10km", "descoberta": "100% do gasto está na conta como 'São Paulo (state)'. Meta consolida em estado — significa que provavelmente está segmentando SP inteira, não só bairros ao redor do Limão.", "acao": "Configurar cada ad set com raio de 5-10km centrado no Limão. Impacto esperado: 3-5x mais eficiência do orçamento (mesmo dinheiro alcança gente que realmente pode ir na loja).", "impacto_estimado": "Alto"},
+    {"prioridade": "P1", "titulo": "👥 Ajustar faixa etária pra 35-65+ (cortar 25-34)", "descoberta": "ICP inicial era 25-55. Realidade: 25-34 tem CTR 0,88% (o pior) e queima 16% do budget. Já 65+ tem CTR 2,04% (o melhor).", "acao": "Cortar 25-34 dos ad sets OU criar campanha dedicada com criativo próprio (linguagem/estética diferente). Redirecionar R$ 427/mês pra 35-65+.", "impacto_estimado": "Alto"},
+    {"prioridade": "P2", "titulo": "📱 Realocar placement: menos Facebook Stories, mais Facebook Feed", "descoberta": "Facebook Feed tem CPM R$ 6,69 (melhor) E CTR 1,79%. Facebook Stories tem CPM R$ 15,66 (caro, 2,3x pior).", "acao": "Editar campanhas: desmarcar Facebook Stories, priorizar Facebook Feed + Instagram Stories (CTR 1,87%).", "impacto_estimado": "Médio"},
+    {"prioridade": "P2", "titulo": "⚠️ Investigar por que anúncios pararam 27-28/08", "descoberta": "Gasto 27/08 = R$ 10 e 28/08 = R$ 0. Média dos dias anteriores era R$ 100+/dia.", "acao": "Verificar Meta Ads Manager: orçamento estourou? Cartão recusou? Campanhas pausadas? Impacto: 2 dias perdidos ≈ 20-30 conversas WhatsApp não geradas.", "impacto_estimado": "Alto"},
+    {"prioridade": "P3", "titulo": "🎨 Rotacionar criativos até 12/09 (fadiga chegando)", "descoberta": "Frequência 30d = 2,85. Alerta em 3,0. Público está vendo o mesmo anúncio ~3x cada.", "acao": "Produzir 3 novos criativos (2 imagens estáticas + 1 reel) até 12/09. Substituir os com mais frequência acumulada.", "impacto_estimado": "Médio"}
+  ],
   "recomendacoes": [
-    {"sev": "ok", "titulo": "Escalar [PLÁSTICA] e [COMBO SEMANAL] +30%", "detalhe": "CPA MSG R$ 3,56 e R$ 6,39. CTR 4,05% e 4,56% — os melhores da conta. Escalar +30% orçamento diário mantendo criativo.", "acao": "Aprovar escala"},
-    {"sev": "crit", "titulo": "🛑 Matar [COMBOS 4 E 5] IMEDIATAMENTE", "detalhe": "CPA MSG R$ 17,33 — 2,8x acima da média (R$ 6,19) e 2,2x acima da meta (R$ 8). CTR 1,33% (pior).", "acao": "Pausar hoje"},
-    {"sev": "warn", "titulo": "Refazer [COMBOS 1,2,3] com naming FAST", "detalhe": "CPA MSG R$ 8,83 vs R$ 6,39 do COMBO SEMANAL. Nome numérico não converte. Trocar por copies como 'COMBO SPA+ESCOVA' ou 'COMBO REVITALIZAÇÃO'.", "acao": "Trocar criativo semana que vem"},
-    {"sev": "warn", "titulo": "Revisar [RETOQUE] — CPM caro", "detalhe": "CPM R$ 23,20 é o mais alto (2,8x a média). Público muito nichado ou lance alto. Testar audiência mais ampla.", "acao": "Ajustar targeting"},
-    {"sev": "ok", "titulo": "Manter estratégia de vagas", "detalhe": "3 vagas (MANICURE/ESCOVISTA/MAQUIADOR) com CPA R$ 3,39-3,70 — top eficiência da conta. Público 'quem procura emprego' é super engajado.", "acao": "Manter"},
-    {"sev": "warn", "titulo": "Frequência 30d = 2,85 — atenção", "detalhe": "Alerta em 3,0. Próximas 2 semanas atingirá fadiga. Preparar rotação de criativos.", "acao": "Produzir 3 novos criativos até 05/09"},
-    {"sev": "crit", "titulo": "P1: Configurar Pixel/CAPI Trinks→Meta", "detalhe": "Hoje só medimos 'conversa iniciada' (CPA MSG). Sem tracking de agendamento e receita, ROAS é impossível. Prioridade máxima do próximo mês.", "acao": "Setup Meta Pixel + CAPI via Trinks"}
+    {"sev": "ok", "titulo": "Escalar [PLÁSTICA] e [COMBO SEMANAL] +30%", "detalhe": "CPA MSG R$ 3,56 e R$ 6,39. CTR 4,05% e 4,56%.", "acao": "Aprovar escala"},
+    {"sev": "crit", "titulo": "🛑 Matar [COMBOS 4 E 5]", "detalhe": "CPA MSG R$ 17,33 — 2,8x acima da média.", "acao": "Pausar hoje"},
+    {"sev": "warn", "titulo": "Refazer [COMBOS 1,2,3] com naming FAST", "detalhe": "CPA MSG R$ 8,83. Nome numérico não converte.", "acao": "Trocar criativo semana que vem"},
+    {"sev": "warn", "titulo": "Revisar [RETOQUE] — CPM caro (R$ 23,20)", "detalhe": "2,8x a média. Público muito nichado ou lance alto.", "acao": "Ajustar targeting"},
+    {"sev": "crit", "titulo": "P1: Configurar Pixel/CAPI Trinks→Meta", "detalhe": "Sem tracking de agendamento e receita, ROAS impossível.", "acao": "Setup Meta Pixel + CAPI via Trinks"}
   ],
   "insights_narrativa": [
-    "**KPI-estrela do FAST = Custo por conversa iniciada (CPA MSG)**. Hoje R$ 6,19 no 30d — 23% abaixo da meta R$ 8. Excelente.",
-    "**Vagas de emprego são o segmento mais eficiente** (CPA R$ 3-4). Manter enquanto contratação está aberta.",
-    "**Nomes específicos batem numéricos 2-3x** — [COMBO SEMANAL] (CPA R$ 6,39) vs [COMBOS 4 E 5] (CPA R$ 17,33). Padrão claro: nomes que descrevem benefício convertem.",
-    "**BRANDING não é pra converter — é pra reach**. CPM R$ 1,63 alcança 90k pessoas por R$ 274/mês. Impossível ganhar isso em MSG.",
-    "**Frequência 2,85 no 30d** = pessoas viram anúncio 2,85x cada. Ainda saudável, mas em 2 semanas vai bater 3,0 (fadiga). Rotacionar criativos.",
-    "**Post IG Reels 'FAST OFICIAL' teve CPA MSG R$ 34,91** — não converte em conversa porque objetivo é LINK_CLICKS. Serve pra branding + engajamento, não pra vendas diretas."
+    "**KPI-estrela: CPA MSG R$ 6,19 no 30d** — 23% abaixo da meta R$ 8. Excelente.",
+    "**99% do público é feminino** — correto pro ICP.",
+    "**Descoberta demográfica:** ICP inicial era 25-55 mas 45+ engaja MUITO mais. Faixa 65+ tem melhor CTR (2,04%) e 25-34 tem o pior (0,88%).",
+    "**Geografia consolidada em estado (SP)** — segmentação está ampla demais. Refinar pra raio da loja destrava eficiência massiva.",
+    "**Facebook Feed é o campeão de placement** — CPM baixo (R$ 6,69) E CTR alto (1,79%). Consistente com público 45+.",
+    "**Vagas de emprego são a campanha mais eficiente** (CPA R$ 3-4). Manter enquanto contratação está aberta.",
+    "**Alerta de fadiga:** frequência 30d = 2,85 (limite 3,0). Rotacionar criativos até 12/09."
   ]
 }
