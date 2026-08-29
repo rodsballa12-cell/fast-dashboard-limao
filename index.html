@@ -2407,7 +2407,7 @@ function comReceita(R, rec){
       if(l.real_delta_pct != null){
         const extra = l.real_delta_pct * (rec - A.receita_base);
         if(Math.abs(extra) > 0.5){
-          l.real += extra;
+          l.real += extra; l.nao_pago = extra;
           l.nota += ` · inclui ${brl(extra)} provisionado sobre a receita nova`;
         }
       }
@@ -2423,7 +2423,9 @@ function comReceita(R, rec){
   A.custo_real = A.var_real + A.fixo_real;  A.custo_esp = A.var_esp + A.fixo_esp;
   A.mc_real = rec - A.var_real;  A.mc_esp = rec - A.var_esp;
   A.res_real = rec - A.custo_real;  A.res_esp_mesma_receita = rec - A.custo_esp;
-  A.provisoes_nao_debitadas = A.grupos.flatMap(g=>g.linhas).filter(l=>l.prov).reduce((a,l)=>a+l.real,0);
+  // tudo que é do mês por competência mas ainda não saiu da conta
+  A.provisoes_nao_debitadas = A.grupos.flatMap(g=>g.linhas)
+    .reduce((a,l)=>a + (l.prov ? l.real : 0) + (l.nao_pago || 0), 0);
   A.res_caixa = A.res_real + A.provisoes_nao_debitadas;
   return A;
 }
@@ -2517,7 +2519,7 @@ function renderFinanceiro(){
     ${grupo('ABERTO')}
     ${sub('(=) Total de custos fixos', R.fixo_real, R.fixo_esp)}
     ${mrg('(=) RESULTADO OPERACIONAL', R.res_real, R.res_esp_mesma_receita, 'EBITDA do mês, por competência')}
-    <tr class="dre-memo"><td>Memória: resultado pelo caixa<span class="dre-n">tira as ${brl0(R.provisoes_nao_debitadas)} de Simples e royalty que ainda não foram debitados</span></td>
+    <tr class="dre-memo"><td>Memória: resultado pelo caixa<span class="dre-n">tira as ${brl0(R.provisoes_nao_debitadas)} de Simples, royalty e comissão provisionada que ainda não saíram da conta</span></td>
       <td>${brl(R.res_caixa)}</td><td class="pc">${finPct(pr(R.res_caixa))}</td>
       <td colspan="3"></td></tr>
     </tbody></table></div>
@@ -2526,6 +2528,52 @@ function renderFinanceiro(){
 
     <div class="fin-fonte">Confere: a coluna de impacto soma <strong>${brl0(R.var_esp-R.var_real)}</strong> nos variáveis e <strong>${brl0(R.fixo_esp-R.fixo_real)}</strong> nos fixos — juntos, exatamente os <strong>${brl0((R.var_esp-R.var_real)+(R.fixo_esp-R.fixo_real))}</strong> que separam o resultado do previsto.
     Somando a receita que não veio (${brl0(R.receita_real-R.receita_meta)}), com a estrutura do modelo uma loja só empata em <strong>${brl0(R.be_modelo_1loja)}</strong>/mês.</div></div>`;
+
+  // ---- fluxo de caixa ----
+  const mx = (TRINKS && TRINKS.abas && TRINKS.abas.mensal) || null;
+  const diasOp = (mx && mx.kpis.dias_op) || 25;
+  const diasMes = (mx && mx.meta.dias_total) || diasOp;
+  const beMesFC = E.custo_fixo_mes / E.cenarios[0].mc;
+  const saidas = R.custo_real - R.provisoes_nao_debitadas;   // o que saiu da conta
+  const queima = rec - saidas;                                // negativo = consumiu caixa
+  const queimaDia = Math.abs(queima) / diasOp;
+  const ritmoDia = rec / diasOp;
+  const precisaDia = beMesFC / diasMes;
+  const ciclo = C.linhas.reduce((a,l)=>a + l.pct * (l.prazo.indexOf('mesmo dia')>=0 ? 0 : 1), 0);
+  const giro = ritmoDia * ciclo;
+  const autonomia = queima < 0 ? k.caixa_conta / queimaDia : null;
+
+  h+=`<div class="card"><h2>💵 Fluxo de caixa</h2>
+    <div class="cap">O que entrou, o que saiu e por quanto tempo a conta aguenta · ${diasOp} dias operados de ${diasMes}</div>
+
+    <div class="dre-ind">
+      <div class="neg"><span class="il">QUEIMA DO MÊS</span><span class="iv">${brl0(queima)}</span><span class="ic">${brl0(-queimaDia)} por dia operado</span></div>
+      <div><span class="il">ENTRA POR DIA</span><span class="iv">${brl0(ritmoDia)}</span><span class="ic">precisaria de ${brl0(precisaDia)}/dia para empatar — falta ${brl0(precisaDia-ritmoDia)}</span></div>
+      <div><span class="il">CICLO DE RECEBIMENTO</span><span class="iv">${ciclo.toFixed(1).replace('.',',')} dia</span><span class="ic">a venda vira caixa quase à vista · giro necessário ${brl0(giro)}</span></div>
+      <div class="${autonomia!==null && autonomia<30?'neg':''}"><span class="il">AUTONOMIA DA CONTA</span><span class="iv">${autonomia===null?'—':Math.round(autonomia)+' dias'}</span><span class="ic">${brl0(k.caixa_conta)} na conta corrente ÷ queima diária · a reserva não entra nesta conta</span></div>
+    </div>
+
+    <div class="dre-wrap"><table class="dre">
+    <thead><tr><th>Movimento do mês</th><th colspan="2">Valor</th><th colspan="3">De onde vem</th></tr></thead>
+    <tbody>
+    <tr class="dre-r"><td>(+) ENTRADAS — receita do mês</td><td>${brl(rec)}</td><td class="pc">100,0%</td>
+      <td colspan="3" style="text-align:left;font-size:11.5px;color:var(--ink-3)">Trinks, ao vivo · liquida em D+0 e D+1</td></tr>
+    <tr class="dre-l"><td>(−) Saídas que passaram pela conta<span class="dre-n">custo lançado no razão da conta corrente</span></td>
+      <td>(${brl0(saidas)})</td><td class="pc">${finPct(pr(saidas))}</td>
+      <td colspan="3" style="text-align:left;font-size:11.5px;color:var(--ink-3)">painel Excel, fechado em ${new Date(FIN.custos_ate+'T12:00:00').toLocaleDateString('pt-BR')}</td></tr>
+    <tr class="dre-m"><td>(=) QUEIMA LÍQUIDA DO MÊS<span class="dre-n">o que a conta corrente de fato perdeu no mês</span></td>
+      <td class="${queima<0?'val-neg':''}">${brl(queima)}</td><td class="pc${queima<0?' val-neg':''}">${finPct(pr(queima))}</td><td colspan="3"></td></tr>
+    <tr class="dre-l prov"><td>(−) Do mês, mas ainda não debitado<span class="dre-n">Simples, royalty mínimo e a comissão provisionada sobre a receita nova</span></td>
+      <td>(${brl0(R.provisoes_nao_debitadas)})</td><td class="pc">${finPct(pr(R.provisoes_nao_debitadas))}</td>
+      <td colspan="3" style="text-align:left;font-size:11.5px;color:var(--warn)">vai sair do caixa em algum momento</td></tr>
+    <tr class="dre-m"><td>(=) RESULTADO POR COMPETÊNCIA</td><td class="val-neg">${brl(R.res_real)}</td><td class="pc val-neg">${finPct(pr(R.res_real))}</td><td colspan="3"></td></tr>
+    <tr class="dre-memo"><td>Caixa em conta na data do painel<span class="dre-n">só a conta corrente da PJ, sem a reserva</span></td><td>${brl(k.caixa_conta)}</td><td class="pc"></td><td colspan="3"></td></tr>
+    </tbody></table></div>
+
+    <div class="dre-alerta">⚠️ <strong>A receita não passa pela conta da PJ.</strong> Ela cai na Stone e fica na Reserva — o razão da conta corrente não tem uma única entrada de faturamento. Na prática a conta é abastecida por transferências, e por isso a autonomia acima mede só o que está na conta corrente hoje, não o que o negócio tem.</div>
+
+    <div class="fin-fonte">O ciclo de ${ciclo.toFixed(2).replace('.',',')} dia é a média ponderada das formas de pagamento medidas: ${C.linhas.map(l=>l.forma+' '+finPct(l.pct)+' em '+l.prazo).join(' · ')}.
+    Com esse perfil, cada dia de venda imobiliza cerca de ${brl0(giro)} — uma fração do que o modelo projetava com 70% em 6x.</div></div>`;
 
   // ---- ponto de equilibrio, simplificado ----
   const cen=E.cenarios.map(c=>{ const be=E.custo_fixo_mes/c.mc; return {...c, be, falta: be-E.fatura_hoje}; });
