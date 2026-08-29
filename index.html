@@ -2956,6 +2956,26 @@ function renderMidias(){
       </tr>`).join('')}</tbody></table></div></section>`;
   } else { placeBox.innerHTML=''; }
 
+  // Funil HubSpot (placeholder até importar base)
+  const funilBox = document.getElementById('midias-funil');
+  if(MID.funil_conversao_hubspot){
+    const f = MID.funil_conversao_hubspot;
+    if(f.conectado){
+      funilBox.innerHTML = `<section class="card"><h2>🎯 Funil de conversão (Meta → WA → HubSpot)</h2>
+        <div class="cap">Rastreamento fim-a-fim: quem veio do Meta, virou lead no WA e agendou.</div>
+        <!-- estrutura pronta pra quando dados chegarem -->
+      </section>`;
+    } else {
+      funilBox.innerHTML = `<section class="card" style="border-left:4px dashed var(--ink-3)">
+        <h2>🎯 Funil de conversão · aguardando setup</h2>
+        <div style="padding:12px;color:var(--ink-2);font-size:12px">${f.mensagem}</div>
+        <div style="padding:12px;background:var(--surface-2);border-radius:6px;font-size:11.5px;color:var(--ink-3)">
+          <strong>Pra destravar:</strong> importar contatos no HubSpot (template <code>hubspot_import_template.csv</code>) marcando cada cliente com <code>fast_canal_origem</code>. Depois cruzamos com o CPA MSG do Meta para calcular ROAS real.
+        </div>
+      </section>`;
+    }
+  }
+
   // Recomendações
   const sev={crit:'🔴',warn:'🟡',ok:'🟢'};
   document.getElementById('midias-recomendacoes').innerHTML = `<div class="card"><h2>💡 Recomendações do Gerente Marketing</h2>
@@ -2985,6 +3005,47 @@ async function loadMidias(){
     if(r.ok){ MID = await r.json(); renderMidias(); }
   }catch(e){ console.warn('midias_sociais.json indisponível', e); }
 }
+
+// Exportar CSV das principais métricas Mídias
+document.getElementById('midias-export-btn').addEventListener('click', () => {
+  if(!MID) return alert('Dados de mídias ainda não carregados.');
+  const M = MID.meta_ads;
+  const ig = MID.instagram;
+  const fbp = MID.facebook_page ? MID.facebook_page.organico_30d : {};
+  const lines = [
+    'Categoria,Métrica,Valor,Período',
+    `Meta Ads,Gasto,${M.por_periodo['7d'].gasto},7d`,
+    `Meta Ads,Gasto,${M.por_periodo['30d'].gasto},30d`,
+    `Meta Ads,Gasto,${M.por_periodo.mtd.gasto},MTD`,
+    `Meta Ads,Conversas WhatsApp,${M.por_periodo['7d'].conversas_msg},7d`,
+    `Meta Ads,Conversas WhatsApp,${M.por_periodo['30d'].conversas_msg},30d`,
+    `Meta Ads,CPA MSG,${M.por_periodo['7d'].cpa_msg||''},7d`,
+    `Meta Ads,CPA MSG,${M.por_periodo['30d'].cpa_msg||''},30d`,
+    `Meta Ads,Alcance,${M.por_periodo['30d'].reach},30d`,
+    `Meta Ads,Cliques,${M.por_periodo['30d'].cliques},30d`,
+    `Meta Ads,CTR (%),${M.por_periodo['30d'].ctr_pct},30d`,
+    `Meta Ads,CPM,${M.por_periodo['30d'].cpm},30d`,
+    `Meta Ads,Frequência,${M.por_periodo['30d'].frequency},30d`,
+    `Instagram,Seguidores atuais,${ig.followers},snapshot`,
+    `Instagram,Novos seguidores,${ig.organico_30d?ig.organico_30d.novos_seguidores:''},30d`,
+    `Instagram,Profile views,${ig.organico_30d?ig.organico_30d.profile_views:''},30d`,
+    `Facebook Page,Visitas,${fbp.page_visits||''},30d`,
+    `Facebook Page,Post engagements,${fbp.page_post_engagements||''},30d`,
+    `Facebook Page,Video views total,${fbp.total_video_views||''},30d`,
+    `Facebook Page,Video views orgânicos,${fbp.video_views_organicos||''},30d`
+  ];
+  const csv = '﻿' + lines.join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const dt = new Date().toISOString().slice(0,10);
+  a.download = `midias-fast-${dt}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
 
 // Pills de período dentro de Mídias
 document.querySelectorAll('.midias-per-btn').forEach(b => b.addEventListener('click', () => {
