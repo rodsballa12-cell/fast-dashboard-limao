@@ -230,29 +230,34 @@
     {"sev": "ok", "icone": "🚀", "titulo": "Instagram cresceu 621 seguidores em 30d", "detalhe": "Média 20,7 seguidores/dia. Post 'LOUCURA DA GERENTE' alcançou 1.526 pessoas orgânico — replicar fórmula promoção+humor."}
   ],
   "funil_conversao": {
-    "periodo": "Últimos 30 dias (2026-07-30 a 2026-08-29)",
+    "periodo": "Mês atual (Ago/2026 até 29/08 · MTD)",
+    "trinks_ago_mtd": {"novos_clientes": 218, "atendimentos_novos": 450, "receita_novos": 28560, "ticket_medio_novos": 63.47, "recorrentes_clientes": 15, "atendimentos_recorrentes": 61, "receita_recorrentes": 2703.1, "caixa_total_mes": 38641.1, "atend_finalizados_total": 530, "atend_cancelados": 30, "taxa_cancelamento_pct": 5.2, "ticket_medio_geral": 122.28},
     "etapas": [
-      {"ordem": 1, "nome": "Investimento Meta Ads", "valor": 2730.22, "unidade": "R$", "fonte": "Meta Ads (Supermetrics)", "medido": true},
-      {"ordem": 2, "nome": "Impressões", "valor": 331132, "unidade": "views", "fonte": "Meta Ads", "medido": true},
-      {"ordem": 3, "nome": "Alcance único", "valor": 116145, "unidade": "pessoas", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 35.1},
-      {"ordem": 4, "nome": "Cliques (todos)", "valor": 5067, "unidade": "cliques", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 4.4},
-      {"ordem": 5, "nome": "Cliques em link", "valor": 2160, "unidade": "cliques", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 42.6},
-      {"ordem": 6, "nome": "⭐ Conversas WhatsApp iniciadas", "valor": 441, "unidade": "conversas", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 20.4, "custo_unitario": 6.19},
-      {"ordem": 7, "nome": "Respostas efetivas atendimento", "valor": null, "unidade": "conversas", "fonte": "Manual (você preenche) ou HubSpot", "medido": false, "estimativa_taxa_pct": 80, "estimativa_valor": 353, "mensagem": "Estimativa 80% respondem. Rastrear no WA Web ou HubSpot."},
-      {"ordem": 8, "nome": "Agendamentos criados", "valor": null, "unidade": "agendamentos", "fonte": "Trinks (cruzar com data conversa)", "medido": false, "estimativa_taxa_pct": 40, "estimativa_valor": 141, "mensagem": "Estimativa 40% agendam. Cruzar Trinks agendamentos novos com data das conversas."},
-      {"ordem": 9, "nome": "Clientes que compareceram", "valor": null, "unidade": "clientes", "fonte": "Trinks (agendamentos 'finalizados')", "medido": false, "estimativa_taxa_pct": 75, "estimativa_valor": 106, "mensagem": "Estimativa 75% comparece. Trinks tem status 'finalizado'."},
-      {"ordem": 10, "nome": "Receita atribuível", "valor": null, "unidade": "R$", "fonte": "Trinks × ticket médio", "medido": false, "estimativa_valor": 7526, "mensagem": "106 clientes × R$ 71 ticket médio = R$ 7.526 (estimado)"}
+      {"ordem": 1, "nome": "Investimento Meta Ads", "valor": 2565.31, "unidade": "R$", "fonte": "Meta Ads (Supermetrics)", "medido": true},
+      {"ordem": 2, "nome": "Impressões", "valor": 311004, "unidade": "views", "fonte": "Meta Ads", "medido": true},
+      {"ordem": 3, "nome": "Alcance único", "valor": 112167, "unidade": "pessoas", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 36.1},
+      {"ordem": 4, "nome": "Cliques (todos)", "valor": 4770, "unidade": "cliques", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 4.3},
+      {"ordem": 5, "nome": "Cliques em link", "valor": 1997, "unidade": "cliques", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 41.9},
+      {"ordem": 6, "nome": "⭐ Conversas WhatsApp iniciadas", "valor": 412, "unidade": "conversas", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 20.6, "custo_unitario": 6.23},
+      {"ordem": 7, "nome": "Novos clientes agendaram (Trinks)", "valor": 218, "unidade": "clientes", "fonte": "🟢 Trinks API (real)", "medido": true, "taxa_da_anterior_pct": 52.9, "mensagem": "218 clientes NOVOS no Trinks em Ago. Se ~80% vieram de Meta = 174."},
+      {"ordem": 8, "nome": "Atendimentos finalizados (novos)", "valor": 450, "unidade": "atendimentos", "fonte": "🟢 Trinks API (real)", "medido": true, "mensagem": "450 atendimentos vieram desses 218 novos (média 2,1/cliente no mês)."},
+      {"ordem": 9, "nome": "Receita de novos clientes", "valor": 28560.00, "unidade": "R$", "fonte": "🟢 Trinks API (real)", "medido": true, "mensagem": "R$ 28.560 vindo de novos. Ticket médio novos = R$ 63,47/atend."},
+      {"ordem": 10, "nome": "Receita atribuível a Meta Ads", "valor": null, "unidade": "R$", "fonte": "Estimativa (sem UTM tracking)", "medido": false, "mensagem": "Sem UTM/CAPI, não sabemos qual % dos 218 novos veio de Meta. Cenários abaixo."}
+    ],
+    "cenarios_roas": [
+      {"cenario": "Otimista (100% novos vieram de Meta)", "novos_meta": 218, "receita_atribuida": 28560, "roas": 11.13},
+      {"cenario": "Realista (80% de Meta)", "novos_meta": 174, "receita_atribuida": 22848, "roas": 8.90},
+      {"cenario": "Meio-termo (60%)", "novos_meta": 131, "receita_atribuida": 17136, "roas": 6.68},
+      {"cenario": "Conservador (40%)", "novos_meta": 87, "receita_atribuida": 11424, "roas": 4.45}
     ],
     "roas_estimado": {
-      "valor": 2.76,
-      "calculo": "R$ 7.526 (receita estimada) ÷ R$ 2.730 (investido) = 2,76x",
-      "confianca": "baixa - todos os multiplicadores após conversa são estimativa. Precisamos rastrear cada etapa pra ter número real."
+      "valor": 6.68,
+      "calculo": "Cenário meio-termo: R$ 17.136 (60% de R$ 28.560) ÷ R$ 2.565 investido = 6,68x",
+      "confianca": "Média — dados Trinks reais, mas atribuição estimada. Pra 100% preciso, precisa Meta Pixel + CAPI ou UTM tag."
     },
     "como_destravar_cada_etapa": [
-      {"etapa": 7, "acao": "Registrar 'respondi' em cada conversa WA. Rápido: no HubSpot, criar propriedade `wa_atendido` e marcar diariamente."},
-      {"etapa": 8, "acao": "Trinks tem histórico de agendamentos criados por data. Cruzar N agendamentos 'novos' na mesma semana das conversas."},
-      {"etapa": 9, "acao": "Trinks tem status 'finalizado' vs 'no-show'. Puxar % de comparecimento real por semana."},
-      {"etapa": 10, "acao": "Meta Pixel + CAPI enviando evento 'Purchase' com valor real → ROAS 100% preciso automático."}
+      {"etapa": 7, "acao": "🟢 Feito automaticamente via Trinks (novos clientes por mês). Precisamos só refinar atribuição de qual % veio de Meta."},
+      {"etapa": 10, "acao": "Opção A: Meta Pixel + CAPI via Trinks — evento 'Schedule' quando cliente marca. Meta atribui automaticamente. Opção B: perguntar cada nova cliente 'como nos conheceu?' e registrar em campo customizado no Trinks."}
     ]
   },
   "google_ads": {"conectado": false, "mensagem": "Aguardando login Google Ads"},

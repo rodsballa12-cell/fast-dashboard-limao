@@ -3158,8 +3158,24 @@ function renderMidias(){
         }).join('')}
       </div>
 
+      ${funil.cenarios_roas ? `<h2 style="margin-top:20px;font-size:14px">💰 Cenários de ROAS · 218 novos clientes no Trinks em Ago</h2>
+      <div class="cap">Sem UTM tracking, atribuímos por cenários. Trinks confirma 218 novos + R$ 28.560 receita deles.</div>
+      <div style="overflow-x:auto;margin-top:10px"><table style="width:100%;font-size:12px;border-collapse:collapse">
+        <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+          <th style="text-align:left;padding:8px">Cenário</th>
+          <th style="text-align:right;padding:8px">Novos de Meta</th>
+          <th style="text-align:right;padding:8px">Receita atribuída</th>
+          <th style="text-align:right;padding:8px">ROAS</th>
+        </tr></thead>
+        <tbody>${funil.cenarios_roas.map((c,i)=>`<tr style="border-bottom:1px solid var(--surface-2);${i===2?'background:rgba(168,85,247,.10)':''}">
+          <td style="padding:8px"><strong>${c.cenario}</strong></td>
+          <td style="text-align:right;padding:8px">${c.novos_meta}</td>
+          <td style="text-align:right;padding:8px">${brl(c.receita_atribuida,0)}</td>
+          <td style="text-align:right;padding:8px;font-weight:700;color:${c.roas>=5?'#22c55e':c.roas>=3?'#3b82f6':'#f59e0b'}">${c.roas.toFixed(2)}x</td>
+        </tr>`).join('')}</tbody></table></div>` : ''}
+
       ${funil.roas_estimado ? `<div style="margin-top:16px;padding:14px;background:rgba(168,85,247,.10);border-left:4px solid #a855f7;border-radius:6px">
-        <div style="color:#a855f7;font-size:11px;font-weight:700;text-transform:uppercase">💰 ROAS ESTIMADO</div>
+        <div style="color:#a855f7;font-size:11px;font-weight:700;text-transform:uppercase">💰 ROAS Recomendado (meio-termo)</div>
         <div style="font-weight:700;font-size:26px;margin-top:4px">${funil.roas_estimado.valor.toFixed(2)}x</div>
         <div style="font-size:11.5px;color:var(--ink-2);margin-top:4px">${funil.roas_estimado.calculo}</div>
         <div style="font-size:10.5px;color:#f59e0b;margin-top:4px">⚠️ Confiança: ${funil.roas_estimado.confianca}</div>
