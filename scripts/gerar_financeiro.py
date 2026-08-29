@@ -45,13 +45,13 @@ def main():
         ("Gerente — fixo", gerente, PREM["gerente"], "R$ 6.500/mês"),
         ("Vale-transporte", vt, 0.0, "não estava previsto no modelo"),
         ("Aluguel + IPTU", 19886.18, PREM["aluguel"], "R$ 18.000/mês na premissa"),
-        ("Marketing", 1900.00, PREM["midia"] + PREM["beleza_boost"], "mídia R$ 2.500 + Beleza Boost R$ 1.900"),
+        ("Marketing", 2650.00, PREM["midia"] + PREM["beleza_boost"], "inclui R$ 750 da gravação da inauguração"),
         ("Produtos e insumos", 2138.91, PREM["insumos"] * rec, "6% da receita"),
         ("Franqueadora e sistemas", 460.39, PREM["sistemas"], "Trinks + Sults"),
         ("Royalty + marketing local", 0.0, PREM["royalty_min"] + PREM["mkt_local"], "mínimo contratual — ainda não debitado"),
         ("Utilidades, telecom e consumo", 2851.01, None, "sem premissa no modelo"),
         ("Seguro do imóvel", 594.98, None, "sem premissa no modelo"),
-        ("Outros ainda a classificar", 6668.43, 0.0, "17 pessoas físicas (R$ 6.403) + 2 fornecedores diversos (R$ 265)"),
+        ("Outros ainda a classificar", 4468.43, 0.0, "R$ 2.103 da Adriana + 13 pessoas de menor valor + R$ 265 diversos"),
     ]
     esp_total = sum(e[2] for e in esp if e[2] is not None)
     real_total = sum(e[1] for e in esp)
@@ -117,9 +117,9 @@ def main():
             {"p": 4, "sev": "crit", "titulo": "Faturamento a 61,6% da meta",
              "detalhe": "R$ 36.955 contra R$ 60.000. Na meta, com a estrutura de custo do modelo, o mês fecharia positivo — o problema é tanto de receita quanto de custo.",
              "acao": "Puxar ocupação: 503 atendimentos em 25 dias com 12 profissionais ativos é baixa densidade."},
-            {"p": 5, "sev": "warn", "titulo": "R$ 6.403 pagos a 17 pessoas fora do cadastro",
-             "detalhe": "Vinte e oito Pix para pessoas que não constam como profissionais no Trinks. Cinco concentram R$ 4.631: Adriana (R$ 2.103 em 3 pagamentos), Claudio, Andressa, Edilson e Niedja. Se forem equipe, o custo de pessoal sobe de 64% para 81% da receita.",
-             "acao": "Identificar essas cinco. É o que falta para o custo de pessoal ficar fechado."},
+            {"p": 5, "sev": "warn", "titulo": "Adriana de Souza Angelico — R$ 2.103 sem classificação",
+             "detalhe": "Três pagamentos em agosto (R$ 1.200, R$ 800 e R$ 103) a uma pessoa que não consta no cadastro de profissionais do Trinks. É o maior item que restou sem natureza definida, e sozinha responde por metade dos R$ 4.468 ainda em aberto.",
+             "acao": "Definir o que é: equipe, prestador ou reembolso. Depois disso o P&L de agosto fecha."},
             {"p": 6, "sev": "warn", "titulo": "Pronampe: R$ 190.000 entraram, mas quem paga é PF",
              "detalhe": "Os R$ 190.000 caíram na conta da empresa em 23/04, vindos da Opinião. Se as 48 parcelas são pagas por pessoa física, a empresa não tem essa dívida — o valor é aporte, não empréstimo.",
              "acao": "Classificar a entrada com o contador: mútuo do sócio, AFAC ou capital. Hoje o painel mostra R$ 223.853 de passivo que a empresa não paga."},
