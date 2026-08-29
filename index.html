@@ -2610,6 +2610,34 @@ function renderMidias(){
       </div>`).join('')}
     </div>
 
+    ${M.ad_sets_30d ? `<h2 style="margin-top:22px">🎯 Ad Sets · segmentação real (público) · 30d</h2>
+    <div class="cap">${M.descoberta_ad_sets || 'Ad sets = agrupamento por público. Uma campanha pode ter 1+ ad sets diferentes.'}</div>
+    <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
+      <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+        <th style="text-align:left;padding:8px">Campanha · Ad Set</th>
+        <th style="text-align:right;padding:8px">Gasto</th>
+        <th style="text-align:right;padding:8px">Alcance</th>
+        <th style="text-align:right;padding:8px">CTR</th>
+        <th style="text-align:right;padding:8px">Freq</th>
+        <th style="text-align:right;padding:8px">CPA MSG</th>
+        <th style="text-align:left;padding:8px">Insight</th>
+      </tr></thead>
+      <tbody>${M.ad_sets_30d.slice().sort((a,b)=>{
+        if(a.cpa_msg==null && b.cpa_msg==null) return b.gasto-a.gasto;
+        if(a.cpa_msg==null) return 1;
+        if(b.cpa_msg==null) return -1;
+        return a.cpa_msg-b.cpa_msg;
+      }).map(a=>`<tr style="border-bottom:1px solid var(--surface-2)">
+        <td style="padding:8px"><strong style="font-size:11px">${a.campanha}</strong><br><span style="color:var(--accent);font-size:10.5px;font-weight:500">${a.adset}</span></td>
+        <td style="text-align:right;padding:8px">${brl(a.gasto)}</td>
+        <td style="text-align:right;padding:8px">${a.reach.toLocaleString('pt-BR')}</td>
+        <td style="text-align:right;padding:8px">${a.ctr_pct.toFixed(2)}%</td>
+        <td style="text-align:right;padding:8px;color:${freqColor(a.frequency)}">${a.frequency.toFixed(2)}</td>
+        <td style="text-align:right;padding:8px;font-weight:700;color:${cpaColor(a.cpa_msg)}">${a.cpa_msg?brl(a.cpa_msg):'—'}</td>
+        <td style="padding:8px;font-size:11px;color:var(--ink-2)">${a.insight||''}</td>
+      </tr>`).join('')}
+      </tbody></table></div>` : ''}
+
     <h2 style="margin-top:22px">🏆 Ranking de campanhas · 30d (por CPA MSG)</h2>
     <div class="cap">Ordenadas do melhor CPA (barato) pro pior. Cor da ação = decisão recomendada.</div>
     <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
