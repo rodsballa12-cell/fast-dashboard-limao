@@ -2397,8 +2397,6 @@ function renderFinanceiro(){
     <div class="fin-fonte">Integridade do painel Excel: ${FIN.integridade.placar} · pendente: ${FIN.integridade.pendente}</div>
     </div>`;
 
-  const sub=document.getElementById('tab-financeiro-sub');
-  if(sub) sub.textContent=brl0(FIN.caixa.total)+' em caixa';
 }
 
 async function loadFinanceiro(){
