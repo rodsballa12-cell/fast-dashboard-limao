@@ -397,6 +397,7 @@
     <div class="panel" id="tab-midias">
       <div class="audit" id="midias-audit"><div>📣</div><div><strong>Gestão de mídias sociais.</strong> Meta Ads + Instagram + Google Ads (quando conectar) + WhatsApp + HubSpot CRM. Dados atualizados pelo Gerente Marketing FAST via <code>/marketing-fast</code>.</div></div>
       <div id="midias-status"></div>
+      <div id="midias-instagram"></div>
       <div class="tabs" role="tablist" style="margin:14px 0 10px 0;gap:6px">
         <button class="tab-btn midias-per-btn" role="tab" aria-selected="true"  data-per="mtd" style="padding:8px 14px;font-size:12.5px">🎯 Mês</button>
         <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="30d" style="padding:8px 14px;font-size:12.5px">📊 30 dias</button>
@@ -2675,6 +2676,50 @@ function renderMidias(){
       }).join('')}
       </tbody></table></div>
     </section>`;
+
+  // Instagram Orgânico
+  const igBox = document.getElementById('midias-instagram');
+  const ig = MID.instagram;
+  if(ig && ig.organico_30d){
+    const org30 = ig.organico_30d;
+    const org7 = ig.organico_7d || {};
+    const posts = (ig.top_posts_30d || []).slice(0, 10);
+    const serie = ig.serie_diaria_30d || [];
+    const maxNovos = serie.length ? Math.max(...serie.map(d=>d.novos_seguidores)) : 0;
+    igBox.innerHTML = `<section class="card" style="border-left:4px solid #E1306C">
+      <h2>📱 Instagram · @${ig.handle} · orgânico</h2>
+      <div class="cap">Dados de crescimento e engajamento da conta (sem boost). Meta libera daily insights.</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Seguidores atuais</div><div style="font-weight:700;font-size:22px">${nfmt(ig.followers)}</div><div style="color:var(--ink-3);font-size:10.5px">${ig.posts_total} posts</div></div>
+        <div style="background:rgba(225,48,108,.08);border-radius:8px;padding:12px;border-left:3px solid #E1306C"><div style="color:#E1306C;font-size:10.5px;font-weight:700;text-transform:uppercase">⭐ Novos seguidores 30d</div><div style="font-weight:700;font-size:22px">${nfmt(org30.novos_seguidores)}</div><div style="color:var(--ink-3);font-size:10.5px">${org30.novos_seguidores_dia_medio.toFixed(1)}/dia médio</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Profile views 30d</div><div style="font-weight:700;font-size:22px">${nfmt(org30.profile_views)}</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(Math.round(org30.profile_views_dia_medio))}/dia médio</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Últimos 7 dias</div><div style="font-weight:700;font-size:22px">+${nfmt(org7.novos_seguidores||0)}</div><div style="color:var(--ink-3);font-size:10.5px">seguidores nesta semana</div></div>
+      </div>
+      ${serie.length?`<div style="margin-top:16px">
+        <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:6px">Novos seguidores/dia · 30d</div>
+        <div style="display:grid;grid-template-columns:repeat(${serie.length},1fr);gap:2px;align-items:end;height:80px">
+          ${serie.map(d=>{const h=maxNovos?(d.novos_seguidores/maxNovos*100):0;const cor=d.novos_seguidores>=30?'#22c55e':d.novos_seguidores>=15?'#3b82f6':d.novos_seguidores>=5?'#f59e0b':'#6b7280';return `<div title="${fmtDate(d.data)}: +${d.novos_seguidores} seguidores" style="background:${cor};height:${Math.max(h,2)}%;border-radius:2px 2px 0 0;cursor:help"></div>`}).join('')}
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink-3);margin-top:4px"><span>${fmtDate(serie[0].data)}</span><span>${fmtDate(serie[serie.length-1].data)}</span></div>
+      </div>`:''}
+      ${posts.length?`<h2 style="margin-top:20px;font-size:15px">🏆 Top posts orgânicos · 30d (por alcance)</h2>
+      <div style="overflow-x:auto;margin-top:10px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
+        <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+          <th style="text-align:left;padding:8px">Data</th>
+          <th style="text-align:left;padding:8px">Tipo</th>
+          <th style="text-align:left;padding:8px">Caption</th>
+          <th style="text-align:right;padding:8px">Alcance</th>
+          <th style="text-align:center;padding:8px">Link</th>
+        </tr></thead>
+        <tbody>${posts.map(p=>`<tr style="border-bottom:1px solid var(--surface-2)">
+          <td style="padding:8px">${fmtDate(p.data)}</td>
+          <td style="padding:8px"><span style="background:${p.tipo==='VIDEO'?'#a855f7':p.tipo==='CAROUSEL_ALBUM'?'#3b82f6':'#22c55e'};color:#fff;font-size:10px;padding:2px 6px;border-radius:8px">${p.tipo==='VIDEO'?'REEL':p.tipo==='CAROUSEL_ALBUM'?'CARROSSEL':'FEED'}</span></td>
+          <td style="padding:8px;font-size:11px">${p.caption_curta}</td>
+          <td style="text-align:right;padding:8px;font-weight:700">${nfmt(p.reach)}</td>
+          <td style="text-align:center;padding:8px"><a href="${p.url}" target="_blank" style="color:var(--accent);text-decoration:none">🔗</a></td>
+        </tr>`).join('')}</tbody></table></div>`:''}
+      </section>`;
+  } else { igBox.innerHTML=''; }
 
   // Direcionamentos estratégicos (destaque)
   const dirBox = document.getElementById('midias-direcionamentos');
