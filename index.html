@@ -138,6 +138,15 @@
   .dec-item .da{font-size:12.5px;color:var(--ink);margin-top:6px;padding-left:10px;border-left:2px solid var(--accent);}
   .fin-fonte{font-size:11px;color:var(--ink-3);margin-top:10px;line-height:1.6;}
   #tab-painel-sub,#tab-clientes-sub,#tab-stone-sub,#tab-auditoria-sub,#tab-financeiro-sub{display:none;}
+  .kpi-grid.fin5{grid-template-columns:repeat(5,1fr);}
+  .kpi.kpi-be{border-top:3px solid var(--warn);}
+  .kpi.kpi-be .value{color:var(--warn);}
+  .be-bar{height:5px;border-radius:3px;background:var(--border);overflow:hidden;margin:6px 0 5px;}
+  .be-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));border-radius:3px;}
+  .be-leg{font-size:10.5px;color:var(--ink-3);line-height:1.4;}
+  td.val-neg,.pc.val-neg{color:var(--crit);}
+  tr.dre-l td.val-neg{color:var(--ink-2);}
+  tr.dre-m td.val-neg{color:var(--crit);}
   /* ---- DRE executiva ---- */
   .dre-ind{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 18px;}
   .dre-ind>div{background:var(--surface-2);border:1px solid var(--border);border-top:3px solid var(--accent);border-radius:8px;padding:11px 13px;display:flex;flex-direction:column;gap:3px;}
@@ -166,7 +175,8 @@
   .dv-bom{color:var(--good);} .dv-mau{color:var(--crit);} .dv-na{color:var(--ink-3);}
   .dre-alerta{margin-top:14px;background:var(--surface-2);border-left:3px solid var(--warn);border-radius:0 8px 8px 0;padding:11px 14px;font-size:12.5px;color:var(--ink-2);line-height:1.55;}
   .dre-alerta strong{color:var(--ink);}
-  @media (max-width:760px){ .dre-ind{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:1100px){ .kpi-grid.fin5{grid-template-columns:repeat(3,1fr);} }
+  @media (max-width:760px){ .dre-ind{grid-template-columns:repeat(2,1fr);} .kpi-grid.fin5{grid-template-columns:repeat(2,1fr);} }
   @media (max-width:820px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.grid-2b{grid-template-columns:1fr;}.categ-grid{grid-template-columns:1fr;}.meta-row{grid-template-columns:repeat(2,1fr);}.brand-txt h1{font-size:18px;}.logo svg{height:44px;width:44px;}.kpi .value{font-size:24px;}.tab-btn{padding:10px 12px;font-size:12.5px;}}
 </style>
 </head>
@@ -385,6 +395,11 @@
     <div class="panel" id="tab-midias">
       <div class="audit" id="midias-audit"><div>📣</div><div><strong>Gestão de mídias sociais.</strong> Meta Ads + Instagram + Google Ads (quando conectar) + WhatsApp + HubSpot CRM. Dados atualizados pelo Gerente Marketing FAST via <code>/marketing-fast</code>.</div></div>
       <div id="midias-status"></div>
+      <div class="tabs" role="tablist" style="margin:14px 0 10px 0;gap:6px">
+        <button class="tab-btn midias-per-btn" role="tab" aria-selected="true"  data-per="mtd" style="padding:8px 14px;font-size:12.5px">🎯 Mês</button>
+        <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="30d" style="padding:8px 14px;font-size:12.5px">📊 30 dias</button>
+        <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="7d"  style="padding:8px 14px;font-size:12.5px">📅 7 dias</button>
+      </div>
       <div id="midias-kpis"></div>
       <div id="midias-campanhas"></div>
       <div id="midias-recomendacoes"></div>
@@ -1700,7 +1715,7 @@ function renderDiario(data){
 // ============= TABS =============
 function setupTabs(){
   // Abas top-level (Painel, Stone, Auditoria)
-  const topBtns = document.querySelectorAll('.tab-btn:not(.periodo-btn)');
+  const topBtns = document.querySelectorAll('.tab-btn:not(.periodo-btn):not(.midias-per-btn)');
   const topPanels = document.querySelectorAll('#content > .panel');
   topBtns.forEach(b => b.addEventListener('click', () => {
     topBtns.forEach(x => x.setAttribute('aria-selected','false'));
@@ -2365,36 +2380,51 @@ function renderFinanceiro(){
   const k=FIN.kpis, R=FIN.resultado, E=FIN.equilibrio, C=FIN.recebimento;
   const atg = k.receita_mes/k.meta_mes;
 
-  document.getElementById('fin-kpis').innerHTML='<section class="kpi-grid">'+[
+  const beMes = E.custo_fixo_mes / E.cenarios[0].mc;
+  const beFalta = beMes - k.receita_mes, bePerc = Math.max(0, Math.min(1, k.receita_mes / beMes));
+  const beBar = `<div class="be-bar"><span style="width:${(bePerc*100).toFixed(1)}%"></span></div>`
+    + `<div class="be-leg">${finPct(bePerc)} percorrido · equilíbrio em ${brl0(beMes)}/mês</div>`;
+
+  document.getElementById('fin-kpis').innerHTML='<section class="kpi-grid fin5">'+[
     kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), 'Conta corrente da PJ · posição de 28/08', null),
     kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), 'Vendas ainda não liquidadas', null),
     kpiCard('k3','RESULTADO DO MÊS', brl0(k.resultado_mes), 'Já com o royalty mínimo provisionado', null),
     kpiCard('k4','FATURAMENTO × META', finPct(atg), brl0(k.receita_mes)+' de '+brl0(k.meta_mes)+' · faltaram '+brl0(k.meta_mes-k.receita_mes), null),
+    kpiCard('k5 kpi-be','FALTA PARA EMPATAR', brl0(beFalta), beBar, null),
   ].join('')+'</section>';
 
   let h='';
 
   // ---- DRE executiva ----
   const pr=v=>v/R.receita_real;
-  const dv=(real,esp)=>{ if(esp===null||esp===undefined) return '<span class="dv-na">—</span>';
-    const d=real-esp; if(Math.abs(d)<1) return '<span class="dv-na">no alvo</span>';
-    return `<span class="${d>0?'dv-mau':'dv-bom'}">${d>0?'+':''}${brl0(d)}</span>`; };
+  // impacto no resultado: positivo = melhor que o esperado (verde) · negativo = pior (vermelho)
+  const imp=(x)=>{ if(x===null||x===undefined) return '<span class="dv-na">sem premissa</span>';
+    if(Math.abs(x)<1) return '<span class="dv-na">no alvo</span>';
+    return `<span class="${x>0?'dv-bom':'dv-mau'}">${x>0?'+':'−'}${brl0(Math.abs(x))}</span>`; };
+  const impC=(real,esp)=> esp===null||esp===undefined ? imp(null) : imp(esp-real);  // custo: gastar menos é melhor
+  const neg=v=>v<0?' val-neg':'';
   const lin=(l)=>`<tr class="dre-l${l.prov?' prov':''}"><td>${l.cat}<span class="dre-n">${l.nota}</span></td>
-      <td>${brl(-l.real)}</td><td class="pc">${finPct(-pr(l.real))}</td>
-      <td>${l.esp===null?'—':brl(-l.esp)}</td><td class="pc">${l.esp===null?'—':finPct(-pr(l.esp))}</td>
-      <td>${l.prov?'<span class="dv-prov">a provisionar</span>':dv(l.real,l.esp)}</td></tr>`;
-  const sub=(rot,r,e,cls)=>`<tr class="dre-s ${cls||''}"><td>${rot}</td>
-      <td>${brl(-r)}</td><td class="pc">${finPct(-pr(r))}</td>
-      <td>${brl(-e)}</td><td class="pc">${finPct(-pr(e))}</td><td>${dv(r,e)}</td></tr>`;
-  const mrg=(rot,r,e,nota)=>`<tr class="dre-m"><td>${rot}${nota?`<span class="dre-n">${nota}</span>`:''}</td>
-      <td>${brl(r)}</td><td class="pc">${finPct(pr(r))}</td>
-      <td>${brl(e)}</td><td class="pc">${finPct(pr(e))}</td><td>${dv(-r,-e)}</td></tr>`;
+      <td class="val-neg">(${brl0(l.real)})</td><td class="pc">${finPct(pr(l.real))}</td>
+      <td>${l.esp===null?'—':'('+brl0(l.esp)+')'}</td><td class="pc">${l.esp===null?'—':finPct(pr(l.esp))}</td>
+      <td>${l.prov?'<span class="dv-prov">a provisionar</span>':impC(l.real,l.esp)}</td></tr>`;
+  // provisao nao paga nao conta como economia no subtotal
+  const sub=(rot,r,e,pv)=>`<tr class="dre-s"><td>${rot}${pv?`<span class="dre-n">impacto medido fora da provisão de ${brl0(pv)}, que não é economia</span>`:''}</td>
+      <td class="val-neg">(${brl0(r)})</td><td class="pc">${finPct(pr(r))}</td>
+      <td>(${brl0(e)})</td><td class="pc">${finPct(pr(e))}</td><td>${impC(r,e-(pv||0))}</td></tr>`;
+  const mrg=(rot,r,e,nota,impOv)=>`<tr class="dre-m"><td>${rot}${nota?`<span class="dre-n">${nota}</span>`:''}</td>
+      <td class="${neg(r).trim()}">${brl(r)}</td><td class="pc${neg(r)}">${finPct(pr(r))}</td>
+      <td class="${neg(e).trim()}">${brl(e)}</td><td class="pc${neg(e)}">${finPct(pr(e))}</td>
+      <td>${imp(impOv===undefined?r-e:impOv)}</td></tr>`;
   const G=id=>R.grupos.find(g=>g.id===id);
   const grupo=(id)=>{ const g=G(id); return `<tr class="dre-g"><td colspan="6">${g.titulo}</td></tr>`+g.linhas.map(lin).join(''); };
+  const provG=id=>G(id).linhas.filter(l=>l.prov).reduce((a,l)=>a+(l.esp||0),0);
+  const pvVar=provG('VARIAVEL'), pvCom=provG('COMERCIAL');
+  const resProv=R.res_real-R.provisoes_nao_debitadas;
 
   const mcR=R.mc_real/R.receita_real, mcP=R.mc_prov/R.receita_real, mcE=R.mc_esp/R.receita_real;
   h+=`<div class="card"><h2>📊 Resultado de agosto — DRE executiva</h2>
-    <div class="cap">Receita do Trinks contra o custo do razão · a coluna <em>esperado</em> aplica as premissas do modelo à receita que de fato entrou</div>
+    <div class="cap">Receita do Trinks contra o custo do razão · a coluna <em>esperado</em> aplica as premissas do modelo à receita que de fato entrou.
+    Custos entre parênteses. Na última coluna, <span class="dv-bom">verde</span> é melhor que o previsto e <span class="dv-mau">vermelho</span> é pior — sempre medido pelo efeito no resultado.</div>
 
     <div class="dre-ind">
       <div><span class="il">MARGEM DE CONTRIBUIÇÃO</span><span class="iv">${finPct(mcR)}</span><span class="ic">${finPct(mcP)} provisionando o Simples · premissa ${finPct(mcE)}</span></div>
@@ -2404,24 +2434,27 @@ function renderFinanceiro(){
     </div>
 
     <div class="dre-wrap"><table class="dre">
-    <thead><tr><th>Linha</th><th colspan="2">Realizado</th><th colspan="2">Esperado</th><th>Desvio</th></tr></thead>
+    <thead><tr><th>Linha</th><th colspan="2">Realizado</th><th colspan="2">Esperado</th><th>Impacto no resultado</th></tr></thead>
     <tbody>
     <tr class="dre-r"><td>RECEITA BRUTA DE SERVIÇOS</td>
       <td>${brl(R.receita_real)}</td><td class="pc">100,0%</td>
       <td>${brl(R.receita_meta)}</td><td class="pc">—</td>
-      <td><span class="dv-mau">${brl0(R.receita_real-R.receita_meta)}</span></td></tr>
+      <td>${imp(R.receita_real-R.receita_meta)}</td></tr>
     ${grupo('VARIAVEL')}
-    ${sub('(=) Total de custos variáveis', R.var_real, R.var_esp)}
-    ${mrg('(=) MARGEM DE CONTRIBUIÇÃO', R.mc_real, R.mc_esp, 'o que sobra para pagar a estrutura · '+finPct(mcP)+' provisionando o Simples')}
+    ${sub('(=) Total de custos variáveis', R.var_real, R.var_esp, pvVar)}
+    ${mrg('(=) MARGEM DE CONTRIBUIÇÃO', R.mc_real, R.mc_esp,
+          'o que sobra para pagar a estrutura · '+finPct(mcP)+' provisionando o Simples, e é essa que o impacto compara',
+          R.mc_prov-R.mc_esp)}
     ${grupo('PESSOAL')}
     ${sub('Subtotal pessoal fixo', G('PESSOAL').sub_real, G('PESSOAL').sub_esp)}
     ${grupo('OCUPACAO')}
     ${sub('Subtotal ocupação', G('OCUPACAO').sub_real, G('OCUPACAO').sub_esp)}
     ${grupo('COMERCIAL')}
-    ${sub('Subtotal comercial e franquia', G('COMERCIAL').sub_real, G('COMERCIAL').sub_esp)}
+    ${sub('Subtotal comercial e franquia', G('COMERCIAL').sub_real, G('COMERCIAL').sub_esp, pvCom)}
     ${grupo('ABERTO')}
-    ${sub('(=) Total de custos fixos', R.fixo_real, R.fixo_esp)}
-    ${mrg('(=) RESULTADO OPERACIONAL', R.res_real, R.res_esp_mesma_receita, 'EBITDA do mês')}
+    ${sub('(=) Total de custos fixos', R.fixo_real, R.fixo_esp, pvCom)}
+    ${mrg('(=) RESULTADO OPERACIONAL — pelo caixa', R.res_real, R.res_esp_mesma_receita, 'o que a conta corrente de fato sentiu')}
+    ${mrg('(=) RESULTADO COM AS PROVISÕES', resProv, R.res_esp_mesma_receita, 'somando o Simples e o royalty que ainda não foram debitados')}
     </tbody></table></div>
 
     <div class="dre-alerta">⚠️ <strong>${brl(R.provisoes_nao_debitadas)} do custo esperado não saiu do caixa</strong> — o Simples (${brl(0.07*R.receita_real)}) e o royalty mínimo (${brl(3500)}) não foram debitados em nenhum extrato. O resultado de ${brl0(R.res_real)} é o que a conta sentiu; provisionando os dois, o mês real é <strong>${brl0(R.res_real-R.provisoes_nao_debitadas)}</strong>.</div>
@@ -2517,13 +2550,14 @@ function renderMidias(){
     </div>
   </div>`;
 
+  const per = window._midiasPer || 'mtd';
+  const pMap = {'7d':p7,'30d':p30,'mtd':pmtd};
+  const pSel = pMap[per] || pmtd;
   document.getElementById('midias-kpis').innerHTML = `<section class="card">
-    <h2>📊 KPIs Meta Ads · múltiplos horizontes</h2>
+    <h2>📊 KPIs Meta Ads · ${pSel.label}</h2>
     <div class="cap"><strong>KPI-estrela:</strong> ${MID.kpi_estrela.explicacao}</div>
-    <div style="display:grid;gap:12px;margin-top:14px">
-      ${periodoBlock(p7, true)}
-      ${periodoBlock(p30, true)}
-      ${periodoBlock(pmtd, false)}
+    <div style="margin-top:14px">
+      ${periodoBlock(pSel, per!=='mtd')}
     </div>
   </section>`;
 
@@ -2607,6 +2641,14 @@ async function loadMidias(){
     if(r.ok){ MID = await r.json(); renderMidias(); }
   }catch(e){ console.warn('midias_sociais.json indisponível', e); }
 }
+
+// Pills de período dentro de Mídias
+document.querySelectorAll('.midias-per-btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.midias-per-btn').forEach(x => x.setAttribute('aria-selected','false'));
+  b.setAttribute('aria-selected','true');
+  window._midiasPer = b.dataset.per;
+  if(MID) renderMidias();
+}));
 
 document.getElementById('btn-reload').addEventListener('click', refreshInteligente);
 
