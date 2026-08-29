@@ -178,6 +178,21 @@
       "insight": "Só 1,7% dos video views são orgânicos — quase tudo veio de boost. Page está sub-utilizada organicamente."
     }
   },
+  "deltas_vs_periodo_anterior": {
+    "30d": {"gasto_pct": 6.24, "impressoes_pct": 17.01, "cliques_pct": 8.04, "conversas_msg_pct": -15.19, "reach_pct": 4.11, "cpa_msg_pct": 25.27},
+    "7d": {"gasto_pct": -17.52, "impressoes_pct": -23.19, "cliques_pct": -30.27, "conversas_msg_pct": -40.00, "reach_pct": -22.56, "cpa_msg_pct": 37.46}
+  },
+  "alertas_topo": [
+    {"sev": "crit", "icone": "🚨", "titulo": "CPA MSG piorou 25% vs mês anterior", "detalhe": "30d atual R$ 6,19 vs anterior R$ 4,94. Conversas caíram 15% (441 vs ~520). Gastando mais para converter menos."},
+    {"sev": "crit", "icone": "⛔", "titulo": "Anúncios pararam 27-28/08 (2 dias)", "detalhe": "Gasto 27/08 = R$ 10 e 28/08 = R$ 0. Provável limite de gasto da conta. Perda estimada: 20-30 conversas WhatsApp. Ir em Ads Manager → Cobrança."},
+    {"sev": "warn", "icone": "⚠️", "titulo": "Frequência 30d = 2,85 (limite 3,0)", "detalhe": "Público vendo mesmo anúncio ~3x. Em 2 semanas atinge fadiga. Rotacionar criativos até 12/09."},
+    {"sev": "warn", "icone": "📉", "titulo": "Facebook Page quase sem alcance orgânico", "detalhe": "Só 1,7% dos video views são orgânicos (525 de 31.318). Focar orgânico no Instagram, manter FB só institucional."},
+    {"sev": "ok", "icone": "🚀", "titulo": "Instagram cresceu 621 seguidores em 30d", "detalhe": "Média 20,7 seguidores/dia. Post 'LOUCURA DA GERENTE' alcançou 1.526 pessoas orgânico — replicar fórmula promoção+humor."}
+  ],
+  "funil_conversao_hubspot": {
+    "conectado": false,
+    "mensagem": "Aguardando import de base no HubSpot com propriedade `fast_canal_origem`. Depois: 441 conversas Meta 30d → X clientes agendaram → Y receita = ROAS real."
+  },
   "google_ads": {"conectado": false, "mensagem": "Aguardando login Google Ads"},
   "hubspot": {"portal_id": "51943728", "contatos": 0, "mensagem": "CRM ativo, aguardando import da base"},
   "whatsapp_cloud_api": {"conectado": false, "mensagem": "Aguardando app Meta Developer (WhatsApp Business Cloud API)"},

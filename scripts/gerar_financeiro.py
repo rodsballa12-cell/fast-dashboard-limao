@@ -81,10 +81,15 @@ def main():
 
     grupos = [
         ("VARIAVEL", "Custos variáveis — acompanham a venda", [
-            ("Comissão sobre produção", comissao, PREM["comissao"] * rec, "31,7% da receita · premissa 32%"),
-            ("Produtos e insumos (CMV)", insumos, INSUMOS_PCT * rec, "6% da receita na premissa"),
+            ("Comissão sobre produção", comissao, PREM["comissao"] * rec,
+             "premissa de 32% da receita", False,
+             {"esp_pct": PREM["comissao"], "real_delta_pct": comissao / rec}),
+            ("Produtos e insumos (CMV)", insumos, INSUMOS_PCT * rec,
+             "premissa de 6% da receita", False,
+             {"esp_pct": INSUMOS_PCT, "real_delta_pct": insumos / rec}),
             ("Impostos sobre venda — Simples", SIMPLES * rec, SIMPLES * rec,
-             "7% da receita · provisionado por competência, ainda não debitado", True),
+             "7% da receita · provisionado por competência, ainda não debitado", True,
+             {"esp_pct": SIMPLES, "real_pct": SIMPLES}),
         ]),
         ("PESSOAL", "Pessoal fixo — independe do faturamento", [
             ("Gerente", gerente, PREM["gerente"], "R$ 6.500/mês"),
@@ -113,8 +118,9 @@ def main():
         return sum((l[i] or 0.0) for l in g[2])
 
     G = [{"id": g[0], "titulo": g[1],
-          "linhas": [{"cat": l[0], "real": l[1], "esp": l[2], "nota": l[3],
-                      "prov": len(l) > 4 and l[4]} for l in g[2]],
+          "linhas": [dict({"cat": l[0], "real": l[1], "esp": l[2], "nota": l[3],
+                           "prov": len(l) > 4 and l[4]}, **(l[5] if len(l) > 5 else {}))
+                     for l in g[2]],
           "sub_real": soma(g, 1), "sub_esp": soma(g, 2)} for g in grupos]
     gi = {g["id"]: g for g in G}
 
@@ -152,6 +158,7 @@ def main():
     d = {
         "gerado_em": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
         "baseline": "2026-08-28",
+        "custos_ate": "2026-08-28",
         "kpis": {
             "caixa_conta": 5060.93,
             "a_receber_stone": 20742.90,

@@ -396,6 +396,7 @@
 
     <div class="panel" id="tab-midias">
       <div class="audit" id="midias-audit"><div>📣</div><div><strong>Gestão de mídias sociais.</strong> Meta Ads + Instagram + Google Ads (quando conectar) + WhatsApp + HubSpot CRM. Dados atualizados pelo Gerente Marketing FAST via <code>/marketing-fast</code>.</div></div>
+      <div id="midias-alertas"></div>
       <div id="midias-status"></div>
       <div id="midias-instagram"></div>
       <div class="tabs" role="tablist" style="margin:14px 0 10px 0;gap:6px">
@@ -410,8 +411,10 @@
       <div id="midias-geo"></div>
       <div id="midias-demo"></div>
       <div id="midias-placement"></div>
+      <div id="midias-funil"></div>
       <div id="midias-recomendacoes"></div>
       <div id="midias-insights"></div>
+      <div style="text-align:right;margin-top:14px"><button id="midias-export-btn" style="background:var(--surface-2);color:var(--ink);border:1px solid var(--ink-3);padding:8px 14px;font-size:12px;border-radius:6px;cursor:pointer">⬇️ Exportar CSV</button></div>
     </div>
 
     <footer>
@@ -2194,6 +2197,7 @@ async function load(showToast=false){
     const resp = await fetch('data/dashboard_data.json?_='+Date.now(), {cache:'no-store'});
     if(!resp.ok) throw new Error('HTTP '+resp.status);
     const data = await resp.json();
+    TRINKS = data;
     renderAnual(data);
     renderMensal(data);
     renderSemanal(data);
@@ -2201,6 +2205,7 @@ async function load(showToast=false){
     renderClientes(data);
     renderStone(data);
     renderAuditoria(data);
+    if(FIN) renderFinanceiro();   // a receita da DRE acompanha o Trinks
     if(!window._tabsSet){ setupTabs(); window._tabsSet=true; }
     const dt=new Date(data.gerado_em);
     const ageMin=Math.floor((Date.now()-dt.getTime())/60000);
@@ -2380,12 +2385,63 @@ async function refreshInteligente(){
 }
 
 // ---------- ABA FINANCEIRO ----------
-let FIN = null;
+let FIN = null, TRINKS = null;
+
+// A receita da DRE vem sempre do Trinks, ao vivo. Os custos vêm do painel Excel,
+// que é atualizado à mão. Tudo que é definido como percentual da receita
+// (Simples, e as premissas de comissão e insumos) recalcula junto.
+function receitaViva(){
+  const c = TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.kpis;
+  return c && typeof c.caixa === 'number' && c.caixa > 0 ? c.caixa : null;
+}
+function comReceita(R, rec){
+  if(!rec || Math.abs(rec - R.receita_real) < 0.5) return R;
+  const A = JSON.parse(JSON.stringify(R));
+  A.receita_base = R.receita_real; A.receita_real = rec;
+  for(const g of A.grupos){
+    for(const l of g.linhas){
+      if(l.real_pct != null) l.real = l.real_pct * rec;
+      // custo variável: a receita nova desde o fechamento do Excel provisiona
+      // na mesma taxa medida — senão a margem infla sozinha
+      if(l.real_delta_pct != null){
+        const extra = l.real_delta_pct * (rec - A.receita_base);
+        if(Math.abs(extra) > 0.5){
+          l.real += extra;
+          l.nota += ` · inclui ${brl(extra)} provisionado sobre a receita nova`;
+        }
+      }
+      if(l.esp_pct  != null) l.esp  = l.esp_pct  * rec;
+    }
+    g.sub_real = g.linhas.reduce((a,l)=>a+(l.real||0),0);
+    g.sub_esp  = g.linhas.reduce((a,l)=>a+(l.esp ||0),0);
+  }
+  const gi = id => A.grupos.find(g=>g.id===id), FIXOS=['PESSOAL','OCUPACAO','COMERCIAL','ABERTO'];
+  A.var_real = gi('VARIAVEL').sub_real;  A.var_esp = gi('VARIAVEL').sub_esp;
+  A.fixo_real = FIXOS.reduce((a,k)=>a+gi(k).sub_real,0);
+  A.fixo_esp  = FIXOS.reduce((a,k)=>a+gi(k).sub_esp, 0);
+  A.custo_real = A.var_real + A.fixo_real;  A.custo_esp = A.var_esp + A.fixo_esp;
+  A.mc_real = rec - A.var_real;  A.mc_esp = rec - A.var_esp;
+  A.res_real = rec - A.custo_real;  A.res_esp_mesma_receita = rec - A.custo_esp;
+  A.provisoes_nao_debitadas = A.grupos.flatMap(g=>g.linhas).filter(l=>l.prov).reduce((a,l)=>a+l.real,0);
+  A.res_caixa = A.res_real + A.provisoes_nao_debitadas;
+  return A;
+}
 function finPct(v){ return ((v||0)*100).toFixed(1).replace('.',',')+'%'; }
 
 function renderFinanceiro(){
   if(!FIN){ document.getElementById('fin-content').innerHTML='<div class="card"><div class="cap">Dados financeiros ainda não carregados.</div></div>'; return; }
-  const k=FIN.kpis, R=FIN.resultado, E=FIN.equilibrio, C=FIN.recebimento;
+  const R = comReceita(FIN.resultado, receitaViva());
+  const C = FIN.recebimento;
+  const rec = R.receita_real;
+  // comissão e ponto de equilíbrio acompanham a receita viva
+  const comPct = R.grupos[0].linhas[0].real / rec;
+  const E = Object.assign({}, FIN.equilibrio, {fatura_hoje: rec, cenarios: [
+    {nome:'Com a comissão de hoje', comissao: comPct,
+     mc: 1 - comPct - FIN.premissas.insumos - FIN.premissas.simples},
+    {nome:'Se a comissão subir para 40%', comissao: 0.40,
+     mc: 1 - 0.40 - FIN.premissas.insumos - FIN.premissas.simples}]});
+  const k = Object.assign({}, FIN.kpis, {receita_mes: rec,
+    resultado_mes: R.res_real, resultado_mes_caixa: R.res_caixa});
   const atg = k.receita_mes/k.meta_mes;
 
   const beMes = E.custo_fixo_mes / E.cenarios[0].mc;
@@ -2427,7 +2483,10 @@ function renderFinanceiro(){
 
   const mcR=R.mc_real/R.receita_real, mcE=R.mc_esp/R.receita_real;
   h+=`<div class="card"><h2>📊 Resultado de agosto — DRE executiva</h2>
-    <div class="cap">Receita do Trinks contra o custo do razão, <strong>por competência</strong>: o que é do mês entra no mês, tenha saído do caixa ou não.
+    <div class="cap">${R.receita_base!==undefined
+      ? `<strong style="color:var(--accent)">Receita ao vivo do Trinks: ${brl(rec)}</strong> — o painel Excel foi fechado em ${new Date(FIN.custos_ate+'T12:00:00').toLocaleDateString('pt-BR')} com ${brl(R.receita_base)}. Os custos são os do Excel; tudo que é percentual da receita (Simples e as premissas) já recalculou.<br>`
+      : `Receita do Trinks · custos do painel Excel de ${new Date(FIN.custos_ate+'T12:00:00').toLocaleDateString('pt-BR')}.<br>`}
+    Comparação <strong>por competência</strong>: o que é do mês entra no mês, tenha saído do caixa ou não.
     A coluna <em>esperado</em> aplica as premissas do modelo à receita que de fato entrou. Custos entre parênteses.
     Na última coluna, <span class="dv-bom">verde</span> é melhor que o previsto e <span class="dv-mau">vermelho</span> é pior — sempre medido pelo efeito no resultado.</div>
 
@@ -2525,6 +2584,32 @@ function renderMidias(){
   const M = MID.meta_ads;
   const bench = MID.benchmarks || {};
 
+  // Alertas topo
+  const alerts = MID.alertas_topo || [];
+  const alertsBox = document.getElementById('midias-alertas');
+  if(alerts.length){
+    const bgColor = s => ({crit:'rgba(239,68,68,.10)', warn:'rgba(245,158,11,.10)', ok:'rgba(34,197,94,.10)'})[s]||'var(--surface-2)';
+    const brColor = s => ({crit:'#ef4444', warn:'#f59e0b', ok:'#22c55e'})[s]||'var(--muted)';
+    alertsBox.innerHTML = `<section class="card" style="padding:0"><div style="display:grid;gap:6px;padding:12px">
+      ${alerts.map(a=>`<div style="background:${bgColor(a.sev)};border-left:4px solid ${brColor(a.sev)};padding:10px 14px;border-radius:6px;display:flex;gap:12px;align-items:flex-start">
+        <div style="font-size:20px">${a.icone}</div>
+        <div style="flex:1"><div style="font-weight:700;font-size:13px;color:${brColor(a.sev)}">${a.titulo}</div>
+        <div style="font-size:11.5px;color:var(--ink-2);margin-top:3px">${a.detalhe}</div></div>
+      </div>`).join('')}
+    </div></section>`;
+  } else { alertsBox.innerHTML=''; }
+
+  // Deltas por período
+  const deltas = MID.deltas_vs_periodo_anterior || {};
+  const deltaArrow = (pct, invert) => {
+    if(pct == null || Math.abs(pct) < 0.5) return '';
+    const positivo = invert ? pct < 0 : pct > 0;
+    const cor = positivo ? '#22c55e' : '#ef4444';
+    const arrow = pct > 0 ? '▲' : '▼';
+    const sign = pct > 0 ? '+' : '';
+    return `<span style="color:${cor};font-size:10px;font-weight:600;margin-left:4px">${arrow}${sign}${pct.toFixed(1)}%</span>`;
+  };
+
   // Status das conexões
   document.getElementById('midias-status').innerHTML = `<section class="card"><h2>🔌 Fontes conectadas</h2>
     <div class="cap">Gerado em ${gerado} · fonte: ${MID.fonte}</div>
@@ -2547,17 +2632,18 @@ function renderMidias(){
 
   const periodoBlock = (p, kpi_estrela) => {
     const dias = (new Date(p.fim)-new Date(p.inicio))/86400000+1;
+    const d = deltas[per] || {};
     return `<div style="background:var(--surface-2);border-radius:8px;padding:14px">
-    <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">${p.label} · ${dias.toFixed(0)} dias</div>
+    <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">${p.label} · ${dias.toFixed(0)} dias ${d.gasto_pct!=null?'<span style="text-transform:none;font-size:10px;color:var(--ink-3);font-weight:400"> · comparado ao período anterior</span>':''}</div>
 
     ${kpi_estrela ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px dashed var(--ink-3)">
       <div style="padding:10px;background:rgba(34,197,94,.08);border-left:3px solid #22c55e;border-radius:4px">
-        <div style="color:#22c55e;font-size:10.5px;font-weight:700;text-transform:uppercase">⭐ Conversas WhatsApp</div>
+        <div style="color:#22c55e;font-size:10.5px;font-weight:700;text-transform:uppercase">⭐ Conversas WhatsApp ${deltaArrow(d.conversas_msg_pct)}</div>
         <div style="font-weight:700;font-size:24px">${nfmt(p.conversas_msg)}</div>
         <div style="color:var(--ink-3);font-size:10.5px">novos leads no WA · ${(p.conversas_msg/dias).toFixed(1)}/dia</div>
       </div>
       <div style="padding:10px;background:rgba(34,197,94,.08);border-left:3px solid #22c55e;border-radius:4px">
-        <div style="color:#22c55e;font-size:10.5px;font-weight:700;text-transform:uppercase">⭐ CPA MSG</div>
+        <div style="color:#22c55e;font-size:10.5px;font-weight:700;text-transform:uppercase">⭐ CPA MSG ${deltaArrow(d.cpa_msg_pct, true)}</div>
         <div style="font-weight:700;font-size:24px;color:${cpaColor(p.cpa_msg)}">${p.cpa_msg?brl(p.cpa_msg):'—'}</div>
         <div style="color:var(--ink-3);font-size:10.5px">custo/conversa · meta ≤${brl(bench.cpa_msg_meta)}</div>
       </div>
@@ -2565,7 +2651,7 @@ function renderMidias(){
 
     <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">💰 Investimento</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:12px;margin-bottom:12px">
-      ${kpiCell('Gasto', brl(p.gasto), brl(p.gasto/dias,0)+'/dia')}
+      ${kpiCell('Gasto '+deltaArrow(d.gasto_pct), brl(p.gasto), brl(p.gasto/dias,0)+'/dia')}
       ${kpiCell('CPM', brl(p.cpm), 'meta ≤'+brl(bench.cpm_meta), p.cpm<=bench.cpm_meta?'#22c55e':'#f59e0b')}
       ${kpiCell('CPC (todos)', brl(p.cpc), 'todos cliques')}
       ${kpiCell('CPC link', p.cpc_link?brl(p.cpc_link):'—', 'só cliques em link')}

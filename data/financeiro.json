@@ -1,6 +1,7 @@
 {
- "gerado_em": "2026-08-29T17:01:10-03:00",
+ "gerado_em": "2026-08-29T17:09:15-03:00",
  "baseline": "2026-08-28",
+ "custos_ate": "2026-08-28",
  "kpis": {
   "caixa_conta": 5060.93,
   "a_receber_stone": 20742.9,
@@ -21,22 +22,28 @@
       "cat": "Comissão sobre produção",
       "real": 11712.38,
       "esp": 11825.632,
-      "nota": "31,7% da receita · premissa 32%",
-      "prov": false
+      "nota": "premissa de 32% da receita",
+      "prov": false,
+      "esp_pct": 0.32,
+      "real_delta_pct": 0.3169354162213064
      },
      {
       "cat": "Produtos e insumos (CMV)",
       "real": 2138.91,
       "esp": 2217.306,
-      "nota": "6% da receita na premissa",
-      "prov": false
+      "nota": "premissa de 6% da receita",
+      "prov": false,
+      "esp_pct": 0.06,
+      "real_delta_pct": 0.05787861485965401
      },
      {
       "cat": "Impostos sobre venda — Simples",
       "real": 2586.857,
       "esp": 2586.857,
       "nota": "7% da receita · provisionado por competência, ainda não debitado",
-      "prov": true
+      "prov": true,
+      "esp_pct": 0.07,
+      "real_pct": 0.07
      }
     ],
     "sub_real": 16438.146999999997,
