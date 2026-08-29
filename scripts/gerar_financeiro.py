@@ -57,8 +57,8 @@ def main():
     real_total = sum(e[1] for e in esp)
 
     # ponto de equilibrio
-    # A parcela da CashMe NAO entra: e divida pessoa fisica do Rodrigo (definido em 29/08).
-    FIXO = 41816.32 + 1300.00 + 4663.61
+    # CashMe e Pronampe NAO entram: as parcelas sao pagas por pessoa fisica (definido em 29/08).
+    FIXO = 41816.32 + 1300.00
 
     d = {
         "gerado_em": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -110,7 +110,7 @@ def main():
              "acao": "Levantar boletos no Sults, inclusive de meses anteriores, e provisionar o piso de R$ 5.000/mês."},
             {"p": 2, "sev": "crit", "titulo": "A comissão está 12,4 pontos acima da premissa",
              "detalhe": "Foram pagos 44,4% da receita contra os 32% do modelo — R$ 4.600 a mais só em agosto. Parte pode ser comissão de julho paga com atraso: duas profissionais receberam R$ 4.713,68 sem produção no mês.",
-             "acao": "Abrir o acordo de remuneração dessas duas. Cada ponto percentual de comissão move o ponto de equilíbrio em cerca de R$ 2.000/mês."},
+             "acao": "Abrir o acordo de remuneração dessas duas. Cada ponto percentual de comissão move o ponto de equilíbrio em cerca de R$ 1.800/mês."},
             {"p": 3, "sev": "crit", "titulo": "As regras de comissão não estão no Trinks",
              "detalhe": "O sistema tem o endpoint, mas nenhuma regra cadastrada. O cálculo é manual — a dispersão individual vai de 27,9% a 110,5% sobre o que cada uma produziu.",
              "acao": "Cadastrar as regras no Trinks para o cálculo parar de depender de planilha."},
@@ -120,10 +120,13 @@ def main():
             {"p": 5, "sev": "warn", "titulo": "R$ 6.403 pagos a 17 pessoas fora do cadastro",
              "detalhe": "Vinte e oito Pix para pessoas que não constam como profissionais no Trinks. Cinco concentram R$ 4.631: Adriana (R$ 2.103 em 3 pagamentos), Claudio, Andressa, Edilson e Niedja. Se forem equipe, o custo de pessoal sobe de 64% para 81% da receita.",
              "acao": "Identificar essas cinco. É o que falta para o custo de pessoal ficar fechado."},
-            {"p": 6, "sev": "warn", "titulo": "A receita não passa pela conta da PJ",
+            {"p": 6, "sev": "warn", "titulo": "Pronampe: R$ 190.000 entraram, mas quem paga é PF",
+             "detalhe": "Os R$ 190.000 caíram na conta da empresa em 23/04, vindos da Opinião. Se as 48 parcelas são pagas por pessoa física, a empresa não tem essa dívida — o valor é aporte, não empréstimo.",
+             "acao": "Classificar a entrada com o contador: mútuo do sócio, AFAC ou capital. Hoje o painel mostra R$ 223.853 de passivo que a empresa não paga."},
+            {"p": 7, "sev": "warn", "titulo": "A receita não passa pela conta da PJ",
              "detalhe": "Cai na Stone e fica na Reserva. O razão da conta corrente não tem uma única entrada de faturamento — o painel enxerga o capital e não enxerga a operação.",
              "acao": "Baixar o extrato Stone de 15/08 em diante."},
-            {"p": 7, "sev": "ok", "titulo": "O dinheiro entra rápido — o modelo estava errado",
+            {"p": 8, "sev": "ok", "titulo": "O dinheiro entra rápido — o modelo estava errado",
              "detalhe": "O modelo assume 70% da receita em crédito parcelado em 6x, imobilizando capital de giro. A realidade: nenhuma venda parcelada e o cartão liquidando no dia seguinte.",
              "acao": "Refazer a projeção de fluxo. A necessidade de giro é uma fração do que foi dimensionado — e a CashMe foi captada em parte para cobrir isso."},
         ],
