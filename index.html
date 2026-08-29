@@ -203,7 +203,7 @@
       <span class="chip" id="chip-age" style="display:none;"></span>
       <span class="chip" id="chip-cota" style="display:none;"></span>
       <span class="chip" id="chip-live" style="display:none;"></span>
-      <button id="btn-reload" class="btn-refresh btn-sync" title="1º clique: pede token GitHub (fica só no browser). Depois: força sync completo com API Trinks em ~1min. Sem token: só recarrega últimos dados publicados.">🔄 Atualizar dados</button>
+      <button id="btn-reload" class="btn-refresh btn-sync" title="1º clique: pede um token GitHub restrito a este repositório (fica só no seu browser). Depois: força sync com a API do Trinks em ~1min. Sem token: recarrega os últimos dados publicados.">🔄 Atualizar dados</button>
     </div>
   </header>
 
@@ -2265,7 +2265,7 @@ function getToken(){
     if(t.length < 20){ localStorage.removeItem('gh_token'); t = null; }  // token inválido salvo
   }
   if(!t){
-    const raw = prompt('🔑 SYNC EM TEMPO REAL (opcional)\n\nColar Personal Access Token do GitHub para forçar sync imediato (fica no seu browser · só desta vez).\n\n📌 Se cancelar: sem problema · o botão "🔄 Recarregar" já traz dados frescos (GitHub Actions atualiza automático nos horários 00h/12h/15h/18h/21h BRT).\n\nComo gerar: github.com/settings/tokens/new · scope: workflow');
+    const raw = prompt('🔑 SYNC EM TEMPO REAL (opcional)\n\nColar Personal Access Token do GitHub para forçar sync imediato (fica no seu browser · só desta vez).\n\n📌 Se cancelar: sem problema · o botão "🔄 Recarregar" já traz dados frescos (GitHub Actions atualiza automático nos horários 00h/12h/15h/18h/21h BRT).\n\nComo gerar (token restrito, recomendado):\ngithub.com/settings/personal-access-tokens/new\n  · Repository access: Only select repositories -> fast-dashboard-limao\n  · Permissions: Actions -> Read and write\n  · Expiration: 90 dias\nNAO use o token classico de scope workflow: ele alcanca TODOS os seus repositorios.');
     if(raw === null) return null;  // usuário cancelou
     t = sanitizeToken(raw);
     if(t && t.length >= 20) localStorage.setItem('gh_token', t);
@@ -2337,7 +2337,7 @@ async function refreshInteligente(){
       'Cola aqui seu Personal Access Token do GitHub — fica salvo SÓ neste browser, ' +
       'nunca sai do seu celular. Depois de configurado, este botão puxa dados FRESCOS ' +
       'do Trinks em ~1min.\n\n' +
-      'Como gerar: github.com/settings/tokens/new (scope: workflow)\n\n' +
+      'Como gerar (token restrito, recomendado):\ngithub.com/settings/personal-access-tokens/new\n  · Repository access: Only select repositories -> fast-dashboard-limao\n  · Permissions: Actions -> Read and write\n  · Expiration: 90 dias\nNAO use o token classico de scope workflow: ele alcanca TODOS os seus repositorios.\n\n' +
       '📌 Se cancelar: o botão só recarrega os últimos dados publicados (que atualizam ' +
       'sozinhos pelo cron).'
     );
