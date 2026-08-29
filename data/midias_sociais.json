@@ -75,9 +75,10 @@
     "ad_account_id": "act_1310973560614050",
     "ad_account_nome": "FE - LIMÃO",
     "por_periodo": {
+      "hoje": {"label": "Hoje (29/08)", "inicio": "2026-08-29", "fim": "2026-08-29", "gasto": 0, "impressoes": 0, "cliques": 0, "link_clicks": 0, "post_engagement": 0, "conversas_msg": 0, "reach": 0, "frequency": 0, "ctr_pct": 0, "link_ctr_pct": 0, "cpm": 0, "cpc": 0, "cpc_link": 0, "cpa_msg": null, "alerta": "🚨 Anúncios parados hoje — limite de gasto da conta atingido em 27/08. Ir em Ads Manager → Cobrança."},
       "7d": {"label": "Últimos 7 dias", "inicio": "2026-08-23", "fim": "2026-08-29", "gasto": 544.41, "impressoes": 64600, "cliques": 887, "link_clicks": 421, "post_engagement": 6885, "conversas_msg": 66, "reach": 42332, "frequency": 1.53, "ctr_pct": 1.37, "link_ctr_pct": 0.65, "cpm": 8.43, "cpc": 0.61, "cpc_link": 1.29, "cpa_msg": 8.25},
-      "30d": {"label": "Últimos 30 dias", "inicio": "2026-07-30", "fim": "2026-08-29", "gasto": 2730.22, "impressoes": 331132, "cliques": 5067, "link_clicks": 2160, "post_engagement": 47598, "conversas_msg": 441, "reach": 116145, "frequency": 2.85, "ctr_pct": 1.53, "link_ctr_pct": 0.65, "cpm": 8.25, "cpc": 0.54, "cpc_link": 1.26, "cpa_msg": 6.19},
-      "mtd": {"label": "Mês atual (Ago/2026)", "inicio": "2026-08-01", "fim": "2026-08-29", "gasto": 2565.31, "impressoes": 311004, "cliques": 4770, "link_clicks": 1997, "post_engagement": 44438, "conversas_msg": 412, "reach": 112167, "frequency": 2.77, "ctr_pct": 1.53, "link_ctr_pct": 0.64, "cpm": 8.25, "cpc": 0.54, "cpc_link": 1.28, "cpa_msg": 6.23}
+      "mtd": {"label": "Mês atual (Ago/2026 · MTD)", "inicio": "2026-08-01", "fim": "2026-08-29", "gasto": 2565.31, "impressoes": 311004, "cliques": 4770, "link_clicks": 1997, "post_engagement": 44438, "conversas_msg": 412, "reach": 112167, "frequency": 2.77, "ctr_pct": 1.53, "link_ctr_pct": 0.64, "cpm": 8.25, "cpc": 0.54, "cpc_link": 1.28, "cpa_msg": 6.23},
+      "90d": {"label": "Últimos 90 dias", "inicio": "2026-06-01", "fim": "2026-08-29", "gasto": 5300.09, "impressoes": 614126, "cliques": 9757, "link_clicks": 5763, "post_engagement": 91775, "conversas_msg": 961, "reach": 175477, "frequency": 3.50, "ctr_pct": 1.59, "link_ctr_pct": 0.94, "cpm": 8.63, "cpc": 0.54, "cpc_link": 0.92, "cpa_msg": 5.52}
     },
     "serie_diaria_30d": [
       {"data": "2026-07-30", "gasto": 84.82, "impressoes": 9813, "cliques": 154, "reach": 8960, "cpa_msg": 6.52},
@@ -144,8 +145,29 @@
       {"nome": "[BRANDING] 110826", "objetivo": "AWARENESS", "gasto": 149.63, "reach": 47503, "cliques": 195, "ctr_pct": 0.21, "cpm": 1.63, "cpc": 0.77, "frequency": 1.94, "cpa_msg": null, "status": "manter"}
     ],
     "geografia_30d": [
-      {"regiao": "São Paulo (state)", "gasto": 2730.22, "share_pct": 100.0, "impressoes": 331132, "cliques": 5067, "ctr_pct": 1.53, "cpm": 8.25, "reach": 116145, "alerta": "Meta consolida em estado — não distingue bairros. Segmentação atual atinge SP inteira."}
+      {"regiao": "São Paulo (state)", "gasto": 2730.22, "share_pct": 100.0, "impressoes": 331132, "cliques": 5067, "ctr_pct": 1.53, "cpm": 8.25, "reach": 116145, "alerta": "Meta agrega tudo em nível estadual, mas os ad sets estão configurados com raio 5-8km centrado no Limão."}
     ],
+    "foco_geografico": {
+      "endereco_loja": "Av. Deputado Emílio Carlos, 358 - Limão, São Paulo-SP",
+      "coordenadas": {"lat": -23.48, "lng": -46.69},
+      "raio_atual_km": 5,
+      "raio_atual_ad_sets": {"msg": 5, "vagas": 8, "branding": 5},
+      "bairros_no_raio_5km": [
+        {"bairro": "Limão", "distancia_km": 0.0, "populacao_estimada": 35000, "mulheres_25_65_estimadas": 12000, "prioridade": "core"},
+        {"bairro": "Casa Verde", "distancia_km": 1.5, "populacao_estimada": 90000, "mulheres_25_65_estimadas": 30000, "prioridade": "alta"},
+        {"bairro": "Parque Peruche", "distancia_km": 2.0, "populacao_estimada": 15000, "mulheres_25_65_estimadas": 5000, "prioridade": "media"},
+        {"bairro": "Freguesia do Ó", "distancia_km": 3.5, "populacao_estimada": 140000, "mulheres_25_65_estimadas": 47000, "prioridade": "alta"},
+        {"bairro": "Vila Nova Cachoeirinha", "distancia_km": 4.0, "populacao_estimada": 120000, "mulheres_25_65_estimadas": 40000, "prioridade": "media"},
+        {"bairro": "Santana (parcial)", "distancia_km": 4.5, "populacao_estimada": 60000, "mulheres_25_65_estimadas": 20000, "prioridade": "baixa (competitivo)"}
+      ],
+      "totais_5km": {"populacao": 460000, "publico_alvo_estimado": 154000, "reach_atual_30d": 116145, "penetracao_pct": 75.4},
+      "expansao_sugerida": [
+        {"raio_km": 5, "populacao_alvo": 154000, "reach_estimado_30d": 116145, "status": "atual"},
+        {"raio_km": 7, "populacao_alvo": 210000, "reach_estimado_30d": 160000, "delta_pct": 38, "custo_extra_estimado": "+R$ 500/mês", "bairros_extra": "Vila Maria, Lauzane Paulista, Vila Guilherme"},
+        {"raio_km": 10, "populacao_alvo": 340000, "reach_estimado_30d": 250000, "delta_pct": 115, "custo_extra_estimado": "+R$ 1.500/mês", "bairros_extra": "Vila Guarani, Vila Formosa, Casa Verde Alta, Perus"}
+      ],
+      "recomendacao_gestor": "Você já alcançou 75% do público-alvo no raio 5km em 30 dias — está próximo do teto de saturação. Considere: (1) expandir pra 7km após rotacionar criativos, ou (2) manter raio e trocar criativos pra atingir mesmas pessoas mais vezes com mensagem diferente."
+    },
     "demografia_30d": [
       {"faixa": "45-54", "genero": "F", "gasto": 726.86, "share_pct": 26.6, "impressoes": 68497, "cliques": 1151, "ctr_pct": 1.68, "reach": 22929, "status": "top"},
       {"faixa": "55-64", "genero": "F", "gasto": 570.85, "share_pct": 20.9, "impressoes": 60945, "cliques": 1131, "ctr_pct": 1.86, "reach": 19764, "status": "top"},
@@ -179,7 +201,7 @@
     }
   },
   "deltas_vs_periodo_anterior": {
-    "30d": {"gasto_pct": 6.24, "impressoes_pct": 17.01, "cliques_pct": 8.04, "conversas_msg_pct": -15.19, "reach_pct": 4.11, "cpa_msg_pct": 25.27},
+    "mtd": {"gasto_pct": 6.24, "impressoes_pct": 17.01, "cliques_pct": 8.04, "conversas_msg_pct": -15.19, "reach_pct": 4.11, "cpa_msg_pct": 25.27},
     "7d": {"gasto_pct": -17.52, "impressoes_pct": -23.19, "cliques_pct": -30.27, "conversas_msg_pct": -40.00, "reach_pct": -22.56, "cpa_msg_pct": 37.46}
   },
   "alertas_topo": [
@@ -189,9 +211,31 @@
     {"sev": "warn", "icone": "📉", "titulo": "Facebook Page quase sem alcance orgânico", "detalhe": "Só 1,7% dos video views são orgânicos (525 de 31.318). Focar orgânico no Instagram, manter FB só institucional."},
     {"sev": "ok", "icone": "🚀", "titulo": "Instagram cresceu 621 seguidores em 30d", "detalhe": "Média 20,7 seguidores/dia. Post 'LOUCURA DA GERENTE' alcançou 1.526 pessoas orgânico — replicar fórmula promoção+humor."}
   ],
-  "funil_conversao_hubspot": {
-    "conectado": false,
-    "mensagem": "Aguardando import de base no HubSpot com propriedade `fast_canal_origem`. Depois: 441 conversas Meta 30d → X clientes agendaram → Y receita = ROAS real."
+  "funil_conversao": {
+    "periodo": "Últimos 30 dias (2026-07-30 a 2026-08-29)",
+    "etapas": [
+      {"ordem": 1, "nome": "Investimento Meta Ads", "valor": 2730.22, "unidade": "R$", "fonte": "Meta Ads (Supermetrics)", "medido": true},
+      {"ordem": 2, "nome": "Impressões", "valor": 331132, "unidade": "views", "fonte": "Meta Ads", "medido": true},
+      {"ordem": 3, "nome": "Alcance único", "valor": 116145, "unidade": "pessoas", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 35.1},
+      {"ordem": 4, "nome": "Cliques (todos)", "valor": 5067, "unidade": "cliques", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 4.4},
+      {"ordem": 5, "nome": "Cliques em link", "valor": 2160, "unidade": "cliques", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 42.6},
+      {"ordem": 6, "nome": "⭐ Conversas WhatsApp iniciadas", "valor": 441, "unidade": "conversas", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 20.4, "custo_unitario": 6.19},
+      {"ordem": 7, "nome": "Respostas efetivas atendimento", "valor": null, "unidade": "conversas", "fonte": "Manual (você preenche) ou HubSpot", "medido": false, "estimativa_taxa_pct": 80, "estimativa_valor": 353, "mensagem": "Estimativa 80% respondem. Rastrear no WA Web ou HubSpot."},
+      {"ordem": 8, "nome": "Agendamentos criados", "valor": null, "unidade": "agendamentos", "fonte": "Trinks (cruzar com data conversa)", "medido": false, "estimativa_taxa_pct": 40, "estimativa_valor": 141, "mensagem": "Estimativa 40% agendam. Cruzar Trinks agendamentos novos com data das conversas."},
+      {"ordem": 9, "nome": "Clientes que compareceram", "valor": null, "unidade": "clientes", "fonte": "Trinks (agendamentos 'finalizados')", "medido": false, "estimativa_taxa_pct": 75, "estimativa_valor": 106, "mensagem": "Estimativa 75% comparece. Trinks tem status 'finalizado'."},
+      {"ordem": 10, "nome": "Receita atribuível", "valor": null, "unidade": "R$", "fonte": "Trinks × ticket médio", "medido": false, "estimativa_valor": 7526, "mensagem": "106 clientes × R$ 71 ticket médio = R$ 7.526 (estimado)"}
+    ],
+    "roas_estimado": {
+      "valor": 2.76,
+      "calculo": "R$ 7.526 (receita estimada) ÷ R$ 2.730 (investido) = 2,76x",
+      "confianca": "baixa - todos os multiplicadores após conversa são estimativa. Precisamos rastrear cada etapa pra ter número real."
+    },
+    "como_destravar_cada_etapa": [
+      {"etapa": 7, "acao": "Registrar 'respondi' em cada conversa WA. Rápido: no HubSpot, criar propriedade `wa_atendido` e marcar diariamente."},
+      {"etapa": 8, "acao": "Trinks tem histórico de agendamentos criados por data. Cruzar N agendamentos 'novos' na mesma semana das conversas."},
+      {"etapa": 9, "acao": "Trinks tem status 'finalizado' vs 'no-show'. Puxar % de comparecimento real por semana."},
+      {"etapa": 10, "acao": "Meta Pixel + CAPI enviando evento 'Purchase' com valor real → ROAS 100% preciso automático."}
+    ]
   },
   "google_ads": {"conectado": false, "mensagem": "Aguardando login Google Ads"},
   "hubspot": {"portal_id": "51943728", "contatos": 0, "mensagem": "CRM ativo, aguardando import da base"},

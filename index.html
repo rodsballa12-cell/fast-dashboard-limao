@@ -400,9 +400,10 @@
       <div id="midias-status"></div>
       <div id="midias-instagram"></div>
       <div class="tabs" role="tablist" style="margin:14px 0 10px 0;gap:6px">
+        <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="hoje" style="padding:8px 14px;font-size:12.5px">🔴 Hoje</button>
+        <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="7d" style="padding:8px 14px;font-size:12.5px">📅 Semana</button>
         <button class="tab-btn midias-per-btn" role="tab" aria-selected="true"  data-per="mtd" style="padding:8px 14px;font-size:12.5px">🎯 Mês</button>
-        <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="30d" style="padding:8px 14px;font-size:12.5px">📊 30 dias</button>
-        <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="7d"  style="padding:8px 14px;font-size:12.5px">📅 7 dias</button>
+        <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="90d" style="padding:8px 14px;font-size:12.5px">📊 90 dias</button>
       </div>
       <div id="midias-kpis"></div>
       <div id="midias-direcionamentos"></div>
@@ -2676,13 +2677,15 @@ function renderMidias(){
   };
 
   const per = window._midiasPer || 'mtd';
-  const pMap = {'7d':p7,'30d':p30,'mtd':pmtd};
+  const pMap = {'hoje':M.por_periodo.hoje, '7d':p7, 'mtd':pmtd, '90d':M.por_periodo['90d']};
   const pSel = pMap[per] || pmtd;
+  const alertaPeriodo = pSel.alerta ? `<div style="margin-bottom:12px;padding:12px;background:rgba(239,68,68,.10);border-left:4px solid #ef4444;border-radius:6px;font-size:13px;color:#ef4444;font-weight:600">${pSel.alerta}</div>` : '';
   document.getElementById('midias-kpis').innerHTML = `<section class="card">
     <h2>📊 KPIs Meta Ads · ${pSel.label}</h2>
     <div class="cap"><strong>KPI-estrela:</strong> ${MID.kpi_estrela.explicacao}</div>
+    ${alertaPeriodo}
     <div style="margin-top:14px">
-      ${periodoBlock(pSel, per!=='mtd')}
+      ${periodoBlock(pSel, per==='7d' || per==='mtd' || per==='90d')}
     </div>
   </section>`;
 
@@ -2871,29 +2874,66 @@ function renderMidias(){
       </section>`;
   } else { trendBox.innerHTML=''; }
 
-  // Geografia
+  // Geografia — aprimorada
   const geoBox = document.getElementById('midias-geo');
-  const geo = M.geografia_30d || [];
-  if(geo.length){
-    geoBox.innerHTML = `<section class="card"><h2>🌍 Foco geográfico · 30 dias</h2>
-      <div class="cap">Onde seu público está sendo alcançado. Meta consolida em nível estadual — não distingue bairros.</div>
-      <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
-      <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
-        <th style="text-align:left;padding:8px">Região</th>
-        <th style="text-align:right;padding:8px">Gasto</th>
-        <th style="text-align:right;padding:8px">%</th>
-        <th style="text-align:right;padding:8px">Alcance</th>
-        <th style="text-align:right;padding:8px">CTR</th>
-        <th style="text-align:right;padding:8px">CPM</th>
-      </tr></thead>
-      <tbody>${geo.map(g=>`<tr style="border-bottom:1px solid var(--surface-2)">
-        <td style="padding:8px"><strong>${g.regiao}</strong>${g.alerta?`<div style="font-size:10.5px;color:#f59e0b;margin-top:4px">⚠️ ${g.alerta}</div>`:''}</td>
-        <td style="text-align:right;padding:8px">${brl(g.gasto)}</td>
-        <td style="text-align:right;padding:8px">${g.share_pct.toFixed(1)}%</td>
-        <td style="text-align:right;padding:8px">${g.reach.toLocaleString('pt-BR')}</td>
-        <td style="text-align:right;padding:8px">${g.ctr_pct.toFixed(2)}%</td>
-        <td style="text-align:right;padding:8px">${brl(g.cpm)}</td>
-      </tr>`).join('')}</tbody></table></div></section>`;
+  const focoGeo = M.foco_geografico;
+  if(focoGeo){
+    const bairrosOrdenados = (focoGeo.bairros_no_raio_5km || []).slice().sort((a,b)=>b.mulheres_25_65_estimadas-a.mulheres_25_65_estimadas);
+    const priColor = p => ({core:'#22c55e','alta':'#3b82f6','media':'#f59e0b','baixa (competitivo)':'#ef4444'})[p]||'var(--muted)';
+    geoBox.innerHTML = `<section class="card"><h2>🌍 Foco geográfico · Limão-SP</h2>
+      <div class="cap">📍 ${focoGeo.endereco_loja} · raio atual: <strong>${focoGeo.raio_atual_km}km</strong> (Msg) · <strong>${focoGeo.raio_atual_ad_sets.vagas}km</strong> (Vagas)</div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px">
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">População no raio 5km</div><div style="font-weight:700;font-size:20px">${nfmt(focoGeo.totais_5km.populacao)}</div><div style="color:var(--ink-3);font-size:10.5px">habitantes</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Público-alvo estimado</div><div style="font-weight:700;font-size:20px">${nfmt(focoGeo.totais_5km.publico_alvo_estimado)}</div><div style="color:var(--ink-3);font-size:10.5px">mulheres 25-65 anos</div></div>
+        <div style="background:rgba(34,197,94,.08);border-radius:8px;padding:12px;border-left:3px solid #22c55e"><div style="color:#22c55e;font-size:10.5px;font-weight:700;text-transform:uppercase">Alcance 30d</div><div style="font-weight:700;font-size:20px">${nfmt(focoGeo.totais_5km.reach_atual_30d)}</div><div style="color:var(--ink-3);font-size:10.5px">pessoas únicas</div></div>
+        <div style="background:rgba(59,130,246,.08);border-radius:8px;padding:12px;border-left:3px solid #3b82f6"><div style="color:#3b82f6;font-size:10.5px;font-weight:700;text-transform:uppercase">Penetração</div><div style="font-weight:700;font-size:20px">${focoGeo.totais_5km.penetracao_pct.toFixed(1)}%</div><div style="color:var(--ink-3);font-size:10.5px">do público-alvo</div></div>
+      </div>
+
+      <h2 style="margin-top:20px;font-size:15px">🏘️ Bairros cobertos no raio 5km</h2>
+      <div class="cap">Ordenados por tamanho do público-alvo (mulheres 25-65 anos).</div>
+      <div style="overflow-x:auto;margin-top:10px"><table style="width:100%;font-size:12px;border-collapse:collapse">
+        <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+          <th style="text-align:left;padding:8px">Bairro</th>
+          <th style="text-align:right;padding:8px">Distância</th>
+          <th style="text-align:right;padding:8px">População</th>
+          <th style="text-align:right;padding:8px">Mulheres 25-65</th>
+          <th style="text-align:center;padding:8px">Prioridade</th>
+        </tr></thead>
+        <tbody>${bairrosOrdenados.map(b=>`<tr style="border-bottom:1px solid var(--surface-2)">
+          <td style="padding:8px"><strong>${b.bairro}</strong></td>
+          <td style="text-align:right;padding:8px">${b.distancia_km.toFixed(1)} km</td>
+          <td style="text-align:right;padding:8px">${nfmt(b.populacao_estimada)}</td>
+          <td style="text-align:right;padding:8px;font-weight:700">${nfmt(b.mulheres_25_65_estimadas)}</td>
+          <td style="text-align:center;padding:8px"><span style="color:${priColor(b.prioridade)};font-weight:600;font-size:11px;text-transform:uppercase">${b.prioridade}</span></td>
+        </tr>`).join('')}</tbody></table></div>
+
+      <h2 style="margin-top:20px;font-size:15px">📈 Simulação de expansão de raio</h2>
+      <div class="cap">Comparativo: manter 5km, expandir pra 7km ou 10km.</div>
+      <div style="overflow-x:auto;margin-top:10px"><table style="width:100%;font-size:12px;border-collapse:collapse">
+        <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+          <th style="text-align:left;padding:8px">Raio</th>
+          <th style="text-align:right;padding:8px">Público-alvo</th>
+          <th style="text-align:right;padding:8px">Reach 30d est.</th>
+          <th style="text-align:right;padding:8px">Δ vs atual</th>
+          <th style="text-align:right;padding:8px">Custo extra est.</th>
+          <th style="text-align:left;padding:8px">Bairros extras</th>
+        </tr></thead>
+        <tbody>${(focoGeo.expansao_sugerida||[]).map(e=>{
+          const isAtual = e.status === 'atual';
+          return `<tr style="border-bottom:1px solid var(--surface-2);${isAtual?'background:rgba(34,197,94,.08)':''}">
+          <td style="padding:8px"><strong>${e.raio_km}km${isAtual?' (atual)':''}</strong></td>
+          <td style="text-align:right;padding:8px">${nfmt(e.populacao_alvo)}</td>
+          <td style="text-align:right;padding:8px">${nfmt(e.reach_estimado_30d)}</td>
+          <td style="text-align:right;padding:8px;color:${e.delta_pct>0?'#22c55e':'var(--muted)'}">${e.delta_pct?'+'+e.delta_pct+'%':'—'}</td>
+          <td style="text-align:right;padding:8px">${e.custo_extra_estimado||'—'}</td>
+          <td style="padding:8px;font-size:11px;color:var(--ink-2)">${e.bairros_extra||'—'}</td>
+        </tr>`;}).join('')}</tbody></table></div>
+
+      <div style="margin-top:14px;padding:12px;background:rgba(168,85,247,.08);border-left:4px solid #a855f7;border-radius:6px;font-size:12px">
+        <strong>💡 Recomendação do gestor:</strong> ${focoGeo.recomendacao_gestor}
+      </div>
+    </section>`;
   } else { geoBox.innerHTML=''; }
 
   // Demografia
@@ -2956,24 +2996,51 @@ function renderMidias(){
       </tr>`).join('')}</tbody></table></div></section>`;
   } else { placeBox.innerHTML=''; }
 
-  // Funil HubSpot (placeholder até importar base)
+  // Funil de conversão Meta → WA → Agendamento
   const funilBox = document.getElementById('midias-funil');
-  if(MID.funil_conversao_hubspot){
-    const f = MID.funil_conversao_hubspot;
-    if(f.conectado){
-      funilBox.innerHTML = `<section class="card"><h2>🎯 Funil de conversão (Meta → WA → HubSpot)</h2>
-        <div class="cap">Rastreamento fim-a-fim: quem veio do Meta, virou lead no WA e agendou.</div>
-        <!-- estrutura pronta pra quando dados chegarem -->
-      </section>`;
-    } else {
-      funilBox.innerHTML = `<section class="card" style="border-left:4px dashed var(--ink-3)">
-        <h2>🎯 Funil de conversão · aguardando setup</h2>
-        <div style="padding:12px;color:var(--ink-2);font-size:12px">${f.mensagem}</div>
-        <div style="padding:12px;background:var(--surface-2);border-radius:6px;font-size:11.5px;color:var(--ink-3)">
-          <strong>Pra destravar:</strong> importar contatos no HubSpot (template <code>hubspot_import_template.csv</code>) marcando cada cliente com <code>fast_canal_origem</code>. Depois cruzamos com o CPA MSG do Meta para calcular ROAS real.
-        </div>
-      </section>`;
-    }
+  const funil = MID.funil_conversao;
+  if(funil){
+    const etapaColor = e => e.medido ? '#22c55e' : '#f59e0b';
+    const maxVal = Math.max(...funil.etapas.map(e=>e.valor||e.estimativa_valor||0));
+    funilBox.innerHTML = `<section class="card" style="border-left:4px solid #a855f7">
+      <h2>🎯 Funil de conversão · Meta → WhatsApp → Agendamento → Cliente</h2>
+      <div class="cap">${funil.periodo}. 🟢 medido · 🟡 estimado (aguardando integração Trinks/Pixel).</div>
+
+      <div style="display:grid;gap:6px;margin-top:14px">
+        ${funil.etapas.map(e=>{
+          const val = e.valor != null ? e.valor : e.estimativa_valor;
+          const width = maxVal ? (val/maxVal*100) : 0;
+          const displayVal = e.valor != null ? nfmt(e.valor) : `~${nfmt(e.estimativa_valor)}`;
+          const unidade = e.unidade === 'R$' ? brl(val) : `${displayVal} ${e.unidade}`;
+          const badge = e.medido ? '🟢' : '🟡';
+          return `<div style="position:relative;padding:12px 14px;background:var(--surface-2);border-radius:6px;border-left:3px solid ${etapaColor(e)}">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+              <div style="flex:1">
+                <div style="font-weight:700;font-size:13px">${badge} ${e.ordem}. ${e.nome}</div>
+                <div style="font-size:11px;color:var(--ink-3);margin-top:2px">${e.fonte}${e.taxa_da_anterior_pct?` · ${e.taxa_da_anterior_pct.toFixed(1)}% da etapa anterior`:''}${e.custo_unitario?` · custo unit R$ ${e.custo_unitario.toFixed(2)}`:''}${e.estimativa_taxa_pct?` · estimativa ${e.estimativa_taxa_pct}%`:''}</div>
+              </div>
+              <div style="text-align:right"><div style="font-weight:700;font-size:16px">${e.unidade==='R$'?brl(val):displayVal}</div><div style="font-size:10px;color:var(--ink-3)">${e.unidade!=='R$'?e.unidade:''}</div></div>
+            </div>
+            ${e.mensagem?`<div style="font-size:10.5px;color:var(--ink-3);margin-top:6px;font-style:italic">${e.mensagem}</div>`:''}
+            <div style="margin-top:8px;height:4px;background:var(--surface);border-radius:2px;overflow:hidden"><div style="height:100%;background:${etapaColor(e)};width:${width}%;opacity:${e.medido?1:0.5}"></div></div>
+          </div>`;
+        }).join('')}
+      </div>
+
+      ${funil.roas_estimado ? `<div style="margin-top:16px;padding:14px;background:rgba(168,85,247,.10);border-left:4px solid #a855f7;border-radius:6px">
+        <div style="color:#a855f7;font-size:11px;font-weight:700;text-transform:uppercase">💰 ROAS ESTIMADO</div>
+        <div style="font-weight:700;font-size:26px;margin-top:4px">${funil.roas_estimado.valor.toFixed(2)}x</div>
+        <div style="font-size:11.5px;color:var(--ink-2);margin-top:4px">${funil.roas_estimado.calculo}</div>
+        <div style="font-size:10.5px;color:#f59e0b;margin-top:4px">⚠️ Confiança: ${funil.roas_estimado.confianca}</div>
+      </div>` : ''}
+
+      <h2 style="margin-top:20px;font-size:14px">🔧 Como destravar cada etapa</h2>
+      <div style="display:grid;gap:6px;margin-top:8px">
+        ${(funil.como_destravar_cada_etapa||[]).map(d=>`<div style="padding:10px 12px;background:var(--surface-2);border-radius:6px;font-size:12px">
+          <strong>Etapa ${d.etapa}:</strong> <span style="color:var(--ink-2)">${d.acao}</span>
+        </div>`).join('')}
+      </div>
+    </section>`;
   }
 
   // Recomendações
