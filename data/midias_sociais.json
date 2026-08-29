@@ -1,0 +1,76 @@
+{
+  "gerado_em": "2026-08-29T14:00:00-03:00",
+  "fonte": "Supermetrics MCP (Meta Ads + Instagram Insights)",
+  "periodo_15d": {
+    "inicio": "2026-08-15",
+    "fim": "2026-08-29",
+    "dias": 15
+  },
+  "instagram": {
+    "handle": "fastescova.limao",
+    "followers": 1732,
+    "posts_total": 31,
+    "url": "https://www.instagram.com/fastescova.limao/"
+  },
+  "meta_ads": {
+    "ad_account_id": "act_1310973560614050",
+    "ad_account_nome": "FE - LIMÃO",
+    "totais_15d": {
+      "gasto": 1204.47,
+      "impressoes": 148703,
+      "cliques": 2159,
+      "ctr_pct": 1.45,
+      "cpm": 8.10,
+      "cpc": 0.56,
+      "reach": 77404
+    },
+    "totais_30d": {
+      "gasto": 2730.22,
+      "impressoes": 331132,
+      "cliques": 5067,
+      "ctr_pct": 1.53,
+      "cpm": 8.25,
+      "cpc": 0.54,
+      "reach": 116145
+    },
+    "top_campanhas_15d": [
+      {"nome": "[MSG] [COMBO SEMANAL] 110826", "objetivo": "ENGAJAMENTO", "gasto": 191.39, "impressoes": 9914, "cliques": 424, "ctr_pct": 4.28, "cpm": 19.31, "cpc": 0.45, "status": "escalar"},
+      {"nome": "[MSG] [PLÁSTICA] 040826", "objetivo": "ENGAJAMENTO", "gasto": 190.63, "impressoes": 13098, "cliques": 511, "ctr_pct": 3.90, "cpm": 14.55, "cpc": 0.37, "status": "escalar"},
+      {"nome": "[MSG] [RETOQUE] 280726", "objetivo": "ENGAJAMENTO", "gasto": 193.72, "impressoes": 8557, "cliques": 231, "ctr_pct": 2.70, "cpm": 22.64, "cpc": 0.84, "status": "revisar"},
+      {"nome": "Post IG Reels FAST OFICIAL", "objetivo": "LINK_CLICKS", "gasto": 144.57, "impressoes": 16660, "cliques": 412, "ctr_pct": 2.47, "cpm": 8.68, "cpc": 0.35, "status": "manter"},
+      {"nome": "[BRANDING] 110826", "objetivo": "AWARENESS", "gasto": 115.96, "impressoes": 70641, "cliques": 141, "ctr_pct": 0.20, "cpm": 1.64, "cpc": 0.82, "status": "manter"},
+      {"nome": "[VAGA ESCOVISTA] 200726", "objetivo": "ENGAJAMENTO", "gasto": 76.23, "impressoes": 6773, "cliques": 114, "ctr_pct": 1.68, "cpm": 11.26, "cpc": 0.67, "status": "manter"},
+      {"nome": "[VAGA MAQUIADOR] 220726", "objetivo": "ENGAJAMENTO", "gasto": 75.84, "impressoes": 7530, "cliques": 92, "ctr_pct": 1.22, "cpm": 10.07, "cpc": 0.82, "status": "otimizar"},
+      {"nome": "[VAGA MANICURE] 220726", "objetivo": "ENGAJAMENTO", "gasto": 75.54, "impressoes": 7138, "cliques": 116, "ctr_pct": 1.63, "cpm": 10.58, "cpc": 0.65, "status": "manter"},
+      {"nome": "[MSG] [COMBOS 1,2,3] 210826", "objetivo": "ENGAJAMENTO", "gasto": 70.66, "impressoes": 4017, "cliques": 64, "ctr_pct": 1.59, "cpm": 17.59, "cpc": 1.10, "status": "otimizar"},
+      {"nome": "[MSG] [COMBOS 4 E 5] 210826", "objetivo": "ENGAJAMENTO", "gasto": 69.30, "impressoes": 4051, "cliques": 54, "ctr_pct": 1.33, "cpm": 17.11, "cpc": 1.28, "status": "matar"}
+    ]
+  },
+  "google_ads": {
+    "conectado": false,
+    "mensagem": "Aguardando acesso Google Ads"
+  },
+  "hubspot": {
+    "portal_id": "51943728",
+    "contatos": 0,
+    "mensagem": "CRM ativo, aguardando import da base"
+  },
+  "whatsapp_cloud_api": {
+    "conectado": false,
+    "mensagem": "Aguardando Meta Developer app (SMS travou)"
+  },
+  "recomendacoes": [
+    {"sev": "ok", "titulo": "Escalar [COMBO SEMANAL] e [PLÁSTICA]", "detalhe": "CTR 4,28% e 3,90% — melhores do 15d. Aumentar orçamento +30%.", "acao": "Aprovar escala Meta Ads"},
+    {"sev": "warn", "titulo": "Matar [COMBOS 4 E 5]", "detalhe": "CTR 1,33% e CPC R$ 1,28 — pior campanha ativa. Duas semanas com performance abaixo.", "acao": "Pausar ou trocar criativo"},
+    {"sev": "warn", "titulo": "Refazer [COMBOS 1,2,3]", "detalhe": "CTR 1,59% e CPC R$ 1,10. Nome numérico converte menos que nome específico (COMBO SEMANAL).", "acao": "Trocar copy usando modelo COMBO SEMANAL"},
+    {"sev": "ok", "titulo": "Manter [BRANDING]", "detalhe": "CPM R$ 1,64 é excelente. Alcança 46k pessoas por R$ 116.", "acao": "Nenhuma"},
+    {"sev": "crit", "titulo": "Configurar Pixel/CAPI Trinks→Meta", "detalhe": "Sem tracking de conversão, ROAS é impossível de medir. Priorizar para próximo mês.", "acao": "Setup Meta Pixel + CAPI via Trinks"},
+    {"sev": "warn", "titulo": "Reconectar IG com scope insights", "detalhe": "Métricas diárias (novos seguidores, alcance por post) bloqueadas por scope FB Login.", "acao": "Reautorizar Instagram Insights no Supermetrics"}
+  ],
+  "insights_narrativa": [
+    "Semana 15/08-29/08: R$ 1.204 investidos, CTR 1,45% acima da média salão (0,9%), CPC R$ 0,56 (bom).",
+    "Nomes específicos batem numéricos 2-3x: [COMBO SEMANAL] (4,28%) vs [COMBOS 1,2,3] (1,59%).",
+    "Reels convertem tão bem quanto MSG dedicada — investir mais em formato Reels.",
+    "Vagas rodam bem (CTR 1,2-1,7%) — captação profissional ativa e eficiente."
+  ]
+}

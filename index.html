@@ -178,6 +178,7 @@
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="stone">🏦 Stone<span class="subn" id="tab-stone-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="auditoria">🛡️ Auditoria<span class="subn" id="tab-auditoria-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="financeiro">💰 Financeiro<span class="subn" id="tab-financeiro-sub"></span></button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="midias">📣 Mídias<span class="subn" id="tab-midias-sub"></span></button>
     </div>
 
     <!-- PAINEL — engloba os 4 períodos com seletor -->
@@ -349,6 +350,15 @@
       <div id="fin-kpis"></div>
       <div id="fin-content"></div>
       <div id="fin-decisoes"></div>
+    </div>
+
+    <div class="panel" id="tab-midias">
+      <div class="audit" id="midias-audit"><div>📣</div><div><strong>Gestão de mídias sociais.</strong> Meta Ads + Instagram + Google Ads (quando conectar) + WhatsApp + HubSpot CRM. Dados atualizados pelo Gerente Marketing FAST via <code>/marketing-fast</code>.</div></div>
+      <div id="midias-status"></div>
+      <div id="midias-kpis"></div>
+      <div id="midias-campanhas"></div>
+      <div id="midias-recomendacoes"></div>
+      <div id="midias-insights"></div>
     </div>
 
     <footer>
@@ -2397,11 +2407,107 @@ async function loadFinanceiro(){
   }catch(e){ console.warn('financeiro.json indisponível', e); }
 }
 
+// ============= MÍDIAS SOCIAIS =============
+let MID = null;
+function renderMidias(){
+  if(!MID) return;
+  const gerado = new Date(MID.gerado_em).toLocaleDateString('pt-BR') + ' ' + new Date(MID.gerado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+
+  // Subtítulo da aba
+  const sub = document.getElementById('tab-midias-sub');
+  if(sub) sub.textContent = ' · ' + gerado;
+
+  // Status das conexões
+  const st = MID;
+  document.getElementById('midias-status').innerHTML = `<section class="card"><h2>🔌 Fontes conectadas</h2>
+    <div class="cap">Gerado em ${gerado} · fonte: ${MID.fonte}</div>
+    <div class="meta-row" style="margin-top:12px">
+      <div class="categ-tile"><div class="n">Meta Ads</div><div class="v" style="color:#22c55e">✅ ativo</div><div class="d">${MID.meta_ads.ad_account_nome} · ${MID.meta_ads.ad_account_id}</div></div>
+      <div class="categ-tile"><div class="n">Instagram</div><div class="v" style="color:#22c55e">✅ ativo</div><div class="d">@${MID.instagram.handle} · ${MID.instagram.followers.toLocaleString('pt-BR')} seguidores · ${MID.instagram.posts_total} posts</div></div>
+      <div class="categ-tile"><div class="n">Google Ads</div><div class="v" style="color:${MID.google_ads.conectado?'#22c55e':'#f59e0b'}">${MID.google_ads.conectado?'✅ ativo':'⏳ pendente'}</div><div class="d">${MID.google_ads.mensagem||''}</div></div>
+      <div class="categ-tile"><div class="n">HubSpot CRM</div><div class="v" style="color:#22c55e">✅ leitura</div><div class="d">Portal ${MID.hubspot.portal_id} · ${MID.hubspot.contatos} contatos</div></div>
+      <div class="categ-tile"><div class="n">WhatsApp API</div><div class="v" style="color:${MID.whatsapp_cloud_api.conectado?'#22c55e':'#ef4444'}">${MID.whatsapp_cloud_api.conectado?'✅ ativo':'🚫 bloqueado'}</div><div class="d">${MID.whatsapp_cloud_api.mensagem||''}</div></div>
+    </div></section>`;
+
+  // KPIs Meta Ads
+  const t15 = MID.meta_ads.totais_15d;
+  const t30 = MID.meta_ads.totais_30d;
+  const kpis = [
+    {label:'Gasto 15d',value:brl(t15.gasto),foot:'~'+brl(t15.gasto/15,0)+'/dia'},
+    {label:'Alcance único',value:t15.reach.toLocaleString('pt-BR'),foot:'pessoas'},
+    {label:'Impressões',value:t15.impressoes.toLocaleString('pt-BR'),foot:'exibições'},
+    {label:'Cliques',value:t15.cliques.toLocaleString('pt-BR'),foot:''},
+    {label:'CTR',value:t15.ctr_pct.toFixed(2)+'%',foot:'média salão ~0,9%',accent:t15.ctr_pct>=1?'up':''},
+    {label:'CPM',value:brl(t15.cpm),foot:'custo/1k impressões'},
+    {label:'CPC',value:brl(t15.cpc),foot:'custo/clique'},
+    {label:'Gasto 30d',value:brl(t30.gasto),foot:brl(t30.reach,0)+' de alcance'}
+  ];
+  renderKPIs('midias-kpis', kpis);
+
+  // Ranking de campanhas
+  const statusColor = s => ({escalar:'#22c55e', manter:'#3b82f6', otimizar:'#f59e0b', revisar:'#f59e0b', matar:'#ef4444'})[s] || 'var(--muted)';
+  const statusLabel = s => ({escalar:'📈 escalar', manter:'✅ manter', otimizar:'🔧 otimizar', revisar:'👀 revisar', matar:'🛑 matar'})[s] || s;
+  const camp = MID.meta_ads.top_campanhas_15d;
+  document.getElementById('midias-campanhas').innerHTML = `<section class="card"><h2>🎯 Top campanhas · últimos 15 dias</h2>
+    <div class="cap">Ordenadas por CTR. Ação recomendada na última coluna.</div>
+    <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12.5px;border-collapse:collapse">
+      <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+        <th style="text-align:left;padding:8px">Campanha</th>
+        <th style="text-align:right;padding:8px">Gasto</th>
+        <th style="text-align:right;padding:8px">Impr.</th>
+        <th style="text-align:right;padding:8px">Cliques</th>
+        <th style="text-align:right;padding:8px">CTR</th>
+        <th style="text-align:right;padding:8px">CPM</th>
+        <th style="text-align:right;padding:8px">CPC</th>
+        <th style="text-align:center;padding:8px">Ação</th>
+      </tr></thead>
+      <tbody>
+      ${camp.sort((a,b)=>b.ctr_pct-a.ctr_pct).map(c=>`<tr style="border-bottom:1px solid var(--surface-2)">
+        <td style="padding:8px"><strong>${c.nome}</strong><br><span style="color:var(--ink-3);font-size:11px">${c.objetivo}</span></td>
+        <td style="text-align:right;padding:8px">${brl(c.gasto)}</td>
+        <td style="text-align:right;padding:8px">${c.impressoes.toLocaleString('pt-BR')}</td>
+        <td style="text-align:right;padding:8px">${c.cliques.toLocaleString('pt-BR')}</td>
+        <td style="text-align:right;padding:8px"><strong>${c.ctr_pct.toFixed(2)}%</strong></td>
+        <td style="text-align:right;padding:8px">${brl(c.cpm)}</td>
+        <td style="text-align:right;padding:8px">${brl(c.cpc)}</td>
+        <td style="text-align:center;padding:8px"><span style="color:${statusColor(c.status)};font-weight:600">${statusLabel(c.status)}</span></td>
+      </tr>`).join('')}
+      </tbody></table></div></section>`;
+
+  // Recomendações
+  const sev={crit:'🔴',warn:'🟡',ok:'🟢'};
+  document.getElementById('midias-recomendacoes').innerHTML = `<div class="card"><h2>💡 Recomendações do Gerente Marketing</h2>
+    <div class="cap">Aprovar/rejeitar no chat com <code>/marketing-fast</code></div>
+    ${MID.recomendacoes.map((d,i)=>`<div class="dec-item ${d.sev}" style="margin-top:8px;padding:12px;border-left:4px solid ${d.sev==='crit'?'#ef4444':d.sev==='warn'?'#f59e0b':'#22c55e'};background:var(--surface-2);border-radius:6px">
+      <div style="font-weight:600"><span style="opacity:.7">${i+1}.</span> ${sev[d.sev]||''} ${d.titulo}</div>
+      <div style="color:var(--ink-2);font-size:12.5px;margin-top:4px">${d.detalhe}</div>
+      <div style="color:var(--accent);font-size:12px;margin-top:6px;font-weight:600">→ ${d.acao}</div>
+    </div>`).join('')}
+    </div>`;
+
+  // Insights narrativos
+  document.getElementById('midias-insights').innerHTML = `<div class="card"><h2>🧠 Insights da semana</h2>
+    <ul style="margin:8px 0 0 20px;line-height:1.7;color:var(--ink-2)">
+      ${MID.insights_narrativa.map(t=>`<li>${t}</li>`).join('')}
+    </ul>
+    <div style="margin-top:16px;padding:12px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-3)">
+      Próxima atualização: rodar <code>/marketing-fast atualizar aba midias</code> — sistema puxa Meta+IG do Supermetrics e regenera este JSON.
+    </div>
+    </div>`;
+}
+
+async function loadMidias(){
+  try{
+    const r = await fetch('data/midias_sociais.json?_='+Date.now(), {cache:'no-store'});
+    if(r.ok){ MID = await r.json(); renderMidias(); }
+  }catch(e){ console.warn('midias_sociais.json indisponível', e); }
+}
+
 document.getElementById('btn-reload').addEventListener('click', refreshInteligente);
 
 // auto-refresh a cada 5min (se aba visível)
-load().finally(loadFinanceiro);
-setInterval(()=>{if(!document.hidden) load().finally(loadFinanceiro);}, 5*60*1000);
+load().finally(()=>{ loadFinanceiro(); loadMidias(); });
+setInterval(()=>{if(!document.hidden) load().finally(()=>{ loadFinanceiro(); loadMidias(); });}, 5*60*1000);
 </script>
 </body>
 </html>
