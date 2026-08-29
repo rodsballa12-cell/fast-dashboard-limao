@@ -2357,7 +2357,7 @@ function renderFinanceiro(){
     <div class="cap">Com as duas lojas rodando · a comissão é o único custo que sobe junto com a venda</div>
     <table class="simple"><tbody>
     <tr><td>Faturamento de agosto</td><td>${brl(E.fatura_hoje)}</td></tr>
-    <tr><td>Custo fixo do mês, com as 2 lojas e as parcelas de empréstimo</td><td>${brl(E.custo_fixo_mes)}</td></tr>
+    <tr><td>Custo fixo do mês, com as 2 lojas<div class="fin-fonte" style="margin:2px 0 0">estrutura das lojas + vale-transporte + Pronampe. A parcela da CashMe não entra: é dívida pessoa física, não despesa da empresa</div></td><td>${brl(E.custo_fixo_mes)}</td></tr>
     <tr><td>De cada R$ 100 faturados, quanto sobra para pagar esse fixo<div class="fin-fonte" style="margin:2px 0 0">tirando comissão de ${finPct(c0.comissao)}, insumos de 6% e Simples de 7%</div></td><td>${brl(c0.mc*100)}</td></tr>
     <tr><td><strong>Faturamento para empatar</strong></td><td><strong>${brl0(c0.be)}</strong></td></tr>
     <tr><td><strong>Quanto falta por mês</strong></td><td><strong style="color:#ef4444">${brl0(c0.falta)}</strong></td></tr>

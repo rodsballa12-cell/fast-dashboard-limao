@@ -51,13 +51,14 @@ def main():
         ("Royalty + marketing local", 0.0, PREM["royalty_min"] + PREM["mkt_local"], "mínimo contratual — ainda não debitado"),
         ("Utilidades, telecom e consumo", 2851.01, None, "sem premissa no modelo"),
         ("Seguro do imóvel", 594.98, None, "sem premissa no modelo"),
-        ("Outros ainda a classificar", 8394.93, 0.0, "não deveria existir"),
+        ("Outros ainda a classificar", 6668.43, 0.0, "17 pessoas físicas (R$ 6.403) + 2 fornecedores diversos (R$ 265)"),
     ]
     esp_total = sum(e[2] for e in esp if e[2] is not None)
     real_total = sum(e[1] for e in esp)
 
     # ponto de equilibrio
-    FIXO = 41816.32 + 1300.00 + 4663.61 + 16092.57
+    # A parcela da CashMe NAO entra: e divida pessoa fisica do Rodrigo (definido em 29/08).
+    FIXO = 41816.32 + 1300.00 + 4663.61
 
     d = {
         "gerado_em": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -109,16 +110,16 @@ def main():
              "acao": "Levantar boletos no Sults, inclusive de meses anteriores, e provisionar o piso de R$ 5.000/mês."},
             {"p": 2, "sev": "crit", "titulo": "A comissão está 12,4 pontos acima da premissa",
              "detalhe": "Foram pagos 44,4% da receita contra os 32% do modelo — R$ 4.600 a mais só em agosto. Parte pode ser comissão de julho paga com atraso: duas profissionais receberam R$ 4.713,68 sem produção no mês.",
-             "acao": "Abrir o acordo de remuneração dessas duas. Cada ponto percentual vale ~R$ 370/mês na receita de hoje e ~R$ 1.500/mês na meta."},
+             "acao": "Abrir o acordo de remuneração dessas duas. Cada ponto percentual de comissão move o ponto de equilíbrio em cerca de R$ 2.000/mês."},
             {"p": 3, "sev": "crit", "titulo": "As regras de comissão não estão no Trinks",
              "detalhe": "O sistema tem o endpoint, mas nenhuma regra cadastrada. O cálculo é manual — a dispersão individual vai de 27,9% a 110,5% sobre o que cada uma produziu.",
              "acao": "Cadastrar as regras no Trinks para o cálculo parar de depender de planilha."},
             {"p": 4, "sev": "crit", "titulo": "Faturamento a 61,6% da meta",
              "detalhe": "R$ 36.955 contra R$ 60.000. Na meta, com a estrutura de custo do modelo, o mês fecharia positivo — o problema é tanto de receita quanto de custo.",
              "acao": "Puxar ocupação: 503 atendimentos em 25 dias com 12 profissionais ativos é baixa densidade."},
-            {"p": 5, "sev": "warn", "titulo": "R$ 8.395 de custo sem classificação",
-             "detalhe": "Enquanto esses lançamentos não forem abertos, o custo real de agosto é pelo menos o que está aqui — pode ser maior.",
-             "acao": "Pente fino nos lançamentos de agosto sem categoria."},
+            {"p": 5, "sev": "warn", "titulo": "R$ 6.403 pagos a 17 pessoas fora do cadastro",
+             "detalhe": "Vinte e oito Pix para pessoas que não constam como profissionais no Trinks. Cinco concentram R$ 4.631: Adriana (R$ 2.103 em 3 pagamentos), Claudio, Andressa, Edilson e Niedja. Se forem equipe, o custo de pessoal sobe de 64% para 81% da receita.",
+             "acao": "Identificar essas cinco. É o que falta para o custo de pessoal ficar fechado."},
             {"p": 6, "sev": "warn", "titulo": "A receita não passa pela conta da PJ",
              "detalhe": "Cai na Stone e fica na Reserva. O razão da conta corrente não tem uma única entrada de faturamento — o painel enxerga o capital e não enxerga a operação.",
              "acao": "Baixar o extrato Stone de 15/08 em diante."},
