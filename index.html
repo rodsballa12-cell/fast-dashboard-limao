@@ -138,6 +138,33 @@
   .dec-item .da{font-size:12.5px;color:var(--ink);margin-top:6px;padding-left:10px;border-left:2px solid var(--accent);}
   .fin-fonte{font-size:11px;color:var(--ink-3);margin-top:10px;line-height:1.6;}
   #tab-painel-sub,#tab-clientes-sub,#tab-stone-sub,#tab-auditoria-sub,#tab-financeiro-sub{display:none;}
+  /* ---- DRE executiva ---- */
+  .dre-ind{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 18px;}
+  .dre-ind>div{background:var(--surface-2);border:1px solid var(--border);border-top:3px solid var(--accent);border-radius:8px;padding:11px 13px;display:flex;flex-direction:column;gap:3px;}
+  .dre-ind>div.neg{border-top-color:var(--crit);}
+  .dre-ind .il{font-size:9.5px;letter-spacing:.09em;color:var(--ink-3);font-weight:700;}
+  .dre-ind .iv{font-size:23px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.15;}
+  .dre-ind>div.neg .iv{color:var(--crit);}
+  .dre-ind .ic{font-size:10.5px;color:var(--ink-3);line-height:1.4;}
+  .dre-wrap{overflow-x:auto;}
+  table.dre{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums;min-width:640px;}
+  table.dre th{font-size:9.5px;letter-spacing:.08em;color:var(--ink-3);text-transform:uppercase;font-weight:700;text-align:right;padding:0 10px 7px;border-bottom:1px solid var(--border);}
+  table.dre th:first-child{text-align:left;}
+  table.dre td{padding:6px 10px;text-align:right;border-bottom:1px solid var(--grid);}
+  table.dre td:first-child{text-align:left;}
+  table.dre td.pc{color:var(--ink-3);font-size:11.5px;width:58px;}
+  .dre-n{display:block;font-size:10.5px;color:var(--ink-3);margin-top:1px;line-height:1.35;}
+  tr.dre-r td{font-weight:700;font-size:14px;background:var(--surface-2);border-bottom:1px solid var(--border);}
+  tr.dre-g td{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:700;padding:13px 10px 4px;border-bottom:0;}
+  tr.dre-l td{color:var(--ink-2);}
+  tr.dre-l td:first-child{color:var(--ink);padding-left:10px;}
+  tr.dre-s td{font-weight:600;border-top:1px solid var(--border);border-bottom:0;color:var(--ink-2);font-size:12.5px;}
+  tr.dre-m td{font-weight:700;font-size:14px;color:var(--ink);background:var(--surface-2);border-top:2px solid var(--accent);border-bottom:1px solid var(--border);padding:9px 10px;}
+  tr.dre-m td .dre-n{font-weight:400;}
+  .dv-bom{color:var(--good);} .dv-mau{color:var(--crit);} .dv-na{color:var(--ink-3);}
+  .dre-alerta{margin-top:14px;background:var(--surface-2);border-left:3px solid var(--warn);border-radius:0 8px 8px 0;padding:11px 14px;font-size:12.5px;color:var(--ink-2);line-height:1.55;}
+  .dre-alerta strong{color:var(--ink);}
+  @media (max-width:760px){ .dre-ind{grid-template-columns:repeat(2,1fr);} }
   @media (max-width:820px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.grid-2b{grid-template-columns:1fr;}.categ-grid{grid-template-columns:1fr;}.meta-row{grid-template-columns:repeat(2,1fr);}.brand-txt h1{font-size:18px;}.logo svg{height:44px;width:44px;}.kpi .value{font-size:24px;}.tab-btn{padding:10px 12px;font-size:12.5px;}}
 </style>
 </head>
@@ -2345,21 +2372,60 @@ function renderFinanceiro(){
 
   let h='';
 
-  // ---- resultado aberto vs esperado ----
-  const dv=(real,esp)=>{ if(esp===null||esp===undefined) return '<span style="color:var(--muted)">—</span>';
-    const d=real-esp; if(Math.abs(d)<1) return '<span style="color:var(--muted)">no alvo</span>';
-    const pior=d>0; return `<span style="color:${pior?'#ef4444':'#22c55e'}">${pior?'+':''}${brl(d)}</span>`; };
+  // ---- DRE executiva ----
+  const pr=v=>v/R.receita_real;
+  const dv=(real,esp)=>{ if(esp===null||esp===undefined) return '<span class="dv-na">—</span>';
+    const d=real-esp; if(Math.abs(d)<1) return '<span class="dv-na">no alvo</span>';
+    return `<span class="${d>0?'dv-mau':'dv-bom'}">${d>0?'+':''}${brl0(d)}</span>`; };
+  const lin=(l)=>`<tr class="dre-l"><td>${l.cat}<span class="dre-n">${l.nota}</span></td>
+      <td>${brl(-l.real)}</td><td class="pc">${finPct(-pr(l.real))}</td>
+      <td>${l.esp===null?'—':brl(-l.esp)}</td><td class="pc">${l.esp===null?'—':finPct(-pr(l.esp))}</td>
+      <td>${dv(l.real,l.esp)}</td></tr>`;
+  const sub=(rot,r,e,cls)=>`<tr class="dre-s ${cls||''}"><td>${rot}</td>
+      <td>${brl(-r)}</td><td class="pc">${finPct(-pr(r))}</td>
+      <td>${brl(-e)}</td><td class="pc">${finPct(-pr(e))}</td><td>${dv(r,e)}</td></tr>`;
+  const mrg=(rot,r,e,nota)=>`<tr class="dre-m"><td>${rot}${nota?`<span class="dre-n">${nota}</span>`:''}</td>
+      <td>${brl(r)}</td><td class="pc">${finPct(pr(r))}</td>
+      <td>${brl(e)}</td><td class="pc">${finPct(pr(e))}</td><td>${dv(-r,-e)}</td></tr>`;
+  const G=id=>R.grupos.find(g=>g.id===id);
+  const grupo=(id)=>{ const g=G(id); return `<tr class="dre-g"><td colspan="6">${g.titulo}</td></tr>`+g.linhas.map(lin).join(''); };
 
-  h+=`<div class="card"><h2>📊 Resultado de agosto — realizado × esperado</h2>
-    <div class="cap">Cada linha compara o que saiu com o que o modelo previa para essa receita</div>
-    <table class="simple"><thead><tr><th>Linha</th><th>Realizado</th><th>Esperado</th><th>Desvio</th></tr></thead><tbody>
-    <tr><td><strong>Receita faturada</strong></td><td><strong>${brl(R.receita_real)}</strong></td><td>${brl(R.receita_meta)}<div class="fin-fonte" style="margin:0">meta do mês</div></td><td><span style="color:#ef4444">${brl(R.receita_real-R.receita_meta)}</span></td></tr>
-    ${R.linhas.map(l=>`<tr><td>${l.cat}<div class="fin-fonte" style="margin:2px 0 0">${l.nota}</div></td><td>${brl(-l.real)}</td><td>${l.esp===null?'—':brl(-l.esp)}</td><td>${dv(l.real,l.esp)}</td></tr>`).join('')}
-    <tr><td><strong>Custo total</strong></td><td><strong>${brl(-R.custo_real)}</strong></td><td>${brl(-R.custo_esp)}</td><td>${dv(R.custo_real,R.custo_esp)}</td></tr>
-    <tr><td><strong>RESULTADO</strong></td><td><strong>${brl(R.res_real)}</strong></td><td><strong>${brl(R.res_esp_mesma_receita)}</strong></td><td>${dv(-R.res_real,-R.res_esp_mesma_receita)}</td></tr>
-    </tbody></table>
-    <div class="fin-fonte">Duas perdas somadas: <strong>${brl(Math.abs(R.receita_real-R.receita_meta))} de receita que não veio</strong> e <strong>${brl(R.custo_real-R.custo_esp)} de custo acima do previsto</strong>.
-    Se o faturamento tivesse batido a meta com a estrutura de custo do modelo, agosto fecharia em <strong style="color:#22c55e">${brl(R.res_esp_na_meta)}</strong>.</div></div>`;
+  const mcR=R.mc_real/R.receita_real, mcP=R.mc_prov/R.receita_real, mcE=R.mc_esp/R.receita_real;
+  h+=`<div class="card"><h2>📊 Resultado de agosto — DRE executiva</h2>
+    <div class="cap">Receita do Trinks contra o custo do razão · a coluna <em>esperado</em> aplica as premissas do modelo à receita que de fato entrou</div>
+
+    <div class="dre-ind">
+      <div><span class="il">MARGEM DE CONTRIBUIÇÃO</span><span class="iv">${finPct(mcR)}</span><span class="ic">${finPct(mcP)} provisionando o Simples · premissa ${finPct(mcE)}</span></div>
+      <div><span class="il">CUSTO VARIÁVEL</span><span class="iv">${finPct(1-mcR)}</span><span class="ic">comissão ${finPct(pr(G('VARIAVEL').linhas[0].real))} + CMV ${finPct(pr(G('VARIAVEL').linhas[1].real))} · o Simples de 7,0% ainda não foi debitado</span></div>
+      <div><span class="il">CUSTO FIXO DO MÊS</span><span class="iv">${brl0(R.fixo_real)}</span><span class="ic">${finPct(pr(R.fixo_real))} da receita · esperado ${brl0(R.fixo_esp)}</span></div>
+      <div class="neg"><span class="il">MARGEM OPERACIONAL</span><span class="iv">${finPct(pr(R.res_real))}</span><span class="ic">${brl0(R.res_real)} no mês</span></div>
+    </div>
+
+    <div class="dre-wrap"><table class="dre">
+    <thead><tr><th>Linha</th><th colspan="2">Realizado</th><th colspan="2">Esperado</th><th>Desvio</th></tr></thead>
+    <tbody>
+    <tr class="dre-r"><td>RECEITA BRUTA DE SERVIÇOS</td>
+      <td>${brl(R.receita_real)}</td><td class="pc">100,0%</td>
+      <td>${brl(R.receita_meta)}</td><td class="pc">—</td>
+      <td><span class="dv-mau">${brl0(R.receita_real-R.receita_meta)}</span></td></tr>
+    ${grupo('VARIAVEL')}
+    ${sub('(=) Total de custos variáveis', R.var_real, R.var_esp)}
+    ${mrg('(=) MARGEM DE CONTRIBUIÇÃO', R.mc_real, R.mc_esp, 'o que sobra para pagar a estrutura · '+finPct(mcP)+' provisionando o Simples')}
+    ${grupo('PESSOAL')}
+    ${sub('Subtotal pessoal fixo', G('PESSOAL').sub_real, G('PESSOAL').sub_esp)}
+    ${grupo('OCUPACAO')}
+    ${sub('Subtotal ocupação', G('OCUPACAO').sub_real, G('OCUPACAO').sub_esp)}
+    ${grupo('COMERCIAL')}
+    ${sub('Subtotal comercial e franquia', G('COMERCIAL').sub_real, G('COMERCIAL').sub_esp)}
+    ${grupo('ABERTO')}
+    ${sub('(=) Total de custos fixos', R.fixo_real, R.fixo_esp)}
+    ${mrg('(=) RESULTADO OPERACIONAL', R.res_real, R.res_esp_mesma_receita, 'EBITDA do mês')}
+    </tbody></table></div>
+
+    <div class="dre-alerta">⚠️ <strong>${brl(R.provisoes_nao_debitadas)} do custo esperado não saiu do caixa</strong> — o Simples (${brl(0.07*R.receita_real)}) e o royalty mínimo (${brl(3500)}) não foram debitados em nenhum extrato. O resultado de ${brl0(R.res_real)} é o que a conta sentiu; provisionando os dois, o mês real é <strong>${brl0(R.res_real-R.provisoes_nao_debitadas)}</strong>.</div>
+
+    <div class="fin-fonte">Duas perdas somadas: <strong>${brl0(Math.abs(R.receita_real-R.receita_meta))} de receita que não veio</strong> e <strong>${brl0(R.custo_real-R.custo_esp)} de custo acima do previsto</strong>.
+    Com a estrutura do modelo, uma loja só empata em <strong>${brl0(R.be_modelo_1loja)}</strong>/mês — a meta de ${brl0(R.receita_meta)} deixaria apenas ${brl0(R.res_esp_na_meta)} de resultado.</div></div>`;
 
   // ---- ponto de equilibrio, simplificado ----
   const cen=E.cenarios.map(c=>{ const be=E.custo_fixo_mes/c.mc; return {...c, be, falta: be-E.fatura_hoje}; });
@@ -2413,63 +2479,102 @@ let MID = null;
 function renderMidias(){
   if(!MID) return;
   const gerado = new Date(MID.gerado_em).toLocaleDateString('pt-BR') + ' ' + new Date(MID.gerado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const M = MID.meta_ads;
+  const bench = MID.benchmarks || {};
 
   // Status das conexões
-  const st = MID;
   document.getElementById('midias-status').innerHTML = `<section class="card"><h2>🔌 Fontes conectadas</h2>
     <div class="cap">Gerado em ${gerado} · fonte: ${MID.fonte}</div>
     <div class="meta-row" style="margin-top:12px">
-      <div class="categ-tile"><div class="n">Meta Ads</div><div class="v" style="color:#22c55e">✅ ativo</div><div class="d">${MID.meta_ads.ad_account_nome} · ${MID.meta_ads.ad_account_id}</div></div>
-      <div class="categ-tile"><div class="n">Instagram</div><div class="v" style="color:#22c55e">✅ ativo</div><div class="d">@${MID.instagram.handle} · ${MID.instagram.followers.toLocaleString('pt-BR')} seguidores · ${MID.instagram.posts_total} posts</div></div>
+      <div class="categ-tile"><div class="n">Meta Ads</div><div class="v" style="color:#22c55e">✅ ativo</div><div class="d">${M.ad_account_nome} · ${M.ad_account_id}</div></div>
+      <div class="categ-tile"><div class="n">Instagram</div><div class="v" style="color:#22c55e">✅ básico</div><div class="d">@${MID.instagram.handle} · ${MID.instagram.followers.toLocaleString('pt-BR')} seguidores · ${MID.instagram.posts_total} posts</div></div>
       <div class="categ-tile"><div class="n">Google Ads</div><div class="v" style="color:${MID.google_ads.conectado?'#22c55e':'#f59e0b'}">${MID.google_ads.conectado?'✅ ativo':'⏳ pendente'}</div><div class="d">${MID.google_ads.mensagem||''}</div></div>
       <div class="categ-tile"><div class="n">HubSpot CRM</div><div class="v" style="color:#22c55e">✅ leitura</div><div class="d">Portal ${MID.hubspot.portal_id} · ${MID.hubspot.contatos} contatos</div></div>
       <div class="categ-tile"><div class="n">WhatsApp API</div><div class="v" style="color:${MID.whatsapp_cloud_api.conectado?'#22c55e':'#ef4444'}">${MID.whatsapp_cloud_api.conectado?'✅ ativo':'🚫 bloqueado'}</div><div class="d">${MID.whatsapp_cloud_api.mensagem||''}</div></div>
     </div></section>`;
 
-  // KPIs Meta Ads
-  const t15 = MID.meta_ads.totais_15d;
-  const t30 = MID.meta_ads.totais_30d;
-  const kpis = [
-    {label:'Gasto 15d',value:brl(t15.gasto),foot:'~'+brl(t15.gasto/15,0)+'/dia'},
-    {label:'Alcance único',value:t15.reach.toLocaleString('pt-BR'),foot:'pessoas'},
-    {label:'Impressões',value:t15.impressoes.toLocaleString('pt-BR'),foot:'exibições'},
-    {label:'Cliques',value:t15.cliques.toLocaleString('pt-BR'),foot:''},
-    {label:'CTR',value:t15.ctr_pct.toFixed(2)+'%',foot:'média salão ~0,9%',accent:t15.ctr_pct>=1?'up':''},
-    {label:'CPM',value:brl(t15.cpm),foot:'custo/1k impressões'},
-    {label:'CPC',value:brl(t15.cpc),foot:'custo/clique'},
-    {label:'Gasto 30d',value:brl(t30.gasto),foot:brl(t30.reach,0)+' de alcance'}
-  ];
-  renderKPIs('midias-kpis', kpis);
+  // KPI-ESTRELA em destaque + 3 períodos
+  const p7=M.por_periodo['7d'], p30=M.por_periodo['30d'], pmtd=M.por_periodo['mtd'];
+  const cpaColor = v => !v ? 'var(--muted)' : v <= bench.cpa_msg_meta*0.7 ? '#22c55e' : v <= bench.cpa_msg_meta ? '#3b82f6' : v <= bench.cpa_msg_meta*1.3 ? '#f59e0b' : '#ef4444';
+  const freqColor = v => v < 2 ? '#22c55e' : v < 2.7 ? '#3b82f6' : v < 3 ? '#f59e0b' : '#ef4444';
 
-  // Ranking de campanhas
-  const statusColor = s => ({escalar:'#22c55e', manter:'#3b82f6', otimizar:'#f59e0b', revisar:'#f59e0b', matar:'#ef4444'})[s] || 'var(--muted)';
-  const statusLabel = s => ({escalar:'📈 escalar', manter:'✅ manter', otimizar:'🔧 otimizar', revisar:'👀 revisar', matar:'🛑 matar'})[s] || s;
-  const camp = MID.meta_ads.top_campanhas_15d;
-  document.getElementById('midias-campanhas').innerHTML = `<section class="card"><h2>🎯 Top campanhas · últimos 15 dias</h2>
-    <div class="cap">Ordenadas por CTR. Ação recomendada na última coluna.</div>
-    <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12.5px;border-collapse:collapse">
+  const periodoBlock = (p, kpi_estrela) => `<div style="background:var(--surface-2);border-radius:8px;padding:14px">
+    <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">${p.label}</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:12px">
+      <div><div style="color:var(--ink-3);font-size:10.5px">Gasto</div><div style="font-weight:700;font-size:15px">${brl(p.gasto)}</div><div style="color:var(--ink-3);font-size:10px">${brl(p.gasto/((new Date(p.fim)-new Date(p.inicio))/86400000+1),0)}/dia</div></div>
+      <div><div style="color:var(--ink-3);font-size:10.5px">Alcance</div><div style="font-weight:700;font-size:15px">${p.reach.toLocaleString('pt-BR')}</div><div style="color:var(--ink-3);font-size:10px">pessoas únicas</div></div>
+      <div><div style="color:var(--ink-3);font-size:10.5px">CTR</div><div style="font-weight:700;font-size:15px;color:${p.ctr_pct>=bench.ctr_meta?'#22c55e':'#f59e0b'}">${p.ctr_pct.toFixed(2)}%</div><div style="color:var(--ink-3);font-size:10px">meta ${bench.ctr_meta}%</div></div>
+      <div><div style="color:var(--ink-3);font-size:10.5px">CPM</div><div style="font-weight:700;font-size:15px;color:${p.cpm<=bench.cpm_meta?'#22c55e':'#f59e0b'}">${brl(p.cpm)}</div><div style="color:var(--ink-3);font-size:10px">meta ≤${brl(bench.cpm_meta)}</div></div>
+      <div><div style="color:var(--ink-3);font-size:10.5px">CPC</div><div style="font-weight:700;font-size:15px">${brl(p.cpc)}</div><div style="color:var(--ink-3);font-size:10px">todos cliques</div></div>
+      <div><div style="color:var(--ink-3);font-size:10.5px">Frequência</div><div style="font-weight:700;font-size:15px;color:${freqColor(p.frequency)}">${p.frequency.toFixed(2)}</div><div style="color:var(--ink-3);font-size:10px">alerta ≥${bench.frequency_alerta}</div></div>
+      ${kpi_estrela ? `<div style="grid-column:span 2;padding-left:10px;border-left:2px solid #22c55e">
+        <div style="color:#22c55e;font-size:10.5px;font-weight:700;text-transform:uppercase">⭐ CPA MSG</div>
+        <div style="font-weight:700;font-size:22px;color:${cpaColor(p.cpa_msg)}">${p.cpa_msg?brl(p.cpa_msg):'—'}</div>
+        <div style="color:var(--ink-3);font-size:10px">custo/conversa WA · meta ≤${brl(bench.cpa_msg_meta)}</div>
+      </div>` : ''}
+    </div>
+  </div>`;
+
+  document.getElementById('midias-kpis').innerHTML = `<section class="card">
+    <h2>📊 KPIs Meta Ads · múltiplos horizontes</h2>
+    <div class="cap"><strong>KPI-estrela:</strong> ${MID.kpi_estrela.explicacao}</div>
+    <div style="display:grid;gap:12px;margin-top:14px">
+      ${periodoBlock(p7, true)}
+      ${periodoBlock(p30, true)}
+      ${periodoBlock(pmtd, false)}
+    </div>
+  </section>`;
+
+  // Breakdown por objetivo (30d)
+  const obj = M.por_objetivo_30d || [];
+  document.getElementById('midias-campanhas').innerHTML = `<section class="card"><h2>🎯 Alocação de orçamento por objetivo · 30d</h2>
+    <div class="cap">Onde o dinheiro está indo. Cada objetivo tem KPI diferente.</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px">
+      ${obj.map(o=>`<div style="background:var(--surface-2);border-radius:8px;padding:14px">
+        <div style="font-size:11.5px;color:var(--ink-3);text-transform:uppercase;font-weight:600">${o.objetivo}</div>
+        <div style="font-size:24px;font-weight:700;margin:6px 0">${brl(o.gasto)}</div>
+        <div style="font-size:11px;color:var(--ink-3)">${o.share_gasto_pct}% do gasto · ${o.impressoes.toLocaleString('pt-BR')} impr · CTR ${o.ctr_pct.toFixed(2)}%</div>
+        <div style="font-size:11.5px;color:var(--ink-2);margin-top:8px;font-style:italic">${o.insight}</div>
+      </div>`).join('')}
+    </div>
+
+    <h2 style="margin-top:22px">🏆 Ranking de campanhas · 30d (por CPA MSG)</h2>
+    <div class="cap">Ordenadas do melhor CPA (barato) pro pior. Cor da ação = decisão recomendada.</div>
+    <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
       <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
         <th style="text-align:left;padding:8px">Campanha</th>
         <th style="text-align:right;padding:8px">Gasto</th>
-        <th style="text-align:right;padding:8px">Impr.</th>
-        <th style="text-align:right;padding:8px">Cliques</th>
+        <th style="text-align:right;padding:8px">Reach</th>
+        <th style="text-align:right;padding:8px">Freq</th>
         <th style="text-align:right;padding:8px">CTR</th>
         <th style="text-align:right;padding:8px">CPM</th>
         <th style="text-align:right;padding:8px">CPC</th>
+        <th style="text-align:right;padding:8px">⭐ CPA MSG</th>
         <th style="text-align:center;padding:8px">Ação</th>
       </tr></thead>
       <tbody>
-      ${camp.sort((a,b)=>b.ctr_pct-a.ctr_pct).map(c=>`<tr style="border-bottom:1px solid var(--surface-2)">
-        <td style="padding:8px"><strong>${c.nome}</strong><br><span style="color:var(--ink-3);font-size:11px">${c.objetivo}</span></td>
+      ${M.top_campanhas_30d.slice().sort((a,b)=>{
+        if(a.cpa_msg==null && b.cpa_msg==null) return 0;
+        if(a.cpa_msg==null) return 1;
+        if(b.cpa_msg==null) return -1;
+        return a.cpa_msg-b.cpa_msg;
+      }).map(c=>{
+        const stColor = ({escalar:'#22c55e', manter:'#3b82f6', otimizar:'#f59e0b', revisar:'#f59e0b', matar:'#ef4444'})[c.status]||'var(--muted)';
+        const stLabel = ({escalar:'📈 escalar', manter:'✅ manter', otimizar:'🔧 otimizar', revisar:'👀 revisar', matar:'🛑 matar'})[c.status]||c.status;
+        return `<tr style="border-bottom:1px solid var(--surface-2)">
+        <td style="padding:8px"><strong>${c.nome}</strong><br><span style="color:var(--ink-3);font-size:10.5px">${c.objetivo}</span></td>
         <td style="text-align:right;padding:8px">${brl(c.gasto)}</td>
-        <td style="text-align:right;padding:8px">${c.impressoes.toLocaleString('pt-BR')}</td>
-        <td style="text-align:right;padding:8px">${c.cliques.toLocaleString('pt-BR')}</td>
-        <td style="text-align:right;padding:8px"><strong>${c.ctr_pct.toFixed(2)}%</strong></td>
+        <td style="text-align:right;padding:8px">${c.reach.toLocaleString('pt-BR')}</td>
+        <td style="text-align:right;padding:8px;color:${freqColor(c.frequency)}">${c.frequency.toFixed(2)}</td>
+        <td style="text-align:right;padding:8px">${c.ctr_pct.toFixed(2)}%</td>
         <td style="text-align:right;padding:8px">${brl(c.cpm)}</td>
-        <td style="text-align:right;padding:8px">${brl(c.cpc)}</td>
-        <td style="text-align:center;padding:8px"><span style="color:${statusColor(c.status)};font-weight:600">${statusLabel(c.status)}</span></td>
-      </tr>`).join('')}
-      </tbody></table></div></section>`;
+        <td style="text-align:right;padding:8px">${c.cpc?brl(c.cpc):'—'}</td>
+        <td style="text-align:right;padding:8px;font-weight:700;color:${cpaColor(c.cpa_msg)}">${c.cpa_msg?brl(c.cpa_msg):'—'}</td>
+        <td style="text-align:center;padding:8px"><span style="color:${stColor};font-weight:600;font-size:11px">${stLabel}</span></td>
+      </tr>`;
+      }).join('')}
+      </tbody></table></div>
+    </section>`;
 
   // Recomendações
   const sev={crit:'🔴',warn:'🟡',ok:'🟢'};
@@ -2483,12 +2588,13 @@ function renderMidias(){
     </div>`;
 
   // Insights narrativos
+  const mdBold = t => t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
   document.getElementById('midias-insights').innerHTML = `<div class="card"><h2>🧠 Insights da semana</h2>
-    <ul style="margin:8px 0 0 20px;line-height:1.7;color:var(--ink-2)">
-      ${MID.insights_narrativa.map(t=>`<li>${t}</li>`).join('')}
+    <ul style="margin:8px 0 0 20px;line-height:1.8;color:var(--ink-2)">
+      ${MID.insights_narrativa.map(t=>`<li>${mdBold(t)}</li>`).join('')}
     </ul>
     <div style="margin-top:16px;padding:12px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-3)">
-      Próxima atualização: rodar <code>/marketing-fast atualizar aba midias</code> — sistema puxa Meta+IG do Supermetrics e regenera este JSON.
+      Próxima atualização: rodar <code>/marketing-fast atualizar aba midias</code> — regenera este JSON com dados frescos do Supermetrics.
     </div>
     </div>`;
 }

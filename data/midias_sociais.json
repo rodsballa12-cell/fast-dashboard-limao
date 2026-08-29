@@ -1,54 +1,86 @@
 {
-  "gerado_em": "2026-08-29T14:00:00-03:00",
-  "fonte": "Supermetrics MCP (Meta Ads + Instagram Insights)",
-  "periodo_15d": {
-    "inicio": "2026-08-15",
-    "fim": "2026-08-29",
-    "dias": 15
+  "gerado_em": "2026-08-29T15:15:00-03:00",
+  "fonte": "Supermetrics MCP · Meta Ads + Instagram Insights",
+  "kpi_estrela": {
+    "nome": "Custo por conversa iniciada (WhatsApp)",
+    "campo": "cost_per_new_messaging_conversation",
+    "explicacao": "Métrica-chave para o negócio FAST: mede quanto custa fazer um lead abrir conversa no WhatsApp — proxy do CAC até tracking de agendamento estar ativo."
   },
   "instagram": {
     "handle": "fastescova.limao",
     "followers": 1732,
     "posts_total": 31,
-    "url": "https://www.instagram.com/fastescova.limao/"
+    "url": "https://www.instagram.com/fastescova.limao/",
+    "pendente": "Métricas diárias (novos seguidores, alcance por post, engagement rate) bloqueadas por scope FB Login. Reconectar com instagram_manage_insights."
   },
   "meta_ads": {
     "ad_account_id": "act_1310973560614050",
     "ad_account_nome": "FE - LIMÃO",
-    "totais_15d": {
-      "gasto": 1204.47,
-      "impressoes": 148703,
-      "cliques": 2159,
-      "ctr_pct": 1.45,
-      "cpm": 8.10,
-      "cpc": 0.56,
-      "reach": 77404
+    "por_periodo": {
+      "7d": {
+        "label": "Últimos 7 dias",
+        "inicio": "2026-08-23",
+        "fim": "2026-08-29",
+        "gasto": 544.41,
+        "impressoes": 64600,
+        "cliques": 887,
+        "reach": 42332,
+        "frequency": 1.53,
+        "ctr_pct": 1.37,
+        "cpm": 8.43,
+        "cpc": 0.61,
+        "cpa_msg": 8.25
+      },
+      "30d": {
+        "label": "Últimos 30 dias",
+        "inicio": "2026-07-30",
+        "fim": "2026-08-29",
+        "gasto": 2730.22,
+        "impressoes": 331132,
+        "cliques": 5067,
+        "reach": 116145,
+        "frequency": 2.85,
+        "ctr_pct": 1.53,
+        "cpm": 8.25,
+        "cpc": 0.54,
+        "cpa_msg": 6.19
+      },
+      "mtd": {
+        "label": "Mês atual (Ago/2026)",
+        "inicio": "2026-08-01",
+        "fim": "2026-08-29",
+        "gasto": 2565.31,
+        "impressoes": 311004,
+        "cliques": 4770,
+        "reach": 112167,
+        "frequency": 2.77,
+        "ctr_pct": 1.53,
+        "cpm": 8.25,
+        "cpc": 0.54
+      }
     },
-    "totais_30d": {
-      "gasto": 2730.22,
-      "impressoes": 331132,
-      "cliques": 5067,
-      "ctr_pct": 1.53,
-      "cpm": 8.25,
-      "cpc": 0.54,
-      "reach": 116145
-    },
-    "top_campanhas_15d": [
-      {"nome": "[MSG] [COMBO SEMANAL] 110826", "objetivo": "ENGAJAMENTO", "gasto": 191.39, "impressoes": 9914, "cliques": 424, "ctr_pct": 4.28, "cpm": 19.31, "cpc": 0.45, "status": "escalar"},
-      {"nome": "[MSG] [PLÁSTICA] 040826", "objetivo": "ENGAJAMENTO", "gasto": 190.63, "impressoes": 13098, "cliques": 511, "ctr_pct": 3.90, "cpm": 14.55, "cpc": 0.37, "status": "escalar"},
-      {"nome": "[MSG] [RETOQUE] 280726", "objetivo": "ENGAJAMENTO", "gasto": 193.72, "impressoes": 8557, "cliques": 231, "ctr_pct": 2.70, "cpm": 22.64, "cpc": 0.84, "status": "revisar"},
-      {"nome": "Post IG Reels FAST OFICIAL", "objetivo": "LINK_CLICKS", "gasto": 144.57, "impressoes": 16660, "cliques": 412, "ctr_pct": 2.47, "cpm": 8.68, "cpc": 0.35, "status": "manter"},
-      {"nome": "[BRANDING] 110826", "objetivo": "AWARENESS", "gasto": 115.96, "impressoes": 70641, "cliques": 141, "ctr_pct": 0.20, "cpm": 1.64, "cpc": 0.82, "status": "manter"},
-      {"nome": "[VAGA ESCOVISTA] 200726", "objetivo": "ENGAJAMENTO", "gasto": 76.23, "impressoes": 6773, "cliques": 114, "ctr_pct": 1.68, "cpm": 11.26, "cpc": 0.67, "status": "manter"},
-      {"nome": "[VAGA MAQUIADOR] 220726", "objetivo": "ENGAJAMENTO", "gasto": 75.84, "impressoes": 7530, "cliques": 92, "ctr_pct": 1.22, "cpm": 10.07, "cpc": 0.82, "status": "otimizar"},
-      {"nome": "[VAGA MANICURE] 220726", "objetivo": "ENGAJAMENTO", "gasto": 75.54, "impressoes": 7138, "cliques": 116, "ctr_pct": 1.63, "cpm": 10.58, "cpc": 0.65, "status": "manter"},
-      {"nome": "[MSG] [COMBOS 1,2,3] 210826", "objetivo": "ENGAJAMENTO", "gasto": 70.66, "impressoes": 4017, "cliques": 64, "ctr_pct": 1.59, "cpm": 17.59, "cpc": 1.10, "status": "otimizar"},
-      {"nome": "[MSG] [COMBOS 4 E 5] 210826", "objetivo": "ENGAJAMENTO", "gasto": 69.30, "impressoes": 4051, "cliques": 54, "ctr_pct": 1.33, "cpm": 17.11, "cpc": 1.28, "status": "matar"}
+    "por_objetivo_30d": [
+      {"objetivo": "ENGAJAMENTO (MSG)", "gasto": 2142.09, "share_gasto_pct": 78.5, "impressoes": 131378, "cliques": 3753, "ctr_pct": 2.86, "cpm": 16.30, "insight": "Coração da captação — puxa WhatsApp"},
+      {"objetivo": "LINK CLICKS (Post IG)", "gasto": 314.19, "share_gasto_pct": 11.5, "impressoes": 31898, "cliques": 870, "ctr_pct": 2.73, "cpm": 9.85, "insight": "Reels boostado — bom engajamento"},
+      {"objetivo": "AWARENESS (Branding)", "gasto": 273.94, "share_gasto_pct": 10.0, "impressoes": 167856, "cliques": 444, "ctr_pct": 0.26, "cpm": 1.63, "insight": "CPM baixíssimo — construção de marca eficiente"}
+    ],
+    "top_campanhas_30d": [
+      {"nome": "[MSG] [VAGA MANICURE] 220726", "objetivo": "ENGAJAMENTO", "gasto": 176.19, "reach": 8064, "cliques": 292, "ctr_pct": 1.93, "cpm": 11.67, "cpc": 0.60, "frequency": 1.87, "cpa_msg": 3.39, "status": "escalar"},
+      {"nome": "[MSG] [VAGA ESCOVISTA] 200726", "objetivo": "ENGAJAMENTO", "gasto": 175.69, "reach": 8852, "cliques": 287, "ctr_pct": 1.99, "cpm": 12.17, "cpc": 0.61, "frequency": 1.63, "cpa_msg": 3.51, "status": "manter"},
+      {"nome": "[MSG] [PLÁSTICA] 040826", "objetivo": "ENGAJAMENTO", "gasto": 477.70, "reach": 14041, "cliques": 1315, "ctr_pct": 4.05, "cpm": 14.73, "cpc": 0.36, "frequency": 2.31, "cpa_msg": 3.56, "status": "escalar"},
+      {"nome": "[MSG] [VAGA MAQUIADOR] 220726", "objetivo": "ENGAJAMENTO", "gasto": 173.90, "reach": 8908, "cliques": 215, "ctr_pct": 1.33, "cpm": 10.78, "cpc": 0.81, "frequency": 1.81, "cpa_msg": 3.70, "status": "manter"},
+      {"nome": "[MSG] [COMBO SEMANAL] 110826", "objetivo": "ENGAJAMENTO", "gasto": 262.08, "reach": 5876, "cliques": 613, "ctr_pct": 4.56, "cpm": 19.49, "cpc": 0.43, "frequency": 2.29, "cpa_msg": 6.39, "status": "escalar"},
+      {"nome": "[MSG] [RETOQUE] 280726", "objetivo": "ENGAJAMENTO", "gasto": 736.57, "reach": 12765, "cliques": 913, "ctr_pct": 2.88, "cpm": 23.20, "cpc": 0.81, "frequency": 2.49, "cpa_msg": 7.67, "status": "revisar"},
+      {"nome": "[MSG] [COMBOS 1,2,3] 210826", "objetivo": "ENGAJAMENTO", "gasto": 70.66, "reach": 1828, "cliques": 64, "ctr_pct": 1.59, "cpm": 17.59, "cpc": 1.10, "frequency": 2.20, "cpa_msg": 8.83, "status": "otimizar"},
+      {"nome": "[MSG] [COMBOS 4 E 5] 210826", "objetivo": "ENGAJAMENTO", "gasto": 69.30, "reach": 1828, "cliques": 54, "ctr_pct": 1.33, "cpm": 17.11, "cpc": 1.28, "frequency": 2.22, "cpa_msg": 17.33, "status": "matar"},
+      {"nome": "Post IG Reels FAST OFICIAL", "objetivo": "LINK_CLICKS", "gasto": 314.19, "reach": 16286, "cliques": 870, "ctr_pct": 2.73, "cpm": 9.85, "cpc": 0.36, "frequency": 1.96, "cpa_msg": 34.91, "status": "manter"},
+      {"nome": "[BRANDING] 270726", "objetivo": "AWARENESS", "gasto": 123.68, "reach": 42864, "cliques": 249, "ctr_pct": 0.33, "cpm": 1.64, "cpc": 0.50, "frequency": 1.76, "cpa_msg": null, "status": "manter"},
+      {"nome": "[BRANDING] 110826", "objetivo": "AWARENESS", "gasto": 149.63, "reach": 47503, "cliques": 195, "ctr_pct": 0.21, "cpm": 1.63, "cpc": 0.77, "frequency": 1.94, "cpa_msg": null, "status": "manter"}
     ]
   },
   "google_ads": {
     "conectado": false,
-    "mensagem": "Aguardando acesso Google Ads"
+    "mensagem": "Aguardando login Google Ads"
   },
   "hubspot": {
     "portal_id": "51943728",
@@ -57,20 +89,33 @@
   },
   "whatsapp_cloud_api": {
     "conectado": false,
-    "mensagem": "Aguardando Meta Developer app (SMS travou)"
+    "mensagem": "Aguardando app Meta Developer (WhatsApp Business Cloud API)"
+  },
+  "benchmarks": {
+    "cpa_msg_meta": 8.00,
+    "cpa_msg_atual_30d": 6.19,
+    "ctr_meta": 1.5,
+    "ctr_atual_30d": 1.53,
+    "cpm_meta": 12.0,
+    "cpm_atual_30d": 8.25,
+    "frequency_alerta": 3.0,
+    "frequency_atual_30d": 2.85
   },
   "recomendacoes": [
-    {"sev": "ok", "titulo": "Escalar [COMBO SEMANAL] e [PLÁSTICA]", "detalhe": "CTR 4,28% e 3,90% — melhores do 15d. Aumentar orçamento +30%.", "acao": "Aprovar escala Meta Ads"},
-    {"sev": "warn", "titulo": "Matar [COMBOS 4 E 5]", "detalhe": "CTR 1,33% e CPC R$ 1,28 — pior campanha ativa. Duas semanas com performance abaixo.", "acao": "Pausar ou trocar criativo"},
-    {"sev": "warn", "titulo": "Refazer [COMBOS 1,2,3]", "detalhe": "CTR 1,59% e CPC R$ 1,10. Nome numérico converte menos que nome específico (COMBO SEMANAL).", "acao": "Trocar copy usando modelo COMBO SEMANAL"},
-    {"sev": "ok", "titulo": "Manter [BRANDING]", "detalhe": "CPM R$ 1,64 é excelente. Alcança 46k pessoas por R$ 116.", "acao": "Nenhuma"},
-    {"sev": "crit", "titulo": "Configurar Pixel/CAPI Trinks→Meta", "detalhe": "Sem tracking de conversão, ROAS é impossível de medir. Priorizar para próximo mês.", "acao": "Setup Meta Pixel + CAPI via Trinks"},
-    {"sev": "warn", "titulo": "Reconectar IG com scope insights", "detalhe": "Métricas diárias (novos seguidores, alcance por post) bloqueadas por scope FB Login.", "acao": "Reautorizar Instagram Insights no Supermetrics"}
+    {"sev": "ok", "titulo": "Escalar [PLÁSTICA] e [COMBO SEMANAL] +30%", "detalhe": "CPA MSG R$ 3,56 e R$ 6,39. CTR 4,05% e 4,56% — os melhores da conta. Escalar +30% orçamento diário mantendo criativo.", "acao": "Aprovar escala"},
+    {"sev": "crit", "titulo": "🛑 Matar [COMBOS 4 E 5] IMEDIATAMENTE", "detalhe": "CPA MSG R$ 17,33 — 2,8x acima da média (R$ 6,19) e 2,2x acima da meta (R$ 8). CTR 1,33% (pior).", "acao": "Pausar hoje"},
+    {"sev": "warn", "titulo": "Refazer [COMBOS 1,2,3] com naming FAST", "detalhe": "CPA MSG R$ 8,83 vs R$ 6,39 do COMBO SEMANAL. Nome numérico não converte. Trocar por copies como 'COMBO SPA+ESCOVA' ou 'COMBO REVITALIZAÇÃO'.", "acao": "Trocar criativo semana que vem"},
+    {"sev": "warn", "titulo": "Revisar [RETOQUE] — CPM caro", "detalhe": "CPM R$ 23,20 é o mais alto (2,8x a média). Público muito nichado ou lance alto. Testar audiência mais ampla.", "acao": "Ajustar targeting"},
+    {"sev": "ok", "titulo": "Manter estratégia de vagas", "detalhe": "3 vagas (MANICURE/ESCOVISTA/MAQUIADOR) com CPA R$ 3,39-3,70 — top eficiência da conta. Público 'quem procura emprego' é super engajado.", "acao": "Manter"},
+    {"sev": "warn", "titulo": "Frequência 30d = 2,85 — atenção", "detalhe": "Alerta em 3,0. Próximas 2 semanas atingirá fadiga. Preparar rotação de criativos.", "acao": "Produzir 3 novos criativos até 05/09"},
+    {"sev": "crit", "titulo": "P1: Configurar Pixel/CAPI Trinks→Meta", "detalhe": "Hoje só medimos 'conversa iniciada' (CPA MSG). Sem tracking de agendamento e receita, ROAS é impossível. Prioridade máxima do próximo mês.", "acao": "Setup Meta Pixel + CAPI via Trinks"}
   ],
   "insights_narrativa": [
-    "Semana 15/08-29/08: R$ 1.204 investidos, CTR 1,45% acima da média salão (0,9%), CPC R$ 0,56 (bom).",
-    "Nomes específicos batem numéricos 2-3x: [COMBO SEMANAL] (4,28%) vs [COMBOS 1,2,3] (1,59%).",
-    "Reels convertem tão bem quanto MSG dedicada — investir mais em formato Reels.",
-    "Vagas rodam bem (CTR 1,2-1,7%) — captação profissional ativa e eficiente."
+    "**KPI-estrela do FAST = Custo por conversa iniciada (CPA MSG)**. Hoje R$ 6,19 no 30d — 23% abaixo da meta R$ 8. Excelente.",
+    "**Vagas de emprego são o segmento mais eficiente** (CPA R$ 3-4). Manter enquanto contratação está aberta.",
+    "**Nomes específicos batem numéricos 2-3x** — [COMBO SEMANAL] (CPA R$ 6,39) vs [COMBOS 4 E 5] (CPA R$ 17,33). Padrão claro: nomes que descrevem benefício convertem.",
+    "**BRANDING não é pra converter — é pra reach**. CPM R$ 1,63 alcança 90k pessoas por R$ 274/mês. Impossível ganhar isso em MSG.",
+    "**Frequência 2,85 no 30d** = pessoas viram anúncio 2,85x cada. Ainda saudável, mas em 2 semanas vai bater 3,0 (fadiga). Rotacionar criativos.",
+    "**Post IG Reels 'FAST OFICIAL' teve CPA MSG R$ 34,91** — não converte em conversa porque objetivo é LINK_CLICKS. Serve pra branding + engajamento, não pra vendas diretas."
   ]
 }
