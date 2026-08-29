@@ -1,10 +1,10 @@
 {
- "gerado_em": "2026-08-29T15:51:35-03:00",
+ "gerado_em": "2026-08-29T15:59:18-03:00",
  "baseline": "2026-08-28",
  "kpis": {
   "caixa_conta": 5060.93,
   "a_receber_stone": 20742.9,
-  "resultado_mes": -23230.46,
+  "resultado_mes": -60185.56,
   "receita_mes": 36955.1,
   "meta_mes": 60000.0
  },
@@ -25,8 +25,14 @@
     "nota": "R$ 6.500/mês"
    },
    {
+    "cat": "Folha CLT — limpeza",
+    "real": 2000,
+    "esp": 0.0,
+    "nota": "não estava previsto no modelo · sem FGTS/DAS no razão"
+   },
+   {
     "cat": "Vale-transporte",
-    "real": 709.6,
+    "real": 812.6,
     "esp": 0.0,
     "nota": "não estava previsto no modelo"
    },
@@ -74,9 +80,9 @@
    },
    {
     "cat": "Outros ainda a classificar",
-    "real": 4468.43,
+    "real": 2365.43,
     "esp": 0.0,
-    "nota": "R$ 2.103 da Adriana + 13 pessoas de menor valor + R$ 265 diversos"
+    "nota": "13 pessoas de menor valor + R$ 265 de diversos"
    }
   ],
   "custo_real": 56685.560000000005,
@@ -164,10 +170,10 @@
   },
   {
    "p": 5,
-   "sev": "warn",
-   "titulo": "Adriana de Souza Angelico — R$ 2.103 sem classificação",
-   "detalhe": "Três pagamentos em agosto (R$ 1.200, R$ 800 e R$ 103) a uma pessoa que não consta no cadastro de profissionais do Trinks. É o maior item que restou sem natureza definida, e sozinha responde por metade dos R$ 4.468 ainda em aberto.",
-   "acao": "Definir o que é: equipe, prestador ou reembolso. Depois disso o P&L de agosto fecha."
+   "sev": "crit",
+   "titulo": "Nenhum encargo de folha aparece no razão",
+   "detalhe": "Há uma funcionária CLT na limpeza, mas não existe um único pagamento de FGTS, INSS, DAS ou eSocial em nenhum mês. Só o salário líquido sai da conta. Com encargos e provisões de 13º e férias, o custo dela é cerca de R$ 2.549/mês, não R$ 2.000.",
+   "acao": "Conferir com o contador onde os encargos estão sendo pagos. Se não estiverem, há passivo trabalhista e fiscal correndo."
   },
   {
    "p": 6,

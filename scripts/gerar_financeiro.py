@@ -33,7 +33,8 @@ def main():
     rec = v(L, "C6")
     comissao = -v(L, "C15")
     gerente = -v(L, "C16")
-    vt = -v(L, "C17")
+    clt = -v(L, "C17")
+    vt = -v(L, "C18")
     demais = -v(L, "C29")
     custo_total = -v(L, "C33")
     resultado = v(L, "C34")
@@ -43,6 +44,7 @@ def main():
     esp = [
         ("Comissão sobre produção", comissao, PREM["comissao"] * rec, "32% da receita — premissa Pack v3"),
         ("Gerente — fixo", gerente, PREM["gerente"], "R$ 6.500/mês"),
+        ("Folha CLT — limpeza", clt, 0.0, "não estava previsto no modelo · sem FGTS/DAS no razão"),
         ("Vale-transporte", vt, 0.0, "não estava previsto no modelo"),
         ("Aluguel + IPTU", 19886.18, PREM["aluguel"], "R$ 18.000/mês na premissa"),
         ("Marketing", 2650.00, PREM["midia"] + PREM["beleza_boost"], "inclui R$ 750 da gravação da inauguração"),
@@ -51,7 +53,7 @@ def main():
         ("Royalty + marketing local", 0.0, PREM["royalty_min"] + PREM["mkt_local"], "mínimo contratual — ainda não debitado"),
         ("Utilidades, telecom e consumo", 2851.01, None, "sem premissa no modelo"),
         ("Seguro do imóvel", 594.98, None, "sem premissa no modelo"),
-        ("Outros ainda a classificar", 4468.43, 0.0, "R$ 2.103 da Adriana + 13 pessoas de menor valor + R$ 265 diversos"),
+        ("Outros ainda a classificar", 2365.43, 0.0, "13 pessoas de menor valor + R$ 265 de diversos"),
     ]
     esp_total = sum(e[2] for e in esp if e[2] is not None)
     real_total = sum(e[1] for e in esp)
@@ -117,9 +119,9 @@ def main():
             {"p": 4, "sev": "crit", "titulo": "Faturamento a 61,6% da meta",
              "detalhe": "R$ 36.955 contra R$ 60.000. Na meta, com a estrutura de custo do modelo, o mês fecharia positivo — o problema é tanto de receita quanto de custo.",
              "acao": "Puxar ocupação: 503 atendimentos em 25 dias com 12 profissionais ativos é baixa densidade."},
-            {"p": 5, "sev": "warn", "titulo": "Adriana de Souza Angelico — R$ 2.103 sem classificação",
-             "detalhe": "Três pagamentos em agosto (R$ 1.200, R$ 800 e R$ 103) a uma pessoa que não consta no cadastro de profissionais do Trinks. É o maior item que restou sem natureza definida, e sozinha responde por metade dos R$ 4.468 ainda em aberto.",
-             "acao": "Definir o que é: equipe, prestador ou reembolso. Depois disso o P&L de agosto fecha."},
+            {"p": 5, "sev": "crit", "titulo": "Nenhum encargo de folha aparece no razão",
+             "detalhe": "Há uma funcionária CLT na limpeza, mas não existe um único pagamento de FGTS, INSS, DAS ou eSocial em nenhum mês. Só o salário líquido sai da conta. Com encargos e provisões de 13º e férias, o custo dela é cerca de R$ 2.549/mês, não R$ 2.000.",
+             "acao": "Conferir com o contador onde os encargos estão sendo pagos. Se não estiverem, há passivo trabalhista e fiscal correndo."},
             {"p": 6, "sev": "warn", "titulo": "Pronampe: R$ 190.000 entraram, mas quem paga é PF",
              "detalhe": "Os R$ 190.000 caíram na conta da empresa em 23/04, vindos da Opinião. Se as 48 parcelas são pagas por pessoa física, a empresa não tem essa dívida — o valor é aporte, não empréstimo.",
              "acao": "Classificar a entrada com o contador: mútuo do sócio, AFAC ou capital. Hoje o painel mostra R$ 223.853 de passivo que a empresa não paga."},
