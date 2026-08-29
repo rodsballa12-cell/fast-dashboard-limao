@@ -2388,7 +2388,7 @@ function renderFinanceiro(){
   document.getElementById('fin-kpis').innerHTML='<section class="kpi-grid fin5">'+[
     kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), 'Conta corrente da PJ · posição de 28/08', null),
     kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), 'Vendas ainda não liquidadas', null),
-    kpiCard('k3','RESULTADO DO MÊS', brl0(k.resultado_mes), 'Já com o royalty mínimo provisionado', null),
+    kpiCard('k3','RESULTADO DO MÊS', brl0(k.resultado_mes), brl0(k.resultado_mes_provisionado)+' provisionando o Simples e o royalty', null),
     kpiCard('k4','FATURAMENTO × META', finPct(atg), brl0(k.receita_mes)+' de '+brl0(k.meta_mes)+' · faltaram '+brl0(k.meta_mes-k.receita_mes), null),
     kpiCard('k5 kpi-be','FALTA PARA EMPATAR', brl0(beFalta), beBar, null),
   ].join('')+'</section>';

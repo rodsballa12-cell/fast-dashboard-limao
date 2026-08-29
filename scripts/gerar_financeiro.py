@@ -37,9 +37,8 @@ def main():
     clt_lim = -v(L, "C18")
     vt = -v(L, "C19")
     demais = -v(L, "C29")
-    custo_total = -v(L, "C33")
-    resultado = v(L, "C34")
-    royalty = 3500.00
+    # resultado NAO e lido de celula fixa: as linhas do P&L mudam quando entra
+    # uma categoria nova. E calculado abaixo, a partir das proprias linhas da DRE.
 
     # ---- DRE executiva: custos agrupados por natureza ----
     # esperado = premissas do modelo aplicadas a receita REALIZADA
@@ -108,7 +107,8 @@ def main():
         "kpis": {
             "caixa_conta": 5060.93,
             "a_receber_stone": 20742.90,
-            "resultado_mes": resultado - royalty,
+            "resultado_mes": caixa_real,
+            "resultado_mes_provisionado": caixa_real - prov,
             "receita_mes": rec,
             "meta_mes": META_MES,
         },
