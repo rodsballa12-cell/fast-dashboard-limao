@@ -33,8 +33,9 @@ def main():
     rec = v(L, "C6")
     comissao = -v(L, "C15")
     gerente = -v(L, "C16")
-    clt = -v(L, "C17")
-    vt = -v(L, "C18")
+    clt_rec = -v(L, "C17")
+    clt_lim = -v(L, "C18")
+    vt = -v(L, "C19")
     demais = -v(L, "C29")
     custo_total = -v(L, "C33")
     resultado = v(L, "C34")
@@ -44,7 +45,8 @@ def main():
     esp = [
         ("Comissão sobre produção", comissao, PREM["comissao"] * rec, "32% da receita — premissa Pack v3"),
         ("Gerente — fixo", gerente, PREM["gerente"], "R$ 6.500/mês"),
-        ("Folha CLT — limpeza", clt, 0.0, "não estava previsto no modelo · sem FGTS/DAS no razão"),
+        ("Folha CLT — recepção (2 pessoas)", clt_rec, 0.0, "não estava previsto no modelo"),
+        ("Folha CLT — limpeza", clt_lim, 0.0, "não estava previsto no modelo"),
         ("Vale-transporte", vt, 0.0, "não estava previsto no modelo"),
         ("Aluguel + IPTU", 19886.18, PREM["aluguel"], "R$ 18.000/mês na premissa"),
         ("Marketing", 2650.00, PREM["midia"] + PREM["beleza_boost"], "inclui R$ 750 da gravação da inauguração"),
@@ -87,8 +89,8 @@ def main():
             "fatura_hoje": rec,
             "custo_fixo_mes": FIXO,
             "cenarios": [
-                {"nome": "Com a comissão de hoje", "comissao": 0.4444, "mc": 1 - 0.4444 - 0.06 - 0.07},
-                {"nome": "Se a comissão voltar a 32%", "comissao": 0.32, "mc": 1 - 0.32 - 0.06 - 0.07},
+                {"nome": "Com a comissão de hoje", "comissao": 0.3169, "mc": 1 - 0.3169 - 0.06 - 0.07},
+                {"nome": "Se a comissão subir para 40%", "comissao": 0.40, "mc": 1 - 0.40 - 0.06 - 0.07},
             ],
         },
         "recebimento": {
@@ -110,18 +112,18 @@ def main():
             {"p": 1, "sev": "crit", "titulo": "Royalty devido e não pago",
              "detalhe": "Não há débito de royalty em nenhum extrato até 28/08. O contrato da Escova cobra independentemente de inauguração — o passivo corre sem aparecer.",
              "acao": "Levantar boletos no Sults, inclusive de meses anteriores, e provisionar o piso de R$ 5.000/mês."},
-            {"p": 2, "sev": "crit", "titulo": "A comissão está 12,4 pontos acima da premissa",
-             "detalhe": "Foram pagos 44,4% da receita contra os 32% do modelo — R$ 4.600 a mais só em agosto. Parte pode ser comissão de julho paga com atraso: duas profissionais receberam R$ 4.713,68 sem produção no mês.",
-             "acao": "Abrir o acordo de remuneração dessas duas. Cada ponto percentual de comissão move o ponto de equilíbrio em cerca de R$ 1.800/mês."},
+            {"p": 2, "sev": "crit", "titulo": "Nenhum encargo de folha aparece no razão",
+             "detalhe": "São três funcionárias CLT — duas na recepção e uma na limpeza — e não existe um único pagamento de FGTS, INSS, DAS ou eSocial em nenhum mês. Só o líquido sai da conta. Com encargos e provisões de 13º e férias, a folha CLT custa cerca de R$ 8.170/mês, não R$ 6.409.",
+             "acao": "Conferir com o contador onde os encargos estão sendo pagos. Se não estiverem, há passivo trabalhista e fiscal correndo."},
             {"p": 3, "sev": "crit", "titulo": "As regras de comissão não estão no Trinks",
              "detalhe": "O sistema tem o endpoint, mas nenhuma regra cadastrada. O cálculo é manual — a dispersão individual vai de 27,9% a 110,5% sobre o que cada uma produziu.",
              "acao": "Cadastrar as regras no Trinks para o cálculo parar de depender de planilha."},
             {"p": 4, "sev": "crit", "titulo": "Faturamento a 61,6% da meta",
              "detalhe": "R$ 36.955 contra R$ 60.000. Na meta, com a estrutura de custo do modelo, o mês fecharia positivo — o problema é tanto de receita quanto de custo.",
              "acao": "Puxar ocupação: 503 atendimentos em 25 dias com 12 profissionais ativos é baixa densidade."},
-            {"p": 5, "sev": "crit", "titulo": "Nenhum encargo de folha aparece no razão",
-             "detalhe": "Há uma funcionária CLT na limpeza, mas não existe um único pagamento de FGTS, INSS, DAS ou eSocial em nenhum mês. Só o salário líquido sai da conta. Com encargos e provisões de 13º e férias, o custo dela é cerca de R$ 2.549/mês, não R$ 2.000.",
-             "acao": "Conferir com o contador onde os encargos estão sendo pagos. Se não estiverem, há passivo trabalhista e fiscal correndo."},
+            {"p": 5, "sev": "ok", "titulo": "A comissão está dentro da premissa",
+             "detalhe": "Separando a folha CLT das recepcionistas, a comissão de agosto é 31,7% da receita — contra os 32% do modelo. O que parecia desvio era salário classificado como comissão.",
+             "acao": "Cadastrar as regras de comissão no Trinks para o cálculo parar de depender de leitura de extrato."},
             {"p": 6, "sev": "warn", "titulo": "Pronampe: R$ 190.000 entraram, mas quem paga é PF",
              "detalhe": "Os R$ 190.000 caíram na conta da empresa em 23/04, vindos da Opinião. Se as 48 parcelas são pagas por pessoa física, a empresa não tem essa dívida — o valor é aporte, não empréstimo.",
              "acao": "Classificar a entrada com o contador: mútuo do sócio, AFAC ou capital. Hoje o painel mostra R$ 223.853 de passivo que a empresa não paga."},
