@@ -121,6 +121,11 @@ def classificar_cadeira(nome_serv):
     return "outro"
 
 
+class QuotaExhaustedError(RuntimeError):
+    """Cota mensal Trinks esgotada. Retry inútil até virar mês — degrada com graça."""
+    pass
+
+
 class Trinks:
     def __init__(self):
         api_key = os.environ["TRINKS_API_KEY"]
@@ -156,8 +161,13 @@ class Trinks:
                 continue
             last_status = r.status_code
             if r.status_code == 429:
-                delay = 30 * (i + 1)
-                print(f"[trinks] {path} 429 rate-limit · aguarda {delay}s")
+                # 429 pode ser rate-limit por segundo (backoff resolve) OU cota mensal
+                # esgotada (backoff não resolve, só desperdiça GH minutes). Duas tentativas
+                # rápidas — se ainda 429, propaga QuotaExhaustedError pro caller decidir.
+                if i >= 1:
+                    raise QuotaExhaustedError(f"429 persistente em {path} — provavelmente cota mensal esgotada")
+                delay = 10 * (i + 1)
+                print(f"[trinks] {path} 429 rate-limit · aguarda {delay}s (tentativa {i+1}/2)")
                 time.sleep(delay); continue
             if 500 <= r.status_code < 600:
                 # Log corpo da resposta na PRIMEIRA tentativa pra revelar o que Trinks retorna
@@ -1901,9 +1911,31 @@ def main():
 
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
     OUT_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    # Limpa status de cota esgotada quando refresh volta a funcionar
+    status_path = REPO_ROOT / "data" / "quota_status.json"
+    if status_path.exists():
+        status_path.unlink()
+        print("[quota] status esgotada removido (cota voltou a funcionar)")
     print(f"[github_refresh] OK · {OUT_JSON}")
     print(f"  Ano R$ {a_anual['kpis']['caixa']:.2f} · Mês R$ {a_mensal['kpis']['caixa']:.2f} · Sem R$ {a_semanal['kpis']['caixa']:.2f} · Hoje R$ {a_diario['kpis']['caixa']:.2f}")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except QuotaExhaustedError as e:
+        # Cota Trinks mensal esgotada. Não sobrescreve dashboard_data.json —
+        # preserva os últimos dados válidos. Escreve status pro frontend mostrar
+        # banner. Sai com sucesso (não polui GH Actions com falhas repetidas
+        # até o reset da cota no dia 1º do mês).
+        print(f"\n⚠️  COTA TRINKS ESGOTADA: {e}")
+        print("   → Dashboard preservado com últimos dados válidos.")
+        print(f"   → Refreshes vão retomar automaticamente quando cota resetar (dia 1º).")
+        status_path = REPO_ROOT / "data" / "quota_status.json"
+        status_path.write_text(json.dumps({
+            "cota_esgotada": True,
+            "detectado_em": datetime.now(BRT).isoformat(timespec="seconds"),
+            "mensagem": "Cota mensal Trinks (10k req) esgotada. Dados congelados. Reset automático no dia 1º do mês.",
+            "erro": str(e),
+        }, ensure_ascii=False, indent=2), encoding="utf-8")
+        sys.exit(0)

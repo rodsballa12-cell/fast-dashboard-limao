@@ -2203,6 +2203,16 @@ async function load(showToast=false){
     if(!resp.ok) throw new Error('HTTP '+resp.status);
     const data = await resp.json();
     TRINKS = data;
+    // Verifica se cota Trinks está esgotada (arquivo separado, não sobrescreve dashboard_data.json)
+    try {
+      const qs = await fetch('data/quota_status.json?_='+Date.now(), {cache:'no-store'});
+      if(qs.ok){
+        const qstatus = await qs.json();
+        if(qstatus.cota_esgotada){
+          toast(`⚠️ <strong>Cota Trinks esgotada</strong><br><small>${qstatus.mensagem}<br>Detectado em: ${qstatus.detectado_em}</small>`, true);
+        }
+      }
+    } catch(_){}
     renderAnual(data);
     renderMensal(data);
     renderSemanal(data);

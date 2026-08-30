@@ -82,7 +82,10 @@ jobs:
                   data/profissionais_cache.json \
                   data/clientes_lista_cache.json \
                   data/servicos_cache.json \
-                  data/agend_detail_cache.json 2>/dev/null || true
+                  data/agend_detail_cache.json \
+                  data/quota_status.json 2>/dev/null || true
+          # Se quota_status foi limpo (arquivo removido), stage a remoção
+          git add -u data/quota_status.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "Sem mudanças nos dados"
           else
