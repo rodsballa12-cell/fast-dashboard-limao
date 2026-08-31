@@ -39,10 +39,31 @@ jobs:
 
       # Early-exit se dashboard_data.json foi atualizado nas últimas 30 min.
       # Aplica só a fires scheduled — dispatch manual sempre roda.
+      #
+      # Também faz backoff quando a cota mensal do Trinks está esgotada: sem
+      # isso o check de recência abaixo nunca satisfaz (dashboard_data.json
+      # deixa de ser commitado), e os 33 fires/dia rodam o script inteiro só
+      # pra tomar 429 e gerar um commit de ruído. Com a cota marcada, tenta
+      # de novo a cada 6h — o bastante pra sair rápido de um 429 transitório
+      # mal classificado, sem martelar uma API que já disse não.
       - name: Check recency
         id: recency
         if: github.event_name == 'schedule'
         run: |
+          if [ -f data/quota_status.json ] \
+             && grep -q '"cota_esgotada": *true' data/quota_status.json; then
+            det=$(sed -nE 's/.*"detectado_em": *"([^"]+)".*/\1/p' data/quota_status.json)
+            det_ts=$(date -d "$det" +%s 2>/dev/null || echo 0)
+            det_mes=$(date -d "$det" +%Y-%m 2>/dev/null || echo "")
+            mes_atual=$(TZ=America/Sao_Paulo date +%Y-%m)
+            idade=$(( $(date -u +%s) - det_ts ))
+            if [ "$det_mes" = "$mes_atual" ] && [ "$det_ts" -gt 0 ] && [ "$idade" -lt 21600 ]; then
+              echo "skip=true" >> $GITHUB_OUTPUT
+              echo "⏭  Cota Trinks esgotada (detectada há $((idade/60)) min). Nova tentativa em ~6h."
+              exit 0
+            fi
+            echo "🔄 Cota marcada como esgotada, mas é mês novo ou passaram 6h — tentando de novo."
+          fi
           last_ts=$(git log -1 --format=%ct -- data/dashboard_data.json 2>/dev/null || echo 0)
           now=$(date -u +%s)
           age=$((now - last_ts))
@@ -88,6 +109,13 @@ jobs:
           git add -u data/quota_status.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "Sem mudanças nos dados"
+          elif git diff --cached --quiet -- data/dashboard_data.json; then
+            # Nada mudou no dashboard: o script saiu pela porta da cota esgotada
+            # e só reescreveu quota_status.json. Rotular isso de "refresh" faz o
+            # git log parecer saudável enquanto o painel está congelado.
+            congelado=$(sed -nE 's/.*"gerado_em": *"([^"]+)".*/\1/p' data/dashboard_data.json | head -1)
+            git commit -m "chore: cota Trinks esgotada · dashboard congelado em ${congelado:-desconhecido}"
+            git push
           else
             git commit -m "refresh: dashboard $(TZ=America/Sao_Paulo date +'%d/%m %H:%M') BRT"
             git push

@@ -2204,11 +2204,15 @@ async function load(showToast=false){
     const data = await resp.json();
     TRINKS = data;
     // Verifica se cota Trinks está esgotada (arquivo separado, não sobrescreve dashboard_data.json)
+    // quotaOut fica no escopo do bloco: o chip de idade abaixo mostra o motivo de
+    // forma permanente — o toast some em 5s e não serve como único aviso.
+    let quotaOut = null;
     try {
       const qs = await fetch('data/quota_status.json?_='+Date.now(), {cache:'no-store'});
       if(qs.ok){
         const qstatus = await qs.json();
         if(qstatus.cota_esgotada){
+          quotaOut = qstatus;
           toast(`⚠️ <strong>Cota Trinks esgotada</strong><br><small>${qstatus.mensagem}<br>Detectado em: ${qstatus.detectado_em}</small>`, true);
         }
       }
@@ -2248,7 +2252,14 @@ async function load(showToast=false){
     // idade: verde <65min, amarelo <180min, vermelho >180min
     const chipAge=document.getElementById('chip-age');
     chipAge.style.display='';
-    if(ageMin<=65){chipAge.className='chip fresh';chipAge.innerHTML=`<span class="dot"></span> há ${ageMin} min`;}
+    if(quotaOut){
+      const h=Math.floor(ageMin/60), m=ageMin%60;
+      const idade = h ? `${h}h${String(m).padStart(2,'0')}m` : `${m} min`;
+      chipAge.className='chip stale';
+      chipAge.innerHTML=`<span class="dot"></span> ⚠️ congelado há ${idade} · cota Trinks esgotada`;
+      chipAge.title=`${quotaOut.mensagem}\nDetectado em: ${quotaOut.detectado_em}`;
+    }
+    else if(ageMin<=65){chipAge.className='chip fresh';chipAge.innerHTML=`<span class="dot"></span> há ${ageMin} min`;}
     else if(ageMin<=180){chipAge.className='chip stale';chipAge.innerHTML=`<span class="dot"></span> há ${ageMin} min · próximo refresh em breve`;}
     else{chipAge.className='chip stale';chipAge.innerHTML=`<span class="dot"></span> há ${Math.floor(ageMin/60)}h${ageMin%60}m ⚠️ desatualizado`;}
     document.getElementById('loading').style.display='none';
