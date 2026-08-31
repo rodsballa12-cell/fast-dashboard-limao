@@ -1,6 +1,13 @@
 {
-  "gerado_em": "2026-08-29T17:10:00-03:00",
-  "fonte": "Supermetrics MCP · Meta Ads + Instagram Insights",
+  "gerado_em": "2026-08-31T14:33:00-03:00",
+  "fonte": "Supermetrics MCP · Meta Ads + Instagram Insights + Facebook Insights",
+  "janelas": {
+    "meta_ads_30d": "2026-08-01 a 2026-08-30",
+    "instagram_30d": "2026-08-01 a 2026-08-30",
+    "instagram_7d": "2026-08-24 a 2026-08-30",
+    "facebook_page_30d": "2026-08-01 a 2026-08-30",
+    "nota": "A API do Instagram só entrega 'novos seguidores' para os últimos 30 dias excluindo o dia corrente; as janelas de 30d de todas as fontes foram alinhadas a 01–30/08 para que os números da aba sejam comparáveis entre si."
+  },
   "kpi_estrela": {
     "nome": "Custo por conversa iniciada (WhatsApp)",
     "campo": "cost_per_new_messaging_conversation",
@@ -8,201 +15,1468 @@
   },
   "instagram": {
     "handle": "fastescova.limao",
-    "followers": 1735,
+    "followers": 1733,
     "posts_total": 31,
     "url": "https://www.instagram.com/fastescova.limao/",
     "organico_30d": {
-      "novos_seguidores": 621,
-      "novos_seguidores_dia_medio": 20.7,
-      "profile_views": 271503,
-      "profile_views_dia_medio": 9050,
+      "novos_seguidores": 521,
+      "novos_seguidores_dia_medio": 17.37,
+      "profile_views": 249733,
+      "profile_views_dia_medio": 8324,
       "profile_reposts": 25,
-      "profile_replies": 48
+      "profile_replies": 43,
+      "nota_profile_views": "'Profile views' na API do Instagram = visualizações de conteúdo da conta (reels, posts e stories), não visitas à página de perfil."
     },
     "organico_7d": {
-      "novos_seguidores": 77,
-      "profile_views": 62908,
-      "reach": 22004
+      "novos_seguidores": 53,
+      "profile_views": 44587,
+      "reach": 14165
     },
     "top_posts_30d": [
-      {"data": "2026-08-10", "tipo": "VIDEO", "reach": 1526, "url": "https://www.instagram.com/reel/Db3DqaMOqHh/", "caption_curta": "LOUCURA DA GERENTE — combo mão+pé+velaterapia R$83 (era R$113)"},
-      {"data": "2026-08-17", "tipo": "IMAGE", "reach": 1452, "url": "https://www.instagram.com/p/DcJ1vzgQ27M/", "caption_curta": "COMBOS DA SEMANA — preços especiais"},
-      {"data": "2026-08-05", "tipo": "VIDEO", "reach": 1254, "url": "https://www.instagram.com/reel/DbqP4XcOL2f/", "caption_curta": "Leve produtos Fast pra casa"},
-      {"data": "2026-08-03", "tipo": "VIDEO", "reach": 917, "url": "https://www.instagram.com/reel/DblLnKliu4J/", "caption_curta": "Plástica dos pés"},
-      {"data": "2026-08-22", "tipo": "VIDEO", "reach": 906, "url": "https://www.instagram.com/reel/DcV97TauWfM/", "caption_curta": "Produtos que usamos na Fast"},
-      {"data": "2026-08-12", "tipo": "VIDEO", "reach": 881, "url": "https://www.instagram.com/reel/Db8Ge9CPqFk/", "caption_curta": "Autocuidado começa aqui"},
-      {"data": "2026-08-01", "tipo": "CAROUSEL_ALBUM", "reach": 849, "url": "https://www.instagram.com/p/DbfyyIJnO8P/", "caption_curta": "Cabelo bem cuidado"},
-      {"data": "2026-08-20", "tipo": "IMAGE", "reach": 819, "url": "https://www.instagram.com/p/DcRrgPZPDCF/", "caption_curta": "Novidade: domingos a partir 30/08"},
-      {"data": "2026-08-23", "tipo": "VIDEO", "reach": 707, "url": "https://www.instagram.com/reel/DcY1HZaSNq6/", "caption_curta": "🚨 NOVIDADE — abrindo aos domingos"},
-      {"data": "2026-08-25", "tipo": "VIDEO", "reach": 588, "url": "https://www.instagram.com/reel/DceS5OkM8vk/", "caption_curta": "Fast Mint — homem se cuida"},
-      {"data": "2026-08-06", "tipo": "CAROUSEL_ALBUM", "reach": 518, "url": "https://www.instagram.com/p/DbtHqnrnPAJ/", "caption_curta": "Detox capilar — 4 tratamentos"},
-      {"data": "2026-08-13", "tipo": "CAROUSEL_ALBUM", "reach": 406, "url": "https://www.instagram.com/p/Db-0sSPHNRJ/", "caption_curta": "Unhas — momento autocuidado"}
+      {
+        "data": "2026-08-10",
+        "tipo": "VIDEO",
+        "reach": 1539,
+        "url": "https://www.instagram.com/reel/Db3DqaMOqHh/",
+        "caption_curta": "LOUCURA DA GERENTE — combo mão+pé+velaterapia R$83 (era R$113)"
+      },
+      {
+        "data": "2026-08-17",
+        "tipo": "IMAGE",
+        "reach": 1458,
+        "url": "https://www.instagram.com/p/DcJ1vzgQ27M/",
+        "caption_curta": "COMBOS DA SEMANA — preços especiais, sem hora marcada"
+      },
+      {
+        "data": "2026-08-05",
+        "tipo": "VIDEO",
+        "reach": 1258,
+        "url": "https://www.instagram.com/reel/DbqP4XcOL2f/",
+        "caption_curta": "O cuidado não acaba no salão — leve os produtos Fast pra casa"
+      },
+      {
+        "data": "2026-08-03",
+        "tipo": "VIDEO",
+        "reach": 918,
+        "url": "https://www.instagram.com/reel/DblLnKliu4J/",
+        "caption_curta": "Plástica dos Pés — o cuidado que todo mundo esquece"
+      },
+      {
+        "data": "2026-08-22",
+        "tipo": "VIDEO",
+        "reach": 917,
+        "url": "https://www.instagram.com/reel/DcV97TauWfM/",
+        "caption_curta": "Tour pelos produtos que usamos no salão (67 curtidas, 18 comentários)"
+      },
+      {
+        "data": "2026-08-12",
+        "tipo": "VIDEO",
+        "reach": 884,
+        "url": "https://www.instagram.com/reel/Db8Ge9CPqFk/",
+        "caption_curta": "O autocuidado começa aqui — convite pra desacelerar"
+      },
+      {
+        "data": "2026-08-01",
+        "tipo": "CAROUSEL_ALBUM",
+        "reach": 850,
+        "url": "https://www.instagram.com/p/DbfyyIJnO8P/",
+        "caption_curta": "Carrossel de abertura do mês"
+      },
+      {
+        "data": "2026-08-20",
+        "tipo": "IMAGE",
+        "reach": 829,
+        "url": "https://www.instagram.com/p/DcRrgPZPDCF/",
+        "caption_curta": "NOVIDADE: abertura aos domingos a partir de 30/08, 9h–15h"
+      },
+      {
+        "data": "2026-08-23",
+        "tipo": "VIDEO",
+        "reach": 714,
+        "url": "https://www.instagram.com/reel/DcY1HZaSNq6/",
+        "caption_curta": "Reel do domingo — reforço da novidade de horário"
+      },
+      {
+        "data": "2026-08-25",
+        "tipo": "VIDEO",
+        "reach": 604,
+        "url": "https://www.instagram.com/reel/DceS5OkM8vk/",
+        "caption_curta": "Fast Mint — cuidado também é coisa de homem"
+      },
+      {
+        "data": "2026-08-06",
+        "tipo": "CAROUSEL_ALBUM",
+        "reach": 518,
+        "url": "https://www.instagram.com/p/DbtHqnrnPAJ/",
+        "caption_curta": "Detox capilar — hidratação, nutrição, umectação, reconstrução"
+      },
+      {
+        "data": "2026-08-13",
+        "tipo": "CAROUSEL_ALBUM",
+        "reach": 409,
+        "url": "https://www.instagram.com/p/Db-0sSPHNRJ/",
+        "caption_curta": "Serviços e pacotes de unhas"
+      }
     ],
     "serie_diaria_30d": [
-      {"data": "2026-07-30", "novos_seguidores": 81, "profile_views": 14430, "reach": 4068},
-      {"data": "2026-07-31", "novos_seguidores": 35, "profile_views": 11405, "reach": 5518},
-      {"data": "2026-08-01", "novos_seguidores": 24, "profile_views": 9814, "reach": 5289},
-      {"data": "2026-08-02", "novos_seguidores": 14, "profile_views": 6466, "reach": 3968},
-      {"data": "2026-08-03", "novos_seguidores": 19, "profile_views": 7395, "reach": 4588},
-      {"data": "2026-08-04", "novos_seguidores": 40, "profile_views": 10234, "reach": 4127},
-      {"data": "2026-08-05", "novos_seguidores": 20, "profile_views": 8898, "reach": 3482},
-      {"data": "2026-08-06", "novos_seguidores": 55, "profile_views": 17938, "reach": 2800},
-      {"data": "2026-08-07", "novos_seguidores": 28, "profile_views": 9700, "reach": 2700},
-      {"data": "2026-08-08", "novos_seguidores": 19, "profile_views": 7600, "reach": 3601},
-      {"data": "2026-08-09", "novos_seguidores": 9, "profile_views": 5992, "reach": 4090},
-      {"data": "2026-08-10", "novos_seguidores": 14, "profile_views": 6949, "reach": 3566},
-      {"data": "2026-08-11", "novos_seguidores": 17, "profile_views": 9050, "reach": 3319},
-      {"data": "2026-08-12", "novos_seguidores": 13, "profile_views": 7790, "reach": 4227},
-      {"data": "2026-08-13", "novos_seguidores": 25, "profile_views": 11450, "reach": 5131},
-      {"data": "2026-08-14", "novos_seguidores": 19, "profile_views": 5961, "reach": 3815},
-      {"data": "2026-08-15", "novos_seguidores": 19, "profile_views": 8235, "reach": 4425},
-      {"data": "2026-08-16", "novos_seguidores": 8, "profile_views": 7155, "reach": 5344},
-      {"data": "2026-08-17", "novos_seguidores": 14, "profile_views": 9110, "reach": 5946},
-      {"data": "2026-08-18", "novos_seguidores": 19, "profile_views": 10362, "reach": 6242},
-      {"data": "2026-08-19", "novos_seguidores": 22, "profile_views": 7702, "reach": 4324},
-      {"data": "2026-08-20", "novos_seguidores": 12, "profile_views": 7673, "reach": 3757},
-      {"data": "2026-08-21", "novos_seguidores": 18, "profile_views": 7286, "reach": 3834},
-      {"data": "2026-08-22", "novos_seguidores": 28, "profile_views": 11994, "reach": 5735},
-      {"data": "2026-08-23", "novos_seguidores": 12, "profile_views": 10392, "reach": 6724},
-      {"data": "2026-08-24", "novos_seguidores": 8, "profile_views": 10505, "reach": 6430},
-      {"data": "2026-08-25", "novos_seguidores": 9, "profile_views": 10390, "reach": 4848},
-      {"data": "2026-08-26", "novos_seguidores": 12, "profile_views": 8547, "reach": 4645},
-      {"data": "2026-08-27", "novos_seguidores": 8, "profile_views": 7728, "reach": 767},
-      {"data": "2026-08-28", "novos_seguidores": 0, "profile_views": 3352, "reach": 420}
+      {
+        "data": "2026-08-01",
+        "novos_seguidores": 24,
+        "profile_views": 9814,
+        "reach": 5289
+      },
+      {
+        "data": "2026-08-02",
+        "novos_seguidores": 14,
+        "profile_views": 6466,
+        "reach": 3968
+      },
+      {
+        "data": "2026-08-03",
+        "novos_seguidores": 19,
+        "profile_views": 7395,
+        "reach": 4588
+      },
+      {
+        "data": "2026-08-04",
+        "novos_seguidores": 40,
+        "profile_views": 10234,
+        "reach": 4127
+      },
+      {
+        "data": "2026-08-05",
+        "novos_seguidores": 20,
+        "profile_views": 8898,
+        "reach": 3482
+      },
+      {
+        "data": "2026-08-06",
+        "novos_seguidores": 55,
+        "profile_views": 17938,
+        "reach": 2800
+      },
+      {
+        "data": "2026-08-07",
+        "novos_seguidores": 28,
+        "profile_views": 9700,
+        "reach": 2700
+      },
+      {
+        "data": "2026-08-08",
+        "novos_seguidores": 19,
+        "profile_views": 7600,
+        "reach": 3601
+      },
+      {
+        "data": "2026-08-09",
+        "novos_seguidores": 9,
+        "profile_views": 5992,
+        "reach": 4090
+      },
+      {
+        "data": "2026-08-10",
+        "novos_seguidores": 14,
+        "profile_views": 6949,
+        "reach": 3566
+      },
+      {
+        "data": "2026-08-11",
+        "novos_seguidores": 17,
+        "profile_views": 9050,
+        "reach": 3319
+      },
+      {
+        "data": "2026-08-12",
+        "novos_seguidores": 13,
+        "profile_views": 7790,
+        "reach": 4227
+      },
+      {
+        "data": "2026-08-13",
+        "novos_seguidores": 25,
+        "profile_views": 11450,
+        "reach": 5131
+      },
+      {
+        "data": "2026-08-14",
+        "novos_seguidores": 19,
+        "profile_views": 5961,
+        "reach": 3815
+      },
+      {
+        "data": "2026-08-15",
+        "novos_seguidores": 19,
+        "profile_views": 8235,
+        "reach": 4425
+      },
+      {
+        "data": "2026-08-16",
+        "novos_seguidores": 8,
+        "profile_views": 7155,
+        "reach": 5344
+      },
+      {
+        "data": "2026-08-17",
+        "novos_seguidores": 14,
+        "profile_views": 9110,
+        "reach": 5946
+      },
+      {
+        "data": "2026-08-18",
+        "novos_seguidores": 19,
+        "profile_views": 10362,
+        "reach": 6242
+      },
+      {
+        "data": "2026-08-19",
+        "novos_seguidores": 22,
+        "profile_views": 7702,
+        "reach": 4324
+      },
+      {
+        "data": "2026-08-20",
+        "novos_seguidores": 12,
+        "profile_views": 7673,
+        "reach": 3757
+      },
+      {
+        "data": "2026-08-21",
+        "novos_seguidores": 18,
+        "profile_views": 7286,
+        "reach": 3834
+      },
+      {
+        "data": "2026-08-22",
+        "novos_seguidores": 28,
+        "profile_views": 11994,
+        "reach": 5735
+      },
+      {
+        "data": "2026-08-23",
+        "novos_seguidores": 12,
+        "profile_views": 10392,
+        "reach": 6724
+      },
+      {
+        "data": "2026-08-24",
+        "novos_seguidores": 8,
+        "profile_views": 10505,
+        "reach": 6430
+      },
+      {
+        "data": "2026-08-25",
+        "novos_seguidores": 9,
+        "profile_views": 10390,
+        "reach": 4848
+      },
+      {
+        "data": "2026-08-26",
+        "novos_seguidores": 12,
+        "profile_views": 8547,
+        "reach": 4645
+      },
+      {
+        "data": "2026-08-27",
+        "novos_seguidores": 8,
+        "profile_views": 7728,
+        "reach": 767
+      },
+      {
+        "data": "2026-08-28",
+        "novos_seguidores": 8,
+        "profile_views": 3352,
+        "reach": 420
+      },
+      {
+        "data": "2026-08-29",
+        "novos_seguidores": 7,
+        "profile_views": 2566,
+        "reach": 306
+      },
+      {
+        "data": "2026-08-30",
+        "novos_seguidores": 1,
+        "profile_views": 1499,
+        "reach": 353
+      }
     ]
   },
   "meta_ads": {
     "ad_account_id": "act_1310973560614050",
     "ad_account_nome": "FE - LIMÃO",
     "por_periodo": {
-      "hoje": {"label": "Hoje (29/08)", "inicio": "2026-08-29", "fim": "2026-08-29", "gasto": 0, "impressoes": 0, "cliques": 0, "link_clicks": 0, "post_engagement": 0, "conversas_msg": 0, "reach": 0, "frequency": 0, "ctr_pct": 0, "link_ctr_pct": 0, "cpm": 0, "cpc": 0, "cpc_link": 0, "cpa_msg": null, "alerta": "🚨 Anúncios parados hoje — limite de gasto da conta atingido em 27/08. Ir em Ads Manager → Cobrança."},
-      "7d": {"label": "Últimos 7 dias", "inicio": "2026-08-23", "fim": "2026-08-29", "gasto": 544.41, "impressoes": 64600, "cliques": 887, "link_clicks": 421, "post_engagement": 6885, "conversas_msg": 66, "reach": 42332, "frequency": 1.53, "ctr_pct": 1.37, "link_ctr_pct": 0.65, "cpm": 8.43, "cpc": 0.61, "cpc_link": 1.29, "cpa_msg": 8.25},
-      "mtd": {"label": "Mês atual (Ago/2026 · MTD)", "inicio": "2026-08-01", "fim": "2026-08-29", "gasto": 2565.31, "impressoes": 311004, "cliques": 4770, "link_clicks": 1997, "post_engagement": 44438, "conversas_msg": 412, "reach": 112167, "frequency": 2.77, "ctr_pct": 1.53, "link_ctr_pct": 0.64, "cpm": 8.25, "cpc": 0.54, "cpc_link": 1.28, "cpa_msg": 6.23},
-      "90d": {"label": "Últimos 90 dias", "inicio": "2026-06-01", "fim": "2026-08-29", "gasto": 5300.09, "impressoes": 614126, "cliques": 9757, "link_clicks": 5763, "post_engagement": 91775, "conversas_msg": 961, "reach": 175477, "frequency": 3.50, "ctr_pct": 1.59, "link_ctr_pct": 0.94, "cpm": 8.63, "cpc": 0.54, "cpc_link": 0.92, "cpa_msg": 5.52}
+      "hoje": {
+        "label": "Hoje (31/08)",
+        "inicio": "2026-08-31",
+        "fim": "2026-08-31",
+        "gasto": 0.0,
+        "impressoes": 0,
+        "cliques": 0,
+        "link_clicks": 0,
+        "post_engagement": 0,
+        "conversas_msg": 0,
+        "reach": 0,
+        "frequency": 0.0,
+        "ctr_pct": 0.0,
+        "link_ctr_pct": 0.0,
+        "cpm": 0.0,
+        "cpc": 0.0,
+        "cpc_link": 0.0,
+        "cpa_msg": null,
+        "alerta": "🚨 Zero veiculação hoje — a conta está sem entregar desde 28/08 (4º dia parado). Último dia cheio foi 26/08; em 27/08 saíram só R$ 10,32. Verificar limite de gasto da conta em Gerenciador de Anúncios → Configurações → Faturamento."
+      },
+      "7d": {
+        "label": "Últimos 7 dias",
+        "inicio": "2026-08-25",
+        "fim": "2026-08-31",
+        "gasto": 240.25,
+        "impressoes": 23083,
+        "cliques": 375,
+        "link_clicks": 169,
+        "post_engagement": 2677,
+        "conversas_msg": 35,
+        "reach": 17261,
+        "frequency": 1.34,
+        "ctr_pct": 1.62,
+        "link_ctr_pct": 0.73,
+        "cpm": 10.41,
+        "cpc": 0.64,
+        "cpc_link": 1.42,
+        "cpa_msg": 6.86,
+        "alerta": "⚠️ Semana truncada: só 26/08 e parte de 27/08 tiveram entrega. Gasto caiu 65% e conversas 61% vs. a semana anterior — efeito da conta parada, não de queda de performance."
+      },
+      "30d": {
+        "label": "Últimos 30 dias",
+        "inicio": "2026-08-01",
+        "fim": "2026-08-30",
+        "gasto": 2565.31,
+        "impressoes": 311004,
+        "cliques": 4770,
+        "link_clicks": 1997,
+        "post_engagement": 44438,
+        "conversas_msg": 412,
+        "reach": 112167,
+        "frequency": 2.77,
+        "ctr_pct": 1.53,
+        "link_ctr_pct": 0.64,
+        "cpm": 8.25,
+        "cpc": 0.54,
+        "cpc_link": 1.28,
+        "cpa_msg": 6.23
+      },
+      "mtd": {
+        "label": "Mês atual (Ago/2026 · MTD)",
+        "inicio": "2026-08-01",
+        "fim": "2026-08-31",
+        "gasto": 2565.31,
+        "impressoes": 311004,
+        "cliques": 4770,
+        "link_clicks": 1997,
+        "post_engagement": 44438,
+        "conversas_msg": 412,
+        "reach": 112167,
+        "frequency": 2.77,
+        "ctr_pct": 1.53,
+        "link_ctr_pct": 0.64,
+        "cpm": 8.25,
+        "cpc": 0.54,
+        "cpc_link": 1.28,
+        "cpa_msg": 6.23
+      },
+      "90d": {
+        "label": "Últimos 90 dias",
+        "inicio": "2026-06-03",
+        "fim": "2026-08-31",
+        "gasto": 5300.09,
+        "impressoes": 614126,
+        "cliques": 9757,
+        "link_clicks": 5763,
+        "post_engagement": 91775,
+        "conversas_msg": 961,
+        "reach": 175477,
+        "frequency": 3.5,
+        "ctr_pct": 1.59,
+        "link_ctr_pct": 0.94,
+        "cpm": 8.63,
+        "cpc": 0.54,
+        "cpc_link": 0.92,
+        "cpa_msg": 5.52
+      }
     },
     "serie_diaria_30d": [
-      {"data": "2026-07-30", "gasto": 84.82, "impressoes": 9813, "cliques": 154, "reach": 8960, "cpa_msg": 6.52},
-      {"data": "2026-07-31", "gasto": 80.09, "impressoes": 10315, "cliques": 143, "reach": 9320, "cpa_msg": 5.01},
-      {"data": "2026-08-01", "gasto": 89.17, "impressoes": 10767, "cliques": 137, "reach": 9705, "cpa_msg": 5.94},
-      {"data": "2026-08-02", "gasto": 93.72, "impressoes": 11799, "cliques": 139, "reach": 10725, "cpa_msg": 11.72},
-      {"data": "2026-08-03", "gasto": 112.09, "impressoes": 12893, "cliques": 143, "reach": 11986, "cpa_msg": 7.47},
-      {"data": "2026-08-04", "gasto": 96.44, "impressoes": 11876, "cliques": 179, "reach": 10868, "cpa_msg": 3.71},
-      {"data": "2026-08-05", "gasto": 101.95, "impressoes": 11058, "cliques": 213, "reach": 9922, "cpa_msg": 3.78},
-      {"data": "2026-08-06", "gasto": 83.28, "impressoes": 10854, "cliques": 209, "reach": 9746, "cpa_msg": 4.16},
-      {"data": "2026-08-07", "gasto": 78.52, "impressoes": 8805, "cliques": 147, "reach": 7735, "cpa_msg": 5.61},
-      {"data": "2026-08-08", "gasto": 90.86, "impressoes": 12001, "cliques": 185, "reach": 10941, "cpa_msg": 7.57},
-      {"data": "2026-08-09", "gasto": 93.48, "impressoes": 13397, "cliques": 183, "reach": 12215, "cpa_msg": 7.19},
-      {"data": "2026-08-10", "gasto": 97.15, "impressoes": 10809, "cliques": 158, "reach": 10042, "cpa_msg": 10.79},
-      {"data": "2026-08-11", "gasto": 130.69, "impressoes": 12364, "cliques": 265, "reach": 10455, "cpa_msg": 4.36},
-      {"data": "2026-08-12", "gasto": 115.97, "impressoes": 13057, "cliques": 275, "reach": 11457, "cpa_msg": 6.44},
-      {"data": "2026-08-13", "gasto": 95.70, "impressoes": 11599, "cliques": 210, "reach": 9740, "cpa_msg": 5.98},
-      {"data": "2026-08-14", "gasto": 81.82, "impressoes": 11022, "cliques": 168, "reach": 9823, "cpa_msg": 6.29},
-      {"data": "2026-08-15", "gasto": 78.55, "impressoes": 11335, "cliques": 169, "reach": 10484, "cpa_msg": 11.22},
-      {"data": "2026-08-16", "gasto": 90.64, "impressoes": 14327, "cliques": 192, "reach": 13602, "cpa_msg": 4.32},
-      {"data": "2026-08-17", "gasto": 101.11, "impressoes": 12784, "cliques": 186, "reach": 12006, "cpa_msg": 4.40},
-      {"data": "2026-08-18", "gasto": 128.05, "impressoes": 13012, "cliques": 203, "reach": 11108, "cpa_msg": 7.11},
-      {"data": "2026-08-19", "gasto": 107.81, "impressoes": 11826, "cliques": 213, "reach": 10574, "cpa_msg": 5.99},
-      {"data": "2026-08-20", "gasto": 76.72, "impressoes": 10689, "cliques": 161, "reach": 9944, "cpa_msg": 6.39},
-      {"data": "2026-08-21", "gasto": 77.18, "impressoes": 10130, "cliques": 148, "reach": 9176, "cpa_msg": 7.02},
-      {"data": "2026-08-22", "gasto": 94.07, "impressoes": 11957, "cliques": 161, "reach": 10421, "cpa_msg": 9.41},
-      {"data": "2026-08-23", "gasto": 106.23, "impressoes": 15611, "cliques": 180, "reach": 13772, "cpa_msg": 7.59},
-      {"data": "2026-08-24", "gasto": 103.86, "impressoes": 13949, "cliques": 171, "reach": 12191, "cpa_msg": 14.84},
-      {"data": "2026-08-25", "gasto": 122.52, "impressoes": 11960, "cliques": 179, "reach": 9933, "cpa_msg": 6.45},
-      {"data": "2026-08-26", "gasto": 107.41, "impressoes": 10284, "cliques": 181, "reach": 8410, "cpa_msg": 6.71},
-      {"data": "2026-08-27", "gasto": 10.32, "impressoes": 839, "cliques": 15, "reach": 769, "cpa_msg": null},
-      {"data": "2026-08-28", "gasto": 0, "impressoes": 0, "cliques": 0, "reach": 0, "cpa_msg": null}
+      {
+        "data": "2026-08-01",
+        "gasto": 89.17,
+        "impressoes": 10767,
+        "cliques": 137,
+        "reach": 9705,
+        "cpa_msg": 5.94
+      },
+      {
+        "data": "2026-08-02",
+        "gasto": 93.72,
+        "impressoes": 11799,
+        "cliques": 139,
+        "reach": 10725,
+        "cpa_msg": 11.71
+      },
+      {
+        "data": "2026-08-03",
+        "gasto": 112.09,
+        "impressoes": 12893,
+        "cliques": 143,
+        "reach": 11986,
+        "cpa_msg": 7.47
+      },
+      {
+        "data": "2026-08-04",
+        "gasto": 96.44,
+        "impressoes": 11876,
+        "cliques": 179,
+        "reach": 10868,
+        "cpa_msg": 3.71
+      },
+      {
+        "data": "2026-08-05",
+        "gasto": 101.95,
+        "impressoes": 11058,
+        "cliques": 213,
+        "reach": 9922,
+        "cpa_msg": 3.78
+      },
+      {
+        "data": "2026-08-06",
+        "gasto": 83.28,
+        "impressoes": 10854,
+        "cliques": 209,
+        "reach": 9746,
+        "cpa_msg": 4.16
+      },
+      {
+        "data": "2026-08-07",
+        "gasto": 78.52,
+        "impressoes": 8805,
+        "cliques": 147,
+        "reach": 7735,
+        "cpa_msg": 5.61
+      },
+      {
+        "data": "2026-08-08",
+        "gasto": 90.86,
+        "impressoes": 12001,
+        "cliques": 185,
+        "reach": 10941,
+        "cpa_msg": 7.57
+      },
+      {
+        "data": "2026-08-09",
+        "gasto": 93.48,
+        "impressoes": 13397,
+        "cliques": 183,
+        "reach": 12215,
+        "cpa_msg": 7.19
+      },
+      {
+        "data": "2026-08-10",
+        "gasto": 97.15,
+        "impressoes": 10809,
+        "cliques": 158,
+        "reach": 10042,
+        "cpa_msg": 10.79
+      },
+      {
+        "data": "2026-08-11",
+        "gasto": 130.69,
+        "impressoes": 12364,
+        "cliques": 265,
+        "reach": 10455,
+        "cpa_msg": 4.36
+      },
+      {
+        "data": "2026-08-12",
+        "gasto": 115.97,
+        "impressoes": 13057,
+        "cliques": 275,
+        "reach": 11457,
+        "cpa_msg": 6.44
+      },
+      {
+        "data": "2026-08-13",
+        "gasto": 95.7,
+        "impressoes": 11599,
+        "cliques": 210,
+        "reach": 9740,
+        "cpa_msg": 5.98
+      },
+      {
+        "data": "2026-08-14",
+        "gasto": 81.82,
+        "impressoes": 11022,
+        "cliques": 168,
+        "reach": 9823,
+        "cpa_msg": 6.29
+      },
+      {
+        "data": "2026-08-15",
+        "gasto": 78.55,
+        "impressoes": 11335,
+        "cliques": 169,
+        "reach": 10484,
+        "cpa_msg": 11.22
+      },
+      {
+        "data": "2026-08-16",
+        "gasto": 90.64,
+        "impressoes": 14327,
+        "cliques": 192,
+        "reach": 13602,
+        "cpa_msg": 4.32
+      },
+      {
+        "data": "2026-08-17",
+        "gasto": 101.11,
+        "impressoes": 12784,
+        "cliques": 186,
+        "reach": 12006,
+        "cpa_msg": 4.4
+      },
+      {
+        "data": "2026-08-18",
+        "gasto": 128.05,
+        "impressoes": 13012,
+        "cliques": 203,
+        "reach": 11108,
+        "cpa_msg": 7.11
+      },
+      {
+        "data": "2026-08-19",
+        "gasto": 107.81,
+        "impressoes": 11826,
+        "cliques": 213,
+        "reach": 10574,
+        "cpa_msg": 5.99
+      },
+      {
+        "data": "2026-08-20",
+        "gasto": 76.72,
+        "impressoes": 10689,
+        "cliques": 161,
+        "reach": 9944,
+        "cpa_msg": 6.39
+      },
+      {
+        "data": "2026-08-21",
+        "gasto": 77.18,
+        "impressoes": 10130,
+        "cliques": 148,
+        "reach": 9176,
+        "cpa_msg": 7.02
+      },
+      {
+        "data": "2026-08-22",
+        "gasto": 94.07,
+        "impressoes": 11957,
+        "cliques": 161,
+        "reach": 10421,
+        "cpa_msg": 9.41
+      },
+      {
+        "data": "2026-08-23",
+        "gasto": 106.23,
+        "impressoes": 15611,
+        "cliques": 180,
+        "reach": 13772,
+        "cpa_msg": 7.59
+      },
+      {
+        "data": "2026-08-24",
+        "gasto": 103.86,
+        "impressoes": 13949,
+        "cliques": 171,
+        "reach": 12191,
+        "cpa_msg": 14.84
+      },
+      {
+        "data": "2026-08-25",
+        "gasto": 122.52,
+        "impressoes": 11960,
+        "cliques": 179,
+        "reach": 9933,
+        "cpa_msg": 6.45
+      },
+      {
+        "data": "2026-08-26",
+        "gasto": 107.41,
+        "impressoes": 10284,
+        "cliques": 181,
+        "reach": 8410,
+        "cpa_msg": 6.71
+      },
+      {
+        "data": "2026-08-27",
+        "gasto": 10.32,
+        "impressoes": 839,
+        "cliques": 15,
+        "reach": 769,
+        "cpa_msg": null
+      },
+      {
+        "data": "2026-08-28",
+        "gasto": 0.0,
+        "impressoes": 0,
+        "cliques": 0,
+        "reach": 0,
+        "cpa_msg": null
+      },
+      {
+        "data": "2026-08-29",
+        "gasto": 0.0,
+        "impressoes": 0,
+        "cliques": 0,
+        "reach": 0,
+        "cpa_msg": null
+      },
+      {
+        "data": "2026-08-30",
+        "gasto": 0.0,
+        "impressoes": 0,
+        "cliques": 0,
+        "reach": 0,
+        "cpa_msg": null
+      }
     ],
     "por_objetivo_30d": [
-      {"objetivo": "ENGAJAMENTO (MSG)", "gasto": 2142.09, "share_gasto_pct": 78.5, "impressoes": 131378, "cliques": 3753, "ctr_pct": 2.86, "cpm": 16.30, "insight": "Coração da captação — puxa WhatsApp"},
-      {"objetivo": "LINK CLICKS (Post IG)", "gasto": 314.19, "share_gasto_pct": 11.5, "impressoes": 31898, "cliques": 870, "ctr_pct": 2.73, "cpm": 9.85, "insight": "Reels boostado — bom engajamento"},
-      {"objetivo": "AWARENESS (Branding)", "gasto": 273.94, "share_gasto_pct": 10.0, "impressoes": 167856, "cliques": 444, "ctr_pct": 0.26, "cpm": 1.63, "insight": "CPM baixíssimo — construção de marca eficiente"}
+      {
+        "objetivo": "ENGAJAMENTO (MSG)",
+        "gasto": 2030.78,
+        "share_gasto_pct": 79.16,
+        "impressoes": 124045,
+        "cliques": 3563,
+        "ctr_pct": 2.87,
+        "cpm": 16.37,
+        "insight": "Coração da captação — 79% do orçamento e 98% das conversas de WhatsApp"
+      },
+      {
+        "objetivo": "LINK CLICKS (Post IG)",
+        "gasto": 278.68,
+        "share_gasto_pct": 10.86,
+        "impressoes": 29414,
+        "cliques": 789,
+        "ctr_pct": 2.68,
+        "cpm": 9.47,
+        "insight": "Post de inauguração impulsionado — bom CTR, mas quase não gera conversa"
+      },
+      {
+        "objetivo": "AWARENESS (Branding)",
+        "gasto": 255.85,
+        "share_gasto_pct": 9.97,
+        "impressoes": 157545,
+        "cliques": 418,
+        "ctr_pct": 0.27,
+        "cpm": 1.62,
+        "insight": "CPM de R$ 1,62 — alcance barato para marca, não espere conversa daqui"
+      }
     ],
     "anuncios_30d": [
-      {"campanha": "[MSG] [PLÁSTICA] 040826", "ad": "AD - Olha, vou te contar um segredo", "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/763778654_1040802548922685_6431546147681978684_n.jpg?_nc_cat=108&ccb=1-7&_nc_eui2=AeEghWiJLvLJTbehdJxvxSzTipSJEpkBM3GKlIkSmQEzcR54yotS1sDTt3jL5ngWHoFTc85PAZEa5WbV08xvVzKr&_nc_ohc=uKWzBsOfmZsQ7kNvwHJ-xfU&_nc_zt=23&_nc_ht=scontent-bru2-1.xx&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&oh=00_AQLzxHP_PBxwNzRi8Pxp0KAsDE6rykPCirbdFdltA0FPeg&oe=6A9927AA", "copy_curto": "Olha, vou te contar um segredo… A Plástica dos Pés é aquele cuidado que faz diferença de verdade", "gasto": 477.70, "impressoes": 32435, "cliques": 1315, "ctr_pct": 4.05, "cpm": 14.73, "reach": 14041, "frequency": 2.31, "cpa_msg": 3.56, "status": "escalar"},
-      {"campanha": "[VAGA MANICURE] 220726", "ad": "AD - VAGA MANICURE", "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/759802954_1281579897241230_2551670096563815511_n.jpg", "copy_curto": "Vaga aberta para MANICURE — Fast Escova Limão", "gasto": 176.19, "impressoes": 15099, "cliques": 292, "ctr_pct": 1.93, "cpm": 11.67, "reach": 8064, "frequency": 1.87, "cpa_msg": 3.39, "status": "escalar"},
-      {"campanha": "[VAGA ESCOVISTA] 200726", "ad": "AD - VAGA ESCOVISTA", "thumb": "", "copy_curto": "Vaga aberta para ESCOVISTA — Fast Escova Limão", "gasto": 175.69, "impressoes": 14438, "cliques": 287, "ctr_pct": 1.99, "cpm": 12.17, "reach": 8852, "frequency": 1.63, "cpa_msg": 3.51, "status": "manter"},
-      {"campanha": "[VAGA MAQUIADOR] 220726", "ad": "AD - VAGA MAQUIADOR", "thumb": "", "copy_curto": "Vaga aberta para MAQUIADOR — Fast Escova Limão", "gasto": 173.90, "impressoes": 16137, "cliques": 215, "ctr_pct": 1.33, "cpm": 10.78, "reach": 8908, "frequency": 1.81, "cpa_msg": 3.70, "status": "manter"},
-      {"campanha": "[MSG] [COMBO SEMANAL] 110826", "ad": "AD - A LOUCURA DA GERENTE CHEGOU", "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/768787102_1737393464351583_6068150645383682088_n.jpg", "copy_curto": "🚨 A LOUCURA DA GERENTE — MÃO+PÉ ganha VELATERAPIA. De R$113 por R$83", "gasto": 262.08, "impressoes": 13450, "cliques": 613, "ctr_pct": 4.56, "cpm": 19.49, "reach": 5876, "frequency": 2.29, "cpa_msg": 6.39, "status": "escalar"},
-      {"campanha": "[MSG] [RETOQUE] 280726", "ad": "AD - Retoque feito, autoestima renovada!", "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/759802954_1281579897241230_2551670096563815511_n.jpg", "copy_curto": "✨ Retoque feito, autoestima renovada — Cabelo bem cuidado faz diferença", "gasto": 736.57, "impressoes": 31751, "cliques": 913, "ctr_pct": 2.88, "cpm": 23.20, "reach": 12765, "frequency": 2.49, "cpa_msg": 7.67, "status": "revisar"},
-      {"campanha": "Post do Instagram FAST OFICIAL", "ad": "Post IG boostado", "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/756223253_3091831074357630_4242396074652814842_n.jpg", "copy_curto": "🎉 É OFICIAL: A FAST ESCOVA LIMÃO ESTÁ DE PORTAS ABERTAS", "gasto": 314.19, "impressoes": 31898, "cliques": 870, "ctr_pct": 2.73, "cpm": 9.85, "reach": 16286, "frequency": 1.96, "cpa_msg": 34.91, "status": "manter (LINK_CLICKS)"},
-      {"campanha": "[BRANDING] 110826", "ad": "AD01 - O cuidado não acaba no salão", "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/772583923_1089529550091420_1951406117431056790_n.jpg", "copy_curto": "O cuidado não acaba no salão. Leve os produtos Fast Escova para casa!", "gasto": 149.63, "impressoes": 91939, "cliques": 195, "ctr_pct": 0.21, "cpm": 1.63, "reach": 47503, "frequency": 1.94, "cpa_msg": null, "status": "manter (AWARENESS)"},
-      {"campanha": "[BRANDING] 270726", "ad": "AD01 - Sinta a sensação de frescor", "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/758793390_2240367073364178_2038600985344487033_n.jpg", "copy_curto": "FRESH Mint — sensação refrescante, fios leves e perfumados", "gasto": 120.97, "impressoes": 73983, "cliques": 242, "ctr_pct": 0.33, "cpm": 1.64, "reach": 42546, "frequency": 1.74, "cpa_msg": null, "status": "manter (AWARENESS)"},
-      {"campanha": "[MSG] [COMBOS 4 E 5] 210826", "ad": "AD02 - Card Retoque + Escova Lisa + LED", "thumb": "", "copy_curto": "Fast Retoque + Escova Lisa GANHA LEDterapia. De R$337 por R$268", "gasto": 53.65, "impressoes": 3034, "cliques": 42, "ctr_pct": 1.38, "cpm": 17.68, "reach": 1528, "frequency": 1.99, "cpa_msg": 13.41, "status": "otimizar"},
-      {"campanha": "[MSG] [COMBOS 1,2,3] 210826", "ad": "AD02 - Escova Lisa + Reconstrução + Mão", "thumb": "", "copy_curto": "Escova Lisa + Reconstrução ganha Mão. De R$256 por R$209", "gasto": 38.20, "impressoes": 2357, "cliques": 33, "ctr_pct": 1.40, "cpm": 16.21, "reach": 1256, "frequency": 1.88, "cpa_msg": 38.20, "status": "matar"},
-      {"campanha": "[MSG] [COMBOS 1,2,3] 210826", "ad": "AD03 - Escova Lisa + Nutrição + Ozônio", "thumb": "", "copy_curto": "Escova Lisa + Nutrição ganha Ozonioterapia. De R$227 por R$158", "gasto": 23.36, "impressoes": 1204, "cliques": 21, "ctr_pct": 1.74, "cpm": 19.40, "reach": 800, "frequency": 1.51, "cpa_msg": 5.84, "status": "escalar"},
-      {"campanha": "[MSG] [COMBOS 4 E 5] 210826", "ad": "AD01 - Escova + Fast Pontas + Nutrição", "thumb": "", "copy_curto": "Escova Lisa + Fast Pontas ganha Nutrição. De R$247 por R$168", "gasto": 15.65, "impressoes": 1017, "cliques": 12, "ctr_pct": 1.18, "cpm": 15.39, "reach": 599, "frequency": 1.70, "cpa_msg": null, "status": "sem conversão"},
-      {"campanha": "[MSG] [COMBOS 1,2,3] 210826", "ad": "AD01 - Escova + Make VIP + Hidratação", "thumb": "", "copy_curto": "Escova Lisa + Make VIP ganha Hidratação. De R$307 por R$228", "gasto": 9.10, "impressoes": 456, "cliques": 10, "ctr_pct": 2.19, "cpm": 19.96, "reach": 320, "frequency": 1.43, "cpa_msg": 3.03, "status": "escalar (test)"},
-      {"campanha": "[BRANDING] 270726", "ad": "AD02 - É OFICIAL: FAST ESCOVA LIMÃO", "thumb": "", "copy_curto": "🎉 É OFICIAL — Fast Escova Limão de portas abertas", "gasto": 2.71, "impressoes": 1610, "cliques": 7, "ctr_pct": 0.43, "cpm": 1.68, "reach": 1543, "frequency": 1.04, "cpa_msg": null, "status": "manter"},
-      {"campanha": "[BRANDING] 260826", "ad": "AD01 - Cuidado também é coisa de homem", "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/786287744_1068303145607460_6528389219268698106_n.jpg", "copy_curto": "Cuidado também é coisa de homem — Fast Mint autocuidado masculino", "gasto": 0.63, "impressoes": 324, "cliques": 0, "ctr_pct": 0, "cpm": 1.94, "reach": 319, "frequency": 1.02, "cpa_msg": null, "status": "aguardar dados"}
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [RETOQUE]  280726",
+        "ad": "AD - Retoque feito, autoestima renovada!",
+        "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/759802954_1281579897241230_2551670096563815511_n.jpg?_nc_cat=111&ccb=1-7&_nc_eui2=AeEXkwwPVp4r7BCXNUA7oWSG7J5VHyll2p3snlUfKWXanWwN31vB1fCt7j-D1GBC1tWzI54dxVtv6ZiNxK17lVOH&_nc_ohc=S1MlySeAncUQ7kNvwFX82_8&_nc_oc=AdrDko_-t_eO4YovrpmDqxJlKrC9_wQjkmfPGsf4PwKS02DpIYCknFfpudJW1Sjogps&_nc_zt=23&_nc_ht=scontent-bru2-1.xx&edm=AAT1rw8EAAAA&_nc_gid=-vTgXUe9uolzdnHWYmsd7w&_nc_tpa=Q5bMBQLo2awArX03cG0ukPUhpmcm-1WYK7tO6zkrPjvWB0f802p1duufG-jPwt7I-lchaWw8QZlZZfDl&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_AQIY5pGWa7p6LY7I-oHMRqJ1aMUNz7BUCy8BfQernXtQEA&oe=6A990C60",
+        "copy_curto": "✨ Retoque feito, autoestima renovada! ✨ Na Fast Escova Limão, seu retoque é realizado com todo o cuidado para…",
+        "gasto": 670.31,
+        "impressoes": 28193,
+        "cliques": 800,
+        "ctr_pct": 2.84,
+        "cpm": 23.78,
+        "reach": 12031,
+        "frequency": 2.34,
+        "cpa_msg": 8.08,
+        "status": "otimizar"
+      },
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [PLÁSTICA]  040826",
+        "ad": "AD - Olha, vou te contar um segredo",
+        "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/763778654_1040802548922685_6431546147681978684_n.jpg?_nc_cat=108&ccb=1-7&_nc_eui2=AeEghWiJLvLJTbehdJxvxSzTipSJEpkBM3GKlIkSmQEzcR54yotS1sDTt3jL5ngWHoFTc85PAZEa5WbV08xvVzKr&_nc_ohc=uKWzBsOfmZsQ7kNvwHJ-xfU&_nc_oc=Adrv6-MkSiDXLUo-Xkt9Z7_ai0fZZRTdSdTdUEOuzWs4cSGF7_mdHAepAdUY3nr5Jow&_nc_zt=23&_nc_ht=scontent-bru2-1.xx&edm=AAT1rw8EAAAA&_nc_gid=FjBii-p5ikuIFOoZjFrw2A&_nc_tpa=Q5bMBQIdiH-uQ3QKVlnWAVKpbeL28pptSWtxyK8SRphwLaldv06MM1LU7TFA9RZzhcACCpvKOazIRCmB&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_AQLzxHP_PBxwNzRi8Pxp0KAsDE6rykPCirbdFdltA0FPeg&oe=6A9927AA",
+        "copy_curto": "Olha, vou te contar um segredo… 👀 A Plástica dos Pés é aquele cuidado que faz diferença de verdade: ajuda a r…",
+        "gasto": 477.7,
+        "impressoes": 32435,
+        "cliques": 1315,
+        "ctr_pct": 4.05,
+        "cpm": 14.73,
+        "reach": 14041,
+        "frequency": 2.31,
+        "cpa_msg": 3.56,
+        "status": "escalar"
+      },
+      {
+        "campanha": "Post do Instagram: 🎉 É OFICIAL: A FAST ESCOVA...",
+        "ad": "Post do Instagram: 🎉 É OFICIAL: A FAST ESCOVA...",
+        "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/756223253_3091831074357630_4242396074652814842_n.jpg?_nc_cat=107&ccb=1-7&_nc_eui2=AeEQtspVCWxNWYIVh1ZUzXVn6BNbOZHxLLHoE1s5kfEssV0Bwd6odSeja4EkqDQiB7L9GqlfEDbyVh72_k9pXuG9&_nc_ohc=T1-i-5RO7yoQ7kNvwEW3mBJ&_nc_oc=AdpQSS_5wuNVoCd5Yt7Kedct4AnTd61MLqfpaeu7lnkjO5Mq_aZlqF7faWqIOwnXnLA&_nc_zt=23&_nc_ht=scontent-bru2-1.xx&edm=AAT1rw8EAAAA&_nc_gid=DPRDCRjUqkrqwyyhHazLuQ&_nc_tpa=Q5bMBQLz1UlotXFR4VHJoSEdCLrWa7Oqk08M0ghBB6ZkcPz8toi28W-ixwdWcI2SclrrqzaN9cbXk4iS&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_AQKEkxPiOm_Kb01KBEfStiL2ncSvmQZ-r6JCLxaF3_93rw&oe=6A990490",
+        "copy_curto": "🎉 É OFICIAL: A FAST ESCOVA LIMÃO ESTÁ DE PORTAS ABERTAS! 💛✨ Um espaço completo para cuidar da sua beleza com…",
+        "gasto": 278.68,
+        "impressoes": 29414,
+        "cliques": 789,
+        "ctr_pct": 2.68,
+        "cpm": 9.47,
+        "reach": 15443,
+        "frequency": 1.9,
+        "cpa_msg": 30.96,
+        "status": "manter (LINK_CLICKS)"
+      },
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [COMBO SEMANAL]  110826",
+        "ad": "AD -  A LOUCURA DA GERENTE CHEGOU",
+        "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/768787102_1737393464351583_6068150645383682088_n.jpg?_nc_cat=103&ccb=1-7&_nc_eui2=AeG4Zy5cVIpwUQF5S67jcm4sx9zzEqYZDTbH3PMSphkNNtnZIcrFE9JSvvhuU1w7XfFpivpkl1bpaawLVSMoOz5m&_nc_ohc=XHqBGhvPOQ8Q7kNvwHYrtsD&_nc_oc=AdpUnEV7lHhBfQ2iVVoojuiNRzjd0esI46DxDTG8ORqMwr3J91KfhSdxJCkAxGq1VBA&_nc_zt=23&_nc_ht=scontent-bru2-1.xx&edm=AAT1rw8EAAAA&_nc_gid=iIGvLFP16c-XCCDZYtwhWQ&_nc_tpa=Q5bMBQIsUGlLkM2jVQZCxHP3Uula2L-HRL2p0qVpZq6PuueI9KZNwWZTozKCZfDga-2fMu5bb2sNoMd5&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_AQLe57Qj1SHW68k-7l5V8jXo2NnIgKYt4_l-wip1jY3LHg&oe=6A991177",
+        "copy_curto": "🚨 A LOUCURA DA GERENTE CHEGOU! De segunda a quarta, fez MÃO + PÉ ganha VELATERAPIA! De R$ 113 por apenas R$ 8…",
+        "gasto": 262.08,
+        "impressoes": 13450,
+        "cliques": 613,
+        "ctr_pct": 4.56,
+        "cpm": 19.49,
+        "reach": 5876,
+        "frequency": 2.29,
+        "cpa_msg": 6.39,
+        "status": "manter"
+      },
+      {
+        "campanha": "[VAGA ESCOVISTA] [MSG] 200726",
+        "ad": "AD - VAGA ESCOVISTA",
+        "thumb": "https://external-bru2-1.xx.fbcdn.net/emg1/v/t13/9240097615178608692?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQLe6vcYDSMBHeo9djUdlVqa4VrsA9j6UjyYPYq5NREmqDUxFmJnnjDcGaflaLYWte-JKBBJmYrPc1pp5TbgmTSQdnXQEEboXL5EzD4JDZkoqSrCDLS9QyQcWyWX7P21Y5QBynAlErGuR2i3ixWPZeDP&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&edm=AAT1rw8EAAAA&_nc_gid=xEDxowCk6GJzZ-lredTBDA&_nc_eui2=AeF3mH2jELzbzSfziYbfYx6PrxXdXxYP9J6vFd1fFg_0niZAgZSWkQiawVkm1cGgMQHACvrY0DrE8XF9zmLCp009&_nc_oc=Adp94xoH1tmCdgEOGfHodbknuG_t2wFNTgaEtAZ1_YBXw61szMUQ_vSza0r0yeLG0d8&ccb=13-1&oh=06_Q3_CAWJJM6nEv-txQVZHgJ67EUSI5V2b30qaXNB-KBKUFhPq&oe=6A9537D2&_nc_sid=58080a",
+        "copy_curto": "A Fast Escova Limão está com vagas abertas para ESCOVISTA. Venha fazer parte de um time que transforma o dia…",
+        "gasto": 161.27,
+        "impressoes": 13217,
+        "cliques": 255,
+        "ctr_pct": 1.93,
+        "cpm": 12.2,
+        "reach": 8323,
+        "frequency": 1.59,
+        "cpa_msg": 3.58,
+        "status": "escalar"
+      },
+      {
+        "campanha": "[VAGA MANICURE] [MSG] 220726",
+        "ad": "AD - VAGA MANICURE",
+        "thumb": "https://external-bru2-1.xx.fbcdn.net/emg1/v/t13/15307045775747868537?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJBB3t6oynFxNEh0gqizB-Rx3p7S4EuNHANSI4LXxYOEdgWykCqJCZRDtNcDQHowouE6QdUAXR3NyEK0_rUNjVsk3IJMVwUf__XxFzQsRLVRAt1Y5TqfpgpvWzouqf2EOKzBXvC7xm7z0RjXOe1zmlA&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&edm=AAT1rw8EAAAA&_nc_gid=pmZ7IRKb93uUMfGHT01f_w&_nc_eui2=AeHiy4ZIpvMZ85kKMpVoMD18upSzJwFJJ3u6lLMnAUkne6jveAuGU3pbfxEWbQRAFo0tHRhWPkd-2e0LCHeJeYL3&_nc_oc=AdrDB6FEQvQOiioDJjVnGafqREzJ5lDIGcF9akOr1BqJSBeZfM_QdRCvAKzlkXt6URs&ccb=13-1&oh=06_Q3_CAZH4IuZWP1f7Rof60SYiNAowjMmfgpMHyRUqNuH3aN3s&oe=6A9540FC&_nc_sid=58080a",
+        "copy_curto": "A Fast Escova Limão está com vagas abertas para MANICURE. Venha fazer parte de um time que transforma o dia d…",
+        "gasto": 159.88,
+        "impressoes": 13750,
+        "cliques": 265,
+        "ctr_pct": 1.93,
+        "cpm": 11.63,
+        "reach": 7752,
+        "frequency": 1.77,
+        "cpa_msg": 3.33,
+        "status": "escalar"
+      },
+      {
+        "campanha": "[VAGA MAQUIADOR] [MSG] 220726",
+        "ad": "AD - VAGA MAQUIADOR",
+        "thumb": "https://external-bru2-1.xx.fbcdn.net/emg1/v/t13/17090335193519842774?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQLcVkBa3NAgR3KNxxhw4Es2yffn_RF4eYe7tzhzQqL3vwyA79mcQc6DnUXYRKECyEsIAqx0pMww50SZ1jiPrP2MlXHz1OdaE8h65M9QvKoLzsYcVcLSkpzLKnW6NCgT5e-1TP4qfkmukwo7lbpIszgO&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&edm=AAT1rw8EAAAA&_nc_gid=XkRmKN8EgzuFUaPGH4lTZw&_nc_eui2=AeHCQekhqh-OF5GPHbUjJZNJyhVJiE5-MGzKFUmITn4wbOM7v7MzGW3WTTwSCtWHZJ_6oJK2cRxXSBFmEbmzAapN&_nc_oc=Adp26k0o8XTbbYvtqqh7ThNIYv03s2fUlKZ42dbsOKOIW5YvypAZLy8_CuwrQ9fTKmk&ccb=13-1&oh=06_Q3_CAXBetsXiCfX7Zo1r7ZQTEWWqFeoPNU_S8SaTSA2Gl01Z&oe=6A952334&_nc_sid=58080a",
+        "copy_curto": "A Fast Escova Limão está com vagas abertas para MAQUIADOR(A). Venha fazer parte de um time que transforma o d…",
+        "gasto": 159.58,
+        "impressoes": 14932,
+        "cliques": 197,
+        "ctr_pct": 1.32,
+        "cpm": 10.69,
+        "reach": 8439,
+        "frequency": 1.77,
+        "cpa_msg": 3.99,
+        "status": "escalar"
+      },
+      {
+        "campanha": "[RECONHECIMENTO] [BRANDING] 110826",
+        "ad": "AD01 -  O cuidado não acaba no salão.",
+        "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/772583923_1089529550091420_1951406117431056790_n.jpg?_nc_cat=111&ccb=1-7&_nc_eui2=AeFe9CJ-B40L3PEdAq_7NliMzocfthGM5VHOhx-2EYzlUcSo_xw0jGZ4Z5LygTDFIRuccTeqEg9NWbV1Ur0XE5PJ&_nc_ohc=SuE91Q-5duIQ7kNvwHblNgg&_nc_oc=Adpv6ha_ZiRTGtFZeHEy6Inqj4_E3qQR-Pivic7ER96dzqx8ewlddM9Ho4dX_mfHgpM&_nc_zt=23&_nc_ht=scontent-bru2-1.xx&edm=AAT1rw8EAAAA&_nc_gid=Ta_KfTUSQm57_Ac2YHUvxw&_nc_tpa=Q5bMBQJZRPpOslJN3ebV5SbvTmghrseibSGhw5r9y8ZNSVivK4r3pLmBEXjnrV3TwvRLp9d79bI4kRy4&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_AQIptnaMWgJf6dHxcnK1TAdcZbRD1JwmTFH1wivyqUy0sg&oe=6A992287",
+        "copy_curto": "O cuidado não acaba no salão. Leve os produtos Fast Escova para casa! 💛",
+        "gasto": 149.63,
+        "impressoes": 91939,
+        "cliques": 195,
+        "ctr_pct": 0.21,
+        "cpm": 1.63,
+        "reach": 47503,
+        "frequency": 1.94,
+        "cpa_msg": null,
+        "status": "manter (AWARENESS)"
+      },
+      {
+        "campanha": "[RECONHECIMENTO] [BRANDING] 270726",
+        "ad": "AD01 -  Sinta a sensação de frescor que conquista",
+        "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/758793390_2240367073364178_2038600985344487033_n.jpg?_nc_cat=102&ccb=1-7&_nc_eui2=AeEVAfSUaIUjlE_u6cV4PF_kuE5p8_PA2VK4Tmnz88DZUrD3RAZlSrZ9_bf5toH7QcZ7NBUBK2j2tOnAit6Ib31S&_nc_ohc=k-OpGZcyvaYQ7kNvwG27rkF&_nc_oc=Adp75d-SO13HVrtyqV4LhdA6Cccm8jSB9csFXv1nqrdk1ab57CsvnWlwsBxSg1ieaps&_nc_zt=23&_nc_ht=scontent-bru2-1.xx&edm=AAT1rw8EAAAA&_nc_gid=HHyQJ3Uy3hyvzbWkiZtrRQ&_nc_tpa=Q5bMBQIcBDalOIUzJ-33ocJUlJCmjDi2_wsvc0tIEYdzUIA-nmKBlU_DbX3AZof65WugdzI3dwE9CC8Y&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_AQIv8Aq-1-22z_b0kyTBFQ6tqh-r4jiHfeyerwfYlPp6zg&oe=6A99285D",
+        "copy_curto": "✨ Sinta a sensação de frescor que conquista desde a primeira aplicação! O FRESH Mint deixa os fios leves, per…",
+        "gasto": 103.42,
+        "impressoes": 63991,
+        "cliques": 216,
+        "ctr_pct": 0.34,
+        "cpm": 1.62,
+        "reach": 39512,
+        "frequency": 1.62,
+        "cpa_msg": null,
+        "status": "manter (AWARENESS)"
+      },
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [COMBOS 4 E 5] 210826",
+        "ad": "AD02 - CARD COMBO RETOQUE DE RAIZ + ESCOVA LISA",
+        "thumb": "https://external-bru2-1.xx.fbcdn.net/emg1/v/t13/4034105068414551117?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJTHLeGeIFNxfpnrhOszBAOdzL4odXS1YGjsw1zTJ791oCnQe7tPQW3V-m14URlWcdjn-ZuL_6HAOBS6ZGzQIjlM-PsVGZgwtSqRslVuwF30DQ21vg9I3SynjAikID_wsnu10BczLJVuhOWC6CwdghN&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&edm=AAT1rw8EAAAA&_nc_gid=PV88kHRs-neE24_6DayMnw&_nc_eui2=AeE-Hg7W_m1DxmpC_jZqIin3DKgcJUdKxioMqBwlR0rGKlWsen-buMocQNjeJHGQtGUzMQR3zan5W2krJXg2ujct&_nc_oc=AdqOvZOqFMssXKjTfNRoO5_HMYdxVBnrJfv2nLG9mtmxRO1Z7l1b4rWT4adf_XxFq_g&ccb=13-1&oh=06_Q3_CASbLZDWV7j5JVArxaiJlpRmgB5OzZ1R_pfujOaZg0ns9&oe=6A9537BC&_nc_sid=58080a",
+        "copy_curto": "✨ Fast Retoque + Escova Lisa e ainda GANHA LEDterapia. De R$337 por apenas R$268! Condição válida de segunda…",
+        "gasto": 53.65,
+        "impressoes": 3034,
+        "cliques": 42,
+        "ctr_pct": 1.38,
+        "cpm": 17.68,
+        "reach": 1528,
+        "frequency": 1.99,
+        "cpa_msg": 13.41,
+        "status": "revisar"
+      },
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [COMBOS 1,2,3] 210826",
+        "ad": "AD02 - CARD COMBO ESCOVA LISA+ RECONSTRUÇÃO",
+        "thumb": "https://external-bru2-1.xx.fbcdn.net/emg1/v/t13/2993735796631955571?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQKKh4hK0LtGoNVrItacF8Hq3mFNUGHvWuCPrt91fDqFOk7HZrxVJCFgBrPlRcf7lMiioWAafLM7TApmPt80s1mkZCbUFuRcFy4-1QzV_At7eGwOHycEUDO7eizPDdHyNBoD7jthlzO9ks8x9TCT8LaE&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&edm=AAT1rw8EAAAA&_nc_gid=zjlUTAEhDBQvzrh4UPG21A&_nc_eui2=AeEa3jZN84idhtEvjcG_Fe1TgmV3BrLn6_aCZXcGsufr9skpLPjZxIhRQD-x7hiqYP2jlJ8sfaPCI-aTxQclXRgL&_nc_oc=AdpJqTNA2zFm5chwBXxzSi-k_JwrPc60cXaHRSgTUugG8gP_yfwfDvY6D34a06HKASE&ccb=13-1&oh=06_Q3_CAQQkn4ALwZmdNn4nNYQLAW8kr1ctyVAle6px1YgbsEFm&oe=6A9526E6&_nc_sid=58080a",
+        "copy_curto": "Escova Lisa + Reconstrução e ainda GANHA Mão. De R$256 por apenas R$209! Cuide dos fios e ainda saia com as u…",
+        "gasto": 38.2,
+        "impressoes": 2357,
+        "cliques": 33,
+        "ctr_pct": 1.4,
+        "cpm": 16.21,
+        "reach": 1256,
+        "frequency": 1.88,
+        "cpa_msg": 38.2,
+        "status": "revisar"
+      },
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [COMBOS 1,2,3] 210826",
+        "ad": "AD03 - CARD COMBO ESCOVA LISA+ NUTRIÇÃO",
+        "thumb": "https://external-bru2-1.xx.fbcdn.net/emg1/v/t13/1427177196661640599?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQIb2c1O3Bqhwev2xE6i66nWLkTJqrDZKsVHMeKkUvoFxx362YHHsnIFB5ZgZ8MPH4-ZDOrRqlWeAsFz_vfz1pLtHaEAaJ15R9I_Or9ijQ3_i37NorVB6RMhmr25PYF0Xg9gzp80Fp03_kHVuHSopwEp&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&edm=AAT1rw8EAAAA&_nc_gid=6CQOd5vVfE8QcrBbFCuHvQ&_nc_eui2=AeHep4WfVIK1cirG8sYa5K_ruSxyl5XoCtu5LHKXlegK21BTCzsgjJelVmn4CzgLEA1g7tHJA_Tu1EPjOb-EXs4h&_nc_oc=Ado1aBTFxVNOTb4Oz_Ao8MN9GckMgvqFXRBrXtIx-dVpweErNP4j1qUQPZ3q_VaF3MI&ccb=13-1&oh=06_Q3_CARAc7orRKoDORqhUQ9ARbuQEpd-to0Flqj32e3lY4oIO&oe=6A9518F8&_nc_sid=58080a",
+        "copy_curto": "Escova Lisa + Nutrição e ainda GANHA Ozonioterapia. De R$227 por apenas R$158! Cabelo bonito, nutrido e bem c…",
+        "gasto": 23.36,
+        "impressoes": 1204,
+        "cliques": 21,
+        "ctr_pct": 1.74,
+        "cpm": 19.4,
+        "reach": 800,
+        "frequency": 1.5,
+        "cpa_msg": 5.84,
+        "status": "manter"
+      },
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [COMBOS 4 E 5] 210826",
+        "ad": "AD01 - CARD COMBO ESCOVA + FAST PONTAS",
+        "thumb": "https://external-bru2-1.xx.fbcdn.net/emg1/v/t13/2991647176649759683?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQJAdgCkRrNns6YiLU1IHow-sCSSuvgxOPhyY5nQHiyuqebTmpBPUweBUyKxX910BhUBWgZMblqXg3duxCbjvQCJGEUW8QcePTTdwjNkAIemp9sNncALzh13ZboV6KpUnRxrD233Igz0x9edNzDhIu0B&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&edm=AAT1rw8EAAAA&_nc_gid=hFo5L8ppeylSKkKLBWdYWg&_nc_eui2=AeG46381uzelIeL-pJ1gWmHvBoNeDyIWDCoGg14PIhYMKs8yz017V7MSc85qCwJDDEkpSfczZu7J_hVdLRmU1TTR&_nc_oc=AdrUczWRFCfGzKKsb3Vs1g70qcXzwWVe-xJfLRvjudxchPzWQV7PnYVUZdwvuTCdNNs&ccb=13-1&oh=06_Q3_CAdgh9fbMnJgX3oT1J1viDMBt-PUcja3ueCQGWav68iUz&oe=6A9511D0&_nc_sid=58080a",
+        "copy_curto": "✨ Escova Lisa + Fast Pontas e ainda GANHA Nutrição. De R$247 por apenas R$168! Cabelo impecável e pontas semp…",
+        "gasto": 15.65,
+        "impressoes": 1017,
+        "cliques": 12,
+        "ctr_pct": 1.18,
+        "cpm": 15.39,
+        "reach": 599,
+        "frequency": 1.7,
+        "cpa_msg": null,
+        "status": "aguardar dados"
+      },
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [COMBOS 1,2,3] 210826",
+        "ad": "AD01 - CARD COMBO ESCOVA + MAKE VIP",
+        "thumb": "https://external-bru2-1.xx.fbcdn.net/emg1/v/t13/3477213987769432664?url=https%3A%2F%2Fwww.facebook.com%2Fads%2Fimage%2F%3Fd%3DAQL6fggAT7g9Hx5uUYPbkIhx11x9AlAeF4PxRm_ZV8zDYQB4p0En6cZRg3y4yKvSifrNPPxbtXXvDGgMuVy7QeopyNiJ3pTTcWJwp3gVUJuqPelxX3Ae6jWnoLCN_ofpT76OcKZQs7DP0uLcup5pRypF&fb_obo=1&utld=facebook.com&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&edm=AAT1rw8EAAAA&_nc_gid=AmYm_rsaPjj06WO8I5891Q&_nc_eui2=AeEZfhj26wJ-X7KiqPw8ByV65THbq_yRC0PlMdur_JELQ2bRyq1wuM3_DH03fYfkbhZG1CzBf-TCkA8OtdfbdZ_P&_nc_oc=Adp3-azIXgRf0EJIOPG9gy2m-F7Htt_B0H-d56wwRwWJhDZbZCvoC0rDFEJbdBf322Q&ccb=13-1&oh=06_Q3_CARCC1Xh62x3HlCMs4WyD1qA1EuDGn-k9LfgtJgpI3tZp&oe=6A95160D&_nc_sid=58080a",
+        "copy_curto": "Escova Lisa + Make VIP e ainda GANHA Hidratação. De R$307 por apenas R$228! Saia pronta, produzida e com os c…",
+        "gasto": 9.1,
+        "impressoes": 456,
+        "cliques": 10,
+        "ctr_pct": 2.19,
+        "cpm": 19.96,
+        "reach": 320,
+        "frequency": 1.43,
+        "cpa_msg": 3.03,
+        "status": "escalar"
+      },
+      {
+        "campanha": "[RECONHECIMENTO] [BRANDING] 270726",
+        "ad": "AD02 -  É OFICIAL: A FAST ESCOVA LIMÃO",
+        "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/758599918_1756678082174477_6226653005347605080_n.jpg?_nc_cat=104&ccb=1-7&_nc_eui2=AeG7j23i5v5kbvZNtJvftHHcWTTvAb2gOHFZNO8BvaA4cWCoBAn7dTgqXS1kIJWHPWMMLZ4Ok1gC3lWpUKS1A9uo&_nc_ohc=PR7sKgTknsoQ7kNvwFZkKUr&_nc_oc=Adqc1UZantiHVd-oWOVN3deLLK7_X3dda5zE6shF9PSqvKCk12YSVLKGXYXsV-rpUTU&_nc_zt=23&_nc_ht=scontent-bru2-1.xx&edm=AAT1rw8EAAAA&_nc_gid=bQwuacCHuNgLP4xsomh3GA&_nc_tpa=Q5bMBQL8ODWrH_80xQXj4EWVCLgNmF4i0ZNE0o3b8rHJJ4UZEO4Xb8LKPTOVA9w4yYCUb2MWFYshfO4F&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_AQJE-FMFJz2uS3j2MzAvWLYv9tvluYNGkL0Q67Pa65EU8A&oe=6A9929BF",
+        "copy_curto": "🎉 É OFICIAL: A FAST ESCOVA LIMÃO ESTÁ DE PORTAS ABERTAS! 💛✨ Escovas, manicure e pedicure, tratamentos capilar…",
+        "gasto": 2.17,
+        "impressoes": 1291,
+        "cliques": 7,
+        "ctr_pct": 0.54,
+        "cpm": 1.68,
+        "reach": 1253,
+        "frequency": 1.03,
+        "cpa_msg": null,
+        "status": "manter (AWARENESS)"
+      },
+      {
+        "campanha": "[RECONHECIMENTO] [BRANDING] 260826",
+        "ad": "AD01 - Cuidado também é coisa de homem",
+        "thumb": "https://scontent-bru2-1.xx.fbcdn.net/v/t15.5256-10/786287744_1068303145607460_6528389219268698106_n.jpg?_nc_cat=100&ccb=1-7&_nc_eui2=AeEhMcwu-1YZsq-52gkIRgzZZIRqrx-a69dkhGqvH5rr1xQLUt1j4E1u11OJIpq3zpvF7JlVwv4JwAG6kk6lpV4y&_nc_ohc=P5vHFPwbrocQ7kNvwF1Yh7y&_nc_oc=AdrhlxzTrhrpI5g10JY_0uihs9p3_R9N0QSBl_Jk37fBYqw-BMDJpCBMsmGqp_E5hac&_nc_zt=23&_nc_ht=scontent-bru2-1.xx&edm=AAT1rw8EAAAA&_nc_gid=QebGDUGqukUkCGhHXhszHg&_nc_tpa=Q5bMBQK83gwGijNTPiqzO2pZNVyB9oSJdOoX1NcbzJZ_4OWDHEyH6kNauiNTLuZgtVso0du0g899BJky&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=a7ce7f&_nc_sid=58080a&oh=00_AQKrAAlYrYHB5Jd3iXC98K0-D0iT9clowBnLcBQFzl638A&oe=6A991BB5",
+        "copy_curto": "Cuidado também é coisa de homem! O Fast Mint chegou para deixar o seu momento de autocuidado ainda mais compl…",
+        "gasto": 0.63,
+        "impressoes": 324,
+        "cliques": 0,
+        "ctr_pct": 0.0,
+        "cpm": 1.94,
+        "reach": 319,
+        "frequency": 1.02,
+        "cpa_msg": null,
+        "status": "manter (AWARENESS)"
+      }
     ],
     "ad_sets_30d": [
-      {"campanha": "[MSG] [PLÁSTICA] 040826", "adset": "[GEO] [5KM] [MULHERES] [25+]", "gasto": 477.70, "reach": 14041, "cliques": 1315, "ctr_pct": 4.05, "frequency": 2.31, "cpa_msg": 3.56, "insight": "Top performer — 25+ funcionando"},
-      {"campanha": "[MSG] [COMBO SEMANAL] 110826", "adset": "[GEO] [5KM] [MULHERES] [25+]", "gasto": 262.08, "reach": 5876, "cliques": 613, "ctr_pct": 4.56, "frequency": 2.29, "cpa_msg": 6.39, "insight": "Melhor CTR da conta"},
-      {"campanha": "[MSG] [RETOQUE] 280726", "adset": "[GEO] [5KM] [MULHERES] [35+]", "gasto": 736.57, "reach": 12765, "cliques": 913, "ctr_pct": 2.88, "frequency": 2.49, "cpa_msg": 7.67, "insight": "35+ focado — CPA subiu"},
-      {"campanha": "[MSG] [COMBOS 1,2,3] 210826", "adset": "[GEO] [5KM] [MULHERES] [25+]", "gasto": 70.66, "reach": 1828, "cliques": 64, "ctr_pct": 1.59, "frequency": 2.20, "cpa_msg": 8.83, "insight": "Baixa performance"},
-      {"campanha": "[MSG] [COMBOS 4 E 5] 210826", "adset": "[GEO] [5KM] [MULHERES] [25+]", "gasto": 69.30, "reach": 1828, "cliques": 54, "ctr_pct": 1.33, "frequency": 2.22, "cpa_msg": 17.33, "insight": "🛑 Pior CPA — matar"},
-      {"campanha": "[VAGA MANICURE] 220726", "adset": "[GEO] [8KM] [INTERESSE] [25-55]", "gasto": 176.19, "reach": 8064, "cliques": 292, "ctr_pct": 1.93, "frequency": 1.87, "cpa_msg": 3.39, "insight": "⭐ Melhor CPA — vagas"},
-      {"campanha": "[VAGA ESCOVISTA] 200726", "adset": "[GEO] [8KM] [INTERESSE] [25-55]", "gasto": 175.69, "reach": 8852, "cliques": 287, "ctr_pct": 1.99, "frequency": 1.63, "cpa_msg": 3.51, "insight": "Eficiente"},
-      {"campanha": "[VAGA MAQUIADOR] 220726", "adset": "[GEO] [8KM] [INTERESSE] [25-55]", "gasto": 173.90, "reach": 8908, "cliques": 215, "ctr_pct": 1.33, "frequency": 1.81, "cpa_msg": 3.70, "insight": "OK, CTR baixo"},
-      {"campanha": "[BRANDING] 110826", "adset": "[GEO] [5KM] [MULHERES] [25+]", "gasto": 149.63, "reach": 47503, "cliques": 195, "ctr_pct": 0.21, "frequency": 1.94, "cpa_msg": null, "insight": "Awareness — CPM baixo"},
-      {"campanha": "[BRANDING] 270726", "adset": "[GEO] [5KM] [MULHERES] [25+]", "gasto": 123.68, "reach": 42864, "cliques": 249, "ctr_pct": 0.33, "frequency": 1.76, "cpa_msg": null, "insight": "Awareness — bom alcance"},
-      {"campanha": "Post do Instagram: FAST OFICIAL", "adset": "Post do Instagram (boost)", "gasto": 314.19, "reach": 16286, "cliques": 870, "ctr_pct": 2.73, "frequency": 1.96, "cpa_msg": 34.91, "insight": "Reels boost — objetivo LINK, não MSG"}
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [RETOQUE]  280726",
+        "adset": "[GEO] [5KM] [MULHERES] [35+]",
+        "gasto": 670.31,
+        "reach": 12031,
+        "cliques": 800,
+        "ctr_pct": 2.84,
+        "frequency": 2.34,
+        "cpa_msg": 8.08,
+        "insight": "Maior gasto do mês, mas CPA R$ 8,08 já no teto da meta — frequência 2,34 pede criativo novo"
+      },
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [PLÁSTICA]  040826",
+        "adset": "[GEO] [5KM] [MULHERES] [25+]",
+        "gasto": 477.7,
+        "reach": 14041,
+        "cliques": 1315,
+        "ctr_pct": 4.05,
+        "frequency": 2.31,
+        "cpa_msg": 3.56,
+        "insight": "Núcleo de performance — concentra os melhores CPAs da conta"
+      },
+      {
+        "campanha": "Post do Instagram: 🎉 É OFICIAL: A FAST ESCOVA...",
+        "adset": "Post do Instagram: 🎉 É OFICIAL: A FAST ESCOVA...",
+        "gasto": 278.68,
+        "reach": 15443,
+        "cliques": 789,
+        "ctr_pct": 2.68,
+        "frequency": 1.9,
+        "cpa_msg": 30.96,
+        "insight": "Post impulsionado — sem segmentação geográfica própria"
+      },
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [COMBO SEMANAL]  110826",
+        "adset": "[GEO] [5KM] [MULHERES] [25+]",
+        "gasto": 262.08,
+        "reach": 5876,
+        "cliques": 613,
+        "ctr_pct": 4.56,
+        "frequency": 2.29,
+        "cpa_msg": 6.39,
+        "insight": "Núcleo de performance — concentra os melhores CPAs da conta"
+      },
+      {
+        "campanha": "[VAGA ESCOVISTA] [MSG] 200726",
+        "adset": "[GEO] [8KM] [INTERESSE] [25-55]",
+        "gasto": 161.27,
+        "reach": 8323,
+        "cliques": 255,
+        "ctr_pct": 1.93,
+        "frequency": 1.59,
+        "cpa_msg": 3.58,
+        "insight": "Recrutamento: CPA R$ 3,33–3,99, o mais barato da conta (candidato ≠ cliente)"
+      },
+      {
+        "campanha": "[VAGA MANICURE] [MSG] 220726",
+        "adset": "[GEO] [8KM] [INTERESSE] [25-55]",
+        "gasto": 159.88,
+        "reach": 7752,
+        "cliques": 265,
+        "ctr_pct": 1.93,
+        "frequency": 1.77,
+        "cpa_msg": 3.33,
+        "insight": "Recrutamento: CPA R$ 3,33–3,99, o mais barato da conta (candidato ≠ cliente)"
+      },
+      {
+        "campanha": "[VAGA MAQUIADOR] [MSG] 220726",
+        "adset": "[GEO] [8KM] [INTERESSE] [25-55]",
+        "gasto": 159.58,
+        "reach": 8439,
+        "cliques": 197,
+        "ctr_pct": 1.32,
+        "frequency": 1.77,
+        "cpa_msg": 3.99,
+        "insight": "Recrutamento: CPA R$ 3,33–3,99, o mais barato da conta (candidato ≠ cliente)"
+      },
+      {
+        "campanha": "[RECONHECIMENTO] [BRANDING] 110826",
+        "adset": "[GEO] [5KM] [MULHERES] [25+]",
+        "gasto": 149.63,
+        "reach": 47503,
+        "cliques": 195,
+        "ctr_pct": 0.21,
+        "frequency": 1.94,
+        "cpa_msg": null,
+        "insight": "Núcleo de performance — concentra os melhores CPAs da conta"
+      },
+      {
+        "campanha": "[RECONHECIMENTO] [BRANDING] 270726",
+        "adset": "[GEO] [5KM] [MULHERES] [25+]",
+        "gasto": 105.59,
+        "reach": 40020,
+        "cliques": 223,
+        "ctr_pct": 0.34,
+        "frequency": 1.63,
+        "cpa_msg": null,
+        "insight": "Núcleo de performance — concentra os melhores CPAs da conta"
+      },
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [COMBOS 1,2,3] 210826",
+        "adset": "[GEO] [5KM] [MULHERES] [25+]",
+        "gasto": 70.66,
+        "reach": 1828,
+        "cliques": 64,
+        "ctr_pct": 1.59,
+        "frequency": 2.2,
+        "cpa_msg": 8.83,
+        "insight": "Núcleo de performance — concentra os melhores CPAs da conta"
+      },
+      {
+        "campanha": "[ENGAJAMENTO] [MSG] [COMBOS 4 E 5] 210826",
+        "adset": "[GEO] [5KM] [MULHERES] [25+]",
+        "gasto": 69.3,
+        "reach": 1828,
+        "cliques": 54,
+        "ctr_pct": 1.33,
+        "frequency": 2.22,
+        "cpa_msg": 17.32,
+        "insight": "Núcleo de performance — concentra os melhores CPAs da conta"
+      },
+      {
+        "campanha": "[RECONHECIMENTO] [BRANDING] 260826",
+        "adset": "[GEO] [5KM] [MULHERES] [25+]",
+        "gasto": 0.63,
+        "reach": 319,
+        "cliques": 0,
+        "ctr_pct": 0.0,
+        "frequency": 1.02,
+        "cpa_msg": null,
+        "insight": "Núcleo de performance — concentra os melhores CPAs da conta"
+      }
     ],
     "descoberta_ad_sets": "Sua segmentação real É granular (raio 5-8km, mulheres, interesse profissional). O erro anterior de 'refinar geo' foi baseado em ver 'SP-estado' — Meta agrega no relatório de região mas o targeting já está fino ✅. Ainda válido: cortar 25-34 do ad set principal, testar 35-65+.",
     "top_campanhas_30d": [
-      {"nome": "[MSG] [VAGA MANICURE] 220726", "objetivo": "ENGAJAMENTO", "gasto": 176.19, "reach": 8064, "cliques": 292, "ctr_pct": 1.93, "cpm": 11.67, "cpc": 0.60, "frequency": 1.87, "cpa_msg": 3.39, "status": "escalar"},
-      {"nome": "[MSG] [VAGA ESCOVISTA] 200726", "objetivo": "ENGAJAMENTO", "gasto": 175.69, "reach": 8852, "cliques": 287, "ctr_pct": 1.99, "cpm": 12.17, "cpc": 0.61, "frequency": 1.63, "cpa_msg": 3.51, "status": "manter"},
-      {"nome": "[MSG] [PLÁSTICA] 040826", "objetivo": "ENGAJAMENTO", "gasto": 477.70, "reach": 14041, "cliques": 1315, "ctr_pct": 4.05, "cpm": 14.73, "cpc": 0.36, "frequency": 2.31, "cpa_msg": 3.56, "status": "escalar"},
-      {"nome": "[MSG] [VAGA MAQUIADOR] 220726", "objetivo": "ENGAJAMENTO", "gasto": 173.90, "reach": 8908, "cliques": 215, "ctr_pct": 1.33, "cpm": 10.78, "cpc": 0.81, "frequency": 1.81, "cpa_msg": 3.70, "status": "manter"},
-      {"nome": "[MSG] [COMBO SEMANAL] 110826", "objetivo": "ENGAJAMENTO", "gasto": 262.08, "reach": 5876, "cliques": 613, "ctr_pct": 4.56, "cpm": 19.49, "cpc": 0.43, "frequency": 2.29, "cpa_msg": 6.39, "status": "escalar"},
-      {"nome": "[MSG] [RETOQUE] 280726", "objetivo": "ENGAJAMENTO", "gasto": 736.57, "reach": 12765, "cliques": 913, "ctr_pct": 2.88, "cpm": 23.20, "cpc": 0.81, "frequency": 2.49, "cpa_msg": 7.67, "status": "revisar"},
-      {"nome": "[MSG] [COMBOS 1,2,3] 210826", "objetivo": "ENGAJAMENTO", "gasto": 70.66, "reach": 1828, "cliques": 64, "ctr_pct": 1.59, "cpm": 17.59, "cpc": 1.10, "frequency": 2.20, "cpa_msg": 8.83, "status": "otimizar"},
-      {"nome": "[MSG] [COMBOS 4 E 5] 210826", "objetivo": "ENGAJAMENTO", "gasto": 69.30, "reach": 1828, "cliques": 54, "ctr_pct": 1.33, "cpm": 17.11, "cpc": 1.28, "frequency": 2.22, "cpa_msg": 17.33, "status": "matar"},
-      {"nome": "Post IG Reels FAST OFICIAL", "objetivo": "LINK_CLICKS", "gasto": 314.19, "reach": 16286, "cliques": 870, "ctr_pct": 2.73, "cpm": 9.85, "cpc": 0.36, "frequency": 1.96, "cpa_msg": 34.91, "status": "manter"},
-      {"nome": "[BRANDING] 270726", "objetivo": "AWARENESS", "gasto": 123.68, "reach": 42864, "cliques": 249, "ctr_pct": 0.33, "cpm": 1.64, "cpc": 0.50, "frequency": 1.76, "cpa_msg": null, "status": "manter"},
-      {"nome": "[BRANDING] 110826", "objetivo": "AWARENESS", "gasto": 149.63, "reach": 47503, "cliques": 195, "ctr_pct": 0.21, "cpm": 1.63, "cpc": 0.77, "frequency": 1.94, "cpa_msg": null, "status": "manter"}
+      {
+        "nome": "[ENGAJAMENTO] [MSG] [RETOQUE]  280726",
+        "objetivo": "ENGAJAMENTO",
+        "gasto": 670.31,
+        "reach": 12031,
+        "cliques": 800,
+        "ctr_pct": 2.84,
+        "cpm": 23.78,
+        "cpc": 0.84,
+        "frequency": 2.34,
+        "cpa_msg": 8.08,
+        "status": "otimizar"
+      },
+      {
+        "nome": "[ENGAJAMENTO] [MSG] [PLÁSTICA]  040826",
+        "objetivo": "ENGAJAMENTO",
+        "gasto": 477.7,
+        "reach": 14041,
+        "cliques": 1315,
+        "ctr_pct": 4.05,
+        "cpm": 14.73,
+        "cpc": 0.36,
+        "frequency": 2.31,
+        "cpa_msg": 3.56,
+        "status": "escalar"
+      },
+      {
+        "nome": "Post do Instagram: 🎉 É OFICIAL: A FAST ESCOVA...",
+        "objetivo": "LINK CLICKS",
+        "gasto": 278.68,
+        "reach": 15443,
+        "cliques": 789,
+        "ctr_pct": 2.68,
+        "cpm": 9.47,
+        "cpc": 0.35,
+        "frequency": 1.9,
+        "cpa_msg": 30.96,
+        "status": "manter (LINK_CLICKS)"
+      },
+      {
+        "nome": "[ENGAJAMENTO] [MSG] [COMBO SEMANAL]  110826",
+        "objetivo": "ENGAJAMENTO",
+        "gasto": 262.08,
+        "reach": 5876,
+        "cliques": 613,
+        "ctr_pct": 4.56,
+        "cpm": 19.49,
+        "cpc": 0.43,
+        "frequency": 2.29,
+        "cpa_msg": 6.39,
+        "status": "manter"
+      },
+      {
+        "nome": "[VAGA ESCOVISTA] [MSG] 200726",
+        "objetivo": "ENGAJAMENTO",
+        "gasto": 161.27,
+        "reach": 8323,
+        "cliques": 255,
+        "ctr_pct": 1.93,
+        "cpm": 12.2,
+        "cpc": 0.63,
+        "frequency": 1.59,
+        "cpa_msg": 3.58,
+        "status": "escalar"
+      },
+      {
+        "nome": "[VAGA MANICURE] [MSG] 220726",
+        "objetivo": "ENGAJAMENTO",
+        "gasto": 159.88,
+        "reach": 7752,
+        "cliques": 265,
+        "ctr_pct": 1.93,
+        "cpm": 11.63,
+        "cpc": 0.6,
+        "frequency": 1.77,
+        "cpa_msg": 3.33,
+        "status": "escalar"
+      },
+      {
+        "nome": "[VAGA MAQUIADOR] [MSG] 220726",
+        "objetivo": "ENGAJAMENTO",
+        "gasto": 159.58,
+        "reach": 8439,
+        "cliques": 197,
+        "ctr_pct": 1.32,
+        "cpm": 10.69,
+        "cpc": 0.81,
+        "frequency": 1.77,
+        "cpa_msg": 3.99,
+        "status": "escalar"
+      },
+      {
+        "nome": "[RECONHECIMENTO] [BRANDING] 110826",
+        "objetivo": "RECONHECIMENTO",
+        "gasto": 149.63,
+        "reach": 47503,
+        "cliques": 195,
+        "ctr_pct": 0.21,
+        "cpm": 1.63,
+        "cpc": 0.77,
+        "frequency": 1.94,
+        "cpa_msg": null,
+        "status": "manter (AWARENESS)"
+      },
+      {
+        "nome": "[RECONHECIMENTO] [BRANDING] 270726",
+        "objetivo": "RECONHECIMENTO",
+        "gasto": 105.59,
+        "reach": 40020,
+        "cliques": 223,
+        "ctr_pct": 0.34,
+        "cpm": 1.62,
+        "cpc": 0.47,
+        "frequency": 1.63,
+        "cpa_msg": null,
+        "status": "manter (AWARENESS)"
+      },
+      {
+        "nome": "[ENGAJAMENTO] [MSG] [COMBOS 1,2,3] 210826",
+        "objetivo": "ENGAJAMENTO",
+        "gasto": 70.66,
+        "reach": 1828,
+        "cliques": 64,
+        "ctr_pct": 1.59,
+        "cpm": 17.59,
+        "cpc": 1.1,
+        "frequency": 2.2,
+        "cpa_msg": 8.83,
+        "status": "otimizar"
+      },
+      {
+        "nome": "[ENGAJAMENTO] [MSG] [COMBOS 4 E 5] 210826",
+        "objetivo": "ENGAJAMENTO",
+        "gasto": 69.3,
+        "reach": 1828,
+        "cliques": 54,
+        "ctr_pct": 1.33,
+        "cpm": 17.11,
+        "cpc": 1.28,
+        "frequency": 2.22,
+        "cpa_msg": 17.32,
+        "status": "revisar"
+      },
+      {
+        "nome": "[RECONHECIMENTO] [BRANDING] 260826",
+        "objetivo": "RECONHECIMENTO",
+        "gasto": 0.63,
+        "reach": 319,
+        "cliques": 0,
+        "ctr_pct": 0.0,
+        "cpm": 1.94,
+        "cpc": null,
+        "frequency": 1.02,
+        "cpa_msg": null,
+        "status": "manter (AWARENESS)"
+      }
     ],
     "geografia_30d": [
-      {"regiao": "São Paulo (state)", "gasto": 2730.22, "share_pct": 100.0, "impressoes": 331132, "cliques": 5067, "ctr_pct": 1.53, "cpm": 8.25, "reach": 116145, "alerta": "Meta agrega tudo em nível estadual, mas os ad sets estão configurados com raio 5-8km centrado no Limão."}
+      {
+        "regiao": "São Paulo (state)",
+        "gasto": 2565.31,
+        "share_pct": 100.0,
+        "impressoes": 311004,
+        "cliques": 4770,
+        "ctr_pct": 1.53,
+        "cpm": 8.25,
+        "reach": 112167,
+        "alerta": "Meta agrega tudo em nível estadual, mas os ad sets estão configurados com raio de 5–8 km do Limão. O relatório de Região não prova dispersão geográfica."
+      }
     ],
     "foco_geografico": {
       "endereco_loja": "Av. Deputado Emílio Carlos, 358 - Limão, São Paulo-SP",
-      "coordenadas": {"lat": -23.48, "lng": -46.69},
+      "coordenadas": {
+        "lat": -23.48,
+        "lng": -46.69
+      },
       "raio_atual_km": 5,
-      "raio_atual_ad_sets": {"msg": 5, "vagas": 8, "branding": 5},
+      "raio_atual_ad_sets": {
+        "msg": 5,
+        "vagas": 8,
+        "branding": 5
+      },
       "bairros_no_raio_5km": [
-        {"bairro": "Limão", "distancia_km": 0.0, "populacao_estimada": 35000, "mulheres_25_65_estimadas": 12000, "prioridade": "core"},
-        {"bairro": "Casa Verde", "distancia_km": 1.5, "populacao_estimada": 90000, "mulheres_25_65_estimadas": 30000, "prioridade": "alta"},
-        {"bairro": "Parque Peruche", "distancia_km": 2.0, "populacao_estimada": 15000, "mulheres_25_65_estimadas": 5000, "prioridade": "media"},
-        {"bairro": "Freguesia do Ó", "distancia_km": 3.5, "populacao_estimada": 140000, "mulheres_25_65_estimadas": 47000, "prioridade": "alta"},
-        {"bairro": "Vila Nova Cachoeirinha", "distancia_km": 4.0, "populacao_estimada": 120000, "mulheres_25_65_estimadas": 40000, "prioridade": "media"},
-        {"bairro": "Santana (parcial)", "distancia_km": 4.5, "populacao_estimada": 60000, "mulheres_25_65_estimadas": 20000, "prioridade": "baixa (competitivo)"}
+        {
+          "bairro": "Limão",
+          "distancia_km": 0.0,
+          "populacao_estimada": 35000,
+          "mulheres_25_65_estimadas": 12000,
+          "prioridade": "core"
+        },
+        {
+          "bairro": "Casa Verde",
+          "distancia_km": 1.5,
+          "populacao_estimada": 90000,
+          "mulheres_25_65_estimadas": 30000,
+          "prioridade": "alta"
+        },
+        {
+          "bairro": "Parque Peruche",
+          "distancia_km": 2.0,
+          "populacao_estimada": 15000,
+          "mulheres_25_65_estimadas": 5000,
+          "prioridade": "media"
+        },
+        {
+          "bairro": "Freguesia do Ó",
+          "distancia_km": 3.5,
+          "populacao_estimada": 140000,
+          "mulheres_25_65_estimadas": 47000,
+          "prioridade": "alta"
+        },
+        {
+          "bairro": "Vila Nova Cachoeirinha",
+          "distancia_km": 4.0,
+          "populacao_estimada": 120000,
+          "mulheres_25_65_estimadas": 40000,
+          "prioridade": "media"
+        },
+        {
+          "bairro": "Santana (parcial)",
+          "distancia_km": 4.5,
+          "populacao_estimada": 60000,
+          "mulheres_25_65_estimadas": 20000,
+          "prioridade": "baixa (competitivo)"
+        }
       ],
-      "totais_5km": {"populacao": 460000, "publico_alvo_estimado": 154000, "reach_atual_30d": 116145, "penetracao_pct": 75.4},
+      "totais_5km": {
+        "populacao": 460000,
+        "publico_alvo_estimado": 154000,
+        "reach_atual_30d": 112167,
+        "penetracao_pct": 72.84
+      },
       "expansao_sugerida": [
-        {"raio_km": 5, "populacao_alvo": 154000, "reach_estimado_30d": 116145, "status": "atual"},
-        {"raio_km": 7, "populacao_alvo": 210000, "reach_estimado_30d": 160000, "delta_pct": 38, "custo_extra_estimado": "+R$ 500/mês", "bairros_extra": "Vila Maria, Lauzane Paulista, Vila Guilherme"},
-        {"raio_km": 10, "populacao_alvo": 340000, "reach_estimado_30d": 250000, "delta_pct": 115, "custo_extra_estimado": "+R$ 1.500/mês", "bairros_extra": "Vila Guarani, Vila Formosa, Casa Verde Alta, Perus"}
+        {
+          "raio_km": 5,
+          "populacao_alvo": 154000,
+          "reach_estimado_30d": 116145,
+          "status": "atual"
+        },
+        {
+          "raio_km": 7,
+          "populacao_alvo": 210000,
+          "reach_estimado_30d": 160000,
+          "delta_pct": 38,
+          "custo_extra_estimado": "+R$ 500/mês",
+          "bairros_extra": "Vila Maria, Lauzane Paulista, Vila Guilherme"
+        },
+        {
+          "raio_km": 10,
+          "populacao_alvo": 340000,
+          "reach_estimado_30d": 250000,
+          "delta_pct": 115,
+          "custo_extra_estimado": "+R$ 1.500/mês",
+          "bairros_extra": "Vila Guarani, Vila Formosa, Casa Verde Alta, Perus"
+        }
       ],
-      "recomendacao_gestor": "Você já alcançou 75% do público-alvo no raio 5km em 30 dias — está próximo do teto de saturação. Considere: (1) expandir pra 7km após rotacionar criativos, ou (2) manter raio e trocar criativos pra atingir mesmas pessoas mais vezes com mensagem diferente."
+      "recomendacao_gestor": "Você alcançou 112.167 pessoas em 30 dias — cerca de 73% do público-alvo estimado no raio de 5 km, com frequência de 2,77. Antes de ampliar o raio, renove os criativos: a saturação atual é de repetição de anúncio, não de falta de público.",
+      "reach_atual_30d": 112167
     },
     "demografia_30d": [
-      {"faixa": "45-54", "genero": "F", "gasto": 726.86, "share_pct": 26.6, "impressoes": 68497, "cliques": 1151, "ctr_pct": 1.68, "reach": 22929, "status": "top"},
-      {"faixa": "55-64", "genero": "F", "gasto": 570.85, "share_pct": 20.9, "impressoes": 60945, "cliques": 1131, "ctr_pct": 1.86, "reach": 19764, "status": "top"},
-      {"faixa": "35-44", "genero": "F", "gasto": 552.04, "share_pct": 20.2, "impressoes": 63369, "cliques": 921, "ctr_pct": 1.45, "reach": 22941, "status": "manter"},
-      {"faixa": "25-34", "genero": "F", "gasto": 426.74, "share_pct": 15.6, "impressoes": 80781, "cliques": 714, "ctr_pct": 0.88, "reach": 33831, "status": "cortar"},
-      {"faixa": "65+", "genero": "F", "gasto": 397.90, "share_pct": 14.6, "impressoes": 52259, "cliques": 1068, "ctr_pct": 2.04, "reach": 16275, "status": "escalar"},
-      {"faixa": "25-34", "genero": "M", "gasto": 28.52, "share_pct": 1.0, "impressoes": 3135, "cliques": 39, "ctr_pct": 1.24, "reach": 1388, "status": "manter"},
-      {"faixa": "35-44", "genero": "M", "gasto": 15.39, "share_pct": 0.6, "impressoes": 1265, "cliques": 25, "ctr_pct": 1.98, "reach": 630, "status": "manter"},
-      {"faixa": "45-54", "genero": "M", "gasto": 6.88, "share_pct": 0.3, "impressoes": 545, "cliques": 12, "ctr_pct": 2.20, "reach": 243, "status": "manter"}
+      {
+        "faixa": "45-54",
+        "genero": "F",
+        "gasto": 685.59,
+        "share_pct": 26.73,
+        "impressoes": 64348,
+        "cliques": 1090,
+        "ctr_pct": 1.69,
+        "reach": 22358,
+        "status": "top"
+      },
+      {
+        "faixa": "55-64",
+        "genero": "F",
+        "gasto": 537.73,
+        "share_pct": 20.96,
+        "impressoes": 57065,
+        "cliques": 1062,
+        "ctr_pct": 1.86,
+        "reach": 19152,
+        "status": "top"
+      },
+      {
+        "faixa": "35-44",
+        "genero": "F",
+        "gasto": 521.34,
+        "share_pct": 20.32,
+        "impressoes": 59725,
+        "cliques": 883,
+        "ctr_pct": 1.48,
+        "reach": 22290,
+        "status": "top"
+      },
+      {
+        "faixa": "25-34",
+        "genero": "F",
+        "gasto": 401.15,
+        "share_pct": 15.64,
+        "impressoes": 76360,
+        "cliques": 667,
+        "ctr_pct": 0.87,
+        "reach": 32491,
+        "status": "ok"
+      },
+      {
+        "faixa": "65+",
+        "genero": "F",
+        "gasto": 369.2,
+        "share_pct": 14.39,
+        "impressoes": 48680,
+        "cliques": 993,
+        "ctr_pct": 2.04,
+        "reach": 15768,
+        "status": "ok"
+      },
+      {
+        "faixa": "25-34",
+        "genero": "M",
+        "gasto": 25.28,
+        "share_pct": 0.99,
+        "impressoes": 2873,
+        "cliques": 35,
+        "ctr_pct": 1.22,
+        "reach": 1311,
+        "status": "residual"
+      },
+      {
+        "faixa": "35-44",
+        "genero": "M",
+        "gasto": 14.22,
+        "share_pct": 0.55,
+        "impressoes": 1153,
+        "cliques": 23,
+        "ctr_pct": 1.99,
+        "reach": 597,
+        "status": "residual"
+      },
+      {
+        "faixa": "45-54",
+        "genero": "M",
+        "gasto": 6.15,
+        "share_pct": 0.24,
+        "impressoes": 492,
+        "cliques": 11,
+        "ctr_pct": 2.24,
+        "reach": 228,
+        "status": "residual"
+      }
     ],
     "placement_30d": [
-      {"plataforma": "Facebook", "posicao": "Feed", "gasto": 845.49, "share_pct": 31.0, "impressoes": 126343, "cliques": 2263, "ctr_pct": 1.79, "cpm": 6.69, "reach": 55515, "status": "escalar"},
-      {"plataforma": "Instagram", "posicao": "Feed", "gasto": 602.59, "share_pct": 22.1, "impressoes": 51716, "cliques": 643, "ctr_pct": 1.24, "cpm": 11.65, "reach": 29202, "status": "otimizar"},
-      {"plataforma": "Instagram", "posicao": "Stories", "gasto": 598.67, "share_pct": 21.9, "impressoes": 52442, "cliques": 981, "ctr_pct": 1.87, "cpm": 11.42, "reach": 27187, "status": "escalar"},
-      {"plataforma": "Facebook", "posicao": "Reels", "gasto": 296.08, "share_pct": 10.8, "impressoes": 64686, "cliques": 635, "ctr_pct": 0.98, "cpm": 4.58, "reach": 31036, "status": "revisar"},
-      {"plataforma": "Facebook", "posicao": "Stories", "gasto": 207.03, "share_pct": 7.6, "impressoes": 13217, "cliques": 204, "ctr_pct": 1.54, "cpm": 15.66, "reach": 7678, "status": "cortar"},
-      {"plataforma": "Instagram", "posicao": "Reels", "gasto": 166.35, "share_pct": 6.1, "impressoes": 20085, "cliques": 314, "ctr_pct": 1.56, "cpm": 8.28, "reach": 13774, "status": "manter"}
+      {
+        "plataforma": "Facebook",
+        "posicao": "Feed",
+        "gasto": 800.71,
+        "share_pct": 31.21,
+        "impressoes": 119207,
+        "cliques": 2158,
+        "ctr_pct": 1.81,
+        "cpm": 6.72,
+        "reach": 53438,
+        "status": "escalar"
+      },
+      {
+        "plataforma": "Instagram",
+        "posicao": "Feed",
+        "gasto": 567.8,
+        "share_pct": 22.13,
+        "impressoes": 48850,
+        "cliques": 603,
+        "ctr_pct": 1.23,
+        "cpm": 11.62,
+        "reach": 28155,
+        "status": "manter"
+      },
+      {
+        "plataforma": "Instagram",
+        "posicao": "Stories",
+        "gasto": 550.59,
+        "share_pct": 21.46,
+        "impressoes": 49084,
+        "cliques": 908,
+        "ctr_pct": 1.85,
+        "cpm": 11.22,
+        "reach": 25460,
+        "status": "escalar"
+      },
+      {
+        "plataforma": "Facebook",
+        "posicao": "Reels",
+        "gasto": 280.34,
+        "share_pct": 10.93,
+        "impressoes": 59940,
+        "cliques": 595,
+        "ctr_pct": 0.99,
+        "cpm": 4.68,
+        "reach": 29741,
+        "status": "otimizar"
+      },
+      {
+        "plataforma": "Facebook",
+        "posicao": "Stories",
+        "gasto": 198.63,
+        "share_pct": 7.74,
+        "impressoes": 12598,
+        "cliques": 196,
+        "ctr_pct": 1.56,
+        "cpm": 15.77,
+        "reach": 7379,
+        "status": "manter"
+      },
+      {
+        "plataforma": "Instagram",
+        "posicao": "Reels",
+        "gasto": 153.94,
+        "share_pct": 6.0,
+        "impressoes": 18819,
+        "cliques": 285,
+        "ctr_pct": 1.51,
+        "cpm": 8.18,
+        "reach": 13108,
+        "status": "manter"
+      }
     ]
   },
   "facebook_page": {
@@ -210,45 +1484,204 @@
     "page_id": "1177609485429072",
     "nome": "Fast Escova Limão",
     "organico_30d": {
-      "page_visits": 1004,
-      "page_post_engagements": 2992,
-      "total_video_views": 31318,
-      "video_views_organicos": 525,
-      "video_views_pagos": 30793,
-      "insight": "Só 1,7% dos video views são orgânicos — quase tudo veio de boost. Page está sub-utilizada organicamente."
+      "page_visits": 970,
+      "page_post_engagements": 2848,
+      "total_video_views": 29290,
+      "video_views_organicos": 514,
+      "video_views_pagos": 28776,
+      "insight": "Só 1,8% dos video views são orgânicos — praticamente tudo veio de boost. Com os anúncios parados desde 28/08, a Página fica sem alcance próprio."
     }
   },
   "deltas_vs_periodo_anterior": {
-    "mtd": {"gasto_pct": 6.24, "impressoes_pct": 17.01, "cliques_pct": 8.04, "conversas_msg_pct": -15.19, "reach_pct": 4.11, "cpa_msg_pct": 25.27},
-    "7d": {"gasto_pct": -17.52, "impressoes_pct": -23.19, "cliques_pct": -30.27, "conversas_msg_pct": -40.00, "reach_pct": -22.56, "cpa_msg_pct": 37.46}
+    "mtd": {
+      "gasto_pct": -6.2,
+      "impressoes_pct": 2.6,
+      "cliques_pct": -4.35,
+      "conversas_msg_pct": -24.95,
+      "reach_pct": -3.4,
+      "cpa_msg_pct": 24.99
+    },
+    "7d": {
+      "gasto_pct": -65.38,
+      "impressoes_pct": -73.52,
+      "cliques_pct": -69.68,
+      "conversas_msg_pct": -61.11,
+      "reach_pct": -69.23,
+      "cpa_msg_pct": -10.97
+    }
   },
   "alertas_topo": [
-    {"sev": "crit", "icone": "🚨", "titulo": "CPA MSG piorou 25% vs mês anterior", "detalhe": "30d atual R$ 6,19 vs anterior R$ 4,94. Conversas caíram 15% (441 vs ~520). Gastando mais para converter menos."},
-    {"sev": "crit", "icone": "⛔", "titulo": "Anúncios pararam 27-28/08 (2 dias)", "detalhe": "Gasto 27/08 = R$ 10 e 28/08 = R$ 0. Provável limite de gasto da conta. Perda estimada: 20-30 conversas WhatsApp. Ir em Ads Manager → Cobrança."},
-    {"sev": "warn", "icone": "⚠️", "titulo": "Frequência 30d = 2,85 (limite 3,0)", "detalhe": "Público vendo mesmo anúncio ~3x. Em 2 semanas atinge fadiga. Rotacionar criativos até 12/09."},
-    {"sev": "warn", "icone": "📉", "titulo": "Facebook Page quase sem alcance orgânico", "detalhe": "Só 1,7% dos video views são orgânicos (525 de 31.318). Focar orgânico no Instagram, manter FB só institucional."},
-    {"sev": "ok", "icone": "🚀", "titulo": "Instagram cresceu 621 seguidores em 30d", "detalhe": "Média 20,7 seguidores/dia. Post 'LOUCURA DA GERENTE' alcançou 1.526 pessoas orgânico — replicar fórmula promoção+humor."}
+    {
+      "sev": "crit",
+      "icone": "🛑",
+      "titulo": "Anúncios parados há 4 dias — conta sem entrega desde 28/08",
+      "detalhe": "Último dia cheio foi 26/08 (R$ 107,41). Em 27/08 saíram só R$ 10,32 e desde 28/08 o gasto é zero. Isso trava a principal fonte de leads do salão: 412 conversas de WhatsApp no mês vieram daqui. Ação: conferir limite de gasto da conta e método de pagamento no Gerenciador de Anúncios."
+    },
+    {
+      "sev": "crit",
+      "icone": "📉",
+      "titulo": "Últimos 7 dias: gasto -65%, conversas -61%",
+      "detalhe": "R$ 240,25 e 35 conversas contra R$ 693,92 e 90 conversas na semana anterior. Não é queda de performance — é ausência de veiculação. O CPA da semana (R$ 6,86) continua dentro da meta."
+    },
+    {
+      "sev": "warn",
+      "icone": "💸",
+      "titulo": "CPA MSG do mês subiu 25% vs. julho",
+      "detalhe": "R$ 6,23 em agosto contra R$ 4,98 em julho. Ainda abaixo da meta de R$ 8,00, mas a tendência é de piora: conversas caíram de 549 para 412 (-25%) com gasto quase igual."
+    },
+    {
+      "sev": "warn",
+      "icone": "🔁",
+      "titulo": "Frequência de 2,77 no público de 5 km",
+      "detalhe": "Alcance de 112.167 pessoas com 311.004 impressões. O ad set [RETOQUE] já está em 2,34 com CPA R$ 8,08 — o pior entre as campanhas de mensagem. Sinal de desgaste de criativo."
+    },
+    {
+      "sev": "warn",
+      "icone": "📱",
+      "titulo": "Alcance do Instagram despencou junto com os anúncios",
+      "detalhe": "De ~5.000 pessoas/dia até 26/08 para 353 em 30/08. O alcance do perfil era sustentado pelo tráfego pago; o orgânico puro da conta é de poucas centenas por dia."
+    },
+    {
+      "sev": "ok",
+      "icone": "✅",
+      "titulo": "Eficiência de mídia segue boa: CTR 1,53% e CPM R$ 8,25",
+      "detalhe": "CTR acima da meta de 1,5% e CPM 31% abaixo do teto de R$ 12. [PLÁSTICA] entrega CPA de R$ 3,56 com CTR de 4,05% — é o criativo a escalar quando a conta voltar."
+    }
   ],
   "funil_conversao": {
-    "periodo": "Mês atual (Ago/2026 até 29/08 · MTD)",
-    "trinks_ago_mtd": {"novos_clientes": 218, "atendimentos_novos": 450, "receita_novos": 28560, "ticket_medio_novos": 63.47, "recorrentes_clientes": 15, "atendimentos_recorrentes": 61, "receita_recorrentes": 2703.1, "caixa_total_mes": 38641.1, "atend_finalizados_total": 530, "atend_cancelados": 30, "taxa_cancelamento_pct": 5.2, "ticket_medio_geral": 122.28},
+    "periodo": "Mês atual (Ago/2026 até 31/08 · MTD)",
+    "trinks_ago_mtd": {
+      "novos_clientes": 218,
+      "atendimentos_novos": 450,
+      "receita_novos": 28560,
+      "ticket_medio_novos": 63.47,
+      "recorrentes_clientes": 15,
+      "atendimentos_recorrentes": 61,
+      "receita_recorrentes": 2703.1,
+      "caixa_total_mes": 38641.1,
+      "atend_finalizados_total": 530,
+      "atend_cancelados": 30,
+      "taxa_cancelamento_pct": 5.2,
+      "ticket_medio_geral": 122.28,
+      "_fonte_data": "2026-08-29"
+    },
     "etapas": [
-      {"ordem": 1, "nome": "Investimento Meta Ads", "valor": 2565.31, "unidade": "R$", "fonte": "Meta Ads (Supermetrics)", "medido": true},
-      {"ordem": 2, "nome": "Impressões", "valor": 311004, "unidade": "views", "fonte": "Meta Ads", "medido": true},
-      {"ordem": 3, "nome": "Alcance único", "valor": 112167, "unidade": "pessoas", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 36.1},
-      {"ordem": 4, "nome": "Cliques (todos)", "valor": 4770, "unidade": "cliques", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 4.3},
-      {"ordem": 5, "nome": "Cliques em link", "valor": 1997, "unidade": "cliques", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 41.9},
-      {"ordem": 6, "nome": "⭐ Conversas WhatsApp iniciadas", "valor": 412, "unidade": "conversas", "fonte": "Meta Ads", "medido": true, "taxa_da_anterior_pct": 20.6, "custo_unitario": 6.23},
-      {"ordem": 7, "nome": "Novos clientes agendaram (Trinks)", "valor": 218, "unidade": "clientes", "fonte": "🟢 Trinks API (real)", "medido": true, "taxa_da_anterior_pct": 52.9, "mensagem": "218 clientes NOVOS no Trinks em Ago. Se ~80% vieram de Meta = 174."},
-      {"ordem": 8, "nome": "Atendimentos finalizados (novos)", "valor": 450, "unidade": "atendimentos", "fonte": "🟢 Trinks API (real)", "medido": true, "mensagem": "450 atendimentos vieram desses 218 novos (média 2,1/cliente no mês)."},
-      {"ordem": 9, "nome": "Receita de novos clientes", "valor": 28560.00, "unidade": "R$", "fonte": "🟢 Trinks API (real)", "medido": true, "mensagem": "R$ 28.560 vindo de novos. Ticket médio novos = R$ 63,47/atend."},
-      {"ordem": 10, "nome": "Receita atribuível a Meta Ads", "valor": null, "unidade": "R$", "fonte": "Estimativa (sem UTM tracking)", "medido": false, "mensagem": "Sem UTM/CAPI, não sabemos qual % dos 218 novos veio de Meta. Cenários abaixo."}
+      {
+        "ordem": 1,
+        "nome": "Investimento Meta Ads",
+        "valor": 2565.31,
+        "unidade": "R$",
+        "fonte": "Meta Ads (Supermetrics)",
+        "medido": true
+      },
+      {
+        "ordem": 2,
+        "nome": "Impressões",
+        "valor": 311004,
+        "unidade": "views",
+        "fonte": "Meta Ads",
+        "medido": true
+      },
+      {
+        "ordem": 3,
+        "nome": "Alcance único",
+        "valor": 112167,
+        "unidade": "pessoas",
+        "fonte": "Meta Ads",
+        "medido": true,
+        "taxa_da_anterior_pct": 36.1
+      },
+      {
+        "ordem": 4,
+        "nome": "Cliques (todos)",
+        "valor": 4770,
+        "unidade": "cliques",
+        "fonte": "Meta Ads",
+        "medido": true,
+        "taxa_da_anterior_pct": 4.3
+      },
+      {
+        "ordem": 5,
+        "nome": "Cliques em link",
+        "valor": 1997,
+        "unidade": "cliques",
+        "fonte": "Meta Ads",
+        "medido": true,
+        "taxa_da_anterior_pct": 41.9
+      },
+      {
+        "ordem": 6,
+        "nome": "⭐ Conversas WhatsApp iniciadas",
+        "valor": 412,
+        "unidade": "conversas",
+        "fonte": "Meta Ads",
+        "medido": true,
+        "taxa_da_anterior_pct": 20.6,
+        "custo_unitario": 6.23
+      },
+      {
+        "ordem": 7,
+        "nome": "Novos clientes agendaram (Trinks)",
+        "valor": 218,
+        "unidade": "clientes",
+        "fonte": "🟢 Trinks API (real)",
+        "medido": true,
+        "taxa_da_anterior_pct": 52.9,
+        "mensagem": "218 clientes NOVOS no Trinks em Ago. Se ~80% vieram de Meta = 174."
+      },
+      {
+        "ordem": 8,
+        "nome": "Atendimentos finalizados (novos)",
+        "valor": 450,
+        "unidade": "atendimentos",
+        "fonte": "🟢 Trinks API (real)",
+        "medido": true,
+        "mensagem": "450 atendimentos vieram desses 218 novos (média 2,1/cliente no mês)."
+      },
+      {
+        "ordem": 9,
+        "nome": "Receita de novos clientes",
+        "valor": 28560.0,
+        "unidade": "R$",
+        "fonte": "🟢 Trinks API (real)",
+        "medido": true,
+        "mensagem": "R$ 28.560 vindo de novos. Ticket médio novos = R$ 63,47/atend."
+      },
+      {
+        "ordem": 10,
+        "nome": "Receita atribuível a Meta Ads",
+        "valor": null,
+        "unidade": "R$",
+        "fonte": "Estimativa (sem UTM tracking)",
+        "medido": false,
+        "mensagem": "Sem UTM/CAPI, não sabemos qual % dos 218 novos veio de Meta. Cenários abaixo."
+      }
     ],
     "cenarios_roas": [
-      {"cenario": "Otimista (100% novos vieram de Meta)", "novos_meta": 218, "receita_atribuida": 28560, "roas": 11.13},
-      {"cenario": "Realista (80% de Meta)", "novos_meta": 174, "receita_atribuida": 22848, "roas": 8.90},
-      {"cenario": "Meio-termo (60%)", "novos_meta": 131, "receita_atribuida": 17136, "roas": 6.68},
-      {"cenario": "Conservador (40%)", "novos_meta": 87, "receita_atribuida": 11424, "roas": 4.45}
+      {
+        "cenario": "Otimista (100% novos vieram de Meta)",
+        "novos_meta": 218,
+        "receita_atribuida": 28560,
+        "roas": 11.13
+      },
+      {
+        "cenario": "Realista (80% de Meta)",
+        "novos_meta": 174,
+        "receita_atribuida": 22848,
+        "roas": 8.9
+      },
+      {
+        "cenario": "Meio-termo (60%)",
+        "novos_meta": 131,
+        "receita_atribuida": 17136,
+        "roas": 6.68
+      },
+      {
+        "cenario": "Conservador (40%)",
+        "novos_meta": 87,
+        "receita_atribuida": 11424,
+        "roas": 4.45
+      }
     ],
     "roas_estimado": {
       "valor": 6.68,
@@ -256,35 +1689,116 @@
       "confianca": "Média — dados Trinks reais, mas atribuição estimada. Pra 100% preciso, precisa Meta Pixel + CAPI ou UTM tag."
     },
     "como_destravar_cada_etapa": [
-      {"etapa": 7, "acao": "🟢 Feito automaticamente via Trinks (novos clientes por mês). Precisamos só refinar atribuição de qual % veio de Meta."},
-      {"etapa": 10, "acao": "Opção A: Meta Pixel + CAPI via Trinks — evento 'Schedule' quando cliente marca. Meta atribui automaticamente. Opção B: perguntar cada nova cliente 'como nos conheceu?' e registrar em campo customizado no Trinks."}
-    ]
+      {
+        "etapa": 7,
+        "acao": "🟢 Feito automaticamente via Trinks (novos clientes por mês). Precisamos só refinar atribuição de qual % veio de Meta."
+      },
+      {
+        "etapa": 10,
+        "acao": "Opção A: Meta Pixel + CAPI via Trinks — evento 'Schedule' quando cliente marca. Meta atribui automaticamente. Opção B: perguntar cada nova cliente 'como nos conheceu?' e registrar em campo customizado no Trinks."
+      }
+    ],
+    "aviso_frescor": "Etapas 1–6 (Meta Ads) refletem a consulta de 31/08. Etapas 7–9 vêm do Trinks e ainda são o snapshot de 29/08 — dashboard_data.json não foi atualizado desde então."
   },
-  "google_ads": {"conectado": false, "mensagem": "Aguardando login Google Ads"},
-  "hubspot": {"portal_id": "51943728", "contatos": 0, "mensagem": "CRM ativo, aguardando import da base"},
-  "whatsapp_cloud_api": {"conectado": false, "mensagem": "Aguardando app Meta Developer (WhatsApp Business Cloud API)"},
-  "benchmarks": {"cpa_msg_meta": 8.00, "cpa_msg_atual_30d": 6.19, "ctr_meta": 1.5, "ctr_atual_30d": 1.53, "cpm_meta": 12.0, "cpm_atual_30d": 8.25, "frequency_alerta": 3.0, "frequency_atual_30d": 2.85},
+  "google_ads": {
+    "conectado": false,
+    "mensagem": "Aguardando login Google Ads"
+  },
+  "hubspot": {
+    "portal_id": "51943728",
+    "contatos": 0,
+    "mensagem": "CRM ativo, aguardando import da base"
+  },
+  "whatsapp_cloud_api": {
+    "conectado": false,
+    "mensagem": "Aguardando app Meta Developer (WhatsApp Business Cloud API)"
+  },
+  "benchmarks": {
+    "cpa_msg_meta": 8.0,
+    "cpa_msg_atual_30d": 6.23,
+    "ctr_meta": 1.5,
+    "ctr_atual_30d": 1.53,
+    "cpm_meta": 12.0,
+    "cpm_atual_30d": 8.25,
+    "frequency_alerta": 3.0,
+    "frequency_atual_30d": 2.77
+  },
   "direcionamentos_estrategicos": [
-    {"prioridade": "OK", "titulo": "✅ Segmentação geo JÁ está correta (5-8km)", "descoberta": "Correção da análise anterior: relatório de Região mostra 'SP-estado' porque Meta consolida assim, mas os ad sets estão configurados com raio 5-8km ao redor do Limão (visto no breakdown de ad sets).", "acao": "Nenhuma ação — segmentação está boa. Focar nos outros direcionamentos.", "impacto_estimado": "N/A"},
-    {"prioridade": "P1", "titulo": "👥 Ajustar faixa etária pra 35-65+ (cortar 25-34)", "descoberta": "ICP inicial era 25-55. Realidade: 25-34 tem CTR 0,88% (o pior) e queima 16% do budget. Já 65+ tem CTR 2,04% (o melhor).", "acao": "Cortar 25-34 dos ad sets OU criar campanha dedicada com criativo próprio (linguagem/estética diferente). Redirecionar R$ 427/mês pra 35-65+.", "impacto_estimado": "Alto"},
-    {"prioridade": "P2", "titulo": "📱 Realocar placement: menos Facebook Stories, mais Facebook Feed", "descoberta": "Facebook Feed tem CPM R$ 6,69 (melhor) E CTR 1,79%. Facebook Stories tem CPM R$ 15,66 (caro, 2,3x pior).", "acao": "Editar campanhas: desmarcar Facebook Stories, priorizar Facebook Feed + Instagram Stories (CTR 1,87%).", "impacto_estimado": "Médio"},
-    {"prioridade": "P2", "titulo": "⚠️ Investigar por que anúncios pararam 27-28/08", "descoberta": "Gasto 27/08 = R$ 10 e 28/08 = R$ 0. Média dos dias anteriores era R$ 100+/dia.", "acao": "Verificar Meta Ads Manager: orçamento estourou? Cartão recusou? Campanhas pausadas? Impacto: 2 dias perdidos ≈ 20-30 conversas WhatsApp não geradas.", "impacto_estimado": "Alto"},
-    {"prioridade": "P3", "titulo": "🎨 Rotacionar criativos até 12/09 (fadiga chegando)", "descoberta": "Frequência 30d = 2,85. Alerta em 3,0. Público está vendo o mesmo anúncio ~3x cada.", "acao": "Produzir 3 novos criativos (2 imagens estáticas + 1 reel) até 12/09. Substituir os com mais frequência acumulada.", "impacto_estimado": "Médio"}
+    {
+      "prioridade": "P1",
+      "titulo": "🛑 Destravar a conta de anúncios — nada mais importa antes disso",
+      "descoberta": "A conta não entrega desde 28/08. Quatro dias parados a um ritmo de ~14 conversas/dia significam cerca de 55 conversas de WhatsApp perdidas — a um CPA de R$ 6,23, era aproximadamente R$ 345 de mídia que deixou de virar lead.",
+      "acao": "Gerenciador de Anúncios → Configurações → Faturamento: checar limite de gasto da conta e cartão. Repor e reativar as campanhas [PLÁSTICA] e [COMBO SEMANAL] primeiro.",
+      "impacto_estimado": "~14 conversas/dia recuperadas"
+    },
+    {
+      "prioridade": "P1",
+      "titulo": "🎨 Renovar criativo do [RETOQUE] antes de religar",
+      "descoberta": "[RETOQUE] é a campanha de maior gasto (R$ 670,31) e o pior CPA entre as de mensagem (R$ 8,08, no teto da meta), com frequência de 2,34. [PLÁSTICA] gastou menos (R$ 477,70) e trouxe mais conversas (134 vs. 83) a R$ 3,56.",
+      "acao": "Pausar o criativo atual de [RETOQUE] e subir 2 variações novas antes de reativar. Redirecionar a verba para [PLÁSTICA] e [COMBO SEMANAL].",
+      "impacto_estimado": "CPA médio -20% a -30%"
+    },
+    {
+      "prioridade": "P2",
+      "titulo": "📊 O boost de post não gera conversa — realocar",
+      "descoberta": "O post impulsionado de inauguração consumiu R$ 278,68 (10,9% do orçamento) e gerou 9 conversas, a R$ 30,96 cada — 5x o CPA médio da conta. Ele entrega alcance e cliques, mas não leads.",
+      "acao": "Encerrar o boost do post de inauguração e mover a verba para campanhas com objetivo de mensagem.",
+      "impacto_estimado": "+R$ 278/mês redirecionados a ~45 conversas"
+    },
+    {
+      "prioridade": "P2",
+      "titulo": "👩 Público 35–64 concentra as conversas",
+      "descoberta": "Mulheres de 35 a 64 anos respondem por R$ 1.744 (68% do gasto) e 283 das 412 conversas. A faixa 25–34 consome R$ 401 e o maior alcance (32.491) mas só 70 conversas — é o público mais caro por conversa.",
+      "acao": "Nos ad sets de mensagem, estreitar a faixa para 35+ e deixar 25–34 apenas nas campanhas de vaga/branding.",
+      "impacto_estimado": "CPA -10% a -15%"
+    },
+    {
+      "prioridade": "OK",
+      "titulo": "✅ Segmentação geográfica continua correta (5–8 km)",
+      "descoberta": "O relatório de Região mostra 'São Paulo (state)' com 100% do gasto porque a Meta agrega geografia em nível estadual no reporting. Os ad sets em si estão com raio de 5 km (mensagem e branding) e 8 km (vagas) a partir do Limão.",
+      "acao": "Nenhuma ação — segmentação está correta. Não interpretar o relatório de Região como dispersão.",
+      "impacto_estimado": "N/A"
+    }
   ],
   "recomendacoes": [
-    {"sev": "ok", "titulo": "Escalar [PLÁSTICA] e [COMBO SEMANAL] +30%", "detalhe": "CPA MSG R$ 3,56 e R$ 6,39. CTR 4,05% e 4,56%.", "acao": "Aprovar escala"},
-    {"sev": "crit", "titulo": "🛑 Matar [COMBOS 4 E 5]", "detalhe": "CPA MSG R$ 17,33 — 2,8x acima da média.", "acao": "Pausar hoje"},
-    {"sev": "warn", "titulo": "Refazer [COMBOS 1,2,3] com naming FAST", "detalhe": "CPA MSG R$ 8,83. Nome numérico não converte.", "acao": "Trocar criativo semana que vem"},
-    {"sev": "warn", "titulo": "Revisar [RETOQUE] — CPM caro (R$ 23,20)", "detalhe": "2,8x a média. Público muito nichado ou lance alto.", "acao": "Ajustar targeting"},
-    {"sev": "crit", "titulo": "P1: Configurar Pixel/CAPI Trinks→Meta", "detalhe": "Sem tracking de agendamento e receita, ROAS impossível.", "acao": "Setup Meta Pixel + CAPI via Trinks"}
+    {
+      "sev": "crit",
+      "titulo": "Religar a conta hoje",
+      "detalhe": "4 dias sem veiculação. ~55 conversas de WhatsApp não aconteceram.",
+      "acao": "Checar faturamento e reativar"
+    },
+    {
+      "sev": "crit",
+      "titulo": "Trocar o criativo de [RETOQUE]",
+      "detalhe": "R$ 670,31 gastos, CPA R$ 8,08, frequência 2,34 — o pior custo por conversa das campanhas de mensagem.",
+      "acao": "Subir 2 criativos novos"
+    },
+    {
+      "sev": "ok",
+      "titulo": "Escalar [PLÁSTICA] e [COMBO SEMANAL] +30%",
+      "detalhe": "CPA de R$ 3,56 e R$ 6,39, CTR de 4,05% e 4,56% — os dois melhores da conta.",
+      "acao": "Aprovar escala na reativação"
+    },
+    {
+      "sev": "warn",
+      "titulo": "Encerrar o boost do post de inauguração",
+      "detalhe": "R$ 278,68 para 9 conversas (R$ 30,96 cada).",
+      "acao": "Pausar e realocar"
+    },
+    {
+      "sev": "warn",
+      "titulo": "Publicar no Instagram durante a parada",
+      "detalhe": "Com a mídia paga desligada, o alcance do perfil caiu de ~5.000/dia para ~350/dia. Reels são o formato de melhor alcance orgânico.",
+      "acao": "2 reels/semana enquanto a conta estiver parada"
+    }
   ],
   "insights_narrativa": [
-    "**KPI-estrela: CPA MSG R$ 6,19 no 30d** — 23% abaixo da meta R$ 8. Excelente.",
-    "**99% do público é feminino** — correto pro ICP.",
-    "**Descoberta demográfica:** ICP inicial era 25-55 mas 45+ engaja MUITO mais. Faixa 65+ tem melhor CTR (2,04%) e 25-34 tem o pior (0,88%).",
-    "**Geografia consolidada em estado (SP)** — segmentação está ampla demais. Refinar pra raio da loja destrava eficiência massiva.",
-    "**Facebook Feed é o campeão de placement** — CPM baixo (R$ 6,69) E CTR alto (1,79%). Consistente com público 45+.",
-    "**Vagas de emprego são a campanha mais eficiente** (CPA R$ 3-4). Manter enquanto contratação está aberta.",
-    "**Alerta de fadiga:** frequência 30d = 2,85 (limite 3,0). Rotacionar criativos até 12/09."
+    "**A conta de anúncios está parada desde 28/08.** Último dia cheio: 26/08. Em 27/08 saíram R$ 10,32 e depois nada. Tudo o mais nesta aba é consequência disso.",
+    "**Agosto fechou (até aqui) em R$ 2.565,31 e 412 conversas de WhatsApp.** Julho tinha sido R$ 2.734,78 e 549 conversas — ou seja, gasto 6% menor e 25% menos conversas.",
+    "**O CPA subiu de R$ 4,98 para R$ 6,23**, mas continua abaixo da meta de R$ 8,00. O problema não é preço do lead, é volume: faltaram 4 dias de veiculação.",
+    "**[PLÁSTICA] é o melhor ativo da conta:** R$ 477,70 investidos, 134 conversas, CPA R$ 3,56 e CTR de 4,05% — o triplo do CTR médio da conta.",
+    "**[RETOQUE] é o inverso:** maior gasto (R$ 670,31), menos conversas (83) e CPA de R$ 8,08. Frequência em 2,34 indica que o público de 5 km já viu esse criativo vezes demais.",
+    "**Facebook Feed é o placement que mais recebe verba** (R$ 800,71, 31%) com o CPM mais barato (R$ 6,72). Instagram Stories entrega o melhor CTR (1,85%) entre os grandes.",
+    "**O Instagram sente a parada em tempo real:** o alcance diário do perfil caiu de ~5.000 pessoas até 26/08 para 353 em 30/08, e os novos seguidores caíram de ~20/dia para 1. O crescimento orgânico da conta estava sendo carregado pela mídia paga."
   ]
 }
