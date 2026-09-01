@@ -596,6 +596,13 @@ def novos_vs_recorr(fin_mes, cadastro_map, ini_mes: date, criterio: str = "cadas
             atend_por_cid[cid] = atend_por_cid.get(cid, 0) + 1
         novos_ids = {cid for cid, n in atend_por_cid.items() if n == 1}
         rec_ids = {cid for cid, n in atend_por_cid.items() if n >= 2}
+        # DEBUG temporário
+        try:
+            import collections
+            dist = collections.Counter(atend_por_cid.values())
+            print(f"[novos_vs_recorr DEBUG] {len(fin_mes)} atend, {len(atend_por_cid)} cids únicos, distribuição visitas: {dict(sorted(dist.items()))}")
+        except Exception:
+            pass
     else:
         # Critério padrão (cadastro vs período) — bom para janelas curtas
         novos_ids, rec_ids = set(), set()
