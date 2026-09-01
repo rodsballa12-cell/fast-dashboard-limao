@@ -872,6 +872,43 @@ def main():
     a_semanal = analisar(agend, transac, seg, dom)
     a_diario = analisar(agend, transac, hoje, hoje)
 
+    # === HISTÓRICO NAVEGÁVEL: semanas e dias ===
+    # Permite que o dashboard permita navegar ◀ ▶ entre períodos passados.
+    historico_semanas = {}
+    d = ini_ano - timedelta(days=ini_ano.weekday())  # segunda da semana de ini_ano
+    while d <= hoje:
+        d_dom = d + timedelta(days=6)
+        ini_sem = max(d, ini_ano)
+        fim_sem = min(d_dom, hoje)
+        a = analisar(agend, transac, ini_sem, fim_sem)
+        if a["kpis"]["atend_fin"] > 0 or a["kpis"]["atend_total"] > 0:
+            iso_year, iso_week, _ = d.isocalendar()
+            kw = f"{iso_year}-W{iso_week:02d}"
+            historico_semanas[kw] = {
+                "periodo_ini": ini_sem.isoformat(),
+                "periodo_fim": fim_sem.isoformat(),
+                "kpis": a["kpis"],
+                "categorias": a.get("categorias", {}),
+                "novos_vs_recorr": novos_vs_recorr(
+                    [x for x in agend if (x.get("status") or {}).get("nome") == "Finalizado"
+                     and x.get("dataHoraInicio")
+                     and ini_sem <= parse_trinks_dt(x["dataHoraInicio"]).date() <= fim_sem],
+                    cad_map, ini_sem),
+            }
+        d += timedelta(days=7)
+
+    # Últimos 60 dias com atendimentos
+    historico_dias = {}
+    for i in range(60):
+        dd = hoje - timedelta(days=i)
+        if dd < ini_ano: break
+        a = analisar(agend, transac, dd, dd)
+        if a["kpis"]["atend_fin"] > 0 or a["kpis"]["atend_total"] > 0:
+            historico_dias[dd.isoformat()] = {
+                "kpis": a["kpis"],
+                "categorias": a.get("categorias", {}),
+            }
+
     fin_mes = [a for a in agend if (a.get("status") or {}).get("nome") == "Finalizado"
                and a.get("dataHoraInicio")
                and ini_mes <= parse_trinks_dt(a["dataHoraInicio"]).date() <= fim_mes]
@@ -1855,6 +1892,10 @@ def main():
                 key=lambda x: -x["v"],
             ),
             "lista": canc_com_valor,
+        },
+        "historico": {
+            "semanas": historico_semanas,
+            "dias": historico_dias,
         },
         "abas": {
             "anual": {
