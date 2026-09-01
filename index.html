@@ -2347,6 +2347,11 @@ async function sincronizarTrinks(){
 // ============= BINDINGS =============
 // Botão único: se tem token salvo → dispara sync completo (workflow GitHub) e recarrega.
 // Sem token → oferece configurar. Se recusar → só recarrega o JSON atual (fallback).
+// Reload de TODAS as abas (Trinks + Financeiro + Mídias)
+function reloadAllTabs(showToast=false){
+  return load(showToast).finally(()=>{ try{loadFinanceiro();}catch(e){} try{loadMidias();}catch(e){} });
+}
+
 async function refreshInteligente(){
   const btn = document.getElementById('btn-reload');
   let token = localStorage.getItem('gh_token');
@@ -2362,11 +2367,11 @@ async function refreshInteligente(){
       '📌 Se cancelar: o botão só recarrega os últimos dados publicados (que atualizam ' +
       'sozinhos pelo cron).'
     );
-    if(raw === null){ load(true); return; }  // cancelou → só recarrega
+    if(raw === null){ reloadAllTabs(true); return; }  // cancelou → recarrega TUDO
     token = sanitizeToken(raw);
     if(!token || token.length < 20){
       toast('❌ Token inválido. Só recarrego os últimos dados publicados.', true);
-      load(true);
+      reloadAllTabs(true);
       return;
     }
     localStorage.setItem('gh_token', token);
@@ -2390,7 +2395,7 @@ async function refreshInteligente(){
       btn.textContent = '⏳ ~60s pra carregar';
       setTimeout(() => {
         btn.disabled = false;
-        load(true);
+        reloadAllTabs(true);
       }, 70000);
     } else if(r.status === 401){
       localStorage.removeItem('gh_token');
@@ -2401,12 +2406,12 @@ async function refreshInteligente(){
       const txt = (await r.text()).slice(0, 150);
       toast(`⚠️ Sync falhou (HTTP ${r.status}). Recarregando últimos dados publicados.<br><small>${txt}</small>`, true);
       btn.disabled = false;
-      load(true);
+      reloadAllTabs(true);
     }
   } catch(e){
     toast(`⚠️ Sem rede pro sync: ${e.message}. Recarregando local.`, true);
     btn.disabled = false;
-    load(true);
+    reloadAllTabs(true);
   }
 }
 
@@ -3303,9 +3308,9 @@ document.querySelectorAll('.midias-per-btn').forEach(b => b.addEventListener('cl
 
 document.getElementById('btn-reload').addEventListener('click', refreshInteligente);
 
-// auto-refresh a cada 5min (se aba visível)
-load().finally(()=>{ loadFinanceiro(); loadMidias(); });
-setInterval(()=>{if(!document.hidden) load().finally(()=>{ loadFinanceiro(); loadMidias(); });}, 5*60*1000);
+// auto-refresh a cada 5min (se aba visível) — TODAS as abas
+reloadAllTabs();
+setInterval(()=>{if(!document.hidden) reloadAllTabs();}, 5*60*1000);
 </script>
 </body>
 </html>
