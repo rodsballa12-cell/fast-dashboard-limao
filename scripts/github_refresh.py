@@ -572,15 +572,41 @@ def top_ltv(agend, ini: date, fim: date, limite=15):
     }
 
 
-def novos_vs_recorr(fin_mes, cadastro_map, ini_mes: date):
-    novos_ids, rec_ids = set(), set()
-    for a in fin_mes:
-        cid = (a.get("cliente") or {}).get("id")
-        if cid is None: continue
-        cad = cadastro_map.get(cid)
-        if cad is None: continue
-        if cad.date() >= ini_mes: novos_ids.add(cid)
-        else: rec_ids.add(cid)
+def novos_vs_recorr(fin_mes, cadastro_map, ini_mes: date, criterio: str = "cadastro_vs_periodo"):
+    """
+    Classifica clientes como novos vs recorrentes.
+
+    criterio='cadastro_vs_periodo' (padrão para MES/SEMANA):
+        novo = cliente cadastrado dentro do período
+        recorrente = cliente cadastrado antes do período (já era cliente)
+
+    criterio='visitas_no_periodo' (recomendado para ANO ou períodos > 90 dias):
+        novo = cliente com apenas 1 atendimento no período (não retornou)
+        recorrente = cliente com 2+ atendimentos no período (retornou)
+        Motivo: se o período é grande OU cobre toda a operação da loja,
+        a data de cadastro sempre cai dentro dele → todos viram "novos" e
+        recorrentes = 0. A retenção real vira invisível.
+    """
+    if criterio == "visitas_no_periodo":
+        # Conta atendimentos por cliente no período
+        atend_por_cid = {}
+        for a in fin_mes:
+            cid = (a.get("cliente") or {}).get("id")
+            if cid is None: continue
+            atend_por_cid[cid] = atend_por_cid.get(cid, 0) + 1
+        novos_ids = {cid for cid, n in atend_por_cid.items() if n == 1}
+        rec_ids = {cid for cid, n in atend_por_cid.items() if n >= 2}
+    else:
+        # Critério padrão (cadastro vs período) — bom para janelas curtas
+        novos_ids, rec_ids = set(), set()
+        for a in fin_mes:
+            cid = (a.get("cliente") or {}).get("id")
+            if cid is None: continue
+            cad = cadastro_map.get(cid)
+            if cad is None: continue
+            if cad.date() >= ini_mes: novos_ids.add(cid)
+            else: rec_ids.add(cid)
+
     r_novos = sum(float(a.get("valor") or 0) for a in fin_mes if (a.get("cliente") or {}).get("id") in novos_ids)
     r_rec = sum(float(a.get("valor") or 0) for a in fin_mes if (a.get("cliente") or {}).get("id") in rec_ids)
     a_novos = sum(1 for a in fin_mes if (a.get("cliente") or {}).get("id") in novos_ids)
@@ -857,7 +883,10 @@ def main():
     nvr_sem = novos_vs_recorr(fin_sem, cad_map, seg)
     fin_ano = [a for a in agend if (a.get("status") or {}).get("nome") == "Finalizado"
                and a.get("dataHoraInicio") and ini_ano <= parse_trinks_dt(a["dataHoraInicio"]).date() <= fim_ano]
-    nvr_ano = novos_vs_recorr(fin_ano, cad_map, ini_ano)
+    # Para o ano usamos 'visitas_no_periodo': novo = 1 atend, recorrente = 2+
+    # (a lógica 'cadastro_vs_periodo' zera os recorrentes quando a loja abriu
+    # dentro do período — todos os clientes ficam classificados como novos)
+    nvr_ano = novos_vs_recorr(fin_ano, cad_map, ini_ano, criterio="visitas_no_periodo")
 
     ltv_ano = top_ltv(agend, ini_ano, fim_ano)
 
