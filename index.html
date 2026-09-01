@@ -203,7 +203,7 @@
       <span class="chip" id="chip-age" style="display:none;"></span>
       <span class="chip" id="chip-cota" style="display:none;"></span>
       <span class="chip" id="chip-live" style="display:none;"></span>
-      <button id="btn-reload" class="btn-refresh btn-sync" title="1º clique: pede um token GitHub restrito a este repositório (fica só no seu browser). Depois: força sync com a API do Trinks em ~1min. Sem token: recarrega os últimos dados publicados.">🔄 Atualizar dados</button>
+      <button id="btn-reload" class="btn-refresh btn-sync" title="Recarrega os últimos dados publicados. Cron atualiza os dados automaticamente a cada ~15min.">🔄 Atualizar dados</button>
     </div>
   </header>
 
@@ -2463,6 +2463,13 @@ function resetToken(){
   }
 }
 window.resetToken = resetToken;  // acessível pelo console: resetToken()
+// Reativar sync forçado via console: setGhToken('ghp_XXXXX')
+window.setGhToken = function(t){
+  t = sanitizeToken(t);
+  if(!t || t.length < 20){ console.error('Token inválido'); return; }
+  localStorage.setItem('gh_token', t);
+  console.log('✅ Token salvo. Próximo clique no botão dispara sync completo.');
+};
 async function sincronizarTrinks(){
   const btn=document.getElementById('btn-sync');
   const token=getToken();
@@ -2518,24 +2525,12 @@ async function refreshInteligente(){
   let token = localStorage.getItem('gh_token');
   if(token){ token = sanitizeToken(token); if(token.length < 20) token = null; }
 
+  // Sem token: só recarrega os dados publicados. Não pede token — cron a
+  // cada 15min mantém tudo fresco. Se quiser reativar sync forçado,
+  // rodar no console: setGhToken('ghp_...')
   if(!token){
-    const raw = prompt(
-      '🔑 Ativar sync completo (1x)\n\n' +
-      'Cola aqui seu Personal Access Token do GitHub — fica salvo SÓ neste browser, ' +
-      'nunca sai do seu celular. Depois de configurado, este botão puxa dados FRESCOS ' +
-      'do Trinks em ~1min.\n\n' +
-      'Como gerar (token restrito, recomendado):\nNo GitHub: foto do perfil > Settings > Developer settings >\nPersonal access tokens > Fine-grained tokens > Generate new token\n  · Expiration: 90 dias\n  · Repository access: Only select repositories -> fast-dashboard-limao\n  · Permissions: Actions -> Read and write\nNAO use o token classico de scope workflow: ele alcanca TODOS os seus repositorios.\n\n' +
-      '📌 Se cancelar: o botão só recarrega os últimos dados publicados (que atualizam ' +
-      'sozinhos pelo cron).'
-    );
-    if(raw === null){ reloadAllTabs(true); return; }  // cancelou → recarrega TUDO
-    token = sanitizeToken(raw);
-    if(!token || token.length < 20){
-      toast('❌ Token inválido. Só recarrego os últimos dados publicados.', true);
-      reloadAllTabs(true);
-      return;
-    }
-    localStorage.setItem('gh_token', token);
+    reloadAllTabs(true);
+    return;
   }
 
   btn.disabled = true;
