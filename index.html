@@ -226,10 +226,15 @@
     <!-- PAINEL — engloba os 4 períodos com seletor -->
     <div class="panel active" id="tab-painel">
       <div class="tabs" role="tablist" style="border-bottom:0;margin-bottom:14px">
-        <button class="tab-btn periodo-btn" role="tab" aria-selected="false" data-periodo="anual" style="padding:8px 14px;font-size:12.5px">📅 Ano · 2026</button>
-        <button class="tab-btn periodo-btn" role="tab" aria-selected="true"  data-periodo="mensal" style="padding:8px 14px;font-size:12.5px">🎯 Mês<span class="subn" id="tab-mensal-sub"></span></button>
-        <button class="tab-btn periodo-btn" role="tab" aria-selected="false" data-periodo="semanal" style="padding:8px 14px;font-size:12.5px">📊 Semana<span class="subn" id="tab-semanal-sub"></span></button>
-        <button class="tab-btn periodo-btn" role="tab" aria-selected="false" data-periodo="diario" style="padding:8px 14px;font-size:12.5px">🔴 Hoje<span class="subn" id="tab-diario-sub"></span></button>
+        <button class="tab-btn periodo-btn" role="tab" aria-selected="false" data-periodo="anual" style="padding:8px 14px;font-size:12.5px">📅 Ano</button>
+        <button class="tab-btn periodo-btn" role="tab" aria-selected="true"  data-periodo="mensal" style="padding:8px 14px;font-size:12.5px">🎯 Mês</button>
+        <button class="tab-btn periodo-btn" role="tab" aria-selected="false" data-periodo="semanal" style="padding:8px 14px;font-size:12.5px">📊 Semana</button>
+        <button class="tab-btn periodo-btn" role="tab" aria-selected="false" data-periodo="diario" style="padding:8px 14px;font-size:12.5px">🔴 Hoje</button>
+        <div id="periodo-nav" style="display:flex;gap:4px;margin-left:auto;align-items:center;font-size:11px;color:var(--ink-3)">
+          <button id="per-prev" class="tab-btn" style="padding:6px 10px;font-size:14px;font-weight:700" title="Período anterior">◀</button>
+          <span id="per-label" style="min-width:110px;text-align:center;font-weight:600;color:var(--ink)">—</span>
+          <button id="per-next" class="tab-btn" style="padding:6px 10px;font-size:14px;font-weight:700" title="Próximo período">▶</button>
+        </div>
       </div>
 
     <!-- ANUAL · foco: evolução financeira, mix, operação -->
@@ -1641,7 +1646,7 @@ function renderClientes(data){
 
 function renderMensal(data){
   const m=data.abas.mensal, k=m.kpis;
-  document.getElementById('tab-mensal-sub').textContent='meta '+brl0(data.meta_mensal_valor/1000)+'k';
+  var _sub=document.getElementById('tab-mensal-sub'); if(_sub) _sub.textContent='';
   if(k.em_atendimento>0){document.getElementById('chip-live').style.display='';document.getElementById('chip-live').innerHTML=`<span class="dot"></span> ${k.em_atendimento} em atendim.`;document.getElementById('chip-live').className='chip live';}
   renderInsights('mensal-insights','Mês corrente',(data.insights||{}).mensal);
   renderKPIs('mensal-kpis',[
@@ -1673,7 +1678,7 @@ function renderMensal(data){
 
 function renderSemanal(data){
   const s=data.abas.semanal, k=s.kpis;
-  document.getElementById('tab-semanal-sub').textContent=fmtDate(k.periodo_ini).slice(0,5)+'–'+fmtDate(k.periodo_fim).slice(0,5);
+  var _s=document.getElementById('tab-semanal-sub'); if(_s) _s.textContent='';
   renderInsights('semanal-insights','Semana corrente',(data.insights||{}).semanal);
   renderKPIs('semanal-kpis',[
     {label:'Caixa · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs sem passada'},
@@ -1701,7 +1706,7 @@ function renderSemanal(data){
 
 function renderDiario(data){
   const d=data.abas.diario, k=d.kpis;
-  document.getElementById('tab-diario-sub').textContent=fmtDate(k.data)+' '+k.dia_semana;
+  var _d=document.getElementById('tab-diario-sub'); if(_d) _d.textContent='';
   renderInsights('diario-insights','Hoje',(data.insights||{}).diario);
   renderKPIs('diario-kpis',[
     {label:'Caixa · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado'},
@@ -1748,7 +1753,77 @@ function setupTabs(){
     perPanels.forEach(p => p.classList.remove('active'));
     b.setAttribute('aria-selected','true');
     document.getElementById('periodo-'+b.dataset.periodo).classList.add('active');
+    window._perOffset = 0;
+    atualizarNavPeriodo();
   }));
+
+  // Navegação ◀/▶ entre períodos (Mês navega entre meses históricos)
+  const btnPrev = document.getElementById('per-prev');
+  const btnNext = document.getElementById('per-next');
+  if(btnPrev) btnPrev.addEventListener('click', () => navegarPeriodo(-1));
+  if(btnNext) btnNext.addEventListener('click', () => navegarPeriodo(+1));
+  atualizarNavPeriodo();
+}
+
+// Estado da navegação entre períodos
+window._perOffset = 0;
+
+function periodoAtivo(){
+  const sel = document.querySelector('.periodo-btn[aria-selected="true"]');
+  return sel ? sel.dataset.periodo : 'mensal';
+}
+
+function mesesDisponiveis(){
+  const m = TRINKS && TRINKS.abas && TRINKS.abas.anual && TRINKS.abas.anual.meses;
+  return m ? Object.keys(m).sort() : [];
+}
+
+function atualizarNavPeriodo(){
+  const per = periodoAtivo();
+  const lbl = document.getElementById('per-label');
+  const prev = document.getElementById('per-prev');
+  const next = document.getElementById('per-next');
+  if(!lbl || !prev || !next) return;
+  const off = window._perOffset || 0;
+
+  if(per === 'mensal'){
+    const meses = mesesDisponiveis();
+    if(meses.length === 0){ lbl.textContent = 'Sem dados'; prev.disabled = next.disabled = true; return; }
+    const idxAtual = meses.length - 1 + off; // 0 = mais recente
+    const clamped = Math.max(0, Math.min(idxAtual, meses.length - 1));
+    if(clamped !== idxAtual) window._perOffset = clamped - (meses.length - 1);
+    const mesId = meses[clamped];
+    const [y,m] = mesId.split('-');
+    const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    lbl.textContent = nomes[parseInt(m)-1] + '/' + y.slice(2);
+    prev.disabled = clamped === 0;
+    next.disabled = clamped === meses.length - 1;
+  } else if(per === 'anual'){
+    lbl.textContent = String(new Date().getFullYear());
+    prev.disabled = true; next.disabled = true;
+  } else if(per === 'semanal'){
+    const k = TRINKS && TRINKS.abas && TRINKS.abas.semanal && TRINKS.abas.semanal.kpis;
+    if(k){ lbl.textContent = fmtDate(k.periodo_ini).slice(0,5) + '–' + fmtDate(k.periodo_fim).slice(0,5); }
+    else lbl.textContent = 'Semana atual';
+    prev.disabled = true; next.disabled = true;
+  } else if(per === 'diario'){
+    const k = TRINKS && TRINKS.abas && TRINKS.abas.diario && TRINKS.abas.diario.kpis;
+    if(k){ lbl.textContent = fmtDate(k.data) + ' ' + (k.dia_semana||''); }
+    else lbl.textContent = 'Hoje';
+    prev.disabled = true; next.disabled = true;
+  }
+}
+
+function navegarPeriodo(delta){
+  const per = periodoAtivo();
+  if(per !== 'mensal') return; // só mensal tem histórico por enquanto
+  const meses = mesesDisponiveis();
+  const idxAtual = meses.length - 1 + (window._perOffset || 0) + delta;
+  if(idxAtual < 0 || idxAtual >= meses.length) return;
+  window._perOffset = (window._perOffset || 0) + delta;
+  atualizarNavPeriodo();
+  // TODO próxima iteração: re-renderizar aba Mensal com dados de meses[idxAtual]
+  toast('📅 Mês selecionado: ' + document.getElementById('per-label').textContent + '. Renderização histórica em construção.', false);
 }
 
 // ============= TOAST =============
@@ -2203,6 +2278,8 @@ async function load(showToast=false){
     if(!resp.ok) throw new Error('HTTP '+resp.status);
     const data = await resp.json();
     TRINKS = data;
+    // Atualiza label do nav de período assim que TRINKS chega
+    try { if(typeof atualizarNavPeriodo === 'function') atualizarNavPeriodo(); } catch(e){}
     // Verifica se cota Trinks está esgotada (arquivo separado, não sobrescreve dashboard_data.json)
     // quotaOut fica no escopo do bloco: o chip de idade abaixo mostra o motivo de
     // forma permanente — o toast some em 5s e não serve como único aviso.
