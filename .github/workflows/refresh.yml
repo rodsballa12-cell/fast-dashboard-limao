@@ -98,13 +98,21 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/dashboard_data.json \
-                  data/clientes_detalhes.json \
-                  data/profissionais_cache.json \
-                  data/clientes_lista_cache.json \
-                  data/servicos_cache.json \
-                  data/agend_detail_cache.json \
-                  data/quota_status.json 2>/dev/null || true
+          # BUG anterior: um único `git add A B C D quota_status.json 2>/dev/null || true`
+          # fazia o comando INTEIRO falhar quando quota_status.json não existia,
+          # engolia o erro (|| true), e nada era staged — commit ficava vazio
+          # apesar do dashboard ter dados novos.
+          # Fix: adicionar cada arquivo individualmente (o `|| true` só cobre o
+          # próprio git add, não os outros).
+          for f in data/dashboard_data.json \
+                   data/clientes_detalhes.json \
+                   data/profissionais_cache.json \
+                   data/clientes_lista_cache.json \
+                   data/servicos_cache.json \
+                   data/agend_detail_cache.json \
+                   data/quota_status.json; do
+            git add "$f" 2>/dev/null || true
+          done
           # Se quota_status foi limpo (arquivo removido), stage a remoção
           git add -u data/quota_status.json 2>/dev/null || true
           if git diff --cached --quiet; then
