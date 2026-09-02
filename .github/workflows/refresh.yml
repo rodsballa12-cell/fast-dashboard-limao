@@ -5,15 +5,31 @@ name: Refresh Dashboard Data
 # ESTRATÉGIA DE RESILIÊNCIA:
 # GitHub Actions pula fires de cron silenciosamente em horários de pico.
 # Solução: 3 fires por hora (:07, :27, :47) com early-exit — se qualquer
-# um dos 3 firar, cobre a janela. Se o primeiro rodou, os outros 2
-# detectam via `git log` (idade < 30 min) e encerram em <10s sem tocar API.
+# um dos 3 firar, cobre a janela; os outros encerram em <10s sem tocar API.
 #
 # HORÁRIO: 11h-21h BRT (14h-23h UTC + 0h UTC). BRT é UTC-3 fixo (sem DST
 # desde 2019), então o minuto UTC = minuto BRT; só a hora desloca.
 #
-# CONSUMO API: ~20 req por execução real. 11 execuções reais/dia = ~220
-# req/dia = ~6.600/mês (66% da cota de 10k). Fires de early-exit não
-# consomem nada.
+# CONSUMO API — medido, não estimado (01/09/2026):
+# O comentário anterior dizia "~20 req/execução · 11 execuções/dia · 220
+# req/dia · 6.600/mês (66% da cota)". Os três números estavam errados.
+# Medindo pelo próprio contador do Trinks (cota_api.totalUtilizado, gravado
+# em dashboard_data.json a cada run), as execuções em regime custaram 24, 27,
+# 27 e 30 req — chame de ~27. E a janela de recência era de 30 min, o que
+# permite 2 execuções/hora, não 1: 11h × 2 = até 22 execuções/dia.
+#   22 × 27 = ~594 req/dia = ~17.800/mês, contra uma cota de 10.000.
+# Ou seja, o desenho estava 1,8× acima da cota mesmo em regime. Em 01/09 o
+# painel queimou 1.007 req (10% da cota mensal) em um único dia.
+#
+# O custo por execução é alto porque agendamentos e transações são
+# re-paginados do ANO INTEIRO a cada run (são a fonte primária de todas as
+# abas). Reduzir isso exige mexer na análise; aqui atacamos a frequência,
+# que é o fator de maior alavancagem e o de menor risco.
+#
+# DESENHO ATUAL: janela de recência de 75 min → ~8 execuções/dia
+#   8 × 27 = ~216 req/dia = ~6.500/mês (65% da cota), com folga para os
+#   picos de cache frio. Além disso, um teto de ritmo (abaixo) corta a
+#   torneira se o consumo real furar o orçamento do mês.
 
 on:
   workflow_dispatch:
@@ -37,7 +53,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      # Early-exit se dashboard_data.json foi atualizado nas últimas 30 min.
+      # Early-exit se dashboard_data.json foi atualizado nas últimas 75 min.
       # Aplica só a fires scheduled — dispatch manual sempre roda.
       #
       # Também faz backoff quando a cota mensal do Trinks está esgotada: sem
@@ -64,14 +80,49 @@ jobs:
             fi
             echo "🔄 Cota marcada como esgotada, mas é mês novo ou passaram 6h — tentando de novo."
           fi
-          last_ts=$(git log -1 --format=%ct -- data/dashboard_data.json 2>/dev/null || echo 0)
+          # TETO DE RITMO: corta a torneira quando o consumo real fura o
+          # orçamento do mês. O contador vem do próprio Trinks (/v1/consumo),
+          # gravado em cota_api pela run anterior. Orçamento = a fatia linear
+          # do mês + 15% de tolerância + um piso de 250 req para o pico de
+          # cache frio do dia 1, limitado a 92% da cota para sempre sobrar
+          # reserva. Em 01/09 o consumo real (1.007) teria batido no teto
+          # (~700) e bloqueado o resto do dia.
+          tot=$(sed -nE 's/.*"totalUtilizado": *([0-9]+).*/\1/p' data/dashboard_data.json | head -1)
+          cota=$(sed -nE 's/.*"cotaTotal": *([0-9]+).*/\1/p' data/dashboard_data.json | head -1)
+          if [ -n "$tot" ] && [ -n "$cota" ] && [ "$cota" -gt 0 ]; then
+            dia=$(TZ=America/Sao_Paulo date +%-d)
+            dias=$(TZ=America/Sao_Paulo date -d "$(TZ=America/Sao_Paulo date +%Y-%m-01) +1 month -1 day" +%-d)
+            teto=$(awk -v c="$cota" -v d="$dia" -v n="$dias" \
+              'BEGIN{t=c*(d/n)*1.15+250; m=c*0.92; if(t>m)t=m; printf "%d", t}')
+            echo "Cota Trinks: ${tot}/${cota} · teto para o dia ${dia}/${dias}: ${teto}"
+            if [ "$tot" -gt "$teto" ]; then
+              echo "skip=true" >> $GITHUB_OUTPUT
+              echo "🛑 Consumo ${tot} acima do teto ${teto} — pulando para não estourar a cota do mês."
+              exit 0
+            fi
+          else
+            echo "⚠️  Não consegui ler cota_api de dashboard_data.json — seguindo sem teto de ritmo."
+          fi
+
+          # RECÊNCIA: usa o gerado_em do próprio JSON, não `git log`. Com
+          # checkout raso (fetch-depth 2) o git não enxerga o pai do commit
+          # mais antigo, então trata esse commit-fronteira como se tivesse
+          # criado todos os arquivos: `git log -1 -- dashboard_data.json`
+          # devolve a data DELE, não a da última alteração real do arquivo.
+          # Medido em 01/09: o método antigo calculou 25 min de idade quando
+          # o dado tinha 58. Erra para menos quando há commits de mídias ou de
+          # código no meio (pula demais) e não tem como errar para mais de
+          # forma controlada. O gerado_em mede exatamente o que interessa:
+          # a idade do dado, independente do histórico git disponível.
+          ger=$(sed -nE 's/.*"gerado_em": *"([^"]+)".*/\1/p' data/dashboard_data.json | head -1)
+          last_ts=$(date -d "$ger" +%s 2>/dev/null || echo 0)
           now=$(date -u +%s)
           age=$((now - last_ts))
           age_min=$((age / 60))
-          echo "Última atualização: ${age_min} min atrás"
-          if [ "$age" -lt 1800 ]; then
+          echo "Última atualização: ${age_min} min atrás (gerado_em ${ger:-desconhecido})"
+          if [ "$last_ts" -gt 0 ] && [ "$age" -lt 4500 ]; then
             echo "skip=true" >> $GITHUB_OUTPUT
-            echo "⏭  Refresh recente (<30min) — outro cron já cobriu esta janela."
+            echo "⏭  Refresh recente (<75min) — outro cron já cobriu esta janela."
           else
             echo "skip=false" >> $GITHUB_OUTPUT
             echo "▶️  Rodando refresh (idade ${age_min} min)."
