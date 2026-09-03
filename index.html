@@ -2936,10 +2936,14 @@ function renderMidias(){
     F: 'Crítica. Parar e reavaliar estratégia toda.'
   }[grade];
 
-  // Forecast do mês (se pill = mês)
-  const hoje = new Date();
-  const dia = hoje.getDate();
-  const diasNoMes = new Date(hoje.getFullYear(), hoje.getMonth()+1, 0).getDate();
+  // Forecast do mês CORRENTE (dinâmico, em BRT)
+  const hojeFmt = new Intl.DateTimeFormat('pt-BR', {timeZone:'America/Sao_Paulo', day:'numeric', month:'numeric', year:'numeric'}).formatToParts(new Date());
+  const dia = parseInt(hojeFmt.find(p=>p.type==='day').value, 10);
+  const mesN = parseInt(hojeFmt.find(p=>p.type==='month').value, 10);
+  const anoN = parseInt(hojeFmt.find(p=>p.type==='year').value, 10);
+  const diasNoMes = new Date(anoN, mesN, 0).getDate();
+  const mesAbrev = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][mesN-1];
+  const forecastLabel = `Forecast ${mesAbrev}/${String(anoN).slice(-2)}`;
   const projGasto = pmtd.gasto * (diasNoMes/dia);
   const projConversas = Math.round(pmtd.conversas_msg * (diasNoMes/dia));
 
@@ -2960,7 +2964,7 @@ function renderMidias(){
           <div style="font-size:10.5px;opacity:0.9">${score}/100</div>
         </div>
         <div style="background:var(--surface-2);padding:10px 14px;border-radius:8px;max-width:220px">
-          <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:600">Forecast Ago/26</div>
+          <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:600">${forecastLabel}</div>
           <div style="font-weight:700;font-size:16px;margin-top:2px">${brl(projGasto,0)}</div>
           <div style="font-size:10.5px;color:var(--ink-3)">${projConversas} conversas · se manter ritmo (dia ${dia}/${diasNoMes})</div>
         </div>
