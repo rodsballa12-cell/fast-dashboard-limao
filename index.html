@@ -1678,7 +1678,10 @@ function renderMensal(data){
   renderKPIs('mensal-kpis',[
     {label:'Caixa · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
-    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`(caixa÷visitas · padrão Trinks)`, delta_pct:k.ticket_delta_pct, delta_label:'vs ticket mês passado'},
+    // O delta do ticket sai da MESMA janela dos outros cards (01 a hoje do mês
+    // passado), não do mês fechado — o rótulo antigo dizia "mês passado" e fazia
+    // parecer comparação contra o mês inteiro.
+    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`(caixa÷visitas · padrão Trinks)`, delta_pct:k.ticket_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
   ]);
   renderMetaProgress('mensal-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
@@ -1709,7 +1712,8 @@ function renderSemanal(data){
   renderKPIs('semanal-kpis',[
     {label:'Caixa · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
-    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:'vs sem passada'},
+    // Mesma janela parcial dos cards ao lado, não a semana fechada anterior.
+    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Dias operados',value:k.dias_op+'',foot:`de ${s.meta.dias_total} da semana`}
   ]);
   renderMetaProgress('semanal-meta','Meta Semanal',s.meta,'Soma das metas diárias dos dias da semana (cada dia ponderado pelo peso histórico do DOW)');
