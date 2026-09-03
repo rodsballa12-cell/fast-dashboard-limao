@@ -1055,20 +1055,41 @@ def main():
         return round((atual - ant) / ant * 100, 1)
 
     def _delta_pct_perdia(atual, ant, dias_atu, dias_ant):
-        """Delta normalizado por dias operados — evita comparar mês parcial × mês fechado.
-        Ticket médio já é média per capita, não normaliza."""
+        """Delta normalizado por dias COM movimento. Exposto como leitura
+        secundária — ver o comentário do laço abaixo para por que não é o
+        número principal."""
         if not dias_atu or not dias_ant or not ant: return None
         return _delta_pct(atual / dias_atu, ant / dias_ant)
 
-    # Injeta deltas nos KPIs de cada aba
+    # Injeta deltas nos KPIs de cada aba.
+    #
+    # O delta principal é BRUTO, não normalizado por dia. As três referências
+    # acima já são janelas de calendário alinhadas por construção — 01 a hoje
+    # contra 01 ao mesmo dia do mês passado, N dias de semana contra os mesmos
+    # N, o dia de hoje até a hora atual contra o mesmo DOW até a mesma hora.
+    # Estando a janela igual dos dois lados, dividir por dias_op corrige uma
+    # distorção que não existe e cria outra: dias_op conta dias COM movimento,
+    # então um dia em que a loja abriu e não veio ninguém simplesmente sai da
+    # conta e infla a média do lado que o teve.
+    #
+    # Caso real de 03/09/2026: agosto 01-03 teve movimento em 2 dos 3 dias
+    # (02/08 ficou zerado). O per-dia comparava R$ 786 contra R$ 3.228 e
+    # mostrava -75,7%; a queda real da mesma janela é -63,5%. O card dizia
+    # "vs 01-03/mês passado" e entregava outro número.
     for aba, ant in [(a_mensal, mes_anterior_kpis), (a_semanal, semana_anterior),
                      (a_diario, dia_anterior_kpis)]:
         k = aba["kpis"]
         dias_atu = k.get("dias_op", 1)
         dias_ant = ant.get("dias_op", 1)
-        k["caixa_delta_pct"] = _delta_pct_perdia(k.get("caixa", 0), ant.get("caixa", 0), dias_atu, dias_ant)
-        k["atend_delta_pct"] = _delta_pct_perdia(k.get("atend_fin", 0), ant.get("atend_fin", 0), dias_atu, dias_ant)
-        k["cliente_dia_delta_pct"] = _delta_pct_perdia(k.get("cliente_dia", 0), ant.get("cliente_dia", 0), dias_atu, dias_ant)
+        k["caixa_delta_pct"] = _delta_pct(k.get("caixa", 0), ant.get("caixa", 0))
+        k["atend_delta_pct"] = _delta_pct(k.get("atend_fin", 0), ant.get("atend_fin", 0))
+        k["cliente_dia_delta_pct"] = _delta_pct(k.get("cliente_dia", 0), ant.get("cliente_dia", 0))
+        # Secundários: a mesma comparação por dia com movimento, para quando a
+        # pergunta for "nos dias em que abriu, rendeu mais ou menos?"
+        k["caixa_delta_perdia_pct"] = _delta_pct_perdia(k.get("caixa", 0), ant.get("caixa", 0), dias_atu, dias_ant)
+        k["atend_delta_perdia_pct"] = _delta_pct_perdia(k.get("atend_fin", 0), ant.get("atend_fin", 0), dias_atu, dias_ant)
+        k["cliente_dia_delta_perdia_pct"] = _delta_pct_perdia(k.get("cliente_dia", 0), ant.get("cliente_dia", 0), dias_atu, dias_ant)
+        k["dias_com_movimento"] = {"atual": dias_atu, "anterior": dias_ant}
         k["ticket_delta_pct"] = _delta_pct(k.get("ticket_medio", 0), ant.get("ticket_medio", 0))
         # Delta bruto também exposto pra UI mostrar quando as duas janelas SÃO comparáveis
         k["caixa_delta_bruto_pct"] = _delta_pct(k.get("caixa", 0), ant.get("caixa", 0))
