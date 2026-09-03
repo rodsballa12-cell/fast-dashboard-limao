@@ -1364,7 +1364,9 @@
         "cliques": 1051,
         "ctr_pct": 1.73,
         "reach": 21602,
-        "status": "top"
+        "conversas_msg": 80,
+        "cpa_msg": 8.2,
+        "status": "otimizar"
       },
       {
         "faixa": "55-64",
@@ -1375,7 +1377,9 @@
         "cliques": 1027,
         "ctr_pct": 1.91,
         "reach": 18212,
-        "status": "top"
+        "conversas_msg": 79,
+        "cpa_msg": 6.49,
+        "status": "manter"
       },
       {
         "faixa": "35-44",
@@ -1386,7 +1390,9 @@
         "cliques": 842,
         "ctr_pct": 1.49,
         "reach": 21276,
-        "status": "top"
+        "conversas_msg": 110,
+        "cpa_msg": 4.57,
+        "status": "escalar"
       },
       {
         "faixa": "25-34",
@@ -1397,7 +1403,9 @@
         "cliques": 645,
         "ctr_pct": 0.88,
         "reach": 32291,
-        "status": "ok"
+        "conversas_msg": 66,
+        "cpa_msg": 5.99,
+        "status": "manter"
       },
       {
         "faixa": "65+",
@@ -1408,7 +1416,9 @@
         "cliques": 965,
         "ctr_pct": 2.11,
         "reach": 15025,
-        "status": "ok"
+        "conversas_msg": 46,
+        "cpa_msg": 7.66,
+        "status": "manter"
       },
       {
         "faixa": "25-34",
@@ -1419,7 +1429,9 @@
         "cliques": 34,
         "ctr_pct": 1.3,
         "reach": 1234,
-        "status": "residual"
+        "conversas_msg": 4,
+        "cpa_msg": 5.86,
+        "status": "manter"
       },
       {
         "faixa": "35-44",
@@ -1430,7 +1442,9 @@
         "cliques": 24,
         "ctr_pct": 2.2,
         "reach": 584,
-        "status": "residual"
+        "conversas_msg": 2,
+        "cpa_msg": 6.92,
+        "status": "manter"
       },
       {
         "faixa": "45-54",
@@ -1441,7 +1455,9 @@
         "cliques": 10,
         "ctr_pct": 2.12,
         "reach": 222,
-        "status": "residual"
+        "conversas_msg": 2,
+        "cpa_msg": 2.97,
+        "status": "escalar"
       }
     ],
     "placement_30d": [
@@ -1562,6 +1578,12 @@
       "icone": "📉",
       "titulo": "Os 7 dias ainda mostram -69% de gasto e -74% de conversas",
       "detalhe": "R$ 212,28 e 23 conversas contra R$ 687,99 e 89 na semana anterior. A janela ainda contém os 4 dias parados (28 a 31/08); deve normalizar até 05/09 se a conta seguir entregando."
+    },
+    {
+      "sev": "warn",
+      "icone": "💬",
+      "titulo": "Perguntas comerciais no Instagram respondidas só no direct",
+      "detalhe": "Nos últimos 30 dias apareceram ao menos 5 perguntas de intenção de compra nos comentários — preço de mão+pé, 'escovam cabelos crespos?', 'qual o telefone de WhatsApp?', 'o que é velaterapia?' e endereço. O salão responde, mas quase sempre com 'te enviamos no direct'. A resposta some do post: quem chegar depois com a mesma dúvida não acha, e a maioria não pergunta de novo — só sai. Responder o preço e o serviço publicamente, e só depois chamar no direct, transforma o comentário em vitrine."
     },
     {
       "sev": "warn",
@@ -1859,6 +1881,13 @@
     "frequency_atual_30d": 2.69
   },
   "direcionamentos_estrategicos": [
+    {
+      "prioridade": "P1",
+      "titulo": "🎯 O orçamento por idade está invertido vs. quem realmente vira cliente",
+      "descoberta": "Cruzando Meta com Trinks: a faixa 35-44 tem o MELHOR CPA (R$ 4,57), o MAIOR volume de conversas (110) e é 37% dos clientes com idade real no Trinks — mas recebe só 20,4% do orçamento. Já 45-54 recebe a MAIOR fatia (26,6%), tem o PIOR CPA (R$ 8,20, acima da meta de R$ 8,00) e é 17% dos clientes. Somando 55+, são 35,1% do orçamento para 14% dos clientes reais. O painel escondia isso porque julgava faixa etária por CTR, e o CTR aponta ao contrário: 65+ tem o melhor CTR (2,11%) e o segundo pior CPA (R$ 7,66). Engajamento de quem tem 55+ é curtida, não intenção: 35-44 converte 17 conversas a cada mil engajamentos, contra 4,6 do 65+.",
+      "acao": "Realocar ~R$ 300/mês de 45-54 e 65+ para 35-44 e 25-34. No CPA atual de cada faixa, a mesma verba rende cerca de +29 conversas/mês. Adicionadas as colunas Conversas e CPA na tabela de demografia para acompanhar.",
+      "impacto_estimado": "+29 conversas/mês sem gastar a mais"
+    },
     {
       "prioridade": "P1",
       "titulo": "🎨 Trocar o criativo do [RETOQUE]",

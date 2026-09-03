@@ -3263,6 +3263,8 @@ function renderMidias(){
         <th style="text-align:center;padding:8px">Gênero</th>
         <th style="text-align:right;padding:8px">Gasto</th>
         <th style="text-align:right;padding:8px">%</th>
+        <th style="text-align:right;padding:8px">Conversas</th>
+        <th style="text-align:right;padding:8px">CPA</th>
         <th style="text-align:right;padding:8px">Alcance</th>
         <th style="text-align:right;padding:8px">CTR</th>
         <th style="text-align:center;padding:8px">Ação</th>
@@ -3272,6 +3274,8 @@ function renderMidias(){
         <td style="text-align:center;padding:8px">${d.genero==='F'?'♀':d.genero==='M'?'♂':'?'}</td>
         <td style="text-align:right;padding:8px">${brl(d.gasto)}</td>
         <td style="text-align:right;padding:8px">${d.share_pct.toFixed(1)}%</td>
+        <td style="text-align:right;padding:8px">${d.conversas_msg!=null?nfmt(d.conversas_msg):'—'}</td>
+        <td style="text-align:right;padding:8px;font-weight:700;color:${cpaColor(d.cpa_msg)}">${d.cpa_msg?brl(d.cpa_msg):'—'}</td>
         <td style="text-align:right;padding:8px">${d.reach.toLocaleString('pt-BR')}</td>
         <td style="text-align:right;padding:8px;font-weight:700;color:${d.ctr_pct>=1.8?'#22c55e':d.ctr_pct>=1.2?'#3b82f6':'#ef4444'}">${d.ctr_pct.toFixed(2)}%</td>
         <td style="text-align:center;padding:8px"><span style="color:${stColor(d.status)};font-weight:600;font-size:11px">${stLabel(d.status)}</span></td>
