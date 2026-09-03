@@ -958,12 +958,19 @@ def main():
 
     ltv_ano = top_ltv(agend, ini_ano, fim_ano)
 
-    # === Semana anterior (pra comparação semana × semana) ===
+    # === Semana anterior — MESMA JANELA (apples-to-apples) ===
+    # Se hoje é quarta (3 dias na semana atual: seg-ter-qua), comparar com
+    # seg-ter-qua da semana passada — não com a semana inteira anterior.
     seg_ant = seg - timedelta(days=7)
-    dom_ant = seg_ant + timedelta(days=6)
-    a_sem_ant = analisar(agend, transac, seg_ant, dom_ant)
+    dias_semana_atu = (hoje - seg).days  # 0=seg, 1=ter, ..., 6=dom
+    fim_janela_sem_ant = seg_ant + timedelta(days=dias_semana_atu)
+    a_sem_ant = analisar(agend, transac, seg_ant, fim_janela_sem_ant)
+    dom_ant_full = seg_ant + timedelta(days=6)
     semana_anterior = {
-        "periodo_ini": seg_ant.isoformat(), "periodo_fim": dom_ant.isoformat(),
+        "periodo_ini": seg_ant.isoformat(),
+        "periodo_fim": fim_janela_sem_ant.isoformat(),
+        "janela_dias": dias_semana_atu + 1,
+        "sem_completa_fim": dom_ant_full.isoformat(),
         "caixa": a_sem_ant["kpis"]["caixa"], "atend_fin": a_sem_ant["kpis"]["atend_fin"],
         "n_trans": a_sem_ant["kpis"]["n_trans"], "ticket_trans": a_sem_ant["kpis"]["ticket_trans"],
         "ticket_medio": a_sem_ant["kpis"]["ticket_medio"],
@@ -971,15 +978,25 @@ def main():
         "dias_op": a_sem_ant["kpis"]["dias_op"],
     }
 
-    # === Mês anterior (pra deltas dos KPIs mensais) ===
+    # === Mês anterior — MESMA JANELA (apples-to-apples) ===
+    # Comparar setembro-parcial (3 dias) com agosto INTEIRO (27 dias) é injusto:
+    # os primeiros dias do mês tipicamente rendem menos que a média. Fix:
+    # comparar mesmos N dias corridos do mês anterior. Se hoje é 03/09,
+    # compara com 01-03/08. Se mês corrente já fechou (raro), usa mês inteiro.
     if hoje.month == 1:
         ini_mes_ant = date(hoje.year - 1, 12, 1)
     else:
         ini_mes_ant = date(hoje.year, hoje.month - 1, 1)
-    fim_mes_ant = date(ini_mes_ant.year, ini_mes_ant.month, monthrange(ini_mes_ant.year, ini_mes_ant.month)[1])
-    a_mes_ant = analisar(agend, transac, ini_mes_ant, fim_mes_ant)
+    ult_dia_mes_ant = monthrange(ini_mes_ant.year, ini_mes_ant.month)[1]
+    # Fim da janela = mesmo dia-do-mês de hoje, ou último dia se mês anterior for menor
+    fim_janela_ant = date(ini_mes_ant.year, ini_mes_ant.month, min(hoje.day, ult_dia_mes_ant))
+    a_mes_ant = analisar(agend, transac, ini_mes_ant, fim_janela_ant)
+    fim_mes_ant_full = date(ini_mes_ant.year, ini_mes_ant.month, ult_dia_mes_ant)
     mes_anterior_kpis = {
-        "periodo_ini": ini_mes_ant.isoformat(), "periodo_fim": fim_mes_ant.isoformat(),
+        "periodo_ini": ini_mes_ant.isoformat(),
+        "periodo_fim": fim_janela_ant.isoformat(),
+        "janela_dias": hoje.day,  # comparação apples-to-apples: primeiros N dias
+        "mes_completo_fim": fim_mes_ant_full.isoformat(),
         "caixa": a_mes_ant["kpis"]["caixa"], "atend_fin": a_mes_ant["kpis"]["atend_fin"],
         "cliente_dia": a_mes_ant["kpis"]["cliente_dia"], "ticket_medio": a_mes_ant["kpis"]["ticket_medio"],
         "dias_op": a_mes_ant["kpis"]["dias_op"],
