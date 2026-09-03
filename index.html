@@ -2669,7 +2669,7 @@ function renderFinanceiro(){
     + `<div class="be-leg">${finPct(bePerc)} percorrido · equilíbrio em ${brl0(beMes)}/mês</div>`;
 
   document.getElementById('fin-kpis').innerHTML='<section class="kpi-grid fin5">'+[
-    kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), 'Conta corrente da PJ · posição de 28/08', null),
+    kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), `Conta corrente da PJ · posição de ${(FIN.baseline||'').split('-').reverse().slice(0,2).join('/')}`, null),
     kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), '⚠️ número da premissa D+30, contrariada pela liquidação diária medida — a revisar com o extrato de 15/08 em diante', null),
     kpiCard('k3','RESULTADO DO MÊS', brl0(k.resultado_mes), brl0(k.resultado_mes_caixa)+' pelo caixa · a diferença é Simples e royalty provisionados', null),
     kpiCard('k4','FATURAMENTO × META', finPct(atg), brl0(k.receita_mes)+' de '+brl0(k.meta_mes)+' · faltaram '+brl0(k.meta_mes-k.receita_mes), null),
