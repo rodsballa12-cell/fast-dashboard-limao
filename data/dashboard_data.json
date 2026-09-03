@@ -1,8 +1,34 @@
 {
-  "gerado_em": "2026-09-03T17:37:36-03:00",
+  "gerado_em": "2026-09-03T18:00:37-03:00",
   "hoje": "2026-09-03",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 30,
+  "dias_atipicos": {
+    "2026-09-01": {
+      "ratio": 2.07,
+      "tipo": "alto",
+      "mediana_dow": 428.5,
+      "caixa": 885.0
+    },
+    "2026-08-10": {
+      "ratio": 2.65,
+      "tipo": "alto",
+      "mediana_dow": 640.0,
+      "caixa": 1698.0
+    },
+    "2026-08-06": {
+      "ratio": 2.87,
+      "tipo": "alto",
+      "mediana_dow": 863.0,
+      "caixa": 2473.0
+    },
+    "2026-07-29": {
+      "ratio": 0.36,
+      "tipo": "baixo",
+      "mediana_dow": 721.5,
+      "caixa": 257.0
+    }
+  },
   "sazonalidade": {
     "peso_dow": {
       "Seg": 7.1,
@@ -1518,7 +1544,7 @@
           "cliente": "Marileide Barbosa "
         }
       ],
-      "horas_desatualizado": 124.3
+      "horas_desatualizado": 124.7
     }
   },
   "auditoria_cancelados": {
@@ -2762,15 +2788,15 @@
           "receita_serv": 2309.0,
           "atend_fin": 46,
           "atend_canc": 1,
-          "atend_total": 51,
+          "atend_total": 53,
           "n_trans": 37,
           "ticket_trans": 77.78,
           "cliente_dia": 32,
           "ticket_medio": 89.94,
-          "taxa_canc": 2.0,
+          "taxa_canc": 1.9,
           "dias_op": 4,
           "clientes_unicos": 32,
-          "em_atendimento": 4,
+          "em_atendimento": 6,
           "n_prof_ativos": 9,
           "rs_hora_salao": 59.96,
           "horas_operacao_periodo": 48.0,
@@ -2824,7 +2850,7 @@
           "receita_serv": 675.0,
           "atend_fin": 16,
           "atend_canc": 0,
-          "atend_total": 19,
+          "atend_total": 21,
           "n_trans": 11,
           "ticket_trans": 61.36,
           "cliente_dia": 11,
@@ -2832,7 +2858,7 @@
           "taxa_canc": 0.0,
           "dias_op": 1,
           "clientes_unicos": 11,
-          "em_atendimento": 3,
+          "em_atendimento": 5,
           "n_prof_ativos": 7,
           "rs_hora_salao": 56.25,
           "horas_operacao_periodo": 12.0,
@@ -4747,15 +4773,15 @@
         "receita_serv": 45788.1,
         "atend_fin": 734,
         "atend_canc": 47,
-        "atend_total": 788,
+        "atend_total": 790,
         "n_trans": 455,
         "ticket_trans": 109.62,
         "cliente_dia": 440,
         "ticket_medio": 113.36,
-        "taxa_canc": 6.0,
+        "taxa_canc": 5.9,
         "dias_op": 38,
         "clientes_unicos": 331,
-        "em_atendimento": 6,
+        "em_atendimento": 8,
         "n_prof_ativos": 22,
         "rs_hora_salao": 105.23,
         "horas_operacao_periodo": 474.0,
@@ -6300,8 +6326,8 @@
             ],
             "recomendar": [
               "FAST ESCOVA - LISA",
-              "PÉS",
-              "FAST HIDRATAÇÃO - FAST MASK"
+              "FAST HIDRATAÇÃO - FAST MASK",
+              "PÉS"
             ]
           },
           {
@@ -6314,8 +6340,8 @@
             ],
             "recomendar": [
               "FAST ESCOVA - LISA",
-              "PÉS",
-              "FAST HIDRATAÇÃO - FAST MASK"
+              "FAST HIDRATAÇÃO - FAST MASK",
+              "PÉS"
             ]
           },
           {
@@ -6354,8 +6380,8 @@
             ],
             "recomendar": [
               "FAST ESCOVA - LISA",
-              "PÉS",
-              "FAST HIDRATAÇÃO - FAST MASK"
+              "FAST HIDRATAÇÃO - FAST MASK",
+              "PÉS"
             ]
           },
           {
@@ -7154,7 +7180,7 @@
         "receita_serv": 1788.0,
         "atend_fin": 36,
         "atend_canc": 0,
-        "atend_total": 40,
+        "atend_total": 42,
         "n_trans": 29,
         "ticket_trans": 81.28,
         "cliente_dia": 25,
@@ -7162,7 +7188,7 @@
         "taxa_canc": 0.0,
         "dias_op": 3,
         "clientes_unicos": 25,
-        "em_atendimento": 4,
+        "em_atendimento": 6,
         "n_prof_ativos": 8,
         "rs_hora_salao": 65.47,
         "horas_operacao_periodo": 36.0,
@@ -7170,6 +7196,13 @@
         "caixa_delta_pct": -63.5,
         "atend_delta_pct": -48.6,
         "cliente_dia_delta_pct": -41.9,
+        "caixa_delta_perdia_pct": -75.7,
+        "atend_delta_perdia_pct": -65.7,
+        "cliente_dia_delta_perdia_pct": -61.2,
+        "dias_com_movimento": {
+          "atual": 3,
+          "anterior": 2
+        },
         "ticket_delta_pct": -37.2,
         "caixa_delta_bruto_pct": -63.5,
         "periodo_ant_ref": {
@@ -7181,22 +7214,6 @@
           "cliente_dia": 43,
           "ticket_medio": 150.12,
           "dias_op": 2
-        },
-        "ticket_meta": 256.19,
-        "ticket_meta_periodo": 240.0,
-        "ticket_atingimento_pct": 36.8,
-        "ticket_gap_por_atend": 161.91,
-        "visitas_projetadas": 250,
-        "visitas_restantes": 225,
-        "ticket_meta_status": "em_curso",
-        "ticket_meta_deficit_caixa": 57643.0,
-        "ticket_meta_supera_caixa": 0.0,
-        "caixa_delta_perdia_pct": -75.7,
-        "atend_delta_perdia_pct": -65.7,
-        "cliente_dia_delta_perdia_pct": -61.2,
-        "dias_com_movimento": {
-          "atual": 3,
-          "anterior": 2
         },
         "base_comparacao": {
           "composicao_atual": [
@@ -7210,12 +7227,21 @@
             "Seg"
           ],
           "peso_semana_atual_pct": 25.1,
-          "peso_semana_anterior_pct": 56.7,
+          "peso_semana_anterior_pct": 56.6,
           "razao_peso": 2.26,
           "comparavel": false,
-          "caixa_delta_ajustado_pct": -17.5,
+          "caixa_delta_ajustado_pct": -17.6,
           "dias_atipicos_na_base": {}
-        }
+        },
+        "ticket_meta": 256.19,
+        "ticket_meta_periodo": 240.0,
+        "ticket_atingimento_pct": 36.8,
+        "ticket_gap_por_atend": 161.91,
+        "visitas_projetadas": 250,
+        "visitas_restantes": 225,
+        "ticket_meta_status": "em_curso",
+        "ticket_meta_deficit_caixa": 57643.0,
+        "ticket_meta_supera_caixa": 0.0
       },
       "meta": {
         "meta": 60000,
@@ -7821,15 +7847,15 @@
         "receita_serv": 2309.0,
         "atend_fin": 46,
         "atend_canc": 1,
-        "atend_total": 51,
+        "atend_total": 53,
         "n_trans": 37,
         "ticket_trans": 77.78,
         "cliente_dia": 32,
         "ticket_medio": 89.94,
-        "taxa_canc": 2.0,
+        "taxa_canc": 1.9,
         "dias_op": 4,
         "clientes_unicos": 32,
-        "em_atendimento": 4,
+        "em_atendimento": 6,
         "n_prof_ativos": 9,
         "rs_hora_salao": 59.96,
         "horas_operacao_periodo": 48.0,
@@ -7837,6 +7863,13 @@
         "caixa_delta_pct": 15.7,
         "atend_delta_pct": 21.1,
         "cliente_dia_delta_pct": 33.3,
+        "caixa_delta_perdia_pct": 15.7,
+        "atend_delta_perdia_pct": 21.1,
+        "cliente_dia_delta_perdia_pct": 33.3,
+        "dias_com_movimento": {
+          "atual": 4,
+          "anterior": 4
+        },
         "ticket_delta_pct": -13.2,
         "caixa_delta_bruto_pct": 15.7,
         "periodo_ant_ref": {
@@ -7851,24 +7884,6 @@
           "ticket_medio": 103.67,
           "cliente_dia": 24,
           "dias_op": 4
-        },
-        "ticket_meta": 360.23,
-        "ticket_meta_periodo": 205.78,
-        "ticket_atingimento_pct": 25.0,
-        "ticket_gap_por_atend": 270.29,
-        "visitas_projetadas": 56,
-        "visitas_restantes": 24,
-        "ticket_meta_status": "em_curso",
-        "ticket_meta_deficit_caixa": 8645.63,
-        "ticket_meta_supera_caixa": 0.0,
-        "periodo_ini": "2026-08-31",
-        "periodo_fim": "2026-09-06",
-        "caixa_delta_perdia_pct": 15.7,
-        "atend_delta_perdia_pct": 21.1,
-        "cliente_dia_delta_perdia_pct": 33.3,
-        "dias_com_movimento": {
-          "atual": 4,
-          "anterior": 4
         },
         "base_comparacao": {
           "composicao_atual": [
@@ -7889,7 +7904,18 @@
           "comparavel": true,
           "caixa_delta_ajustado_pct": 15.7,
           "dias_atipicos_na_base": {}
-        }
+        },
+        "ticket_meta": 360.23,
+        "ticket_meta_periodo": 205.78,
+        "ticket_atingimento_pct": 25.0,
+        "ticket_gap_por_atend": 270.29,
+        "visitas_projetadas": 56,
+        "visitas_restantes": 24,
+        "ticket_meta_status": "em_curso",
+        "ticket_meta_deficit_caixa": 8645.63,
+        "ticket_meta_supera_caixa": 0.0,
+        "periodo_ini": "2026-08-31",
+        "periodo_fim": "2026-09-06"
       },
       "meta": {
         "meta": 11523.63,
@@ -8534,7 +8560,7 @@
         "receita_serv": 675.0,
         "atend_fin": 16,
         "atend_canc": 0,
-        "atend_total": 19,
+        "atend_total": 21,
         "n_trans": 11,
         "ticket_trans": 61.36,
         "cliente_dia": 11,
@@ -8542,7 +8568,7 @@
         "taxa_canc": 0.0,
         "dias_op": 1,
         "clientes_unicos": 11,
-        "em_atendimento": 3,
+        "em_atendimento": 5,
         "n_prof_ativos": 7,
         "rs_hora_salao": 56.25,
         "horas_operacao_periodo": 12.0,
@@ -8550,46 +8576,23 @@
         "caixa_delta_pct": -21.8,
         "atend_delta_pct": 128.6,
         "cliente_dia_delta_pct": 83.3,
-        "ticket_delta_pct": -57.3,
-        "caixa_delta_bruto_pct": -21.8,
-        "periodo_ant_ref": {
-          "data": "2026-08-27",
-          "hora_max": 17.62,
-          "caixa": 863.0,
-          "atend_fin": 7,
-          "cliente_dia": 6,
-          "ticket_medio": 143.83,
-          "dias_op": 1
-        },
-        "pace_intraday": {
-          "hora_atual_str": "17:37",
-          "hora_atual_num": 17.62,
-          "pct_esperado_agora": 59.0,
-          "meta_dia": 1563.8,
-          "meta_esperada_agora": 922.64,
-          "realizado_agora": 675.0,
-          "pace_delta": -247.64,
-          "pace_ratio_pct": 73.2,
-          "projecao_dia": 1144.07,
-          "opera_hoje": true
-        },
-        "ticket_meta": 0.0,
-        "ticket_meta_periodo": 142.16,
-        "ticket_atingimento_pct": 0.0,
-        "ticket_gap_por_atend": 0.0,
-        "visitas_projetadas": 11,
-        "visitas_restantes": 0,
-        "ticket_meta_status": "encerrado_deficit",
-        "ticket_meta_deficit_caixa": 888.8,
-        "ticket_meta_supera_caixa": 0.0,
-        "dia_semana": "Qui",
-        "data": "2026-09-03",
         "caixa_delta_perdia_pct": -21.8,
         "atend_delta_perdia_pct": 128.6,
         "cliente_dia_delta_perdia_pct": 83.3,
         "dias_com_movimento": {
           "atual": 1,
           "anterior": 1
+        },
+        "ticket_delta_pct": -57.3,
+        "caixa_delta_bruto_pct": -21.8,
+        "periodo_ant_ref": {
+          "data": "2026-08-27",
+          "hora_max": 18.0,
+          "caixa": 863.0,
+          "atend_fin": 7,
+          "cliente_dia": 6,
+          "ticket_medio": 143.83,
+          "dias_op": 1
         },
         "base_comparacao": {
           "composicao_atual": [
@@ -8604,7 +8607,30 @@
           "comparavel": true,
           "caixa_delta_ajustado_pct": -21.8,
           "dias_atipicos_na_base": {}
-        }
+        },
+        "pace_intraday": {
+          "hora_atual_str": "18:00",
+          "hora_atual_num": 18.0,
+          "pct_esperado_agora": 63.6,
+          "meta_dia": 1563.8,
+          "meta_esperada_agora": 994.58,
+          "realizado_agora": 675.0,
+          "pace_delta": -319.58,
+          "pace_ratio_pct": 67.9,
+          "projecao_dia": 1061.32,
+          "opera_hoje": true
+        },
+        "ticket_meta": 0.0,
+        "ticket_meta_periodo": 142.16,
+        "ticket_atingimento_pct": 0.0,
+        "ticket_gap_por_atend": 0.0,
+        "visitas_projetadas": 11,
+        "visitas_restantes": 0,
+        "ticket_meta_status": "encerrado_deficit",
+        "ticket_meta_deficit_caixa": 888.8,
+        "ticket_meta_supera_caixa": 0.0,
+        "dia_semana": "Qui",
+        "data": "2026-09-03"
       },
       "meta": {
         "meta": 1563.8,
@@ -9053,13 +9079,13 @@
       {
         "tipo": "atencao",
         "titulo": "Ritmo abaixo do esperado",
-        "texto": "Só 43% da meta às 17h com 3h úteis restantes.",
+        "texto": "Só 43% da meta às 18h com 2h úteis restantes.",
         "acao": "Postar story/status no WhatsApp com 'últimas vagas hoje' pode gerar 2-3 walk-ins na última hora."
       },
       {
         "tipo": "info",
         "titulo": "Picos previstos ainda hoje",
-        "texto": "Base semanal aponta 18h (1.5 clientes/hora), 19h (0.8 clientes/hora) como as próximas horas de fluxo.",
+        "texto": "Base semanal aponta 19h (0.8 clientes/hora) como as próximas horas de fluxo.",
         "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
       },
       {
@@ -9193,31 +9219,5 @@
         "acao": "Sem profissional → provavelmente registro velho do setup inicial da loja. Valor atípico → pode ser cortesia, meia porção ou erro de lançamento — perguntar à profissional."
       }
     ]
-  },
-  "dias_atipicos": {
-    "2026-09-01": {
-      "ratio": 2.07,
-      "tipo": "alto",
-      "mediana_dow": 428.5,
-      "caixa": 885.0
-    },
-    "2026-08-10": {
-      "ratio": 2.65,
-      "tipo": "alto",
-      "mediana_dow": 640.0,
-      "caixa": 1698.0
-    },
-    "2026-08-06": {
-      "ratio": 2.87,
-      "tipo": "alto",
-      "mediana_dow": 863.0,
-      "caixa": 2473.0
-    },
-    "2026-07-29": {
-      "ratio": 0.36,
-      "tipo": "baixo",
-      "mediana_dow": 721.5,
-      "caixa": 257.0
-    }
   }
 }
