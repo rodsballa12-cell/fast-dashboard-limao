@@ -40,6 +40,20 @@ META = [
 ]
 BENCH = ["cpa_msg_meta", "ctr_meta", "cpm_meta", "frequency_alerta"]
 
+# O index.html desreferencia estes campos direto nas tabelas de 30d
+# (d.reach.toLocaleString(), d.ctr_pct.toFixed(2), o.impressoes.toLocaleString()).
+# Um null/ausente aqui lança dentro do .map() e apaga a aba Mídias inteira —
+# aconteceu em 03/09, quando demografia e placement foram regeneradas sem reach.
+CAMPOS_TABELA = {
+    "por_objetivo_30d": ["gasto", "share_gasto_pct", "impressoes", "ctr_pct"],
+    "demografia_30d": ["faixa", "gasto", "share_pct", "reach", "ctr_pct"],
+    "placement_30d": ["plataforma", "posicao", "gasto", "share_pct", "reach", "ctr_pct", "cpm"],
+    "geografia_30d": ["regiao", "gasto", "share_pct", "impressoes", "ctr_pct", "cpm"],
+    "top_campanhas_30d": ["nome", "gasto", "reach", "cliques", "ctr_pct", "frequency"],
+    "ad_sets_30d": ["campanha", "adset", "gasto", "reach", "cliques", "ctr_pct", "frequency"],
+    "anuncios_30d": ["ad", "campanha", "gasto", "impressoes", "cliques", "ctr_pct", "frequency", "reach"],
+}
+
 
 def main() -> int:
     caminho = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else REPO / "data" / "midias_sociais.json"
@@ -105,6 +119,19 @@ def main() -> int:
     for k in BENCH:
         if d.get("benchmarks", {}).get(k) is None:
             erros.append(f"benchmarks.{k} ausente ou null")
+
+    # --- campos que as tabelas de 30d desreferenciam sem guarda --------------
+    for bloco, campos in CAMPOS_TABELA.items():
+        linhas = m.get(bloco)
+        if not isinstance(linhas, list):
+            continue
+        for i, linha in enumerate(linhas):
+            for c in campos:
+                if linha.get(c) is None:
+                    erros.append(
+                        f"meta_ads.{bloco}[{i}].{c} ausente ou null — o painel "
+                        f"desreferencia esse campo direto e a aba Mídias fica em branco"
+                    )
 
     # --- reconciliação: os recortes de 30d têm que fechar com o total -------
     total = (pp.get("30d") or {}).get("gasto")
