@@ -139,9 +139,12 @@ def main() -> int:
 
     # --------------------------------------------------- melhor e pior ------
     # Só campanhas que ainda estão no ar: comparar com uma pausada não gera ação.
+    # "cortar"/"matar" continuam aqui de propósito — são campanhas rodando que
+    # deveriam parar, e é exatamente isso que a agência precisa ver.
+    FORA_DO_AR = {"pausado", "pausada", "encerrado", "encerrada", "inativo", "removido"}
     camp = [
         c for c in m.get("top_campanhas_30d", [])
-        if c.get("cpa_msg") and c.get("status") not in ("pausado", "encerrado")
+        if c.get("cpa_msg") and (c.get("status") or "").lower() not in FORA_DO_AR
     ]
     if len(camp) >= 2:
         camp.sort(key=lambda c: c["cpa_msg"])
