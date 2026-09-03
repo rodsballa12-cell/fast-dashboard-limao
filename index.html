@@ -69,6 +69,15 @@
   .progress-fill::after{content:"";position:absolute;top:0;right:0;bottom:0;width:2px;background:var(--accent);box-shadow:0 0 8px var(--accent);}
   .progress-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums;}
   .progress-labels .now{color:var(--accent);font-weight:700;}
+  /* Marca onde o realizado DEVERIA estar pelos dias já corridos. Sem ela a
+     barra no dia 3 de 30 mostra ~3% e parece fracasso, quando é só o mês
+     tendo começado. */
+  .progress-pace{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink-2);opacity:.85;z-index:2;}
+  .progress-pace::after{content:"";position:absolute;top:-4px;left:-3px;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--ink-2);}
+  .pace-line{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;margin-top:10px;padding:9px 12px;
+    background:var(--surface-2);border-radius:8px;font-size:12.5px;color:var(--ink-2);font-variant-numeric:tabular-nums;}
+  .pace-line b{font-size:15px;font-family:Georgia,serif;}
+  .pace-line b.good{color:var(--good);} .pace-line b.warn{color:var(--warn);} .pace-line b.crit{color:var(--crit);}
   .grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
   .sala-wrap{margin-bottom:12px;}
   .sala-wrap .sala-header{background:linear-gradient(90deg,var(--surface-2),transparent);padding:10px 14px;border-radius:8px 8px 0 0;border-left:4px solid var(--accent);margin-bottom:2px;}
@@ -646,12 +655,29 @@ function renderTicketMeta(container_id, periodo_label, kpis){
 function renderMetaProgress(container_id, titulo, meta, subtitle){
   if(!meta || !meta.meta) return;
   const pct_v = Math.min(meta.pct,100);
+  // Meta proporcional aos dias já corridos, na mesma competência. Comparar o
+  // realizado de 3 dias com a meta de 30 sempre dá ~3% e não informa nada; o
+  // que informa é o realizado contra a fatia que caberia a esses 3 dias.
+  const temPace = meta.meta_ate_hoje != null && meta.pct_ate_hoje != null;
+  const pacePos = (meta.dias_total > 0)
+    ? Math.min(meta.dias_realizados / meta.dias_total * 100, 100) : null;
+  const paceCor = !temPace ? '' : (meta.pct_ate_hoje >= 100 ? 'good'
+                                 : meta.pct_ate_hoje >= 80  ? 'warn' : 'crit');
+  const saldo = temPace ? meta.saldo_ate_hoje : null;
   const html=`
     <section class="meta-card">
       <h2><span style="color:var(--accent)">🎯</span> ${titulo} · <span style="color:var(--accent)">${brl0(meta.meta)}</span></h2>
       <div class="sub">${subtitle||''}</div>
-      <div class="progress"><div class="progress-fill" style="width:${pct_v}%"></div></div>
+      <div class="progress">
+        <div class="progress-fill" style="width:${pct_v}%"></div>
+        ${pacePos!=null?`<div class="progress-pace" style="left:${pacePos}%" title="Onde você deveria estar com ${meta.dias_realizados} de ${meta.dias_total} dias corridos"></div>`:''}
+      </div>
       <div class="progress-labels"><span>R$ 0</span><span class="now">▲ ${brl0(meta.realizado)} · ${pct(meta.pct)}</span><span>${brl0(meta.meta)}</span></div>
+      ${temPace?`<div class="pace-line">
+        <span>Esperado até aqui (${meta.dias_realizados} de ${meta.dias_total} dias): <b>${brl0(meta.meta_ate_hoje)}</b></span>
+        <span>· Você está em <b class="${paceCor}">${pct(meta.pct_ate_hoje)}</b> do ritmo</span>
+        <span>· ${saldo>=0?'Adiantado':'Atrasado'} em <b class="${paceCor}">${brl0(Math.abs(saldo))}</b></span>
+      </div>`:''}
       <div class="meta-row" style="margin-top:20px;">
         <div class="meta-cell"><div class="l">Realizado</div><div class="v accent">${brl0(meta.realizado)}</div></div>
         <div class="meta-cell"><div class="l">Falta</div><div class="v">${brl0(meta.falta)}</div></div>

@@ -546,18 +546,43 @@ def analisar(agend, transac, ini: date, fim: date):
 
 
 def calc_meta(caixa, meta, dias_real, dias_total):
+    """KPIs de meta do período, com a meta proporcional aos dias já corridos.
+
+    'pct' compara o realizado com a meta do período INTEIRO. No dia 3 de 30 ele
+    sempre dá ~3%, o que não diz nada: claro que 3 dias não pagam 30. Por isso
+    existe 'meta_ate_hoje' — a fatia da meta que caberia aos dias já corridos,
+    na mesma competência. É contra ela que dá para saber se o mês está indo bem.
+
+    Setembro/2026 no dia 3: R$ 1.949 contra os R$ 6.000 esperados até aqui =
+    32,5%, e não os 3,2% que a leitura contra a meta cheia sugere.
+
+    A mesma função serve mês, semana e ano, então a régua é a mesma nas três.
+    """
     pct = caixa / max(meta, 1) * 100
     falta = meta - caixa
     dias_rest = max(dias_total - dias_real, 0)
     necessario = falta / max(dias_rest, 1) if dias_rest else 0
     ritmo = caixa / max(dias_real, 1)
     proj = ritmo * dias_total
+
+    # Meta proporcional. Sem dias corridos ou sem dias totais não há fatia a
+    # cobrar, e devolver 0 aqui produziria "realizado infinitamente acima".
+    if dias_real > 0 and dias_total > 0:
+        meta_ate_hoje = meta * dias_real / dias_total
+        pct_ate_hoje = round(caixa / meta_ate_hoje * 100, 1) if meta_ate_hoje > 0 else None
+        saldo_ate_hoje = brl_round(caixa - meta_ate_hoje)
+    else:
+        meta_ate_hoje = pct_ate_hoje = saldo_ate_hoje = None
+
     return {
         "meta": meta, "realizado": brl_round(caixa), "pct": round(pct, 1),
         "falta": brl_round(falta), "dias_realizados": dias_real, "dias_total": dias_total,
         "dias_restantes": dias_rest, "necessario_dia": brl_round(necessario),
         "ritmo_dia": brl_round(ritmo), "projecao": brl_round(proj),
         "projecao_pct": round(proj / max(meta, 1) * 100, 1),
+        "meta_ate_hoje": brl_round(meta_ate_hoje) if meta_ate_hoje is not None else None,
+        "pct_ate_hoje": pct_ate_hoje,
+        "saldo_ate_hoje": saldo_ate_hoje,
     }
 
 
