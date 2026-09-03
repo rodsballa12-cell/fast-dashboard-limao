@@ -978,25 +978,23 @@ def main():
         "dias_op": a_sem_ant["kpis"]["dias_op"],
     }
 
-    # === Mês anterior — MESMA JANELA (apples-to-apples) ===
-    # Comparar setembro-parcial (3 dias) com agosto INTEIRO (27 dias) é injusto:
-    # os primeiros dias do mês tipicamente rendem menos que a média. Fix:
-    # comparar mesmos N dias corridos do mês anterior. Se hoje é 03/09,
-    # compara com 01-03/08. Se mês corrente já fechou (raro), usa mês inteiro.
+    # === Mês anterior — MÊS INTEIRO fechado (média per-day) ===
+    # Comparar setembro-parcial com agosto-inteiro. O _delta_pct_perdia divide
+    # ambos por dias_op → compara per-day. Isso dilui o ruído dos primeiros
+    # dias específicos do mês anterior (que podem ser atípicos) e reflete o
+    # padrão médio do mês passado — muito mais estável e informativo pra
+    # decisão. Um fim de semana quente nos primeiros 3 dias de agosto não
+    # distorce a referência.
     if hoje.month == 1:
         ini_mes_ant = date(hoje.year - 1, 12, 1)
     else:
         ini_mes_ant = date(hoje.year, hoje.month - 1, 1)
-    ult_dia_mes_ant = monthrange(ini_mes_ant.year, ini_mes_ant.month)[1]
-    # Fim da janela = mesmo dia-do-mês de hoje, ou último dia se mês anterior for menor
-    fim_janela_ant = date(ini_mes_ant.year, ini_mes_ant.month, min(hoje.day, ult_dia_mes_ant))
-    a_mes_ant = analisar(agend, transac, ini_mes_ant, fim_janela_ant)
-    fim_mes_ant_full = date(ini_mes_ant.year, ini_mes_ant.month, ult_dia_mes_ant)
+    fim_mes_ant = date(ini_mes_ant.year, ini_mes_ant.month, monthrange(ini_mes_ant.year, ini_mes_ant.month)[1])
+    a_mes_ant = analisar(agend, transac, ini_mes_ant, fim_mes_ant)
     mes_anterior_kpis = {
         "periodo_ini": ini_mes_ant.isoformat(),
-        "periodo_fim": fim_janela_ant.isoformat(),
-        "janela_dias": hoje.day,  # comparação apples-to-apples: primeiros N dias
-        "mes_completo_fim": fim_mes_ant_full.isoformat(),
+        "periodo_fim": fim_mes_ant.isoformat(),
+        "modo_comparacao": "mes_inteiro_perdia",  # per-day contra mês fechado
         "caixa": a_mes_ant["kpis"]["caixa"], "atend_fin": a_mes_ant["kpis"]["atend_fin"],
         "cliente_dia": a_mes_ant["kpis"]["cliente_dia"], "ticket_medio": a_mes_ant["kpis"]["ticket_medio"],
         "dias_op": a_mes_ant["kpis"]["dias_op"],

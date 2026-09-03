@@ -1650,9 +1650,9 @@ function renderMensal(data){
   if(k.em_atendimento>0){document.getElementById('chip-live').style.display='';document.getElementById('chip-live').innerHTML=`<span class="dot"></span> ${k.em_atendimento} em atendim.`;document.getElementById('chip-live').className='chip live';}
   renderInsights('mensal-insights','Mês corrente',(data.insights||{}).mensal);
   renderKPIs('mensal-kpis',[
-    {label:'Caixa · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d mês passado`},
-    {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d mês passado`},
-    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`(caixa÷visitas · padrão Trinks)`, delta_pct:k.ticket_delta_pct, delta_label:'vs mês passado'},
+    {label:'Caixa · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs média/dia mês passado'},
+    {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:'vs média/dia mês passado'},
+    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`(caixa÷visitas · padrão Trinks)`, delta_pct:k.ticket_delta_pct, delta_label:'vs ticket mês passado'},
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
   ]);
   renderMetaProgress('mensal-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
