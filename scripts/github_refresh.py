@@ -1002,14 +1002,30 @@ def main():
         "dias_op": a_mes_ant["kpis"]["dias_op"],
     }
 
-    # === Mesmo DOW semana passada (pra delta do diário) ===
+    # === Mesmo DOW semana passada — MESMA HORA-JANELA (apples-to-apples) ===
+    # Comparar hoje-13h (parcial) com quinta-passada-inteira (fechada) distorce.
+    # Fix: filtrar transações/agendamentos do dia_ant até a hora atual, pra
+    # ambos os lados representarem "o mesmo pedaço do dia".
     hoje_ant = hoje - timedelta(days=7)
-    a_dia_ant = analisar(agend, transac, hoje_ant, hoje_ant)
+    agora_dt = datetime.now(BRT)
+    hora_num = agora_dt.hour + agora_dt.minute / 60.0
+    def _no_dia_ate_hora(dt_str, dia_alvo, hora_lim):
+        dt = parse_trinks_dt(dt_str)
+        if not dt or dt.date() != dia_alvo: return False
+        return (dt.hour + dt.minute/60.0) <= hora_lim
+    agend_dia_ant_parcial = [a for a in agend
+                              if a.get("dataHoraInicio")
+                              and _no_dia_ate_hora(a["dataHoraInicio"], hoje_ant, hora_num)]
+    transac_dia_ant_parcial = [t for t in transac
+                                if t.get("dataHora")
+                                and _no_dia_ate_hora(t["dataHora"], hoje_ant, hora_num)]
+    a_dia_ant = analisar(agend_dia_ant_parcial, transac_dia_ant_parcial, hoje_ant, hoje_ant)
     dia_anterior_kpis = {
         "data": hoje_ant.isoformat(),
+        "hora_max": round(hora_num, 2),
         "caixa": a_dia_ant["kpis"]["caixa"], "atend_fin": a_dia_ant["kpis"]["atend_fin"],
         "cliente_dia": a_dia_ant["kpis"]["cliente_dia"], "ticket_medio": a_dia_ant["kpis"]["ticket_medio"],
-        "dias_op": a_dia_ant["kpis"]["dias_op"],
+        "dias_op": a_dia_ant["kpis"]["dias_op"] or 1,  # se hora atual muito cedo, evita div/0
     }
 
     def _delta_pct(atual, ant):

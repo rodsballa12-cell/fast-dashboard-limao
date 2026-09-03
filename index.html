@@ -1709,9 +1709,9 @@ function renderDiario(data){
   var _d=document.getElementById('tab-diario-sub'); if(_d) _d.textContent='';
   renderInsights('diario-insights','Hoje',(data.insights||{}).diario);
   renderKPIs('diario-kpis',[
-    {label:'Caixa · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado'},
-    {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · +${k.em_atendimento} em curso`, delta_pct:k.cliente_dia_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado'},
-    {label:'Ticket / visita',value:(k.cliente_dia||0)>0?brl(k.ticket_medio||0):'—',foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado'},
+    {label:'Caixa · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
+    {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · +${k.em_atendimento} em curso`, delta_pct:k.cliente_dia_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
+    {label:'Ticket / visita',value:(k.cliente_dia||0)>0?brl(k.ticket_medio||0):'—',foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
   ]);
   renderMetaProgress('diario-meta','Meta Diária',d.meta,'Meta específica do dia da semana atual (peso histórico do DOW × META_MENSAL, respeitando jornada)');
