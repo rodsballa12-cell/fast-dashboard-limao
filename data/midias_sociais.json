@@ -1699,46 +1699,141 @@
     ],
     "cenarios_roas": [
       {
-        "cenario": "Otimista (100% novos vieram de Meta)",
-        "novos_meta": 218,
-        "receita_atribuida": 28560,
-        "roas": 11.13
+        "cenario": "Digital amplo — IG+FB+Internet+app (50,8%)",
+        "novos_meta": 111,
+        "receita_atribuida": 14504,
+        "roas": 5.65
       },
       {
-        "cenario": "Realista (80% de Meta)",
-        "novos_meta": 174,
-        "receita_atribuida": 22848,
-        "roas": 8.9
+        "cenario": "📊 MEDIDO · Instagram + Facebook (42,4%)",
+        "novos_meta": 92,
+        "receita_atribuida": 12112,
+        "roas": 4.72,
+        "recomendado": true
       },
       {
-        "cenario": "Meio-termo (60%)",
-        "novos_meta": 131,
-        "receita_atribuida": 17136,
-        "roas": 6.68
+        "cenario": "Só Instagram (41,4%)",
+        "novos_meta": 90,
+        "receita_atribuida": 11813,
+        "roas": 4.6
       },
       {
-        "cenario": "Conservador (40%)",
-        "novos_meta": 87,
-        "receita_atribuida": 11424,
-        "roas": 4.45
+        "cenario": "Piso — quem não respondeu conta como não-Meta (32,1%)",
+        "novos_meta": 70,
+        "receita_atribuida": 9180,
+        "roas": 3.58
       }
     ],
     "roas_estimado": {
-      "valor": 6.68,
-      "calculo": "Cenário meio-termo: R$ 17.136 (60% de R$ 28.560) ÷ R$ 2.565 investido = 6,68x",
-      "confianca": "Média — dados Trinks reais, mas atribuição estimada. Pra 100% preciso, precisa Meta Pixel + CAPI ou UTM tag."
+      "valor": 4.72,
+      "calculo": "42,4% dos 191 clientes novos de agosto que responderam 'como nos conheceu' disseram Instagram ou Facebook. Aplicado aos 218 novos do Trinks: R$ 12.112 ÷ R$ 2.565,31 investido = 4,72x.",
+      "confianca": "Média-alta — atribuição MEDIDA, não estimada: 191 de 252 clientes novos de agosto (75,8%) informaram o canal na recepção. Duas ressalvas: quem respondeu 'Instagram' não separa pago de orgânico, e os 61 que não responderam foram extrapolados com o mesmo mix — o cenário 'piso' mostra o outro extremo."
     },
     "como_destravar_cada_etapa": [
       {
         "etapa": 7,
-        "acao": "🟢 Feito automaticamente via Trinks (novos clientes por mês). Precisamos só refinar atribuição de qual % veio de Meta."
+        "acao": "🟢 Feito automaticamente via Trinks (novos clientes por mês)."
       },
       {
         "etapa": 10,
-        "acao": "Opção A: Meta Pixel + CAPI via Trinks — evento 'Schedule' quando cliente marca. Meta atribui automaticamente. Opção B: perguntar cada nova cliente 'como nos conheceu?' e registrar em campo customizado no Trinks."
+        "acao": "🟡 PARCIALMENTE DESTRAVADO. O campo 'como nos conheceu' do Trinks já vinha sendo preenchido na recepção em 75.8% dos clientes novos — o painel é que lia a chave errada da API e mostrava 0% de cobertura. Corrigido: o ROAS agora sai de atribuição medida (42.4% Instagram/Facebook), não de cenário chutado."
+      },
+      {
+        "etapa": 10,
+        "acao": "Para fechar os 24.2% que faltam: combinar com a recepção que o campo é obrigatório no cadastro. Cada ponto de cobertura reduz a extrapolação e aperta o ROAS."
+      },
+      {
+        "etapa": 10,
+        "acao": "Para separar Instagram PAGO de ORGÂNICO — o que o autorrelato não resolve — aí sim precisa Meta Pixel + CAPI com evento 'Schedule' no Trinks, ou UTM no link do WhatsApp."
       }
     ],
-    "aviso_frescor": "Etapas 1-6 (Meta Ads) são o mês de agosto fechado. Etapas 7-9 vêm do Trinks e ainda são o snapshot de 29/08 — faltam os atendimentos de 30 e 31/08, então a receita real de agosto é maior que a mostrada aqui."
+    "aviso_frescor": "Etapas 1-6 (Meta Ads) são o mês de agosto fechado. Etapas 7-9 vêm do Trinks e ainda são o snapshot de 29/08 — faltam os atendimentos de 30 e 31/08, então a receita real de agosto é maior que a mostrada aqui. A atribuição por canal vem da coorte de 252 clientes cadastrados em agosto (cache clientes_detalhes.json).",
+    "atribuicao_medida": {
+      "fonte": "Trinks · campo comoNosConheceu, coorte de clientes cadastrados em Ago/2026",
+      "coorte": 252,
+      "responderam": 191,
+      "cobertura_pct": 75.8,
+      "resumo": "Atribuição MEDIDA no Trinks: 191 dos 252 clientes novos de agosto (75,8%) informaram o canal na recepção; 42,4% vieram de Instagram/Facebook. Antes o painel mostrava cenários chutados porque lia a chave errada da API.",
+      "mix": [
+        {
+          "canal": "Instagram",
+          "n": 79,
+          "share_pct": 41.4
+        },
+        {
+          "canal": "Passou Em Frente",
+          "n": 46,
+          "share_pct": 24.1
+        },
+        {
+          "canal": "Outdoor",
+          "n": 16,
+          "share_pct": 8.4
+        },
+        {
+          "canal": "Internet",
+          "n": 14,
+          "share_pct": 7.3
+        },
+        {
+          "canal": "Indicação Familiar",
+          "n": 11,
+          "share_pct": 5.8
+        },
+        {
+          "canal": "Busdoor",
+          "n": 7,
+          "share_pct": 3.7
+        },
+        {
+          "canal": "Indicação Amigo",
+          "n": 6,
+          "share_pct": 3.1
+        },
+        {
+          "canal": "Indicação Vizinho",
+          "n": 3,
+          "share_pct": 1.6
+        },
+        {
+          "canal": "Outra Unidade",
+          "n": 3,
+          "share_pct": 1.6
+        },
+        {
+          "canal": "Facebook",
+          "n": 2,
+          "share_pct": 1.0
+        },
+        {
+          "canal": "Aplicativo",
+          "n": 1,
+          "share_pct": 0.5
+        },
+        {
+          "canal": "Outras Redes Sociais",
+          "n": 1,
+          "share_pct": 0.5
+        },
+        {
+          "canal": "Revista E Jornal",
+          "n": 1,
+          "share_pct": 0.5
+        },
+        {
+          "canal": "Parceria",
+          "n": 1,
+          "share_pct": 0.5
+        }
+      ],
+      "grupos": {
+        "meta_pct": 42.4,
+        "digital_amplo_pct": 50.8,
+        "passou_em_frente_pct": 24.1,
+        "ooh_pct": 12.6,
+        "indicacao_pct": 10.5
+      }
+    }
   },
   "google_ads": {
     "conectado": false,

@@ -844,10 +844,24 @@ def main():
                 dn = parse_trinks_dt(dn_str)
                 aniv_map[cid] = (dn.month, dn.day, c.get("nome") or det.get("nome") or "")
             except Exception: pass
-        # comoNosConheceu — canal de aquisição
+        # comoNosConheceu — canal de aquisição.
+        # O Trinks devolve um objeto {"id": 941, "descricao": "Instagram"}. O código
+        # antigo lia canal.get("nome"), chave que não existe nessa rota: o resultado
+        # era None para TODO cliente, e o painel mostrava "cobertura 0%" com 328
+        # clientes sem dado — quando na verdade ~69% da base tem o canal preenchido.
+        # Por isso o funil caía nos cenários de ROAS chutados em vez de usar a
+        # atribuição real. Aceita 'descricao' e 'nome' para não quebrar se a rota mudar.
         canal = det.get("comoNosConheceu")
         if canal:
-            canal_map[cid] = str(canal).strip().title() if isinstance(canal, str) else (canal.get("nome") if isinstance(canal, dict) else "")
+            if isinstance(canal, str):
+                nome_canal = canal
+            elif isinstance(canal, dict):
+                nome_canal = canal.get("descricao") or canal.get("nome") or ""
+            else:
+                nome_canal = ""
+            nome_canal = nome_canal.strip().title()
+            if nome_canal:
+                canal_map[cid] = nome_canal
         # gênero / sexo
         g = det.get("genero") or det.get("sexo")
         if g:
