@@ -360,9 +360,26 @@ def analisar(agend, transac, ini: date, fim: date):
 
     # Capacidade DOW-aware: soma horas reais de cada dia operado no período
     # (dom = 6h vs seg-sáb = 12h). Antes usava 12h flat → distorcia domingo pra baixo.
+    #
+    # A janela é limitada aos dias que REALMENTE existiram como operação:
+    #  - não conta dia futuro: na aba mensal, dia 2 do mês somava os 30 dias do mês
+    #    inteiro e a utilização aparecia como 0,3% em vez de ~5%;
+    #  - não conta dia anterior à abertura: a aba anual somava jan–jun, quando o
+    #    salão nem existia, e mostrava 1,1% de utilização — o equivalente a 104h
+    #    por cadeira por dia operado, que é impossível.
+    # A data de abertura sai do próprio dado (primeiro atendimento registrado),
+    # sem constante cravada.
+    _hoje = datetime.now(BRT).date()
+    _primeiro_atend = min(
+        (parse_trinks_dt(a["dataHoraInicio"]).date()
+         for a in agend if a.get("dataHoraInicio")),
+        default=None,
+    )
+    _ini_cap = max(ini, _primeiro_atend) if _primeiro_atend else ini
+    _fim_cap = min(fim, _hoje)
     horas_operacao_periodo = 0.0
-    _cur = ini
-    while _cur <= fim:
+    _cur = _ini_cap
+    while _cur <= _fim_cap:
         if opera_no_dia(_cur):
             horas_operacao_periodo += HORAS_POR_DOW[_cur.weekday()]
         _cur += timedelta(days=1)
