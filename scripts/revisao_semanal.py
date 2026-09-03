@@ -13,6 +13,7 @@ são os números, e esses vêm do painel, não da memória.
 
 Uso:  python scripts/revisao_semanal.py [caminho.json] > revisao.txt
 """
+import itertools
 import json
 import pathlib
 import sys
@@ -70,6 +71,42 @@ def dias_sem_entrega(serie, ini, fim):
     ]
 
 
+def retencao_agregada(caminho=None):
+    """Números de retenção do Trinks, só agregados.
+
+    Devolve None se o arquivo não existir ou não tiver os campos — a revisão
+    sai sem a seção em vez de quebrar. NUNCA lê top_ltv["top"], que é a lista
+    nominal de clientes: esta mensagem é enviada para a agência.
+    """
+    caminho = caminho or REPO / "data" / "dashboard_data.json"
+    try:
+        anual = json.loads(caminho.read_text(encoding="utf-8"))["abas"]["anual"]
+        t, nvr = anual["top_ltv"], anual["novos_vs_recorr"]
+        total, uma_vez = t["total_clientes"], t["uma_vez"]
+        voltaram = t["duas_mais"]
+        rec, novos = nvr["recorrentes"], nvr["novos"]
+        if not (total and voltaram and novos["clientes"]):
+            return None
+        ltv_recorr = rec["receita"] / rec["clientes"]
+        ltv_novo = novos["receita"] / novos["clientes"]
+        receita = t["receita_total"]
+        return {
+            "total": total,
+            "receita": receita,
+            "uma_vez": uma_vez,
+            "uma_vez_pct": uma_vez / total * 100,
+            "voltaram": voltaram,
+            "visitas_recorr": rec["atend"] / rec["clientes"],
+            "receita_recorr": rec["receita"],
+            "share_recorr": rec["receita"] / receita * 100 if receita else 0,
+            "ltv_recorr": ltv_recorr,
+            "ltv_novo": ltv_novo,
+            "razao": ltv_recorr / ltv_novo if ltv_novo else 0,
+        }
+    except Exception:
+        return None
+
+
 def main() -> int:
     caminho = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else REPO / "data" / "midias_sociais.json"
     d = json.loads(caminho.read_text(encoding="utf-8"))
@@ -79,6 +116,8 @@ def main() -> int:
     dl = (d.get("deltas_vs_periodo_anterior") or {}).get("7d", {})
     b = d.get("benchmarks", {})
     L = []
+    _n = itertools.count(1)
+    sec = lambda t: L.append(f"*{next(_n)}. {t}*")
 
     L.append("📊 *REVISÃO SEMANAL · FAST ESCOVA LIMÃO*")
     L.append(f"_{dm(p7['inicio'])} a {dm(p7['fim'])} · Meta Ads_")
@@ -87,7 +126,7 @@ def main() -> int:
     L.append("")
 
     # ------------------------------------------------------------- números --
-    L.append("*1. Como foi a semana*")
+    sec("Como foi a semana")
     L.append("")
     L.append(f"• Investimento: {brl(p7['gasto'])}")
     L.append(f"• Conversas no WhatsApp: {num(p7['conversas_msg'])}")
@@ -116,7 +155,7 @@ def main() -> int:
 
     # -------------------------------------------------------------- deltas --
     if any(v is not None for v in dl.values() if not isinstance(v, str)):
-        L.append("*2. Contra a semana anterior*")
+        sec("Contra a semana anterior")
         L.append("")
         L.append(f"• Investimento: {seta(dl.get('gasto_pct'))}")
         L.append(f"• Conversas: {seta(dl.get('conversas_msg_pct'))}")
@@ -128,7 +167,7 @@ def main() -> int:
         L.append("")
 
     # ------------------------------------------------------------ 30 dias ---
-    L.append("*3. Referência dos últimos 30 dias*")
+    sec("Referência dos últimos 30 dias")
     L.append("")
     L.append(
         f"{brl(p30['gasto'])} · {num(p30['conversas_msg'])} conversas · "
@@ -148,7 +187,7 @@ def main() -> int:
     ]
     if len(camp) >= 2:
         camp.sort(key=lambda c: c["cpa_msg"])
-        L.append("*4. Melhor e pior campanha ativa (30 dias, por CPA)*")
+        sec("Melhor e pior campanha ativa (30 dias, por CPA)")
         L.append("")
         L.append(f"🟢 {camp[0]['nome'].strip()} — {brl(camp[0]['cpa_msg'])} · {num(camp[0].get('conversas_msg'))} conversas")
         L.append(f"🔴 {camp[-1]['nome'].strip()} — {brl(camp[-1]['cpa_msg'])} · {num(camp[-1].get('conversas_msg'))} conversas")
@@ -157,7 +196,7 @@ def main() -> int:
     # -------------------------------------------------- pontos de atenção ---
     alertas = [a for a in d.get("alertas_topo", []) if a.get("sev") in ("crit", "warn")]
     if alertas:
-        L.append("*5. Pontos que eu quero entender*")
+        sec("Pontos que eu quero entender")
         L.append("")
         for a in alertas[:5]:
             L.append(f"{a.get('icone','•')} {a['titulo']}")
@@ -166,7 +205,7 @@ def main() -> int:
     # ------------------------------------------------------- pendências -----
     pend = [r for r in d.get("recomendacoes", []) if r.get("sev") == "crit"]
     if pend:
-        L.append("*6. Pendente da revisão anterior*")
+        sec("Pendente da revisão anterior")
         L.append("")
         for r in pend:
             L.append(f"• {r['titulo']} — _{r.get('acao','')}_")
@@ -174,10 +213,48 @@ def main() -> int:
         L.append("Me confirmem o que já foi feito e o que não foi, com o motivo.")
         L.append("")
 
+    # ----------------------------------------------- retenção (Trinks) ------
+    # O que a agência não tem e não consegue ver: o que acontece DEPOIS da
+    # conversa. Sem hora marcada não há reserva ligando uma coisa à outra, então
+    # esta seção é a única forma de a mídia ser discutida em termos de cliente
+    # e receita em vez de custo por mensagem.
+    #
+    # PII: dashboard_data tem nome e telefone de cliente e esta mensagem vai
+    # para fora do salão. Aqui só entram agregados — top_ltv["top"], que é a
+    # lista nominal, nunca é tocada.
+    ret = retencao_agregada()
+    if ret:
+        sec("Do outro lado do balcão (Trinks — dado que vocês não têm)")
+        L.append("")
+        L.append(f"• {num(ret['total'])} clientes no ano · {brl(ret['receita'])} de receita")
+        L.append(f"• {num(ret['uma_vez'])} vieram uma vez só ({pc(ret['uma_vez_pct'], 0)})")
+        L.append(f"• {num(ret['voltaram'])} voltaram — e fazem {str(round(ret['visitas_recorr'], 1)).replace('.', ',')} visitas cada")
+        L.append(f"• Quem volta gera {brl(ret['receita_recorr'])} ({pc(ret['share_recorr'], 0)} da receita)")
+        L.append(f"• Um cliente que volta vale {brl(ret['ltv_recorr'])} contra {brl(ret['ltv_novo'])} de quem vem uma vez — {str(round(ret['razao'], 1)).replace('.', ',')}x")
+        L.append("")
+        L.append(
+            f"Ou seja: {pc(ret['share_recorr'], 0)} da receita vem de quem volta, e "
+            f"100% da verba vai para quem ainda não veio. E como o salão é sem hora "
+            f"marcada, não existe reserva segurando ninguém entre uma visita e a outra."
+        )
+        L.append("")
+        L.append("*O que eu quero de vocês sobre isso:*")
+        L.append(
+            f"• Subir a base de clientes do Trinks como público personalizado e rodar "
+            f"uma campanha de retorno. Essas pessoas já conhecem o salão — deve sair "
+            f"bem abaixo dos {brl(p30.get('cpa_msg'))} de uma conversa nova."
+        )
+        L.append(
+            f"• Fazer o lookalike a partir de quem VOLTA ({num(ret['voltaram'])} clientes), "
+            f"não de todo mundo que já veio. Assim a Meta aprende a achar quem vira "
+            f"recorrente, e não quem aparece uma vez e some."
+        )
+        L.append("")
+
     # ------------------------------------------------- recomendações Meta ---
     rm = (d.get("meta_ads", {}).get("recomendacoes_meta") or {}).get("itens", [])
     if rm:
-        L.append("*7. O painel de Recomendações da Meta*")
+        sec("O painel de Recomendações da Meta")
         L.append("")
         L.append(f"Tem {len(rm)} itens abertos lá. Agrupados por tipo:")
         # A Meta repete o mesmo tipo para grupos de ad sets diferentes: listar item
@@ -210,7 +287,7 @@ def main() -> int:
     while alvo_dia.weekday() >= 5:
         alvo_dia += timedelta(days=1)
     prazo = f"{DIAS[alvo_dia.weekday()]} ({alvo_dia.strftime('%d/%m')})"
-    L.append(f"*8. O que eu preciso de vocês até {prazo}*")
+    sec(f"O que eu preciso de vocês até {prazo}")
     L.append("")
     L.append("1. *A leitura de vocês sobre a semana.* Concordam com o que eu apontei ou estão vendo outra coisa nos números?")
     L.append("")
