@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-03T05:30:00-03:00",
+  "gerado_em": "2026-09-03T06:18:37-03:00",
   "fonte": "Supermetrics MCP · Meta Ads + Instagram Insights + Facebook Insights",
   "janelas": {
     "meta_ads_30d": "2026-08-04 a 2026-09-02",
@@ -1701,7 +1701,135 @@
       ],
       "nota": "R$ 97/dia é o que está configurado hoje na conta, não um valor confirmado com o Rodrigo. Se a verba de setembro for outra, é esse número que precisa mudar."
     },
-    "nota_reach": "Alcance é deduplicado dentro de cada recorte: os valores por linha estão certos, mas somar linhas de demografia ou placement não dá o alcance total da conta."
+    "nota_reach": "Alcance é deduplicado dentro de cada recorte: os valores por linha estão certos, mas somar linhas de demografia ou placement não dá o alcance total da conta.",
+    "recomendacoes_meta": {
+      "lido_em": "2026-09-03",
+      "fonte": "Meta Marketing API · recommendations (a própria Meta, não análise nossa)",
+      "itens": [
+        {
+          "tipo": "FRAGMENTATION",
+          "prioridade_meta": 3,
+          "alvo": "Os 3 ad sets [GEO][8KM][INTERESSE][25-55] — VAGA MAQUIADOR, MANICURE e ESCOVISTA",
+          "diagnostico": "3 conjuntos de anúncios com configurações e públicos semelhantes, mas criativos diferentes — competem entre si no mesmo leilão.",
+          "ganho_estimado_meta": "Custo por conversa 18% mais baixo",
+          "acao": "Combinar em um único ad set com os 3 anúncios dentro",
+          "url": "https://adsmanager.facebook.com/adsmanager/manage/accounts?act=1310973560614050&breakdown_regrouping=1&recommendation_hash_string=9494ca7b6a69fe73083685bcedaccce2&recommendation_type=fragmentation_v4&is_mfr_model_shown_by_default=1&referral_source=marketing_api"
+        },
+        {
+          "tipo": "FRAGMENTATION",
+          "prioridade_meta": 7,
+          "alvo": "Os 3 ad sets [GEO][5KM][MULHERES][25+] — COMBO SEMANAL, COMBOS 1,2,3 e COMBOS 4 E 5",
+          "diagnostico": "Mesmo problema no lado comercial: três ad sets com público idêntico disputando o mesmo leilão.",
+          "ganho_estimado_meta": "Custo por conversa 18% mais baixo",
+          "acao": "Combinar — mas só depois de 06/09, quando o aprendizado pós-parada estabilizar",
+          "url": "https://adsmanager.facebook.com/adsmanager/manage/accounts?act=1310973560614050&breakdown_regrouping=1&recommendation_hash_string=dbc8962268d83d960e1c24ac56085d45&recommendation_type=fragmentation_v4&is_mfr_model_shown_by_default=1&referral_source=marketing_api"
+        },
+        {
+          "tipo": "FRAGMENTATION",
+          "prioridade_meta": 9,
+          "alvo": "4 ad sets com o mesmo objetivo e públicos diferentes, incluindo o [RETOQUE]",
+          "diagnostico": "Objetivos semelhantes, públicos diferentes — a Meta sugere consolidar para concentrar sinal.",
+          "ganho_estimado_meta": "Custo por conversa 18% mais baixo",
+          "acao": "Avaliar depois de 06/09. Consolidar campanhas com CPA muito diferente (PLÁSTICA 3,53 vs RETOQUE 7,88) esconde a diferença — aqui não seguir cegamente",
+          "url": "https://adsmanager.facebook.com/adsmanager/manage/accounts?act=1310973560614050&breakdown_regrouping=1&recommendation_hash_string=472f9399e3ef31307124c55ed23bb54f&recommendation_type=fragmentation_v4&is_mfr_model_shown_by_default=1&referral_source=marketing_api"
+        },
+        {
+          "tipo": "APLUSC_STANDARD_ENHANCEMENTS",
+          "prioridade_meta": 21,
+          "alvo": "10 anúncios (todos os ativos)",
+          "diagnostico": "Melhorias automáticas de imagem e texto quando a Meta prevê ganho.",
+          "ganho_estimado_meta": "Custo por resultado 5% mais baixo",
+          "acao": "Opcional — altera o criativo automaticamente, avaliar se vale abrir mão do controle",
+          "url": "https://adsmanager.facebook.com/adsmanager/manage/accounts?act=1310973560614050&breakdown_regrouping=1&recommendation_hash_string=463d3f65898a1e679e9d532b90015b2a&recommendation_type=aplusc_standard_enhancements_bundle&is_mfr_model_shown_by_default=1&referral_source=marketing_api"
+        },
+        {
+          "tipo": "REELS_PC_RECOMMENDATION",
+          "prioridade_meta": 1,
+          "alvo": "Os 3 ad sets de vaga e 2 comerciais",
+          "diagnostico": "Os anúncios rodam em reels com imagem estática. Vídeo vertical 9:16 com áudio performa melhor nesse posicionamento.",
+          "ganho_estimado_meta": "Custo por resultado 8% inferior",
+          "acao": "Produzir versão em vídeo vertical dos criativos que rodam em reels",
+          "url": null
+        }
+      ],
+      "nota": "Endpoint que a conta nunca tinha consultado. As recomendações são da Meta, com estimativa dela — não são análise nossa, e nem todas devem ser seguidas."
+    },
+    "vagas_30d": {
+      "janela": "2026-08-04 a 2026-09-02",
+      "gasto_total": 469.61,
+      "share_da_verba_pct": 18.8,
+      "budget_diario": 18,
+      "conversas": 122,
+      "cpa_msg": 3.85,
+      "campanhas": 3,
+      "no_ar_desde": "2026-07-20",
+      "situacao": "permanente — o salão sempre tem vaga aberta",
+      "por_plataforma": [
+        {
+          "plataforma": "Facebook",
+          "gasto": 124.66,
+          "share_pct": 26.5,
+          "conversas": 42,
+          "cpa_msg": 2.97,
+          "ctr_pct": 2.63,
+          "insight": "Melhor plataforma para recrutamento e a que menos recebe verba"
+        },
+        {
+          "plataforma": "Instagram",
+          "gasto": 344.95,
+          "share_pct": 73.5,
+          "conversas": 80,
+          "cpa_msg": 4.31,
+          "ctr_pct": 1.45,
+          "insight": "Leva 73,5% da verba a um CPA 45% mais caro que o Facebook"
+        }
+      ],
+      "por_faixa": [
+        {
+          "faixa": "25-34 F",
+          "gasto": 195.72,
+          "conversas": 47,
+          "cpa_msg": 4.16,
+          "ctr_pct": 1.37
+        },
+        {
+          "faixa": "35-44 F",
+          "gasto": 149.15,
+          "conversas": 49,
+          "cpa_msg": 3.04,
+          "ctr_pct": 2.19
+        },
+        {
+          "faixa": "45-54 F",
+          "gasto": 70.3,
+          "conversas": 13,
+          "cpa_msg": 5.41,
+          "ctr_pct": 2.83
+        },
+        {
+          "faixa": "Homens (todas)",
+          "gasto": 45.01,
+          "conversas": 9,
+          "cpa_msg": 5.0,
+          "ctr_pct": 1.71
+        },
+        {
+          "faixa": "55-64 F",
+          "gasto": 6.35,
+          "conversas": 2,
+          "cpa_msg": 3.18,
+          "ctr_pct": 4.6
+        },
+        {
+          "faixa": "Não identificado",
+          "gasto": 3.08,
+          "conversas": 2,
+          "cpa_msg": 1.54,
+          "ctr_pct": 1.63
+        }
+      ],
+      "lacuna_de_medicao": "122 conversas em 30 dias. Ninguém registra quantas viraram candidato de verdade e quantas viraram contratação. Sem isso o CPA de R$ 3,85 não diz se está bom: conversa barata pode ser conversa desqualificada."
+    }
   },
   "facebook_page": {
     "conectado": true,
@@ -1740,8 +1868,8 @@
     {
       "sev": "crit",
       "icone": "🛑",
-      "titulo": "A conta ficou 4 dias sem entregar — e pode acontecer de novo",
-      "detalhe": "27/08 caiu para R$ 10,32 (contra R$ 107,41 no dia anterior) e 28, 29, 30 e 31/08 fecharam em R$ 0,00 — a Meta nem devolve linha para 29 e 30/08, sinal de zero entrega. Voltou sozinha em 01/09, na virada do mês. Ao ritmo dos 23 dias anteriores (R$ 98,55/dia), foram cerca de R$ 480 de entrega que simplesmente não aconteceram — aos R$ 6,25 de CPA, umas 77 conversas. E o custo maior nem foi esse: as 10 campanhas voltaram do zero em fase de aprendizado. Parar na virada do mês e voltar no dia 1º é o comportamento clássico de limite de gastos da conta, não de falta de saldo. Vale conferir em Gerenciador de Anúncios → Configurações de pagamento → Limite de gastos da conta: se houver um teto perto de R$ 2.500, ele vai travar a conta de novo no fim de setembro."
+      "titulo": "A conta parou no acumulado de R$ 5.300 — não é teto mensal",
+      "detalhe": "Correção de uma leitura anterior: eu tinha suposto teto mensal de ~R$ 2.500 porque agosto fechou em R$ 2.565,31. Julho derruba isso — gastou MAIS (R$ 2.734,78) e rodou até 31/07 sem parar. O que fecha é o acumulado da conta: não houve entrega nenhuma antes de 03/07, o gasto somou R$ 5.289,77 até 26/08 e a conta morreu em 27/08 depois de entregar só R$ 10,32 — exatamente R$ 5.300,09 acumulados. Um número redondo demais para ser coincidência. Isso é a assinatura de limite de gastos da conta (que na Meta é vitalício, não mensal) ou de cobrança recusada no limite de faturamento. Hoje o acumulado é R$ 5.523,92: se o teto foi só elevado e não removido, ele volta a bater. A R$ 97/dia, os próximos R$ 2.900 chegam em cerca de 30 dias."
     },
     {
       "sev": "ok",
@@ -1752,8 +1880,8 @@
     {
       "sev": "warn",
       "icone": "🧑‍💼",
-      "titulo": "R$ 540/mês em anúncios de vaga — as vagas ainda estão abertas?",
-      "detalhe": "MAQUIADOR, MANICURE e ESCOVISTA somam R$ 18/dia, 18,6% de toda a verba, e estão no ar desde 20–22/07 — seis semanas. Nos 30 dias consumiram R$ 469,61 e trouxeram 122 conversas a CPA médio de R$ 3,85, ou seja, funcionam bem para o que se propõem. A pergunta não é de performance, é de necessidade: se as três vagas já foram preenchidas, são R$ 540/mês que voltam para a captação de cliente sem tirar um centavo de nada que esteja vendendo. É a maior realocação disponível na conta hoje, e depende de uma resposta sua."
+      "titulo": "Vagas são permanentes — a perda não é a verba, é a fragmentação",
+      "detalhe": "As três campanhas de vaga ficam no ar de forma permanente, então não há o que cortar. O desperdício está na estrutura: três ad sets com o mesmo raio de 8 km, a mesma faixa 25-55 e os mesmos três interesses, cada um com R$ 6/dia. Eles disputam o mesmo leilão entre si e nenhum junta volume suficiente para sair da fase de aprendizado. A própria Meta sinaliza isso no painel de recomendações e estima custo por conversa 18% menor se forem combinados em um só. Some a isso o mix de plataforma: o Facebook entrega a R$ 2,97 por conversa e leva 26,5% da verba; o Instagram entrega a R$ 4,31 e leva 73,5%."
     },
     {
       "sev": "crit",
@@ -2067,17 +2195,31 @@
   "direcionamentos_estrategicos": [
     {
       "prioridade": "P1",
-      "titulo": "🛑 Blindar a conta contra uma segunda parada",
-      "descoberta": "A entrega morreu em 27/08 e só voltou em 01/09, sozinha, na virada do mês. Nenhuma campanha foi pausada, nenhum orçamento zerou — as campanhas continuaram ENABLED o tempo todo. O padrão 'para no fim do mês, volta no dia 1º' é o de limite de gastos da conta (account spending limit), um teto acumulado que, ao ser atingido, desliga tudo até ser elevado ou resetado. Agosto fechou em R$ 2.565,31, número perto o suficiente de um teto redondo de R$ 2.500 para merecer verificação. Isso não aparece na API — só no Gerenciador.",
-      "acao": "Gerenciador de Anúncios → Configurações de pagamento → Limite de gastos da conta. Se existir um teto, elevá-lo ou removê-lo. Se não existir, o motivo foi meio de pagamento recusado — e aí vale cadastrar um cartão reserva. Sem isso, setembro repete outubro.",
-      "impacto_estimado": "~R$ 480 de entrega e ~77 conversas por mês, além dos resets de aprendizado"
+      "titulo": "🛑 O teto que travou a conta é de acumulado, não de mês",
+      "descoberta": "A entrega morreu em 27/08 e voltou sozinha em 01/09, com as campanhas ENABLED o tempo todo. A primeira leitura foi de teto mensal, porque agosto fechou em R$ 2.565,31. Julho desmente: R$ 2.734,78 no mês, mais que agosto, rodando até o dia 31 sem interrupção. Refazendo a conta pelo acumulado — e a conta não entregou nada antes de 03/07, então o acumulado é a vida inteira dela — o gasto chegou a R$ 5.289,77 em 26/08, entregou R$ 10,32 em 27/08 e parou em R$ 5.300,09. O limite de gastos da conta na Meta é justamente vitalício, não mensal.",
+      "acao": "Gerenciador de Anúncios → Configurações de pagamento → Limite de gastos da conta. Se houver valor, REMOVER em vez de elevar — elevar só adia. Se o campo estiver vazio, o motivo foi cobrança recusada no limite de faturamento, e aí o que resolve é cartão reserva cadastrado. O acumulado hoje é R$ 5.523,92 e sobe R$ 97/dia.",
+      "impacto_estimado": "Evita ~R$ 480 de entrega perdida e o reset de aprendizado das 10 campanhas"
     },
     {
       "prioridade": "P1",
-      "titulo": "🧑‍💼 Decidir as três campanhas de vaga — R$ 540/mês parados",
-      "descoberta": "MAQUIADOR, MANICURE e ESCOVISTA rodam desde 20–22/07 a R$ 6/dia cada. Somam 18,6% da verba total da conta. Performam bem no que fazem (122 conversas a CPA R$ 3,85 em 30 dias), mas recrutamento não é captação de cliente — e seis semanas é tempo demais para uma vaga continuar aberta sem ninguém ter perguntado se ainda está.",
-      "acao": "Se as vagas foram preenchidas: pausar as três e realocar os R$ 18/dia para [PLÁSTICA] (CPA R$ 3,53) e [COMBO SEMANAL] (R$ 6,35). Se alguma continua aberta, manter só ela. Não é uma decisão de dados — é uma pergunta de operação.",
-      "impacto_estimado": "+R$ 540/mês para captação ≈ +150 conversas/mês ao CPA do [PLÁSTICA]"
+      "titulo": "🧑‍💼 Fundir os 3 ad sets de vaga — a Meta estima -18% no CPA",
+      "descoberta": "As vagas são permanentes, então a pergunta muda de 'cortar?' para 'gastar melhor?'. Os três ad sets têm targeting idêntico — raio de 8 km do Limão, 25-55, interesses de busca de emprego — e R$ 6/dia cada. Resultado: competem entre si no leilão e nenhum acumula os ~50 resultados semanais que a Meta pede para sair do aprendizado; cada um faz uns 10. A Meta detecta isso sozinha: o endpoint de recomendações traz um item FRAGMENTATION apontando exatamente esses três ad sets, com estimativa de custo por conversa 18% menor se combinados. E ela oferece o merge em um clique, preservando os criativos e o histórico — bem mais seguro do que reconstruir a campanha na mão.",
+      "acao": "Abrir a recomendação FRAGMENTATION no Gerenciador e aceitar o merge dos três ad sets de vaga em um só, R$ 18/dia, com os três anúncios dentro. Uma mudança de cada vez: medir 7 dias antes de mexer em plataforma ou faixa etária.",
+      "impacto_estimado": "CPA R$ 3,85 → ~R$ 3,15 · ~150 conversas/mês pelos mesmos R$ 540"
+    },
+    {
+      "prioridade": "P2",
+      "titulo": "📘 Para vaga, o Facebook é 45% mais barato que o Instagram — e leva 1/4 da verba",
+      "descoberta": "Recorte só das campanhas de vaga nos 30 dias: Facebook gastou R$ 124,66 e trouxe 42 conversas (CPA R$ 2,97, CTR 2,63%); Instagram gastou R$ 344,95 e trouxe 80 (CPA R$ 4,31, CTR 1,45%). O Instagram consome 73,5% da verba de recrutamento entregando 45% mais caro. Faz sentido: quem procura emprego de escovista ou manicure na Zona Norte está no Facebook. Nas campanhas comerciais o padrão se repete em menor grau — Facebook Feed é o melhor CPA da conta (R$ 5,06). Por faixa, 35-44 novamente lidera (CPA R$ 3,04) enquanto 25-34 recebe R$ 46 a mais e entrega mais caro (R$ 4,16).",
+      "acao": "Depois que o ad set unificado rodar 7 dias, testar uma semana só com Facebook e Messenger. Se o CPA cair abaixo de R$ 3,00, fixar.",
+      "impacto_estimado": "CPA de vaga potencialmente abaixo de R$ 3,00"
+    },
+    {
+      "prioridade": "P2",
+      "titulo": "📋 Ninguém sabe quantas das 122 conversas viraram contratação",
+      "descoberta": "As campanhas de vaga geraram 122 conversas em 30 dias a R$ 3,85. O número parece ótimo, mas é o custo de uma mensagem, não de um candidato. Não há registro de quantas viraram entrevista nem quantas viraram contratação. Enquanto isso o criativo é genérico — não diz escala, remuneração, se exige experiência, nem que o salão trabalha sem hora marcada. Anúncio vago gera mensagem barata e desqualificada, o que melhora o CPA e piora o resultado.",
+      "acao": "Anotar numa planilha simples, por semana: mensagens recebidas, entrevistas marcadas, contratações. Com 4 semanas dá para calcular custo por contratação de verdade. Em paralelo, incluir no anúncio um filtro objetivo (experiência, escala ou faixa de remuneração) e aceitar que o CPA suba.",
+      "impacto_estimado": "Troca CPA de mensagem por custo por contratação — a métrica que importa"
     },
     {
       "prioridade": "P1",
@@ -2111,21 +2253,27 @@
   "recomendacoes": [
     {
       "sev": "crit",
-      "titulo": "Checar o limite de gastos da conta",
-      "detalhe": "A conta parou 4 dias no fim de agosto e voltou sozinha em 01/09. Se houver teto de gastos, setembro repete.",
+      "titulo": "Remover o limite de gastos da conta",
+      "detalhe": "A conta travou no acumulado de R$ 5.300,09 em 27/08. Hoje está em R$ 5.523,92 e sobe R$ 97/dia. Elevar o teto só adia — remover resolve.",
       "acao": "Gerenciador → Config. de pagamento"
     },
     {
       "sev": "crit",
-      "titulo": "As vagas ainda estão abertas?",
-      "detalhe": "R$ 18/dia (18,6% da verba) em recrutamento há 6 semanas. Se preenchidas, são R$ 540/mês para captação.",
-      "acao": "Responder e eu realoco"
+      "titulo": "Aceitar o merge dos 3 ad sets de vaga",
+      "detalhe": "A Meta estima -18% no custo por conversa. Merge em um clique na recomendação FRAGMENTATION, sem reconstruir nada.",
+      "acao": "Gerenciador → Recomendações"
     },
     {
       "sev": "crit",
       "titulo": "Rodar a lista de reativação",
       "detalhe": "41 clientes em risco, R$ 9.197 de LTV, telefone já no Trinks. Custo de contato: zero.",
       "acao": "Recepção · aba Clientes"
+    },
+    {
+      "sev": "warn",
+      "titulo": "Começar a contar contratações",
+      "detalhe": "122 conversas de vaga em 30 dias e nenhum registro de quantas viraram candidato. Sem isso o CPA de R$ 3,85 não significa nada.",
+      "acao": "Planilha semanal"
     },
     {
       "sev": "warn",
@@ -2136,13 +2284,13 @@
     {
       "sev": "warn",
       "titulo": "Postar no Instagram hoje",
-      "detalhe": "Sem post desde 31/08. O alcance do perfil não se sustenta sem conteúdo novo — os 4 dias parados provaram isso.",
+      "detalhe": "Sem post desde 31/08. O alcance do perfil não se sustenta sem conteúdo novo.",
       "acao": "Reel, 3x/semana"
     },
     {
       "sev": "warn",
-      "titulo": "Não mexer em verba até 06/09",
-      "detalhe": "As 10 campanhas saíram de 4 dias parados e o [RETOQUE] ainda levou troca de idade. Qualquer leitura de CPA agora é de aprendizado, não de performance.",
+      "titulo": "Não mexer em verba comercial até 06/09",
+      "detalhe": "As campanhas saíram de 4 dias parados e o [RETOQUE] levou troca de idade. Qualquer CPA agora é de aprendizado. O merge das vagas é exceção: é estrutural, não de verba.",
       "acao": "Revisar em 06/09"
     },
     {
@@ -2153,11 +2301,11 @@
     }
   ],
   "insights_narrativa": [
-    "**A conta ficou 4 dias no escuro e ninguém foi avisado.** 27/08 entregou R$ 10,32 contra R$ 107,41 do dia anterior; 28, 29, 30 e 31/08 fecharam em zero. As campanhas nunca foram pausadas — a entrega simplesmente parou e voltou sozinha em 01/09. Ao ritmo dos 23 dias anteriores (R$ 98,55/dia), foram ~R$ 480 e ~77 conversas que não aconteceram, mais o reaprendizado de 10 campanhas.",
+    "**A conta ficou 4 dias no escuro e o motivo não é o que eu disse antes.** 27/08 entregou R$ 10,32 contra R$ 107,41 do dia anterior; 28 a 31/08 fecharam em zero, com as campanhas ENABLED. Eu tinha suposto teto mensal de ~R$ 2.500 porque agosto fechou em R$ 2.565,31 — **julho desmente**: gastou R$ 2.734,78, mais que agosto, e rodou até o dia 31. O que fecha é o acumulado: a conta nunca entregou nada antes de 03/07, somou R$ 5.289,77 até 26/08 e parou em **R$ 5.300,09**. Limite de gastos da conta, na Meta, é vitalício — e hoje o acumulado já está em R$ 5.523,92.",
     "**Setembro abriu no rumo certo.** R$ 223,83 em dois dias e 25 conversas. 01/09 foi caro (CPA R$ 27,86, a conta reaprendendo) e 02/09 já normalizou: R$ 140,24 e 22 conversas a **R$ 6,37**, abaixo da meta de R$ 8,00.",
     "**A janela de 30 dias (04/08 a 02/09) fechou em R$ 2.494,15 e 399 conversas**, CPA R$ 6,25 e CTR 1,59% — ambos melhores que a meta, apesar de carregar os 4 dias mortos dentro dela. A base de performance nunca foi o problema; o que falta é a conta ficar no ar.",
     "**A verba configurada hoje é R$ 97/dia — R$ 2.910 no mês.** Ela está repartida em 10 ad sets: R$ 67 em campanhas comerciais, R$ 18 em vagas, R$ 6 em indicação e R$ 6 em branding. Nos dois primeiros dias o ritmo real foi de R$ 111,92/dia, o que projeta R$ 3.357 se seguir assim. Se a verba de setembro é outra, é esse número que precisa mudar.",
-    "**Quase um quinto do orçamento anuncia vaga de emprego.** As três campanhas de recrutamento estão no ar desde 20–22/07 e consomem R$ 540/mês. Elas funcionam — 122 conversas a R$ 3,85 — mas se as vagas já foram preenchidas esse dinheiro está sendo gasto para nada, e é a maior realocação disponível na conta.",
+    "**Quase um quinto do orçamento anuncia vaga, e vai continuar assim** — o salão sempre tem posição aberta. Como não há o que cortar, a alavanca é estrutural: três ad sets com targeting idêntico e R$ 6/dia cada, competindo entre si e presos na fase de aprendizado. A própria Meta sinaliza e estima **-18% no custo por conversa** se forem combinados. E o mix está invertido: o Facebook traz conversa de vaga a R$ 2,97 com 26,5% da verba, o Instagram a R$ 4,31 com 73,5%.",
     "**[PLÁSTICA] segue o melhor ativo:** R$ 508,62, 144 conversas, CPA R$ 3,53 e CTR 4,08%. O oposto é [COMBOS 4 E 5]: R$ 95,25 para 4 conversas (CPA R$ 23,81) e nenhuma em setembro. A diferença está no criativo — um abre conversa, o outro mostra tabela de preço.",
     "**Mulheres de 35-44 são a melhor faixa da conta** (CPA R$ 4,77) e recebem menos verba que 45-54 (CPA R$ 8,05). 55-64, que em julho parecia cara, fechou agosto em R$ 6,33.",
     "**Os 4 dias parados mostraram o tamanho da dependência da mídia paga.** O alcance diário do Instagram caiu de ~4.600 para 306 (−93%) e os novos seguidores de ~12/dia para 1. Na Página do Facebook, 98% dos video views são pagos. E não há post novo desde 31/08 — entrando no terceiro dia de silêncio."
