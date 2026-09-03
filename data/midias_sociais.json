@@ -1574,6 +1574,12 @@
       "detalhe": "Melhor dia desde que a conta voltou. Em 01/09 o CPA foi R$ 27,86 (3 conversas, saindo do aprendizado); hoje caiu para R$ 5,92, abaixo da média de 30 dias (R$ 6,29) e da meta de R$ 8,00."
     },
     {
+      "sev": "crit",
+      "icone": "🪣",
+      "titulo": "47% dos clientes vêm uma vez e nunca voltam",
+      "detalhe": "153 dos 328 clientes têm uma única visita. A mídia está enchendo um balde furado: cada conversa nova custa R$ 6,29, mas quase metade de quem entra não gera segunda visita. Somado aos 41 em alerta de churn (R$ 9.197 de LTV em risco, telefone já no Trinks), a retenção hoje vale mais que qualquer ajuste de campanha."
+    },
+    {
       "sev": "warn",
       "icone": "📉",
       "titulo": "Os 7 dias ainda mostram -69% de gasto e -74% de conversas",
@@ -1883,10 +1889,17 @@
   "direcionamentos_estrategicos": [
     {
       "prioridade": "P1",
-      "titulo": "🎯 O orçamento por idade está invertido vs. quem realmente vira cliente",
-      "descoberta": "Cruzando Meta com Trinks: a faixa 35-44 tem o MELHOR CPA (R$ 4,57), o MAIOR volume de conversas (110) e é 37% dos clientes com idade real no Trinks — mas recebe só 20,4% do orçamento. Já 45-54 recebe a MAIOR fatia (26,6%), tem o PIOR CPA (R$ 8,20, acima da meta de R$ 8,00) e é 17% dos clientes. Somando 55+, são 35,1% do orçamento para 14% dos clientes reais. O painel escondia isso porque julgava faixa etária por CTR, e o CTR aponta ao contrário: 65+ tem o melhor CTR (2,11%) e o segundo pior CPA (R$ 7,66). Engajamento de quem tem 55+ é curtida, não intenção: 35-44 converte 17 conversas a cada mil engajamentos, contra 4,6 do 65+.",
-      "acao": "Realocar ~R$ 300/mês de 45-54 e 65+ para 35-44 e 25-34. No CPA atual de cada faixa, a mesma verba rende cerca de +29 conversas/mês. Adicionadas as colunas Conversas e CPA na tabela de demografia para acompanhar.",
-      "impacto_estimado": "+29 conversas/mês sem gastar a mais"
+      "titulo": "🎯 Cortar 55+ no [RETOQUE] — e NÃO tocar na idade do [PLÁSTICA]",
+      "descoberta": "A média da conta dizia que 55+ era caro. Olhando por campanha, o oposto convive no mesmo mês. No [RETOQUE], 55+ custa R$ 226,76 para 21 conversas (CPA R$ 10,80) enquanto 35-54 custa R$ 340,16 para 51 (CPA R$ 6,67). Já no [PLÁSTICA], 55-64 é o MELHOR público da conta inteira: CPA R$ 3,27, e 65+ vem logo atrás com R$ 3,39. Cortar 55+ no nível da conta, como a leitura agregada sugeria, teria destruído a campanha mais eficiente que existe aqui.",
+      "acao": "No ad set [GEO][5KM][MULHERES][35+] do [RETOQUE], fechar a idade em 35-54. A verba de 55+ realocada dentro da própria campanha ao CPA de 35-54 vira ~34 conversas em vez de 21. Não mexer na idade do [PLÁSTICA] nem do [COMBO SEMANAL].",
+      "impacto_estimado": "+13 conversas/mês só no [RETOQUE]"
+    },
+    {
+      "prioridade": "P1",
+      "titulo": "💸 R$ 9.197 de LTV saindo pela porta enquanto se paga R$ 6,29 por conversa nova",
+      "descoberta": "O Trinks já identifica 41 clientes em risco de churn — média de 26 dias sem vir, LTV médio de R$ 295,30, telefone de todos já cadastrado. São R$ 9.197 em risco, o equivalente a 373% de um mês inteiro de mídia. E 153 dos 328 clientes (47%) vieram UMA vez só. O topo é concentrado: 65 clientes (20%) fazem 45,2% da receita, com LTV médio de R$ 615 em 8,7 visitas. O dado aparece na aba Clientes, mas nunca encontra a decisão de verba, que acontece aqui. Adquirir custa R$ 6,29 por conversa; reativar quem já veio custa uma mensagem no WhatsApp.",
+      "acao": "Antes de subir orçamento de mídia, rodar a lista de churn da aba Clientes: 41 contatos, custo zero. Se 1 em cada 4 voltar e gastar o ticket médio, são ~R$ 2.300 recuperados — quase um mês de mídia, sem gastar em mídia.",
+      "impacto_estimado": "~R$ 2.300 recuperáveis a custo zero"
     },
     {
       "prioridade": "P1",
@@ -1926,34 +1939,34 @@
   ],
   "recomendacoes": [
     {
-      "sev": "ok",
-      "titulo": "Escalar [PLÁSTICA] e [COMBO SEMANAL] +30%",
-      "detalhe": "CPA de R$ 3,63 e R$ 6,34 contra meta de R$ 8,00, e hoje a conta entregou 20 conversas a R$ 5,92.",
-      "acao": "Aprovar escala"
+      "sev": "crit",
+      "titulo": "Rodar a lista de churn antes de subir verba",
+      "detalhe": "41 clientes, R$ 9.197 de LTV em risco, telefone já cadastrado. Custo de contato: zero.",
+      "acao": "Aba Clientes → lista de churn"
     },
     {
       "sev": "crit",
-      "titulo": "Trocar o criativo de [RETOQUE]",
-      "detalhe": "R$ 566,92 gastos, CPA R$ 7,87 e frequência 2,27 — o pior custo por conversa das campanhas de mensagem.",
-      "acao": "Subir 2 criativos novos"
-    },
-    {
-      "sev": "warn",
-      "titulo": "Encerrar o boost do post de inauguração",
-      "detalhe": "R$ 271,13 para 9 conversas (R$ 30,13 cada).",
-      "acao": "Pausar e realocar"
+      "titulo": "Fechar idade 35-54 no [RETOQUE]",
+      "detalhe": "55+ custa CPA R$ 10,80 nessa campanha. Não replicar no [PLÁSTICA], onde 55+ é o melhor público (R$ 3,27).",
+      "acao": "Ads Manager → ad set do [RETOQUE] → idade 35-54"
     },
     {
       "sev": "ok",
-      "titulo": "Dar volume à campanha de indicação",
-      "detalhe": "[DISTRIBUIÇÃO] entrou em 01/09 com R$ 1,65 — sem dados suficientes para avaliar.",
-      "acao": "Subir para R$ 20/dia por 4 dias"
+      "titulo": "Escalar [PLÁSTICA] R$ 12 → R$ 16/dia",
+      "detalhe": "CPA R$ 3,63, o melhor da conta, com 135 conversas em 30 dias.",
+      "acao": "Aprovar escala"
+    },
+    {
+      "sev": "ok",
+      "titulo": "Escalar [COMBO SEMANAL] R$ 12 → R$ 15/dia",
+      "detalhe": "CPA R$ 6,34, abaixo da meta de R$ 8,00.",
+      "acao": "Aprovar escala"
     },
     {
       "sev": "warn",
-      "titulo": "Manter 2 reels/semana no Instagram",
-      "detalhe": "O reel de 31/08 foi o de melhor alcance orgânico da retomada (766). Reels puxam o alcance da conta.",
-      "acao": "Fixar na rotina de conteúdo"
+      "titulo": "Pausar o boost do post de inauguração",
+      "detalhe": "R$ 10/dia para 9 conversas em 30 dias (R$ 30,13 cada).",
+      "acao": "Pausar campanha"
     }
   ],
   "insights_narrativa": [
