@@ -1569,6 +1569,12 @@
   "alertas_topo": [
     {
       "sev": "ok",
+      "icone": "⚙️",
+      "titulo": "Ajustes aplicados no Meta em 02/09",
+      "detalhe": "[PLÁSTICA] R$ 12→16/dia e [COMBO SEMANAL] R$ 12→15/dia (os dois melhores CPAs). [RETOQUE] com idade fechada em 35-54, onde 55+ custava CPA R$ 10,80 contra R$ 6,67 de 35-54. Boost do post de inauguração pausado (R$ 10/dia para CPA R$ 30,13). Saldo: −R$ 3/dia. Raio de 5 km e demais segmentações conferidos após a alteração. Reavaliar em 3-4 dias, quando o aprendizado do [RETOQUE] estabilizar."
+    },
+    {
+      "sev": "ok",
       "icone": "🚀",
       "titulo": "Retomada consolidada: 20 conversas hoje a CPA de R$ 5,92",
       "detalhe": "Melhor dia desde que a conta voltou. Em 01/09 o CPA foi R$ 27,86 (3 conversas, saindo do aprendizado); hoje caiu para R$ 5,92, abaixo da média de 30 dias (R$ 6,29) e da meta de R$ 8,00."
@@ -1940,33 +1946,33 @@
   "recomendacoes": [
     {
       "sev": "crit",
-      "titulo": "Rodar a lista de churn antes de subir verba",
-      "detalhe": "41 clientes, R$ 9.197 de LTV em risco, telefone já cadastrado. Custo de contato: zero.",
-      "acao": "Aba Clientes → lista de churn"
+      "titulo": "Rodar a lista de reativação",
+      "detalhe": "41 clientes em risco, R$ 9.197 de LTV, telefone já no Trinks. Custo de contato: zero. Única ação da lista que não depende de mídia.",
+      "acao": "Recepção · aba Clientes"
     },
     {
       "sev": "crit",
-      "titulo": "Fechar idade 35-54 no [RETOQUE]",
-      "detalhe": "55+ custa CPA R$ 10,80 nessa campanha. Não replicar no [PLÁSTICA], onde 55+ é o melhor público (R$ 3,27).",
-      "acao": "Ads Manager → ad set do [RETOQUE] → idade 35-54"
-    },
-    {
-      "sev": "ok",
-      "titulo": "Escalar [PLÁSTICA] R$ 12 → R$ 16/dia",
-      "detalhe": "CPA R$ 3,63, o melhor da conta, com 135 conversas em 30 dias.",
-      "acao": "Aprovar escala"
-    },
-    {
-      "sev": "ok",
-      "titulo": "Escalar [COMBO SEMANAL] R$ 12 → R$ 15/dia",
-      "detalhe": "CPA R$ 6,34, abaixo da meta de R$ 8,00.",
-      "acao": "Aprovar escala"
+      "titulo": "Trocar o criativo de [RETOQUE]",
+      "detalhe": "O corte de idade ataca o público errado, mas o criativo continua o mesmo desde 28/07, com frequência 2,27. É a próxima alavanca dessa campanha.",
+      "acao": "Subir 2 variações"
     },
     {
       "sev": "warn",
-      "titulo": "Pausar o boost do post de inauguração",
-      "detalhe": "R$ 10/dia para 9 conversas em 30 dias (R$ 30,13 cada).",
-      "acao": "Pausar campanha"
+      "titulo": "Acompanhar o [RETOQUE] por 3-4 dias",
+      "detalhe": "Mudança de idade reinicia o aprendizado. CPA pode subir antes de cair — não reverter na primeira leitura ruim.",
+      "acao": "Revisar em 06/09"
+    },
+    {
+      "sev": "ok",
+      "titulo": "[DISTRIBUIÇÃO] precisa de volume",
+      "detalhe": "Campanha de indicação entrou em 01/09 com R$ 1,65 gastos. Sem dados para avaliar.",
+      "acao": "Subir para R$ 20/dia por 4 dias"
+    },
+    {
+      "sev": "warn",
+      "titulo": "Responder preço e serviço publicamente no Instagram",
+      "detalhe": "5 perguntas de intenção de compra em 30 dias respondidas só no direct.",
+      "acao": "Responder no próprio comentário"
     }
   ],
   "insights_narrativa": [
