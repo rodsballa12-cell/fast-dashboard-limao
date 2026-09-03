@@ -545,6 +545,62 @@ def analisar(agend, transac, ini: date, fim: date):
     }
 
 
+def marcar_dias_atipicos(historico_dias, min_amostras=3, lim_alto=2.0, lim_baixo=0.45):
+    """Marca dias fora do padrão do PRÓPRIO dia da semana.
+
+    A referência de cada dia é a mediana dos outros dias na mesma posição da
+    semana, não a mediana geral. Testei com a mediana geral primeiro e ela
+    acusou 01, 08, 15, 22 e 29/08 como anômalos — que são simplesmente todos
+    os sábados de agosto. Sábado vale 41,9% do faturamento da semana e terça
+    4,3%: contra a média geral, todo sábado é outlier e nenhuma terça nunca é.
+
+    Devolve {data: {ratio, tipo, mediana_dow}} só para os dias marcados.
+    """
+    from statistics import median
+    por_dow = defaultdict(list)
+    for iso, bloco in historico_dias.items():
+        caixa = (bloco.get("kpis") or {}).get("caixa") or 0
+        if caixa > 0:
+            por_dow[date.fromisoformat(iso).weekday()].append(caixa)
+
+    marcados = {}
+    for iso, bloco in historico_dias.items():
+        caixa = (bloco.get("kpis") or {}).get("caixa") or 0
+        if caixa <= 0:
+            continue
+        amostras = por_dow[date.fromisoformat(iso).weekday()]
+        if len(amostras) < min_amostras:
+            continue                      # poucos dados: não dá para dizer o que é normal
+        med = median(amostras)
+        if not med:
+            continue
+        ratio = caixa / med
+        if ratio >= lim_alto or ratio <= lim_baixo:
+            marcados[iso] = {
+                "ratio": round(ratio, 2),
+                "tipo": "alto" if ratio >= lim_alto else "baixo",
+                "mediana_dow": brl_round(med),
+                "caixa": brl_round(caixa),
+            }
+    return marcados
+
+
+def peso_janela(ini: date, fim: date, peso_dow):
+    """Fatia do faturamento de uma semana que os dias desta janela representam.
+
+    peso_dow é indexado por weekday() e soma 1. Uma janela de sáb+dom+seg
+    carrega muito mais expectativa de caixa que uma de ter+qua+qui, e comparar
+    as duas pelo total bruto mede o calendário, não o negócio.
+    """
+    total, dias = 0.0, []
+    cur = ini
+    while cur <= fim:
+        total += peso_dow.get(cur.weekday(), 0) or 0
+        dias.append(DOW_NOMES[cur.weekday()])
+        cur += timedelta(days=1)
+    return total, dias
+
+
 def calc_meta(caixa, meta, dias_real, dias_total):
     """KPIs de meta do período, com a meta proporcional aos dias já corridos.
 
@@ -1395,6 +1451,50 @@ def main():
         n_op = sum(1 for i in range(7) if HORAS_POR_DOW[i] > 0)
         peso_dow = {i: (1/n_op if HORAS_POR_DOW[i] > 0 else 0) for i in range(7)}
 
+    # === Qualidade da base de comparação de cada aba ===
+    # Roda aqui, e não junto dos deltas, porque depende do peso_dow acima.
+    #
+    # "01 a hoje contra 01 ao mesmo dia do mês passado" parece a comparação
+    # mais justa que existe, e é — de calendário. De negócio não é: em 2026,
+    # 01/09 caiu numa terça e 01/08 num sábado. A janela de setembro pega
+    # ter+qua+qui (25,1% do faturamento de uma semana) e a de agosto pega
+    # sáb+dom+seg (56,7%). O card mostrava -63,5% de caixa; corrigida a
+    # composição, a queda é de 17,5%. O resto era o calendário.
+    dias_atipicos = marcar_dias_atipicos(historico_dias)
+    for aba, ant, ini_atu in ((a_mensal, mes_anterior_kpis, ini_mes),
+                              (a_semanal, semana_anterior, seg),
+                              (a_diario, dia_anterior_kpis, hoje)):
+        k = aba["kpis"]
+        try:
+            ini_ant = date.fromisoformat(ant.get("periodo_ini") or ant["data"])
+            fim_ant = date.fromisoformat(ant.get("periodo_fim") or ant["data"])
+        except Exception:
+            continue
+        p_atu, comp_atu = peso_janela(ini_atu, hoje, peso_dow)
+        p_ant, comp_ant = peso_janela(ini_ant, fim_ant, peso_dow)
+        razao = (p_ant / p_atu) if p_atu else None
+
+        ajustado = None
+        if p_atu and p_ant and ant.get("caixa"):
+            ajustado = round(((k.get("caixa", 0) / p_atu) / (ant["caixa"] / p_ant) - 1) * 100, 1)
+
+        na_base = {iso: info for iso, info in dias_atipicos.items()
+                   if ini_ant <= date.fromisoformat(iso) <= fim_ant}
+        # 15% de folga: abaixo disso a diferença de composição não move a
+        # leitura o suficiente para valer um aviso na tela.
+        comparavel = razao is not None and abs(razao - 1) <= 0.15
+
+        k["base_comparacao"] = {
+            "composicao_atual": comp_atu,
+            "composicao_anterior": comp_ant,
+            "peso_semana_atual_pct": round(p_atu * 100, 1),
+            "peso_semana_anterior_pct": round(p_ant * 100, 1),
+            "razao_peso": round(razao, 2) if razao else None,
+            "comparavel": comparavel,
+            "caixa_delta_ajustado_pct": ajustado,
+            "dias_atipicos_na_base": na_base,
+        }
+
     # === PESO SEMANA-DO-MÊS: capta semana forte (pós-pagamento) vs fraca (final do mês) ===
     def sem_do_mes(d: date) -> int:
         return (d.day - 1) // 7 + 1  # 1..5
@@ -1945,6 +2045,7 @@ def main():
         "hoje": hoje.isoformat(),
         "meta_mensal_valor": META_MENSAL,
         "dias_op_mes": dias_op_mes_real,
+        "dias_atipicos": dias_atipicos,
         "sazonalidade": {
             "peso_dow": {DOW_NOMES[i]: round(peso_dow[i]*100, 1) for i in range(7)},
             "meta_dia_por_dow": {DOW_NOMES[i]: meta_dia_por_dow[i] for i in range(7)},

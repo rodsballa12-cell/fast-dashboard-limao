@@ -7197,6 +7197,24 @@
         "dias_com_movimento": {
           "atual": 3,
           "anterior": 2
+        },
+        "base_comparacao": {
+          "composicao_atual": [
+            "Ter",
+            "Qua",
+            "Qui"
+          ],
+          "composicao_anterior": [
+            "Sáb",
+            "Dom",
+            "Seg"
+          ],
+          "peso_semana_atual_pct": 25.1,
+          "peso_semana_anterior_pct": 56.7,
+          "razao_peso": 2.26,
+          "comparavel": false,
+          "caixa_delta_ajustado_pct": -17.5,
+          "dias_atipicos_na_base": {}
         }
       },
       "meta": {
@@ -7851,6 +7869,26 @@
         "dias_com_movimento": {
           "atual": 4,
           "anterior": 4
+        },
+        "base_comparacao": {
+          "composicao_atual": [
+            "Seg",
+            "Ter",
+            "Qua",
+            "Qui"
+          ],
+          "composicao_anterior": [
+            "Seg",
+            "Ter",
+            "Qua",
+            "Qui"
+          ],
+          "peso_semana_atual_pct": 32.2,
+          "peso_semana_anterior_pct": 32.2,
+          "razao_peso": 1.0,
+          "comparavel": true,
+          "caixa_delta_ajustado_pct": 15.7,
+          "dias_atipicos_na_base": {}
         }
       },
       "meta": {
@@ -8552,6 +8590,20 @@
         "dias_com_movimento": {
           "atual": 1,
           "anterior": 1
+        },
+        "base_comparacao": {
+          "composicao_atual": [
+            "Qui"
+          ],
+          "composicao_anterior": [
+            "Qui"
+          ],
+          "peso_semana_atual_pct": 12.6,
+          "peso_semana_anterior_pct": 12.6,
+          "razao_peso": 1.0,
+          "comparavel": true,
+          "caixa_delta_ajustado_pct": -21.8,
+          "dias_atipicos_na_base": {}
         }
       },
       "meta": {
@@ -9141,5 +9193,31 @@
         "acao": "Sem profissional → provavelmente registro velho do setup inicial da loja. Valor atípico → pode ser cortesia, meia porção ou erro de lançamento — perguntar à profissional."
       }
     ]
+  },
+  "dias_atipicos": {
+    "2026-09-01": {
+      "ratio": 2.07,
+      "tipo": "alto",
+      "mediana_dow": 428.5,
+      "caixa": 885.0
+    },
+    "2026-08-10": {
+      "ratio": 2.65,
+      "tipo": "alto",
+      "mediana_dow": 640.0,
+      "caixa": 1698.0
+    },
+    "2026-08-06": {
+      "ratio": 2.87,
+      "tipo": "alto",
+      "mediana_dow": 863.0,
+      "caixa": 2473.0
+    },
+    "2026-07-29": {
+      "ratio": 0.36,
+      "tipo": "baixo",
+      "mediana_dow": 721.5,
+      "caixa": 257.0
+    }
   }
 }
