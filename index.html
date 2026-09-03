@@ -3313,14 +3313,15 @@ function renderMidias(){
       </tr>`).join('')}</tbody></table></div></section>`;
   } else { placeBox.innerHTML=''; }
 
-  // Funil de conversão Meta → WA → Agendamento
+  // Funil de conversão Meta → WA → Visita (o salão é sem hora marcada: não há
+  // etapa de agendamento, a pessoa aparece na loja quando quer)
   const funilBox = document.getElementById('midias-funil');
   const funil = MID.funil_conversao;
   if(funil){
     const etapaColor = e => e.medido ? '#22c55e' : '#f59e0b';
     const maxVal = Math.max(...funil.etapas.map(e=>e.valor||e.estimativa_valor||0));
     funilBox.innerHTML = `<section class="card" style="border-left:4px solid #a855f7">
-      <h2>🎯 Funil de conversão · Meta → WhatsApp → Agendamento → Cliente</h2>
+      <h2>🎯 Funil de conversão · Meta → WhatsApp → Visita → Cliente</h2>
       <div class="cap">${funil.periodo}. 🟢 medido · 🟡 estimado (aguardando integração Trinks/Pixel).</div>
 
       <div style="display:grid;gap:6px;margin-top:14px">

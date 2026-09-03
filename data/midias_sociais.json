@@ -15,7 +15,7 @@
   "kpi_estrela": {
     "nome": "Custo por conversa iniciada (WhatsApp)",
     "campo": "cost_per_new_messaging_conversation",
-    "explicacao": "Métrica-chave do FAST: quanto custa fazer um lead abrir conversa no WhatsApp. Proxy do CAC até tracking de agendamento (Pixel/CAPI) estar ativo."
+    "explicacao": "Métrica-chave do FAST: quanto custa fazer um lead abrir conversa no WhatsApp. É proxy do CAC — e vai continuar sendo proxy, porque o salão é sem hora marcada: não existe agendamento ligando a conversa à visita. O que substitui esse elo é o campo comoNosConheceu na recepção e, quando estiver ligado, o cruzamento do telefone da conversa com o cadastro do Trinks."
   },
   "instagram": {
     "handle": "fastescova.limao",
@@ -1997,13 +1997,13 @@
       },
       {
         "ordem": 7,
-        "nome": "Novos clientes agendaram (Trinks)",
+        "nome": "Novos clientes atendidos (Trinks)",
         "valor": 218,
         "unidade": "clientes",
         "fonte": "🟢 Trinks API (real)",
         "medido": true,
         "taxa_da_anterior_pct": 52.9,
-        "mensagem": "218 clientes NOVOS no Trinks em Ago. Se ~80% vieram de Meta = 174."
+        "mensagem": "218 clientes NOVOS registrados no Trinks em agosto. Como o salão é sem hora marcada, não há etapa de agendamento entre a conversa e a visita: a pessoa aparece quando quer, e o registro só nasce no atendimento. Por isso a taxa daqui para trás é indicativa, não uma conversão rastreada."
       },
       {
         "ordem": 8,
@@ -2030,7 +2030,7 @@
         "unidade": "R$",
         "fonte": "Estimativa (sem UTM tracking)",
         "medido": false,
-        "mensagem": "Sem UTM/CAPI, não sabemos qual % dos 218 novos veio de Meta. Cenários abaixo."
+        "mensagem": "Sem hora marcada, nada liga a conversa à visita de forma automática. As duas pontes possíveis são o comoNosConheceu na recepção (hoje em 75,8% de cobertura) e o cruzamento de telefone entre WhatsApp e Trinks, que depende da WhatsApp Cloud API. Cenários abaixo."
       }
     ],
     "cenarios_roas": [
@@ -2170,7 +2170,8 @@
         "indicacao_pct": 10.5
       }
     },
-    "nota_setembro": "Os números deste funil são de agosto fechado e seguem válidos como referência. Setembro só terá leitura de ROAS quando houver mês suficiente no Trinks; até lá, a régua é o CPA de conversa."
+    "nota_setembro": "Os números deste funil são de agosto fechado e seguem válidos como referência. Setembro só terá leitura de ROAS quando houver mês suficiente no Trinks; até lá, a régua é o CPA de conversa.",
+    "modelo_negocio": "Walk-in / sem hora marcada. Não há agendamento, logo não há no-show nem reserva prendendo o cliente entre a conversa e a visita — o intervalo entre as duas é vazio, e é onde a operação perde gente."
   },
   "google_ads": {
     "conectado": false,
