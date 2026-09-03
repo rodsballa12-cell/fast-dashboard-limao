@@ -978,23 +978,21 @@ def main():
         "dias_op": a_sem_ant["kpis"]["dias_op"],
     }
 
-    # === Mês anterior — MÊS INTEIRO fechado (média per-day) ===
-    # Comparar setembro-parcial com agosto-inteiro. O _delta_pct_perdia divide
-    # ambos por dias_op → compara per-day. Isso dilui o ruído dos primeiros
-    # dias específicos do mês anterior (que podem ser atípicos) e reflete o
-    # padrão médio do mês passado — muito mais estável e informativo pra
-    # decisão. Um fim de semana quente nos primeiros 3 dias de agosto não
-    # distorce a referência.
+    # === Mês anterior — MESMA JANELA de dias (comparação direta) ===
+    # Setembro 01-03 vs Agosto 01-03 — mesmos dias corridos, apples-to-apples.
+    # É a comparação mais literal: "aos mesmos dias do mês passado, como
+    # estávamos?". Sem média, sem projeção — só o número que existiu.
     if hoje.month == 1:
         ini_mes_ant = date(hoje.year - 1, 12, 1)
     else:
         ini_mes_ant = date(hoje.year, hoje.month - 1, 1)
-    fim_mes_ant = date(ini_mes_ant.year, ini_mes_ant.month, monthrange(ini_mes_ant.year, ini_mes_ant.month)[1])
-    a_mes_ant = analisar(agend, transac, ini_mes_ant, fim_mes_ant)
+    ult_dia_mes_ant = monthrange(ini_mes_ant.year, ini_mes_ant.month)[1]
+    fim_janela_ant = date(ini_mes_ant.year, ini_mes_ant.month, min(hoje.day, ult_dia_mes_ant))
+    a_mes_ant = analisar(agend, transac, ini_mes_ant, fim_janela_ant)
     mes_anterior_kpis = {
         "periodo_ini": ini_mes_ant.isoformat(),
-        "periodo_fim": fim_mes_ant.isoformat(),
-        "modo_comparacao": "mes_inteiro_perdia",  # per-day contra mês fechado
+        "periodo_fim": fim_janela_ant.isoformat(),
+        "janela_dias": hoje.day,
         "caixa": a_mes_ant["kpis"]["caixa"], "atend_fin": a_mes_ant["kpis"]["atend_fin"],
         "cliente_dia": a_mes_ant["kpis"]["cliente_dia"], "ticket_medio": a_mes_ant["kpis"]["ticket_medio"],
         "dias_op": a_mes_ant["kpis"]["dias_op"],
