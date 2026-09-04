@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-04T17:09:46-03:00",
+  "gerado_em": "2026-09-04T17:16:13-03:00",
   "hoje": "2026-09-04",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 30,
@@ -264,8 +264,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 1730,
-    "saldoRestante": 8270
+    "totalUtilizado": 1732,
+    "saldoRestante": 8268
   },
   "metas_franqueadora": {
     "recepcionistas": 2,
@@ -520,22 +520,28 @@
     "pix_tarifa_pct": 0.641,
     "taxa_pix_pct": 0.641,
     "nao_conciliado": {
-      "total_valor_risco": 21731.64,
+      "total_valor_risco": 21503.64,
       "orfaos_stone_n": 0,
       "orfaos_stone_v": 0.0,
       "orfaos_stone": [],
-      "orfaos_trinks_n": 2,
-      "orfaos_trinks_v": 307.0,
+      "orfaos_trinks_n": 1,
+      "orfaos_trinks_v": 79.0,
       "orfaos_trinks": [
-        {
-          "data": "2026-08-29",
-          "valor": 228.0,
-          "cliente": "Biankarine Silva"
-        },
         {
           "data": "2026-09-04",
           "valor": 79.0,
           "cliente": "Carilone Da Silvia Moreira "
+        }
+      ],
+      "orfaos_trinks_reconciliados_n": 1,
+      "orfaos_trinks_reconciliados_v": 228.0,
+      "orfaos_trinks_reconciliados": [
+        {
+          "data": "2026-08-29",
+          "valor": 228.0,
+          "cliente": "Biankarine Silva",
+          "motivo": "PIX feito para conta XP (não passou pelo Stone)",
+          "confirmado_em": "2026-09-04"
         }
       ],
       "a_receber_d30": 21424.64,
@@ -1236,7 +1242,7 @@
           "cliente": "Carilone Da Silvia Moreira "
         }
       ],
-      "horas_desatualizado": 0.1
+      "horas_desatualizado": 0.3
     }
   },
   "auditoria_cancelados": {
@@ -5915,9 +5921,9 @@
           "FAST ESCOVA - LISA",
           "MÃOS",
           "FAST HIDRATAÇÃO - FAST MASK",
-          "PÉS E MÃOS",
           "PÉS",
-          "FAST ESCOVA - MODELADA"
+          "FAST ESCOVA - MODELADA",
+          "PÉS E MÃOS"
         ],
         "n_clientes_com_oportunidade": 187,
         "top": [
@@ -5939,7 +5945,7 @@
             "ltv": 1695.0,
             "ja_faz": [
               "MÃOS",
-              "FAST ESCOVA - MODELADA"
+              "PÉS"
             ],
             "recomendar": [
               "FAST ESCOVA - LISA",
@@ -5968,7 +5974,7 @@
             "recomendar": [
               "FAST ESCOVA - LISA",
               "MÃOS",
-              "PÉS E MÃOS"
+              "PÉS"
             ]
           },
           {
@@ -5981,7 +5987,7 @@
             ],
             "recomendar": [
               "MÃOS",
-              "FAST ESCOVA - MODELADA",
+              "PÉS",
               "PÉS E MÃOS"
             ]
           },
@@ -5994,8 +6000,8 @@
               "MÃOS"
             ],
             "recomendar": [
-              "PÉS E MÃOS",
-              "PÉS"
+              "PÉS",
+              "PÉS E MÃOS"
             ]
           },
           {
@@ -6022,7 +6028,7 @@
             "recomendar": [
               "FAST ESCOVA - LISA",
               "MÃOS",
-              "PÉS E MÃOS"
+              "PÉS"
             ]
           },
           {
@@ -6047,9 +6053,9 @@
               "MÃOS"
             ],
             "recomendar": [
-              "FAST ESCOVA - MODELADA",
+              "PÉS",
               "PÉS E MÃOS",
-              "PÉS"
+              "FAST ESCOVA - MODELADA"
             ]
           },
           {
@@ -6062,8 +6068,8 @@
             ],
             "recomendar": [
               "MÃOS",
-              "FAST ESCOVA - MODELADA",
-              "PÉS"
+              "PÉS",
+              "FAST ESCOVA - MODELADA"
             ]
           },
           {
@@ -6090,7 +6096,7 @@
             "recomendar": [
               "FAST ESCOVA - LISA",
               "FAST HIDRATAÇÃO - FAST MASK",
-              "PÉS E MÃOS"
+              "PÉS"
             ]
           },
           {
@@ -6129,8 +6135,8 @@
               "MÃOS"
             ],
             "recomendar": [
-              "FAST ESCOVA - MODELADA",
-              "PÉS"
+              "PÉS",
+              "FAST ESCOVA - MODELADA"
             ]
           },
           {
@@ -6144,7 +6150,7 @@
             "recomendar": [
               "FAST ESCOVA - LISA",
               "FAST HIDRATAÇÃO - FAST MASK",
-              "PÉS E MÃOS"
+              "PÉS"
             ]
           },
           {
@@ -8411,24 +8417,24 @@
         "horas_operacao_periodo": 12.0,
         "utilizacao_agregada_pct": 4.9,
         "caixa_delta_pct": 16.8,
-        "atend_delta_pct": -31.8,
-        "cliente_dia_delta_pct": -28.6,
+        "atend_delta_pct": -34.8,
+        "cliente_dia_delta_pct": -33.3,
         "caixa_delta_perdia_pct": 16.8,
-        "atend_delta_perdia_pct": -31.8,
-        "cliente_dia_delta_perdia_pct": -28.6,
+        "atend_delta_perdia_pct": -34.8,
+        "cliente_dia_delta_perdia_pct": -33.3,
         "dias_com_movimento": {
           "atual": 1,
           "anterior": 1
         },
-        "ticket_delta_pct": 63.5,
+        "ticket_delta_pct": 75.2,
         "caixa_delta_bruto_pct": 16.8,
         "periodo_ant_ref": {
           "data": "2026-08-28",
-          "hora_max": 17.15,
+          "hora_max": 17.27,
           "caixa": 887.0,
-          "atend_fin": 22,
-          "cliente_dia": 14,
-          "ticket_medio": 63.36,
+          "atend_fin": 23,
+          "cliente_dia": 15,
+          "ticket_medio": 59.13,
           "dias_op": 1
         },
         "base_comparacao": {
@@ -8446,15 +8452,15 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "17:09",
-          "hora_atual_num": 17.15,
-          "pct_esperado_agora": 53.3,
+          "hora_atual_str": "17:16",
+          "hora_atual_num": 17.27,
+          "pct_esperado_agora": 54.6,
           "meta_dia": 2148.87,
-          "meta_esperada_agora": 1144.38,
+          "meta_esperada_agora": 1173.71,
           "realizado_agora": 1036.0,
-          "pace_delta": -108.38,
-          "pace_ratio_pct": 90.5,
-          "projecao_dia": 1945.36,
+          "pace_delta": -137.71,
+          "pace_ratio_pct": 88.3,
+          "projecao_dia": 1896.74,
           "opera_hoje": true
         },
         "ticket_meta": 0.0,
@@ -9023,8 +9029,8 @@
     "stone": [
       {
         "tipo": "critico",
-        "titulo": "2 PIX registrado no Trinks mas SEM confirmação Stone",
-        "texto": "Total R$ 307,00. O sistema marca como recebido, mas o dinheiro NÃO caiu na conta.",
+        "titulo": "1 PIX registrado no Trinks mas SEM confirmação Stone",
+        "texto": "Total R$ 79,00. O sistema marca como recebido, mas o dinheiro NÃO caiu na conta.",
         "acao": "Verificar comprovante com o cliente hoje. Se não confirmar, corrigir Trinks pra não inflar caixa fantasma."
       },
       {
