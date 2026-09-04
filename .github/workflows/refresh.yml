@@ -34,9 +34,12 @@ name: Refresh Dashboard Data
 on:
   workflow_dispatch:
   schedule:
-    - cron: '7 14-23,0 * * *'
-    - cron: '27 14-23,0 * * *'
-    - cron: '47 14-23,0 * * *'
+    # 5 slots/dia cobrindo horário comercial · 2 fires defasados por slot
+    # (redundância pro GH pular às vezes) · early-exit resolve a duplicação.
+    # Slots em BRT: 11h · 14h · 17h · 20h · 22h
+    # Meta: ~5 execuções REAIS/dia (vs ~8 antes) → economia ~40%
+    - cron: '7 14,17,20,23,1 * * *'
+    - cron: '37 14,17,20,23,1 * * *'
 
 permissions:
   contents: write

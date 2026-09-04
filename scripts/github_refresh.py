@@ -789,9 +789,34 @@ def main():
     agend.extend(agend_mes)
     print(f"[fetch] agendamentos merged: {len(agend)} total")
 
-    print("[fetch] transacoes ano...")
-    transac = list(t.paginate("/v1/transacoes", {"dataInicio": ini_ano.isoformat(), "dataFim": fim_ano.isoformat()}))
-    print(f"  {len(transac)} transações")
+    # === TRANSAÇÕES · mesma estratégia dos agendamentos ===
+    TRANSAC_ANO_CACHE = REPO_ROOT / "data" / "transacoes_ano_cache.json"
+    cache_tx_existe = TRANSAC_ANO_CACHE.exists()
+    if eh_domingo or not cache_tx_existe:
+        motivo = "domingo · refresh semanal" if eh_domingo else "cache miss"
+        print(f"[fetch] transacoes ANO ({motivo})...")
+        transac_ano = list(t.paginate("/v1/transacoes", {"dataInicio": ini_ano.isoformat(), "dataFim": fim_ano.isoformat()}))
+        TRANSAC_ANO_CACHE.write_text(json.dumps({
+            "gerado_em": datetime.now(BRT).isoformat(timespec="seconds"),
+            "payload": transac_ano,
+        }, ensure_ascii=False), encoding="utf-8")
+        print(f"  {len(transac_ano)} transações · cache atualizado")
+    else:
+        cache_tx = json.loads(TRANSAC_ANO_CACHE.read_text(encoding="utf-8"))
+        transac_ano = cache_tx.get("payload") or []
+        cache_ger = cache_tx.get("gerado_em", "?")[:10]
+        print(f"[fetch] transacoes ANO (cache local · último domingo {cache_ger})")
+
+    print("[fetch] transacoes MÊS corrente (fresh)...")
+    transac_mes = list(t.paginate("/v1/transacoes", {"dataInicio": ini_mes.isoformat(), "dataFim": fim_mes.isoformat()}))
+    print(f"  {len(transac_mes)} transações do mês")
+
+    # Merge: cache ano SEM mês corrente + mês corrente fresh
+    transac = [x for x in transac_ano
+               if x.get("dataHora")
+               and not (ini_mes_iso <= x["dataHora"][:10] <= fim_mes_iso)]
+    transac.extend(transac_mes)
+    print(f"[fetch] transacoes merged: {len(transac)} total")
 
     # === CLIENTES LISTA · cache 12h (base muda pouco durante o dia) ===
     if _cache_valido(CLIENTES_LISTA_CACHE, TTL_CLI_LISTA_HORAS):
