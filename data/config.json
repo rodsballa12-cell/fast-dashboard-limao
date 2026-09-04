@@ -16,6 +16,18 @@
     "resgate": "imediato",
     "ultima_conferencia_app": "2026-08-23"
   },
+  "reconciliacoes_manuais": {
+    "_desc": "Vendas do Trinks que apareceriam como 'órfão' (sem match Stone) mas foram conciliadas manualmente. Match por (data, valor, cliente parcial). Motivo fica registrado pra auditoria.",
+    "itens": [
+      {
+        "data": "2026-08-29",
+        "valor": 228.00,
+        "cliente_contem": "Biankarine",
+        "motivo": "PIX feito para conta XP (não passou pelo Stone)",
+        "confirmado_em": "2026-09-04"
+      }
+    ]
+  },
   "metas_franqueadora": {
     "_desc": "Metas mensais oficiais fornecidas pela franqueadora, POR RECEPCIONISTA. Multiplicadas por `recepcionistas` pra chegar no total da loja. Resto (META_MENSAL - subtotal) vira 'servicos_gerais'.",
     "recepcionistas": 2,

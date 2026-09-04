@@ -298,8 +298,39 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     total_recebido_cart = sum(x["valor"] for x in cart_stone_periodo)
     a_receber_total = max(0, total_vendido_cart * 0.965 - total_recebido_cart)
 
+    # === RECONCILIAÇÕES MANUAIS: filtra órfãos Trinks confirmados fora do Stone ===
+    # (ex: PIX que foi feito direto pra conta XP, não passou pelo Stone).
+    # Lista vem de data/config.json > reconciliacoes_manuais.itens.
+    import json as _json, os as _os
+    reconc_manuais = []
+    try:
+        cfg_path = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "data", "config.json")
+        _cfg = _json.loads(open(cfg_path, encoding="utf-8").read())
+        reconc_manuais = (_cfg.get("reconciliacoes_manuais") or {}).get("itens") or []
+    except Exception:
+        reconc_manuais = []
+
+    def _bate_reconc(orf, reconc):
+        try:
+            if orf.get("data") != reconc.get("data"): return False
+            if abs(float(orf.get("valor", 0)) - float(reconc.get("valor", 0))) > 0.01: return False
+            token = (reconc.get("cliente_contem") or "").lower().strip()
+            if token and token not in (orf.get("cliente") or "").lower(): return False
+            return True
+        except Exception:
+            return False
+
+    orf_t_reconciliados = []
+    orf_t_pendentes = []
+    for orf in orf_t_all:
+        marcado = next((r for r in reconc_manuais if _bate_reconc(orf, r)), None)
+        if marcado:
+            orf_t_reconciliados.append({**orf, "motivo": marcado.get("motivo", ""), "confirmado_em": marcado.get("confirmado_em")})
+        else:
+            orf_t_pendentes.append(orf)
+
     valor_orf_stone = sum(o["valor"] for o in orf_s_all)
-    valor_orf_trinks = sum(o["valor"] for o in orf_t_all)
+    valor_orf_trinks = sum(o["valor"] for o in orf_t_pendentes)  # só pendentes contam como risco
     total_risco = valor_orf_stone + valor_orf_trinks + a_receber_total
 
     nao_conciliado = {
@@ -307,9 +338,12 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         "orfaos_stone_n": len(orf_s_all),
         "orfaos_stone_v": _r(valor_orf_stone),
         "orfaos_stone": orf_s_all[:50],
-        "orfaos_trinks_n": len(orf_t_all),
+        "orfaos_trinks_n": len(orf_t_pendentes),
         "orfaos_trinks_v": _r(valor_orf_trinks),
-        "orfaos_trinks": orf_t_all[:50],
+        "orfaos_trinks": orf_t_pendentes[:50],
+        "orfaos_trinks_reconciliados_n": len(orf_t_reconciliados),
+        "orfaos_trinks_reconciliados_v": _r(sum(o["valor"] for o in orf_t_reconciliados)),
+        "orfaos_trinks_reconciliados": orf_t_reconciliados[:50],
         "a_receber_d30": _r(a_receber_total),
         "matches_consolidados": len(matches_all),
     }
