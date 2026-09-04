@@ -10,7 +10,11 @@ permissions:
 
 jobs:
   dispatch:
+    # DESATIVADO em 04/09/2026: com o campanhas_wa.yml no ar, um comentário
+    # 'approve' num issue antigo dispararia a mesma mensagem duas vezes assim
+    # que os secrets da Meta existirem. A condição abaixo nunca é verdadeira.
     if: |
+      false &&
       contains(github.event.issue.labels.*.name, 'aniversario') &&
       github.event.issue.state == 'open' &&
       (startsWith(github.event.comment.body, 'approve') || startsWith(github.event.comment.body, 'skip'))

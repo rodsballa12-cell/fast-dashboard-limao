@@ -11,7 +11,7 @@
   },
   "reserva_stone": {
     "meta_objetivo": 150000,
-    "rendimento_previsto_30d": 159.20,
+    "rendimento_previsto_30d": 159.2,
     "produto": "CDB Stone 100% CDI",
     "resgate": "imediato",
     "ultima_conferencia_app": "2026-08-23"
@@ -24,7 +24,10 @@
       "fast_retoque": 4200,
       "produtos": 1800
     },
-    "fast_retoque_keywords": ["RETOQUE", "FAST RETOQUE"]
+    "fast_retoque_keywords": [
+      "RETOQUE",
+      "FAST RETOQUE"
+    ]
   },
   "cadeiras": {
     "cabelo": 5,
@@ -44,18 +47,83 @@
   "data_inicio_domingo": "2026-08-30",
   "cadeira_por_servico_keywords": {
     "cabelo": [
-      "ESCOVA", "HIDRATAÇÃO", "HIDRATACAO", "MASK", "RECONSTRUÇÃO", "RECONSTRUCAO",
-      "RETOQUE", "CHAPINHA", "BABYLISS", "NUTRI", "UMECTAÇÃO", "UMECTACAO",
-      "LAVAGEM", "MEGA HAIR", "LED", "PENTEADO", "FRESH MINT", "MODELADA",
-      "ADICIONAL ESCOVA", "TRATAMENTO"
+      "ESCOVA",
+      "HIDRATAÇÃO",
+      "HIDRATACAO",
+      "MASK",
+      "RECONSTRUÇÃO",
+      "RECONSTRUCAO",
+      "RETOQUE",
+      "CHAPINHA",
+      "BABYLISS",
+      "NUTRI",
+      "UMECTAÇÃO",
+      "UMECTACAO",
+      "LAVAGEM",
+      "MEGA HAIR",
+      "LED",
+      "PENTEADO",
+      "FRESH MINT",
+      "MODELADA",
+      "ADICIONAL ESCOVA",
+      "TRATAMENTO"
     ],
     "maquiagem": [
-      "MAKE", "MAQUIAGEM", "SOBRANCELHA", "SOBRANC", "BUÇO", "BUCO",
-      "CILIOS", "CÍLIOS", "CILIO", "EPILAÇÃO", "EPILACAO", "HENNA", "DESIGN"
+      "MAKE",
+      "MAQUIAGEM",
+      "SOBRANCELHA",
+      "SOBRANC",
+      "BUÇO",
+      "BUCO",
+      "CILIOS",
+      "CÍLIOS",
+      "CILIO",
+      "EPILAÇÃO",
+      "EPILACAO",
+      "HENNA",
+      "DESIGN"
     ],
     "unhas": [
-      "MÃOS", "MAOS", "PÉS", "PES", "ESMALTAÇÃO", "ESMALTACAO",
-      "FRANCESINHA", "PLÁSTICA", "PLASTICA", "OZONIOTERAPIA"
+      "MÃOS",
+      "MAOS",
+      "PÉS",
+      "PES",
+      "ESMALTAÇÃO",
+      "ESMALTACAO",
+      "FRANCESINHA",
+      "PLÁSTICA",
+      "PLASTICA",
+      "OZONIOTERAPIA"
     ]
+  },
+  "disparo_wa": {
+    "_desc": "Disparo automático de WhatsApp. 'ativo' é o kill switch: com false a fila é montada vazia e nada sai, mesmo com os secrets da Meta configurados. Ligar só depois de o template ser aprovado pela Meta.",
+    "ativo": false,
+    "teto_diario": 20,
+    "cooldown_global_dias": 14,
+    "janela_envio": {
+      "inicio": 9,
+      "fim": 20
+    },
+    "opt_out": [],
+    "campanhas": {
+      "aniversario": {
+        "ativo": true,
+        "cooldown_dias": 300,
+        "teto_diario": 10,
+        "template": "aniversario_fast_v1",
+        "lingua": "pt_BR"
+      },
+      "reativacao": {
+        "ativo": true,
+        "cooldown_dias": 45,
+        "teto_diario": 5,
+        "min_visitas": 3,
+        "min_dias_sem_vir": 14,
+        "max_dias_sem_vir": 120,
+        "template": "reativacao_fast_v1",
+        "lingua": "pt_BR"
+      }
+    }
   }
 }

@@ -1,10 +1,11 @@
 name: Aniversários — fila diária
 
+# DESATIVADO em 04/09/2026 — substituído por campanhas_wa.yml, que dispara
+# sozinho com travas no código. Este fluxo criava um issue por dia esperando
+# um 'approve' que quase nunca vinha: 9 issues criados, 7 sem resposta.
+# Mantido só com workflow_dispatch para poder ser reativado à mão se preciso.
 on:
   workflow_dispatch:
-  schedule:
-    # 08h BRT (= 11h UTC) — antes de abrir a loja
-    - cron: '0 11 * * *'
 
 permissions:
   contents: write

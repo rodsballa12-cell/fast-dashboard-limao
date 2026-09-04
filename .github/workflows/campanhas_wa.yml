@@ -1,0 +1,68 @@
+name: WhatsApp — disparo automático (aniversário + reativação)
+
+# Substitui o fluxo antigo de aprovação por issue (aniversarios.yml), que entre
+# 24/08 e 04/09 gerou 9 issues e teve 7 sem resposta. As travas que o gate humano
+# deveria dar agora estão no código: kill switch, opt-out, cooldown global e por
+# campanha, teto diário e janela de horário — ver scripts/campanhas_wa.py.
+#
+# Roda em dry-run enquanto META_ACCESS_TOKEN e META_PHONE_NUMBER_ID não
+# existirem nos Secrets, e não envia nada enquanto disparo_wa.ativo for false
+# no data/config.json. Os dois precisam estar prontos para sair mensagem.
+
+on:
+  workflow_dispatch:
+    inputs:
+      forcar_horario:
+        description: 'Ignorar a janela de 9h-20h (só para teste manual)'
+        type: boolean
+        default: false
+  schedule:
+    # 10h BRT (13h UTC) — dentro da janela de envio e depois do refresh do painel,
+    # para a fila ler os aniversariantes e o churn do dia já atualizados.
+    - cron: '0 13 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  # Duas execuções em paralelo poderiam montar a mesma fila e enviar em dobro:
+  # o cooldown só protege depois que o histórico é gravado.
+  group: campanhas-wa
+  cancel-in-progress: false
+
+jobs:
+  disparar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Montar fila do dia
+        run: python scripts/campanhas_wa.py
+
+      - name: Disparar
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_PHONE_NUMBER_ID: ${{ secrets.META_PHONE_NUMBER_ID }}
+          WA_FORCA_HORARIO: ${{ inputs.forcar_horario && '1' || '' }}
+        run: python scripts/wa_dispatch.py
+
+      - name: Commit fila e histórico
+        # O histórico PRECISA voltar para o repo: é ele que alimenta o cooldown.
+        # Sem esse commit, todo dia seria "primeira vez" para todo mundo.
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/wa_fila.json data/wa_historico.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "Nada mudou"
+          else
+            git commit -m "wa: fila e historico $(TZ=America/Sao_Paulo date +'%d/%m %H:%M')"
+            git pull --rebase origin main && git push
+          fi
