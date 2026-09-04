@@ -751,10 +751,44 @@ def main():
             "payload": payload,
         }, ensure_ascii=False), encoding="utf-8")
 
-    # === AGENDAMENTOS · TRANSAÇÕES (sempre fresh · são a fonte primária) ===
-    print("[fetch] agendamentos ano...")
-    agend = list(t.paginate("/v1/agendamentos", {"dataInicio": ini_ano.isoformat(), "dataFim": fim_ano.isoformat()}))
-    print(f"  {len(agend)} agendamentos")
+    # === AGENDAMENTOS ===
+    # Ano inteiro só aos domingos (refresh semanal do histórico). Nos outros
+    # dias, puxa só o MÊS CORRENTE fresh e mescla com o cache do ano.
+    # Economia: 5-7 req/run × 6 dias/semana × 8 runs/dia = ~250 req/semana.
+    # Se cache não existe (primeira execução), força pull do ano.
+    AGEND_ANO_CACHE = REPO_ROOT / "data" / "agendamentos_ano_cache.json"
+    eh_domingo = hoje.weekday() == 6
+    cache_existe = AGEND_ANO_CACHE.exists()
+    if eh_domingo or not cache_existe:
+        motivo = "domingo · refresh semanal" if eh_domingo else "cache miss"
+        print(f"[fetch] agendamentos ANO ({motivo})...")
+        agend_ano = list(t.paginate("/v1/agendamentos", {"dataInicio": ini_ano.isoformat(), "dataFim": fim_ano.isoformat()}))
+        AGEND_ANO_CACHE.write_text(json.dumps({
+            "gerado_em": datetime.now(BRT).isoformat(timespec="seconds"),
+            "payload": agend_ano,
+        }, ensure_ascii=False), encoding="utf-8")
+        print(f"  {len(agend_ano)} agendamentos · cache atualizado")
+    else:
+        cache_data = json.loads(AGEND_ANO_CACHE.read_text(encoding="utf-8"))
+        agend_ano = cache_data.get("payload") or []
+        cache_ger = cache_data.get("gerado_em", "?")[:10]
+        print(f"[fetch] agendamentos ANO (cache local · último domingo {cache_ger})")
+
+    # Sempre puxa o MÊS CORRENTE fresh — cancelamentos, "em atendimento agora",
+    # atendimentos novos entram aqui e sobrescrevem o range mensal do cache.
+    print("[fetch] agendamentos MÊS corrente (fresh)...")
+    agend_mes = list(t.paginate("/v1/agendamentos", {"dataInicio": ini_mes.isoformat(), "dataFim": fim_mes.isoformat()}))
+    print(f"  {len(agend_mes)} agendamentos do mês")
+
+    # Merge: cache ano SEM mês corrente + mês corrente fresh
+    ini_mes_iso = ini_mes.isoformat()
+    fim_mes_iso = fim_mes.isoformat()
+    agend = [a for a in agend_ano
+             if a.get("dataHoraInicio")
+             and not (ini_mes_iso <= a["dataHoraInicio"][:10] <= fim_mes_iso)]
+    agend.extend(agend_mes)
+    print(f"[fetch] agendamentos merged: {len(agend)} total")
+
     print("[fetch] transacoes ano...")
     transac = list(t.paginate("/v1/transacoes", {"dataInicio": ini_ano.isoformat(), "dataFim": fim_ano.isoformat()}))
     print(f"  {len(transac)} transações")

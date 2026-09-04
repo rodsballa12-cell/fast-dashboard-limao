@@ -161,6 +161,7 @@ jobs:
                    data/clientes_lista_cache.json \
                    data/servicos_cache.json \
                    data/agend_detail_cache.json \
+                   data/agendamentos_ano_cache.json \
                    data/quota_status.json; do
             git add "$f" 2>/dev/null || true
           done
