@@ -2701,9 +2701,11 @@ function renderFinanceiro(){
   const nomeDe = (k)=>{ if(!k) return '?'; const p=parseChave(k); return nomeLongo[p.mes-1]; };
   const nomeCurtoDe = (k)=>{ if(!k) return '?'; const p=parseChave(k); return nomeCurto[p.mes-1]; };
 
-  // Mês fechado (retrospectivo): FIN.mes_fechado_chave. Fallback: último mês com receita
+  // DRE detalhada = MÊS CORRENTE (mes_principal_chave — setembro projetado do
+  // Excel). mfKey ainda existe pra card de comparação mês anterior.
   const mfKey = FIN.mes_fechado_chave || Object.keys(mesesMap).filter(k=>(mesesMap[k].receita_bruta||0)>0).sort().pop();
-  const R = (mfKey && mesesMap[mfKey]) || FIN.resultado;  // retrocompat
+  const mpKey = FIN.mes_principal_chave || mfKey;
+  const R = (mpKey && mesesMap[mpKey]) || FIN.resultado;  // agora aponta pro mês corrente
   // preenche campos derivados que a DRE detalhada precisa (equivalentes ao antigo FIN.resultado)
   if(!R.be_modelo_1loja) R.be_modelo_1loja = FIN.resultado?.be_modelo_1loja || 0;
   if(R.mc_real === undefined) R.mc_real = R.margem_contribuicao || 0;
@@ -2819,7 +2821,7 @@ function renderFinanceiro(){
   </div>`;
 
   // KPI grid abaixo do card SETEMBRO = MÊS FECHADO (retrospectivo, Excel)
-  const mfLbl = (nomeCurtoDe(mfKey) || excelMesLabel).toUpperCase();
+  const mfLbl = (nomeCurtoDe(mpKey) || excelMesLabel).toUpperCase();
   document.getElementById('fin-kpis').innerHTML = mesEmCursoCard + '<section class="kpi-grid fin5">'+[
     kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), `Conta corrente da PJ · posição ${baselineFmt}`, null),
     kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), `no fechamento do Excel (${mfLbl})`, null),
@@ -2853,7 +2855,7 @@ function renderFinanceiro(){
   const grupo=(id)=>{ const g=G(id); if(!g.linhas.length) return ''; return `<tr class="dre-g"><td colspan="6">${g.titulo}</td></tr>`+g.linhas.map(lin).join(''); };
 
   const mcR=R.mc_real/Math.max(R.receita_real,1), mcE=R.mc_esp/Math.max(R.receita_real,1);
-  const dreMesNome = nomeDe(mfKey) || 'último mês fechado';
+  const dreMesNome = nomeDe(mpKey) || 'mês corrente';
   h+=`<div class="card"><h2>📊 Resultado de ${dreMesNome} — DRE executiva</h2>
     <div class="cap">Retrospectivo do painel Excel · último mês fechado com dados.<br>
     Comparação <strong>por competência</strong>: o que é do mês entra no mês, tenha saído do caixa ou não.
