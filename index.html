@@ -2691,18 +2691,21 @@ function finPct(v){ return ((v||0)*100).toFixed(1).replace('.',',')+'%'; }
 
 function renderFinanceiro(){
   if(!FIN){ document.getElementById('fin-content').innerHTML='<div class="card"><div class="cap">Dados financeiros ainda não carregados.</div></div>'; return; }
-  const R = comReceita(FIN.resultado, receitaViva());
+  // DRE = AGOSTO FECHADO. NÃO substituir receita por Trinks live — antes fazia
+  // isso e misturava setembro parcial (R\$ 2k, 3 dias) com custos fixos de
+  // agosto (R\$ 60k), produzindo prejuízo aparente absurdo. Agora:
+  // - Bloco AGOSTO: retrospectivo, 100% dado congelado do Excel do Rodrigo
+  // - Bloco SETEMBRO EM CURSO: separado, receita live + projeção linear
+  const R = FIN.resultado;
   const C = FIN.recebimento;
-  const rec = R.receita_real;
-  // comissão e ponto de equilíbrio acompanham a receita viva
+  const rec = R.receita_real;  // receita de agosto (do Excel)
   const comPct = R.grupos[0].linhas[0].real / rec;
   const E = Object.assign({}, FIN.equilibrio, {fatura_hoje: rec, cenarios: [
     {nome:'Com a comissão de hoje', comissao: comPct,
      mc: 1 - comPct - FIN.premissas.insumos - FIN.premissas.simples},
     {nome:'Se a comissão subir para 40%', comissao: 0.40,
      mc: 1 - 0.40 - FIN.premissas.insumos - FIN.premissas.simples}]});
-  const k = Object.assign({}, FIN.kpis, {receita_mes: rec,
-    resultado_mes: R.res_real, resultado_mes_caixa: R.res_caixa});
+  const k = FIN.kpis;
   const atg = k.receita_mes/k.meta_mes;
 
   const beMes = E.custo_fixo_mes / E.cenarios[0].mc;
@@ -2710,12 +2713,47 @@ function renderFinanceiro(){
   const beBar = `<div class="be-bar"><span style="width:${(bePerc*100).toFixed(1)}%"></span></div>`
     + `<div class="be-leg">${finPct(bePerc)} percorrido · equilíbrio em ${brl0(beMes)}/mês</div>`;
 
-  document.getElementById('fin-kpis').innerHTML='<section class="kpi-grid fin5">'+[
-    kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), `Conta corrente da PJ · posição de ${(FIN.baseline||'').split('-').reverse().slice(0,2).join('/')}`, null),
+  // === CARD "MÊS EM CURSO" (setembro) — LIVE do Trinks ===
+  const kmes = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.kpis) || {};
+  const kanoAbas = (TRINKS && TRINKS.abas && TRINKS.abas.anual && TRINKS.abas.anual.meses) || {};
+  const rec_atual = kmes.caixa || 0;
+  const dias_op_atual = kmes.dias_op || 0;
+  const dias_op_mes = TRINKS && TRINKS.dias_op_mes ? TRINKS.dias_op_mes : 26;
+  const proj_mes = dias_op_atual > 0 ? (rec_atual / dias_op_atual) * dias_op_mes : 0;
+  const meta_mes = 60000;
+  const proj_pct = proj_mes / meta_mes * 100;
+  // Agosto pra comparação
+  const rec_ago = (kanoAbas['2026-08'] || {}).caixa || rec;
+  // Custos: variáveis proporcionais à projeção, fixos iguais ao mês anterior (do Excel)
+  const custo_var_proj = proj_mes * (FIN.premissas.comissao + FIN.premissas.insumos + FIN.premissas.simples);
+  const custo_fixo = E.custo_fixo_mes;
+  const res_proj = proj_mes - custo_var_proj - custo_fixo;
+  const hoje = new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',day:'numeric',month:'short'}).format(new Date());
+  const mesNomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const mesAtualIdx = new Date().getMonth();
+  const mesNome = mesNomes[mesAtualIdx];
+
+  const mesEmCursoCard = `<div class="card" style="border-left:3px solid var(--accent);margin-bottom:14px">
+    <h2>🎯 ${mesNome} em curso — leitura ao vivo</h2>
+    <div class="cap">Receita direto do Trinks · projeção linear (ritmo atual × dias operacionais do mês). Custos: variáveis proporcionais, fixos = mesma linha do mês anterior.</div>
+    <div class="kpi-grid fin5" style="margin-top:12px">
+      ${kpiCard('k1','RECEITA ATÉ HOJE', brl0(rec_atual), `${dias_op_atual}d operados · ritmo R\$ ${(rec_atual/Math.max(dias_op_atual,1)).toFixed(0)}/dia`, null)}
+      ${kpiCard('k2',`PROJEÇÃO ${mesNome.toUpperCase()}`, brl0(proj_mes), `Se manter ritmo · ${finPct(proj_pct/100)} da meta 60k`, null)}
+      ${kpiCard('k3','RESULTADO PROJETADO', brl0(res_proj), res_proj >= 0 ? 'lucro na projeção linear' : 'prejuízo na projeção · precisa acelerar', null)}
+      ${kpiCard('k4','AGOSTO FECHADO', brl0(rec_ago), `Meta era 60k · ${finPct(rec_ago/60000)} atingido`, null)}
+      ${kpiCard('k5','Δ RITMO', ((rec_atual/Math.max(dias_op_atual,1))/(rec_ago/27)*100 - 100).toFixed(0)+'%', 'vs média de agosto por dia', null)}
+    </div>
+    <div class="insight" style="margin-top:12px">
+      <strong>Como ler:</strong> a DRE detalhada abaixo é de <strong>agosto fechado</strong> (dado auditado do Excel). Este card é a leitura ao vivo do <strong>mês corrente</strong>, útil pra saber se está indo pra bater a meta antes do fim do mês.
+    </div>
+  </div>`;
+
+  document.getElementById('fin-kpis').innerHTML = mesEmCursoCard + '<section class="kpi-grid fin5">'+[
+    kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), `Conta corrente da PJ · posição de ${(FIN.baseline||'').split('-').reverse().slice(0,2).join('/')} (mês fechado)`, null),
     kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), '⚠️ número da premissa D+30, contrariada pela liquidação diária medida — a revisar com o extrato de 15/08 em diante', null),
-    kpiCard('k3','RESULTADO DO MÊS', brl0(k.resultado_mes), brl0(k.resultado_mes_caixa)+' pelo caixa · a diferença é Simples e royalty provisionados', null),
-    kpiCard('k4','FATURAMENTO × META', finPct(atg), brl0(k.receita_mes)+' de '+brl0(k.meta_mes)+' · faltaram '+brl0(k.meta_mes-k.receita_mes), null),
-    kpiCard('k5 kpi-be','FALTA PARA EMPATAR', brl0(beFalta), beBar, null),
+    kpiCard('k3','RESULTADO AGOSTO', brl0(k.resultado_mes), brl0(k.resultado_mes_caixa)+' pelo caixa · diferença é Simples e royalty provisionados', null),
+    kpiCard('k4','AGOSTO × META', finPct(atg), brl0(k.receita_mes)+' de '+brl0(k.meta_mes)+' · faltaram '+brl0(k.meta_mes-k.receita_mes), null),
+    kpiCard('k5 kpi-be','FALTA PRA EQUILÍBRIO (AGO)', brl0(beFalta), beBar, null),
   ].join('')+'</section>';
 
   let h='';
