@@ -2715,7 +2715,40 @@ function renderFinanceiro(){
   if(R.mc_esp  === undefined) R.mc_esp  = R.margem_contribuicao || 0;
   if(R.res_esp_mesma_receita === undefined) R.res_esp_mesma_receita = R.res_real;
 
-  const C = FIN.recebimento;  // pode estar ausente; guardamos abaixo
+  // FIN.recebimento sumiu do gerador na reescrita que passou a ler todos os meses
+  // do Excel, e com ele sumiram os KPIs de fluxo de caixa — os dois blocos abaixo
+  // são fechados por `if(C ...)`. Em vez de devolver a lista fixa de agosto que
+  // existia antes, o mix é montado do dado vivo: as formas de pagamento do mês no
+  // Trinks, com o prazo MEDIDO no extrato da Stone (dias_medio_recebimento), não
+  // com a premissa de D+30 para todo cartão.
+  const C = FIN.recebimento || (() => {
+    const mp = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.meios_pagamento) || [];
+    const total = mp.reduce((a,m)=>a+(m.v||0), 0);
+    if(!total) return null;
+    const st = ((TRINKS.stone||{}).antecipacao_analise) || {};
+    const dDeb = (st.debito && st.debito.dias_medio_recebimento) != null ? st.debito.dias_medio_recebimento : 1;
+    const dCre = (st.credito && st.credito.dias_medio_recebimento) != null ? st.credito.dias_medio_recebimento : 30;
+    // Maestro, Electron e Redeshop são bandeiras de DÉBITO — caem junto com o PIX,
+    // não em D+30. Tratá-las como crédito inflava o ciclo em vários dias.
+    const classifica = nome => {
+      const n = (nome||'').toLowerCase();
+      if(/pix|dinheiro|esp[ée]cie/.test(n))                       return {dias:0,    grupo:'à vista'};
+      if(/d[ée]bito|maestro|electron|redeshop/.test(n))           return {dias:dDeb, grupo:'débito'};
+      return {dias:dCre, grupo:'crédito'};
+    };
+    const ev = {'à vista':'cai na conta no mesmo dia',
+                'débito':`liquidação medida no extrato da Stone: D+${dDeb}`,
+                'crédito':`liquidação medida no extrato da Stone: D+${dCre}, sem antecipação`};
+    const linhas = mp.map(m=>{ const c = classifica(m.nome);
+        return {forma:m.nome, valor:m.v, pct:(m.v||0)/total, dias:c.dias, grupo:c.grupo,
+                prazo: c.dias === 0 ? 'mesmo dia' : `D+${c.dias}`, evidencia: ev[c.grupo]}; })
+      .sort((a,b)=>b.valor-a.valor);
+    const cred = linhas.filter(l=>l.grupo==='crédito').reduce((a,l)=>a+l.pct,0);
+    return {linhas, total_formas: total,
+      medido_ate: (TRINKS.stone||{}).periodo_fim || null,
+      prova: `Mix do mês no Trinks cruzado com o extrato da Stone. ${finPct(cred)} da receita é crédito e demora D+${dCre}; o resto cai em até ${dDeb} dia. Todas as vendas são 1x — não há parcelamento diluindo caixa.`,
+      ressalva: 'As formas vêm do Trinks (o que foi vendido) e os prazos do extrato da Stone (quando liquidou). Se aparecer venda fora do Trinks, ela não está neste mix.'};
+  })();
   const rec = R.receita_real;  // receita do mês fechado
   const comPct = R.grupos[0].linhas[0].real / Math.max(rec, 1);
   const E = Object.assign({}, FIN.equilibrio, {fatura_hoje: rec, cenarios: [
@@ -2961,8 +2994,14 @@ function renderFinanceiro(){
     const ritmoDia    = REC_REAL / Math.max(DIAS_OP, 1);
     const beMesFC     = E.custo_fixo_mes / Math.max(E.cenarios[0].mc, 0.01);
     const precisaDia  = beMesFC / Math.max(DIAS_MES, 1);
-    // Ciclo de recebimento: FAST não parcela, Stone liquida D+1 → default 1.0 dia
-    const ciclo       = (FIN.recebimento && FIN.recebimento.ciclo_medio) || 1.0;
+    // Ciclo de recebimento: média ponderada dos dias de liquidação de cada forma.
+    // O default de 1 dia valia enquanto se supunha tudo em débito, mas o extrato
+    // da Stone mede crédito em D+30 e crédito é ~42% do mix — a 1 dia o giro
+    // dava ~R$ 1,2 mil contra os R$ 20,7 mil que a Stone mostra a receber.
+    const ciclo = (C && C.linhas && C.linhas.length)
+      ? C.linhas.reduce((a,l)=>a + l.pct * (l.dias != null ? l.dias : 1), 0)
+      : ((FIN.recebimento && FIN.recebimento.ciclo_medio) || 1.0);
+    const pctCredito = (C && C.linhas) ? C.linhas.filter(l=>l.grupo==='crédito').reduce((a,l)=>a+l.pct,0) : 0;
     const giro        = ritmoDia * ciclo;
     const autonomia   = queima < 0 ? k.caixa_conta / Math.max(queimaDia, 1) : null;
     const proj_saidas = VAR_ESP + FIXO_ESP - (R.provisoes_nao_debitadas || 0);
@@ -2973,7 +3012,7 @@ function renderFinanceiro(){
       <div class="dre-ind">
         <div class="${queima<0?'neg':''}"><span class="il">QUEIMA DO MÊS ATÉ HOJE</span><span class="iv">${brl0(queima)}</span><span class="ic">${brl0(-queimaDia)} por dia operado</span></div>
         <div><span class="il">ENTRA POR DIA</span><span class="iv">${brl0(ritmoDia)}</span><span class="ic">precisaria ${brl0(precisaDia)}/dia pra empatar — falta ${brl0(Math.max(precisaDia-ritmoDia,0))}</span></div>
-        <div><span class="il">CICLO DE RECEBIMENTO</span><span class="iv">${ciclo.toFixed(1).replace('.',',')} dia</span><span class="ic">Stone liquida D+1 · giro necessário ${brl0(giro)}</span></div>
+        <div><span class="il">CICLO DE RECEBIMENTO</span><span class="iv">${ciclo.toFixed(1).replace('.',',')} dias</span><span class="ic">${pctCredito>0.05?`${finPct(pctCredito)} da receita é crédito e segura o caixa`:'Stone liquida D+1'} · ${brl0(giro)} presos em trânsito${k.a_receber_stone?` · Stone mostra ${brl0(k.a_receber_stone)} a receber`:''}</span></div>
         <div class="${autonomia!==null && autonomia<30?'neg':''}"><span class="il">AUTONOMIA DA CONTA</span><span class="iv">${autonomia===null?'—':Math.round(autonomia)+' dias'}</span><span class="ic">${brl0(k.caixa_conta)} na conta ÷ queima diária · reserva Stone à parte</span></div>
       </div>
 
@@ -3006,7 +3045,7 @@ function renderFinanceiro(){
 
       <div class="dre-alerta">⚠️ <strong>A receita não passa pela conta da PJ direto.</strong> Cai na Stone e fica na Reserva CDB — a conta corrente é abastecida por transferências. Por isso a autonomia acima mede só o que está na corrente, não o negócio inteiro (Stone a receber = ${brl0(k.a_receber_stone)}).</div>
 
-      <div class="fin-fonte">Ciclo padrão de 1 dia (Stone D+1 · FAST não parcela). Prorata: variáveis a ${(RATIO_REC*100).toFixed(0)}% da receita realizada; fixos a ${(RATIO_DIA*100).toFixed(0)}% (${DIAS_OP}/${DIAS_MES} dias operados).</div></div>`;
+      <div class="fin-fonte">${(C && C.linhas && C.linhas.length) ? `Ciclo de ${ciclo.toFixed(1).replace('.',',')} dias — média ponderada das formas do mês no Trinks com o prazo medido no extrato da Stone: ${C.linhas.map(l=>l.forma+' '+finPct(l.pct)+' em '+l.prazo).join(' · ')}. Nenhuma venda é parcelada.` : 'Ciclo padrão de 1 dia (Stone D+1 · FAST não parcela).'} Prorata: variáveis a ${(RATIO_REC*100).toFixed(0)}% da receita realizada; fixos a ${(RATIO_DIA*100).toFixed(0)}% (${DIAS_OP}/${DIAS_MES} dias operados).</div></div>`;
   }
 
   // ---- ponto de equilibrio, simplificado ----
@@ -3030,7 +3069,7 @@ function renderFinanceiro(){
       <div class="cap">Medido no extrato da Stone${C.medido_ate ? ` até ${new Date(C.medido_ate+'T12:00:00').toLocaleDateString('pt-BR')}` : ''}</div>
       <table class="simple"><thead><tr><th>Forma de recebimento</th><th>Valor</th><th>% do total</th><th>Cai quando</th><th>Evidência</th></tr></thead><tbody>
       ${C.linhas.map(l=>`<tr><td>${l.forma}</td><td>${brl(l.valor)}</td><td>${finPct(l.pct)}</td><td><strong>${l.prazo}</strong></td><td style="text-align:left;font-size:11.5px;color:var(--ink-2)">${l.evidencia||''}</td></tr>`).join('')}
-      <tr><td><strong>Total das formas medidas</strong></td><td><strong>${brl(C.total_formas)}</strong></td><td><strong>100,0%</strong></td><td colspan="2" style="text-align:left;font-size:11.5px;color:var(--ink-3)">contra ${brl(rec)} de receita — diferença de ${brl(C.total_formas-rec)}, a conferir na extração completa</td></tr>
+      <tr><td><strong>Total das formas medidas</strong></td><td><strong>${brl(C.total_formas)}</strong></td><td><strong>100,0%</strong></td><td colspan="2" style="text-align:left;font-size:11.5px;color:var(--ink-3)">${FIN.recebimento ? `contra ${brl(rec)} de receita — diferença de ${brl(C.total_formas-rec)}, a conferir na extração completa` : `bate com a coluna <strong>Realizado</strong> do fluxo de caixa: é o mesmo caixa do mês até agora no Trinks. A coluna Projetado (${brl(rec)}) é o mês inteiro no Excel.`}</td></tr>
       </tbody></table>
       ${C.prova ? `<div class="insight-card" style="margin-top:12px">${C.prova}</div>` : ''}
       ${C.ressalva ? `<div class="fin-fonte">⚠️ ${C.ressalva}</div>` : ''}</div>`;
