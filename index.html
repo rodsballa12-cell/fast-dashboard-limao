@@ -2819,18 +2819,29 @@ function renderFinanceiro(){
       ${kpiCard('k5','Δ RITMO/DIA', delta_ritmo+'%', `vs média ${mesAntNome}`, null)}
     </div>
     <div class="insight" style="margin-top:12px">
-      <strong>Como ler:</strong> receita ao vivo do Trinks · projetado vem do Excel (${excelDoMesCorrente ? 'atualizado' : 'do mês anterior — atualize'}) · DRE detalhada abaixo é sempre do último mês fechado auditado no Excel.
+      <strong>Como ler:</strong> receita ao vivo do Trinks · projetado vem do Excel · DRE detalhada abaixo compara <em>Realizado (Trinks)</em> vs <em>Projetado (Excel)</em>.
     </div>
   </div>`;
 
-  // KPI grid abaixo do card SETEMBRO = MÊS FECHADO (retrospectivo, Excel)
-  const mfLbl = (nomeCurtoDe(mpKey) || excelMesLabel).toUpperCase();
+  // KPI grid abaixo = REALIZADO até hoje (Trinks live + custos prorateados)
+  const mpLbl = (nomeCurtoDe(mpKey) || excelMesLabel).toUpperCase();
+  const ratio_rec_kpi = proj_final > 0 ? rec_atual / proj_final : 0;
+  const ratio_dia_kpi = dias_op_mes > 0 ? dias_op_atual / dias_op_mes : 0;
+  const var_real_kpi  = custo_var_proj * ratio_rec_kpi;
+  const fixo_real_kpi = custo_fixo * ratio_dia_kpi;
+  const res_real_kpi  = rec_atual - var_real_kpi - fixo_real_kpi;
+  const atg_real_kpi  = rec_atual / 60000;
+  const falta_fechar  = Math.max(proj_final - rec_atual, 0);
+  const bePercReal    = Math.max(0, Math.min(1, rec_atual / beMes));
+  const beBarReal     = `<div class="be-bar"><span style="width:${(bePercReal*100).toFixed(1)}%"></span></div>`
+    + `<div class="be-leg">${finPct(bePercReal)} percorrido · equilíbrio em ${brl0(beMes)}/mês</div>`;
+
   document.getElementById('fin-kpis').innerHTML = mesEmCursoCard + '<section class="kpi-grid fin5">'+[
     kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), `Conta corrente da PJ · posição ${baselineFmt}`, null),
-    kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), `no fechamento do Excel (${mfLbl})`, null),
-    kpiCard('k3',`RESULTADO ${mfLbl}`, brl0(k.resultado_mes), brl0(k.resultado_mes_caixa)+' pelo caixa · diferença = Simples e royalty provisionados', null),
-    kpiCard('k4',`${mfLbl} × META`, finPct(atg), brl0(k.receita_mes)+' de '+brl0(k.meta_mes)+' · faltaram '+brl0(k.meta_mes-k.receita_mes), null),
-    kpiCard('k5 kpi-be',`FALTA PRA EQUILÍBRIO (${mfLbl})`, brl0(beFalta), beBar, null),
+    kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), `snapshot no Excel · atualiza a cada 15 dias`, null),
+    kpiCard('k3',`RESULTADO REALIZADO ${mpLbl}`, brl0(res_real_kpi), `custos prorateados: variáveis a ${(ratio_rec_kpi*100).toFixed(0)}% da receita, fixos a ${(ratio_dia_kpi*100).toFixed(0)}% dos dias`, null),
+    kpiCard('k4',`${mpLbl} × META (real)`, finPct(atg_real_kpi), brl0(rec_atual)+' de R$ 60.000 · faltam '+brl0(60000-rec_atual)+' pra meta', null),
+    kpiCard('k5 kpi-be',`FALTA PRA EQUILÍBRIO (${mpLbl})`, brl0(Math.max(beMes-rec_atual,0)), beBarReal, null),
   ].join('')+'</section>';
 
   let h='';
