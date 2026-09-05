@@ -3165,6 +3165,11 @@ function renderMidias(){
   const freqColor = v => v < 2 ? '#22c55e' : v < 2.7 ? '#3b82f6' : v < 3 ? '#f59e0b' : '#ef4444';
 
   const nfmt = n => (n||0).toLocaleString('pt-BR');
+  // A Meta às vezes devolve alcance como 'não calculável' (não dá para
+  // deduplicar naquele agrupamento). Não é erro nosso e não pode derrubar a
+  // tabela: vira travessão. Vale para reach, frequency e qualquer numérico.
+  const nOpt = (v, casas) => (v == null || !isFinite(v)) ? '—'
+    : (casas != null ? v.toFixed(casas).replace('.', ',') : v.toLocaleString('pt-BR'));
   const kpiCell = (label, value, foot, color) => `<div><div style="color:var(--ink-3);font-size:10.5px">${label}</div><div style="font-weight:700;font-size:15px${color?';color:'+color:''}">${value}</div><div style="color:var(--ink-3);font-size:10px">${foot||''}</div></div>`;
 
   const periodoBlock = (p, kpi_estrela) => {
@@ -3244,6 +3249,24 @@ function renderMidias(){
   const pSel = pMap[per] || pmtd;
   const diasDe = p => Math.round((new Date(p.fim) - new Date(p.inicio))/86400000) + 1;
   const serieDia = M.serie_diaria_30d || [];
+
+  // ── Recorte por período das quebras ────────────────────────────────────────
+  // O JSON trazia só o corte de 30 dias e TODOS os blocos abaixo o exibiam sob
+  // qualquer aba: "Semana" mostrava anúncio, ad set, demografia e posicionamento
+  // de 30 dias. Agora cada bloco pede a quebra da janela; quando ela ainda não
+  // foi coletada, o corte de 30d aparece com selo dizendo isso, em vez de passar
+  // por dado da semana.
+  const BRK = M.breakdowns || {};
+  const quebra = nome => {
+    const doPer = (BRK[per] || {})[nome];
+    if(doPer && doPer.length) return {dados: doPer, proprio: true};
+    return {dados: M[nome + '_30d'] || [], proprio: false};
+  };
+  const seloJanela = q => q.proprio ? '' :
+    `<span title="Esta janela ainda não tem quebra própria coletada — o número exibido é o dos últimos 30 dias." style="margin-left:8px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;background:rgba(245,158,11,.15);color:#f59e0b;vertical-align:middle">recorte de 30d</span>`;
+  const janelaTxt = q => q.proprio ? pSel.label.toLowerCase() : 'últimos 30 dias';
+  // Soma de uma série diária dentro da janela escolhida.
+  const fatia = (arr, campoData='data') => (arr||[]).filter(x => x[campoData] >= pSel.inicio && x[campoData] <= pSel.fim);
 
   // Interpolação linear sobre uma lista de âncoras [x, y]
   const interp = (pts, x) => {
@@ -3457,9 +3480,10 @@ function renderMidias(){
     </div>
   </section>`;
 
-  // Breakdown por objetivo (30d)
-  const obj = M.por_objetivo_30d || [];
-  document.getElementById('midias-campanhas').innerHTML = `<section class="card"><h2>🎯 Alocação de orçamento por objetivo · 30d</h2>
+  // Breakdown por objetivo — segue a janela quando existe quebra dela
+  const qObj = quebra('por_objetivo'), obj = qObj.dados;
+  const qAds = quebra('anuncios'), qSets = quebra('ad_sets'), qCamp = quebra('top_campanhas');
+  document.getElementById('midias-campanhas').innerHTML = `<section class="card"><h2>🎯 Alocação de orçamento por objetivo · ${janelaTxt(qObj)}${seloJanela(qObj)}</h2>
     <div class="cap">Onde o dinheiro está indo. Cada objetivo tem KPI diferente.</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px">
       ${obj.map(o=>`<div style="background:var(--surface-2);border-radius:8px;padding:14px">
@@ -3470,10 +3494,10 @@ function renderMidias(){
       </div>`).join('')}
     </div>
 
-    ${M.anuncios_30d ? `<h2 style="margin-top:22px">🎨 Anúncios individuais · 30d (por CPA MSG)</h2>
+    ${qAds.dados.length ? `<h2 style="margin-top:22px">🎨 Anúncios individuais · ${janelaTxt(qAds)} (por CPA MSG)${seloJanela(qAds)}</h2>
     <div class="cap">Cada criativo com preview visual e métricas. Ordenados do melhor CPA (mais eficiente) pro pior.</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:12px">
-      ${M.anuncios_30d.slice().sort((a,b)=>{
+      ${qAds.dados.slice().sort((a,b)=>{
         if(a.cpa_msg==null && b.cpa_msg==null) return b.gasto-a.gasto;
         if(a.cpa_msg==null) return 1;
         if(b.cpa_msg==null) return -1;
@@ -3491,15 +3515,15 @@ function renderMidias(){
             <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:11px">
               <div><span style="color:var(--ink-3)">Gasto</span> <strong>${brl(a.gasto)}</strong></div>
               <div><span style="color:var(--ink-3)">CPA MSG</span> <strong style="color:${cpaColor(a.cpa_msg)}">${a.cpa_msg?brl(a.cpa_msg):'—'}</strong></div>
-              <div><span style="color:var(--ink-3)">CTR</span> <strong>${a.ctr_pct.toFixed(2)}%</strong></div>
-              <div><span style="color:var(--ink-3)">Freq</span> <strong style="color:${freqColor(a.frequency)}">${a.frequency.toFixed(1)}</strong></div>
+              <div><span style="color:var(--ink-3)">CTR</span> <strong>${nOpt(a.ctr_pct,2)}%</strong></div>
+              <div><span style="color:var(--ink-3)">Freq</span> <strong style="color:${a.frequency!=null?freqColor(a.frequency):'var(--ink-3)'}">${nOpt(a.frequency,1)}</strong></div>
             </div>
           </div>
         </div>`;
       }).join('')}
     </div>` : ''}
 
-    ${M.ad_sets_30d ? `<h2 style="margin-top:22px">🎯 Ad Sets · segmentação real (público) · 30d</h2>
+    ${qSets.dados.length ? `<h2 style="margin-top:22px">🎯 Ad Sets · segmentação real (público) · ${janelaTxt(qSets)}${seloJanela(qSets)}</h2>
     <div class="cap">${M.descoberta_ad_sets || 'Ad sets = agrupamento por público. Uma campanha pode ter 1+ ad sets diferentes.'}</div>
     <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
       <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
@@ -3511,7 +3535,7 @@ function renderMidias(){
         <th style="text-align:right;padding:8px">CPA MSG</th>
         <th style="text-align:left;padding:8px">Insight</th>
       </tr></thead>
-      <tbody>${M.ad_sets_30d.slice().sort((a,b)=>{
+      <tbody>${qSets.dados.slice().sort((a,b)=>{
         if(a.cpa_msg==null && b.cpa_msg==null) return b.gasto-a.gasto;
         if(a.cpa_msg==null) return 1;
         if(b.cpa_msg==null) return -1;
@@ -3519,15 +3543,15 @@ function renderMidias(){
       }).map(a=>`<tr style="border-bottom:1px solid var(--surface-2)">
         <td style="padding:8px"><strong style="font-size:11px">${a.campanha}</strong><br><span style="color:var(--accent);font-size:10.5px;font-weight:500">${a.adset}</span></td>
         <td style="text-align:right;padding:8px">${brl(a.gasto)}</td>
-        <td style="text-align:right;padding:8px">${a.reach.toLocaleString('pt-BR')}</td>
+        <td style="text-align:right;padding:8px">${nOpt(a.reach)}</td>
         <td style="text-align:right;padding:8px">${a.ctr_pct.toFixed(2)}%</td>
-        <td style="text-align:right;padding:8px;color:${freqColor(a.frequency)}">${a.frequency.toFixed(2)}</td>
+        <td style="text-align:right;padding:8px;color:${a.frequency!=null?freqColor(a.frequency):'var(--ink-3)'}">${nOpt(a.frequency,2)}</td>
         <td style="text-align:right;padding:8px;font-weight:700;color:${cpaColor(a.cpa_msg)}">${a.cpa_msg?brl(a.cpa_msg):'—'}</td>
         <td style="padding:8px;font-size:11px;color:var(--ink-2)">${a.insight||''}</td>
       </tr>`).join('')}
       </tbody></table></div>` : ''}
 
-    <h2 style="margin-top:22px">🏆 Ranking de campanhas · 30d (por CPA MSG)</h2>
+    <h2 style="margin-top:22px">🏆 Ranking de campanhas · ${janelaTxt(qCamp)} (por CPA MSG)${seloJanela(qCamp)}</h2>
     <div class="cap">Ordenadas do melhor CPA (barato) pro pior. Cor da ação = decisão recomendada.</div>
     <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
       <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
@@ -3542,7 +3566,7 @@ function renderMidias(){
         <th style="text-align:center;padding:8px">Ação</th>
       </tr></thead>
       <tbody>
-      ${M.top_campanhas_30d.slice().sort((a,b)=>{
+      ${qCamp.dados.slice().sort((a,b)=>{
         if(a.cpa_msg==null && b.cpa_msg==null) return 0;
         if(a.cpa_msg==null) return 1;
         if(b.cpa_msg==null) return -1;
@@ -3553,8 +3577,8 @@ function renderMidias(){
         return `<tr style="border-bottom:1px solid var(--surface-2)">
         <td style="padding:8px"><strong>${c.nome}</strong><br><span style="color:var(--ink-3);font-size:10.5px">${c.objetivo}</span></td>
         <td style="text-align:right;padding:8px">${brl(c.gasto)}</td>
-        <td style="text-align:right;padding:8px">${c.reach.toLocaleString('pt-BR')}</td>
-        <td style="text-align:right;padding:8px;color:${freqColor(c.frequency)}">${c.frequency.toFixed(2)}</td>
+        <td style="text-align:right;padding:8px">${nOpt(c.reach)}</td>
+        <td style="text-align:right;padding:8px;color:${c.frequency!=null?freqColor(c.frequency):'var(--ink-3)'}">${nOpt(c.frequency,2)}</td>
         <td style="text-align:right;padding:8px">${c.ctr_pct.toFixed(2)}%</td>
         <td style="text-align:right;padding:8px">${brl(c.cpm)}</td>
         <td style="text-align:right;padding:8px">${c.cpc?brl(c.cpc):'—'}</td>
@@ -3571,26 +3595,42 @@ function renderMidias(){
   if(ig && ig.organico_30d){
     const org30 = ig.organico_30d;
     const org7 = ig.organico_7d || {};
-    const posts = (ig.top_posts_30d || []).slice(0, 10);
-    const serie = ig.serie_diaria_30d || [];
+    // A série diária do Instagram é por dia, então dá para somar na janela. Mas
+    // ela termina em D-1: a API só entrega "novos seguidores" dos últimos 30 dias
+    // EXCLUINDO o dia corrente. Numa janela que inclui hoje, o último dia falta.
+    const igSerieToda = ig.serie_diaria_30d || [];
+    const igJanela = fatia(igSerieToda);
+    const serie = igJanela.length ? igJanela : igSerieToda;
+    const igProprio = igJanela.length > 0;
+    const igUlt = igSerieToda.length ? igSerieToda[igSerieToda.length-1].data : null;
+    const igFalta = igProprio && igUlt && pSel.fim > igUlt
+      ? Math.round((new Date(pSel.fim) - new Date(igUlt))/86400000) : 0;
+    const igNovos = igProprio ? serie.reduce((a,d)=>a+(d.novos_seguidores||0),0) : org30.novos_seguidores;
+    const igViews = igProprio ? serie.reduce((a,d)=>a+(d.profile_views||0),0) : org30.profile_views;
+    const igDias = serie.length || 30;
+    const igPostsJan = igProprio ? (ig.top_posts_30d||[]).filter(p=>p.data>=pSel.inicio && p.data<=pSel.fim) : (ig.top_posts_30d||[]);
+    const posts = igPostsJan.slice(0, 10);
+    const igJanTxt = igProprio ? pSel.label.toLowerCase() : 'últimos 30 dias';
     const maxNovos = serie.length ? Math.max(...serie.map(d=>d.novos_seguidores)) : 0;
     igBox.innerHTML = `<section class="card" style="border-left:4px solid #E1306C">
-      <h2>📱 Instagram · @${ig.handle} · orgânico</h2>
-      <div class="cap">Dados de crescimento e engajamento da conta (sem boost). Meta libera daily insights.</div>
+      <h2>📱 Instagram · @${ig.handle} · orgânico · ${igJanTxt}${igProprio?'':seloJanela({proprio:false})}</h2>
+      <div class="cap">Crescimento e engajamento da conta, sem boost. ${igProprio?`${igDias} dia(s) somados da série diária.`:''}
+        ${igFalta?`<span style="color:#f59e0b">A API do Instagram só dá "novos seguidores" até ${fmtDate(igUlt)} (ela exclui o dia corrente), então faltam ${igFalta} dia(s) no fim desta janela.</span>`:''}
+        ${igProprio && igDias < diasDe(pSel) - igFalta ? `<span style="color:#f59e0b">A série do Instagram guarda 30 dias; esta janela pede ${diasDe(pSel)} e o bloco soma os ${igDias} que existem.</span>` : ''}</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
         <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Seguidores atuais</div><div style="font-weight:700;font-size:22px">${nfmt(ig.followers)}</div><div style="color:var(--ink-3);font-size:10.5px">${ig.posts_total} posts</div></div>
-        <div style="background:rgba(225,48,108,.08);border-radius:8px;padding:12px;border-left:3px solid #E1306C"><div style="color:#E1306C;font-size:10.5px;font-weight:700;text-transform:uppercase">⭐ Novos seguidores 30d</div><div style="font-weight:700;font-size:22px">${nfmt(org30.novos_seguidores)}</div><div style="color:var(--ink-3);font-size:10.5px">${org30.novos_seguidores_dia_medio.toFixed(1)}/dia médio</div></div>
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Profile views 30d</div><div style="font-weight:700;font-size:22px">${nfmt(org30.profile_views)}</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(Math.round(org30.profile_views_dia_medio))}/dia médio</div></div>
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Últimos 7 dias</div><div style="font-weight:700;font-size:22px">+${nfmt(org7.novos_seguidores||0)}</div><div style="color:var(--ink-3);font-size:10.5px">seguidores nesta semana</div></div>
+        <div style="background:rgba(225,48,108,.08);border-radius:8px;padding:12px;border-left:3px solid #E1306C"><div style="color:#E1306C;font-size:10.5px;font-weight:700;text-transform:uppercase">⭐ Novos seguidores · ${igJanTxt}</div><div style="font-weight:700;font-size:22px">${nfmt(igNovos)}</div><div style="color:var(--ink-3);font-size:10.5px">${(igNovos/igDias).toFixed(1).replace('.',',')}/dia médio</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Profile views · ${igJanTxt}</div><div style="font-weight:700;font-size:22px">${nfmt(igViews)}</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(Math.round(igViews/igDias))}/dia médio</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Posts publicados</div><div style="font-weight:700;font-size:22px">${nfmt(igPostsJan.length)}</div><div style="color:var(--ink-3);font-size:10.5px">na janela · ${ig.posts_total} no total do perfil</div></div>
       </div>
       ${serie.length?`<div style="margin-top:16px">
-        <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:6px">Novos seguidores/dia · 30d</div>
+        <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:6px">Novos seguidores/dia · ${igJanTxt}</div>
         <div style="display:grid;grid-template-columns:repeat(${serie.length},1fr);gap:2px;align-items:end;height:80px">
           ${serie.map(d=>{const h=maxNovos?(d.novos_seguidores/maxNovos*100):0;const cor=d.novos_seguidores>=30?'#22c55e':d.novos_seguidores>=15?'#3b82f6':d.novos_seguidores>=5?'#f59e0b':'#6b7280';return `<div title="${fmtDate(d.data)}: +${d.novos_seguidores} seguidores" style="background:${cor};height:${Math.max(h,2)}%;border-radius:2px 2px 0 0;cursor:help"></div>`}).join('')}
         </div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink-3);margin-top:4px"><span>${fmtDate(serie[0].data)}</span><span>${fmtDate(serie[serie.length-1].data)}</span></div>
       </div>`:''}
-      ${posts.length?`<h2 style="margin-top:20px;font-size:15px">🏆 Top posts orgânicos · 30d (por alcance)</h2>
+      ${posts.length?`<h2 style="margin-top:20px;font-size:15px">🏆 Top posts orgânicos · ${igJanTxt} (por alcance)</h2>
       <div style="overflow-x:auto;margin-top:10px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
         <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
           <th style="text-align:left;padding:8px">Data</th>
@@ -3618,8 +3658,8 @@ function renderMidias(){
   if(MID.facebook_page && MID.facebook_page.conectado){
     const fbp = MID.facebook_page.organico_30d || {};
     const fbHTML = `<section class="card fb-page-card" style="border-left:4px solid #1877F2;margin-top:12px">
-      <h2>📘 Facebook Page · ${MID.facebook_page.nome} · orgânico 30d</h2>
-      <div class="cap">Dados da Página FB. Métricas orgânicas separadas das de anúncios.</div>
+      <h2>📘 Facebook Page · ${MID.facebook_page.nome} · orgânico${seloJanela({proprio:false})}</h2>
+      <div class="cap">Métricas orgânicas da Página, separadas das de anúncios. A API entrega só o agregado de 30 dias — não há série diária para recortar, então este bloco não acompanha a janela escolhida.</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
         <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Visitas à Página</div><div style="font-weight:700;font-size:22px">${nfmt(fbp.page_visits)}</div><div style="color:var(--ink-3);font-size:10.5px">últimos 30 dias</div></div>
         <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Post engagements</div><div style="font-weight:700;font-size:22px">${nfmt(fbp.page_post_engagements)}</div><div style="color:var(--ink-3);font-size:10.5px">curtidas+coment.+shares</div></div>
@@ -3653,7 +3693,13 @@ function renderMidias(){
 
   // Trend diário
   const trendBox = document.getElementById('midias-trend');
-  const serie = M.serie_diaria_30d || [];
+  // A série diária cobre 30 dias. Como cada ponto é um dia, dá para fatiar de
+  // verdade na janela — sem estimativa e sem selo. Só a aba de 90 dias pede mais
+  // do que existe, e aí o gráfico diz o que está mostrando.
+  const serieCompleta = M.serie_diaria_30d || [];
+  const serieJanela = fatia(serieCompleta);
+  const serie = serieJanela.length ? serieJanela : serieCompleta;
+  const serieParcial = serieCompleta.length && serie.length < diasDe(pSel);
   if(serie.length){
     const maxCost = Math.max(...serie.map(d=>d.gasto));
     const totCost = serie.reduce((s,d)=>s+d.gasto,0);
@@ -3661,8 +3707,10 @@ function renderMidias(){
     const avgCPA = cpaValid.length ? cpaValid.reduce((s,v)=>s+v,0)/cpaValid.length : null;
     const bestDay = serie.filter(d=>d.cpa_msg!=null).sort((a,b)=>a.cpa_msg-b.cpa_msg)[0];
     const worstDay = serie.filter(d=>d.cpa_msg!=null).sort((a,b)=>b.cpa_msg-a.cpa_msg)[0];
-    trendBox.innerHTML = `<section class="card"><h2>📈 Evolução diária · últimos 30 dias</h2>
-      <div class="cap">Barra = gasto diário. Cor = CPA MSG (verde=barato, vermelho=caro). Média R$ ${(totCost/serie.length).toFixed(0)}/dia · CPA médio ${avgCPA?brl(avgCPA):'—'}.</div>
+    trendBox.innerHTML = `<section class="card"><h2>📈 Evolução diária · ${serieJanela.length ? pSel.label : 'últimos 30 dias'}</h2>
+      <div class="cap">${serie.length} dia(s) · ${fmtDate(serie[0].data)} a ${fmtDate(serie[serie.length-1].data)}. Barra = gasto diário. Cor = CPA MSG (verde=barato, vermelho=caro). Média R$ ${(totCost/serie.length).toFixed(0)}/dia · CPA médio ${avgCPA?brl(avgCPA):'—'}.
+      ${serieParcial ? `<br><span style="color:#f59e0b">A série guardada cobre 30 dias; esta janela pede ${diasDe(pSel)} e o gráfico mostra os ${serie.length} que existem.</span>` : ''}
+      ${serie.length===1 ? '<br><span style="color:var(--ink-3)">Um único dia não desenha tendência — o gráfico está aqui só para dar a escala.</span>' : ''}</div>
       ${bestDay?`<div style="font-size:11.5px;color:var(--ink-2);margin-top:8px">⭐ <strong>Melhor dia:</strong> ${fmtDate(bestDay.data)} — CPA ${brl(bestDay.cpa_msg)} · gasto ${brl(bestDay.gasto)}</div>`:''}
       ${worstDay?`<div style="font-size:11.5px;color:var(--ink-2)">⚠️ <strong>Pior dia:</strong> ${fmtDate(worstDay.data)} — CPA ${brl(worstDay.cpa_msg)} · gasto ${brl(worstDay.gasto)}</div>`:''}
       <div style="display:grid;grid-template-columns:repeat(${serie.length},1fr);gap:2px;margin-top:14px;align-items:end;height:120px">
@@ -3740,11 +3788,11 @@ function renderMidias(){
 
   // Demografia
   const demoBox = document.getElementById('midias-demo');
-  const demo = M.demografia_30d || [];
+  const qDemo = quebra('demografia'), demo = qDemo.dados;
   if(demo.length){
     const stColor = s => ({escalar:'#22c55e', top:'#22c55e', manter:'#3b82f6', cortar:'#ef4444', otimizar:'#f59e0b'})[s]||'var(--muted)';
     const stLabel = s => ({escalar:'📈 escalar',top:'⭐ top',manter:'✅ manter',cortar:'✂️ cortar',otimizar:'🔧 otimizar'})[s]||s;
-    demoBox.innerHTML = `<section class="card"><h2>👥 Demografia · 30 dias</h2>
+    demoBox.innerHTML = `<section class="card"><h2>👥 Demografia · ${janelaTxt(qDemo)}${seloJanela(qDemo)}</h2>
       <div class="cap">Idade × gênero × performance. Base pra reajustar targeting.</div>
       <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
       <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
@@ -3765,7 +3813,7 @@ function renderMidias(){
         <td style="text-align:right;padding:8px">${d.share_pct.toFixed(1)}%</td>
         <td style="text-align:right;padding:8px">${d.conversas_msg!=null?nfmt(d.conversas_msg):'—'}</td>
         <td style="text-align:right;padding:8px;font-weight:700;color:${cpaColor(d.cpa_msg)}">${d.cpa_msg?brl(d.cpa_msg):'—'}</td>
-        <td style="text-align:right;padding:8px">${d.reach.toLocaleString('pt-BR')}</td>
+        <td style="text-align:right;padding:8px">${nOpt(d.reach)}</td>
         <td style="text-align:right;padding:8px;font-weight:700;color:${d.ctr_pct>=1.8?'#22c55e':d.ctr_pct>=1.2?'#3b82f6':'#ef4444'}">${d.ctr_pct.toFixed(2)}%</td>
         <td style="text-align:center;padding:8px"><span style="color:${stColor(d.status)};font-weight:600;font-size:11px">${stLabel(d.status)}</span></td>
       </tr>`).join('')}</tbody></table></div></section>`;
@@ -3773,11 +3821,11 @@ function renderMidias(){
 
   // Placement
   const placeBox = document.getElementById('midias-placement');
-  const place = M.placement_30d || [];
+  const qPlace = quebra('placement'), place = qPlace.dados;
   if(place.length){
     const stColor = s => ({escalar:'#22c55e',manter:'#3b82f6',otimizar:'#f59e0b',revisar:'#f59e0b',cortar:'#ef4444'})[s]||'var(--muted)';
     const stLabel = s => ({escalar:'📈 escalar',manter:'✅ manter',otimizar:'🔧 otimizar',revisar:'👀 revisar',cortar:'✂️ cortar'})[s]||s;
-    placeBox.innerHTML = `<section class="card"><h2>📱 Placement · onde os anúncios aparecem · 30 dias</h2>
+    placeBox.innerHTML = `<section class="card"><h2>📱 Placement · onde os anúncios aparecem · ${janelaTxt(qPlace)}${seloJanela(qPlace)}</h2>
       <div class="cap">Facebook vs Instagram × Feed vs Stories vs Reels. Guia da realocação.</div>
       <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
       <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
@@ -3797,7 +3845,7 @@ function renderMidias(){
         <td style="text-align:right;padding:8px">${p.share_pct.toFixed(1)}%</td>
         <td style="text-align:right;padding:8px;color:${p.ctr_pct>=1.5?'#22c55e':p.ctr_pct>=1?'#3b82f6':'#ef4444'}">${p.ctr_pct.toFixed(2)}%</td>
         <td style="text-align:right;padding:8px;color:${p.cpm<=8?'#22c55e':p.cpm<=12?'#3b82f6':'#ef4444'}">${brl(p.cpm)}</td>
-        <td style="text-align:right;padding:8px">${p.reach.toLocaleString('pt-BR')}</td>
+        <td style="text-align:right;padding:8px">${nOpt(p.reach)}</td>
         <td style="text-align:center;padding:8px"><span style="color:${stColor(p.status)};font-weight:600;font-size:11px">${stLabel(p.status)}</span></td>
       </tr>`).join('')}</tbody></table></div></section>`;
   } else { placeBox.innerHTML=''; }

@@ -44,6 +44,11 @@ BENCH = ["cpa_msg_meta", "ctr_meta", "cpm_meta", "frequency_alerta"]
 # (d.reach.toLocaleString(), d.ctr_pct.toFixed(2), o.impressoes.toLocaleString()).
 # Um null/ausente aqui lança dentro do .map() e apaga a aba Mídias inteira —
 # aconteceu em 03/09, quando demografia e placement foram regeneradas sem reach.
+# reach e frequency podem vir null de verdade: em alguns agrupamentos a Meta
+# responde "can't be calculated, would require summing deduplicated values".
+# Não é dado faltando por erro nosso — o painel renderiza travessão (nOpt).
+CAMPOS_OPCIONAIS = {"reach", "frequency"}
+
 CAMPOS_TABELA = {
     "por_objetivo_30d": ["gasto", "share_gasto_pct", "impressoes", "ctr_pct"],
     "demografia_30d": ["faixa", "gasto", "share_pct", "reach", "ctr_pct"],
@@ -119,6 +124,51 @@ def main() -> int:
     for k in BENCH:
         if d.get("benchmarks", {}).get(k) is None:
             erros.append(f"benchmarks.{k} ausente ou null")
+
+    # --- quebras por período (meta_ads.breakdowns) ---------------------------
+    # Mesmo risco das tabelas de 30d, agora multiplicado por janela: um null em
+    # breakdowns['7d']['demografia'] apaga a aba inteira só na aba Semana, que é
+    # onde ninguém olharia primeiro.
+    brk = m.get("breakdowns")
+    if isinstance(brk, dict):
+        for per in ("hoje", "7d", "mtd", "90d"):
+            bloco_per = brk.get(per)
+            if bloco_per is None:
+                avisos.append(f"breakdowns['{per}'] ausente — a aba cai no recorte de 30d")
+                continue
+            if not isinstance(bloco_per, dict):
+                erros.append(f"breakdowns['{per}'] não é objeto")
+                continue
+            for nome, campos in CAMPOS_TABELA.items():
+                curto = nome.replace("_30d", "")
+                # geografia_30d não é renderizada em nenhum bloco do painel
+                # (a aba usa foco_geografico, que é pesquisa, não período).
+                if curto == "geografia":
+                    continue
+                linhas = bloco_per.get(curto)
+                if linhas is None:
+                    avisos.append(f"breakdowns['{per}'].{curto} ausente — cai no recorte de 30d")
+                    continue
+                if not isinstance(linhas, list):
+                    erros.append(f"breakdowns['{per}'].{curto} não é lista")
+                    continue
+                for i, linha in enumerate(linhas):
+                    for c in campos:
+                        if c not in linha:
+                            erros.append(f"breakdowns['{per}'].{curto}[{i}] sem a chave '{c}'")
+                        elif linha[c] is None and c not in CAMPOS_OPCIONAIS:
+                            erros.append(f"breakdowns['{per}'].{curto}[{i}].{c} é null — o painel chama método nele")
+            # A tabela tem que fechar com o cabeçalho: se a soma das campanhas
+            # não bate com o total do período, o usuário vê números que não somam.
+            camps = bloco_per.get("top_campanhas")
+            tot = (pp.get(per) or {}).get("gasto")
+            if isinstance(camps, list) and camps and tot:
+                soma = sum(x.get("gasto") or 0 for x in camps)
+                if abs(soma - tot) > max(0.05, tot * 0.01):
+                    erros.append(f"breakdowns['{per}'].top_campanhas soma {soma:.2f} "
+                                 f"contra {tot:.2f} de por_periodo['{per}'].gasto")
+    else:
+        avisos.append("meta_ads.breakdowns ausente — todas as abas caem no recorte de 30d")
 
     # --- campos que as tabelas de 30d desreferenciam sem guarda --------------
     for bloco, campos in CAMPOS_TABELA.items():
