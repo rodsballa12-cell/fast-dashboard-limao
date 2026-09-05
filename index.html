@@ -2835,111 +2835,167 @@ function renderFinanceiro(){
 
   let h='';
 
-  // ---- DRE executiva (por competência) ----
-  const pr=v=>v/R.receita_real;
-  // impacto no resultado: positivo = melhor que o previsto (verde) · negativo = pior (vermelho)
-  const imp=(x)=>{ if(x===null||x===undefined) return '<span class="dv-na">sem premissa</span>';
-    if(Math.abs(x)<1) return '<span class="dv-na">no alvo</span>';
-    return `<span class="${x>0?'dv-bom':'dv-mau'}">${x>0?'+':'−'}${brl0(Math.abs(x))}</span>`; };
-  const impC=(real,esp)=> esp===null||esp===undefined ? imp(null) : imp(esp-real);  // custo: gastar menos é melhor
-  const neg=v=>v<0?' val-neg':'';
-  const lin=(l)=>`<tr class="dre-l${l.prov?' prov':''}"><td>${l.cat}<span class="dre-n">${l.nota}</span></td>
-      <td>(${brl0(l.real)})</td><td class="pc">${finPct(pr(l.real))}</td>
-      <td>${l.esp===null?'—':'('+brl0(l.esp)+')'}</td><td class="pc">${l.esp===null?'—':finPct(pr(l.esp))}</td>
-      <td>${l.prov?'<span class="dv-prov">provisionado</span>':impC(l.real,l.esp)}</td></tr>`;
-  const sub=(rot,r,e)=>`<tr class="dre-s"><td>${rot}</td>
-      <td>(${brl0(r)})</td><td class="pc">${finPct(pr(r))}</td>
-      <td>(${brl0(e)})</td><td class="pc">${finPct(pr(e))}</td><td>${impC(r,e)}</td></tr>`;
-  const mrg=(rot,r,e,nota)=>`<tr class="dre-m"><td>${rot}${nota?`<span class="dre-n">${nota}</span>`:''}</td>
-      <td class="${neg(r).trim()}">${brl(r)}</td><td class="pc${neg(r)}">${finPct(pr(r))}</td>
-      <td class="${neg(e).trim()}">${brl(e)}</td><td class="pc${neg(e)}">${finPct(pr(e))}</td>
-      <td>${imp(r-e)}</td></tr>`;
-  const G=id=>R.grupos.find(g=>g.id===id) || {titulo:'', linhas:[], sub_real:0, sub_esp:0};
-  const grupo=(id)=>{ const g=G(id); if(!g.linhas.length) return ''; return `<tr class="dre-g"><td colspan="6">${g.titulo}</td></tr>`+g.linhas.map(lin).join(''); };
+  // ---- DRE em curso: REALIZADO (Trinks live + prorata) vs PROJETADO (Excel mês) ----
+  // Regra Rodrigo: Excel = projeção; Trinks = realizado. A cada 15 dias
+  // Rodrigo troca a projeção do Excel por realizado parcial na aba DRE.
+  const REC_PROJ = R.receita_real;                              // Excel mês inteiro
+  const REC_REAL = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.kpis && TRINKS.abas.mensal.kpis.caixa) || 0;
+  const DIAS_OP  = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.kpis && TRINKS.abas.mensal.kpis.dias_op) || 0;
+  const DIAS_MES = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.meta && TRINKS.abas.mensal.meta.dias_total) || 30;
+  const RATIO_REC = REC_PROJ > 0 ? REC_REAL / REC_PROJ : 0;      // custos VARIÁVEIS escalam com receita
+  const RATIO_DIA = DIAS_MES > 0 ? DIAS_OP / DIAS_MES : 0;       // custos FIXOS escalam com tempo
 
-  const mcR=R.mc_real/Math.max(R.receita_real,1), mcE=R.mc_esp/Math.max(R.receita_real,1);
+  // Prorateia custos de cada grupo: VARIAVEL segue receita, FIXO segue dias
+  const scaleG = (g)=>{ if(!g || !g.linhas) return g;
+    const r = g.id === 'VARIAVEL' ? RATIO_REC : RATIO_DIA;
+    const linhas = g.linhas.map(l => ({...l, esp: l.real, real: (l.real||0) * r}));
+    return {...g, linhas,
+      sub_real: linhas.reduce((a,l)=>a+(l.real||0),0),
+      sub_esp:  linhas.reduce((a,l)=>a+(l.esp ||0),0)};
+  };
+  const gDisp = (R.grupos || []).map(scaleG);
+  const gd = (id)=> gDisp.find(g=>g.id===id) || {titulo:'',linhas:[],sub_real:0,sub_esp:0};
+
+  const VAR_REAL = gd('VARIAVEL').sub_real, VAR_ESP = gd('VARIAVEL').sub_esp;
+  const FIXO_REAL = ['PESSOAL','OCUPACAO','COMERCIAL'].reduce((a,id)=>a+gd(id).sub_real,0);
+  const FIXO_ESP  = ['PESSOAL','OCUPACAO','COMERCIAL'].reduce((a,id)=>a+gd(id).sub_esp, 0);
+  const MC_REAL = REC_REAL - VAR_REAL, MC_ESP = REC_PROJ - VAR_ESP;
+  const RES_REAL = MC_REAL - FIXO_REAL, RES_ESP = MC_ESP - FIXO_ESP;
+
+  // Formatters: % sempre sobre a receita da COLUNA (real ou proj)
+  const prR = v => REC_REAL>0 ? v/REC_REAL : 0;
+  const prP = v => REC_PROJ>0 ? v/REC_PROJ : 0;
+  // Progresso: realizado / projetado. Bom se >= ritmo temporal do mês.
+  const bar = (pct, ritmo)=>{
+    const cls = pct >= ritmo ? 'dv-bom' : (pct >= ritmo*0.85 ? 'dv-na' : 'dv-mau');
+    return `<span class="${cls}">${(pct*100).toFixed(0)}%</span>`;
+  };
+  const barRec = (pct)=>{ const cls = pct >= RATIO_DIA ? 'dv-bom' : (pct >= RATIO_DIA*0.85 ? 'dv-na' : 'dv-mau'); return `<span class="${cls}">${(pct*100).toFixed(0)}%</span>`; };
+  // Custos: quanto mais próximo do 100% mid-month, pior (gastando adiantado). Neutro por default.
+  const barCusto = (pct)=> `<span class="dv-na">${(pct*100).toFixed(0)}%</span>`;
+  const neg = v=>v<0?' val-neg':'';
+
+  const linR = (l)=>{
+    const prog = l.esp>0 ? l.real/l.esp : 0;
+    return `<tr class="dre-l${l.prov?' prov':''}"><td>${l.cat}<span class="dre-n">${l.nota||''}</span></td>
+      <td>(${brl0(l.real)})</td><td class="pc">${finPct(prR(l.real))}</td>
+      <td>(${brl0(l.esp)})</td><td class="pc">${finPct(prP(l.esp))}</td>
+      <td>${l.prov?'<span class="dv-prov">provisionado</span>':barCusto(prog)}</td></tr>`;
+  };
+  const subR = (rot,r,e)=>{
+    const prog = e>0 ? r/e : 0;
+    return `<tr class="dre-s"><td>${rot}</td>
+      <td>(${brl0(r)})</td><td class="pc">${finPct(prR(r))}</td>
+      <td>(${brl0(e)})</td><td class="pc">${finPct(prP(e))}</td>
+      <td>${barCusto(prog)}</td></tr>`;
+  };
+  const mrgR = (rot,r,e,nota)=>{
+    const prog = e!==0 ? r/e : 0;
+    // pra margens: se ambos negativos, valor mais próximo de 0 é melhor. Comparação simples pelo delta.
+    const dv = r >= e ? 'dv-bom' : 'dv-mau';
+    return `<tr class="dre-m"><td>${rot}${nota?`<span class="dre-n">${nota}</span>`:''}</td>
+      <td class="${neg(r).trim()}">${brl(r)}</td><td class="pc${neg(r)}">${finPct(prR(r))}</td>
+      <td class="${neg(e).trim()}">${brl(e)}</td><td class="pc${neg(e)}">${finPct(prP(e))}</td>
+      <td><span class="${dv}">${(prog*100).toFixed(0)}%</span></td></tr>`;
+  };
+  const grupoR = (id)=>{ const g = gd(id); if(!g.linhas.length) return ''; return `<tr class="dre-g"><td colspan="6">${g.titulo}</td></tr>`+g.linhas.map(linR).join(''); };
+
+  const mcR=MC_REAL/Math.max(REC_REAL,1), mcE=MC_ESP/Math.max(REC_PROJ,1);
   const dreMesNome = nomeDe(mpKey) || 'mês corrente';
-  h+=`<div class="card"><h2>📊 Resultado de ${dreMesNome} — DRE executiva</h2>
-    <div class="cap">Retrospectivo do painel Excel · último mês fechado com dados.<br>
-    Comparação <strong>por competência</strong>: o que é do mês entra no mês, tenha saído do caixa ou não.
-    A coluna <em>esperado</em> aplica as premissas do modelo à receita que de fato entrou. Custos entre parênteses.
-    Na última coluna, <span class="dv-bom">verde</span> é melhor que o previsto e <span class="dv-mau">vermelho</span> é pior — sempre medido pelo efeito no resultado.</div>
+  const ritmoLbl = `dia ${DIAS_OP} de ${DIAS_MES} · ritmo esperado ${(RATIO_DIA*100).toFixed(0)}%`;
+  h+=`<div class="card"><h2>📊 DRE de ${dreMesNome} — em curso</h2>
+    <div class="cap">
+      <strong>Realizado</strong> = faturamento Trinks ao vivo (custos variáveis escalam com receita, fixos com dias operados).<br>
+      <strong>Projetado</strong> = Excel do mês corrente. A cada 15 dias você atualiza o Excel com valores realizados; o painel absorve na próxima atualização.<br>
+      Referência de ritmo: <strong>${ritmoLbl}</strong>. Na última coluna, <span class="dv-bom">verde</span> se está acima do ritmo esperado.
+    </div>
 
     <div class="dre-ind">
-      <div><span class="il">MARGEM DE CONTRIBUIÇÃO</span><span class="iv">${finPct(mcR)}</span><span class="ic">premissa ${finPct(mcE)} · sobra de cada R$ 100 vendidos</span></div>
-      <div><span class="il">CUSTO VARIÁVEL</span><span class="iv">${finPct(1-mcR)}</span><span class="ic">comissão ${finPct(pr(G('VARIAVEL').linhas[0].real))} + CMV ${finPct(pr(G('VARIAVEL').linhas[1].real))} + Simples ${finPct(pr(G('VARIAVEL').linhas[2].real))}</span></div>
-      <div><span class="il">CUSTO FIXO DO MÊS</span><span class="iv">${brl0(R.fixo_real)}</span><span class="ic">${finPct(pr(R.fixo_real))} da receita · esperado ${brl0(R.fixo_esp)}</span></div>
-      <div class="neg"><span class="il">MARGEM OPERACIONAL</span><span class="iv">${finPct(pr(R.res_real))}</span><span class="ic">${brl0(R.res_real)} no mês · ${brl0(R.res_caixa)} pelo caixa</span></div>
+      <div><span class="il">MARGEM DE CONTRIBUIÇÃO</span><span class="iv">${finPct(mcR)}</span><span class="ic">projetada ${finPct(mcE)}</span></div>
+      <div><span class="il">CUSTO VARIÁVEL</span><span class="iv">${finPct(1-mcR)}</span><span class="ic">projetado ${finPct(1-mcE)}</span></div>
+      <div><span class="il">CUSTO FIXO ATÉ HOJE</span><span class="iv">${brl0(FIXO_REAL)}</span><span class="ic">projetado mês ${brl0(FIXO_ESP)}</span></div>
+      <div class="${RES_REAL<0?'neg':''}"><span class="il">RESULTADO EM CURSO</span><span class="iv">${brl0(RES_REAL)}</span><span class="ic">projetado ${brl0(RES_ESP)} · ${(RES_ESP!==0?(RES_REAL/RES_ESP*100).toFixed(0):'—')}%</span></div>
     </div>
 
     <div class="dre-wrap"><table class="dre">
-    <thead><tr><th>Linha</th><th colspan="2">Realizado</th><th colspan="2">Esperado</th><th>Impacto no resultado</th></tr></thead>
+    <thead><tr><th>Linha</th><th colspan="2">Realizado (Trinks)</th><th colspan="2">Projetado (Excel)</th><th>% realizado</th></tr></thead>
     <tbody>
-    <tr class="dre-r"><td>RECEITA BRUTA DE SERVIÇOS<span class="dre-n">a coluna esperado aqui é a meta do mês, não a premissa de custo</span></td>
-      <td>${brl(R.receita_real)}</td><td class="pc">100,0%</td>
-      <td>${brl(R.receita_meta)}</td><td class="pc">—</td>
-      <td>${imp(R.receita_real-R.receita_meta)}</td></tr>
-    ${grupo('VARIAVEL')}
-    ${sub('(=) Total de custos variáveis', R.var_real, R.var_esp)}
-    ${mrg('(=) MARGEM DE CONTRIBUIÇÃO', R.mc_real, R.mc_esp, 'o que sobra para pagar a estrutura')}
-    ${grupo('PESSOAL')}
-    ${sub('Subtotal pessoal fixo', G('PESSOAL').sub_real, G('PESSOAL').sub_esp)}
-    ${grupo('OCUPACAO')}
-    ${sub('Subtotal ocupação', G('OCUPACAO').sub_real, G('OCUPACAO').sub_esp)}
-    ${grupo('COMERCIAL')}
-    ${sub('Subtotal comercial e franquia', G('COMERCIAL').sub_real, G('COMERCIAL').sub_esp)}
-    ${grupo('ABERTO')}
-    ${sub('(=) Total de custos fixos', R.fixo_real, R.fixo_esp)}
-    ${mrg('(=) RESULTADO OPERACIONAL', R.res_real, R.res_esp_mesma_receita, 'EBITDA do mês, por competência')}
-    <tr class="dre-memo"><td>Memória: resultado pelo caixa<span class="dre-n">tira as ${brl0(R.provisoes_nao_debitadas)} de Simples, royalty e comissão provisionada que ainda não saíram da conta</span></td>
-      <td>${brl(R.res_caixa)}</td><td class="pc">${finPct(pr(R.res_caixa))}</td>
-      <td colspan="3"></td></tr>
+    <tr class="dre-r"><td>RECEITA BRUTA DE SERVIÇOS<span class="dre-n">Realizado: Trinks live · Projetado: Excel mês completo</span></td>
+      <td>${brl(REC_REAL)}</td><td class="pc">100,0%</td>
+      <td>${brl(REC_PROJ)}</td><td class="pc">100,0%</td>
+      <td>${barRec(RATIO_REC)}</td></tr>
+    ${grupoR('VARIAVEL')}
+    ${subR('(=) Total de custos variáveis', VAR_REAL, VAR_ESP)}
+    ${mrgR('(=) MARGEM DE CONTRIBUIÇÃO', MC_REAL, MC_ESP, 'o que sobra para pagar a estrutura')}
+    ${grupoR('PESSOAL')}
+    ${subR('Subtotal pessoal fixo', gd('PESSOAL').sub_real, gd('PESSOAL').sub_esp)}
+    ${grupoR('OCUPACAO')}
+    ${subR('Subtotal ocupação', gd('OCUPACAO').sub_real, gd('OCUPACAO').sub_esp)}
+    ${grupoR('COMERCIAL')}
+    ${subR('Subtotal comercial e franquia', gd('COMERCIAL').sub_real, gd('COMERCIAL').sub_esp)}
+    ${subR('(=) Total de custos fixos', FIXO_REAL, FIXO_ESP)}
+    ${mrgR('(=) RESULTADO OPERACIONAL', RES_REAL, RES_ESP, 'EBITDA do mês, por competência')}
     </tbody></table></div>
 
-    <div class="dre-alerta">⚠️ <strong>${brl(R.provisoes_nao_debitadas)} do custo do mês não saiu do caixa</strong> — o Simples e o royalty entram na DRE porque são obrigação de ${dreMesNome}; a conta corrente ainda vai senti-los.</div>
+    <div class="dre-alerta">💡 <strong>Como o painel se atualiza:</strong> Trinks atualiza sozinho no cron (várias vezes ao dia). O Excel você atualiza a cada 15 dias com os realizados parciais — assim que subir a nova versão, a coluna "Projetado" vira "Realizado consolidado".</div>
 
-    <div class="fin-fonte">Confere: a coluna de impacto soma <strong>${brl0(R.var_esp-R.var_real)}</strong> nos variáveis e <strong>${brl0(R.fixo_esp-R.fixo_real)}</strong> nos fixos — juntos, exatamente os <strong>${brl0((R.var_esp-R.var_real)+(R.fixo_esp-R.fixo_real))}</strong> que separam o resultado do previsto.
-    Somando a receita que não veio (${brl0(R.receita_real-R.receita_meta)}), com a estrutura do modelo uma loja só empata em <strong>${brl0(R.be_modelo_1loja)}</strong>/mês.</div></div>`;
+    <div class="fin-fonte">Prorata de custos: <strong>variáveis</strong> (comissão, CMV, Simples, inadimplência) recalculados a ${(RATIO_REC*100).toFixed(0)}% da receita realizada; <strong>fixos</strong> (pessoal, aluguel, ocupação, comercial) a ${(RATIO_DIA*100).toFixed(0)}% (${DIAS_OP}/${DIAS_MES} dias). Ponto de equilíbrio da estrutura fica em <strong>${brl0(R.be_modelo_1loja)}</strong>/mês.</div></div>`;
 
-  // ---- fluxo de caixa (só se temos dados de recebimento) ----
-  if(C && C.linhas && C.linhas.length){
-    const mx = (TRINKS && TRINKS.abas && TRINKS.abas.mensal) || null;
-    const diasOp = (mx && mx.kpis.dias_op) || 25;
-    const diasMes = (mx && mx.meta.dias_total) || diasOp;
-    const beMesFC = E.custo_fixo_mes / E.cenarios[0].mc;
-    const saidas = R.custo_real - R.provisoes_nao_debitadas;
-    const queima = rec - saidas;
-    const queimaDia = Math.abs(queima) / diasOp;
-    const ritmoDia = rec / diasOp;
-    const precisaDia = beMesFC / diasMes;
-    const ciclo = C.linhas.reduce((a,l)=>a + l.pct * (l.prazo.indexOf('mesmo dia')>=0 ? 0 : 1), 0);
-    const giro = ritmoDia * ciclo;
-    const autonomia = queima < 0 ? k.caixa_conta / queimaDia : null;
+  // ---- Fluxo de caixa: sempre renderiza. KPIs vêm de Trinks live + Excel prorateado.
+  {
+    // Custos efetivos que saem da conta (exclui provisões: Simples e royalty)
+    const saidas_real = (VAR_REAL + FIXO_REAL) - (R.provisoes_nao_debitadas || 0) * RATIO_REC;
+    const queima      = REC_REAL - saidas_real;                   // negativo = queimou caixa
+    const queimaDia   = Math.abs(queima) / Math.max(DIAS_OP, 1);
+    const ritmoDia    = REC_REAL / Math.max(DIAS_OP, 1);
+    const beMesFC     = E.custo_fixo_mes / Math.max(E.cenarios[0].mc, 0.01);
+    const precisaDia  = beMesFC / Math.max(DIAS_MES, 1);
+    // Ciclo de recebimento: FAST não parcela, Stone liquida D+1 → default 1.0 dia
+    const ciclo       = (FIN.recebimento && FIN.recebimento.ciclo_medio) || 1.0;
+    const giro        = ritmoDia * ciclo;
+    const autonomia   = queima < 0 ? k.caixa_conta / Math.max(queimaDia, 1) : null;
+    const proj_saidas = VAR_ESP + FIXO_ESP - (R.provisoes_nao_debitadas || 0);
+    const proj_queima = REC_PROJ - proj_saidas;
 
     h+=`<div class="card"><h2>💵 Fluxo de caixa</h2>
-      <div class="cap">O que entrou, o que saiu e por quanto tempo a conta aguenta · ${diasOp} dias operados de ${diasMes}</div>
+      <div class="cap">O que entrou, o que saiu e por quanto tempo a conta aguenta · ${DIAS_OP} dias operados de ${DIAS_MES}</div>
       <div class="dre-ind">
-        <div class="neg"><span class="il">QUEIMA DO MÊS</span><span class="iv">${brl0(queima)}</span><span class="ic">${brl0(-queimaDia)} por dia operado</span></div>
-        <div><span class="il">ENTRA POR DIA</span><span class="iv">${brl0(ritmoDia)}</span><span class="ic">precisaria de ${brl0(precisaDia)}/dia para empatar — falta ${brl0(precisaDia-ritmoDia)}</span></div>
-        <div><span class="il">CICLO DE RECEBIMENTO</span><span class="iv">${ciclo.toFixed(1).replace('.',',')} dia</span><span class="ic">a venda vira caixa quase à vista · giro necessário ${brl0(giro)}</span></div>
-        <div class="${autonomia!==null && autonomia<30?'neg':''}"><span class="il">AUTONOMIA DA CONTA</span><span class="iv">${autonomia===null?'—':Math.round(autonomia)+' dias'}</span><span class="ic">${brl0(k.caixa_conta)} na conta corrente ÷ queima diária</span></div>
+        <div class="${queima<0?'neg':''}"><span class="il">QUEIMA DO MÊS ATÉ HOJE</span><span class="iv">${brl0(queima)}</span><span class="ic">${brl0(-queimaDia)} por dia operado</span></div>
+        <div><span class="il">ENTRA POR DIA</span><span class="iv">${brl0(ritmoDia)}</span><span class="ic">precisaria ${brl0(precisaDia)}/dia pra empatar — falta ${brl0(Math.max(precisaDia-ritmoDia,0))}</span></div>
+        <div><span class="il">CICLO DE RECEBIMENTO</span><span class="iv">${ciclo.toFixed(1).replace('.',',')} dia</span><span class="ic">Stone liquida D+1 · giro necessário ${brl0(giro)}</span></div>
+        <div class="${autonomia!==null && autonomia<30?'neg':''}"><span class="il">AUTONOMIA DA CONTA</span><span class="iv">${autonomia===null?'—':Math.round(autonomia)+' dias'}</span><span class="ic">${brl0(k.caixa_conta)} na conta ÷ queima diária · reserva Stone à parte</span></div>
       </div>
+
       <div class="dre-wrap"><table class="dre">
-      <thead><tr><th>Movimento do mês</th><th colspan="2">Valor</th><th colspan="3">De onde vem</th></tr></thead>
+      <thead><tr><th>Movimento do mês</th><th colspan="2">Realizado (Trinks)</th><th colspan="2">Projetado (Excel)</th><th>%</th></tr></thead>
       <tbody>
-      <tr class="dre-r"><td>(+) ENTRADAS — receita do mês</td><td>${brl(rec)}</td><td class="pc">100,0%</td>
-        <td colspan="3" style="text-align:left;font-size:11.5px;color:var(--ink-3)">Trinks, ao vivo · liquida em D+0 e D+1</td></tr>
-      <tr class="dre-l"><td>(−) Saídas que passaram pela conta<span class="dre-n">custo lançado no razão da conta corrente</span></td>
-        <td>(${brl0(saidas)})</td><td class="pc">${finPct(pr(saidas))}</td>
-        <td colspan="3" style="text-align:left;font-size:11.5px;color:var(--ink-3)">painel Excel, fechado em ${new Date(FIN.custos_ate+'T12:00:00').toLocaleDateString('pt-BR')}</td></tr>
-      <tr class="dre-m"><td>(=) QUEIMA LÍQUIDA DO MÊS</td>
-        <td class="${queima<0?'val-neg':''}">${brl(queima)}</td><td class="pc${queima<0?' val-neg':''}">${finPct(pr(queima))}</td><td colspan="3"></td></tr>
-      <tr class="dre-l prov"><td>(−) Do mês, mas ainda não debitado</td>
-        <td>(${brl0(R.provisoes_nao_debitadas)})</td><td class="pc">${finPct(pr(R.provisoes_nao_debitadas))}</td>
-        <td colspan="3" style="text-align:left;font-size:11.5px;color:var(--warn)">vai sair do caixa em algum momento</td></tr>
-      <tr class="dre-m"><td>(=) RESULTADO POR COMPETÊNCIA</td><td class="val-neg">${brl(R.res_real)}</td><td class="pc val-neg">${finPct(pr(R.res_real))}</td><td colspan="3"></td></tr>
+      <tr class="dre-r"><td>(+) ENTRADAS — receita</td>
+        <td>${brl(REC_REAL)}</td><td class="pc">100,0%</td>
+        <td>${brl(REC_PROJ)}</td><td class="pc">100,0%</td>
+        <td>${barRec(RATIO_REC)}</td></tr>
+      <tr class="dre-l"><td>(−) Saídas efetivas<span class="dre-n">custos variáveis + fixos, sem provisão de Simples/royalty</span></td>
+        <td>(${brl0(saidas_real)})</td><td class="pc">${finPct(prR(saidas_real))}</td>
+        <td>(${brl0(proj_saidas)})</td><td class="pc">${finPct(prP(proj_saidas))}</td>
+        <td>${barCusto(proj_saidas>0 ? saidas_real/proj_saidas : 0)}</td></tr>
+      <tr class="dre-m"><td>(=) QUEIMA LÍQUIDA</td>
+        <td class="${queima<0?'val-neg':''}">${brl(queima)}</td><td class="pc${queima<0?' val-neg':''}">${finPct(prR(queima))}</td>
+        <td class="${proj_queima<0?'val-neg':''}">${brl(proj_queima)}</td><td class="pc${proj_queima<0?' val-neg':''}">${finPct(prP(proj_queima))}</td>
+        <td>—</td></tr>
+      <tr class="dre-l prov"><td>(−) Provisões que ainda não saíram<span class="dre-n">Simples + royalty do mês, provisionado</span></td>
+        <td>(${brl0((R.provisoes_nao_debitadas||0)*RATIO_REC)})</td><td class="pc">${finPct(prR((R.provisoes_nao_debitadas||0)*RATIO_REC))}</td>
+        <td>(${brl0(R.provisoes_nao_debitadas||0)})</td><td class="pc">${finPct(prP(R.provisoes_nao_debitadas||0))}</td>
+        <td>—</td></tr>
+      <tr class="dre-m"><td>(=) RESULTADO POR COMPETÊNCIA</td>
+        <td class="${RES_REAL<0?'val-neg':''}">${brl(RES_REAL)}</td><td class="pc${RES_REAL<0?' val-neg':''}">${finPct(prR(RES_REAL))}</td>
+        <td class="${RES_ESP<0?'val-neg':''}">${brl(RES_ESP)}</td><td class="pc${RES_ESP<0?' val-neg':''}">${finPct(prP(RES_ESP))}</td>
+        <td>—</td></tr>
+      <tr class="dre-memo"><td>Caixa em conta<span class="dre-n">só conta corrente da PJ, sem a reserva Stone</span></td>
+        <td>${brl(k.caixa_conta)}</td><td class="pc"></td><td colspan="3"></td></tr>
       </tbody></table></div>
-      <div class="fin-fonte">O ciclo de ${ciclo.toFixed(2).replace('.',',')} dia é a média ponderada das formas de pagamento medidas: ${C.linhas.map(l=>l.forma+' '+finPct(l.pct)+' em '+l.prazo).join(' · ')}.</div></div>`;
+
+      <div class="dre-alerta">⚠️ <strong>A receita não passa pela conta da PJ direto.</strong> Cai na Stone e fica na Reserva CDB — a conta corrente é abastecida por transferências. Por isso a autonomia acima mede só o que está na corrente, não o negócio inteiro (Stone a receber = ${brl0(k.a_receber_stone)}).</div>
+
+      <div class="fin-fonte">Ciclo padrão de 1 dia (Stone D+1 · FAST não parcela). Prorata: variáveis a ${(RATIO_REC*100).toFixed(0)}% da receita realizada; fixos a ${(RATIO_DIA*100).toFixed(0)}% (${DIAS_OP}/${DIAS_MES} dias operados).</div></div>`;
   }
 
   // ---- ponto de equilibrio, simplificado ----
