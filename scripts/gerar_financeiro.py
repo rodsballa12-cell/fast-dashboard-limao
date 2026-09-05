@@ -1,22 +1,19 @@
 # -*- coding: utf-8 -*-
-"""Le a aba DRE do painel Excel e gera data/financeiro.json com TODOS os meses.
+"""Lê a aba DRE do painel Excel (bloco FAST ESCOVA) e gera data/financeiro.json
+com TODOS os meses do plano de 5 anos.
 
-Rodar depois de qualquer atualização do painel Excel na máquina do Rodrigo.
-O Excel precisa ter sido aberto e salvo pelo Excel antes, senão as fórmulas
-não têm valor em cache.
+Estrutura da aba DRE do Rodrigo:
+  - Linha 4: cabeçalho com datetime de cada mês (2026-05 até 2031-04)
+  - Linha 7: título "🟦 DRE FAST ESCOVA"
+  - Linhas 8-22: linhas da DRE Fast Escova
+  - Linhas 25-40: DRE Fast Spa (ignoramos aqui)
+  - Linhas 43-46: consolidado
+  - Linhas 49-57: resumo anual
 
-Estrutura esperada da aba DRE:
-  - Coluna A: rótulos (categorias como "Comissão sobre produção", "Aluguel", etc)
-  - Colunas subsequentes: um mês por coluna
-  - Cabeçalho de mês pode estar em qualquer uma das primeiras 5 linhas
-  - Formato aceito: "Jan/26", "Janeiro", "01/2026", datetime, "jan-26" etc
+Setembro projetado hoje: receita R$ 52.992 · EBITDA -R$ 5.901.
 
-O script detecta automaticamente onde está o cabeçalho e quais colunas
-são meses. Se não achar padrão, imprime diagnóstico claro.
-
-Projetado × Realizado: o Excel mantém o projetado no mês corrente até
-Rodrigo começar a atualizar com o realizado (a cada 15 dias). Nada muda
-aqui — o valor lido é o que estiver na célula, seja projetado ou real.
+O Excel mantém o projetado no mês corrente até Rodrigo começar a atualizar
+com o realizado (a cada 15 dias).
 """
 import json, os, datetime, re, unicodedata, sys
 import openpyxl
@@ -25,9 +22,27 @@ PAINEL = r"C:\Users\rods_\OneDrive\Franquia - FAST\Claude\Painel_Gestao_Financei
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "financeiro.json")
 
 META_MES = 60000.00
-PREM = dict(comissao=0.32, insumos=0.06, aluguel=18000.00, gerente=6500.00,
-            midia=2500.00, beleza_boost=1900.00, sistemas=400.00,
-            royalty_min=2500.00, mkt_local=1000.00)
+
+# Linhas da DRE FAST ESCOVA (bloco 8-22)
+# rot_key: (linha, sinal_positivo?) — se True mantém sinal, se False inverte
+LINHAS_ESCOVA = {
+    # ROW: (chave interna, descrição)
+    8:  ("receita_bruta",        "(+) Receita Bruta"),
+    9:  ("impostos",             "(-) Impostos (Simples 7%)"),
+    10: ("inadimplencia",        "(-) Inadimplência 2%"),
+    11: ("receita_liquida",      "(=) Receita Líquida"),
+    12: ("comissoes",            "(-) Comissões (32%)"),
+    13: ("royalty",              "(-) Royalty (max 2500 ou 7%)"),
+    14: ("cmv",                  "(-) CMV/insumos 12%"),
+    15: ("marketing_local",      "(-) Marketing local mínimo"),
+    16: ("margem_contribuicao",  "(=) Margem Contribuição"),
+    17: ("aluguel_iptu",         "(-) Aluguel + IPTU (rateio 45,5%)"),
+    18: ("trinks_sults",         "(-) Trinks/Sults"),
+    19: ("pessoal_clt",          "(-) Pessoal CLT"),
+    20: ("beleza_boost",         "(-) Beleza Boost gestão"),
+    21: ("midia",                "(-) Mídia"),
+    22: ("ebitda",                "(=) EBITDA"),
+}
 
 MES_NUM = {
     "jan":1, "janeiro":1, "fev":2, "fevereiro":2, "mar":3, "marco":3, "março":3,
@@ -37,154 +52,118 @@ MES_NUM = {
 }
 
 
-def _norm(x):
-    t = unicodedata.normalize("NFKD", str(x or "")).encode("ascii", "ignore").decode()
-    return re.sub(r"[^a-z0-9]+", " ", t.lower()).strip()
-
-
-def detectar_meses(ws, ano_default=None):
-    """Varre as primeiras 5 linhas × 20 colunas procurando cabeçalhos de mês.
-    Retorna dict {col: (ano, mes)} com colunas identificadas."""
-    if ano_default is None:
-        ano_default = datetime.date.today().year
+def detectar_meses(ws):
+    """Varre linha 4 (cabeçalho de meses) procurando datetime."""
     achados = {}
-    for r in range(1, 6):
-        for c in range(2, 21):
-            v = ws.cell(r, c).value
-            if v is None: continue
-            # datetime direto
-            if isinstance(v, datetime.datetime):
-                achados[c] = (v.year, v.month); continue
-            if isinstance(v, datetime.date):
-                achados[c] = (v.year, v.month); continue
-            s = str(v).lower().strip()
-            # padrão "01/2026", "01/26"
-            m = re.match(r"^(\d{1,2})[/\-](\d{2,4})$", s)
-            if m:
-                mes = int(m.group(1)); ano = int(m.group(2))
-                if ano < 100: ano += 2000
-                if 1 <= mes <= 12:
-                    achados[c] = (ano, mes); continue
-            # padrão "jan/26", "jan-26", "janeiro/2026", "Jan/26"
-            m = re.match(r"^([a-z]{3,10})[/\-]?(\d{2,4})?$", s)
-            if m:
-                mes_nome = m.group(1)
-                mes_num = MES_NUM.get(mes_nome)
-                if mes_num:
-                    ano = m.group(2)
-                    ano = (int(ano) if ano else ano_default)
-                    if ano < 100: ano += 2000
-                    achados[c] = (ano, mes_num); continue
-    # Retorna só se achou uma sequência plausível (>= 3 meses)
-    if len(achados) >= 3:
-        return achados
-    return {}
+    for c in range(2, ws.max_column + 1):
+        v = ws.cell(4, c).value
+        if isinstance(v, (datetime.datetime, datetime.date)):
+            achados[c] = (v.year, v.month)
+    return achados
 
 
-def ler_dre(ws, col_mes):
-    """Le a aba DRE por rótulo, retornando dict {rotulo_normalizado: valor}
-    da coluna do mês específico. Valores None viram 0.0."""
-    m = {}
-    for r in range(1, ws.max_row + 1):
-        rot = ws.cell(r, 1).value
-        val = ws.cell(r, col_mes).value
-        if rot:
-            k = _norm(rot)
-            if k and isinstance(val, (int, float)):
-                m.setdefault(k, val)
-    return m
+def num(x):
+    """Extrai float ou 0.0."""
+    return float(x) if isinstance(x, (int, float)) else 0.0
 
 
-def pegar(m, rotulo, obrigatorio=True):
-    """Busca valor pelo rótulo, tratando sinal (custo vem negativo, receita positivo)."""
-    k = _norm(rotulo)
-    if k in m:
-        return m[k]
-    if obrigatorio:
-        return None
-    return 0.0
+def monta_mes(ws, col, ano, mes):
+    """Constrói o dict de um mês lendo as 15 linhas do bloco FAST ESCOVA."""
+    v = {chave: num(ws.cell(row, col).value)
+         for row, (chave, _) in LINHAS_ESCOVA.items()}
 
+    receita_bruta   = v["receita_bruta"]
+    receita_liquida = v["receita_liquida"]
+    ebitda          = v["ebitda"]
 
-def monta_mes(dre_map, ano, mes):
-    """Constrói o dict de um mês a partir dos valores lidos da DRE."""
-    rec = pegar(dre_map, "Receita faturada (R$)") or pegar(dre_map, "Receita") or 0.0
-    # custos vêm negativos no P&L; converte pra positivo
-    def _custo(rot):
-        v = pegar(dre_map, rot, obrigatorio=False)
-        return -v if v and v < 0 else (v or 0.0)
+    # Valores em módulo (positivos) pra facilitar leitura
+    impostos   = abs(v["impostos"])
+    inad       = abs(v["inadimplencia"])
+    comissoes  = abs(v["comissoes"])
+    royalty    = abs(v["royalty"])
+    cmv        = abs(v["cmv"])
+    mkt_local  = abs(v["marketing_local"])
+    aluguel    = abs(v["aluguel_iptu"])
+    trinks     = abs(v["trinks_sults"])
+    pessoal    = abs(v["pessoal_clt"])
+    beleza_bst = abs(v["beleza_boost"])
+    midia      = abs(v["midia"])
 
-    comissao = _custo("Comissão sobre produção — VARIÁVEL") or _custo("Comissão sobre produção")
-    insumos = _custo("Produtos e insumos")
-    gerente = _custo("Gerente — fixo mensal") or _custo("Gerente")
-    clt_rec = _custo("Folha CLT — recepção (2 pessoas)") or _custo("Folha CLT recepção")
-    clt_lim = _custo("Folha CLT — limpeza") or _custo("Folha CLT limpeza")
-    vt = _custo("Vale-transporte da equipe") or _custo("Vale-transporte")
-    aluguel = _custo("Aluguel + IPTU")
-    marketing = _custo("Marketing (mídia, Beleza Boost, impressos, audiovisual)") or _custo("Marketing")
-    utilidades = _custo("Utilidades, telecom e consumo")
-    seguro = _custo("Seguro do imóvel")
-    franqueadora = _custo("Franqueadora, sistemas e taxas") or _custo("Franqueadora")
-    a_classificar = _custo("Outros ainda a classificar") or 0.0
+    # Grupos que a UI do painel espera (mesma estrutura de antes, adaptada)
+    def _row(cat, real, esp=None, nota="", prov=False, extra=None):
+        d = {"cat": cat, "real": real, "esp": esp if esp is not None else real,
+             "nota": nota, "prov": prov}
+        if extra: d.update(extra)
+        return d
 
-    SIMPLES, INSUMOS_PCT = 0.07, PREM["insumos"]
+    rec = receita_bruta
     grupos = [
-        ("VARIAVEL", "Custos variáveis — acompanham a venda", [
-            ("Comissão sobre produção", comissao, PREM["comissao"] * rec,
-             "premissa 32% da receita", False, {"esp_pct": PREM["comissao"], "real_delta_pct": comissao / max(rec,1)}),
-            ("Produtos e insumos (CMV)", insumos, INSUMOS_PCT * rec,
-             "premissa 6% da receita", False, {"esp_pct": INSUMOS_PCT, "real_delta_pct": insumos / max(rec,1)}),
-            ("Impostos sobre venda — Simples", SIMPLES * rec, SIMPLES * rec,
-             "7% da receita · provisionado por competência", True, {"esp_pct": SIMPLES, "real_pct": SIMPLES}),
-        ]),
-        ("PESSOAL", "Pessoal fixo — independe do faturamento", [
-            ("Gerente", gerente, PREM["gerente"], "R$ 6.500/mês"),
-            ("Folha CLT — recepção (2 pessoas)", clt_rec, 0.0, "não estava no modelo"),
-            ("Folha CLT — limpeza", clt_lim, 0.0, "não estava no modelo"),
-            ("Vale-transporte", vt, 0.0, "não estava no modelo"),
-        ]),
-        ("OCUPACAO", "Ocupação — o imóvel das duas lojas", [
-            ("Aluguel + IPTU", aluguel, PREM["aluguel"], "R$ 18.000/mês na premissa"),
-            ("Utilidades, telecom e consumo", utilidades, None, "sem premissa"),
-            ("Seguro do imóvel", seguro, None, "sem premissa"),
-        ]),
-        ("COMERCIAL", "Comercial e franquia", [
-            ("Marketing", marketing, PREM["midia"] + PREM["beleza_boost"], ""),
-            ("Franqueadora, sistemas e taxas", franqueadora, PREM["sistemas"], "Trinks + Sults"),
-            ("Royalty + marketing local", PREM["royalty_min"] + PREM["mkt_local"],
-             PREM["royalty_min"] + PREM["mkt_local"], "mínimo contratual · provisionado", True),
-        ]),
-        ("ABERTO", "Ainda sem classificação", [
-            ("Outros a classificar", a_classificar, 0.0, ""),
-        ]),
+        {"id": "VARIAVEL", "titulo": "Custos variáveis — acompanham a venda",
+         "linhas": [
+             _row("Comissão sobre produção", comissoes, comissoes,
+                  "32% da receita (premissa do modelo)", False,
+                  {"esp_pct": 0.32, "real_delta_pct": comissoes/max(rec,1)}),
+             _row("Produtos e insumos (CMV)", cmv, cmv,
+                  "12% da receita (Fast Escova)", False,
+                  {"esp_pct": 0.12, "real_delta_pct": cmv/max(rec,1)}),
+             _row("Impostos sobre venda — Simples", impostos, impostos,
+                  "7% da receita · provisionado por competência", True,
+                  {"esp_pct": 0.07, "real_pct": 0.07}),
+             _row("Inadimplência 2%", inad, inad,
+                  "2% da receita bruta", False),
+         ]},
+        {"id": "PESSOAL", "titulo": "Pessoal fixo — CLT",
+         "linhas": [
+             _row("Pessoal CLT (recepção + limpeza + gerente + encargos)",
+                  pessoal, pessoal, "consolidado do painel"),
+         ]},
+        {"id": "OCUPACAO", "titulo": "Ocupação — rateio 45,5% do imóvel",
+         "linhas": [
+             _row("Aluguel + IPTU", aluguel, aluguel,
+                  "45,5% do rateio das 2 lojas"),
+             _row("Trinks + Sults (sistemas)", trinks, trinks,
+                  "45,5% rateio"),
+         ]},
+        {"id": "COMERCIAL", "titulo": "Comercial e franquia",
+         "linhas": [
+             _row("Mídia paga", midia, midia,
+                  "45,5% rateio · varia por fase"),
+             _row("Beleza Boost (gestão)", beleza_bst, beleza_bst,
+                  "100% Fast Escova"),
+             _row("Marketing local mínimo", mkt_local, mkt_local,
+                  "mínimo contratual"),
+             _row("Royalty", royalty, royalty,
+                  "máx entre R$ 2.500 e 7% da receita · provisionado", True),
+         ]},
     ]
 
-    def soma(g, i):
-        return sum((l[i] or 0.0) for l in g[2])
+    def soma(g, key):
+        return sum((l[key] or 0.0) for l in g["linhas"])
 
-    G = [{"id": g[0], "titulo": g[1],
-          "linhas": [dict({"cat": l[0], "real": l[1], "esp": l[2], "nota": l[3],
-                           "prov": len(l) > 4 and l[4]}, **(l[5] if len(l) > 5 else {}))
-                     for l in g[2]],
-          "sub_real": soma(g, 1), "sub_esp": soma(g, 2)} for g in grupos]
-    gi = {g["id"]: g for g in G}
+    for g in grupos:
+        g["sub_real"] = soma(g, "real")
+        g["sub_esp"] = soma(g, "esp")
+    gi = {g["id"]: g for g in grupos}
 
-    var_real = gi["VARIAVEL"]["sub_real"]; var_esp = gi["VARIAVEL"]["sub_esp"]
-    fixo_real = sum(gi[k]["sub_real"] for k in ("PESSOAL", "OCUPACAO", "COMERCIAL", "ABERTO"))
-    fixo_esp = sum(gi[k]["sub_esp"] for k in ("PESSOAL", "OCUPACAO", "COMERCIAL", "ABERTO"))
+    var_real = gi["VARIAVEL"]["sub_real"]
+    fixo_real = sum(gi[k]["sub_real"] for k in ("PESSOAL", "OCUPACAO", "COMERCIAL"))
     real_total = var_real + fixo_real
-    esp_total = var_esp + fixo_esp
-    prov = sum(l["real"] for g in G for l in g["linhas"] if l["prov"])
-    resultado = rec - real_total
-    caixa_real = resultado + prov
+    prov = sum(l["real"] for g in grupos for l in g["linhas"] if l["prov"])
 
     return {
         "ano": ano, "mes": mes, "chave": f"{ano}-{mes:02d}",
-        "receita_real": rec, "receita_meta": META_MES,
-        "grupos": G,
-        "var_real": var_real, "var_esp": var_esp,
-        "fixo_real": fixo_real, "fixo_esp": fixo_esp,
-        "custo_real": real_total, "custo_esp": esp_total,
-        "res_real": resultado, "res_caixa": caixa_real,
+        "receita_bruta": receita_bruta,
+        "receita_liquida": receita_liquida,
+        "receita_real": receita_bruta,
+        "receita_meta": META_MES,
+        "ebitda": ebitda,
+        "margem_contribuicao": v["margem_contribuicao"],
+        "grupos": grupos,
+        "var_real": var_real, "var_esp": var_real,
+        "fixo_real": fixo_real, "fixo_esp": fixo_real,
+        "custo_real": real_total, "custo_esp": real_total,
+        "res_real": ebitda,
+        "res_caixa": ebitda + prov,
         "provisoes_nao_debitadas": prov,
     }
 
@@ -193,108 +172,88 @@ def main():
     if not os.path.exists(PAINEL):
         print(f"❌ Painel não encontrado: {PAINEL}"); sys.exit(1)
     wb = openpyxl.load_workbook(PAINEL, data_only=True)
+    if "DRE" not in wb.sheetnames:
+        print(f"❌ Aba 'DRE' não existe. Disponíveis: {wb.sheetnames}"); sys.exit(1)
+    ws = wb["DRE"]
 
-    # 1. Aba DRE (com fallback pra P&L_Operacional se DRE não existir)
-    if "DRE" in wb.sheetnames:
-        ws_dre = wb["DRE"]
-        print(f"[dre] usando aba 'DRE' · {ws_dre.max_row} linhas × {ws_dre.max_column} cols")
-    elif "P&L_Operacional" in wb.sheetnames:
-        ws_dre = wb["P&L_Operacional"]
-        print("[dre] aba 'DRE' não encontrada · fallback pra 'P&L_Operacional'")
-    else:
-        print(f"❌ Nem 'DRE' nem 'P&L_Operacional' existem. Abas: {wb.sheetnames}"); sys.exit(1)
-
-    # 2. Detectar colunas dos meses
-    cols_meses = detectar_meses(ws_dre)
+    cols_meses = detectar_meses(ws)
     if not cols_meses:
-        print("❌ Não achei cabeçalhos de mês nas primeiras 5 linhas × 20 colunas.")
-        print("   Formatos aceitos: 'Jan/26', 'Janeiro', '01/2026', datetime, etc")
-        print("   Verifique se a linha do cabeçalho tem os meses e roda de novo.")
-        # Mostra o que achou pra debug
-        print("\n   Preview das primeiras 3 linhas × 12 cols:")
-        for r in range(1, 4):
-            row_vals = [str(ws_dre.cell(r, c).value or "")[:15] for c in range(1, 13)]
-            print(f"     R{r}: {' | '.join(row_vals)}")
-        sys.exit(1)
-    print(f"[dre] {len(cols_meses)} meses detectados:")
-    for c in sorted(cols_meses):
-        ano, mes = cols_meses[c]
-        print(f"     col {c} = {ano}-{mes:02d}")
+        print("❌ Não achei cabeçalhos de mês na linha 4"); sys.exit(1)
 
-    # 3. Ler cada mês
+    print(f"[dre] {len(cols_meses)} meses detectados de {min(cols_meses.values())} a {max(cols_meses.values())}")
+
     meses = {}
     for col, (ano, mes) in cols_meses.items():
-        dre_map = ler_dre(ws_dre, col)
-        if not dre_map:
-            print(f"[warn] col {col} ({ano}-{mes:02d}): dre_map vazio, pulando")
-            continue
-        m = monta_mes(dre_map, ano, mes)
+        m = monta_mes(ws, col, ano, mes)
         meses[m["chave"]] = m
-        if m["receita_real"] > 0:
-            print(f"     {m['chave']}: receita R$ {m['receita_real']:,.2f} · resultado R$ {m['res_real']:,.2f}")
 
-    if not meses:
-        print("❌ Nenhum mês com dados válidos"); sys.exit(1)
+    # Log resumo
+    print("\n[dre] Resumo por mês (só Fast Escova):")
+    print(f"  {'MÊS':<10} {'RECEITA':>12} {'CUSTOS':>12} {'EBITDA':>12}")
+    for k in sorted(meses):
+        m = meses[k]
+        if m["receita_bruta"] > 0 or m["custo_real"] > 0:
+            print(f"  {k:<10} {m['receita_bruta']:>12,.2f} {m['custo_real']:>12,.2f} {m['res_real']:>12,.2f}")
 
-    # 4. Determinar mês corrente e último mês fechado
+    # Determinar mês principal
     hoje = datetime.date.today()
     chave_hoje = f"{hoje.year}-{hoje.month:02d}"
-    mes_corrente = meses.get(chave_hoje)
-    # Último mês fechado: mês corrente-1 com dados válidos
-    meses_com_dados = sorted([k for k in meses if meses[k]["receita_real"] > 0])
+    principal = meses.get(chave_hoje)
+    if not principal or principal["receita_bruta"] == 0:
+        # Fallback: último mês fechado com dados
+        candidatos = sorted([k for k in meses if meses[k]["receita_bruta"] > 0 and k <= chave_hoje])
+        if candidatos:
+            principal = meses[candidatos[-1]]
+        else:
+            principal = meses.get(chave_hoje) or next(iter(meses.values()))
+
     mes_fechado_chave = None
-    for k in reversed(meses_com_dados):
-        if k < chave_hoje:
+    for k in sorted(meses, reverse=True):
+        if k < chave_hoje and meses[k]["receita_bruta"] > 0:
             mes_fechado_chave = k; break
-    mes_fechado = meses.get(mes_fechado_chave) if mes_fechado_chave else None
 
-    # Kpis: se tem mês corrente, usa. Senão, último fechado.
-    principal = mes_corrente if mes_corrente and mes_corrente["receita_real"] > 0 else mes_fechado
-    if not principal:
-        # Fallback: primeiro mês com dados
-        principal = meses[meses_com_dados[0]] if meses_com_dados else next(iter(meses.values()))
+    # Equilíbrio: usa dados do PRÓPRIO mês principal (não hardcoded)
+    rec_p = principal["receita_bruta"]
+    fixo_p = principal["fixo_real"]
+    var_pct_p = principal["var_real"] / max(rec_p, 1)
+    mc_pct_p = 1 - var_pct_p
+    be_mes = fixo_p / max(mc_pct_p, 0.01)
 
-    # ---- Ponto de equilíbrio (herdado do modelo antigo) ----
-    FIXO = 41816.32 + 1300.00  # CashMe/Pronampe fora
-    rec_p = principal["receita_real"]
-    com_p = principal["grupos"][0]["linhas"][0]["real"]
-    com_pct = com_p / max(rec_p, 1)
-    SIMPLES, INSUMOS_PCT = 0.07, PREM["insumos"]
-    mc_meta = 1 - PREM["comissao"] - INSUMOS_PCT - SIMPLES
-    fixo_modelo = PREM["aluguel"] + PREM["gerente"] + PREM["midia"] + PREM["beleza_boost"] \
-                  + PREM["sistemas"] + PREM["royalty_min"] + PREM["mkt_local"]
-
-    # ---- Payload ----
     d = {
         "gerado_em": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
         "baseline": hoje.isoformat(),
         "custos_ate": hoje.isoformat(),
-        "mes_corrente_chave": mes_corrente["chave"] if mes_corrente else None,
+        "mes_corrente_chave": chave_hoje if chave_hoje in meses else None,
+        "mes_principal_chave": principal["chave"],
         "mes_fechado_chave": mes_fechado_chave,
+        "loja": "FAST ESCOVA LIMÃO",
         "kpis": {
-            "caixa_conta": 5060.93,   # TODO: puxar do Stone/extrato
+            "caixa_conta": 5060.93,   # TODO: puxar do extrato
             "a_receber_stone": 20742.90,
             "resultado_mes": principal["res_real"],
             "resultado_mes_caixa": principal["res_caixa"],
-            "receita_mes": principal["receita_real"],
+            "receita_mes": principal["receita_bruta"],
             "meta_mes": META_MES,
         },
-        "meses": meses,  # todos os meses lidos da DRE
-        "resultado": {  # mês PRINCIPAL (corrente com dados, ou último fechado)
+        "meses": meses,
+        "resultado": {
             **principal,
-            "res_esp_mesma_receita": rec_p - principal["custo_esp"],
-            "res_esp_na_meta": META_MES * mc_meta - fixo_modelo,
-            "be_modelo_1loja": fixo_modelo / mc_meta,
-            "mc_real": rec_p - principal["var_real"],
-            "mc_esp": rec_p - principal["var_esp"],
+            "res_esp_mesma_receita": principal["res_real"],  # projetado = real no Excel
+            "res_esp_na_meta": None,  # o Excel já tem os cenários projetados
+            "be_modelo_1loja": be_mes,
+            "mc_real": principal["margem_contribuicao"],
+            "mc_esp": principal["margem_contribuicao"],
         },
-        "premissas": {"comissao": PREM["comissao"], "insumos": INSUMOS_PCT, "simples": SIMPLES},
+        "premissas": {
+            "comissao": 0.32, "insumos": 0.12, "simples": 0.07, "inadimplencia": 0.02,
+        },
         "equilibrio": {
             "fatura_hoje": rec_p,
-            "custo_fixo_mes": FIXO,
+            "custo_fixo_mes": fixo_p,
             "cenarios": [
-                {"nome": "Com a comissão atual", "comissao": com_pct, "mc": 1 - com_pct - INSUMOS_PCT - SIMPLES},
-                {"nome": "Se subir para 40%", "comissao": 0.40, "mc": 1 - 0.40 - INSUMOS_PCT - SIMPLES},
+                {"nome": "Projetado do Excel", "comissao": 0.32, "mc": mc_pct_p},
+                {"nome": "Se comissão subir para 40%", "comissao": 0.40,
+                 "mc": 1 - 0.40 - 0.12 - 0.07 - 0.02},
             ],
         },
     }
@@ -302,8 +261,11 @@ def main():
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as f:
         json.dump(d, f, ensure_ascii=False, indent=1)
+
     print(f"\n✓ gerado: {OUT}")
-    print(f"  {len(meses)} meses no JSON · mês principal: {principal['chave']}")
+    print(f"  {len(meses)} meses · mês principal: {principal['chave']} (R$ {principal['receita_bruta']:,.2f})")
+    if mes_fechado_chave:
+        print(f"  Último fechado com receita: {mes_fechado_chave}")
 
 
 if __name__ == "__main__":
