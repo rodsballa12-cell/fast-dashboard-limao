@@ -28,6 +28,10 @@
       }
     ]
   },
+  "pessoal_clt": {
+    "_desc": "Detalhamento do pessoal CLT que hoje o Excel consolida numa linha. O 'salario_gerente_com_encargos' é subtraído do total pessoal_clt do Excel pra mostrar a gerente como linha separada na DRE.",
+    "salario_gerente_com_encargos": 6500
+  },
   "metas_franqueadora": {
     "_desc": "Metas mensais oficiais fornecidas pela franqueadora, POR RECEPCIONISTA. Multiplicadas por `recepcionistas` pra chegar no total da loja. Resto (META_MENSAL - subtotal) vira 'servicos_gerais'.",
     "recepcionistas": 2,

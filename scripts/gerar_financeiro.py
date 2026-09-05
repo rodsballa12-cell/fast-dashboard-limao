@@ -23,6 +23,17 @@ OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
 
 META_MES = 60000.00
 
+# Carrega config pra puxar salário da gerente (separa do pessoal_clt consolidado do Excel)
+def _load_cfg():
+    cfg_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "config.json")
+    try:
+        with open(cfg_path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+CFG = _load_cfg()
+SALARIO_GERENTE = float(((CFG.get("pessoal_clt") or {}).get("salario_gerente_com_encargos")) or 6500)
+
 # Linhas da DRE FAST ESCOVA (bloco 8-22)
 # rot_key: (linha, sinal_positivo?) — se True mantém sinal, se False inverte
 LINHAS_ESCOVA = {
@@ -114,8 +125,11 @@ def monta_mes(ws, col, ano, mes):
          ]},
         {"id": "PESSOAL", "titulo": "Pessoal fixo — CLT",
          "linhas": [
-             _row("Pessoal CLT (recepção + limpeza + gerente + encargos)",
-                  pessoal, pessoal, "consolidado do painel"),
+             _row("Gerente (CLT com encargos)", SALARIO_GERENTE, SALARIO_GERENTE,
+                  "salário + INSS + FGTS + férias/13º proporcional"),
+             _row("Recepção + limpeza + encargos", max(pessoal - SALARIO_GERENTE, 0),
+                  max(pessoal - SALARIO_GERENTE, 0),
+                  "total pessoal do Excel menos gerente"),
          ]},
         {"id": "OCUPACAO", "titulo": "Ocupação — rateio 45,5% do imóvel",
          "linhas": [
