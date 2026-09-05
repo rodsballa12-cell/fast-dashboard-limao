@@ -1247,6 +1247,44 @@ def main():
         "top": churn_candidatos[:20],
     }
 
+    # === Série diária de clientes NOVOS (para o funil respeitar a competência) ===
+    # O funil do painel cruza gasto de mídia com clientes novos do Trinks. Enquanto
+    # o número de novos era só o do mês fechado, o funil ficava travado em agosto
+    # e não acompanhava a janela escolhida (Hoje / 7d / mês / 90d).
+    #
+    # "Novo" aqui é primeira visita de todas, não "cadastrado no período": é essa
+    # a pessoa que a mídia pode ter trazido. Quem já tinha vindo antes e voltou é
+    # retorno, mesmo que o cadastro seja recente. Como o fetch cobre o ano inteiro
+    # desde 01/01, a primeira visita é confiável — a loja começou a operar em julho.
+    primeira_visita = {cid: min(datas) for cid, datas in cli_visitas.items() if datas}
+    novos_por_dia = defaultdict(lambda: {"novos": 0, "atend": 0, "receita": 0.0})
+    for cid, d0 in primeira_visita.items():
+        novos_por_dia[d0]["novos"] += 1
+    for a in agend:
+        if (a.get("status") or {}).get("nome") != "Finalizado": continue
+        cid = (a.get("cliente") or {}).get("id")
+        if cid is None: continue
+        try:
+            dt = parse_trinks_dt(a["dataHoraInicio"]).date()
+        except Exception:
+            continue
+        # Só o atendimento do próprio dia de estreia conta como receita de novo
+        if primeira_visita.get(cid) != dt: continue
+        novos_por_dia[dt]["atend"] += 1
+        novos_por_dia[dt]["receita"] += float(a.get("valor") or 0)
+    # `receita` é só a visita de estreia — o que a janela de mídia produziu de
+    # caixa imediato. `receita_ltv` é tudo que essa safra já gastou até hoje,
+    # incluindo os retornos: é o retorno real da aquisição, e cresce depois que
+    # a janela fecha. Os dois juntos mostram o piso e o acumulado do ROAS.
+    for cid, d0 in primeira_visita.items():
+        novos_por_dia[d0]["ltv"] = novos_por_dia[d0].get("ltv", 0.0) + cli_valor.get(cid, 0.0)
+    serie_novos_dia = [
+        {"data": d.isoformat(), "novos": v["novos"], "atend": v["atend"],
+         "receita": brl_round(v["receita"]), "receita_ltv": brl_round(v.get("ltv", 0.0))}
+        for d, v in sorted(novos_por_dia.items())
+        if (hoje - d).days <= 180
+    ]
+
     # === Aniversariantes próximos (14 dias) ===
     aniversariantes = []
     for cid, (mm, dd, nome) in aniv_map.items():
@@ -2181,6 +2219,7 @@ def main():
                 "parcelas": a_anual.get("parcelas", []),
                 "categoria_native": a_anual.get("categoria_native", []),
                 "churn_early": churn,
+                "serie_novos_dia": serie_novos_dia,
                 "cross_sell": cross_sell_data,
                 "aniversariantes": aniversariantes,
                 "seg_canal": seg_canal,
