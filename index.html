@@ -2844,13 +2844,23 @@ function renderFinanceiro(){
       ${excelBadge}
     </div>
     <div class="cap">Receita direto do Trinks (atualiza sozinho). Projetado vem do Excel quando você atualiza o painel — você faz a cada 15 dias.</div>
-    <div class="kpi-grid fin5" style="margin-top:12px">
-      ${kpiCard('k1','RECEITA ATÉ HOJE', brl0(rec_atual), `${dias_op_atual}d operados · ritmo R\$ ${(rec_atual/Math.max(dias_op_atual,1)).toFixed(0)}/dia`, null)}
+    ${(()=>{
+      const falta_projMes  = Math.max(proj_final - rec_atual, 0);
+      const dias_rest      = Math.max(dias_op_mes - dias_op_atual, 0);
+      const ritmo_atual    = rec_atual / Math.max(dias_op_atual, 1);
+      const ritmo_precisa  = dias_rest > 0 ? falta_projMes / dias_rest : 0;
+      const gap_ritmo      = ritmo_precisa - ritmo_atual;
+      const perc_realizado = proj_final > 0 ? rec_atual / proj_final : 0;
+      const barFalta = `<div class="be-bar"><span style="width:${(perc_realizado*100).toFixed(1)}%"></span></div>`
+        + `<div class="be-leg">${(perc_realizado*100).toFixed(0)}% realizado · faltam ${dias_rest}d</div>`;
+      return `<div class="kpi-grid fin5" style="margin-top:12px">
+      ${kpiCard('k1','RECEITA ATÉ HOJE', brl0(rec_atual), `${dias_op_atual}d operados · ritmo R\$ ${ritmo_atual.toFixed(0)}/dia`, null)}
       ${kpiCard('k2', projLabel, brl0(proj_final), projHint, null)}
-      ${kpiCard('k3','RESULTADO PROJETADO', brl0(res_proj), res_proj >= 0 ? 'lucro na projeção' : 'prejuízo na projeção · acelerar', null)}
-      ${kpiCard('k4', mesAntNome.toUpperCase()+' FECHADO', brl0(rec_ant), `Meta 60k · ${finPct(rec_ant/60000)} atingido`, null)}
-      ${kpiCard('k5','Δ RITMO/DIA', delta_ritmo+'%', `vs média ${mesAntNome}`, null)}
-    </div>
+      ${kpiCard('k3 kpi-be','FALTA FATURAR NO MÊS', brl0(falta_projMes), barFalta, null)}
+      ${kpiCard('k4','RITMO NECESSÁRIO', 'R\$ '+ritmo_precisa.toFixed(0)+'/dia', `atual R\$ ${ritmo_atual.toFixed(0)}/dia · ${gap_ritmo>0?'acelerar +':'sobra '}R\$ ${Math.abs(gap_ritmo).toFixed(0)}/dia`, null)}
+      ${kpiCard('k5','RESULTADO PROJETADO', brl0(res_proj), `EBITDA se fechar em ${brl0(proj_final)} · ${mesAntNome} foi ${brl0(rec_ant)}`, null)}
+    </div>`;
+    })()}
     <div class="insight" style="margin-top:12px">
       <strong>Como ler:</strong> receita ao vivo do Trinks · projetado vem do Excel · DRE detalhada abaixo compara <em>Realizado (Trinks)</em> vs <em>Projetado (Excel)</em>.
     </div>
