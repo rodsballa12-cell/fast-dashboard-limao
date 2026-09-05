@@ -3097,28 +3097,6 @@ function renderMidias(){
   const tsEl = document.getElementById('midias-atualizado');
   if(tsEl) tsEl.textContent = 'atualizado ' + gerado;
 
-  // Health Score consolidado (A-F)
-  const dMtd = deltas.mtd || {};
-  let score = 100;
-  const p30d = pmtd;
-  if(p30d.cpa_msg && p30d.cpa_msg > bench.cpa_msg_meta) score -= 15;
-  if(p30d.ctr_pct < bench.ctr_meta) score -= 10;
-  if(p30d.frequency >= bench.frequency_alerta) score -= 20;
-  if(p30d.frequency >= 2.8 && p30d.frequency < bench.frequency_alerta) score -= 8;
-  if(dMtd.cpa_msg_pct > 15) score -= 15;
-  if(dMtd.conversas_msg_pct < -10) score -= 15;
-  if(dMtd.gasto_pct > 20) score -= 5;
-  score = Math.max(0, score);
-  const grade = score >= 90 ? 'A' : score >= 75 ? 'B' : score >= 60 ? 'C' : score >= 40 ? 'D' : 'F';
-  const gradeColor = {A:'#22c55e', B:'#3b82f6', C:'#f59e0b', D:'#ef4444', F:'#7f1d1d'}[grade];
-  const gradeMsg = {
-    A: 'Saudável em todos os fatores. Manter estratégia.',
-    B: 'Boa performance com 1-2 pontos de atenção.',
-    C: 'Média. Vários indicadores precisam ajuste.',
-    D: 'Fraca. Ação corretiva imediata.',
-    F: 'Crítica. Parar e reavaliar estratégia toda.'
-  }[grade];
-
   // Forecast do mês CORRENTE (dinâmico, em BRT)
   const hojeFmt = new Intl.DateTimeFormat('pt-BR', {timeZone:'America/Sao_Paulo', day:'numeric', month:'numeric', year:'numeric'}).formatToParts(new Date());
   const dia = parseInt(hojeFmt.find(p=>p.type==='day').value, 10);
@@ -3130,9 +3108,205 @@ function renderMidias(){
   const projGasto = pmtd.gasto * (diasNoMes/dia);
   const projConversas = Math.round(pmtd.conversas_msg * (diasNoMes/dia));
 
+  // ── Health Score por período ───────────────────────────────────────────────
+  // Antes a nota saía sempre do MTD e era repetida nas quatro abas — Hoje,
+  // Semana, Mês e 90 dias mostravam a mesma letra. Cada janela responde a uma
+  // pergunta diferente e agora tem regra própria:
+  //   Hoje    → a conta está ENTREGANDO no ritmo? (eficiência com 3 conversas é ruído)
+  //   Semana  → eficiência operacional + dias sem entrega na janela
+  //   Mês     → acumulado vs mesmos dias do mês anterior + ritmo de verba
+  //   90 dias → estrutura e tendência (o mês recente está melhor ou pior que o trimestre?)
+  //
+  // O teto de frequência também deixou de ser único. Frequência é acumulada:
+  // 3,55 em 90 dias é normal, os mesmos 3,55 em 7 dias seriam saturação.
+
   const per = window._midiasPer || 'mtd';
   const pMap = {'hoje':M.por_periodo.hoje, '7d':p7, 'mtd':pmtd, '90d':M.por_periodo['90d']};
   const pSel = pMap[per] || pmtd;
+  const diasDe = p => Math.round((new Date(p.fim) - new Date(p.inicio))/86400000) + 1;
+  const serieDia = M.serie_diaria_30d || [];
+
+  // Interpolação linear sobre uma lista de âncoras [x, y]
+  const interp = (pts, x) => {
+    if(x <= pts[0][0]) return pts[0][1];
+    for(let i=1;i<pts.length;i++)
+      if(x <= pts[i][0])
+        return pts[i-1][1] + (pts[i][1]-pts[i-1][1])*(x-pts[i-1][0])/(pts[i][0]-pts[i-1][0]);
+    return pts[pts.length-1][1];
+  };
+  // Teto de frequência por tamanho de janela: 1d→1,8 · 7d→2,5 · 30d→3,0 · 90d→4,0
+  const freqTeto = dias => interp([[0,1.8],[0.845,2.5],[1.477,3.0],[1.954,4.0]], Math.log10(Math.max(1,dias)));
+  // Fração do gasto diário já entregue às h horas (BRT). A entrega não é uniforme:
+  // madrugada quase não gasta, o grosso sai da tarde para a noite.
+  const curvaDia = h => interp([[0,0],[6,.08],[12,.30],[18,.63],[24,1]], h);
+
+  // Hora BRT da geração do dado — o card "Hoje" vai até esse ponto, não até 24h
+  const _hp = new Intl.DateTimeFormat('en-GB',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(MID.gerado_em));
+  const horaBRT = (+_hp.find(x=>x.type==='hour').value) + (+_hp.find(x=>x.type==='minute').value)/60;
+
+  // Mediana dos dias que entregaram — base de ritmo mais robusta que a média,
+  // que os 4 dias parados de agosto puxariam para baixo.
+  const _entregando = serieDia.filter(x => (x.gasto||0) > 0).map(x => x.gasto).sort((a,b)=>a-b);
+  const medDia = _entregando.length ? _entregando[Math.floor(_entregando.length/2)] : null;
+  const mortosNa = p => serieDia.filter(x => x.data >= p.inicio && x.data <= p.fim && !(x.gasto > 0)).length;
+
+  // Número em pt-BR, tolerante a ausente: o texto de cada fator é montado antes
+  // de tira() testar a condição, então um delta que não existe não pode estourar.
+  const nb = (v, c=1) => (v == null || !isFinite(v)) ? '—' : v.toFixed(c).replace('.', ',');
+
+  // Acumulador de nota: cada regra que dispara tira peso e deixa a linha visível.
+  const Nota = () => {
+    const fat = []; let s = 100;
+    return {
+      tira(cond, peso, sev, texto){ if(cond){ s -= peso; fat.push({peso, sev, texto}); } return this; },
+      diz(sev, texto){ fat.push({peso:0, sev, texto}); return this; },
+      fim(){ return {score: Math.max(0, Math.round(s)), fatores: fat}; }
+    };
+  };
+
+  function avaliar(per, p){
+    const dias = diasDe(p), teto = freqTeto(dias), meta = bench.cpa_msg_meta;
+    const cpa = p.cpa_msg, n = Nota();
+
+    if(per === 'hoje'){
+      // Dia parcial: julgar CPA com 3 conversas às 8h é ruído. O que dá para
+      // afirmar é se o dinheiro está saindo no ritmo dos dias que entregaram.
+      const esperado = medDia ? medDia * curvaDia(horaBRT) : null;
+      const ritmo = esperado ? p.gasto/esperado : null;
+      const hh = Math.floor(horaBRT), hstr = `${String(hh).padStart(2,'0')}h`;
+      n.tira(!p.gasto && horaBRT >= 10, 65, 'crit', `Nenhuma entrega registrada até as ${hstr} — é a assinatura de conta travada`);
+      n.tira(!p.gasto && horaBRT < 10, 12, 'warn', `Ainda sem entrega às ${hstr}, mas é cedo para concluir`);
+      if(ritmo != null && p.gasto > 0){
+        n.tira(ritmo < 0.5, 28, 'crit', `Entregou ${(ritmo*100).toFixed(0).replace('.',',')}% do esperado até as ${hstr} (${brl(p.gasto)} de ~${brl(esperado)})`);
+        n.tira(ritmo >= 0.5 && ritmo < 0.75, 12, 'warn', `Ritmo em ${(ritmo*100).toFixed(0).replace('.',',')}% do esperado até as ${hstr}`);
+        n.tira(ritmo > 1.6, 8, 'warn', `Gastando ${(ritmo*100).toFixed(0).replace('.',',')}% acima do ritmo — o dia deve fechar bem acima da média`);
+        if(ritmo >= 0.75 && ritmo <= 1.6 && !(p.conversas_msg === 0 && horaBRT >= 12)) n.diz('ok', `Entrega no ritmo: ${brl(p.gasto)} contra ~${brl(esperado)} esperados até as ${hstr}`);
+      }
+      n.tira(p.conversas_msg === 0 && medDia && p.gasto > medDia*0.25, 35, 'crit', `${brl(p.gasto)} gastos e nenhuma conversa iniciada`);
+      if(p.conversas_msg >= 5){
+        n.tira(cpa > meta*1.3, 14, 'warn', `CPA de ${brl(cpa)} em ${p.conversas_msg} conversas, acima da meta de ${brl(meta)}`);
+        n.tira(cpa <= meta*0.7, 0, 'ok', `CPA de ${brl(cpa)} bem abaixo da meta`);
+      } else if(p.conversas_msg > 0){
+        n.diz('info', `${p.conversas_msg} conversa(s) até agora — amostra pequena demais para julgar CPA. O ${brl(cpa)} do card é indicativo, não nota.`);
+      }
+      return n.fim();
+    }
+
+    if(per === '7d'){
+      const d = deltas['7d'] || {}, mortos = mortosNa(p);
+      const dCpa = d.cpa_msg_pct, dConv = d.conversas_msg_pct;
+      n.tira(cpa > meta*1.3, 20, 'crit', `CPA de ${brl(cpa)} na semana, 30% acima da meta de ${brl(meta)}`);
+      n.tira(cpa > meta && cpa <= meta*1.3, 11, 'warn', `CPA de ${brl(cpa)} acima da meta de ${brl(meta)}`);
+      n.tira(cpa <= meta*0.75, 0, 'ok', `CPA de ${brl(cpa)}, bem abaixo da meta`);
+      n.tira(p.ctr_pct < bench.ctr_meta, 10, 'warn', `CTR de ${p.ctr_pct.toFixed(2).replace('.',',')}% abaixo da meta de ${bench.ctr_meta}%`);
+      n.tira(p.frequency >= teto, 15, 'warn', `Frequência ${p.frequency.toFixed(2).replace('.',',')} no teto de ${teto.toFixed(2).replace('.',',')} para 7 dias — o público está vendo demais`);
+      n.tira(mortos > 0, Math.min(36, mortos*14), 'crit', `${mortos} dia(s) sem nenhuma entrega dentro da janela`);
+      n.tira(dCpa > 15, 12, 'warn', `CPA ${nb(dCpa)}% pior que a semana anterior`);
+      n.tira(dConv < -10, 12, 'warn', `${nb(Math.abs(dConv))}% menos conversas que a semana anterior`);
+      n.tira(dConv > 10, 0, 'ok', `+${nb(dConv)}% de conversas contra a semana anterior`);
+      n.tira(p.cpm > bench.cpm_meta, 5, 'warn', `CPM de ${brl(p.cpm)} acima da meta de ${brl(bench.cpm_meta)}`);
+      return n.fim();
+    }
+
+    if(per === 'mtd'){
+      const d = deltas.mtd || {}, mortos = mortosNa(p);
+      const dCpa = d.cpa_msg_pct, dConv = d.conversas_msg_pct;
+      const orcado = (M.verba_setembro && M.verba_setembro.budget_diario_configurado) || null;
+      n.tira(cpa > meta*1.3, 18, 'crit', `CPA de ${brl(cpa)} no mês, 30% acima da meta de ${brl(meta)}`);
+      n.tira(cpa > meta && cpa <= meta*1.3, 10, 'warn', `CPA de ${brl(cpa)} acima da meta de ${brl(meta)}`);
+      n.tira(cpa <= meta*0.75, 0, 'ok', `CPA de ${brl(cpa)}, abaixo da meta`);
+      n.tira(p.ctr_pct < bench.ctr_meta, 8, 'warn', `CTR de ${p.ctr_pct.toFixed(2).replace('.',',')}% abaixo da meta de ${bench.ctr_meta}%`);
+      n.tira(p.frequency >= teto, 12, 'warn', `Frequência ${p.frequency.toFixed(2).replace('.',',')} no teto de ${teto.toFixed(2).replace('.',',')} para ${dias} dias`);
+      n.tira(mortos > 0, Math.min(24, mortos*12), 'crit', `${mortos} dia(s) sem entrega dentro do mês`);
+      n.tira(dCpa > 15, 15, 'crit', `CPA ${nb(dCpa)}% pior que os mesmos ${dias} dias do mês passado`);
+      n.tira(dConv < -10, 15, 'crit', `${nb(Math.abs(dConv))}% menos conversas que os mesmos ${dias} dias do mês passado`);
+      n.tira(dConv > 10, 0, 'ok', `+${nb(dConv)}% de conversas contra o mesmo trecho do mês passado`);
+      if(orcado){
+        const projec = (p.gasto/dias) * diasNoMes, alvo = orcado * diasNoMes;
+        n.tira(projec > alvo*1.15, 10, 'warn', `No ritmo atual o mês fecha em ${brl(projec,0)} contra ${brl(alvo,0)} de verba configurada (+${((projec/alvo-1)*100).toFixed(0).replace('.',',')}%)`);
+        n.tira(projec < alvo*0.8, 8, 'warn', `No ritmo atual o mês fecha em ${brl(projec,0)}, ${((1-projec/alvo)*100).toFixed(0).replace('.',',')}% abaixo da verba de ${brl(alvo,0)} — verba parada não vira conversa`);
+      }
+      n.diz('info', `${dias} de ${diasNoMes} dias corridos — a nota fica mais firme conforme o mês avança.`);
+      return n.fim();
+    }
+
+    // 90 dias: estrutura e tendência. Não há período anterior para comparar, então
+    // a comparação é interna — o mês recente contra o próprio trimestre.
+    const c30 = p30 ? p30.cpa_msg : null;
+    n.tira(cpa > meta*1.3, 18, 'crit', `CPA de ${brl(cpa)} no trimestre, 30% acima da meta de ${brl(meta)}`);
+    n.tira(cpa > meta && cpa <= meta*1.3, 10, 'warn', `CPA de ${brl(cpa)} acima da meta de ${brl(meta)}`);
+    n.tira(cpa <= meta*0.75, 0, 'ok', `CPA de ${brl(cpa)} no trimestre, abaixo da meta de ${brl(meta)}`);
+    n.tira(p.ctr_pct < bench.ctr_meta, 8, 'warn', `CTR de ${p.ctr_pct.toFixed(2).replace('.',',')}% abaixo da meta de ${bench.ctr_meta}%`);
+    n.tira(p.frequency >= teto, 14, 'warn', `Frequência ${p.frequency.toFixed(2).replace('.',',')} acima do teto de ${teto.toFixed(2).replace('.',',')} para 90 dias — o raio de 5 km já está saturado`);
+    if(c30 && cpa){
+      n.tira(c30 > cpa*1.15, 18, 'crit', `Piorando: os últimos 30 dias custam ${brl(c30)} por conversa contra ${brl(cpa)} do trimestre (+${((c30/cpa-1)*100).toFixed(0).replace('.',',')}%)`);
+      n.tira(c30 < cpa*0.9, 0, 'ok', `Melhorando: os últimos 30 dias custam ${brl(c30)} contra ${brl(cpa)} do trimestre`);
+      n.tira(c30 >= cpa*0.9 && c30 <= cpa*1.15, 0, 'info', `Estável: 30 dias em ${brl(c30)} contra ${brl(cpa)} do trimestre`);
+    }
+    const mortos90 = mortosNa(p);
+    n.tira(mortos90 > 0, Math.min(10, mortos90*3), 'warn', `${mortos90} dia(s) sem entrega no trecho de 30 dias visível da série — a parada de 27 a 31/08`);
+    n.diz('info', 'Sem período anterior para comparar: 90 dias já cobrem quase toda a vida da conta, que só passou a entregar em 03/07.');
+    return n.fim();
+  }
+
+  let {score, fatores} = avaliar(per, pSel);
+  // Um dia pela metade não vira A. A nota de 'Hoje' mede se a conta está
+  // entregando, não se está eficiente — com 3 conversas às 8h não existe base
+  // para afirmar excelência, então o teto é B até o dia estar praticamente fechado.
+  if(per === 'hoje' && horaBRT < 20 && score > 85){
+    fatores = fatores.concat([{peso:0, sev:'info',
+      texto:`Nota limitada a B: o dia ainda está correndo e a leitura cobre só a entrega, não a eficiência.`}]);
+    score = 85;
+  }
+  const grade = score >= 90 ? 'A' : score >= 75 ? 'B' : score >= 60 ? 'C' : score >= 40 ? 'D' : 'F';
+  const gradeColor = {A:'#22c55e', B:'#3b82f6', C:'#f59e0b', D:'#ef4444', F:'#7f1d1d'}[grade];
+  const gradeMsg = ({
+    hoje: {A:'Dia entregando no ritmo esperado.', B:'Dia dentro do normal, com um ponto de atenção.',
+           C:'Dia irregular — vale conferir antes do fim do expediente.', D:'Dia fora do padrão. Conferir entrega agora.',
+           F:'Dia parado ou muito fora do padrão. Abrir o Gerenciador.'},
+    '7d': {A:'Semana saudável em todos os fatores. Manter.', B:'Boa semana com 1-2 pontos de atenção.',
+           C:'Semana média. Vários indicadores pedem ajuste.', D:'Semana fraca. Ação corretiva imediata.',
+           F:'Semana crítica. Parar e reavaliar campanha a campanha.'},
+    mtd: {A:'Mês no rumo certo contra o mês anterior.', B:'Mês bom, com ajustes pontuais a fazer.',
+          C:'Mês médio. O acumulado ainda dá para virar.', D:'Mês fraco contra o mesmo trecho do mês passado. Corrigir agora.',
+          F:'Mês crítico. Revisar verba e criativos antes de seguir.'},
+    '90d': {A:'Estrutura sólida e tendência de melhora.', B:'Estrutura boa, com um ponto estrutural a resolver.',
+            C:'Estrutura média. A conta funciona, mas não está evoluindo.', D:'Estrutura fraca: a tendência recente é de piora.',
+            F:'Estrutura crítica. O problema é de estratégia, não de semana.'}
+  }[per] || {})[grade] || '';
+  const confianca = {hoje:'baixa · dia parcial', '7d':'média', mtd:`${diasDe(pSel)}/${diasNoMes} dias`, '90d':'alta'}[per] || '';
+
+  const sevCor = {crit:'#ef4444', warn:'#f59e0b', ok:'#22c55e', info:'var(--ink-3)'};
+  const sevIco = {crit:'▼', warn:'▽', ok:'▲', info:'·'};
+  const fatoresHTML = fatores.length ? `<div style="display:grid;gap:4px;margin-top:8px">
+    ${fatores.map(f=>`<div style="display:flex;gap:8px;align-items:flex-start;font-size:11.5px;line-height:1.45">
+      <span style="color:${sevCor[f.sev]};font-weight:700;flex:0 0 auto">${sevIco[f.sev]}</span>
+      <span style="color:var(--ink-2);flex:1">${f.texto}</span>
+      <span style="color:${f.peso?sevCor[f.sev]:'var(--ink-3)'};font-weight:600;flex:0 0 auto;font-variant-numeric:tabular-nums">${f.peso?'−'+f.peso:'—'}</span>
+    </div>`).join('')}
+  </div>` : '';
+
+  // Segundo card: também muda por período, senão as quatro abas repetem o mesmo número
+  const cardCtx = (() => {
+    if(per === 'hoje'){
+      const esp = medDia ? medDia * curvaDia(horaBRT) : null;
+      const hh = String(Math.floor(horaBRT)).padStart(2,'0');
+      return {t:'Ritmo do dia', v: brl(pSel.gasto),
+              f: esp ? `esperado ~${brl(esp)} até as ${hh}h · ${((pSel.gasto/esp)*100).toFixed(0).replace('.',',')}% do ritmo` : 'sem base de comparação'};
+    }
+    if(per === '7d'){
+      const d = deltas['7d'] || {};
+      return {t:'Semana', v:`${(pSel.conversas_msg/7).toFixed(1).replace('.',',')} conversas/dia`,
+              f:`${brl(pSel.gasto/7,0)}/dia${d.conversas_msg_pct!=null?` · ${d.conversas_msg_pct>0?'+':''}${nb(d.conversas_msg_pct)}% vs semana anterior`:''}`};
+    }
+    if(per === '90d'){
+      return {t:'Média mensal (90d)', v: brl(pSel.gasto/3,0),
+              f:`${Math.round(pSel.conversas_msg/3)} conversas/mês · CPA médio ${brl(pSel.cpa_msg)}`};
+    }
+    return {t: forecastLabel, v: brl(projGasto,0),
+            f:`${projConversas} conversas · se manter ritmo (dia ${dia}/${diasNoMes})`};
+  })();
+
   const alertaPeriodo = pSel.alerta ? `<div style="margin-bottom:12px;padding:12px;background:rgba(239,68,68,.10);border-left:4px solid #ef4444;border-radius:6px;font-size:13px;color:#ef4444;font-weight:600">${pSel.alerta}</div>` : '';
   document.getElementById('midias-kpis').innerHTML = `<section class="card">
     <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;margin-bottom:14px">
@@ -3142,18 +3316,22 @@ function renderMidias(){
       </div>
       <div style="display:flex;gap:10px;align-items:stretch">
         <div style="background:${gradeColor};color:#fff;padding:10px 16px;border-radius:8px;text-align:center;min-width:80px">
-          <div style="font-size:10.5px;text-transform:uppercase;font-weight:600;opacity:0.9">Health Score</div>
+          <div style="font-size:10.5px;text-transform:uppercase;font-weight:600;opacity:0.9">Nota · ${pSel.label}</div>
           <div style="font-weight:800;font-size:32px;line-height:1">${grade}</div>
           <div style="font-size:10.5px;opacity:0.9">${score}/100</div>
         </div>
         <div style="background:var(--surface-2);padding:10px 14px;border-radius:8px;max-width:220px">
-          <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:600">${forecastLabel}</div>
-          <div style="font-weight:700;font-size:16px;margin-top:2px">${brl(projGasto,0)}</div>
-          <div style="font-size:10.5px;color:var(--ink-3)">${projConversas} conversas · se manter ritmo (dia ${dia}/${diasNoMes})</div>
+          <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:600">${cardCtx.t}</div>
+          <div style="font-weight:700;font-size:16px;margin-top:2px">${cardCtx.v}</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${cardCtx.f}</div>
         </div>
       </div>
     </div>
-    <div style="font-size:11.5px;color:var(--ink-2);margin-bottom:12px;padding:8px 10px;background:${gradeColor}22;border-left:3px solid ${gradeColor};border-radius:4px">💡 ${gradeMsg}</div>
+    <div style="margin-bottom:12px;padding:10px 12px;background:${gradeColor}22;border-left:3px solid ${gradeColor};border-radius:4px">
+      <div style="font-size:11.5px;color:var(--ink-2);font-weight:600">💡 ${gradeMsg}
+        <span style="font-weight:400;color:var(--ink-3)"> · confiança da leitura: ${confianca} · regra própria da janela de ${diasDe(pSel)} dia(s)</span></div>
+      ${fatoresHTML}
+    </div>
     ${alertaPeriodo}
     <div style="margin-top:14px">
       ${periodoBlock(pSel, per==='7d' || per==='mtd' || per==='90d')}
