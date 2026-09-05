@@ -3239,10 +3239,15 @@ function renderMidias(){
       </section>`;
   } else { igBox.innerHTML=''; }
 
-  // Facebook Page (novo — org 30d)
+  // Facebook Page (org 30d).
+  // Este bloco não tem container próprio no HTML: ele é injetado como irmão do
+  // igBox. insertAdjacentHTML ACRESCENTA, não substitui — então cada
+  // renderMidias() (troca de aba, botão Atualizar, reloadAllTabs) empilhava mais
+  // uma cópia da seção. Removemos a anterior antes de inserir a nova.
+  document.querySelectorAll('.fb-page-card').forEach(e => e.remove());
   if(MID.facebook_page && MID.facebook_page.conectado){
     const fbp = MID.facebook_page.organico_30d || {};
-    const fbHTML = `<section class="card" style="border-left:4px solid #1877F2;margin-top:12px">
+    const fbHTML = `<section class="card fb-page-card" style="border-left:4px solid #1877F2;margin-top:12px">
       <h2>📘 Facebook Page · ${MID.facebook_page.nome} · orgânico 30d</h2>
       <div class="cap">Dados da Página FB. Métricas orgânicas separadas das de anúncios.</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
