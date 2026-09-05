@@ -2691,21 +2691,44 @@ function finPct(v){ return ((v||0)*100).toFixed(1).replace('.',',')+'%'; }
 
 function renderFinanceiro(){
   if(!FIN){ document.getElementById('fin-content').innerHTML='<div class="card"><div class="cap">Dados financeiros ainda não carregados.</div></div>'; return; }
-  // DRE = AGOSTO FECHADO. NÃO substituir receita por Trinks live — antes fazia
-  // isso e misturava setembro parcial (R\$ 2k, 3 dias) com custos fixos de
-  // agosto (R\$ 60k), produzindo prejuízo aparente absurdo. Agora:
-  // - Bloco AGOSTO: retrospectivo, 100% dado congelado do Excel do Rodrigo
-  // - Bloco SETEMBRO EM CURSO: separado, receita live + projeção linear
-  const R = FIN.resultado;
-  const C = FIN.recebimento;
-  const rec = R.receita_real;  // receita de agosto (do Excel)
-  const comPct = R.grupos[0].linhas[0].real / rec;
+  // DRE detalhada = ÚLTIMO MÊS FECHADO no Excel (retrospectivo).
+  // Card SETEMBRO EM CURSO = Trinks live + Excel projetado.
+  // O Excel tem 60 meses (mai/26 a abr/31). Cada mês vive em FIN.meses[YYYY-MM].
+  const mesesMap = FIN.meses || {};
+  const nomeCurto = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const nomeLongo = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const parseChave = (k)=>({ano:parseInt(k.slice(0,4),10), mes:parseInt(k.slice(5,7),10)});
+  const nomeDe = (k)=>{ if(!k) return '?'; const p=parseChave(k); return nomeLongo[p.mes-1]; };
+  const nomeCurtoDe = (k)=>{ if(!k) return '?'; const p=parseChave(k); return nomeCurto[p.mes-1]; };
+
+  // Mês fechado (retrospectivo): FIN.mes_fechado_chave. Fallback: último mês com receita
+  const mfKey = FIN.mes_fechado_chave || Object.keys(mesesMap).filter(k=>(mesesMap[k].receita_bruta||0)>0).sort().pop();
+  const R = (mfKey && mesesMap[mfKey]) || FIN.resultado;  // retrocompat
+  // preenche campos derivados que a DRE detalhada precisa (equivalentes ao antigo FIN.resultado)
+  if(!R.be_modelo_1loja) R.be_modelo_1loja = FIN.resultado?.be_modelo_1loja || 0;
+  if(R.mc_real === undefined) R.mc_real = R.margem_contribuicao || 0;
+  if(R.mc_esp  === undefined) R.mc_esp  = R.margem_contribuicao || 0;
+  if(R.res_esp_mesma_receita === undefined) R.res_esp_mesma_receita = R.res_real;
+
+  const C = FIN.recebimento;  // pode estar ausente; guardamos abaixo
+  const rec = R.receita_real;  // receita do mês fechado
+  const comPct = R.grupos[0].linhas[0].real / Math.max(rec, 1);
   const E = Object.assign({}, FIN.equilibrio, {fatura_hoje: rec, cenarios: [
     {nome:'Com a comissão de hoje', comissao: comPct,
      mc: 1 - comPct - FIN.premissas.insumos - FIN.premissas.simples},
     {nome:'Se a comissão subir para 40%', comissao: 0.40,
      mc: 1 - 0.40 - FIN.premissas.insumos - FIN.premissas.simples}]});
-  const k = FIN.kpis;
+
+  // KPIs do mês fechado (agosto). Caixa/receber ainda vêm de FIN.kpis (mês
+  // corrente, snapshot manual do Rodrigo).
+  const k = {
+    caixa_conta: FIN.kpis.caixa_conta,
+    a_receber_stone: FIN.kpis.a_receber_stone,
+    resultado_mes: R.res_real,
+    resultado_mes_caixa: R.res_caixa,
+    receita_mes: R.receita_real,
+    meta_mes: R.receita_meta || FIN.kpis.meta_mes,
+  };
   const atg = k.receita_mes/k.meta_mes;
 
   const beMes = E.custo_fixo_mes / E.cenarios[0].mc;
@@ -2731,27 +2754,39 @@ function renderFinanceiro(){
   const mesAtualISO = `${anoAtual}-${String(mesAtualIdx+1).padStart(2,'0')}`;
 
   const baselineIso = FIN.baseline || '';
-  const excelDoMesCorrente = baselineIso.startsWith(mesAtualISO);
   const baselineFmt = baselineIso.split('-').reverse().slice(0,2).join('/') || '?';
-  const excelMesLabel = baselineIso ? mesNomes[parseInt(baselineIso.slice(5,7),10)-1] : '?';
+  // Excel do mês corrente = tem entrada em meses[YYYY-MM] com receita > 0
+  const mesCorrenteData = (FIN.meses || {})[mesAtualISO];
+  const excelDoMesCorrente = mesCorrenteData && mesCorrenteData.receita_bruta > 0;
+  const excelMesLabel = mesNome;  // usamos o mês da UI se Excel tem o mês corrente
 
-  // Referência de projeção: sempre a MELHOR fonte disponível
-  //   1. Excel do mês corrente (Rodrigo atualizou) → usa receita_meta como projetado
-  //   2. Caso contrário: projeção linear pelo ritmo atual Trinks
-  const proj_do_excel = excelDoMesCorrente ? (FIN.resultado?.receita_meta || meta_mes) : null;
+  // Projeção: se Excel tem dado do mês corrente, usa receita_bruta projetada;
+  // caso contrário cai no linear pelo ritmo Trinks.
+  const proj_do_excel = excelDoMesCorrente ? mesCorrenteData.receita_bruta : null;
   const proj_final = proj_do_excel || proj_ritmo;
 
-  // Custos: variáveis proporcionais à projeção final, fixos = do último Excel
-  const custo_var_proj = proj_final * (FIN.premissas.comissao + FIN.premissas.insumos + FIN.premissas.simples);
-  const custo_fixo = E.custo_fixo_mes;
-  const res_proj = proj_final - custo_var_proj - custo_fixo;
+  // Custos e resultado projetados: se Excel tem mês corrente, usa dado dele
+  // (real do Excel — que inclui inadimplência, cmv correto etc). Senão calcula
+  // aproximado pelas premissas.
+  let custo_var_proj, custo_fixo, res_proj;
+  if(excelDoMesCorrente){
+    custo_var_proj = mesCorrenteData.var_real;
+    custo_fixo = mesCorrenteData.fixo_real;
+    res_proj = mesCorrenteData.res_real;
+  } else {
+    const prem = FIN.premissas || {comissao:0.32, insumos:0.12, simples:0.07, inadimplencia:0.02};
+    custo_var_proj = proj_final * (prem.comissao + prem.insumos + prem.simples + (prem.inadimplencia||0));
+    custo_fixo = E.custo_fixo_mes;
+    res_proj = proj_final - custo_var_proj - custo_fixo;
+  }
 
-  // Mês anterior pra comparação (auto)
+  // Mês fechado pra comparação — prioridade Excel (mais preciso), fallback Trinks
   const mesAntIdx = (mesAtualIdx - 1 + 12) % 12;
   const anoAnt = mesAtualIdx === 0 ? anoAtual - 1 : anoAtual;
   const mesAntISO = `${anoAnt}-${String(mesAntIdx+1).padStart(2,'0')}`;
   const mesAntNome = mesNomes[mesAntIdx];
-  const rec_ant = (kanoAbas[mesAntISO] || {}).caixa || rec;
+  const mesAntExcel = mesesMap[mesAntISO];
+  const rec_ant = (mesAntExcel && mesAntExcel.receita_bruta) || (kanoAbas[mesAntISO] || {}).caixa || rec;
   const dias_ant = (kanoAbas[mesAntISO] || {}).dias_op || 27;
   const delta_ritmo = ((rec_atual/Math.max(dias_op_atual,1))/(rec_ant/Math.max(dias_ant,1))*100 - 100).toFixed(0);
 
@@ -2783,13 +2818,14 @@ function renderFinanceiro(){
     </div>
   </div>`;
 
-  const excelMesLbl = excelMesLabel.toUpperCase();
+  // KPI grid abaixo do card SETEMBRO = MÊS FECHADO (retrospectivo, Excel)
+  const mfLbl = (nomeCurtoDe(mfKey) || excelMesLabel).toUpperCase();
   document.getElementById('fin-kpis').innerHTML = mesEmCursoCard + '<section class="kpi-grid fin5">'+[
-    kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), `Conta corrente da PJ · posição ${baselineFmt} (Excel ${excelMesLbl})`, null),
-    kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), `no fechamento do Excel (${excelMesLbl})`, null),
-    kpiCard('k3',`RESULTADO ${excelMesLbl}`, brl0(k.resultado_mes), brl0(k.resultado_mes_caixa)+' pelo caixa · diferença = Simples e royalty provisionados', null),
-    kpiCard('k4',`${excelMesLbl} × META`, finPct(atg), brl0(k.receita_mes)+' de '+brl0(k.meta_mes)+' · faltaram '+brl0(k.meta_mes-k.receita_mes), null),
-    kpiCard('k5 kpi-be',`FALTA PRA EQUILÍBRIO (${excelMesLbl})`, brl0(beFalta), beBar, null),
+    kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), `Conta corrente da PJ · posição ${baselineFmt}`, null),
+    kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), `no fechamento do Excel (${mfLbl})`, null),
+    kpiCard('k3',`RESULTADO ${mfLbl}`, brl0(k.resultado_mes), brl0(k.resultado_mes_caixa)+' pelo caixa · diferença = Simples e royalty provisionados', null),
+    kpiCard('k4',`${mfLbl} × META`, finPct(atg), brl0(k.receita_mes)+' de '+brl0(k.meta_mes)+' · faltaram '+brl0(k.meta_mes-k.receita_mes), null),
+    kpiCard('k5 kpi-be',`FALTA PRA EQUILÍBRIO (${mfLbl})`, brl0(beFalta), beBar, null),
   ].join('')+'</section>';
 
   let h='';
@@ -2813,14 +2849,13 @@ function renderFinanceiro(){
       <td class="${neg(r).trim()}">${brl(r)}</td><td class="pc${neg(r)}">${finPct(pr(r))}</td>
       <td class="${neg(e).trim()}">${brl(e)}</td><td class="pc${neg(e)}">${finPct(pr(e))}</td>
       <td>${imp(r-e)}</td></tr>`;
-  const G=id=>R.grupos.find(g=>g.id===id);
-  const grupo=(id)=>{ const g=G(id); return `<tr class="dre-g"><td colspan="6">${g.titulo}</td></tr>`+g.linhas.map(lin).join(''); };
+  const G=id=>R.grupos.find(g=>g.id===id) || {titulo:'', linhas:[], sub_real:0, sub_esp:0};
+  const grupo=(id)=>{ const g=G(id); if(!g.linhas.length) return ''; return `<tr class="dre-g"><td colspan="6">${g.titulo}</td></tr>`+g.linhas.map(lin).join(''); };
 
-  const mcR=R.mc_real/R.receita_real, mcE=R.mc_esp/R.receita_real;
-  h+=`<div class="card"><h2>📊 Resultado de agosto — DRE executiva</h2>
-    <div class="cap">${R.receita_base!==undefined
-      ? `<strong style="color:var(--accent)">Receita ao vivo do Trinks: ${brl(rec)}</strong> — o painel Excel foi fechado em ${new Date(FIN.custos_ate+'T12:00:00').toLocaleDateString('pt-BR')} com ${brl(R.receita_base)}. Os custos são os do Excel; tudo que é percentual da receita (Simples e as premissas) já recalculou.<br>`
-      : `Receita do Trinks · custos do painel Excel de ${new Date(FIN.custos_ate+'T12:00:00').toLocaleDateString('pt-BR')}.<br>`}
+  const mcR=R.mc_real/Math.max(R.receita_real,1), mcE=R.mc_esp/Math.max(R.receita_real,1);
+  const dreMesNome = nomeDe(mfKey) || 'último mês fechado';
+  h+=`<div class="card"><h2>📊 Resultado de ${dreMesNome} — DRE executiva</h2>
+    <div class="cap">Retrospectivo do painel Excel · último mês fechado com dados.<br>
     Comparação <strong>por competência</strong>: o que é do mês entra no mês, tenha saído do caixa ou não.
     A coluna <em>esperado</em> aplica as premissas do modelo à receita que de fato entrou. Custos entre parênteses.
     Na última coluna, <span class="dv-bom">verde</span> é melhor que o previsto e <span class="dv-mau">vermelho</span> é pior — sempre medido pelo efeito no resultado.</div>
@@ -2856,98 +2891,98 @@ function renderFinanceiro(){
       <td colspan="3"></td></tr>
     </tbody></table></div>
 
-    <div class="dre-alerta">⚠️ <strong>${brl(R.provisoes_nao_debitadas)} do custo do mês não saiu do caixa</strong> — o Simples (${brl(0.07*R.receita_real)}) e o royalty mínimo (${brl(3500)}) não foram debitados em nenhum extrato até 28/08. Entram na DRE porque são obrigação de agosto; a conta corrente ainda vai senti-los.</div>
+    <div class="dre-alerta">⚠️ <strong>${brl(R.provisoes_nao_debitadas)} do custo do mês não saiu do caixa</strong> — o Simples e o royalty entram na DRE porque são obrigação de ${dreMesNome}; a conta corrente ainda vai senti-los.</div>
 
     <div class="fin-fonte">Confere: a coluna de impacto soma <strong>${brl0(R.var_esp-R.var_real)}</strong> nos variáveis e <strong>${brl0(R.fixo_esp-R.fixo_real)}</strong> nos fixos — juntos, exatamente os <strong>${brl0((R.var_esp-R.var_real)+(R.fixo_esp-R.fixo_real))}</strong> que separam o resultado do previsto.
     Somando a receita que não veio (${brl0(R.receita_real-R.receita_meta)}), com a estrutura do modelo uma loja só empata em <strong>${brl0(R.be_modelo_1loja)}</strong>/mês.</div></div>`;
 
-  // ---- fluxo de caixa ----
-  const mx = (TRINKS && TRINKS.abas && TRINKS.abas.mensal) || null;
-  const diasOp = (mx && mx.kpis.dias_op) || 25;
-  const diasMes = (mx && mx.meta.dias_total) || diasOp;
-  const beMesFC = E.custo_fixo_mes / E.cenarios[0].mc;
-  const saidas = R.custo_real - R.provisoes_nao_debitadas;   // o que saiu da conta
-  const queima = rec - saidas;                                // negativo = consumiu caixa
-  const queimaDia = Math.abs(queima) / diasOp;
-  const ritmoDia = rec / diasOp;
-  const precisaDia = beMesFC / diasMes;
-  const ciclo = C.linhas.reduce((a,l)=>a + l.pct * (l.prazo.indexOf('mesmo dia')>=0 ? 0 : 1), 0);
-  const giro = ritmoDia * ciclo;
-  const autonomia = queima < 0 ? k.caixa_conta / queimaDia : null;
+  // ---- fluxo de caixa (só se temos dados de recebimento) ----
+  if(C && C.linhas && C.linhas.length){
+    const mx = (TRINKS && TRINKS.abas && TRINKS.abas.mensal) || null;
+    const diasOp = (mx && mx.kpis.dias_op) || 25;
+    const diasMes = (mx && mx.meta.dias_total) || diasOp;
+    const beMesFC = E.custo_fixo_mes / E.cenarios[0].mc;
+    const saidas = R.custo_real - R.provisoes_nao_debitadas;
+    const queima = rec - saidas;
+    const queimaDia = Math.abs(queima) / diasOp;
+    const ritmoDia = rec / diasOp;
+    const precisaDia = beMesFC / diasMes;
+    const ciclo = C.linhas.reduce((a,l)=>a + l.pct * (l.prazo.indexOf('mesmo dia')>=0 ? 0 : 1), 0);
+    const giro = ritmoDia * ciclo;
+    const autonomia = queima < 0 ? k.caixa_conta / queimaDia : null;
 
-  h+=`<div class="card"><h2>💵 Fluxo de caixa</h2>
-    <div class="cap">O que entrou, o que saiu e por quanto tempo a conta aguenta · ${diasOp} dias operados de ${diasMes}</div>
-
-    <div class="dre-ind">
-      <div class="neg"><span class="il">QUEIMA DO MÊS</span><span class="iv">${brl0(queima)}</span><span class="ic">${brl0(-queimaDia)} por dia operado</span></div>
-      <div><span class="il">ENTRA POR DIA</span><span class="iv">${brl0(ritmoDia)}</span><span class="ic">precisaria de ${brl0(precisaDia)}/dia para empatar — falta ${brl0(precisaDia-ritmoDia)}</span></div>
-      <div><span class="il">CICLO DE RECEBIMENTO</span><span class="iv">${ciclo.toFixed(1).replace('.',',')} dia</span><span class="ic">a venda vira caixa quase à vista · giro necessário ${brl0(giro)}</span></div>
-      <div class="${autonomia!==null && autonomia<30?'neg':''}"><span class="il">AUTONOMIA DA CONTA</span><span class="iv">${autonomia===null?'—':Math.round(autonomia)+' dias'}</span><span class="ic">${brl0(k.caixa_conta)} na conta corrente ÷ queima diária · a reserva não entra nesta conta</span></div>
-    </div>
-
-    <div class="dre-wrap"><table class="dre">
-    <thead><tr><th>Movimento do mês</th><th colspan="2">Valor</th><th colspan="3">De onde vem</th></tr></thead>
-    <tbody>
-    <tr class="dre-r"><td>(+) ENTRADAS — receita do mês</td><td>${brl(rec)}</td><td class="pc">100,0%</td>
-      <td colspan="3" style="text-align:left;font-size:11.5px;color:var(--ink-3)">Trinks, ao vivo · liquida em D+0 e D+1</td></tr>
-    <tr class="dre-l"><td>(−) Saídas que passaram pela conta<span class="dre-n">custo lançado no razão da conta corrente</span></td>
-      <td>(${brl0(saidas)})</td><td class="pc">${finPct(pr(saidas))}</td>
-      <td colspan="3" style="text-align:left;font-size:11.5px;color:var(--ink-3)">painel Excel, fechado em ${new Date(FIN.custos_ate+'T12:00:00').toLocaleDateString('pt-BR')}</td></tr>
-    <tr class="dre-m"><td>(=) QUEIMA LÍQUIDA DO MÊS<span class="dre-n">o que a conta corrente de fato perdeu no mês</span></td>
-      <td class="${queima<0?'val-neg':''}">${brl(queima)}</td><td class="pc${queima<0?' val-neg':''}">${finPct(pr(queima))}</td><td colspan="3"></td></tr>
-    <tr class="dre-l prov"><td>(−) Do mês, mas ainda não debitado<span class="dre-n">Simples, royalty mínimo e a comissão provisionada sobre a receita nova</span></td>
-      <td>(${brl0(R.provisoes_nao_debitadas)})</td><td class="pc">${finPct(pr(R.provisoes_nao_debitadas))}</td>
-      <td colspan="3" style="text-align:left;font-size:11.5px;color:var(--warn)">vai sair do caixa em algum momento</td></tr>
-    <tr class="dre-m"><td>(=) RESULTADO POR COMPETÊNCIA</td><td class="val-neg">${brl(R.res_real)}</td><td class="pc val-neg">${finPct(pr(R.res_real))}</td><td colspan="3"></td></tr>
-    <tr class="dre-memo"><td>Caixa em conta na data do painel<span class="dre-n">só a conta corrente da PJ, sem a reserva</span></td><td>${brl(k.caixa_conta)}</td><td class="pc"></td><td colspan="3"></td></tr>
-    </tbody></table></div>
-
-    <div class="dre-alerta">⚠️ <strong>A receita não passa pela conta da PJ.</strong> Ela cai na Stone e fica na Reserva — o razão da conta corrente não tem uma única entrada de faturamento. Na prática a conta é abastecida por transferências, e por isso a autonomia acima mede só o que está na conta corrente hoje, não o que o negócio tem.</div>
-
-    <div class="fin-fonte">O ciclo de ${ciclo.toFixed(2).replace('.',',')} dia é a média ponderada das formas de pagamento medidas: ${C.linhas.map(l=>l.forma+' '+finPct(l.pct)+' em '+l.prazo).join(' · ')}.
-    Com esse perfil, cada dia de venda imobiliza cerca de ${brl0(giro)} — uma fração do que o modelo projetava com 70% em 6x.</div></div>`;
+    h+=`<div class="card"><h2>💵 Fluxo de caixa</h2>
+      <div class="cap">O que entrou, o que saiu e por quanto tempo a conta aguenta · ${diasOp} dias operados de ${diasMes}</div>
+      <div class="dre-ind">
+        <div class="neg"><span class="il">QUEIMA DO MÊS</span><span class="iv">${brl0(queima)}</span><span class="ic">${brl0(-queimaDia)} por dia operado</span></div>
+        <div><span class="il">ENTRA POR DIA</span><span class="iv">${brl0(ritmoDia)}</span><span class="ic">precisaria de ${brl0(precisaDia)}/dia para empatar — falta ${brl0(precisaDia-ritmoDia)}</span></div>
+        <div><span class="il">CICLO DE RECEBIMENTO</span><span class="iv">${ciclo.toFixed(1).replace('.',',')} dia</span><span class="ic">a venda vira caixa quase à vista · giro necessário ${brl0(giro)}</span></div>
+        <div class="${autonomia!==null && autonomia<30?'neg':''}"><span class="il">AUTONOMIA DA CONTA</span><span class="iv">${autonomia===null?'—':Math.round(autonomia)+' dias'}</span><span class="ic">${brl0(k.caixa_conta)} na conta corrente ÷ queima diária</span></div>
+      </div>
+      <div class="dre-wrap"><table class="dre">
+      <thead><tr><th>Movimento do mês</th><th colspan="2">Valor</th><th colspan="3">De onde vem</th></tr></thead>
+      <tbody>
+      <tr class="dre-r"><td>(+) ENTRADAS — receita do mês</td><td>${brl(rec)}</td><td class="pc">100,0%</td>
+        <td colspan="3" style="text-align:left;font-size:11.5px;color:var(--ink-3)">Trinks, ao vivo · liquida em D+0 e D+1</td></tr>
+      <tr class="dre-l"><td>(−) Saídas que passaram pela conta<span class="dre-n">custo lançado no razão da conta corrente</span></td>
+        <td>(${brl0(saidas)})</td><td class="pc">${finPct(pr(saidas))}</td>
+        <td colspan="3" style="text-align:left;font-size:11.5px;color:var(--ink-3)">painel Excel, fechado em ${new Date(FIN.custos_ate+'T12:00:00').toLocaleDateString('pt-BR')}</td></tr>
+      <tr class="dre-m"><td>(=) QUEIMA LÍQUIDA DO MÊS</td>
+        <td class="${queima<0?'val-neg':''}">${brl(queima)}</td><td class="pc${queima<0?' val-neg':''}">${finPct(pr(queima))}</td><td colspan="3"></td></tr>
+      <tr class="dre-l prov"><td>(−) Do mês, mas ainda não debitado</td>
+        <td>(${brl0(R.provisoes_nao_debitadas)})</td><td class="pc">${finPct(pr(R.provisoes_nao_debitadas))}</td>
+        <td colspan="3" style="text-align:left;font-size:11.5px;color:var(--warn)">vai sair do caixa em algum momento</td></tr>
+      <tr class="dre-m"><td>(=) RESULTADO POR COMPETÊNCIA</td><td class="val-neg">${brl(R.res_real)}</td><td class="pc val-neg">${finPct(pr(R.res_real))}</td><td colspan="3"></td></tr>
+      </tbody></table></div>
+      <div class="fin-fonte">O ciclo de ${ciclo.toFixed(2).replace('.',',')} dia é a média ponderada das formas de pagamento medidas: ${C.linhas.map(l=>l.forma+' '+finPct(l.pct)+' em '+l.prazo).join(' · ')}.</div></div>`;
+  }
 
   // ---- ponto de equilibrio, simplificado ----
   const cen=E.cenarios.map(c=>{ const be=E.custo_fixo_mes/c.mc; return {...c, be, falta: be-E.fatura_hoje}; });
   const c0=cen[0], c1=cen[1];
   h+=`<div class="card"><h2>🎯 Quanto precisa faturar para o mês fechar no zero</h2>
-    <div class="cap">Com as duas lojas rodando · a comissão é o único custo que sobe junto com a venda</div>
+    <div class="cap">Base ${dreMesNome} · a comissão é o único custo que sobe junto com a venda</div>
     <table class="simple"><tbody>
-    <tr><td>Faturamento de agosto</td><td>${brl(E.fatura_hoje)}</td></tr>
-    <tr><td>Custo fixo do mês, com as 2 lojas<div class="fin-fonte" style="margin:2px 0 0">estrutura das lojas + vale-transporte. CashMe e Pronampe não entram: as parcelas são pagas por pessoa física, não pela empresa</div></td><td>${brl(E.custo_fixo_mes)}</td></tr>
+    <tr><td>Faturamento de ${dreMesNome}</td><td>${brl(E.fatura_hoje)}</td></tr>
+    <tr><td>Custo fixo do mês<div class="fin-fonte" style="margin:2px 0 0">estrutura da loja · CashMe e Pronampe não entram: as parcelas são pagas por pessoa física, não pela empresa</div></td><td>${brl(E.custo_fixo_mes)}</td></tr>
     <tr><td>De cada R$ 100 faturados, quanto sobra para pagar esse fixo<div class="fin-fonte" style="margin:2px 0 0">tirando comissão de ${finPct(c0.comissao)}, insumos de ${finPct(FIN.premissas.insumos)} e Simples de ${finPct(FIN.premissas.simples)}</div></td><td>${brl(c0.mc*100)}</td></tr>
     <tr><td><strong>Faturamento para empatar</strong></td><td><strong>${brl0(c0.be)}</strong></td></tr>
     <tr><td><strong>Quanto falta por mês</strong></td><td><strong style="color:#ef4444">${brl0(c0.falta)}</strong></td></tr>
     </tbody></table>
     <div class="fin-fonte" style="margin-top:12px">💡 A comissão é a alavanca: <strong>cada ponto percentual move o ponto de equilíbrio em ${brl0(E.custo_fixo_mes/(c0.mc*c0.mc)/100)}/mês</strong>.
-    ${(()=>{ const sobe=c1.be>c0.be; return `A ${finPct(c1.comissao)} sobrariam ${brl(c1.mc*100)} de cada R$ 100 e o equilíbrio ${sobe?'subiria':'cairia'} para <strong>${brl0(c1.be)}</strong> — <strong>${brl0(Math.abs(c1.be-c0.be))} ${sobe?'a mais':'a menos'} de faturamento, todo mês</strong>.`; })()}</div>
-    <div class="fin-fonte">Base do cálculo: estrutura mensal do modelo para as 2 lojas. Em agosto o fixo realizado foi ${brl0(R.fixo_real)}, dos quais ${brl0(G('ABERTO').sub_real)} ainda sem classificação e ${brl0(3500)} de royalty provisionado — por isso os dois números não são iguais.</div></div>`;
+    ${(()=>{ const sobe=c1.be>c0.be; return `A ${finPct(c1.comissao)} sobrariam ${brl(c1.mc*100)} de cada R$ 100 e o equilíbrio ${sobe?'subiria':'cairia'} para <strong>${brl0(c1.be)}</strong> — <strong>${brl0(Math.abs(c1.be-c0.be))} ${sobe?'a mais':'a menos'} de faturamento, todo mês</strong>.`; })()}</div></div>`;
 
-  // ---- quando o dinheiro entra ----
-  h+=`<div class="card"><h2>⏱️ Quando o dinheiro entra</h2>
-    <div class="cap">Medido no extrato da Stone até ${new Date(C.medido_ate+'T12:00:00').toLocaleDateString('pt-BR')}</div>
-    <table class="simple"><thead><tr><th>Forma de recebimento</th><th>Valor em ago</th><th>% do total</th><th>Cai quando</th><th>Evidência</th></tr></thead><tbody>
-    ${C.linhas.map(l=>`<tr><td>${l.forma}</td><td>${brl(l.valor)}</td><td>${finPct(l.pct)}</td><td><strong>${l.prazo}</strong></td><td style="text-align:left;font-size:11.5px;color:var(--ink-2)">${l.evidencia}</td></tr>`).join('')}
-    <tr><td><strong>Total das formas medidas</strong></td><td><strong>${brl(C.total_formas)}</strong></td><td><strong>100,0%</strong></td><td colspan="2" style="text-align:left;font-size:11.5px;color:var(--ink-3)">contra ${brl(FIN.resultado.receita_real)} de receita — diferença de ${brl(C.total_formas-FIN.resultado.receita_real)}, a conferir na extração completa</td></tr>
-    </tbody></table>
-    <div class="insight-card" style="margin-top:12px"><strong>O modelo estava errado — e a realidade é melhor.</strong><br>
-    A projeção assume 70% da receita em crédito parcelado em 6x, imobilizando capital de giro por meses.
-    Na prática <strong>nenhuma venda foi parcelada</strong> e o cartão liquida no dia seguinte.<br><br>
-    ${C.prova}</div>
-    <div class="fin-fonte">⚠️ ${C.ressalva}</div></div>`;
+  // ---- quando o dinheiro entra (só se temos recebimento medido) ----
+  if(C && C.linhas && C.linhas.length){
+    h+=`<div class="card"><h2>⏱️ Quando o dinheiro entra</h2>
+      <div class="cap">Medido no extrato da Stone${C.medido_ate ? ` até ${new Date(C.medido_ate+'T12:00:00').toLocaleDateString('pt-BR')}` : ''}</div>
+      <table class="simple"><thead><tr><th>Forma de recebimento</th><th>Valor</th><th>% do total</th><th>Cai quando</th><th>Evidência</th></tr></thead><tbody>
+      ${C.linhas.map(l=>`<tr><td>${l.forma}</td><td>${brl(l.valor)}</td><td>${finPct(l.pct)}</td><td><strong>${l.prazo}</strong></td><td style="text-align:left;font-size:11.5px;color:var(--ink-2)">${l.evidencia||''}</td></tr>`).join('')}
+      <tr><td><strong>Total das formas medidas</strong></td><td><strong>${brl(C.total_formas)}</strong></td><td><strong>100,0%</strong></td><td colspan="2" style="text-align:left;font-size:11.5px;color:var(--ink-3)">contra ${brl(rec)} de receita — diferença de ${brl(C.total_formas-rec)}, a conferir na extração completa</td></tr>
+      </tbody></table>
+      ${C.prova ? `<div class="insight-card" style="margin-top:12px">${C.prova}</div>` : ''}
+      ${C.ressalva ? `<div class="fin-fonte">⚠️ ${C.ressalva}</div>` : ''}</div>`;
+  }
 
   document.getElementById('fin-content').innerHTML=h;
 
   const sev={crit:'🔴',warn:'🟡',ok:'🟢'};
-  document.getElementById('fin-decisoes').innerHTML=`<div class="card"><h2>🧭 Pontos para decisão</h2>
-    <div class="cap">Em ordem de impacto · atualizado em ${new Date(FIN.gerado_em).toLocaleDateString('pt-BR')}</div>
-    ${FIN.decisoes.map(d=>`<div class="dec-item ${d.sev}">
-      <div class="dt"><span class="num">${d.p}</span> ${sev[d.sev]||''} ${d.titulo}</div>
-      <div class="dd">${d.detalhe}</div>
-      <div class="da">→ ${d.acao}</div>
-    </div>`).join('')}
-    <div class="fin-fonte">Integridade do painel Excel: ${FIN.integridade.placar}</div>
-    </div>`;
+  const decisoesEl = document.getElementById('fin-decisoes');
+  if(decisoesEl){
+    if(FIN.decisoes && FIN.decisoes.length){
+      decisoesEl.innerHTML=`<div class="card"><h2>🧭 Pontos para decisão</h2>
+        <div class="cap">Em ordem de impacto · atualizado em ${new Date(FIN.gerado_em).toLocaleDateString('pt-BR')}</div>
+        ${FIN.decisoes.map(d=>`<div class="dec-item ${d.sev}">
+          <div class="dt"><span class="num">${d.p}</span> ${sev[d.sev]||''} ${d.titulo}</div>
+          <div class="dd">${d.detalhe}</div>
+          <div class="da">→ ${d.acao}</div>
+        </div>`).join('')}
+        ${FIN.integridade ? `<div class="fin-fonte">Integridade do painel Excel: ${FIN.integridade.placar}</div>` : ''}
+        </div>`;
+    } else {
+      decisoesEl.innerHTML='';
+    }
+  }
 }
 
 async function loadFinanceiro(){
