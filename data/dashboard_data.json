@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-06T19:06:13-03:00",
+  "gerado_em": "2026-09-06T21:56:33-03:00",
   "hoje": "2026-09-06",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 30,
@@ -258,8 +258,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 1982,
-    "saldoRestante": 8018
+    "totalUtilizado": 2018,
+    "saldoRestante": 7982
   },
   "metas_franqueadora": {
     "recepcionistas": 2,
@@ -1616,7 +1616,7 @@
           "cliente": "Carilone Da Silvia Moreira "
         }
       ],
-      "horas_desatualizado": 50.1
+      "horas_desatualizado": 52.9
     }
   },
   "auditoria_cancelados": {
@@ -6734,8 +6734,8 @@
           "FAST ESCOVA - LISA",
           "MÃOS",
           "PÉS E MÃOS",
-          "FAST HIDRATAÇÃO - FAST MASK",
           "PÉS",
+          "FAST HIDRATAÇÃO - FAST MASK",
           "FAST ESCOVA - MODELADA"
         ],
         "n_clientes_com_oportunidade": 200,
@@ -6827,8 +6827,8 @@
             ],
             "recomendar": [
               "FAST ESCOVA - LISA",
-              "FAST HIDRATAÇÃO - FAST MASK",
-              "PÉS"
+              "PÉS",
+              "FAST HIDRATAÇÃO - FAST MASK"
             ]
           },
           {
@@ -6854,8 +6854,8 @@
             ],
             "recomendar": [
               "MÃOS",
-              "FAST HIDRATAÇÃO - FAST MASK",
-              "PÉS"
+              "PÉS",
+              "FAST HIDRATAÇÃO - FAST MASK"
             ]
           },
           {
@@ -6882,7 +6882,7 @@
             "recomendar": [
               "FAST ESCOVA - LISA",
               "MÃOS",
-              "FAST HIDRATAÇÃO - FAST MASK"
+              "PÉS"
             ]
           },
           {
@@ -6909,7 +6909,7 @@
             "recomendar": [
               "MÃOS",
               "PÉS E MÃOS",
-              "FAST HIDRATAÇÃO - FAST MASK"
+              "PÉS"
             ]
           },
           {
@@ -6936,7 +6936,7 @@
             "recomendar": [
               "FAST ESCOVA - LISA",
               "MÃOS",
-              "FAST HIDRATAÇÃO - FAST MASK"
+              "PÉS"
             ]
           },
           {
@@ -6974,7 +6974,7 @@
             "recomendar": [
               "FAST ESCOVA - LISA",
               "PÉS E MÃOS",
-              "FAST HIDRATAÇÃO - FAST MASK"
+              "PÉS"
             ]
           },
           {
@@ -9436,7 +9436,7 @@
         "caixa_delta_bruto_pct": 37.7,
         "periodo_ant_ref": {
           "data": "2026-08-30",
-          "hora_max": 19.1,
+          "hora_max": 21.93,
           "caixa": 629.0,
           "atend_fin": 10,
           "cliente_dia": 7,
@@ -9458,15 +9458,15 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "19:06",
-          "hora_atual_num": 19.1,
-          "pct_esperado_agora": 77.6,
+          "hora_atual_str": "21:56",
+          "hora_atual_num": 21.93,
+          "pct_esperado_agora": 99.7,
           "meta_dia": 954.21,
-          "meta_esperada_agora": 740.18,
+          "meta_esperada_agora": 951.67,
           "realizado_agora": 866.0,
-          "pace_delta": 125.82,
-          "pace_ratio_pct": 117.0,
-          "projecao_dia": 1116.41,
+          "pace_delta": -85.67,
+          "pace_ratio_pct": 91.0,
+          "projecao_dia": 868.32,
           "opera_hoje": true
         },
         "ticket_meta": 0.0,
@@ -9878,7 +9878,14 @@
     }
   },
   "insights": {
-    "diario": [],
+    "diario": [
+      {
+        "tipo": "info",
+        "titulo": "Fechamento do dia",
+        "texto": "Caixa R$ 866,00 · 4 visitas · ticket R$ 216,50 · meta 91% (R$ 88,21 faltou).",
+        "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
+      }
+    ],
     "semanal": [
       {
         "tipo": "oportunidade",
