@@ -34,6 +34,13 @@ tags: [fast, produtizacao, saas, franquia, trinks]
 As duas são privadas por padrão — só abrem para quem você compartilhar pelo menu da
 própria página.
 
+## Documento HTML autônomo
+
+`docs/produtizacao/fast-insights-business-plan.html` — o business plan completo num
+arquivo só. Abre com dois cliques, funciona sem internet, pode ser anexado num e-mail e
+tem botão de imprimir/salvar em PDF (19 páginas em A4). É a versão para quem não vai
+abrir link, e para levar impressa na reunião.
+
 ## Modelo financeiro reproduzível
 
 `scripts/modelo_negocio.py` gera todas as tabelas do doc 06. Mude uma premissa no topo

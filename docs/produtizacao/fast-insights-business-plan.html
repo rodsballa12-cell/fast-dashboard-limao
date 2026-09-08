@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Rodrigo de Pinho Garcia">
+<meta name="description" content="Plano de negócio para levar o painel de gestão da FAST Escova Limão às 431 lojas da rede.">
+<title>FAST Insights — Business Plan · Da Limão para a Rede</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+html{color-scheme:light dark}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<style>
+:root{
+  --ground:#F0EFEA;
+  --surface:#FBFAF7;
+  --surface-2:#F5F4EE;
+  --ink:#1B1A17;
+  --ink-2:#413F39;
+  --muted:#6A675E;
+  --rule:#DEDCD3;
+  --rule-strong:#C5C2B6;
+  --accent:#2B5FA8;
+  --accent-soft:#E4EAF5;
+  --amber:#B06A12;
+  --amber-soft:#F6EBDA;
+  --pos:#2C6B3F;
+  --neg:#A4321F;
+  --s1:#2B5FA8;
+  --s2:#C2751A;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -16px rgba(27,26,23,.28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#141412;
+    --surface:#1D1D1A;
+    --surface-2:#242421;
+    --ink:#EDEBE4;
+    --ink-2:#CFCCC3;
+    --muted:#9B988E;
+    --rule:#302F2B;
+    --rule-strong:#403E38;
+    --accent:#8FB4E8;
+    --accent-soft:#1E2733;
+    --amber:#D9A24E;
+    --amber-soft:#2A2419;
+    --pos:#7FBF92;
+    --neg:#E08A72;
+    --s1:#4F80D0;
+    --s2:#BE7F26;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#141412;
+  --surface:#1D1D1A;
+  --surface-2:#242421;
+  --ink:#EDEBE4;
+  --ink-2:#CFCCC3;
+  --muted:#9B988E;
+  --rule:#302F2B;
+  --rule-strong:#403E38;
+  --accent:#8FB4E8;
+  --accent-soft:#1E2733;
+  --amber:#D9A24E;
+  --amber-soft:#2A2419;
+  --pos:#7FBF92;
+  --neg:#E08A72;
+  --s1:#4F80D0;
+  --s2:#BE7F26;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px 96px}
+
+/* ---------- header ---------- */
+header.top{
+  border-bottom:1px solid var(--rule);
+  padding:56px 0 36px;
+  margin-bottom:8px;
+}
+.eyebrow{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 18px;
+}
+h1{
+  font-family:Fraunces,Georgia,serif;
+  font-weight:600;font-size:clamp(40px,7vw,68px);line-height:1.02;
+  letter-spacing:-.02em;margin:0;text-wrap:balance;
+  font-variation-settings:"opsz" 120;
+}
+h1 .sub{display:block;color:var(--muted);font-size:clamp(19px,3vw,26px);
+  font-weight:400;line-height:1.3;margin-top:16px;max-width:30ch;
+  font-variation-settings:"opsz" 30;}
+.byline{
+  display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:28px;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);
+}
+.byline .tag{
+  border:1px solid var(--rule-strong);border-radius:2px;
+  padding:2px 8px;color:var(--ink-2);
+}
+
+/* ---------- key figures ---------- */
+.figs{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--rule);border:1px solid var(--rule);
+  margin:44px 0 8px;
+}
+.fig{background:var(--surface);padding:20px 18px 22px;display:flex;flex-direction:column;gap:6px}
+.fig .n{
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;
+  font-size:26px;font-weight:500;letter-spacing:-.02em;color:var(--ink);line-height:1.1;
+}
+.fig .n.hi{color:var(--accent)}
+.fig .l{font-size:12.5px;color:var(--muted);line-height:1.35}
+@media(max-width:720px){.figs{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 4px;border-top:1px solid var(--rule)}
+section:first-of-type{border-top:none}
+.shead{display:flex;gap:16px;align-items:baseline;margin-bottom:20px}
+.snum{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent);
+  padding-top:6px;letter-spacing:.06em;flex:none;
+}
+h2{
+  font-family:Fraunces,Georgia,serif;font-weight:600;
+  font-size:clamp(24px,3.4vw,31px);line-height:1.15;letter-spacing:-.015em;
+  margin:0;text-wrap:balance;font-variation-settings:"opsz" 40;
+}
+h3{
+  font-family:"IBM Plex Sans",sans-serif;font-weight:600;font-size:15px;
+  letter-spacing:.01em;margin:32px 0 10px;color:var(--ink);
+}
+p{margin:0 0 16px;max-width:68ch;color:var(--ink-2)}
+p.lead{font-size:18px;color:var(--ink);max-width:62ch}
+strong{color:var(--ink);font-weight:600}
+a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+ul{margin:0 0 18px;padding-left:20px;max-width:68ch;color:var(--ink-2)}
+li{margin-bottom:8px}
+li::marker{color:var(--rule-strong)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:8px 0 24px;border:1px solid var(--rule);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);font-weight:400;
+  background:var(--surface-2);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:right;font-family:"IBM Plex Mono",monospace;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{background:var(--surface-2);font-weight:600;color:var(--ink)}
+.pos{color:var(--pos)}
+.neg{color:var(--neg)}
+.pill{
+  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+  letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:2px;
+  background:var(--accent-soft);color:var(--accent);white-space:nowrap;
+}
+.pill.warn{background:var(--amber-soft);color:var(--amber)}
+
+/* ---------- callout ---------- */
+.callout{
+  border-left:3px solid var(--amber);background:var(--amber-soft);
+  padding:18px 22px;margin:24px 0;max-width:72ch;
+}
+.callout p{margin:0;max-width:none;color:var(--ink)}
+.callout .k{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--amber);display:block;margin-bottom:8px;
+}
+.note{font-size:13.5px;color:var(--muted);max-width:70ch;margin:0 0 20px}
+
+/* ---------- chart ---------- */
+.chart{
+  border:1px solid var(--rule);background:var(--surface);
+  padding:22px 20px 16px;margin:8px 0 20px;box-shadow:var(--shadow);
+}
+.chart .ctitle{font-size:15px;font-weight:600;margin:0 0 2px}
+.chart .csub{font-size:13px;color:var(--muted);margin:0 0 14px}
+.legend{display:flex;gap:20px;flex-wrap:wrap;margin:0 0 12px;
+  font-size:12.5px;color:var(--ink-2)}
+.legend span.sw{display:inline-block;width:14px;height:3px;border-radius:2px;
+  vertical-align:middle;margin-right:7px}
+.plot{position:relative;overflow-x:auto}
+svg{display:block;width:100%;height:auto;min-width:520px}
+.gridline{stroke:var(--rule);stroke-width:1}
+.zeroline{stroke:var(--rule-strong);stroke-width:1.5;stroke-dasharray:3 3}
+.axlabel{fill:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:10.5px}
+.dlabel{fill:var(--ink);font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:500}
+.tip{
+  position:absolute;pointer-events:none;opacity:0;transition:opacity .12s;
+  background:var(--surface);border:1px solid var(--rule-strong);
+  box-shadow:var(--shadow);padding:9px 12px;font-size:12.5px;
+  font-family:"IBM Plex Mono",monospace;white-space:nowrap;z-index:3;
+  transform:translate(-50%,-115%);
+}
+.tip b{display:block;font-family:"IBM Plex Sans",sans-serif;font-size:11px;
+  color:var(--muted);font-weight:400;margin-bottom:5px;letter-spacing:.04em}
+.tip .row{display:flex;gap:10px;justify-content:space-between}
+details{margin:0 0 8px;font-size:13.5px}
+summary{cursor:pointer;color:var(--accent);padding:6px 0}
+summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---------- checklist ---------- */
+ol.check{list-style:none;padding:0;margin:0 0 20px;counter-reset:c;max-width:72ch}
+ol.check li{
+  counter-increment:c;position:relative;padding:11px 0 11px 42px;
+  border-bottom:1px solid var(--rule);margin:0;color:var(--ink-2);font-size:14.5px;
+}
+ol.check li:last-child{border-bottom:none}
+ol.check li::before{
+  content:counter(c);position:absolute;left:0;top:11px;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);
+  border:1px solid var(--rule-strong);width:22px;height:22px;
+  display:grid;place-items:center;border-radius:50%;
+}
+
+footer{
+  border-top:1px solid var(--rule);margin-top:56px;padding-top:24px;
+  font-size:12.5px;color:var(--muted);max-width:72ch;
+}
+footer a{color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- navegação ---------- */
+nav.toc{
+  position:sticky;top:0;z-index:10;background:var(--ground);
+  border-bottom:1px solid var(--rule);margin:0 -24px 0;padding:10px 24px;
+  overflow-x:auto;white-space:nowrap;
+}
+nav.toc a{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.04em;
+  color:var(--muted);text-decoration:none;margin-right:18px;padding:3px 0;
+  border-bottom:1px solid transparent;
+}
+nav.toc a:hover,nav.toc a:focus-visible{color:var(--accent);border-bottom-color:var(--accent)}
+section{scroll-margin-top:56px}
+
+/* ---------- opções lado a lado ---------- */
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);
+  border:1px solid var(--rule);margin:8px 0 24px}
+.opt{background:var(--surface);padding:18px 18px 20px;display:flex;flex-direction:column;gap:9px}
+.opt.pick{background:var(--amber-soft)}
+.opt h4{margin:0;font-family:Fraunces,Georgia,serif;font-size:18px;font-weight:600;
+  font-variation-settings:"opsz" 30}
+.opt .rec{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--amber)}
+.opt dl{margin:0;font-size:13px;display:grid;grid-template-columns:auto 1fr;gap:4px 10px}
+.opt dt{color:var(--muted)}
+.opt dd{margin:0;color:var(--ink-2)}
+@media(max-width:720px){.opts{grid-template-columns:1fr}}
+
+/* ---------- checklist interativo ---------- */
+.dsc{border:1px solid var(--rule);background:var(--surface);margin:0 0 28px}
+.dsc-head{
+  display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid var(--rule);background:var(--surface-2);
+}
+.dsc-head h3{margin:0;font-size:14px}
+.dsc-head .st{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted)}
+.item{display:grid;grid-template-columns:auto 1fr;gap:0 14px;padding:14px 18px;
+  border-bottom:1px solid var(--rule);align-items:start}
+.item:last-child{border-bottom:none}
+.item.done{background:var(--surface-2)}
+.item.done .q{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.box{
+  appearance:none;-webkit-appearance:none;width:20px;height:20px;margin:2px 0 0;
+  border:1.5px solid var(--rule-strong);border-radius:3px;background:var(--surface);
+  cursor:pointer;display:grid;place-items:center;flex:none;
+}
+.box:checked{background:var(--accent);border-color:var(--accent)}
+.box:checked::after{content:"";width:5px;height:9px;border:solid var(--surface);
+  border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.box:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.box:disabled{opacity:.45;cursor:default}
+.item .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-bottom:5px}
+.code{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--accent);
+  letter-spacing:.06em}
+.prio{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;padding:1px 6px;border-radius:2px}
+.p1{background:var(--amber-soft);color:var(--neg)}
+.p2{background:var(--amber-soft);color:var(--amber)}
+.p3{background:var(--surface-2);color:var(--muted);border:1px solid var(--rule)}
+.item .q{font-size:14.5px;color:var(--ink);line-height:1.5}
+.item .w{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5}
+.item .w b{color:var(--ink-2);font-weight:500}
+.item textarea{
+  width:100%;margin-top:9px;font:inherit;font-size:13px;line-height:1.5;
+  background:var(--ground);color:var(--ink);border:1px solid var(--rule);
+  border-radius:3px;padding:8px 10px;resize:vertical;min-height:38px;
+}
+.item textarea:focus-visible{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+.dsc-foot{padding:12px 18px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--rule)}
+.bar{height:4px;background:var(--rule);border-radius:2px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+
+/* ---------- documento autônomo ---------- */
+.toolbar{
+  display:flex;justify-content:flex-end;gap:10px;padding:14px 0 0;
+}
+.btn{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.06em;
+  text-transform:uppercase;background:var(--surface);color:var(--ink-2);
+  border:1px solid var(--rule-strong);border-radius:3px;padding:7px 14px;cursor:pointer;
+}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.docnote{
+  border:1px solid var(--rule);background:var(--surface);padding:14px 18px;
+  margin:20px 0 0;font-size:13px;color:var(--muted);
+}
+.docnote strong{color:var(--ink-2)}
+
+
+/* No documento o índice inteiro precisa aparecer: quebra linha em vez de rolar. */
+nav.toc{white-space:normal;overflow:visible;display:flex;flex-wrap:wrap;gap:2px 0}
+nav.toc a{margin-right:16px}
+code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surface-2);padding:1px 5px;border-radius:2px}
+/* ---------- impressão ---------- */
+@page{ margin:18mm 15mm; }
+@media print{
+  :root{
+    --ground:#FFFFFF; --surface:#FFFFFF; --surface-2:#F4F3EF;
+    --ink:#000000; --ink-2:#1E1C19; --muted:#4A4740;
+    --rule:#CFCCC4; --rule-strong:#9C988E;
+    --accent:#1F4C88; --accent-soft:#EAEFF7;
+    --amber:#8A5210; --amber-soft:#F7F0E4;
+    --pos:#1F5732; --neg:#8A2716; --s1:#1F4C88; --s2:#A05F12;
+    --shadow:none;
+  }
+  body{font-size:10.5pt;line-height:1.5}
+  .wrap{max-width:none;padding:0}
+  .toolbar,nav.toc,.tip{display:none!important}
+  header.top{padding-top:0;break-after:avoid}
+  h1{font-size:32pt}
+  h1 .sub{font-size:13pt}
+  section{padding:18px 0 0;break-before:auto}
+  h2{font-size:16pt}
+  h2,h3{break-after:avoid}
+  .figs{break-inside:avoid}
+  .tw,.callout,.chart,.opt,.docnote,.dsc-head{break-inside:avoid}
+  .dsc{break-inside:auto}
+  .item{break-inside:avoid}
+  .item textarea{min-height:46px;background:#fff;border:1px solid var(--rule)}
+  table{min-width:0;font-size:9pt}
+  svg{min-width:0}
+  .plot{overflow:visible}
+  a{color:var(--accent);text-decoration:none}
+  details{display:block}
+  details>summary{display:none}
+}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+<div class="toolbar">
+  <button class="btn" type="button" onclick="window.print()">Imprimir ou salvar em PDF</button>
+</div>
+
+
+<header class="top">
+  <p class="eyebrow">Plano de execução · rede FAST</p>
+  <h1>Da Limão para a Rede
+    <span class="sub">O plano detalhado para levar o painel de uma loja às 431, e o que ainda não sabemos.</span>
+  </h1>
+  <div class="byline">
+    <span class="tag">Detalhado v1</span>
+    <span>Rodrigo Garcia · franqueado FAST Limão</span>
+    <span>08 · 09 · 2026</span>
+    <span>Documento para leitura e impressão</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Seções">
+  <a href="#s1">01 · Onde estamos</a>
+  <a href="#s2">02 · Produto</a>
+  <a href="#s3">03 · Estrutura jurídica</a>
+  <a href="#s4">04 · Mercado</a>
+  <a href="#s5">05 · Preços</a>
+  <a href="#s6">06 · Go-to-market</a>
+  <a href="#s7">07 · Financeiro</a>
+  <a href="#s8">08 · Riscos</a>
+  <a href="#s9">09 · Portões</a>
+  <a href="#s10">10 · O que falta descobrir</a>
+</nav>
+
+<div class="figs">
+  <div class="fig"><span class="n hi">R$ 267 mil</span><span class="l">capital necessário até o caixa virar</span></div>
+  <div class="fig"><span class="n">mês 15</span><span class="l">primeiro mês com resultado positivo</span></div>
+  <div class="fig"><span class="n">mês 23</span><span class="l">caixa acumulado volta a zero</span></div>
+  <div class="fig"><span class="n">R$ 883 mil</span><span class="l">resultado no ano 3</span></div>
+</div>
+<div class="docnote"><p style="margin:0"><strong>Sobre este arquivo.</strong> Documento autônomo: funciona sem internet, pode ser enviado por e-mail e imprime em 19 páginas. Use o botão no topo para salvar em PDF. As tabelas financeiras vêm do modelo em <code>scripts/modelo_negocio.py</code>, que reproduz cada número a partir das premissas da seção 07.</p></div><p class="note">Modelo de 36 meses com premissas explícitas na seção 07. Toda projeção é estimativa; os 34 itens da seção 10 são exatamente o que ainda pode derrubá-la.</p>
+
+<section id="s1">
+  <div class="shead"><span class="snum">01</span><h2>Onde estamos</h2></div>
+  <p class="lead">Um produto pronto, num mercado cativo por contrato, com trilho de cobrança já existente e margem de 86% — travado por uma cláusula que precisa virar acordo.</p>
+  <div class="callout">
+    <span class="k">A trava · cláusula 13.13 do contrato de franquia</span>
+    <p>Cede à franqueadora a propriedade de toda "invenção, descoberta, aperfeiçoamento ou inovação" resultante da operação da unidade, "ainda que decorra de ato praticado pelo FRANQUEADO". Numa leitura literal, <strong>o produto já não é meu</strong>. Nada neste plano é executável antes de um acordo escrito.</p>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>O que temos a favor</th><th>Base</th></tr></thead>
+      <tbody>
+        <tr><td>Produto em produção há meses numa loja real</td><td>6 abas, 5x/dia, ~5.500 linhas</td></tr>
+        <tr><td>Trinks obrigatório em 100% da rede</td><td>Contrato, cláusula 7.6</td></tr>
+        <tr><td>Taxa de Software paga direto ao fornecedor homologado já existe</td><td>Contrato, cláusulas 7.6 e 12.8</td></tr>
+        <tr><td>Software não é atividade concorrente</td><td>Contrato, cláusula 21.2.1</td></tr>
+        <tr><td>Assento no Conselho de Franqueados</td><td>Contrato, cláusula 1.4</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="s2">
+  <div class="shead"><span class="snum">02</span><h2>O produto</h2></div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Módulo</th><th>O que entrega</th><th>Estado</th><th>Plano</th></tr></thead>
+      <tbody>
+        <tr><td>Painel operacional</td><td>Meta do dia com peso por dia da semana, ocupação por cadeira, R$/hora de salão</td><td><span class="pill">produção</span></td><td>Essencial</td></tr>
+        <tr><td>Auditoria</td><td>Cancelamentos por profissional e serviço, desvio de tabela, risco em reais</td><td><span class="pill">produção</span></td><td>Essencial</td></tr>
+        <tr><td>Insights</td><td>Comentário acionável automático por aba e período</td><td><span class="pill">produção</span></td><td>Essencial</td></tr>
+        <tr><td>Financeiro</td><td>DRE, ponto de equilíbrio, margem de contribuição</td><td><span class="pill warn">depende de Excel</span></td><td>Gestão</td></tr>
+        <tr><td>Conciliação</td><td>Recebíveis, órfãos dos dois lados, antecipação, fluxo de caixa</td><td><span class="pill warn">depende de CSV</span></td><td>Gestão</td></tr>
+        <tr><td>Clientes</td><td>Base ativa, churn, aniversariantes, ticket por cliente</td><td><span class="pill">produção</span></td><td>Gestão</td></tr>
+        <tr><td>Campanhas</td><td>WhatsApp com kill switch, opt-out, cooldown, teto e janela</td><td><span class="pill warn">pronto, desligado</span></td><td>Crescimento</td></tr>
+        <tr><td>Painel da Rede</td><td>Todas as lojas lado a lado, ranking, benchmark, alerta de queda</td><td><span class="pill warn">a construir</span></td><td>Franqueadora</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>A defensibilidade não é o código</h3>
+  <p>É a calibragem: peso por dia da semana medido em 42 dias de amostra, meta por cadeira e por hora, as palavras-chave que classificam 57 serviços em cabelo, unha e maquiagem, o critério do que é cancelamento suspeito. Meses operando uma loja de verdade. Um BI genérico não tem isso e não consegue inventar.</p>
+  <p class="note">A vulnerabilidade é o outro lado da mesma moeda: parte dessa calibragem veio da franqueadora — metas oficiais, tabela de preços, modelo de DRE. É o que a cláusula 21.1 protege e o que torna a homologação necessária, não opcional.</p>
+</section>
+
+<section id="s3">
+  <div class="shead"><span class="snum">03</span><h2>Estrutura jurídica</h2></div>
+  <p>Três formas de destravar a 13.13. A escolha define quem investe os R$ 267 mil e quem fica com os R$ 883 mil.</p>
+  <div class="opts">
+    <div class="opt">
+      <h4>A · Licenciamento</h4>
+      <dl>
+        <dt>Dono</dt><dd>Você, com licença à rede</dd>
+        <dt>Recebe</dt><dd>Royalty por loja ativa</dd>
+        <dt>Investe</dt><dd>Você</dd>
+        <dt>Upside ano 3</dt><dd>R$ 883 mil</dd>
+        <dt>Risco 13.13</dt><dd>Alto — ela pode contestar</dd>
+      </dl>
+      <p class="note" style="margin:0">Melhor cenário financeiro, mais difícil de conseguir: exige que ela abra mão de um direito que já tem no papel. <strong>Peça esta.</strong></p>
+    </div>
+    <div class="opt pick">
+      <span class="rec">Aceite esta</span>
+      <h4>B · Joint venture</h4>
+      <dl>
+        <dt>Dono</dt><dd>Sociedade nova</dd>
+        <dt>Recebe</dt><dd>Participação + pró-labore</dd>
+        <dt>Investe</dt><dd>A sociedade</dd>
+        <dt>Upside ano 3</dt><dd>Sua fatia de R$ 883 mil</dd>
+        <dt>Risco 13.13</dt><dd>Neutralizado</dd>
+      </dl>
+      <p class="note" style="margin:0">O provável, e é bom: neutraliza a cláusula, divide o capital e mantém upside.</p>
+    </div>
+    <div class="opt">
+      <h4>C · Venda do ativo</h4>
+      <dl>
+        <dt>Dono</dt><dd>Franqueadora</dd>
+        <dt>Recebe</dt><dd>À vista + earn-out</dd>
+        <dt>Investe</dt><dd>Ela</dd>
+        <dt>Upside ano 3</dt><dd>Zero após o pagamento</dd>
+        <dt>Risco 13.13</dt><dd>Neutralizado</dd>
+      </dl>
+      <p class="note" style="margin:0">Põe dinheiro no bolso e encerra o assunto. Considere se a negociação travar, ou se você concluir que não quer tocar uma empresa de software.</p>
+    </div>
+  </div>
+  <div class="callout">
+    <span class="k">Regra inegociável nas três</span>
+    <p>Nada de código, repositório ou demonstração técnica detalhada antes de documento assinado. Mostrar o painel funcionando, sim; mostrar como ele foi feito, não.</p>
+  </div>
+</section>
+
+<section id="s4">
+  <div class="shead"><span class="snum">04</span><h2>Mercado</h2></div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Camada</th><th>Definição</th><th class="num">Lojas</th><th class="num">Receita potencial/ano</th></tr></thead>
+      <tbody>
+        <tr><td>TAM</td><td>Salões no Brasil que usam Trinks</td><td class="num">a descobrir · T6</td><td class="num">—</td></tr>
+        <tr><td>SAM</td><td>Rede FAST: Escova + Spa</td><td class="num">431 → 600</td><td class="num">1,55 → 2,15 mi</td></tr>
+        <tr class="total"><td>SOM ano 3</td><td>65% de adoção na rede</td><td class="num">389</td><td class="num">R$ 1,53 mi</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>O contrato torna o Trinks obrigatório, então o SAM é a rede inteira — não uma fatia dela. É raro, e é o maior ativo comercial do plano.</p>
+  <h3>Quem compra</h3>
+  <p><strong>O franqueado</strong> fatura ~R$ 97 mil/mês, tem 8 a 16 profissionais e não é analista de dados. Olha o faturamento do dia e sente o resto. O que compra não é "dashboard" — é <em>descobrir o problema na terça em vez de no fechamento do mês</em>.</p>
+  <p><strong>A franqueadora</strong> tem 431 unidades e R$ 502 mi de faturamento de rede. O que compra é comparabilidade: saber qual loja está caindo antes de o franqueado ligar pedindo socorro.</p>
+  <h3>Concorrência</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Concorrente</th><th>Ameaça</th><th>Por que ganhamos ou perdemos</th></tr></thead>
+      <tbody>
+        <tr><td>A planilha do franqueado</td><td><span class="pill">o real</span></td><td>Ganhamos: ela não atualiza sozinha nem cruza com a adquirente</td></tr>
+        <tr><td>Relatórios do próprio Trinks</td><td><span class="pill">média</span></td><td>Ganhamos: mostram o que aconteceu, não o que fazer — e não veem o dinheiro</td></tr>
+        <tr><td>Sults, o CRM homologado</td><td><span class="pill">média</span></td><td>Sobreposição parcial · item F5</td></tr>
+        <tr><td>BI genérico (Power BI, Looker)</td><td><span class="pill">baixa</span></td><td>Exige quem saiba usar. Nenhum franqueado tem</td></tr>
+        <tr><td>A Trinks lançar o produto</td><td><span class="pill warn">alta</span></td><td>Eles têm o dado · item T7</td></tr>
+        <tr><td>A franqueadora construir</td><td><span class="pill warn">alta</span></td><td>6 a 9 meses e uma equipe. Nossa vantagem é o tempo</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="s5">
+  <div class="shead"><span class="snum">05</span><h2>Modelo e preços</h2></div>
+  <p>Fornecedor Homologado, espelhando o que a rede já faz com Trinks e Sults: a franqueadora homologa e compra o Painel da Rede; a loja paga a Taxa de Software direto ao fornecedor.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Plano</th><th class="num">R$/mês</th><th>Inclui</th><th class="num">% do faturamento</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Essencial</strong></td><td class="num">199</td><td>Painel operacional, metas com sazonalidade, insights, auditoria</td><td class="num">0,21%</td></tr>
+        <tr><td><strong>Gestão</strong></td><td class="num">349</td><td>+ DRE, fluxo de caixa, conciliação, clientes</td><td class="num">0,36%</td></tr>
+        <tr><td><strong>Crescimento</strong></td><td class="num">549</td><td>+ CRM, campanhas de WhatsApp, régua de reativação</td><td class="num">0,57%</td></tr>
+        <tr class="total"><td><strong>Painel da Rede</strong></td><td class="num">8 a 15 mil</td><td>Franqueadora: consolidado, ranking, benchmark, alertas</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p><strong>Mix modelado:</strong> 40% Essencial · 45% Gestão · 15% Crescimento → ticket médio <strong>R$ 319</strong>. O preço é ancorado no percentual do faturamento, não no custo: a 0,3% da receita, a decisão deixa de ser financeira e vira conveniência.</p>
+  <h3>O que não fazer</h3>
+  <ul>
+    <li><strong>Cobrar percentual do faturamento da loja.</strong> Parece alinhado, mas transforma cada reajuste em negociação e assusta quem está indo bem.</li>
+    <li><strong>Plano gratuito.</strong> O custo de suporte por loja (R$ 34) não sustenta freemium numa base de 600.</li>
+    <li><strong>Embutir as mensagens de WhatsApp na mensalidade.</strong> Custo variável dentro de preço fixo é como se perde margem sem perceber — repasse a custo.</li>
+    <li><strong>Vender direto ao franqueado sem homologação.</strong> É o caminho que dispara as cláusulas 21.1 e 19.3.3 (ix).</li>
+  </ul>
+</section>
+
+<section id="s6">
+  <div class="shead"><span class="snum">06</span><h2>Go-to-market</h2></div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Etapa</th><th class="num">Duração</th><th>O que acontece</th><th>Marco de saída</th></tr></thead>
+      <tbody>
+        <tr><td>0 · Contenção</td><td class="num">2 sem</td><td>Fechar acesso público, suspender o que sai da loja, advogado</td><td>Exposições contidas</td></tr>
+        <tr><td>1 · Acordo</td><td class="num">4–8 sem</td><td>Trinks (parceria) + franqueadora (estrutura A, B ou C)</td><td><strong>Dois papéis assinados</strong></td></tr>
+        <tr><td>2 · Piloto</td><td class="num">8 sem</td><td>5 lojas de perfis diferentes, gratuitas</td><td>Valor provado fora da Limão</td></tr>
+        <tr><td>3 · Homologação</td><td class="num">4 sem</td><td>Entrar na lista, contrato-tipo, preço oficial</td><td>Comunicado à rede</td></tr>
+        <tr><td>4 · Escala</td><td class="num">contínuo</td><td>Conselho, convenção, onboarding self-service</td><td>100 lojas no mês 12</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>O piloto é gratuito de propósito: 5 lojas × R$ 319 × 2 meses = R$ 3.190 de receita abdicada para comprar a prova de que o produto funciona fora da Limão. É barato.</p>
+  <h3>Canais, em ordem de eficácia</h3>
+  <ol class="check">
+    <li><strong>A franqueadora comunicando à rede.</strong> Um comunicado oficial vale mais que 600 ligações. É o que a homologação compra.</li>
+    <li><strong>Conselho de Franqueados</strong> — pauta natural, e você já tem assento (cláusula 1.4).</li>
+    <li><strong>Convenção e encontros da rede</strong>, previstos na cláusula 6.1 (ix) para "exposição de ideias, críticas e sugestões sobre o SISTEMA".</li>
+    <li><strong>Boca a boca entre franqueados.</strong> O mais forte e o mais lento. Uma loja que descobre R$ 2.500 em cancelamentos conta para as outras.</li>
+    <li><strong>Grupos de WhatsApp da rede.</strong> Informal, alto alcance, use com parcimônia.</li>
+  </ol>
+  <h3>Curva de adoção modelada</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Mês</th><th class="num">7</th><th class="num">9</th><th class="num">12</th><th class="num">15</th><th class="num">18</th><th class="num">24</th><th class="num">30</th><th class="num">36</th></tr></thead>
+      <tbody>
+        <tr><td>Lojas pagando</td><td class="num">16</td><td class="num">30</td><td class="num">69</td><td class="num">137</td><td class="num">219</td><td class="num">328</td><td class="num">368</td><td class="num">389</td></tr>
+        <tr><td>% da rede</td><td class="num">4%</td><td class="num">7%</td><td class="num">15%</td><td class="num">29%</td><td class="num">44%</td><td class="num">60%</td><td class="num">65%</td><td class="num">65%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note"><strong>Por que 65% e não 100%:</strong> lojas novas em ramp-up, franqueados multi-unidade que negociam à parte, resistentes por princípio, lojas em transição societária. Adoção total em rede de franquia é ficção, mesmo com produto obrigatório.</p>
+</section>
+
+<section id="s7">
+  <div class="shead"><span class="snum">07</span><h2>Financeiro</h2></div>
+
+  <h3>Premissas</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Premissa</th><th class="num">Valor</th><th>Origem</th></tr></thead>
+      <tbody>
+        <tr><td>Ticket médio</td><td class="num">R$ 319</td><td>Mix 40/45/15 sobre 199/349/549</td></tr>
+        <tr><td>Custo variável por loja</td><td class="num">R$ 45</td><td>Infra 8 + suporte 34 + cobrança 3</td></tr>
+        <tr class="total"><td>Margem de contribuição</td><td class="num">R$ 274 · 86%</td><td>Calculado</td></tr>
+        <tr><td>CAC</td><td class="num">R$ 400</td><td>Onboarding + rateio de eventos da rede</td></tr>
+        <tr><td>Churn</td><td class="num">1,5%/mês</td><td>Conservador — inclui fechamento de loja</td></tr>
+        <tr><td>Custo fixo em regime</td><td class="num">R$ 35.000</td><td>Dev 16k · CS 6k · infra 3k · pró-labore 10k</td></tr>
+        <tr><td>Painel da Rede</td><td class="num">R$ 10.000</td><td>A partir do mês 9, meio da faixa</td></tr>
+        <tr><td>Teto de adoção</td><td class="num">65%</td><td>Da rede, que cresce de 431 a 600</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart">
+    <p class="ctitle">Caixa acumulado ao longo de 36 meses</p>
+    <p class="csub">O vale no mês 14 é o capital que precisa existir antes de começar</p>
+    <div class="plot" id="plot">
+      <svg viewBox="0 0 760 372" role="img" aria-label="Curva de caixa acumulado: desce até menos R$ 267 mil no mês 14, cruza zero no mês 23 e chega a R$ 953 mil no mês 36.">
+        <line class="gridline" x1="70" y1="30"    x2="700" y2="30"/>
+        <line class="gridline" x1="70" y1="81.9"  x2="700" y2="81.9"/>
+        <line class="gridline" x1="70" y1="133.8" x2="700" y2="133.8"/>
+        <line class="gridline" x1="70" y1="185.8" x2="700" y2="185.8"/>
+        <line class="gridline" x1="70" y1="300"   x2="700" y2="300"/>
+        <line class="zeroline" x1="70" y1="237.7" x2="700" y2="237.7"/>
+        <text class="axlabel" x="62" y="33.5"  text-anchor="end">1,0 mi</text>
+        <text class="axlabel" x="62" y="85.4"  text-anchor="end">750 mil</text>
+        <text class="axlabel" x="62" y="137.3" text-anchor="end">500 mil</text>
+        <text class="axlabel" x="62" y="189.3" text-anchor="end">250 mil</text>
+        <text class="axlabel" x="62" y="241.2" text-anchor="end">0</text>
+        <text class="axlabel" x="62" y="303.5" text-anchor="end">−300 mil</text>
+        <line class="gridline" x1="70"  y1="300" x2="70"  y2="306"/>
+        <line class="gridline" x1="160" y1="300" x2="160" y2="306"/>
+        <line class="gridline" x1="268" y1="300" x2="268" y2="306"/>
+        <line class="gridline" x1="376" y1="300" x2="376" y2="306"/>
+        <line class="gridline" x1="484" y1="300" x2="484" y2="306"/>
+        <line class="gridline" x1="592" y1="300" x2="592" y2="306"/>
+        <line class="gridline" x1="700" y1="300" x2="700" y2="306"/>
+        <text class="axlabel" x="70"  y="320" text-anchor="middle">M1</text>
+        <text class="axlabel" x="160" y="320" text-anchor="middle">M6</text>
+        <text class="axlabel" x="268" y="320" text-anchor="middle">M12</text>
+        <text class="axlabel" x="376" y="320" text-anchor="middle">M18</text>
+        <text class="axlabel" x="484" y="320" text-anchor="middle">M24</text>
+        <text class="axlabel" x="592" y="320" text-anchor="middle">M30</text>
+        <text class="axlabel" x="700" y="320" text-anchor="middle">M36</text>
+        <text class="axlabel" x="385" y="341" text-anchor="middle">meses desde o início</text>
+        <polyline fill="none" stroke="var(--s1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          points="70.0,240.4 88.0,241.4 106.0,248.5 124.0,253.1 142.0,257.6 160.0,265.5 178.0,271.8 196.0,276.8 214.0,281.0 232.0,284.7 250.0,288.0 268.0,290.6 286.0,292.4 304.0,293.2 322.0,292.7 340.0,290.8 358.0,287.4 376.0,282.3 394.0,275.7 412.0,267.5 430.0,258.0 448.0,247.4 466.0,235.7 484.0,223.2 502.0,209.9 520.0,196.1 538.0,181.8 556.0,167.1 574.0,152.1 592.0,136.8 610.0,121.1 628.0,105.3 646.0,89.2 664.0,72.9 682.0,56.4 700.0,39.7"/>
+        <circle cx="304" cy="293.2" r="4.5" fill="var(--s2)" stroke="var(--surface)" stroke-width="2"/>
+        <circle cx="466" cy="235.7" r="4.5" fill="var(--s1)" stroke="var(--surface)" stroke-width="2"/>
+        <text class="dlabel" x="304" y="285" text-anchor="middle">−R$ 267 mil · M14</text>
+        <text class="dlabel" x="470" y="224">caixa zera · M23</text>
+        <line id="guide" x1="0" y1="30" x2="0" y2="300" stroke="var(--rule-strong)" stroke-width="1" opacity="0"/>
+      </svg>
+      <div class="tip" id="tip"></div>
+    </div>
+  </div>
+
+  <h3>Projeção anual</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th></th><th class="num">Ano 1</th><th class="num">Ano 2</th><th class="num">Ano 3</th></tr></thead>
+      <tbody>
+        <tr><td>Receita</td><td class="num">112.990</td><td class="num">968.140</td><td class="num">1.526.137</td></tr>
+        <tr><td>Resultado</td><td class="num neg">−254.871</td><td class="num pos">+324.852</td><td class="num pos">+883.248</td></tr>
+        <tr class="total"><td>Lojas no fim do ano</td><td class="num">69</td><td class="num">328</td><td class="num">389</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <span class="k">Correção em relação à versão anterior</span>
+    <p>O plano anterior falava em R$ 112 mil de investimento. Aquele número cobria só o custo de construir; <strong>não incluía o prejuízo operacional até o caixa virar</strong>. A necessidade real é <strong>R$ 267 mil</strong> — 2,4 vezes maior. É a diferença entre "dá para bancar do bolso" e "precisa de sócio, capital, ou uma estrutura em que a franqueadora banque".</p>
+  </div>
+
+  <h3>Economia unitária</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Métrica</th><th class="num">Valor</th></tr></thead>
+      <tbody>
+        <tr><td>Margem de contribuição por loja</td><td class="num">R$ 274/mês</td></tr>
+        <tr><td>Payback do CAC</td><td class="num">1,5 mês</td></tr>
+        <tr><td>LTV a 1,0% de churn</td><td class="num">R$ 27.400 · 68x</td></tr>
+        <tr class="total"><td>LTV a 1,5% de churn</td><td class="num">R$ 18.267 · 46x</td></tr>
+        <tr><td>LTV a 2,0% de churn</td><td class="num">R$ 13.700 · 34x</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Um LTV/CAC de 46x seria absurdo em SaaS normal. Aqui é real, e diz uma coisa específica: <strong>o risco deste negócio não está na aquisição de clientes, está no canal.</strong> Conseguir a homologação é quase binário — com ela, o custo de vender tende a zero; sem ela, não existe negócio. Toda a energia vai para a negociação, não para marketing.</p>
+
+  <h3>Cenários</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Cenário</th><th class="num">1º mês +</th><th class="num">Caixa zera</th><th class="num">Capital</th><th class="num">Receita ano 3</th><th class="num">Resultado ano 3</th></tr></thead>
+      <tbody>
+        <tr class="total"><td>Base</td><td class="num">M15</td><td class="num">M23</td><td class="num">267.088</td><td class="num">1.526.137</td><td class="num pos">883.248</td></tr>
+        <tr><td>Adoção metade (33% da rede)</td><td class="num">M19</td><td class="num">M35</td><td class="num">327.402</td><td class="num">823.069</td><td class="num pos">291.624</td></tr>
+        <tr><td>Homologação atrasa 6 meses</td><td class="num">M21</td><td class="num">M29</td><td class="num">292.811</td><td class="num">1.417.651</td><td class="num pos">752.896</td></tr>
+        <tr><td>Preço 20% menor</td><td class="num">M17</td><td class="num">M27</td><td class="num">302.405</td><td class="num">1.244.028</td><td class="num pos">601.139</td></tr>
+        <tr><td>Sem o Painel da Rede</td><td class="num">M17</td><td class="num">M26</td><td class="num">335.658</td><td class="num">1.406.137</td><td class="num pos">763.248</td></tr>
+        <tr><td>Participação de 20% à franqueadora</td><td class="num">M17</td><td class="num">M28</td><td class="num">318.259</td><td class="num">1.220.910</td><td class="num pos">578.021</td></tr>
+        <tr><td>Participação de 35%</td><td class="num">M19</td><td class="num">M35</td><td class="num">377.326</td><td class="num">991.989</td><td class="num pos">349.100</td></tr>
+        <tr><td>Participação de 50%</td><td class="num">M23</td><td class="num neg">não volta</td><td class="num">474.338</td><td class="num">763.069</td><td class="num">120.180</td></tr>
+        <tr><td>Pior caso combinado</td><td class="num">M33</td><td class="num neg">não volta</td><td class="num">500.221</td><td class="num">499.736</td><td class="num neg">−42.641</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <span class="k">O limite de negociação</span>
+    <p>Até <strong>35% de participação</strong> para a franqueadora o negócio continua de pé. <strong>A 50% ele para de se pagar em 36 meses.</strong> Leve esse número para a mesa — é a diferença entre uma parceria e um emprego mal pago.</p>
+  </div>
+
+  <h3>Versão enxuta</h3>
+  <p>Sem pró-labore e com estrutura mais leve (custo fixo em regime de R$ 25 mil), abrir mão do próprio salário por 12 meses economiza R$ 52 mil de capital e antecipa o break-even em 2 meses.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Variante</th><th class="num">1º mês +</th><th class="num">Caixa zera</th><th class="num">Capital</th><th class="num">Resultado ano 3</th></tr></thead>
+      <tbody>
+        <tr class="total"><td>Enxuta</td><td class="num">M13</td><td class="num">M21</td><td class="num">214.871</td><td class="num pos">1.003.248</td></tr>
+        <tr><td>Enxuta + participação 35%</td><td class="num">M17</td><td class="num">M29</td><td class="num">285.210</td><td class="num pos">469.100</td></tr>
+        <tr><td>Enxuta + adoção metade</td><td class="num">M16</td><td class="num">M28</td><td class="num">244.888</td><td class="num pos">411.624</td></tr>
+        <tr><td>Enxuta + pior caso</td><td class="num">M27</td><td class="num neg">não volta</td><td class="num">356.567</td><td class="num">77.359</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note"><strong>Lacuna conhecida:</strong> a projeção está antes dos impostos da empresa de software (item N3). No Simples Nacional, o resultado do ano 3 cai de R$ 883 mil para algo entre R$ 700 mil e R$ 790 mil. Não muda a decisão, mas precisa entrar antes de virar proposta formal.</p>
+</section>
+
+<section id="s8">
+  <div class="shead"><span class="snum">08</span><h2>Riscos</h2></div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Risco</th><th>Prob.</th><th>Impacto</th><th>Mitigação</th></tr></thead>
+      <tbody>
+        <tr><td>Franqueadora invoca a 13.13 sem contrapartida</td><td><span class="pill warn">alta</span></td><td>fatal</td><td>Negociar antes de expandir; nada de código antes do papel</td></tr>
+        <tr><td>Franqueadora constrói internamente</td><td><span class="pill">média</span></td><td>fatal</td><td>Chegar com produto pronto; oferecer a JV, que torna irracional fazer sozinha</td></tr>
+        <tr><td>Trinks nega uso comercial</td><td><span class="pill">média</span></td><td>fatal</td><td>Conversar na semana 1; ingestão trocável desde a Fase 1</td></tr>
+        <tr><td>Trinks lança produto concorrente</td><td><span class="pill">média</span></td><td>alto</td><td>Item T7. Se sim, negociar como parceiro em vez de competir</td></tr>
+        <tr><td>Capital de R$ 267 mil não aparece</td><td><span class="pill warn">alta</span></td><td>alto</td><td>Estrutura B ou C; versão enxuta a R$ 215 mil; faseamento</td></tr>
+        <tr><td>Adoção abaixo de 33%</td><td><span class="pill">média</span></td><td>alto</td><td>O piloto valida antes de investir a Fase 2</td></tr>
+        <tr><td>Vazamento de dado de cliente</td><td><span class="pill">baixa</span></td><td>fatal</td><td>Contenção na semana 1; contrato de operador com cada loja</td></tr>
+        <tr><td>Sults já faz parte disso</td><td><span class="pill">média</span></td><td>médio</td><td>Item F5. Se sim, integrar em vez de competir</td></tr>
+        <tr><td>Pessoa-chave</td><td><span class="pill">média</span></td><td>alto</td><td>Documentar as regras de negócio na Fase 1</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="s9">
+  <div class="shead"><span class="snum">09</span><h2>Portões de decisão</h2></div>
+  <p>Quatro portões. Em cada um, uma resposta honesta antes de gastar o próximo real.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Portão</th><th>Quando</th><th>Critério para seguir</th><th>Se não</th></tr></thead>
+      <tbody>
+        <tr><td><strong>G1 · Jurídico</strong></td><td>Semana 2</td><td>O advogado vê caminho viável para a 13.13</td><td>Pare. Uso interno apenas</td></tr>
+        <tr><td><strong>G2 · Trinks</strong></td><td>Semana 4</td><td>Existe caminho contratual para uso comercial da API</td><td>Pare ou repense a fonte de dados</td></tr>
+        <tr><td><strong>G3 · Franqueadora</strong></td><td>Semana 8</td><td>Ela topa A, B ou C — qualquer uma por escrito</td><td>Avalie o produto genérico fora do SISTEMA</td></tr>
+        <tr><td><strong>G4 · Piloto</strong></td><td>Mês 4</td><td>4 das 5 lojas usam semanalmente e pagariam</td><td>Não invista as Fases 2 e 3</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout">
+    <span class="k">O que torna este plano executável</span>
+    <p>Não é o otimismo dos números — é a disciplina dos portões. O pior desfecho possível não é o projeto não acontecer: é gastar R$ 267 mil e perder a loja por ter pulado o G1.</p>
+  </div>
+</section>
+
+<section id="s10">
+  <div class="shead"><span class="snum">10</span><h2>O que falta descobrir</h2></div>
+  <p class="lead">Todo plano de negócio é uma pilha de suposições. Estas são as que sobraram, em ordem de quanto mudam a decisão — não de curiosidade.</p>
+  <p>Cada item traz <strong>o que muda</strong>: a consequência prática da resposta. Se um item não muda nada, não deveria estar aqui. Marque o que já respondeu e anote a resposta. Neste arquivo as anotações não são gravadas: imprima e preencha à mão, ou use a versão online.</p>
+
+  <div class="tw">
+    <table>
+      <thead><tr><th>Onda</th><th class="num">Prazo</th><th>Objetivo</th><th>Portão</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1 · Sobrevivência</strong></td><td class="num">14 dias</td><td>Descobrir se existe caminho legal e técnico</td><td>G1 + G2</td></tr>
+        <tr><td><strong>2 · Modelo</strong></td><td class="num">30 dias</td><td>Descobrir qual estrutura de negócio é possível</td><td>G3</td></tr>
+        <tr><td><strong>3 · Refino</strong></td><td class="num">90 dias</td><td>Ajustar preço, custo e produto com dado real</td><td>G4</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note"><strong>Regra:</strong> não gaste um real da Fase 1 antes de fechar a Onda 1. O custo de descobrir é uma hora de advogado e três telefonemas. O custo de não descobrir são duas multas de R$ 200 mil, cumuláveis, e a loja.</p>
+
+  <div id="listas"></div>
+
+  <h3>O que já foi respondido</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Pergunta</th><th>Resposta</th><th>Fonte</th></tr></thead>
+      <tbody>
+        <tr><td>Quantas lojas da rede usam Trinks?</td><td><strong>100%</strong> — obrigatório</td><td>Contrato, 7.6</td></tr>
+        <tr><td>A franqueadora cobra taxa de tecnologia?</td><td><strong>Sim</strong> — paga direto ao fornecedor homologado</td><td>Contrato, 7.6</td></tr>
+        <tr><td>Existe caminho de fornecedor terceiro cobrando das lojas?</td><td><strong>Sim</strong> — Trinks e Sults já fazem isso</td><td>Contrato, 7.6 e 12.8</td></tr>
+        <tr><td>A não concorrência impede uma software house?</td><td><strong>Não</strong> — concorrente é estabelecimento de beleza</td><td>Contrato, 21.2.1</td></tr>
+        <tr><td>A Trinks permite uso comercial dos dados?</td><td><strong>Não, sem contrato específico</strong></td><td>Termos de Uso</td></tr>
+        <tr><td>Quem é dono da base de clientes?</td><td><strong>A franqueadora</strong></td><td>Contrato, 13.11</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <p>Documento interno em rascunho, elaborado por Rodrigo Garcia, franqueado da FAST Escova Limão. Não é comunicação oficial da franqueadora nem parecer jurídico. As cláusulas citadas vêm do contrato de franquia assinado em 27/01/2026 e dos Termos de Uso da Trinks.</p>
+  <p>Fontes de mercado:
+    <a href="https://timesbrasil.com.br/empresas-e-negocios/wellness/lojas-fast-escova-crescimento-2026/">Times Brasil</a> ·
+    <a href="https://mapadasfranquias.com.br/noticia/fast-escova-investe-r-11-milhao-projeta-faturamento-de-r-502-milhoes-e-inaugura-nova-fase-como-ecossistema-fast/">Mapa das Franquias</a> ·
+    <a href="https://www.portaldofranchising.com.br/noticias/fast-escova-chega-a-200-unidades-em-funcionamento-no-brasil/">Portal do Franchising</a>
+  </p>
+</footer>
+
+</div>
+<script>
+/* ---------------- gráfico de caixa ---------------- */
+(function(){
+  var CAIXA=[-13000,-18000,-52000,-74000,-96000,-134000,-164019,-188363,-208350,-226516,-242267,-254871,-263463,-267088,-264776,-255658,-239100,-214804,-182855,-143688,-97994,-46594,9662,69980,133667,200142,268938,339689,412113,485994,561173,637527,714968,793429,872861,953229];
+  var LOJAS=[0,0,0,0,0,0,16,22,30,40,53,69,89,111,137,164,192,219,245,267,286,303,317,328,337,345,352,358,363,368,372,376,379,383,386,389];
+  var plot=document.getElementById('plot'), tip=document.getElementById('tip'),
+      guide=document.getElementById('guide'), svg=plot.querySelector('svg');
+  var X0=70,X1=700;
+  function brl(v){
+    return (v<0?'−':'+')+'R$ '+Math.abs(Math.round(v)).toLocaleString('pt-BR');
+  }
+  function move(e){
+    var r=svg.getBoundingClientRect();
+    var px=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+    var vx=px/r.width*760;
+    if(vx<X0||vx>X1){leave();return;}
+    var i=Math.round((vx-X0)/(X1-X0)*35);
+    if(i<0)i=0; if(i>35)i=35;
+    var gx=X0+i/35*(X1-X0), gpx=gx/760*r.width;
+    guide.setAttribute('x1',gx); guide.setAttribute('x2',gx);
+    guide.setAttribute('opacity','1');
+    tip.innerHTML='<b>mês '+(i+1)+'</b>'+
+      '<div class="row"><span>caixa</span><span>'+brl(CAIXA[i])+'</span></div>'+
+      '<div class="row"><span>lojas</span><span>'+LOJAS[i]+'</span></div>';
+    tip.style.left=gpx+'px';
+    tip.style.top=(r.height*0.62)+'px';
+    tip.style.opacity='1';
+  }
+  function leave(){tip.style.opacity='0';guide.setAttribute('opacity','0');}
+  plot.addEventListener('mousemove',move);
+  plot.addEventListener('touchmove',move,{passive:true});
+  plot.addEventListener('mouseleave',leave);
+  plot.addEventListener('touchend',leave);
+})();
+
+/* ---------------- checklist de descoberta ---------------- */
+(function(){
+  var P={b:['p1','bloqueante'],e:['p2','estrutural'],r:['p3','refinamento']};
+  var GRUPOS=[
+    {id:'J', nome:'Jurídico', quem:'Advogado de franquias · R$ 1.500 a 3.000 por 1 a 2 horas de consulta, mais R$ 3.000 a 6.000 se houver redação de documentos.', itens:[
+      ['J1','b','A cláusula 13.13 alcança um software que eu escrevi? Uma cessão universal e gratuita de tudo que o franqueado criar é exigível, ou abusiva num contrato de adesão?','<b>Tudo.</b> Se alcança, o único caminho é negociar. Se é questionável, você negocia de outra posição.'],
+      ['J2','b','A Lei de Software (9.609/98) muda algo, sendo o autor pessoa física, fora de vínculo empregatício e com ferramentas próprias?','Define a força do seu argumento de titularidade.'],
+      ['J3','b','Qual o risco real das três exposições atuais — painel público, sync do HubSpot, campanhas — e em que ordem corrigir?','Define o que fazer <b>nesta semana</b>.'],
+      ['J4','e','Como demonstrar o produto à franqueadora sem entregar o ativo? Existe NDA ou memorando que preserve minha posição?','Define se a reunião da semana 4 pode acontecer.'],
+      ['J5','e','Qual estrutura usar: PJ separada, sociedade com a franqueadora, ou licenciamento? Posso ser sócio de uma software house sendo franqueado?','Define qual das três estruturas da seção 03 é viável.'],
+      ['J6','e','Sendo franqueado <em>e</em> fornecedor homologado ao mesmo tempo, há conflito a tratar no contrato de fornecimento?','Define cláusulas do contrato de homologação.'],
+      ['J7','e','Se eu construir do zero um produto genérico para salões, fora do horário e sem material dos MANUAIS, a 13.13 ainda alcança? Que provas de segregação preciso produzir desde já?','Define se o plano B existe — e as provas precisam começar <b>antes</b>, não depois.']
+    ]},
+    {id:'T', nome:'Trinks', quem:'Comercial e parcerias da Trinks. Custo: telefonemas e uma reunião.', itens:[
+      ['T1','b','Existe autorização para uso comercial da API? Os Termos vedam uso "nunca comercial" e obra derivada sem contrato específico — qual o processo para obter esse contrato?','<b>Se não existe caminho, não há produto</b> sobre a API do Trinks.'],
+      ['T2','b','A cota de 10.000 requisições por mês é por estabelecimento ou por conta?','Se for por conta, o custo unitário muda completamente e o modelo precisa ser refeito.'],
+      ['T3','b','Existe programa formal de parceiro ou integrador? Contrato-tipo, requisitos, prazo de aprovação?','Define o prazo da Onda 1 e se há atalho.'],
+      ['T4','e','O modelo de parceria envolve taxa, participação na receita, ou é gratuito?','Entra direto no custo variável por loja, hoje modelado como R$ 0.'],
+      ['T5','e','A API tem endpoints incrementais (updated_since, delta, webhooks) ou só paginação completa?','Define o custo da Fase 3 e se a economia de 70% de requisições é real.'],
+      ['T6','r','Quantos salões no Brasil usam Trinks? Existe base fora da rede FAST?','Dimensiona o TAM e a viabilidade do plano B.'],
+      ['T7','e','A Trinks tem, ou planeja, um produto próprio de BI ou gestão financeira?','Se sim, o jogo é parceria e não competição — e o timing fica urgente.']
+    ]},
+    {id:'F', nome:'Franqueadora', quem:'Diretoria e área de operações da FE Franchising. Cuidado: perguntar já sinaliza intenção — faça depois de J1 e J4.', itens:[
+      ['F1','e','Existe projeto interno de BI, dados ou painel da rede em andamento?','Se existe, o jogo é parceria ou venda do ativo — não licenciamento.'],
+      ['F2','e','Quem decide a homologação de um fornecedor? Qual o processo e o prazo típico?','Define o cronograma real da etapa 3 do go-to-market.'],
+      ['F3','e','Quais os critérios de homologação — certificações, seguro, capital, contrato-tipo?','Pode exigir estrutura societária e capital antes do previsto.'],
+      ['F4','e','Existe contrato-tipo de Fornecedor Homologado? Que termos traz: exclusividade, participação na receita, prazo, rescisão?','<b>Entra direto no modelo financeiro</b> — ver os cenários de participação.'],
+      ['F5','e','Qual o escopo do Sults hoje? Ele já faz, ou vai fazer, parte do que o FAST Insights faz?','Se houver sobreposição, o caminho é integrar em vez de competir.'],
+      ['F6','r','A franqueadora coleta dados das lojas hoje? Como, com que frequência, e o que faz com eles?','Dimensiona o valor do Painel da Rede e o preço que ele suporta.'],
+      ['F7','r','O Conselho de Franqueados pode pautar isso? Quando é a próxima reunião?','É o canal mais barato de validação com a rede.'],
+      ['F8','e','Qual o apetite: comprar o ativo, licenciar, entrar como sócia, ou construir?','Define qual das três estruturas propor primeiro.']
+    ]},
+    {id:'M', nome:'Mercado e cliente', quem:'8 a 10 franqueados, em conversas de 20 minutos. Peça ajuda, não venda: "estou montando um controle para a minha loja e queria saber o que você olha na sua".', itens:[
+      ['M1','e','Qual a primeira métrica que o franqueado olha de manhã? E qual pergunta ele não consegue responder hoje?','Define o que vai no plano Essencial — e o que corta.'],
+      ['M2','e','Quanto pagaria? Teste de preço: mostre R$ 199, R$ 349 e R$ 549 e observe a reação.','Valida ou derruba o ticket de R$ 319, que sustenta todo o modelo.'],
+      ['M3','r','Que ferramentas usa além de Trinks e Sults, e quanto gasta por mês com elas?','Mostra o orçamento já disponível e a disposição real de pagar.'],
+      ['M4','r','Quantas lojas da rede são multi-unidade, com o mesmo dono?','Muda o produto (visão consolidada) e o preço (desconto por grupo).']
+    ]},
+    {id:'P', nome:'Produto e técnico', quem:'Você, medindo. Custo: tempo e o piloto.', itens:[
+      ['P1','r','Qual o custo real de infraestrutura por loja, medido com 5 lojas rodando?','Hoje modelado em R$ 8. Se for R$ 30, a margem cai de 86% para 78%.'],
+      ['P2','e','Quantas requisições por loja/mês em regime, com ingestão incremental?','Se estourar a cota, o produto não escala sem contrato especial com a Trinks.'],
+      ['P3','e','Quais adquirentes as lojas usam? Stone é universal na rede? Elas têm API?','Define se a conciliação do plano Gestão funciona fora da Limão ou vira upload manual.'],
+      ['P4','e','Quanto do financeiro dá para automatizar sem o Excel? A franqueadora tem modelo de DRE padronizado?','Se houver modelo da rede, a Fase 2 encolhe muito. Se não, cada loja tem um jeito.'],
+      ['P5','r','Qual BSP de WhatsApp usar, com que custo de setup por loja e por conversa?','Define a viabilidade do plano Crescimento de R$ 549.']
+    ]},
+    {id:'N', nome:'Números e operação', quem:'Contador e medição no piloto.', itens:[
+      ['N1','r','Preço real da conversa de marketing no WhatsApp, tabela Meta Brasil vigente.','Hoje estimado em R$ 0,35. É repasse, então não afeta margem — mas afeta a proposta.'],
+      ['N2','r','Custo real de suporte por loja, medido no piloto: horas por loja por mês.','Hoje modelado em R$ 34. É o maior componente do custo variável.'],
+      ['N3','e','Regime tributário da PJ de software: Simples, Lucro Presumido, alíquota de ISS no município.','Pode consumir 6% a 16% da receita — <b>hoje não está no modelo financeiro</b>.']
+    ]}
+  ];
+
+  var estado={};
+
+  function render(){
+    var alvo=document.getElementById('listas');
+    var html='';
+    GRUPOS.forEach(function(g){
+      var feitos=g.itens.filter(function(it){return estado[it[0]]&&estado[it[0]].feito;}).length;
+      html+='<div class="dsc"><div class="dsc-head">'+
+        '<h3>'+g.id+' · '+g.nome+'</h3>'+
+        '<span class="st" data-st="'+g.id+'">'+feitos+' de '+g.itens.length+' respondidos</span>'+
+        '</div>';
+      g.itens.forEach(function(it){
+        var id=it[0], p=P[it[1]], st=estado[id]||{};
+        html+='<div class="item'+(st.feito?' done':'')+'" data-item="'+id+'">'+
+          '<input type="checkbox" class="box" data-id="'+id+'"'+(st.feito?' checked':'')+' aria-label="Marcar '+id+' como respondido">'+
+          '<div><div class="meta"><span class="code">'+id+'</span>'+
+          '<span class="prio '+p[0]+'">'+p[1]+'</span></div>'+
+          '<div class="q">'+it[2]+'</div>'+
+          '<div class="w"><b>O que muda:</b> '+it[3]+'</div>'+
+          '<textarea data-id="'+id+'" rows="1" placeholder="Resposta, data, com quem falou…">'+
+          (st.nota||'').replace(/</g,'&lt;')+'</textarea>'+
+          '</div></div>';
+      });
+      html+='<div class="dsc-foot">'+g.quem+'</div></div>';
+    });
+    var total=GRUPOS.reduce(function(a,g){return a+g.itens.length;},0);
+    var feitos=Object.keys(estado).filter(function(k){return estado[k].feito;}).length;
+    html='<div class="dsc"><div class="dsc-head"><h3>Progresso</h3>'+
+      '<span class="st" id="geral">'+feitos+' de '+total+'</span></div>'+
+      '<div style="padding:14px 18px"><div class="bar"><i id="barra" style="width:'+
+      (total?Math.round(feitos/total*100):0)+'%"></i></div>'+
+      '<p class="note" style="margin:10px 0 0">6 itens bloqueantes. Um advogado e três telefonemas — é todo o custo de descobrir se este projeto existe.'+
+      ' <em>Neste arquivo as anotações não são gravadas — use a versão online para isso, ou imprima e preencha à mão.</em>'+'</p></div></div>'+html;
+    alvo.innerHTML=html;
+  }
+
+  document.addEventListener('change',function(e){
+    var b=e.target.closest && e.target.closest('.box'); if(!b) return;
+    var id=b.dataset.id;
+    estado[id]=estado[id]||{}; estado[id].feito=b.checked;
+    var lab=b.closest('.item'); if(lab) lab.classList.toggle('done',b.checked);
+    atualizaContadores();
+  });
+
+  document.addEventListener('input',function(e){
+    var t=e.target; if(t.tagName!=='TEXTAREA'||!t.dataset.id) return;
+    t.style.height='auto'; t.style.height=(t.scrollHeight+2)+'px';
+    var id=t.dataset.id;
+    estado[id]=estado[id]||{}; estado[id].nota=t.value;
+  });
+
+  function atualizaContadores(){
+    var total=0, feitos=0;
+    GRUPOS.forEach(function(g){
+      var f=g.itens.filter(function(it){return estado[it[0]]&&estado[it[0]].feito;}).length;
+      total+=g.itens.length; feitos+=f;
+      var el=document.querySelector('[data-st="'+g.id+'"]');
+      if(el) el.textContent=f+' de '+g.itens.length+' respondidos';
+    });
+    var g=document.getElementById('geral'); if(g) g.textContent=feitos+' de '+total;
+    var b=document.getElementById('barra');
+    if(b) b.style.width=(total?Math.round(feitos/total*100):0)+'%';
+  }
+
+  render();
+
+  // A persistência chega depois; a página já é útil sem ela.
+})();
+</script>
+
+</body>
+</html>
