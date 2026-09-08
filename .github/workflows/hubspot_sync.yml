@@ -1,0 +1,35 @@
+name: HubSpot — sync contatos (Trinks → CRM)
+
+# Envia clientes do Trinks pra HubSpot. Upsert por email (chave natural), com
+# fallback pra trinks_id quando não tem email. Roda 1x por dia depois do refresh
+# das 05:00 UTC (02h BRT), então CRM sempre tem a base fresca.
+# Sem HUBSPOT_TOKEN configurado nos Secrets, roda em dry-run e só loga.
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # 05:15 UTC = 02:15 BRT, ~10min depois do refresh noturno terminar
+    - cron: '15 5 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hubspot-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Sync
+        env:
+          HUBSPOT_TOKEN: ${{ secrets.HUBSPOT_TOKEN }}
+          HUBSPOT_PORTAL_ID: '51943728'
+        run: python scripts/hubspot_sync.py
