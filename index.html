@@ -317,6 +317,7 @@
       <div id="semanal-comparacao"></div>
       <!-- 3. ONDE O CAIXA SE CONCENTRA (dia da semana) -->
       <div id="semanal-dow"></div>
+      <div id="semanal-google-dow"></div>
       <!-- 4. MIX + TICKET -->
       <div id="semanal-categorias"></div>
       <div id="semanal-ticket-meta"></div>
@@ -431,6 +432,7 @@
         <span id="midias-atualizado" style="margin-left:auto;font-size:11px;color:var(--ink-3);align-self:center"></span>
       </div>
       <div id="midias-kpis"></div>
+      <div id="midias-crossings"></div>
       <div id="midias-direcionamentos"></div>
       <div id="midias-campanhas"></div>
       <div id="midias-trend"></div>
@@ -1812,6 +1814,70 @@ function renderSemanal(data){
   if(s.novos_vs_recorr) renderNovosRecorr('semanal-novos', s.novos_vs_recorr, 'semana');
   renderRentabilidade('semanal-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
   renderBarsDow('semanal-dow','📊 Onde o caixa se concentra na semana','Distribuição por dia · decide onde reforçar equipe e campanha',s.por_dow,'');
+  // Cruzamento Semanal × Mídias: quando Google gera ação vs quando a loja fatura
+  (function(){
+    const el = document.getElementById('semanal-google-dow');
+    if(!el) return;
+    if(typeof MID === 'undefined' || !MID || !MID.google_business || !MID.google_business.serie_diaria_30d) { el.innerHTML=''; return; }
+    const gmb = MID.google_business.serie_diaria_30d;
+    // Agrupa por DOW (0=Dom, 6=Sáb)
+    const dowNomes = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    const byDow = dowNomes.map(n=>({dow:n, phone:0, dir:0, views:0, dias:0}));
+    gmb.forEach(x=>{
+      const dt = new Date(x.data+'T12:00:00');
+      const dw = dt.getDay();
+      byDow[dw].phone += x.actions_phone||0;
+      byDow[dw].dir   += x.actions_directions||0;
+      byDow[dw].views += x.views_total||0;
+      byDow[dw].dias  += 1;
+    });
+    // Média por DOW (para 30d, tipicamente 4-5 dias de cada dow)
+    const rows = byDow.map(d=>({
+      dow: d.dow,
+      views_med: d.dias>0 ? d.views/d.dias : 0,
+      phone_med: d.dias>0 ? d.phone/d.dias : 0,
+      dir_med: d.dias>0 ? d.dir/d.dias : 0,
+      acoes_med: d.dias>0 ? (d.phone+d.dir)/d.dias : 0,
+    }));
+    // Caixa Trinks por DOW (média histórica) — vem de s.por_dow
+    const trDow = (s.por_dow || []);
+    // trDow tem items {dow: 'Segunda', caixa: X, atend: Y}? Vamos tentar
+    const trMap = {};
+    trDow.forEach(x=>{
+      const nome = (x.nome || x.dow || '').toLowerCase();
+      const short = nome.startsWith('dom') ? 'Dom' : nome.startsWith('seg') ? 'Seg' : nome.startsWith('ter') ? 'Ter' : nome.startsWith('qua') ? 'Qua' : nome.startsWith('qui') ? 'Qui' : nome.startsWith('sex') ? 'Sex' : nome.startsWith('sáb') || nome.startsWith('sab') ? 'Sáb' : null;
+      if(short) trMap[short] = { caixa: x.caixa||x.v||0, atend: x.atend||x.n||0 };
+    });
+    const linhas = rows.map(r=>{
+      const tr = trMap[r.dow] || {caixa:0, atend:0};
+      // Alinhamento: dia com muita ação Google mas pouco caixa = subaproveitado
+      const ratio = tr.caixa > 0 && r.acoes_med > 0 ? tr.caixa/r.acoes_med : null;
+      return `<tr style="border-bottom:1px solid var(--surface-2)">
+        <td style="padding:8px;font-weight:600">${r.dow}</td>
+        <td style="text-align:right;padding:8px">${r.views_med.toFixed(0)}</td>
+        <td style="text-align:right;padding:8px">${r.phone_med.toFixed(1)}</td>
+        <td style="text-align:right;padding:8px">${r.dir_med.toFixed(1)}</td>
+        <td style="text-align:right;padding:8px;font-weight:700">${r.acoes_med.toFixed(1)}</td>
+        <td style="text-align:right;padding:8px">${tr.caixa > 0 ? brl0(tr.caixa) : '—'}</td>
+        <td style="text-align:right;padding:8px">${tr.atend || '—'}</td>
+      </tr>`;
+    }).join('');
+    el.innerHTML = `<div class="card" style="border-left:4px solid #4285F4;margin-top:12px">
+      <h2>📍 Google Meu Negócio por dia da semana × caixa Trinks</h2>
+      <div class="cap">Cruzamento aba Semanal × Mídias. Quando o Google gera ação (ligação/rota) vs quando o caixa da loja acontece. Se um DOW tem muita ação e pouco caixa, capacidade está subaproveitada; se tem pouca ação e caixa alto, o dia se autossustenta sem Google.</div>
+      <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
+      <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+        <th style="text-align:left;padding:8px">DOW</th>
+        <th style="text-align:right;padding:8px">Views médios</th>
+        <th style="text-align:right;padding:8px">📞 Ligações</th>
+        <th style="text-align:right;padding:8px">📍 Rotas</th>
+        <th style="text-align:right;padding:8px">Ações totais</th>
+        <th style="text-align:right;padding:8px">Caixa hist.</th>
+        <th style="text-align:right;padding:8px">Atend hist.</th>
+      </tr></thead>
+      <tbody>${linhas}</tbody></table></div>
+    </div>`;
+  })();
   renderBarsHora('semanal-hora','⏱ Fluxo típico do dia · semana <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · define escala e horário de campanhas',s.hora_media,true,'');
   renderRankingProf('semanal-prof','👥 Profissionais da semana','Receita + ticket médio da semana · replicar quem faz upsell',s.ranking_prof, s.ranking_prof_total_n);
   renderMeiosPagamento('semanal-meios','💳 Mix de pagamentos · semana','Fluxo de caixa: PIX+dinheiro imediato · cartão só em 30d',s.meios_pagamento);
@@ -2081,10 +2147,60 @@ function renderAuditoria(data){
     ${excluidosNota}
   </div>`;
 
-  // Ranking por profissional
+  // Ranking por profissional × produtividade (cruzamento aba Painel)
   const pr = aud.por_profissional || [];
-  const rowsProf = pr.map(p => [p.nome || '—', p.n, brl0(p.v)]);
-  renderTable('auditoria-por-prof', 'Cancelados por profissional', 'ordenado por valor total cancelado', ['Profissional', 'N', 'Valor'], rowsProf);
+  const rankProf = ((data.abas||{}).mensal||{}).ranking_prof || [];
+  const rankMap = new Map(rankProf.map(p=>[(p.nome||'').toLowerCase().trim(), p]));
+  const norm = s => (s||'').toLowerCase().trim();
+  // Enriquece com dados de produtividade e computa taxa de cancelamento
+  const enrich = pr.map(p => {
+    const rp = rankMap.get(norm(p.nome)) || {};
+    const atend = rp.n || 0;
+    const receita = rp.v || 0;
+    const totalTentativas = atend + p.n;
+    const taxaCanc = totalTentativas > 0 ? p.n/totalTentativas*100 : 0;
+    return { ...p, atend, receita_mes: receita, taxa_canc_pct: taxaCanc };
+  }).sort((a,b)=>b.v - a.v);
+
+  if(enrich.length){
+    // Classifica: alto risco = alta taxa canc + baixa produtividade
+    const riskCat = r => {
+      if(r.atend === 0 && r.n > 0) return {label:'⚠️ só cancela', clr:'#ef4444'};
+      if(r.taxa_canc_pct >= 15) return {label:'🚨 taxa alta', clr:'#ef4444'};
+      if(r.taxa_canc_pct >= 8) return {label:'⚠️ atenção', clr:'#f59e0b'};
+      if(r.atend >= 30) return {label:'✓ produtivo', clr:'#22c55e'};
+      return {label:'—', clr:'var(--ink-3)'};
+    };
+    const linhas = enrich.map(p => {
+      const risk = riskCat(p);
+      return `<tr style="border-bottom:1px solid var(--surface-2)">
+        <td style="padding:8px"><strong>${p.nome || '—'}</strong></td>
+        <td style="text-align:right;padding:8px">${p.n}</td>
+        <td style="text-align:right;padding:8px">${brl0(p.v)}</td>
+        <td style="text-align:right;padding:8px">${p.atend || '—'}</td>
+        <td style="text-align:right;padding:8px">${p.receita_mes > 0 ? brl0(p.receita_mes) : '—'}</td>
+        <td style="text-align:right;padding:8px;color:${p.taxa_canc_pct >= 10 ? '#ef4444' : p.taxa_canc_pct >= 5 ? '#f59e0b' : 'var(--ink-2)'}">${p.taxa_canc_pct.toFixed(1)}%</td>
+        <td style="text-align:center;padding:8px;color:${risk.clr};font-size:11px;font-weight:600">${risk.label}</td>
+      </tr>`;
+    }).join('');
+    profEl.innerHTML = `<div class="card" style="border-left:4px solid #f59e0b">
+      <h2>👤 Cancelamentos por profissional × produtividade</h2>
+      <div class="cap">Cruzamento aba Auditoria × Painel(Mensal ranking_prof). Alta taxa de cancelamento + baixa produtividade = sinal pra conversar. Só cancelamento e zero atendimento pago = investigar.</div>
+      <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
+      <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+        <th style="text-align:left;padding:8px">Profissional</th>
+        <th style="text-align:right;padding:8px">N canc</th>
+        <th style="text-align:right;padding:8px">Valor canc</th>
+        <th style="text-align:right;padding:8px">Atend mês</th>
+        <th style="text-align:right;padding:8px">Receita mês</th>
+        <th style="text-align:right;padding:8px">Taxa canc</th>
+        <th style="text-align:center;padding:8px">Sinal</th>
+      </tr></thead>
+      <tbody>${linhas}</tbody></table></div>
+    </div>`;
+  } else {
+    profEl.innerHTML = '';
+  }
 
   // Lista completa
   const riscoStyle = {
@@ -3098,6 +3214,21 @@ function renderFinanceiro(){
 
       <div class="dre-alerta">⚠️ <strong>A receita não passa pela conta da PJ direto.</strong> Cai na Stone e fica na Reserva CDB — a conta corrente é abastecida por transferências. Por isso a autonomia acima mede só o que está na corrente, não o negócio inteiro (Stone a receber = ${brl0(k.a_receber_stone)}).</div>
 
+      ${(()=>{
+        // CRUZAMENTO Financeiro × Mídias: verba Meta como alavanca de autonomia
+        if(typeof MID === 'undefined' || !MID || !MID.meta_ads) return '';
+        const verba = MID.meta_ads.verba_setembro;
+        if(!verba || !verba.budget_diario_configurado) return '';
+        const budgetDia = verba.budget_diario_configurado;
+        const budgetMes = budgetDia * 30;
+        const pctReceita = REC_REAL > 0 ? budgetMes/REC_REAL*100 : 0;
+        const impacto = autonomia !== null && queima < 0 ? Math.round(budgetMes / Math.abs(queimaDia)) : 0;
+        return `<div style="margin-top:12px;padding:12px;background:rgba(236,72,153,.05);border-left:4px solid #ec4899;border-radius:6px;font-size:12px;color:var(--ink-2);line-height:1.5">
+          <strong style="color:#ec4899">🔗 Cruzamento com aba Mídias · alavanca de caixa</strong><br>
+          Verba Meta Ads configurada: <strong>${brl0(budgetDia)}/dia</strong> (${brl0(budgetMes)}/mês · ${pctReceita.toFixed(1)}% da receita realizada). ${autonomia !== null && autonomia < 30 ? `Se a autonomia da conta está em ${Math.round(autonomia)} dias, <strong style="color:#ef4444">cortar a verba temporariamente adiciona ~${impacto} dias de fôlego</strong> — mas mata aquisição. Decisão: aceitar o CAC alto e cortar, ou aguentar sabendo que Meta compensa depois.` : 'Verba Meta é a alavanca mais rápida se a autonomia começar a apertar — cortar não adiciona receita, mas para a queima extra imediatamente.'}
+        </div>`;
+      })()}
+
       <div class="fin-fonte">${(C && C.linhas && C.linhas.length) ? `Ciclo de ${ciclo.toFixed(1).replace('.',',')} dias — média ponderada das formas do mês no Trinks com o prazo medido no extrato da Stone: ${C.linhas.map(l=>l.forma+' '+finPct(l.pct)+' em '+l.prazo).join(' · ')}. Nenhuma venda é parcelada.` : 'Ciclo padrão de 1 dia (Stone D+1 · FAST não parcela).'} Prorata: variáveis a ${(RATIO_REC*100).toFixed(0)}% da receita realizada; fixos a ${(RATIO_DIA*100).toFixed(0)}% (${DIAS_OP}/${DIAS_MES} dias operados).</div></div>`;
   }
 
@@ -3832,6 +3963,269 @@ function renderMidias(){
       })()}
     </section>`;
     igBox.insertAdjacentHTML('afterend', gmbHTML);
+  }
+
+  // ===== CRUZAMENTOS COM OUTRAS ABAS =====
+  // Renderiza aqui todo cruzamento Mídias × Trinks que dá pra fazer com os dados disponíveis.
+  // Depende de TRINKS estar carregado; se não estiver, deixa vazio e re-renderiza no próximo tick.
+  const crossBox = document.getElementById('midias-crossings');
+  if(crossBox && TRINKS && TRINKS.abas){
+    const tAn = TRINKS.abas.anual || {};
+    const tMe = TRINKS.abas.mensal || {};
+    const brl0m = v => 'R\$ ' + Math.round(v||0).toLocaleString('pt-BR');
+
+    // 1. CAC REAL POR PERÍODO
+    // Mapeia janela Mídias → dados Trinks. mtd = mês, 7d = semanal, 30d ≈ mensal
+    const cacCards = [];
+    const janelaPara = (per)=> {
+      const mp = MID.meta_ads.por_periodo[per] || {};
+      if(per === 'mtd' || per === '30d'){
+        // novos_vs_recorr do mês corrente
+        const nr = tMe.novos_vs_recorr || {};
+        return { gasto: mp.gasto||0, conversas: mp.conversas_msg||0, novos: (nr.novos||{}).clientes||0, label: mp.label||per, dias_op: (tMe.kpis||{}).dias_op||0 };
+      }
+      if(per === '7d'){
+        const nr = (TRINKS.abas.semanal||{}).novos_vs_recorr || {};
+        return { gasto: mp.gasto||0, conversas: mp.conversas_msg||0, novos: (nr.novos||{}).clientes||0, label: mp.label||per, dias_op: 7 };
+      }
+      if(per === 'hoje'){
+        const nr = (TRINKS.abas.diario||{}).novos_vs_recorr || {};
+        return { gasto: mp.gasto||0, conversas: mp.conversas_msg||0, novos: (nr.novos||{}).clientes||0, label: mp.label||per, dias_op: 1 };
+      }
+      // 90d: soma via série
+      const sn = tAn.serie_novos_dia || [];
+      const cut = new Date(); cut.setDate(cut.getDate()-90);
+      const novos90 = sn.filter(x=>new Date(x.data)>=cut).reduce((a,x)=>a+(x.novos||0),0);
+      return { gasto: mp.gasto||0, conversas: mp.conversas_msg||0, novos: novos90, label: mp.label||per, dias_op: 90 };
+    };
+    // LTV médio da base
+    const ltvMedio = ((tAn.top_ltv||{}).receita_total || 0) / Math.max(((tAn.top_ltv||{}).total_clientes||1), 1);
+    // Ticket médio de estreia
+    const ticketEstreia = (()=>{
+      const sn = tAn.serie_novos_dia || [];
+      const totRec = sn.reduce((a,x)=>a+(x.receita||0), 0);
+      const totNov = sn.reduce((a,x)=>a+(x.novos||0), 0);
+      return totNov > 0 ? totRec/totNov : 0;
+    })();
+    const dPer = janelaPara(perAtual);
+    const cacReal = dPer.novos > 0 ? dPer.gasto/dPer.novos : null;
+    const cacConversa = dPer.conversas > 0 ? dPer.gasto/dPer.conversas : null;
+    const paybackVisitas = cacReal && ticketEstreia > 0 ? Math.ceil(cacReal/ticketEstreia) : null;
+    const cacColor = !cacReal ? 'var(--muted)' : cacReal < ticketEstreia*0.5 ? '#22c55e' : cacReal < ticketEstreia ? '#3b82f6' : cacReal < ticketEstreia*2 ? '#f59e0b' : '#ef4444';
+
+    let html = '';
+    // -- CAC card
+    html += `<section class="card" style="border-left:4px solid #ec4899;margin-top:12px">
+      <h2>💸 CAC real Meta Ads × Trinks · ${dPer.label}</h2>
+      <div class="cap">Cruzamento aba Mídias × Painel. CAC real = gasto Meta Ads ÷ novos clientes atendidos no Trinks na mesma janela (não conversas, cliente real). Ticket de estreia (Trinks): ${brl0m(ticketEstreia)} · LTV médio da base: ${brl0m(ltvMedio)}.</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px">
+          <div style="color:var(--ink-3);font-size:10.5px">GASTO META ADS</div>
+          <div style="font-weight:700;font-size:22px">${brl0m(dPer.gasto)}</div>
+          <div style="color:var(--ink-3);font-size:10.5px">${dPer.dias_op}d · ${brl0m(dPer.gasto/Math.max(dPer.dias_op,1))}/dia</div>
+        </div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px">
+          <div style="color:var(--ink-3);font-size:10.5px">NOVOS CLIENTES (TRINKS)</div>
+          <div style="font-weight:700;font-size:22px">${dPer.novos}</div>
+          <div style="color:var(--ink-3);font-size:10.5px">${dPer.conversas} conversas Meta</div>
+        </div>
+        <div style="background:rgba(236,72,153,.08);border-radius:8px;padding:12px;border-left:3px solid ${cacColor}">
+          <div style="color:${cacColor};font-size:10.5px;font-weight:700;text-transform:uppercase">CAC real</div>
+          <div style="font-weight:700;font-size:22px;color:${cacColor}">${cacReal !== null ? brl0m(cacReal) : '—'}</div>
+          <div style="color:var(--ink-3);font-size:10.5px">${cacConversa !== null ? 'CAC conversa: '+brl0m(cacConversa) : 'sem dado'}</div>
+        </div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px">
+          <div style="color:var(--ink-3);font-size:10.5px">PAYBACK</div>
+          <div style="font-weight:700;font-size:22px">${paybackVisitas || '—'}${paybackVisitas ? ' visitas' : ''}</div>
+          <div style="color:var(--ink-3);font-size:10.5px">${paybackVisitas ? 'até recuperar CAC no ticket ' + brl0m(ticketEstreia) : ''}</div>
+        </div>
+      </div>
+      ${cacReal !== null ? `<div style="margin-top:12px;padding:10px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2)">
+        <strong>💡 Leitura:</strong> ${cacReal < ticketEstreia*0.5 ? `<span style="color:#22c55e;font-weight:600">Excelente</span> — CAC é menos de 50% do ticket de estreia. Cada cliente paga o próprio custo já na primeira visita e sobra ${brl0m(ticketEstreia-cacReal)} de MC.` : cacReal < ticketEstreia ? `<span style="color:#3b82f6;font-weight:600">Bom</span> — CAC bate na 1ª visita. Fica ${brl0m(ticketEstreia-cacReal)} de margem já na estreia.` : cacReal < ticketEstreia*2 ? `<span style="color:#f59e0b;font-weight:600">Atenção</span> — CAC vale ${(cacReal/ticketEstreia).toFixed(1)} tickets. Payback em ${paybackVisitas} visitas. OK só se retenção for boa.` : `<span style="color:#ef4444;font-weight:600">Ruim</span> — CAC é ${(cacReal/ticketEstreia).toFixed(1)}× o ticket. LTV médio de ${brl0m(ltvMedio)} ainda paga (${(ltvMedio/cacReal).toFixed(1)}× o CAC), mas margem apertada.`}
+      </div>` : ''}
+    </section>`;
+
+    // 2. META ADS BAIRROS × TRINKS SEG_BAIRRO
+    const focoG = M.foco_geografico;
+    const bairrosTrinks = tAn.seg_bairro && tAn.seg_bairro.top ? tAn.seg_bairro.top : [];
+    if(focoG && focoG.bairros_no_raio_5km && bairrosTrinks.length){
+      const bairrosGasto = focoG.bairros_no_raio_5km;
+      // Normalizar nomes de bairro pra match (case + acentos)
+      const norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+      const bMap = new Map(bairrosTrinks.map(b=>[norm(b.nome), b]));
+      const cruzados = bairrosGasto.slice(0,10).map(bg=>{
+        const bt = bMap.get(norm(bg.bairro));
+        return {
+          bairro: bg.bairro,
+          publico_ads: bg.mulheres_25_65_estimadas,
+          prioridade_ads: bg.prioridade,
+          clientes_reais: bt ? bt.n_clientes : 0,
+          receita_real: bt ? bt.receita : 0,
+        };
+      });
+      const totalClientesMap = cruzados.reduce((a,x)=>a+x.clientes_reais,0);
+      const totalReceitaMap = cruzados.reduce((a,x)=>a+x.receita_real,0);
+      html += `<section class="card" style="border-left:4px solid #a855f7;margin-top:12px">
+        <h2>🗺️ Bairros ads × clientes reais · valida onde a verba converte</h2>
+        <div class="cap">Cruzamento aba Mídias × Painel(Clientes). "Público-alvo" vem do foco geográfico do Meta Ads. "Clientes atendidos" vem do <em>seg_bairro</em> do Trinks. Se a Meta veicula pesado num bairro e vem 0 cliente, é dinheiro jogado fora.</div>
+        <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
+        <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+          <th style="text-align:left;padding:8px">Bairro</th>
+          <th style="text-align:right;padding:8px">Mulheres 25-65 (target)</th>
+          <th style="text-align:center;padding:8px">Prioridade ads</th>
+          <th style="text-align:right;padding:8px">Clientes reais</th>
+          <th style="text-align:right;padding:8px">Receita gerada</th>
+          <th style="text-align:center;padding:8px">Match?</th>
+        </tr></thead>
+        <tbody>${cruzados.map(c=>{
+          const match = c.clientes_reais > 0 ? 'ok' : (c.prioridade_ads === 'core' || c.prioridade_ads === 'alta' ? 'gap' : 'baixo');
+          const matchClr = {ok:'#22c55e', gap:'#ef4444', baixo:'#f59e0b'}[match];
+          const matchTxt = {ok:'✓ converte', gap:'🚨 gasta e não converte', baixo:'~ pouco investido'}[match];
+          return `<tr style="border-bottom:1px solid var(--surface-2)">
+            <td style="padding:8px"><strong>${c.bairro}</strong></td>
+            <td style="text-align:right;padding:8px">${nfmt(c.publico_ads)}</td>
+            <td style="text-align:center;padding:8px;font-size:11px;text-transform:uppercase">${c.prioridade_ads}</td>
+            <td style="text-align:right;padding:8px;font-weight:${c.clientes_reais>0?700:400}">${c.clientes_reais}</td>
+            <td style="text-align:right;padding:8px">${brl0m(c.receita_real)}</td>
+            <td style="text-align:center;padding:8px;color:${matchClr};font-size:11px;font-weight:600">${matchTxt}</td>
+          </tr>`;
+        }).join('')}
+        <tr style="border-top:2px solid var(--ink-3);font-weight:700"><td style="padding:8px">Total nesses 10 bairros</td><td></td><td></td><td style="text-align:right;padding:8px">${totalClientesMap}</td><td style="text-align:right;padding:8px">${brl0m(totalReceitaMap)}</td><td></td></tr>
+        </tbody></table></div>
+        <div style="margin-top:12px;padding:10px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2)">
+          <strong>💡 Leitura:</strong> ${totalClientesMap > 0 ? `Dos ${cruzados.length} bairros que a Meta prioriza no raio 5km, ${cruzados.filter(x=>x.clientes_reais>0).length} têm cliente real. ${cruzados.filter(x=>x.clientes_reais===0 && (x.prioridade_ads==='core'||x.prioridade_ads==='alta')).length > 0 ? '<span style="color:#ef4444;font-weight:600">Verba em bairros de prioridade alta que não têm nenhum cliente</span> merece revisão com a agência.' : 'A geografia da veiculação bate com a base real.'}` : 'Sem clientes registrados nesses bairros — verificar se seg_bairro está sendo preenchido no Trinks.'}
+        </div>
+      </section>`;
+    }
+
+    // 3. META ADS DEMOGRAFIA × TRINKS SEG_GENERO
+    const demoAds = (MID.meta_ads.demografia_30d || []);
+    const segG = tAn.seg_genero || {};
+    if(demoAds.length && segG.top){
+      // Agrega ads por gênero
+      const genderAgg = {F:{gasto:0,conversas:0,imp:0}, M:{gasto:0,conversas:0,imp:0}};
+      demoAds.forEach(d=>{
+        const g = (d.genero||d.gender||'').toString().toUpperCase().charAt(0);
+        if(genderAgg[g]){
+          genderAgg[g].gasto += (d.gasto||0);
+          genderAgg[g].conversas += (d.conversas||d.conversas_msg||0);
+          genderAgg[g].imp += (d.impressoes||d.impressions||0);
+        }
+      });
+      // Trinks
+      const genderTrinks = {F:{n:0,r:0}, M:{n:0,r:0}};
+      segG.top.forEach(g=>{
+        const key = g.nome && g.nome.toUpperCase().startsWith('F') ? 'F' : (g.nome && g.nome.toUpperCase().startsWith('M') ? 'M' : null);
+        if(key){ genderTrinks[key].n = g.n_clientes||0; genderTrinks[key].r = g.receita||0; }
+      });
+      const totAdsG = genderAgg.F.gasto + genderAgg.M.gasto;
+      const totTriN = genderTrinks.F.n + genderTrinks.M.n;
+      if(totAdsG > 0 && totTriN > 0){
+        const linhas = [['F','#ec4899'],['M','#3b82f6']].map(([g,cor])=>{
+          const pctAds = genderAgg[g].gasto/totAdsG*100;
+          const pctTri = genderTrinks[g].n/totTriN*100;
+          const align = Math.abs(pctAds - pctTri) < 5 ? '✓ alinhado' : pctAds > pctTri ? '⚠️ verba > base' : '💡 base > verba';
+          const alignClr = Math.abs(pctAds - pctTri) < 5 ? '#22c55e' : pctAds > pctTri ? '#f59e0b' : '#3b82f6';
+          return `<tr style="border-bottom:1px solid var(--surface-2)">
+            <td style="padding:8px;color:${cor};font-weight:700">${g === 'F' ? 'Feminino' : 'Masculino'}</td>
+            <td style="text-align:right;padding:8px">${brl0m(genderAgg[g].gasto)}</td>
+            <td style="text-align:right;padding:8px">${pctAds.toFixed(0)}%</td>
+            <td style="text-align:right;padding:8px">${genderTrinks[g].n}</td>
+            <td style="text-align:right;padding:8px">${pctTri.toFixed(0)}%</td>
+            <td style="text-align:center;padding:8px;color:${alignClr};font-size:11px;font-weight:600">${align}</td>
+          </tr>`;
+        }).join('');
+        html += `<section class="card" style="border-left:4px solid #ec4899;margin-top:12px">
+          <h2>👥 Público ads × base Trinks · alinhamento de gênero</h2>
+          <div class="cap">Cruzamento aba Mídias × Painel(Clientes). Comparação entre onde vai a verba Meta (gasto por gênero, 30d) e quem realmente consome (base Trinks). Idealmente, verba segue base — não o oposto.</div>
+          <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
+          <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+            <th style="text-align:left;padding:8px">Gênero</th>
+            <th style="text-align:right;padding:8px">Gasto ads 30d</th>
+            <th style="text-align:right;padding:8px">% da verba</th>
+            <th style="text-align:right;padding:8px">Clientes Trinks</th>
+            <th style="text-align:right;padding:8px">% da base</th>
+            <th style="text-align:center;padding:8px">Situação</th>
+          </tr></thead>
+          <tbody>${linhas}</tbody></table></div>
+        </section>`;
+      }
+    }
+
+    // 4. INSTAGRAM / GMB DIÁRIO × TRINKS SERIE — brand tracking overlay simples
+    const sn = tAn.serie_novos_dia || [];
+    const gmbSd = MID.google_business && MID.google_business.serie_diaria_30d || [];
+    const igSd = MID.instagram && MID.instagram.serie_diaria_30d || [];
+    if(sn.length && (gmbSd.length || igSd.length)){
+      // Últimos 14 dias com dado dos 3
+      const mapNov = new Map(sn.map(x=>[x.data,x.novos]));
+      const mapAt = new Map(sn.map(x=>[x.data,x.atend]));
+      const mapGmb = new Map(gmbSd.map(x=>[x.data,(x.actions_phone||0)+(x.actions_directions||0)]));
+      const mapIg = new Map(igSd.map(x=>[x.data,x.novos_seguidores||0]));
+      // datas comuns últimos 14 dias
+      const hoje = new Date();
+      const datas = [];
+      for(let i=13;i>=0;i--){
+        const d = new Date(hoje); d.setDate(d.getDate()-i);
+        datas.push(d.toISOString().slice(0,10));
+      }
+      const rows = datas.map(d=>({
+        data: d,
+        novos: mapNov.get(d) || 0,
+        atend: mapAt.get(d) || 0,
+        gmb: mapGmb.get(d) || 0,
+        ig: mapIg.get(d) || 0,
+      }));
+      const hasData = rows.some(r => r.novos > 0 || r.gmb > 0 || r.ig > 0);
+      if(hasData){
+        // Correlação simples (Pearson) entre gmb e novos
+        const corr = (xs,ys)=>{
+          const n = xs.length;
+          const sx = xs.reduce((a,b)=>a+b,0), sy = ys.reduce((a,b)=>a+b,0);
+          const mx = sx/n, my = sy/n;
+          let num=0,dx=0,dy=0;
+          for(let i=0;i<n;i++){ num+=(xs[i]-mx)*(ys[i]-my); dx+=(xs[i]-mx)**2; dy+=(ys[i]-my)**2; }
+          return (dx>0 && dy>0) ? num/Math.sqrt(dx*dy) : 0;
+        };
+        const cGmb = corr(rows.map(r=>r.gmb), rows.map(r=>r.novos));
+        const cIg = corr(rows.map(r=>r.ig), rows.map(r=>r.novos));
+        const corLabel = c => Math.abs(c) < 0.3 ? 'fraca' : Math.abs(c) < 0.6 ? 'moderada' : 'forte';
+        const corColor = c => Math.abs(c) < 0.3 ? '#f59e0b' : Math.abs(c) < 0.6 ? '#3b82f6' : '#22c55e';
+        html += `<section class="card" style="border-left:4px solid #14b8a6;margin-top:12px">
+          <h2>📈 Brand tracking · atividade digital × novos Trinks · últimos 14d</h2>
+          <div class="cap">Cruzamento aba Mídias × Painel. Compara diariamente ações Google + novos seguidores IG × novos clientes atendidos no Trinks. Correlação alta = canal antecipa/traz visita real.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;font-size:12px">
+            <div style="background:var(--surface-2);border-radius:8px;padding:12px;border-left:3px solid ${corColor(cGmb)}">
+              <div style="color:var(--ink-3);font-size:10.5px">CORRELAÇÃO GMB × NOVOS TRINKS</div>
+              <div style="font-weight:700;font-size:22px;color:${corColor(cGmb)}">${cGmb.toFixed(2)}</div>
+              <div style="color:var(--ink-3);font-size:10.5px">${corLabel(cGmb)} · ${cGmb > 0.3 ? 'canal traz visita' : 'sem relação clara'}</div>
+            </div>
+            <div style="background:var(--surface-2);border-radius:8px;padding:12px;border-left:3px solid ${corColor(cIg)}">
+              <div style="color:var(--ink-3);font-size:10.5px">CORRELAÇÃO IG SEG × NOVOS TRINKS</div>
+              <div style="font-weight:700;font-size:22px;color:${corColor(cIg)}">${cIg.toFixed(2)}</div>
+              <div style="color:var(--ink-3);font-size:10.5px">${corLabel(cIg)} · ${cIg > 0.3 ? 'seguidor vira cliente' : 'crescer IG ≠ trazer cliente'}</div>
+            </div>
+          </div>
+          <div style="overflow-x:auto;margin-top:14px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
+          <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+            <th style="text-align:left;padding:6px">Dia</th>
+            <th style="text-align:right;padding:6px">📍 Google ações</th>
+            <th style="text-align:right;padding:6px">📷 IG novos seg.</th>
+            <th style="text-align:right;padding:6px">👥 Novos Trinks</th>
+            <th style="text-align:right;padding:6px">Atendimentos</th>
+          </tr></thead>
+          <tbody>${rows.map(r=>`<tr style="border-bottom:1px solid var(--surface-2)">
+            <td style="padding:6px">${r.data.split('-').reverse().slice(0,2).join('/')}</td>
+            <td style="text-align:right;padding:6px">${r.gmb || '—'}</td>
+            <td style="text-align:right;padding:6px">${r.ig || '—'}</td>
+            <td style="text-align:right;padding:6px;font-weight:${r.novos>0?700:400}">${r.novos || '—'}</td>
+            <td style="text-align:right;padding:6px">${r.atend || '—'}</td>
+          </tr>`).join('')}</tbody></table></div>
+        </section>`;
+      }
+    }
+
+    crossBox.innerHTML = html;
   }
 
   // Direcionamentos estratégicos (destaque)
