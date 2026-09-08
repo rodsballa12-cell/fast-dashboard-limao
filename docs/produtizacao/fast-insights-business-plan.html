@@ -412,10 +412,11 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
   <div class="fig"><span class="n">mês 17</span><span class="l">caixa volta a zero · contra mês 23</span></div>
   <div class="fig"><span class="n">570 lojas</span><span class="l">no mês 36 · contra 389</span></div>
 </div>
-<div class="docnote"><p style="margin:0"><strong>Sobre este arquivo.</strong> Documento autônomo: funciona sem internet, pode ser enviado por e-mail e imprime em 19 páginas. Use o botão no topo para salvar em PDF. As tabelas financeiras saem da planilha <code>FAST-Insights-modelo-financeiro.xlsx</code>, cujas fórmulas foram conferidas uma a uma contra um modelo independente em Python.</p></div><p class="note">Modelo de 36 meses com premissas explícitas na seção 07. Os números em destaque acima são do cenário COM homologação; o plano inteiro está calculado nos dois desenhos, lado a lado. Toda projeção é estimativa, e os 34 itens da seção 10 são exatamente o que ainda pode derrubá-la.</p>
+<div class="docnote"><p style="margin:0"><strong>Sobre este arquivo.</strong> Documento autônomo: funciona sem internet, pode ser enviado por e-mail e imprime em 25 páginas. Use o botão no topo para salvar em PDF. As tabelas financeiras saem da planilha <code>FAST-Insights-modelo-financeiro.xlsx</code>, cujas fórmulas foram conferidas uma a uma contra um modelo independente em Python.</p></div><p class="note">Modelo de 36 meses com premissas explícitas na seção 07. Os números em destaque acima são do cenário COM homologação; o plano inteiro está calculado nos dois desenhos, lado a lado. Toda projeção é estimativa, e os 34 itens da seção 10 são exatamente o que ainda pode derrubá-la.</p>
 <div class="callout" style="max-width:none">
   <span class="k">Os dois cenários</span>
-  <p><strong>Sem homologação:</strong> você vende loja a loja, a R$ 319, e chega a 65% da rede em três anos. <strong>Com homologação:</strong> a franqueadora torna o produto obrigatório — como já fez com o Trinks e o Sults —, cobra das lojas e repassa consolidado; adesão de 95%, preço único de R$ 299, e 25% da receita fica com ela. Este plano recomenda o segundo, e mostra os dois em cada seção.</p>
+  <p><strong>Nos dois casos você é Fornecedor Homologado</strong> — vender à rede por fora não é uma opção, dispara as cláusulas 21.1 e 19.3.3&nbsp;(ix). O que muda é a adesão:</p>
+  <p><strong>Sem homologação obrigatória:</strong> cada loja decide, você vende uma a uma, a R$ 319, e chega a 65% da rede em três anos. <strong>Com homologação obrigatória:</strong> a franqueadora torna o produto de uso obrigatório — como já fez com o Trinks e o Sults —, cobra das lojas e repassa consolidado; adesão de 95%, preço único de R$ 299, e 25% da receita fica com ela. Ao longo do documento os dois aparecem abreviados como <strong>sem</strong> e <strong>com homologação</strong>. Este plano recomenda o segundo.</p>
 </div>
 
 <section id="s1">
@@ -443,7 +444,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
   <div class="shead"><span class="snum">02</span><h2>O produto</h2></div>
   <div class="tw">
     <table>
-      <thead><tr><th>Módulo</th><th>O que entrega</th><th>Estado</th><th>Plano</th></tr></thead>
+      <thead><tr><th>Módulo</th><th>O que entrega</th><th>Estado</th><th>Plano · sem homologação</th></tr></thead>
       <tbody>
         <tr><td>Painel operacional</td><td>Meta do dia com peso por dia da semana, ocupação por cadeira, R$/hora de salão</td><td><span class="pill">produção</span></td><td>Essencial</td></tr>
         <tr><td>Auditoria</td><td>Cancelamentos por profissional e serviço, desvio de tabela, risco em reais</td><td><span class="pill">produção</span></td><td>Essencial</td></tr>
@@ -456,6 +457,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
       </tbody>
     </table>
   </div>
+  <p class="note"><strong>Com homologação a última coluna deixa de existir:</strong> um produto de uso obrigatório é um só, com tudo incluído, a R$ 299. A escada de três planos só faz sentido quando cada loja escolhe se compra e quanto compra.</p>
   <h3>A defensibilidade não é o código</h3>
   <p>É a calibragem: peso por dia da semana medido em 42 dias de amostra, meta por cadeira e por hora, as palavras-chave que classificam 57 serviços em cabelo, unha e maquiagem, o critério do que é cancelamento suspeito. Meses operando uma loja de verdade. Um BI genérico não tem isso e não consegue inventar.</p>
   <p class="note">A vulnerabilidade é o outro lado da mesma moeda: parte dessa calibragem veio da franqueadora — metas oficiais, tabela de preços, modelo de DRE. É o que a cláusula 21.1 protege e o que torna a homologação necessária, não opcional.</p>
@@ -463,7 +465,8 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
 
 <section id="s3">
   <div class="shead"><span class="snum">03</span><h2>Estrutura jurídica</h2></div>
-  <p>Três formas de destravar a 13.13. A escolha define quem investe os R$ 267 mil e quem fica com os R$ 883 mil.</p>
+  <p>Três formas de destravar a 13.13. A escolha define quem investe o capital — R$ 192 mil com homologação, R$ 267 mil sem — e quem fica com o resultado.</p>
+  <p class="note"><strong>São dois eixos independentes, e vale não confundi-los.</strong> Esta seção decide <em>de quem é o produto</em> (titularidade: licenciar, sociedade ou vender). A seção 05 decide <em>como ele chega às lojas</em> (distribuição: adesão voluntária ou obrigatória). Qualquer uma das três estruturas abaixo funciona com qualquer um dos dois cenários.</p>
   <div class="opts">
     <div class="opt">
       <h4>A · Licenciamento</h4>
@@ -471,7 +474,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
         <dt>Dono</dt><dd>Você, com licença à rede</dd>
         <dt>Recebe</dt><dd>Royalty por loja ativa</dd>
         <dt>Investe</dt><dd>Você</dd>
-        <dt>Upside ano 3</dt><dd>R$ 883 mil</dd>
+        <dt>Upside ano 3</dt><dd>R$ 859 mil com homologação</dd>
         <dt>Risco 13.13</dt><dd>Alto — ela pode contestar</dd>
       </dl>
       <p class="note" style="margin:0">Melhor cenário financeiro, mais difícil de conseguir: exige que ela abra mão de um direito que já tem no papel. <strong>Peça esta.</strong></p>
@@ -483,7 +486,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
         <dt>Dono</dt><dd>Sociedade nova</dd>
         <dt>Recebe</dt><dd>Participação + pró-labore</dd>
         <dt>Investe</dt><dd>A sociedade</dd>
-        <dt>Upside ano 3</dt><dd>Sua fatia de R$ 883 mil</dd>
+        <dt>Upside ano 3</dt><dd>Sua fatia de R$ 859 mil</dd>
         <dt>Risco 13.13</dt><dd>Neutralizado</dd>
       </dl>
       <p class="note" style="margin:0">O provável, e é bom: neutraliza a cláusula, divide o capital e mantém upside.</p>
@@ -523,6 +526,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
   <h3>Quem compra</h3>
   <p><strong>O franqueado</strong> fatura ~R$ 97 mil/mês, tem 8 a 16 profissionais e não é analista de dados. Olha o faturamento do dia e sente o resto. O que compra não é "dashboard" — é <em>descobrir o problema na terça em vez de no fechamento do mês</em>.</p>
   <p><strong>A franqueadora</strong> tem 431 unidades e R$ 502 mi de faturamento de rede. O que compra é comparabilidade: saber qual loja está caindo antes de o franqueado ligar pedindo socorro.</p>
+  <p class="note"><strong>No cenário com homologação, quem decide a compra é a franqueadora, não a loja.</strong> Isso não dispensa convencer o franqueado — dispensa vendê-lo um a um. Um produto imposto e ruim vira reclamação no Conselho; imposto e bom vira o padrão da rede. É por isso que o preço cai para R$ 299: ele precisa ser defensável até para a loja mais fraca.</p>
   <h3>Concorrência</h3>
   <div class="tw">
     <table>
@@ -559,7 +563,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
   <p>O contrato já dá o mecanismo: a cláusula <strong>7.6</strong> lista Trinks e Sults como softwares de uso obrigatório pagos ao fornecedor homologado, a <strong>12.11</strong> permite acrescentar software durante a vigência, e a <strong>2.3</strong> diz que alterações de padrão podem implicar custos adicionais "com o que desde já expressamente concorda" — o que alcança os 431 contratos já assinados.</p>
   <div class="tw">
     <table>
-      <thead><tr><th>Plano</th><th class="num">R$/mês</th><th>Inclui</th><th class="num">% do faturamento</th></tr></thead>
+      <thead><tr><th>Plano · sem homologação</th><th class="num">R$/mês</th><th>Inclui</th><th class="num">% do faturamento</th></tr></thead>
       <tbody>
         <tr><td><strong>Essencial</strong></td><td class="num">199</td><td>Painel operacional, metas com sazonalidade, insights, auditoria</td><td class="num">0,21%</td></tr>
         <tr><td><strong>Gestão</strong></td><td class="num">349</td><td>+ DRE, fluxo de caixa, conciliação, clientes</td><td class="num">0,36%</td></tr>
@@ -568,13 +572,24 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
       </tbody>
     </table>
   </div>
-  <p><strong>Mix modelado:</strong> 40% Essencial · 45% Gestão · 15% Crescimento → ticket médio <strong>R$ 319</strong>. O preço é ancorado no percentual do faturamento, não no custo: a 0,3% da receita, a decisão deixa de ser financeira e vira conveniência.</p>
+  <p><strong>Mix modelado:</strong> 40% Essencial · 45% Gestão · 15% Crescimento → ticket médio <strong>R$ 319</strong>.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Plano · com homologação</th><th class="num">R$/mês</th><th>Inclui</th><th class="num">% do faturamento</th></tr></thead>
+      <tbody>
+        <tr class="total"><td><strong>Único, para toda a rede</strong></td><td class="num">299</td><td>Tudo: painel, auditoria, insights, DRE, conciliação, clientes e campanhas</td><td class="num">0,31%</td></tr>
+        <tr><td>Painel da Rede</td><td class="num">8 a 15 mil</td><td>Franqueadora: consolidado, ranking, benchmark, alertas</td><td class="num">—</td></tr>
+        <tr><td>Participação da franqueadora</td><td class="num">25%</td><td>Da receita das lojas, pela obrigatoriedade e pela cobrança consolidada</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Nos dois casos o preço é ancorado no percentual do faturamento, não no custo: a 0,3% da receita, a decisão deixa de ser financeira e vira conveniência.</p>
   <h3>O que não fazer</h3>
   <ul>
     <li><strong>Cobrar percentual do faturamento da loja.</strong> Parece alinhado, mas transforma cada reajuste em negociação e assusta quem está indo bem.</li>
     <li><strong>Plano gratuito.</strong> O custo de suporte por loja (R$ 34) não sustenta freemium numa base de 600.</li>
     <li><strong>Embutir as mensagens de WhatsApp na mensalidade.</strong> Custo variável dentro de preço fixo é como se perde margem sem perceber — repasse a custo.</li>
-    <li><strong>Vender direto ao franqueado sem homologação.</strong> É o caminho que dispara as cláusulas 21.1 e 19.3.3 (ix).</li>
+    <li><strong>Vender ao franqueado sem ser fornecedor homologado.</strong> Não confunda com o cenário "sem homologação" deste plano, que é adesão voluntária <em>já homologado</em>. Vender por fora é o caminho que dispara as cláusulas 21.1 e 19.3.3 (ix).</li>
   </ul>
 </section>
 
@@ -585,14 +600,14 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
       <thead><tr><th>Etapa</th><th class="num">Duração</th><th>O que acontece</th><th>Marco de saída</th></tr></thead>
       <tbody>
         <tr><td>0 · Contenção</td><td class="num">2 sem</td><td>Fechar acesso público, suspender o que sai da loja, advogado</td><td>Exposições contidas</td></tr>
-        <tr><td>1 · Acordo</td><td class="num">4–8 sem</td><td>Trinks (parceria) + franqueadora (estrutura A, B ou C)</td><td><strong>Dois papéis assinados</strong></td></tr>
+        <tr><td>1 · Acordo</td><td class="num">4–8 sem</td><td>Trinks (parceria) + franqueadora (estrutura A, B ou C <em>e</em> adesão voluntária ou obrigatória)</td><td><strong>Dois papéis assinados</strong></td></tr>
         <tr><td>2 · Piloto</td><td class="num">8 sem</td><td>5 lojas de perfis diferentes, gratuitas</td><td>Valor provado fora da Limão</td></tr>
-        <tr><td>3 · Homologação</td><td class="num">4 sem</td><td>Entrar na lista, contrato-tipo, preço oficial</td><td>Comunicado à rede</td></tr>
-        <tr><td>4 · Escala</td><td class="num">contínuo</td><td>Conselho, convenção, onboarding self-service</td><td>100 lojas no mês 12</td></tr>
+        <tr><td>3 · Homologação</td><td class="num">4 sem</td><td>Entrar na lista de fornecedores homologados, contrato-tipo, preço oficial</td><td>Comunicado à rede — e, no cenário obrigatório, o prazo de implantação</td></tr>
+        <tr><td>4 · Escala</td><td class="num">contínuo</td><td>Sem homologação: conselho, convenção, onboarding self-service. Com: implantação em bloco no prazo da franqueadora</td><td><strong>231 lojas no mês 12</strong> com homologação · 69 sem</td></tr>
       </tbody>
     </table>
   </div>
-  <p>O piloto é gratuito de propósito: 5 lojas × R$ 319 × 2 meses = R$ 3.190 de receita abdicada para comprar a prova de que o produto funciona fora da Limão. É barato.</p>
+  <p>O piloto é gratuito de propósito: 5 lojas × R$ 299 × 2 meses = R$ 2.990 de receita abdicada para comprar a prova de que o produto funciona fora da Limão. É barato — e no cenário obrigatório ele vale duas vezes mais, porque é a evidência que a franqueadora precisa para impor o produto sem virar alvo do Conselho.</p>
   <h3>Canais, em ordem de eficácia</h3>
   <ol class="check">
     <li><strong>A franqueadora comunicando à rede.</strong> Um comunicado oficial vale mais que 600 ligações. É o que a homologação compra.</li>
@@ -765,7 +780,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
       </tbody>
     </table>
   </div>
-  <p class="note"><strong>Lacuna conhecida:</strong> a projeção está antes dos impostos da empresa de software (item N3). No Simples Nacional, o resultado do ano 3 cai de R$ 883 mil para algo entre R$ 700 mil e R$ 790 mil. Não muda a decisão, mas precisa entrar antes de virar proposta formal.</p>
+  <p class="note"><strong>Lacuna conhecida:</strong> a projeção está antes dos impostos da empresa de software (item N3). A uma alíquota de 10% sobre a receita, o resultado do ano 3 cairia de R$ 859 mil para cerca de R$ 704 mil no cenário com homologação, e de R$ 883 mil para cerca de R$ 731 mil sem. Não muda a decisão, mas precisa entrar antes de virar proposta formal.</p>
 </section>
 
 <section id="s8">
@@ -778,14 +793,29 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
         <tr><td>Franqueadora constrói internamente</td><td><span class="pill">média</span></td><td>fatal</td><td>Chegar com produto pronto; oferecer a JV, que torna irracional fazer sozinha</td></tr>
         <tr><td>Trinks nega uso comercial</td><td><span class="pill">média</span></td><td>fatal</td><td>Conversar na semana 1; ingestão trocável desde a Fase 1</td></tr>
         <tr><td>Trinks lança produto concorrente</td><td><span class="pill">média</span></td><td>alto</td><td>Item T7. Se sim, negociar como parceiro em vez de competir</td></tr>
-        <tr><td>Capital de R$ 267 mil não aparece</td><td><span class="pill warn">alta</span></td><td>alto</td><td>Estrutura B ou C; versão enxuta a R$ 215 mil; faseamento</td></tr>
-        <tr><td>Adoção abaixo de 33%</td><td><span class="pill">média</span></td><td>alto</td><td>O piloto valida antes de investir a Fase 2</td></tr>
+        <tr><td>Capital de R$ 192 a 267 mil não aparece</td><td><span class="pill warn">alta</span></td><td>alto</td><td>Estrutura B ou C; a homologação já corta 28% da necessidade; versão enxuta</td></tr>
+        <tr><td>Adoção abaixo de 33% (só sem homologação)</td><td><span class="pill">média</span></td><td>alto</td><td>O piloto valida antes de investir a Fase 2</td></tr>
         <tr><td>Vazamento de dado de cliente</td><td><span class="pill">baixa</span></td><td>fatal</td><td>Contenção na semana 1; contrato de operador com cada loja</td></tr>
         <tr><td>Sults já faz parte disso</td><td><span class="pill">média</span></td><td>médio</td><td>Item F5. Se sim, integrar em vez de competir</td></tr>
         <tr><td>Pessoa-chave</td><td><span class="pill">média</span></td><td>alto</td><td>Documentar as regras de negócio na Fase 1</td></tr>
       </tbody>
     </table>
   </div>
+
+  <h3>Os quatro riscos que só existem com homologação obrigatória</h3>
+  <p>A cobrança consolidada é excelente para o caixa e péssima para a soberania: quem cobra, manda. Cada um destes tem uma trava contratual que o neutraliza, e nenhuma delas é opcional.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Risco</th><th>O que acontece na prática</th><th>Trava a pedir no contrato</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Concentração total</strong></td><td>100% da receita num único pagador. Um atraso de 60 dias e você financia a rede inteira</td><td>Pagamento até o dia 10 do mês seguinte, com multa e juros, e direito de cobrar as lojas diretamente se o atraso passar de 60 dias</td></tr>
+        <tr><td><strong>Perda do relacionamento</strong></td><td>Sem contrato com a loja, trocar de fornecedor não custa nada a ninguém: você perde 100% de uma vez, não aos poucos</td><td>Prazo mínimo de 48 meses, renovação automática e aviso prévio de 12 meses para descontinuar</td></tr>
+        <tr><td><strong>Controle do preço</strong></td><td>Quem cobra define o reajuste. Cada renovação vira uma negociação em que você tem zero alavanca</td><td>Reajuste por índice (IPCA ou IGP-M), nunca por negociação</td></tr>
+        <tr><td><strong>Dependência somada à 13.13</strong></td><td>Ela já tem argumento de titularidade e passa a ter também o cliente e o caixa</td><td>Cláusula afastando expressamente a 13.13 para este produto, e direito de ofertar direto às lojas por 24 meses se ela rescindir</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Sem as quatro, o modelo consolidado transforma um negócio em um emprego sem carteira. Com as quatro, ele é melhor que o voluntário em quase tudo — e é por isso que este plano o recomenda.</p>
 </section>
 
 <section id="s9">
@@ -797,14 +827,14 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
       <tbody>
         <tr><td><strong>G1 · Jurídico</strong></td><td>Semana 2</td><td>O advogado vê caminho viável para a 13.13</td><td>Pare. Uso interno apenas</td></tr>
         <tr><td><strong>G2 · Trinks</strong></td><td>Semana 4</td><td>Existe caminho contratual para uso comercial da API</td><td>Pare ou repense a fonte de dados</td></tr>
-        <tr><td><strong>G3 · Franqueadora</strong></td><td>Semana 8</td><td>Ela topa A, B ou C — qualquer uma por escrito</td><td>Avalie o produto genérico fora do SISTEMA</td></tr>
+        <tr><td><strong>G3 · Franqueadora</strong></td><td>Semana 8</td><td>Ela topa A, B ou C por escrito — <em>e</em> diz se a adesão será voluntária ou obrigatória</td><td>Avalie o produto genérico fora do SISTEMA</td></tr>
         <tr><td><strong>G4 · Piloto</strong></td><td>Mês 4</td><td>4 das 5 lojas usam semanalmente e pagariam</td><td>Não invista as Fases 2 e 3</td></tr>
       </tbody>
     </table>
   </div>
   <div class="callout">
     <span class="k">O que torna este plano executável</span>
-    <p>Não é o otimismo dos números — é a disciplina dos portões. O pior desfecho possível não é o projeto não acontecer: é gastar R$ 267 mil e perder a loja por ter pulado o G1.</p>
+    <p>Não é o otimismo dos números — é a disciplina dos portões. O pior desfecho possível não é o projeto não acontecer: é gastar R$ 192 a 267 mil e perder a loja por ter pulado o G1.</p>
   </div>
 </section>
 
