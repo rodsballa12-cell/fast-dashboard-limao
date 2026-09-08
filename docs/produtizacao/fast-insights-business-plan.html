@@ -312,6 +312,8 @@ section{scroll-margin-top:56px}
 .bar{height:4px;background:var(--rule);border-radius:2px;overflow:hidden;margin-top:8px}
 .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
 
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.9em;background:var(--surface-2);border:1px solid var(--rule);padding:1px 5px;border-radius:2px;color:var(--ink-2)}
+
 /* ---------- documento autônomo ---------- */
 .toolbar{
   display:flex;justify-content:flex-end;gap:10px;padding:14px 0 0;
@@ -384,7 +386,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
     <span class="sub">O plano detalhado para levar o painel de uma loja às 431, e o que ainda não sabemos.</span>
   </h1>
   <div class="byline">
-    <span class="tag">Detalhado v1</span>
+    <span class="tag">Detalhado v2</span>
     <span>Rodrigo Garcia · franqueado FAST Limão</span>
     <span>08 · 09 · 2026</span>
     <span>Documento para leitura e impressão</span>
@@ -410,7 +412,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
   <div class="fig"><span class="n">mês 17</span><span class="l">caixa volta a zero · contra mês 23</span></div>
   <div class="fig"><span class="n">570 lojas</span><span class="l">no mês 36 · contra 389</span></div>
 </div>
-<div class="docnote"><p style="margin:0"><strong>Sobre este arquivo.</strong> Documento autônomo: funciona sem internet, pode ser enviado por e-mail e imprime em 19 páginas. Use o botão no topo para salvar em PDF. As tabelas financeiras vêm do modelo em <code>scripts/modelo_negocio.py</code>, que reproduz cada número a partir das premissas da seção 07.</p></div><p class="note">Modelo de 36 meses com premissas explícitas na seção 07. Os números em destaque acima são do cenário COM homologação; o plano inteiro está calculado nos dois desenhos, lado a lado. Toda projeção é estimativa, e os 34 itens da seção 10 são exatamente o que ainda pode derrubá-la.</p>
+<div class="docnote"><p style="margin:0"><strong>Sobre este arquivo.</strong> Documento autônomo: funciona sem internet, pode ser enviado por e-mail e imprime em 19 páginas. Use o botão no topo para salvar em PDF. As tabelas financeiras saem da planilha <code>FAST-Insights-modelo-financeiro.xlsx</code>, cujas fórmulas foram conferidas uma a uma contra um modelo independente em Python.</p></div><p class="note">Modelo de 36 meses com premissas explícitas na seção 07. Os números em destaque acima são do cenário COM homologação; o plano inteiro está calculado nos dois desenhos, lado a lado. Toda projeção é estimativa, e os 34 itens da seção 10 são exatamente o que ainda pode derrubá-la.</p>
 <div class="callout" style="max-width:none">
   <span class="k">Os dois cenários</span>
   <p><strong>Sem homologação:</strong> você vende loja a loja, a R$ 319, e chega a 65% da rede em três anos. <strong>Com homologação:</strong> a franqueadora torna o produto obrigatório — como já fez com o Trinks e o Sults —, cobra das lojas e repassa consolidado; adesão de 95%, preço único de R$ 299, e 25% da receita fica com ela. Este plano recomenda o segundo, e mostra os dois em cada seção.</p>
@@ -512,7 +514,8 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
       <tbody>
         <tr><td>TAM</td><td>Salões no Brasil que usam Trinks</td><td class="num">a descobrir · T6</td><td class="num">—</td></tr>
         <tr><td>SAM</td><td>Rede FAST: Escova + Spa</td><td class="num">431 → 600</td><td class="num">1,55 → 2,15 mi</td></tr>
-        <tr class="total"><td>SOM ano 3</td><td>65% de adoção na rede</td><td class="num">389</td><td class="num">R$ 1,53 mi</td></tr>
+        <tr><td>SOM ano 3 · sem homologação</td><td>65% de adoção na rede</td><td class="num">389</td><td class="num">R$ 1,53 mi</td></tr>
+        <tr class="total"><td>SOM ano 3 · com homologação</td><td>95% de adoção na rede</td><td class="num">570</td><td class="num">R$ 1,56 mi</td></tr>
       </tbody>
     </table>
   </div>
@@ -630,6 +633,11 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
         <tr><td>Painel da Rede</td><td class="num" colspan="2">R$ 10.000</td><td>A partir do mês 9, meio da faixa</td></tr>
       </tbody>
     </table>
+  </div>
+
+  <div class="callout">
+    <span class="k">Para mexer nos números</span>
+    <p>Tudo desta seção sai de uma planilha com fórmulas vivas — <code>FAST-Insights-modelo-financeiro.xlsx</code>. A chave está na <strong>célula B7 da aba Premissas</strong>: <strong>1</strong> = com homologação, <strong>0</strong> = sem. Ela reconfigura as sete premissas acima de uma vez e refaz os 36 meses, o resumo e os dois gráficos. Cada aba mostra no topo qual modelo está ativo. A aba Cenários é a única que não segue a chave, de propósito: as doze linhas são casos fixos, para poderem ser comparados de uma vez.</p>
   </div>
 
   <div class="chart">
