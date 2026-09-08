@@ -134,33 +134,73 @@ def _extract_contact(cid, c):
     return {k: v for k, v in props.items() if v not in ("", None)}
 
 
+def _search_by_trinks_id(trinks_ids):
+    """Busca no HubSpot contatos que já têm esses trinks_ids. Retorna dict
+    {trinks_id: hs_contact_id}. HubSpot limita 100 valores por filtro IN."""
+    encontrados = {}
+    for i in range(0, len(trinks_ids), 100):
+        batch = [str(t) for t in trinks_ids[i:i+100] if t]
+        if not batch: continue
+        body = {
+            "filterGroups": [{"filters": [{
+                "propertyName": "trinks_id",
+                "operator": "IN",
+                "values": batch,
+            }]}],
+            "properties": ["trinks_id"],
+            "limit": 100,
+        }
+        r = _req("POST", "/crm/v3/objects/contacts/search", body)
+        if r and "results" in r:
+            for c in r["results"]:
+                tid = (c.get("properties") or {}).get("trinks_id")
+                if tid:
+                    encontrados[str(tid)] = c["id"]
+    return encontrados
+
+
 def _upsert_batch(inputs):
-    """Upsert por email; se não tiver email, cai no create simples usando trinks_id."""
+    """Estratégia:
+    1. Contatos COM email → batch upsert por email (dedup automático HubSpot)
+    2. Contatos SEM email → busca existentes por trinks_id, atualiza se
+       encontrado, cria se novo. Sem depender de trinks_id ser unique.
+    """
     com_email = [i for i in inputs if i.get("email")]
     sem_email = [i for i in inputs if not i.get("email")]
 
-    ok_upsert = 0
+    ok_upsert_email = 0
     if com_email:
         body = {"inputs": [{"idProperty": "email", "id": i["email"], "properties": i} for i in com_email]}
         r = _req("POST", "/crm/v3/objects/contacts/batch/upsert", body)
         if r and "results" in r:
-            ok_upsert = len(r["results"])
+            ok_upsert_email = len(r["results"])
 
-    ok_create = 0
-    # sem email: batch create com trinks_id como natural key alternativa
+    ok_update, ok_create = 0, 0
     if sem_email:
-        # tenta upsert por trinks_id (funciona se a prop foi criada como identificador único)
-        body = {"inputs": [{"idProperty": "trinks_id", "id": i["trinks_id"], "properties": i} for i in sem_email if i.get("trinks_id")]}
-        r = _req("POST", "/crm/v3/objects/contacts/batch/upsert", body)
-        if r and "results" in r:
-            ok_create = len(r["results"])
-        elif r is None:
-            # fallback: create simples (pode duplicar em re-runs, mas trinks_id evita)
-            body2 = {"inputs": [{"properties": i} for i in sem_email]}
-            r2 = _req("POST", "/crm/v3/objects/contacts/batch/create", body2)
-            if r2 and "results" in r2:
-                ok_create = len(r2["results"])
-    return ok_upsert, ok_create
+        trinks_ids = [str(i.get("trinks_id")) for i in sem_email if i.get("trinks_id")]
+        existentes = _search_by_trinks_id(trinks_ids)  # {trinks_id: hs_id}
+
+        para_atualizar, para_criar = [], []
+        for c in sem_email:
+            tid = str(c.get("trinks_id") or "")
+            if tid and tid in existentes:
+                para_atualizar.append({"id": existentes[tid], "properties": c})
+            else:
+                para_criar.append({"properties": c})
+
+        if para_atualizar:
+            body = {"inputs": para_atualizar}
+            r = _req("POST", "/crm/v3/objects/contacts/batch/update", body)
+            if r and "results" in r:
+                ok_update = len(r["results"])
+
+        if para_criar:
+            body = {"inputs": para_criar}
+            r = _req("POST", "/crm/v3/objects/contacts/batch/create", body)
+            if r and "results" in r:
+                ok_create = len(r["results"])
+
+    return ok_upsert_email, ok_update, ok_create
 
 
 def main():
@@ -187,17 +227,19 @@ def main():
     _ensure_custom_props()
 
     print(f"[hubspot] enviando em batches de 100...")
-    total_upsert, total_create = 0, 0
+    total_email, total_upd, total_new = 0, 0, 0
     for i in range(0, len(contacts), 100):
         batch = contacts[i:i+100]
-        up, cr = _upsert_batch(batch)
-        total_upsert += up
-        total_create += cr
-        print(f"  batch {i//100 + 1}: upsert={up} create={cr}")
+        em, up, cr = _upsert_batch(batch)
+        total_email += em
+        total_upd += up
+        total_new += cr
+        print(f"  batch {i//100 + 1}: upsert_email={em} update={up} create={cr}")
         time.sleep(0.5)  # respeita rate limit HubSpot (100 req/10s)
 
-    print(f"\n✓ {total_upsert + total_create} contatos sincronizados "
-          f"(upsert email={total_upsert}, upsert trinks_id={total_create})")
+    print(f"\n✓ {total_email + total_upd + total_new} contatos sincronizados "
+          f"(upsert por email={total_email}, atualizados por trinks_id={total_upd}, "
+          f"novos criados={total_new})")
 
 
 if __name__ == "__main__":
