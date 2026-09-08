@@ -4145,6 +4145,7 @@ function renderMidias(){
   // Renderiza aqui todo cruzamento Mídias × Trinks que dá pra fazer com os dados disponíveis.
   // Depende de TRINKS estar carregado; se não estiver, deixa vazio e re-renderiza no próximo tick.
   const crossBox = document.getElementById('midias-crossings');
+  try {
   if(crossBox && TRINKS && TRINKS.abas){
     const tAn = TRINKS.abas.anual || {};
     const tMe = TRINKS.abas.mensal || {};
@@ -4183,7 +4184,7 @@ function renderMidias(){
       const totNov = sn.reduce((a,x)=>a+(x.novos||0), 0);
       return totNov > 0 ? totRec/totNov : 0;
     })();
-    const dPer = janelaPara(perAtual);
+    const dPer = janelaPara(per);
     const cacReal = dPer.novos > 0 ? dPer.gasto/dPer.novos : null;
     const cacConversa = dPer.conversas > 0 ? dPer.gasto/dPer.conversas : null;
     const paybackVisitas = cacReal && ticketEstreia > 0 ? Math.ceil(cacReal/ticketEstreia) : null;
@@ -4545,6 +4546,14 @@ function renderMidias(){
     }
 
     crossBox.innerHTML = html;
+  }
+  } catch(e) {
+    // Se qualquer cruzamento quebrar, apenas registra e segue — não pode
+    // impedir o render de geografia/demografia/ROAS que vêm depois.
+    console.warn('crossings render falhou:', e);
+    if(crossBox) crossBox.innerHTML = `<div class="card" style="border-left:4px solid #f59e0b;padding:12px;font-size:12px;color:var(--ink-2)">
+      ⚠️ Bloco de cruzamentos indisponível temporariamente (${e.message||e}). Cards principais abaixo intactos.
+    </div>`;
   }
 
   // Direcionamentos estratégicos (destaque)
