@@ -1,0 +1,20 @@
+name: Probe — descobrir endpoint comissões Trinks
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        run: pip install requests
+      - name: Probe endpoints comissões
+        env:
+          TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
+          TRINKS_ESTABELECIMENTO_ID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID }}
+        run: python scripts/probe_comissoes.py
