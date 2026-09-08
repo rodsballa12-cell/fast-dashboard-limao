@@ -21,12 +21,24 @@ tags: [fast, produtizacao, saas, franquia, trinks]
 | 03 | [[03-conversa-com-a-franqueadora]] | O roteiro e os números da reunião | Você |
 | 04 | [[04-metodo-de-prompts]] | Como me pedir isso com menos idas e voltas | Você |
 | 05 | [[05-analise-contratual]] | **Leia primeiro.** O que o contrato FAST e os termos da Trinks permitem, proíbem e exigem | Você + seu advogado |
+| 06 | [[06-business-plan-detalhado]] | O plano completo: estrutura jurídica, modelo financeiro de 36 meses, cenários e portões de decisão | Você + sócio ou dev parceiro |
+| 07 | [[07-plano-de-descoberta]] | Os 34 itens que ainda faltam descobrir, com o que cada resposta muda | Você |
 
-## Versão publicada (para compartilhar)
+## Versões publicadas (para compartilhar)
 
-O business plan também está publicado como página web, pronta para mandar por link:
-**https://claude.ai/code/artifact/cd35b2ac-8e6d-4697-a217-4c667227596d**
-(privada por padrão — só abre para quem você compartilhar pelo menu da página).
+| Página | Para quê | Link |
+|---|---|---|
+| **FAST Insights** | O resumo executivo, para a conversa com a franqueadora | https://claude.ai/code/artifact/cd35b2ac-8e6d-4697-a217-4c667227596d |
+| **Da Limão para a Rede** | O plano detalhado + o checklist de descoberta, com as respostas salvas | https://claude.ai/code/artifact/7d10e93e-3111-45fe-a2b3-ca7196ac2f88 |
+
+As duas são privadas por padrão — só abrem para quem você compartilhar pelo menu da
+própria página.
+
+## Modelo financeiro reproduzível
+
+`scripts/modelo_negocio.py` gera todas as tabelas do doc 06. Mude uma premissa no topo
+do arquivo e rode `python scripts/modelo_negocio.py` para ver o efeito em cadeia —
+é assim que se testa "e se o ticket for R$ 250?" sem refazer conta à mão.
 
 ## Resumo em cinco linhas
 
