@@ -77,6 +77,24 @@ ws["B3"].font = SUB
 
 linhas = [
     ("", ""),
+    ("A CHAVE DO ARQUIVO", ""),
+    ("Premissas · célula B7",
+     "É a chave que comanda a planilha inteira. 1 = COM homologação (obrigatório em toda "
+     "a rede, R$ 299, 25% para a franqueadora). 0 = SEM homologação (venda loja a loja, "
+     "R$ 319, sem participação). Trocar esse único número reconfigura sete premissas de "
+     "uma vez e refaz o Modelo mensal e o Resumo — inclusive os dois gráficos."),
+    ("As sete que ela comanda",
+     "Preço por loja, teto de adoção, mês central da curva, inclinação da curva, CAC, "
+     "cobrança por loja e participação da franqueadora. As duas colunas ficam visíveis "
+     "lado a lado nas Premissas, então dá para ver o que muda antes de trocar."),
+    ("A única aba que NÃO segue",
+     "A aba Cenários, de propósito: cada uma das doze linhas é um caso fixo, para poderem "
+     "ser comparados de uma vez só. As duas primeiras linhas são exatamente os dois "
+     "modelos da chave."),
+    ("Confira no topo de cada aba",
+     "Modelo mensal, Resumo e Cenários mostram numa faixa qual modelo está ativo. Se a "
+     "faixa disser algo diferente do que você espera, é a B7 que está trocada."),
+    ("", ""),
     ("COMO USAR", ""),
     ("1. Mude só o azul",
      "Toda célula com texto AZUL na aba Premissas é uma entrada que você pode editar. "
@@ -84,8 +102,8 @@ linhas = [
     ("2. Fundo amarelo = decisivo",
      "As entradas com fundo amarelo são as que mais mexem no resultado. Comece por elas."),
     ("3. O resto se ajusta sozinho",
-     "Modelo mensal, Resumo e Cenários recalculam a partir das Premissas. "
-     "Nenhum número deste arquivo é digitado duas vezes."),
+     "Modelo mensal e Resumo recalculam inteiros a partir das Premissas. Nenhum número "
+     "deste arquivo é digitado duas vezes."),
     ("4. Se abrir e vier vazio",
      "Alguns visualizadores não recalculam sozinhos. Abra no Excel, LibreOffice ou "
      "Google Sheets e mande recalcular (no Excel: Ctrl+Alt+F9)."),
@@ -94,7 +112,7 @@ linhas = [
     ("Premissas", "Todas as entradas do modelo, agrupadas por tema, com a fonte de cada número."),
     ("Modelo mensal", "36 meses, linha a linha: lojas, receita, custos, resultado e caixa acumulado."),
     ("Resumo", "Os números de decisão — capital necessário, ponto de equilíbrio, economia unitária — e os dois gráficos."),
-    ("Cenários", "Nove cenários calculados ao vivo, inclusive os de participação da franqueadora na receita."),
+    ("Cenários", "Doze cenários calculados ao vivo — os dois modelos principais e dez sensibilidades. Aba fixa: não segue a chave B7."),
     ("Descoberta", "Os 34 itens que faltam validar. Marque o status e anote a resposta."),
     ("", ""),
     ("LEGENDA DE CORES", ""),
@@ -163,9 +181,20 @@ def prem(linha, rotulo, valor, unidade, obs, fmt=RS, chave=None, destaque=False,
 
 # ---------- o seletor de modelo comercial ----------
 secao(ps, 6, "MODELO COMERCIAL — a chave que muda tudo", ate=5)
-ps.cell(row=7, column=1, value="Modelo em uso  (1 = COM homologação · 0 = SEM homologação)").font = NEGRITO
+ps.cell(row=7, column=1,
+        value="Modelo em uso  →  digite 1 (COM homologação) ou 0 (SEM homologação)").font = \
+    Font(name=FONTE, size=11, bold=True, color="8A5210")
 c = ps.cell(row=7, column=2, value=1)
-c.font, c.number_format, c.border, c.fill = AZUL, NUM, BORDA, F_INPUT
+c.font = Font(name=FONTE, size=14, bold=True, color="0000FF")
+c.number_format, c.border, c.fill = NUM, BORDA, F_INPUT
+c.alignment = Alignment(horizontal="center", vertical="center")
+dv_modelo = DataValidation(type="list", formula1='"1,0"', allow_blank=False,
+                           showDropDown=False, errorTitle="Valor inválido",
+                           error="Use 1 para COM homologação ou 0 para SEM homologação.")
+ps.add_data_validation(dv_modelo)
+dv_modelo.add("B7")
+mo = ps.cell(row=7, column=3, value='=IF($B$7=1,"COM homolog.",IF($B$7=0,"SEM homolog.","⚠ inválido"))')
+mo.font = Font(name=FONTE, size=11, bold=True, color="1F4C88")
 o = ps.cell(row=7, column=5,
             value="1 = homologado obrigatório em toda a rede, com cobrança consolidada pela "
                   "franqueadora. 0 = venda voluntária, loja a loja. Trocar aqui reconfigura "
@@ -317,6 +346,10 @@ ms["A1"] = "Modelo mensal — 36 meses"
 ms["A1"].font = TITULO
 ms["A2"] = "Todas as colunas são fórmulas que leem a aba Premissas. Custos aparecem como negativos."
 ms["A2"].font = SUB
+faixa = ms.cell(row=3, column=1, value='="MODELO EM USO NESTA ABA:  "&IF(Premissas!$B$7=1,"COM homologação  ·  obrigatório em toda a rede, R$ 299, 25% à franqueadora","SEM homologação  ·  venda loja a loja, R$ 319, sem participação")')
+faixa.font = Font(name=FONTE, size=11, bold=True, color="8A5210")
+for _c in range(1, 16):
+    ms.cell(row=3, column=_c).fill = F_ALERTA
 
 COLS = [
     ("Mês", 7, NUM),
@@ -387,6 +420,10 @@ rs["A1"] = "Resumo — os números de decisão"
 rs["A1"].font = TITULO
 rs["A2"] = "Tudo calculado a partir do Modelo mensal. Nada digitado."
 rs["A2"].font = SUB
+faixa = rs.cell(row=3, column=1, value='="MODELO EM USO NESTA ABA:  "&IF(Premissas!$B$7=1,"COM homologação  ·  obrigatório em toda a rede, R$ 299, 25% à franqueadora","SEM homologação  ·  venda loja a loja, R$ 319, sem participação")')
+faixa.font = Font(name=FONTE, size=11, bold=True, color="8A5210")
+for _c in range(1, 5):
+    rs.cell(row=3, column=_c).fill = F_ALERTA
 cab(rs, 4, ["Indicador", "Valor", "Unidade", "Leitura"])
 
 MM = "'Modelo mensal'"
@@ -482,9 +519,17 @@ cs = wb.create_sheet("Cenários")
 cs.sheet_view.showGridLines = False
 cs["A1"] = "Cenários"
 cs["A1"].font = TITULO
-cs["A2"] = ("Cada cenário recalcula os 36 meses com suas próprias premissas. "
-            "Os valores em branco herdam a aba Premissas.")
+cs["A2"] = ("Cada cenário recalcula os 36 meses com suas próprias premissas.")
 cs["A2"].font = SUB
+aviso = cs.cell(row=3, column=1,
+                value="ATENÇÃO: esta aba NÃO segue a chave B7 das Premissas — de propósito. "
+                      "Cada linha é um caso fixo, para os doze poderem ser comparados de uma "
+                      "só vez. As linhas 1 e 2 são exatamente os dois modelos da chave.")
+aviso.font = Font(name=FONTE, size=10, bold=True, color="8A5210")
+aviso.alignment = Alignment(wrap_text=True, vertical="top")
+for _c in range(1, 12):
+    cs.cell(row=3, column=_c).fill = F_ALERTA
+cs.row_dimensions[3].height = 30
 cs.column_dimensions["A"].width = 38
 
 LINHA_MOD = CD.LINHA          # parâmetro -> linha do bloco MODELO COMERCIAL
