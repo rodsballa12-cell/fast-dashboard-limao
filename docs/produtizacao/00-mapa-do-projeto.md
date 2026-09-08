@@ -23,6 +23,7 @@ tags: [fast, produtizacao, saas, franquia, trinks]
 | 05 | [[05-analise-contratual]] | **Leia primeiro.** O que o contrato FAST e os termos da Trinks permitem, proíbem e exigem | Você + seu advogado |
 | 06 | [[06-business-plan-detalhado]] | O plano completo: estrutura jurídica, modelo financeiro de 36 meses, cenários e portões de decisão | Você + sócio ou dev parceiro |
 | 07 | [[07-plano-de-descoberta]] | Os 34 itens que ainda faltam descobrir, com o que cada resposta muda | Você |
+| 08 | [[08-modelo-obrigatorio-consolidado]] | Homologação obrigatória com cobrança consolidada: os números, as cláusulas que sustentam e as quatro travas | Você + seu advogado |
 
 ## Versões publicadas (para compartilhar)
 

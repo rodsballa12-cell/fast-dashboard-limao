@@ -429,27 +429,38 @@ cs["A2"].font = SUB
 cs.column_dimensions["A"].width = 38
 
 CEN = [
-    # nome,                                   ticket,       teto,  atraso, share, rede,  fixo
-    ("Base",                                  None,         None,  0,      0.00,  None,  None),
-    ("Adoção metade — 33% da rede",           None,         0.325, 0,      0.00,  None,  None),
-    ("Homologação atrasa 6 meses",            None,         None,  6,      0.00,  None,  None),
-    ("Preço 20% menor",                       255.0,        None,  0,      0.00,  None,  None),
-    ("Sem o Painel da Rede",                  None,         None,  0,      0.00,  0,     None),
-    ("Participação de 20% à franqueadora",    None,         None,  0,      0.20,  None,  None),
-    ("Participação de 35%",                   None,         None,  0,      0.35,  None,  None),
-    ("Participação de 50%",                   None,         None,  0,      0.50,  None,  None),
-    ("Pior caso combinado",                   None,         0.325, 6,      0.35,  None,  None),
-    ("Enxuta — sem pró-labore",               None,         None,  0,      0.00,  None,  25000),
+    # nome,                                  ticket, teto,  atraso, share, rede, fixo,  cac, centro, cvar
+    ("Base — modelo voluntário",             None,  None,  0, 0.00, None, None, None, None, None, None),
+    ("Adoção metade — 33% da rede",          None,  0.325, 0, 0.00, None, None, None, None, None, None),
+    ("Homologação atrasa 6 meses",           None,  None,  6, 0.00, None, None, None, None, None, None),
+    ("Preço 20% menor",                      255.0, None,  0, 0.00, None, None, None, None, None, None),
+    ("Sem o Painel da Rede",                 None,  None,  0, 0.00, 0,    None, None, None, None, None),
+    ("Participação de 20% à franqueadora",   None,  None,  0, 0.20, None, None, None, None, None, None),
+    ("Participação de 35%",                  None,  None,  0, 0.35, None, None, None, None, None, None),
+    ("Participação de 50%",                  None,  None,  0, 0.50, None, None, None, None, None, None),
+    ("Pior caso combinado",                  None,  0.325, 6, 0.35, None, None, None, None, None, None),
+    ("Enxuta — sem pró-labore",              None,  None,  0, 0.00, None, 25000, None, None, None, None),
+    ("OBRIGATÓRIO · sem participação",       249.0, 0.95,  0, 0.00, None, None, 50.0, 12.0, 42.0, 0.45),
+    ("OBRIGATÓRIO · participação 20%",       249.0, 0.95,  0, 0.20, None, None, 50.0, 12.0, 42.0, 0.45),
+    ("OBRIGATÓRIO · participação 30%",       249.0, 0.95,  0, 0.30, None, None, 50.0, 12.0, 42.0, 0.45),
+    ("OBRIGATÓRIO R$ 299 · participação 30%", 299.0, 0.95, 0, 0.30, None, None, 50.0, 12.0, 42.0, 0.45),
 ]
 PARAM = [("Ticket médio", RS2, L["ticket"]), ("Teto de adoção", PCT, L["teto"]),
          ("Atraso (meses)", NUM, None), ("Participação franqueadora", PCT, None),
-         ("Painel da Rede", RS, L["rede_mes"]), ("Custo fixo em regime", RS, L["freg"])]
+         ("Painel da Rede", RS, L["rede_mes"]), ("Custo fixo em regime", RS, L["freg"]),
+         ("CAC por loja", RS, L["cac"]), ("Mês central da curva", NUM1, L["centro"]),
+         ("Custo variável por loja", RS2, L["cvar"]),
+         ("Inclinação da curva", '0.00', L["k"])]
+NP = len(PARAM)
 
-secao(cs, 4, "PREMISSAS DE CADA CENÁRIO", ate=8)
-cab(cs, 5, ["Cenário"] + [p[0] for p in PARAM], [38, 14, 14, 13, 16, 15, 17])
+secao(cs, 4, "PREMISSAS DE CADA CENÁRIO", ate=NP + 1)
+cab(cs, 5, ["Cenário"] + [p[0] for p in PARAM],
+    [40, 13, 12, 11, 14, 13, 15, 12, 13, 14, 13])
 for i, (nome, *vals) in enumerate(CEN):
     r = 6 + i
-    cs.cell(row=r, column=1, value=nome).font = NEGRITO if i == 0 else PRETO
+    obr = nome.startswith("OBRIGAT")
+    c0 = cs.cell(row=r, column=1, value=nome)
+    c0.font = NEGRITO if (i == 0 or obr) else PRETO
     for j, v in enumerate(vals):
         c = cs.cell(row=r, column=2 + j)
         if v is None:
@@ -459,40 +470,35 @@ for i, (nome, *vals) in enumerate(CEN):
             c.value = v
             c.font = AZUL
         c.number_format, c.border = PARAM[j][1], BORDA
-    if i == 0:
-        for col in range(1, 8):
-            cs.cell(row=r, column=col).fill = F_TOTAL
+    if i == 0 or obr:
+        for col in range(1, NP + 2):
+            cs.cell(row=r, column=col).fill = F_TOTAL if i == 0 else F_ALERTA
 
-# grade de cálculo: meses nas linhas 26..61, 5 colunas por cenário
-CAB_GRADE = 34    # linha do cabeçalho da grade
-GR0 = 36          # primeiro mês da grade — abaixo da tabela de resultados (20-29)
-COL0 = 3          # coluna C
-LARG = 7          # lojas, receita, custos, resultado, caixa + 2 auxiliares
+LIN_RES = 21            # primeira linha da tabela de resultados
+CAB_GRADE = 42          # cabeçalho da grade
+GR0 = 44                # primeiro mês da grade
+COL0 = 3
+LARG = 7
 
-secao(cs, CAB_GRADE - 1, "GRADE DE CÁLCULO — 36 meses por cenário (pode ocultar estas linhas)", ate=73)
+secao(cs, CAB_GRADE - 1, "GRADE DE CÁLCULO — 36 meses por cenário (pode ocultar estas linhas)", ate=101)
 cs.cell(row=CAB_GRADE, column=1, value="Mês").font = NEGRITO
 for i, (nome, *_) in enumerate(CEN):
     base = COL0 + i * LARG
     t = cs.cell(row=CAB_GRADE, column=base, value=nome)
     t.font = Font(name=FONTE, size=8, bold=True, color="1F4C88")
     for j, h in enumerate(["lojas", "receita", "custos", "result.", "caixa", "aux+", "auxcx"]):
-        c = cs.cell(row=CAB_GRADE, column=base + j)
         if j:
-            c.value = h
+            c = cs.cell(row=CAB_GRADE, column=base + j, value=h)
             c.font = Font(name=FONTE, size=8, color="6A675E")
 
 for i in range(len(CEN)):
-    pr = 6 + i                       # linha das premissas do cenário
+    pr = 6 + i
     base = COL0 + i * LARG
-    cl = get_column_letter(base)          # lojas
-    cr = get_column_letter(base + 1)      # receita
-    cc = get_column_letter(base + 2)      # custos
-    cres = get_column_letter(base + 3)    # resultado
-    ccx = get_column_letter(base + 4)     # caixa
-    ca1 = get_column_letter(base + 5)     # 1o mes com resultado positivo
-    ca2 = get_column_letter(base + 6)     # 1o mes com caixa positivo
-    tic, tet, atr, sha, red, fix = (f"$B${pr}", f"$C${pr}", f"$D${pr}",
-                                    f"$E${pr}", f"$F${pr}", f"$G${pr}")
+    cl, cr, cc = (get_column_letter(base + k) for k in (0, 1, 2))
+    cres, ccx, ca1, ca2 = (get_column_letter(base + k) for k in (3, 4, 5, 6))
+    tic, tet, atr, sha = f"$B${pr}", f"$C${pr}", f"$D${pr}", f"$E${pr}"
+    red, fix, cac, cen, cva = f"$F${pr}", f"$G${pr}", f"$H${pr}", f"$I${pr}", f"$J${pr}"
+    inc = f"$K${pr}"
     for k in range(36):
         r = GR0 + k
         ant = r - 1
@@ -500,19 +506,18 @@ for i in range(len(CEN)):
             cs.cell(row=r, column=1, value=k + 1).font = PRETO
         rede_lojas = f"({L['rede0']}+({L['rede36']}-{L['rede0']})*$A{r}/36)"
         cs[f"{cl}{r}"] = (f"=IF($A{r}-{atr}<{L['inicio']},0,{tet}*{rede_lojas}"
-                          f"/(1+EXP(-{L['k']}*($A{r}-{atr}-{L['centro']}))))")
+                          f"/(1+EXP(-{inc}*($A{r}-{atr}-{cen}))))")
         cs[f"{cr}{r}"] = (f"=({cl}{r}*{tic}+IF($A{r}>={L['rede_ini']}+{atr},{red},0))"
                           f"*(1-{sha})*(1-{L['imposto']})")
         novas = f"MAX(0,{cl}{r}-{cl}{ant})" if k else f"{cl}{r}"
         cs[f"{cc}{r}"] = (
-            f"=-({cl}{r}*{L['cvar']}+{novas}*{L['cac']}"
+            f"=-({cl}{r}*{cva}+{novas}*{cac}"
             f"+IF($A{r}-{atr}<=2,{L['f0']},IF($A{r}-{atr}<=5,{L['f1']},"
             f"IF($A{r}-{atr}<=8,{L['f2']},{fix})))"
             f"+IF($A{r}=1+{atr},{L['cap1']},IF($A{r}=3+{atr},{L['cap3']},"
             f"IF($A{r}=6+{atr},{L['cap6']},0))))")
         cs[f"{cres}{r}"] = f"={cr}{r}+{cc}{r}"
         cs[f"{ccx}{r}"] = (f"={ccx}{ant}+{cres}{r}") if k else f"={cres}{r}"
-        # Auxiliares em vez de fórmula matricial: MIN sobre elas dá o primeiro mês.
         cs[f"{ca1}{r}"] = f"=IF({cres}{r}>0,$A{r},9999)"
         cs[f"{ca2}{r}"] = f"=IF({ccx}{r}>0,$A{r},9999)"
         for col, fmt in ((cl, NUM1), (cr, RS), (cc, RS), (cres, RS), (ccx, RS),
@@ -520,14 +525,13 @@ for i in range(len(CEN)):
             cel = cs[f"{col}{r}"]
             cel.number_format, cel.font = fmt, Font(name=FONTE, size=8)
 
-# resultados
-secao(cs, 18, "RESULTADO DE CADA CENÁRIO", ate=7)
-cab(cs, 19, ["Cenário", "1º mês positivo", "Caixa volta a zero", "Capital necessário",
-             "Receita ano 3 (líquida de participação e impostos)", "Resultado ano 3",
-             "Lojas no mês 36"],
-    [38, 15, 17, 17, 15, 16, 15])
+secao(cs, LIN_RES - 2, "RESULTADO DE CADA CENÁRIO", ate=7)
+cab(cs, LIN_RES - 1, ["Cenário", "1º mês positivo", "Caixa volta a zero", "Capital necessário",
+                      "Receita ano 3 (líquida de participação e impostos)", "Resultado ano 3",
+                      "Lojas no mês 36"],
+    [40, 15, 17, 17, 20, 16, 15])
 for i, (nome, *_) in enumerate(CEN):
-    r = 20 + i
+    r = LIN_RES + i
     base = COL0 + i * LARG
     cl = get_column_letter(base)
     cr = get_column_letter(base + 1)
@@ -545,18 +549,30 @@ for i, (nome, *_) in enumerate(CEN):
         (6, f"=SUM({cres}{y3i}:{cres}{y3f})", RS),
         (7, f"={cl}{fim}", NUM),
     ]
-    cs.cell(row=r, column=1, value=nome).font = NEGRITO if i == 0 else PRETO
+    obr = nome.startswith("OBRIGAT")
+    cs.cell(row=r, column=1, value=nome).font = NEGRITO if (i == 0 or obr) else PRETO
     for col, formula, fmt in vals:
         c = cs.cell(row=r, column=col, value=formula)
         c.font, c.number_format, c.border = PRETO, fmt, BORDA
-    if i == 0:
+    if i == 0 or obr:
         for col in range(1, 8):
-            cs.cell(row=r, column=col).fill = F_TOTAL
+            cs.cell(row=r, column=col).fill = F_TOTAL if i == 0 else F_ALERTA
 
-cs["A31"] = ("Zero em \"1º mês positivo\" ou \"caixa volta a zero\" significa que não acontece "
-             "dentro dos 36 meses. A receita destes cenários já está líquida de participação "
-             "e de impostos; a do Resumo é bruta, com os impostos em linha própria.")
-cs["A31"].font = SUB
+cs[f"A{LIN_RES + len(CEN) + 1}"] = (
+    "Zero em \"1º mês positivo\" ou \"caixa volta a zero\" significa que não acontece dentro "
+    "dos 36 meses. A receita destes cenários já está líquida de participação e de impostos; "
+    "a do Resumo é bruta, com os impostos em linha própria.")
+cs[f"A{LIN_RES + len(CEN) + 1}"].font = SUB
+cs[f"A{LIN_RES + len(CEN) + 3}"] = (
+    "CENÁRIOS EM DESTAQUE: homologação obrigatória em toda a rede, com a franqueadora "
+    "cobrando das lojas e repassando de forma consolidada. Adesão de 95%, rampa mais rápida "
+    "(mês central 12 e inclinação 0,45 porque a franqueadora marca prazo), CAC de R$ 50 "
+    "porque não há venda, e custo variável de R$ 42 porque a "
+    "cobrança vira uma fatura só. O preço cai para R$ 249 porque um custo imposto a todos "
+    "precisa ser defensável até para a loja mais fraca.")
+cs[f"A{LIN_RES + len(CEN) + 3}"].font = Font(name=FONTE, size=9, italic=True, color="8A5210")
+cs[f"A{LIN_RES + len(CEN) + 3}"].alignment = Alignment(wrap_text=True, vertical="top")
+cs.row_dimensions[LIN_RES + len(CEN) + 3].height = 58
 
 # ================================================================ DESCOBERTA
 ds = wb.create_sheet("Descoberta")
