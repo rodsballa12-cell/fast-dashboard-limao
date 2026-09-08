@@ -41,6 +41,17 @@ arquivo só. Abre com dois cliques, funciona sem internet, pode ser anexado num 
 tem botão de imprimir/salvar em PDF (19 páginas em A4). É a versão para quem não vai
 abrir link, e para levar impressa na reunião.
 
+## Planilha do modelo
+
+`docs/produtizacao/FAST-Insights-modelo-financeiro.xlsx` — o modelo em Excel, com
+**fórmulas vivas**: mude uma célula azul na aba Premissas e o modelo mensal, o resumo e
+os nove cenários recalculam sozinhos. Seis abas: Leia-me, Premissas, Modelo mensal,
+Resumo (com dois gráficos), Cenários e Descoberta.
+
+Gerada por `scripts/gerar_modelo_xlsx.py` e conferida por
+`scripts/verificar_modelo_xlsx.py`, que avalia as fórmulas de verdade e compara com o
+modelo em Python: 28 de 28 conferências corretas, zero célula com erro.
+
 ## Modelo financeiro reproduzível
 
 `scripts/modelo_negocio.py` gera todas as tabelas do doc 06. Mude uma premissa no topo
