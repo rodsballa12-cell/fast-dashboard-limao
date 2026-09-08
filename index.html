@@ -1123,41 +1123,45 @@ function renderComissoes(container_id, comissoes, prof_meta, data){
   const n_ativos = Object.values(meta).filter(p => (p.status||'').toString().toLowerCase().includes('ativ')).length;
   const n_total = Object.keys(meta).length;
   if(!c.habilitado){
-    // Simulação: quanto seria pago com premissa 32% (da DRE) usando ranking_prof do mês
+    // Produção real do mês (sem multiplicar por premissa nenhuma — só o que Trinks mede)
     const rp = (data && data.abas && data.abas.mensal && data.abas.mensal.ranking_prof) || [];
-    const pctPremissa = 0.32;  // premissa DRE
-    const simulacao = rp.map(p => ({
+    const producao = rp.map(p => ({
       nome: p.nome || '—',
       atend: p.n || 0,
       receita: p.v || 0,
       horas: p.horas_trab || 0,
-      comissao_devida: (p.v || 0) * pctPremissa,
       ticket_medio: p.ticket_medio || 0,
     })).sort((a,b)=>b.receita-a.receita);
-    const totalReceita = simulacao.reduce((a,x)=>a+x.receita,0);
-    const totalComissao = simulacao.reduce((a,x)=>a+x.comissao_devida,0);
-    const linhas = simulacao.map(p=>`<tr style="border-bottom:1px solid var(--surface-2)">
+    const totalReceita = producao.reduce((a,x)=>a+x.receita,0);
+    const totalAtend = producao.reduce((a,x)=>a+x.atend,0);
+    const totalHoras = producao.reduce((a,x)=>a+x.horas,0);
+    const linhas = producao.map(p=>`<tr style="border-bottom:1px solid var(--surface-2)">
       <td style="padding:6px"><strong>${p.nome}</strong></td>
       <td style="text-align:right;padding:6px">${p.atend}</td>
       <td style="text-align:right;padding:6px">${p.horas.toFixed(1)}h</td>
       <td style="text-align:right;padding:6px">${brl0(p.receita)}</td>
       <td style="text-align:right;padding:6px">${brl0(p.ticket_medio)}</td>
-      <td style="text-align:right;padding:6px;color:#a855f7;font-weight:700">${brl0(p.comissao_devida)}</td>
-      <td style="text-align:right;padding:6px;color:var(--ink-3);font-size:11px">${p.horas > 0 ? brl0(p.comissao_devida/p.horas)+'/h' : '—'}</td>
+      <td style="text-align:right;padding:6px;color:var(--ink-3);font-size:11px">${p.horas > 0 ? brl0(p.receita/p.horas)+'/h' : '—'}</td>
     </tr>`).join('');
-    el.innerHTML = `<div class="card" style="border-left:4px solid #f59e0b">
-      <h2>💰 Comissões cadastradas no Trinks</h2>
+    el.innerHTML = `<div class="card" style="border-left:4px solid #ef4444">
+      <h2>💰 Comissões — SEM TAXA CADASTRADA NO TRINKS</h2>
       <div class="cap">Endpoint <code>/v1/profissionais/comissoes</code> · leitura automática do Trinks.</div>
-      <div class="audit" style="background:#fef3c7;border-color:#f59e0b;color:#78350f;margin-bottom:14px">
-        <div>⚙️</div>
+      <div class="audit" style="background:rgba(239,68,68,.10);border-color:#ef4444;color:#fff;margin-bottom:14px;padding:14px;border-radius:6px;border-left:4px solid #ef4444">
+        <div style="font-size:20px">🚫</div>
         <div>
-          <strong>Nenhuma regra cadastrada no Trinks (${c.obs||'endpoint retorna 0 regras'}).</strong><br>
-          <span style="font-size:12px;">Base atual: <strong>${n_ativos} profs ativos</strong> de ${n_total} cadastros. Consequência: sem cross-check automatizado; comissões são pagas "no manual" e não dá pra auditar contra a produção real.</span>
+          <strong style="color:#ef4444;font-size:14px">Trinks retorna 0 regras de comissão.</strong>
+          <div style="font-size:12px;color:var(--ink-2);margin-top:6px;line-height:1.6">
+            Verificamos 3 endpoints/fontes:<br>
+            • <code>/v1/profissionais/comissoes</code> → <strong>0 regras cadastradas</strong> (${c.obs||''})<br>
+            • Cache de profissionais (${n_total} cadastros) → nenhum tem campo <em>comissao_pct</em><br>
+            • Cache de serviços (58 catalogados) → nenhum tem campo <em>comissao</em><br><br>
+            <strong>Não existe "taxa real" pra puxar do Trinks hoje.</strong> As comissões estão sendo pagas por fora do sistema. Sem cadastro no Trinks, não dá pra auditoria automática, e o valor "Comissão sobre produção" da DRE (premissa 32%) não pode ser validado contra a realidade.
+          </div>
         </div>
       </div>
 
-      ${simulacao.length ? `<h2 style="font-size:14px;margin-top:20px">🧮 Simulação · quanto SERIA pago com premissa DRE (32%)</h2>
-      <div class="cap">Cruzamento aba Auditoria × Painel(Mensal) × Financeiro(DRE). Aplica a premissa de 32% de comissão que aparece na DRE sobre a produção real de cada profissional no mês corrente. Se você cadastrar essa regra no Trinks, cada valor abaixo é exatamente o que seria pago automaticamente.</div>
+      ${producao.length ? `<h2 style="font-size:14px;margin-top:20px">📊 Produção real por profissional (mês corrente)</h2>
+      <div class="cap">Dado bruto do Trinks — só o que foi medido, sem aplicar taxa nenhuma. Esse é o insumo pra você calcular comissão hoje no manual (ou pra Trinks calcular sozinho, quando você cadastrar as regras).</div>
       <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
         <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
           <th style="text-align:left;padding:6px">Profissional</th>
@@ -1165,17 +1169,25 @@ function renderComissoes(container_id, comissoes, prof_meta, data){
           <th style="text-align:right;padding:6px">Horas</th>
           <th style="text-align:right;padding:6px">Receita produzida</th>
           <th style="text-align:right;padding:6px">Ticket médio</th>
-          <th style="text-align:right;padding:6px;color:#a855f7">Comissão devida</th>
           <th style="text-align:right;padding:6px">R$/hora</th>
         </tr></thead>
         <tbody>${linhas}
-        <tr style="border-top:2px solid var(--ink-3);font-weight:700"><td style="padding:8px">TOTAL EQUIPE (${simulacao.length} profs)</td><td style="text-align:right;padding:8px">${simulacao.reduce((a,x)=>a+x.atend,0)}</td><td style="text-align:right;padding:8px">${simulacao.reduce((a,x)=>a+x.horas,0).toFixed(1)}h</td><td style="text-align:right;padding:8px">${brl0(totalReceita)}</td><td></td><td style="text-align:right;padding:8px;color:#a855f7">${brl0(totalComissao)}</td><td></td></tr>
-      </tbody></table></div>
-      <div style="margin-top:12px;padding:10px;background:rgba(168,85,247,.06);border-left:3px solid #a855f7;border-radius:6px;font-size:12px;color:var(--ink-2);line-height:1.6">
-        <strong>💡 Leitura executiva:</strong> Total de comissão devida no mês corrente = <strong style="color:#a855f7">${brl0(totalComissao)}</strong> (32% de ${brl0(totalReceita)} produzidos pelos ${simulacao.length} profissionais). Esse número deveria bater com a linha "Comissão sobre produção" da DRE.
-        <br><br>
-        <strong>Ação pra fechar o loop:</strong> em Trinks → Configurações → Profissionais → Comissões, cadastra a regra 32% (ou % diferente por prof/serviço se for o caso). No próximo refresh, o painel para de simular e passa a mostrar o valor OFICIAL vs pago vs devido — auditoria automática.
-      </div>` : ''}
+        <tr style="border-top:2px solid var(--ink-3);font-weight:700"><td style="padding:8px">TOTAL EQUIPE (${producao.length} profs)</td><td style="text-align:right;padding:8px">${totalAtend}</td><td style="text-align:right;padding:8px">${totalHoras.toFixed(1)}h</td><td style="text-align:right;padding:8px">${brl0(totalReceita)}</td><td></td><td style="text-align:right;padding:8px">${totalHoras>0 ? brl0(totalReceita/totalHoras)+'/h' : '—'}</td></tr>
+      </tbody></table></div>` : ''}
+
+      <h2 style="font-size:14px;margin-top:20px">📝 Como cadastrar no Trinks (destrava auditoria automática)</h2>
+      <div style="margin-top:10px;padding:12px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2);line-height:1.7">
+        <ol style="margin:0;padding-left:20px">
+          <li>Acesse <strong>Trinks → Configurações → Profissionais</strong></li>
+          <li>Selecione um profissional → aba <strong>"Comissões"</strong> (ou "Financeiro")</li>
+          <li>Cadastre a regra: pode ser <strong>% fixo sobre o serviço</strong> (ex: 40% para cabeleireiro, 50% para manicure) ou <strong>tabela por serviço</strong> (ex: 30% em escova, 50% em coloração)</li>
+          <li>Repita pros ${n_ativos} profissionais ativos</li>
+          <li>No próximo refresh, esse card recarrega e mostra as regras REAIS cadastradas + o valor devido calculado pelo próprio Trinks</li>
+        </ol>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--ink-3)">
+          <strong>Enquanto não cadastra:</strong> a linha "Comissão sobre produção" da DRE fica com valor da premissa (32% × receita) que pode não bater com o que você paga. Sem base de comparação, não dá pra saber se está pagando a mais, a menos, ou consistente entre profissionais.
+        </div>
+      </div>
     </div>`;
     return;
   }
