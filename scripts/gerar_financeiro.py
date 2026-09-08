@@ -34,6 +34,35 @@ def _load_cfg():
 CFG = _load_cfg()
 SALARIO_GERENTE = float(((CFG.get("pessoal_clt") or {}).get("salario_gerente_com_encargos")) or 6500)
 
+
+def _load_comissoes():
+    """Carrega regras de comissão do Trinks BackOffice + calcula taxa efetiva
+    ponderada usando o mix de categorias (arquivo pipeline dashboard_data.json)."""
+    cpath = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "comissoes.json")
+    dpath = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "dashboard_data.json")
+    try:
+        with open(cpath, encoding="utf-8") as f: cfg = json.load(f)
+    except Exception:
+        return 0.32  # fallback premissa
+    try:
+        with open(dpath, encoding="utf-8") as f: dash = json.load(f)
+    except Exception:
+        return cfg.get("regra_padrao_pct") or 0.32
+    cats = (dash.get("abas", {}).get("anual", {}).get("categoria_native") or [])
+    if not cats:
+        return cfg.get("regra_padrao_pct") or 0.32
+    def _norm(s): return (s or "").lower().strip()
+    mapa = {_norm(k): v for k, v in (cfg.get("por_categoria") or {}).items()}
+    default = cfg.get("regra_padrao_pct") or 0.32
+    total_rec = sum(c.get("v", 0) for c in cats)
+    total_com = sum(c.get("v", 0) * mapa.get(_norm(c.get("nome")), default) for c in cats)
+    if total_rec <= 0: return default
+    return total_com / total_rec
+
+
+COMISSAO_PCT = _load_comissoes()
+print(f"[gerar_financeiro] Taxa comissão efetiva ponderada: {COMISSAO_PCT*100:.2f}%")
+
 # Linhas da DRE FAST ESCOVA (bloco 8-22)
 # rot_key: (linha, sinal_positivo?) — se True mantém sinal, se False inverte
 LINHAS_ESCOVA = {
@@ -85,12 +114,17 @@ def monta_mes(ws, col, ano, mes):
 
     receita_bruta   = v["receita_bruta"]
     receita_liquida = v["receita_liquida"]
-    ebitda          = v["ebitda"]
 
     # Valores em módulo (positivos) pra facilitar leitura
     impostos   = abs(v["impostos"])
     inad       = abs(v["inadimplencia"])
-    comissoes  = abs(v["comissoes"])
+    # Comissão: Excel tinha 32% liso, mas Rodrigo confirmou taxas por categoria
+    # do Trinks BackOffice — taxa efetiva ponderada ~37,4% (Unhas 50% puxa média).
+    # Recalculamos aqui pra a DRE refletir o real, e ajustamos EBITDA downstream.
+    comissoes_excel  = abs(v["comissoes"])
+    comissoes  = receita_bruta * COMISSAO_PCT
+    delta_comissao = comissoes - comissoes_excel
+    ebitda          = v["ebitda"] - delta_comissao  # EBITDA cai o mesmo delta
     royalty    = abs(v["royalty"])
     cmv        = abs(v["cmv"])
     mkt_local  = abs(v["marketing_local"])
@@ -112,8 +146,8 @@ def monta_mes(ws, col, ano, mes):
         {"id": "VARIAVEL", "titulo": "Custos variáveis — acompanham a venda",
          "linhas": [
              _row("Comissão sobre produção", comissoes, comissoes,
-                  "32% da receita (premissa do modelo)", False,
-                  {"esp_pct": 0.32, "real_delta_pct": comissoes/max(rec,1)}),
+                  f"{COMISSAO_PCT*100:.1f}% da receita (taxa efetiva ponderada · Trinks BackOffice)", False,
+                  {"esp_pct": round(COMISSAO_PCT, 4), "real_delta_pct": comissoes/max(rec,1)}),
              _row("Produtos e insumos (CMV)", cmv, cmv,
                   "12% da receita (Fast Escova)", False,
                   {"esp_pct": 0.12, "real_delta_pct": cmv/max(rec,1)}),
@@ -259,13 +293,13 @@ def main():
             "mc_esp": principal["margem_contribuicao"],
         },
         "premissas": {
-            "comissao": 0.32, "insumos": 0.12, "simples": 0.07, "inadimplencia": 0.02,
+            "comissao": round(COMISSAO_PCT, 4), "insumos": 0.12, "simples": 0.07, "inadimplencia": 0.02,
         },
         "equilibrio": {
             "fatura_hoje": rec_p,
             "custo_fixo_mes": fixo_p,
             "cenarios": [
-                {"nome": "Projetado do Excel", "comissao": 0.32, "mc": mc_pct_p},
+                {"nome": "Projetado do Excel", "comissao": round(COMISSAO_PCT, 4), "mc": mc_pct_p},
                 {"nome": "Se comissão subir para 40%", "comissao": 0.40,
                  "mc": 1 - 0.40 - 0.12 - 0.07 - 0.02},
             ],
