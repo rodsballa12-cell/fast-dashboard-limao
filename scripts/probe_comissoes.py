@@ -11,7 +11,7 @@ API_KEY = os.getenv("TRINKS_API_KEY", "").strip()
 EID = os.getenv("TRINKS_ESTABELECIMENTO_ID", "").strip()
 BASE = "https://api.trinks.com"
 HEADERS = {
-    "apiKey": API_KEY,
+    "X-Api-Key": API_KEY,
     "estabelecimentoId": EID,
     "Content-Type": "application/json",
     "Accept": "application/json",
