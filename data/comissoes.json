@@ -1,0 +1,23 @@
+{
+  "_desc": "Regras de comissão do Trinks BackOffice · exportado de /BackOffice/ManterCadastro/Servicos em 08/09/2026. Taxa por CATEGORIA de serviço (uniforme dentro de cada categoria, não varia por profissional).",
+  "fonte": "servicosDoEstabelecimento.csv (Trinks BackOffice)",
+  "atualizado_em": "2026-09-08",
+  "por_categoria": {
+    "Escova": 0.30,
+    "ESCOVA": 0.30,
+    "Harmonização": 0.30,
+    "HARMONIZAÇÃO": 0.30,
+    "Maquiagem": 0.40,
+    "MAQUIAGEM": 0.40,
+    "Penteados": 0.30,
+    "PENTEADOS": 0.30,
+    "Retoque": 0.40,
+    "RETOQUE": 0.40,
+    "Tratamento": 0.30,
+    "TRATAMENTO": 0.30,
+    "Unhas": 0.50,
+    "UNHAS": 0.50
+  },
+  "regra_padrao_pct": 0.30,
+  "obs": "Categorias com match case-insensitive. Regra padrão 30% aplica se categoria não estiver mapeada. Cadeireleiro/manicure não muda a taxa — quem determina é o serviço."
+}

@@ -1123,71 +1123,125 @@ function renderComissoes(container_id, comissoes, prof_meta, data){
   const n_ativos = Object.values(meta).filter(p => (p.status||'').toString().toLowerCase().includes('ativ')).length;
   const n_total = Object.keys(meta).length;
   if(!c.habilitado){
-    // Produção real do mês (sem multiplicar por premissa nenhuma — só o que Trinks mede)
     const rp = (data && data.abas && data.abas.mensal && data.abas.mensal.ranking_prof) || [];
+    const catAn = (data && data.abas && data.abas.anual && data.abas.anual.categoria_native) || [];
+
+    // Regras REAIS de comissão (exportadas do Trinks BackOffice)
+    const cfg = (typeof COMISSOES_CFG !== 'undefined' && COMISSOES_CFG) || null;
+    const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+    const taxaCat = (nome) => {
+      if(!cfg) return 0.32; // fallback premissa
+      const map = cfg.por_categoria || {};
+      // match exato
+      if(nome in map) return map[nome];
+      // match case-insensitive
+      const nn = norm(nome);
+      for(const k in map){ if(norm(k) === nn) return map[k]; }
+      return cfg.regra_padrao_pct || 0.32;
+    };
+
+    // Cálculo por categoria (usando categoria_native anual como base ponderada)
+    const catRows = catAn.map(c => {
+      const taxa = taxaCat(c.nome);
+      return {
+        nome: c.nome,
+        receita: c.v || 0,
+        n_atend: c.n || 0,
+        taxa_pct: taxa * 100,
+        comissao: (c.v || 0) * taxa,
+      };
+    }).sort((a,b)=>b.receita-a.receita);
+    const receitaAnual = catRows.reduce((a,x)=>a+x.receita, 0);
+    const comissaoAnual = catRows.reduce((a,x)=>a+x.comissao, 0);
+    const taxaEfetivaPct = receitaAnual > 0 ? (comissaoAnual/receitaAnual*100) : 0;
+    // Aplica taxa efetiva ponderada no mês corrente
+    const receitaMes = ((data && data.abas && data.abas.mensal && data.abas.mensal.kpis && data.abas.mensal.kpis.caixa) || 0);
+    const comissaoMesEstim = receitaMes * (taxaEfetivaPct/100);
+    const comissaoMesPremissa = receitaMes * 0.32;
+    const deltaVsPremissa = comissaoMesEstim - comissaoMesPremissa;
+
+    // Produção real por profissional (mês corrente)
     const producao = rp.map(p => ({
       nome: p.nome || '—',
       atend: p.n || 0,
       receita: p.v || 0,
       horas: p.horas_trab || 0,
-      ticket_medio: p.ticket_medio || 0,
+      comissao_estim: (p.v || 0) * (taxaEfetivaPct/100),  // aplicando taxa efetiva ponderada
     })).sort((a,b)=>b.receita-a.receita);
-    const totalReceita = producao.reduce((a,x)=>a+x.receita,0);
-    const totalAtend = producao.reduce((a,x)=>a+x.atend,0);
-    const totalHoras = producao.reduce((a,x)=>a+x.horas,0);
-    const linhas = producao.map(p=>`<tr style="border-bottom:1px solid var(--surface-2)">
-      <td style="padding:6px"><strong>${p.nome}</strong></td>
-      <td style="text-align:right;padding:6px">${p.atend}</td>
-      <td style="text-align:right;padding:6px">${p.horas.toFixed(1)}h</td>
-      <td style="text-align:right;padding:6px">${brl0(p.receita)}</td>
-      <td style="text-align:right;padding:6px">${brl0(p.ticket_medio)}</td>
-      <td style="text-align:right;padding:6px;color:var(--ink-3);font-size:11px">${p.horas > 0 ? brl0(p.receita/p.horas)+'/h' : '—'}</td>
-    </tr>`).join('');
-    el.innerHTML = `<div class="card" style="border-left:4px solid #ef4444">
-      <h2>💰 Comissões — SEM TAXA CADASTRADA NO TRINKS</h2>
-      <div class="cap">Endpoint <code>/v1/profissionais/comissoes</code> · leitura automática do Trinks.</div>
-      <div class="audit" style="background:rgba(239,68,68,.10);border-color:#ef4444;color:#fff;margin-bottom:14px;padding:14px;border-radius:6px;border-left:4px solid #ef4444">
-        <div style="font-size:20px">🚫</div>
-        <div>
-          <strong style="color:#ef4444;font-size:14px">Trinks retorna 0 regras de comissão.</strong>
-          <div style="font-size:12px;color:var(--ink-2);margin-top:6px;line-height:1.6">
-            Verificamos 3 endpoints/fontes:<br>
-            • <code>/v1/profissionais/comissoes</code> → <strong>0 regras cadastradas</strong> (${c.obs||''})<br>
-            • Cache de profissionais (${n_total} cadastros) → nenhum tem campo <em>comissao_pct</em><br>
-            • Cache de serviços (58 catalogados) → nenhum tem campo <em>comissao</em><br><br>
-            <strong>Não existe "taxa real" pra puxar do Trinks hoje.</strong> As comissões estão sendo pagas por fora do sistema. Sem cadastro no Trinks, não dá pra auditoria automática, e o valor "Comissão sobre produção" da DRE (premissa 32%) não pode ser validado contra a realidade.
+    const totalProfReceita = producao.reduce((a,x)=>a+x.receita,0);
+    const totalProfCom = producao.reduce((a,x)=>a+x.comissao_estim,0);
+
+    el.innerHTML = `<div class="card" style="border-left:4px solid #22c55e">
+      <h2>💰 Comissões · taxas reais do Trinks BackOffice</h2>
+      <div class="cap">${cfg ? `Regras cadastradas em <code>data/comissoes.json</code> — fonte: <em>${cfg.fonte||'Trinks'}</em> · atualizado em ${cfg.atualizado_em||'?'}. Taxa varia por CATEGORIA de serviço, não por profissional.` : 'Aguardando carregar data/comissoes.json...'}</div>
+
+      ${cfg ? `<div style="margin-top:14px;padding:12px;background:rgba(34,197,94,.06);border-left:3px solid #22c55e;border-radius:6px;font-size:12px;color:var(--ink-2)">
+        <strong style="color:#22c55e">✓ Taxas oficiais carregadas do BackOffice:</strong>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+          ${Object.entries(cfg.por_categoria).filter(([k,v],i,arr)=>arr.findIndex(([k2])=>norm(k2)===norm(k))===i).map(([nome,pct])=>`<span style="background:var(--surface-2);padding:4px 10px;border-radius:12px;font-size:11.5px"><strong>${nome}</strong> ${(pct*100).toFixed(0)}%</span>`).join('')}
+        </div>
+      </div>` : ''}
+
+      ${catRows.length ? `<h2 style="font-size:14px;margin-top:20px">🧮 Comissão calculada por categoria (base anual)</h2>
+      <div class="cap">Cruzamento aba Auditoria × Painel(Anual categoria_native). Aplica a taxa OFICIAL de cada categoria sobre a receita real do ano até hoje. Taxa efetiva ponderada = (comissão total ÷ receita total).</div>
+      <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
+        <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+          <th style="text-align:left;padding:6px">Categoria</th>
+          <th style="text-align:right;padding:6px">Atend</th>
+          <th style="text-align:right;padding:6px">Receita ano</th>
+          <th style="text-align:right;padding:6px">Taxa</th>
+          <th style="text-align:right;padding:6px;color:#22c55e">Comissão devida</th>
+        </tr></thead>
+        <tbody>${catRows.map(c=>`<tr style="border-bottom:1px solid var(--surface-2)">
+          <td style="padding:6px"><strong>${c.nome}</strong></td>
+          <td style="text-align:right;padding:6px">${c.n_atend}</td>
+          <td style="text-align:right;padding:6px">${brl0(c.receita)}</td>
+          <td style="text-align:right;padding:6px">${c.taxa_pct.toFixed(0)}%</td>
+          <td style="text-align:right;padding:6px;color:#22c55e;font-weight:700">${brl0(c.comissao)}</td>
+        </tr>`).join('')}
+        <tr style="border-top:2px solid var(--ink-3);font-weight:700"><td style="padding:8px">TOTAL ANO</td><td style="text-align:right;padding:8px">${catRows.reduce((a,x)=>a+x.n_atend,0)}</td><td style="text-align:right;padding:8px">${brl0(receitaAnual)}</td><td style="text-align:right;padding:8px;color:#22c55e">${taxaEfetivaPct.toFixed(1)}%</td><td style="text-align:right;padding:8px;color:#22c55e">${brl0(comissaoAnual)}</td></tr>
+      </tbody></table></div>` : ''}
+
+      <div style="margin-top:14px;padding:12px;background:rgba(168,85,247,.08);border-left:4px solid #a855f7;border-radius:6px;font-size:12px;color:var(--ink-2);line-height:1.6">
+        <strong style="color:#a855f7">💡 Comparação com premissa DRE (32%):</strong>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;font-size:12px">
+          <div style="background:var(--surface-2);padding:10px;border-radius:6px">
+            <div style="color:var(--ink-3);font-size:10.5px">RECEITA MÊS CORRENTE</div>
+            <div style="font-weight:700;font-size:18px">${brl0(receitaMes)}</div>
           </div>
+          <div style="background:var(--surface-2);padding:10px;border-radius:6px">
+            <div style="color:var(--ink-3);font-size:10.5px">PREMISSA DRE (32%)</div>
+            <div style="font-weight:700;font-size:18px;color:var(--ink-3)">${brl0(comissaoMesPremissa)}</div>
+          </div>
+          <div style="background:var(--surface);padding:10px;border-radius:6px;border-left:3px solid #22c55e">
+            <div style="color:#22c55e;font-size:10.5px;font-weight:700">REAL PONDERADO (${taxaEfetivaPct.toFixed(1)}%)</div>
+            <div style="font-weight:700;font-size:18px;color:#22c55e">${brl0(comissaoMesEstim)}</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-size:12px">
+          <strong>Delta:</strong> <span style="color:${Math.abs(deltaVsPremissa) < 100 ? '#22c55e' : deltaVsPremissa > 0 ? '#ef4444' : '#3b82f6'}">${deltaVsPremissa > 0 ? '+' : ''}${brl0(deltaVsPremissa)}/mês</span> vs premissa DRE. ${Math.abs(deltaVsPremissa) < 100 ? 'Premissa 32% está calibrada.' : deltaVsPremissa > 0 ? `<strong>A DRE está SUBESTIMANDO comissão em ${brl0(deltaVsPremissa)}/mês</strong> — a taxa efetiva real é ${taxaEfetivaPct.toFixed(1)}% (peso maior de Unhas com 50%). Corrigir a premissa da DRE pra ${taxaEfetivaPct.toFixed(1)}%.` : `<strong>A DRE está SUPERESTIMANDO comissão em ${brl0(-deltaVsPremissa)}/mês</strong>. Taxa efetiva real ${taxaEfetivaPct.toFixed(1)}% — sobra ${brl0(-deltaVsPremissa)}/mês vs previsão.`}
         </div>
       </div>
 
-      ${producao.length ? `<h2 style="font-size:14px;margin-top:20px">📊 Produção real por profissional (mês corrente)</h2>
-      <div class="cap">Dado bruto do Trinks — só o que foi medido, sem aplicar taxa nenhuma. Esse é o insumo pra você calcular comissão hoje no manual (ou pra Trinks calcular sozinho, quando você cadastrar as regras).</div>
+      ${producao.length ? `<h2 style="font-size:14px;margin-top:20px">👤 Comissão estimada por profissional (mês corrente)</h2>
+      <div class="cap">Aplica a taxa efetiva ponderada (${taxaEfetivaPct.toFixed(1)}%) sobre a receita real do mês de cada prof. Estimativa — não distingue qual categoria de serviço cada prof fez. Pra precisão real, precisamos de mais dado (receita por prof × categoria).</div>
       <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
         <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
           <th style="text-align:left;padding:6px">Profissional</th>
           <th style="text-align:right;padding:6px">Atend</th>
           <th style="text-align:right;padding:6px">Horas</th>
           <th style="text-align:right;padding:6px">Receita produzida</th>
-          <th style="text-align:right;padding:6px">Ticket médio</th>
-          <th style="text-align:right;padding:6px">R$/hora</th>
+          <th style="text-align:right;padding:6px;color:#a855f7">Comissão estim.</th>
         </tr></thead>
-        <tbody>${linhas}
-        <tr style="border-top:2px solid var(--ink-3);font-weight:700"><td style="padding:8px">TOTAL EQUIPE (${producao.length} profs)</td><td style="text-align:right;padding:8px">${totalAtend}</td><td style="text-align:right;padding:8px">${totalHoras.toFixed(1)}h</td><td style="text-align:right;padding:8px">${brl0(totalReceita)}</td><td></td><td style="text-align:right;padding:8px">${totalHoras>0 ? brl0(totalReceita/totalHoras)+'/h' : '—'}</td></tr>
+        <tbody>${producao.map(p=>`<tr style="border-bottom:1px solid var(--surface-2)">
+          <td style="padding:6px"><strong>${p.nome}</strong></td>
+          <td style="text-align:right;padding:6px">${p.atend}</td>
+          <td style="text-align:right;padding:6px">${p.horas.toFixed(1)}h</td>
+          <td style="text-align:right;padding:6px">${brl0(p.receita)}</td>
+          <td style="text-align:right;padding:6px;color:#a855f7;font-weight:700">${brl0(p.comissao_estim)}</td>
+        </tr>`).join('')}
+        <tr style="border-top:2px solid var(--ink-3);font-weight:700"><td style="padding:8px">TOTAL EQUIPE (${producao.length} profs)</td><td style="text-align:right;padding:8px">${producao.reduce((a,x)=>a+x.atend,0)}</td><td style="text-align:right;padding:8px">${producao.reduce((a,x)=>a+x.horas,0).toFixed(1)}h</td><td style="text-align:right;padding:8px">${brl0(totalProfReceita)}</td><td style="text-align:right;padding:8px;color:#a855f7">${brl0(totalProfCom)}</td></tr>
       </tbody></table></div>` : ''}
-
-      <h2 style="font-size:14px;margin-top:20px">📝 Como cadastrar no Trinks (destrava auditoria automática)</h2>
-      <div style="margin-top:10px;padding:12px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2);line-height:1.7">
-        <ol style="margin:0;padding-left:20px">
-          <li>Acesse <strong>Trinks → Configurações → Profissionais</strong></li>
-          <li>Selecione um profissional → aba <strong>"Comissões"</strong> (ou "Financeiro")</li>
-          <li>Cadastre a regra: pode ser <strong>% fixo sobre o serviço</strong> (ex: 40% para cabeleireiro, 50% para manicure) ou <strong>tabela por serviço</strong> (ex: 30% em escova, 50% em coloração)</li>
-          <li>Repita pros ${n_ativos} profissionais ativos</li>
-          <li>No próximo refresh, esse card recarrega e mostra as regras REAIS cadastradas + o valor devido calculado pelo próprio Trinks</li>
-        </ol>
-        <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--ink-3)">
-          <strong>Enquanto não cadastra:</strong> a linha "Comissão sobre produção" da DRE fica com valor da premissa (32% × receita) que pode não bater com o que você paga. Sem base de comparação, não dá pra saber se está pagando a mais, a menos, ou consistente entre profissionais.
-        </div>
-      </div>
     </div>`;
     return;
   }
@@ -3396,6 +3450,18 @@ async function loadWaFila(){
   }catch(e){ console.warn('wa_fila.json indisponível', e); }
 }
 loadWaFila();
+
+// Regras de comissão exportadas do Trinks BackOffice (config local)
+let COMISSOES_CFG = null;
+async function loadComissoes(){
+  try{
+    const r = await fetch('data/comissoes.json?_='+Date.now(), {cache:'no-store'});
+    if(r.ok){ COMISSOES_CFG = await r.json();
+      if(typeof data !== 'undefined' && data && data.auditoria_cancelados){ try{ renderAuditoria(data); }catch(e){} }
+    }
+  }catch(e){ console.warn('comissoes.json indisponível', e); }
+}
+loadComissoes();
 
 // ============= MÍDIAS SOCIAIS =============
 let MID = null;
