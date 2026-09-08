@@ -3155,6 +3155,7 @@ function renderMidias(){
       <div class="categ-tile"><div class="n">Instagram</div><div class="v" style="color:#22c55e">✅ básico</div><div class="d">@${MID.instagram.handle} · ${MID.instagram.followers.toLocaleString('pt-BR')} seguidores · ${MID.instagram.posts_total} posts</div></div>
       <div class="categ-tile"><div class="n">Facebook Page</div><div class="v" style="color:${MID.facebook_page&&MID.facebook_page.conectado?'#22c55e':'#f59e0b'}">${MID.facebook_page&&MID.facebook_page.conectado?'✅ ativo':'⏳ pendente'}</div><div class="d">${MID.facebook_page?MID.facebook_page.nome:'Aguardando auth'}</div></div>
       <div class="categ-tile"><div class="n">Google Ads</div><div class="v" style="color:${MID.google_ads.conectado?'#22c55e':'#f59e0b'}">${MID.google_ads.conectado?'✅ ativo':'⏳ pendente'}</div><div class="d">${MID.google_ads.mensagem||''}</div></div>
+      <div class="categ-tile"><div class="n">Google Meu Negócio</div><div class="v" style="color:${MID.google_business&&MID.google_business.conectado?'#22c55e':'#f59e0b'}">${MID.google_business&&MID.google_business.conectado?'✅ ativo':'⏳ pendente'}</div><div class="d">${MID.google_business?'⭐ '+MID.google_business.rating.estrelas_media+' · '+MID.google_business.rating.reviews_total+' reviews':'Aguardando auth'}</div></div>
       <div class="categ-tile"><div class="n">HubSpot CRM</div><div class="v" style="color:#22c55e">✅ leitura</div><div class="d">Portal ${MID.hubspot.portal_id} · ${MID.hubspot.contatos} contatos</div></div>
       <div class="categ-tile"><div class="n">WhatsApp API</div><div class="v" style="color:${MID.whatsapp_cloud_api.conectado?'#22c55e':'#ef4444'}">${MID.whatsapp_cloud_api.conectado?'✅ ativo':'🚫 bloqueado'}</div><div class="d">${MID.whatsapp_cloud_api.mensagem||''}</div></div>
     </div></section>`;
@@ -3669,6 +3670,78 @@ function renderMidias(){
       ${fbp.insight?`<div style="margin-top:12px;padding:10px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2)"><strong>💡 Insight:</strong> ${fbp.insight}</div>`:''}
     </section>`;
     igBox.insertAdjacentHTML('afterend', fbHTML);
+  }
+
+  // Google Meu Negócio — remove card antigo antes de renderizar de novo
+  document.querySelectorAll('.gmb-card').forEach(e => e.remove());
+  if(MID.google_business && MID.google_business.conectado){
+    const gmb = MID.google_business;
+    const k = gmb.kpis_30d || {};
+    const sd = gmb.serie_diaria_30d || [];
+    // Últimos 7 dias vs 7 anteriores para delta
+    const sdOrd = sd.slice().sort((a,b)=>a.data.localeCompare(b.data));
+    const ult7 = sdOrd.slice(-7);
+    const ant7 = sdOrd.slice(-14,-7);
+    const sum = (arr,f) => arr.reduce((a,x)=>a+(x[f]||0),0);
+    const ult7views = sum(ult7,'views_total'), ant7views = sum(ant7,'views_total');
+    const deltaViews = ant7views > 0 ? ((ult7views/ant7views-1)*100).toFixed(0) : '—';
+    const ult7phone = sum(ult7,'actions_phone'), ant7phone = sum(ant7,'actions_phone');
+    const deltaPhone = ant7phone > 0 ? ((ult7phone/ant7phone-1)*100).toFixed(0) : '—';
+    // Últimas reviews (3 mais recentes)
+    const revsRec = (gmb.ultimas_reviews||[]).slice(0,3);
+    const starStr = n => '★'.repeat(n) + '☆'.repeat(5-n);
+    const revColor = n => n>=4?'#22c55e':n>=3?'#f59e0b':'#ef4444';
+    // Insight simples
+    const rankColor = k.taxa_conversao_pct >= 10 ? '#22c55e' : k.taxa_conversao_pct >= 6 ? '#3b82f6' : '#f59e0b';
+    const gmbHTML = `<section class="card gmb-card" style="border-left:4px solid #4285F4;margin-top:12px">
+      <h2>📍 Google Meu Negócio · ${gmb.nome.split(' - ')[0]}</h2>
+      <div class="cap">Descoberta orgânica no Google Search e Google Maps · dados 30 dias · ${gmb.nota_atraso_dados}</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px">
+          <div style="color:var(--ink-3);font-size:10.5px">VIEWS TOTAIS 30D</div>
+          <div style="font-weight:700;font-size:22px">${(k.views_total||0).toLocaleString('pt-BR')}</div>
+          <div style="color:var(--ink-3);font-size:10.5px">${(k.views_maps||0).toLocaleString('pt-BR')} Maps · ${(k.views_search||0).toLocaleString('pt-BR')} Search</div>
+        </div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px">
+          <div style="color:var(--ink-3);font-size:10.5px">📞 LIGAÇÕES 30D</div>
+          <div style="font-weight:700;font-size:22px">${k.actions_phone||0}</div>
+          <div style="color:${deltaPhone>=0?'#22c55e':'#ef4444'};font-size:10.5px">últ. 7d: ${ult7phone} · ${deltaPhone>0?'+':''}${deltaPhone}% vs 7 dias antes</div>
+        </div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px">
+          <div style="color:var(--ink-3);font-size:10.5px">📍 PEDIDOS DE ROTA 30D</div>
+          <div style="font-weight:700;font-size:22px">${k.actions_directions||0}</div>
+          <div style="color:var(--ink-3);font-size:10.5px">intenção alta de vinda física</div>
+        </div>
+        <div style="background:rgba(66,133,244,.08);border-radius:8px;padding:12px;border-left:3px solid #4285F4">
+          <div style="color:#4285F4;font-size:10.5px;font-weight:700;text-transform:uppercase">Taxa conversão</div>
+          <div style="font-weight:700;font-size:22px;color:${rankColor}">${k.taxa_conversao_pct}%</div>
+          <div style="color:var(--ink-3);font-size:10.5px">${k.actions_total} ações ÷ ${k.views_total} views</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:14px;margin-top:14px">
+        <div style="background:var(--surface-2);border-radius:8px;padding:14px">
+          <div style="color:var(--ink-3);font-size:10.5px;text-transform:uppercase">Rating vitalício</div>
+          <div style="font-weight:700;font-size:32px;color:#FBBC04">⭐ ${gmb.rating.estrelas_media}</div>
+          <div style="color:var(--ink-3);font-size:11.5px">${gmb.rating.reviews_total} avaliações · top 5% de salões SP</div>
+        </div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:14px">
+          <div style="color:var(--ink-3);font-size:10.5px;text-transform:uppercase;margin-bottom:8px">Últimas avaliações</div>
+          ${revsRec.map(r=>`<div style="margin-bottom:8px;padding:8px;background:var(--surface);border-radius:6px;border-left:2px solid ${revColor(r.estrelas)}">
+            <div style="display:flex;gap:8px;font-size:11.5px">
+              <span style="color:${revColor(r.estrelas)};font-weight:700">${starStr(r.estrelas)}</span>
+              <span style="color:var(--ink-2);font-weight:600">${r.nome}</span>
+              <span style="color:var(--ink-3);margin-left:auto">${r.data.split('-').reverse().slice(0,2).join('/')}</span>
+              ${r.respondida?'<span style="color:#22c55e;font-size:10px">✓ respondida</span>':'<span style="color:#ef4444;font-size:10px">⚠ pendente</span>'}
+            </div>
+            ${r.comment?`<div style="font-size:11px;color:var(--ink-3);margin-top:4px;font-style:italic">"${r.comment.slice(0,120)}${r.comment.length>120?'...':''}"</div>`:''}
+          </div>`).join('')}
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:10px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2)">
+        <strong>💡 Insight:</strong> ${k.actions_phone > k.actions_directions ? `Cliente prefere ligar antes de ir (${k.actions_phone} ligações vs ${k.actions_directions} rotas). Recepção deve estar preparada pra atender bem cada ligação — é o momento de conversão.` : `Muito mais pedidos de rota (${k.actions_directions}) do que ligações (${k.actions_phone}) — as pessoas descobrem e já vão. Coloque uma placa/comunicação bonita na entrada, é o que converte.`} A taxa de conversão views→ações de <strong>${k.taxa_conversao_pct}%</strong> ${k.taxa_conversao_pct >= 8 ? 'está saudável (bench salão: 6-10%).' : 'está abaixo do benchmark (6-10% pra salão). Perfil pode ganhar fotos/posts pra ativar mais cliques.'}
+      </div>
+    </section>`;
+    igBox.insertAdjacentHTML('afterend', gmbHTML);
   }
 
   // Direcionamentos estratégicos (destaque)
