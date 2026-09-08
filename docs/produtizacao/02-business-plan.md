@@ -9,6 +9,13 @@ tags: [fast, business-plan, saas, franquia, precificacao]
 
 # FAST Insights — Business Plan v1
 
+> ⚠️ **LEIA ANTES: [[05-analise-contratual]].** Depois da leitura do contrato de franquia
+> e dos termos da Trinks (08/09/2026), **duas premissas deste plano mudaram**: a
+> titularidade do produto é disputável (cláusula 13.13 cede à franqueadora tudo que o
+> franqueado criar), e a parceria com a Trinks passou de desejável a pré-requisito. O
+> modelo comercial abaixo foi corrigido; o cronograma da seção 10 foi refeito. Os números
+> de mercado e de custo seguem válidos — e dois deles ficaram **melhores**.
+
 > **Como ler este documento:** todo número marcado como *estimativa* é um modelo, não
 > um fato. A seção 9 lista os 8 números que precisam ser confirmados antes de você
 > apresentar isso para alguém. Os números de rede (unidades, faturamento) vêm de
@@ -60,6 +67,9 @@ Esse número é a base da precificação: um plano de R$ 299/mês custa **0,3% d
 faturamento da loja**. É a faixa em que a decisão de compra deixa de ser financeira e
 passa a ser de conveniência — que é exatamente onde você quer estar.
 
+O contrato de franquia (cláusula 7.6) **obriga toda a rede a usar o Trinks**. O mercado
+endereçável não é uma fatia da rede — é a rede inteira.
+
 - **Mercado endereçável hoje:** 431 lojas × R$ 299 × 12 = **R$ 1,55 mi/ano**
 - **Com o plano de expansão (600 lojas):** **R$ 2,15 mi/ano**
 - **Ecossistema Fast completo, incluindo Spa:** o mesmo motor serve, com outras
@@ -79,13 +89,14 @@ passa a ser de conveniência — que é exatamente onde você quer estar.
 
 - A **franqueadora** assina o *Painel da Rede* (ranking, benchmark, alertas de loja em
   risco) — R$ 8 a 15 mil/mês. Ela ganha visão que hoje não tem e paga por isso.
-- O **franqueado** assina o plano da loja, **cobrado no mesmo boleto do royalty**. Esse
-  detalhe é o mais valioso do modelo inteiro: elimina inadimplência, elimina cobrança
-  individual e reduz o churn para perto de zero, porque cancelar exige um ato
-  deliberado com a franqueadora.
+- O **franqueado** assina o plano da loja como **Taxa de Software paga diretamente ao
+  Fornecedor Homologado** — o trilho que a cláusula 7.6 do contrato de franquia já criou
+  para o Trinks e o Sults. Não é uma estrutura a inventar: é a que a rede já usa, com
+  cobrança direta da loja, sem depender do faturamento da franqueadora.
 
-A franqueadora vira seu canal de distribuição. Você não vende 600 vezes: você vende
-uma vez e é homologado.
+A franqueadora vira seu canal de distribuição. Você não vende 600 vezes: você é
+homologado uma vez. **Mas a homologação deixou de ser a estratégia comercial mais
+esperta e passou a ser a única porta legítima** — ver [[05-analise-contratual]], seção 3.
 
 ## 5. Preços
 
@@ -168,6 +179,7 @@ Ano 2, no cenário-base com 600 lojas e 60% de adoção: **R$ 1,5 mi de receita 
 
 | Risco | Impacto | O que fazer |
 |---|---|---|
+| **A franqueadora reivindica a titularidade (cl. 13.13)** | Fatal | O risco nº 1, e ele já existe. Negociar por escrito antes de expandir ou demonstrar em detalhe — ver [[05-analise-contratual]] |
 | **A franqueadora decide fazer internamente** | Fatal | Chegar antes com produto pronto e rodando. Propor licenciamento em vez de venda: ela leva a marca, você mantém o motor |
 | **Dependência da Trinks** | Alto | Fechar parceria formal. Desenhar a camada de ingestão trocável desde a Fase 1 |
 | **Cota/custo de API inviabiliza** | Alto | Item nº 1 da validação. Ingestão incremental reduz o consumo em ~70% |
@@ -180,11 +192,16 @@ Ano 2, no cenário-base com 600 lojas e 60% de adoção: **R$ 1,5 mi de receita 
 
 Nenhuma decisão grande antes destes:
 
-1. **Cota da API Trinks é por estabelecimento ou por conta?** Muda o custo unitário.
-2. **A Trinks tem programa de parceria/integrador?** Muda a relação inteira.
-3. **Quantas das 431 lojas usam o Trinks?** Se a rede não é padronizada, o mercado é menor.
-4. **A franqueadora já cobra taxa de tecnologia?** Se sim, entrar nela é o caminho mais curto.
-5. **Existe projeto interno de BI na franqueadora?** Se existe, o jogo é parceria, não venda.
+1. **Cota da API Trinks é por estabelecimento ou por conta?** Muda o custo unitário. ⬜ em aberto
+2. **A Trinks tem programa de parceria/integrador?** ✅ **Respondido e agravado:** os Termos
+   de Uso proíbem uso comercial e obra derivada sem contrato específico escrito. Deixou de
+   ser oportunidade e virou pré-requisito.
+3. **Quantas das 431 lojas usam o Trinks?** ✅ **Respondido: 100%** — a cláusula 7.6 torna
+   o Trinks obrigatório em toda a rede.
+4. **A franqueadora já cobra taxa de tecnologia?** ✅ **Respondido: sim** — Taxa de Software
+   (7.6), paga diretamente ao fornecedor homologado. O trilho de cobrança já existe.
+5. **Existe projeto interno de BI na franqueadora?** ⬜ em aberto — se existe, o jogo é
+   parceria, não venda.
 6. **Preço real da mensagem de WhatsApp** na tabela Meta Brasil vigente.
 7. **Quanto o franqueado médio já gasta** com ferramentas de gestão hoje.
 8. **Faturamento médio da loja madura** (o de R$ 97 mil é média com lojas novas puxando para baixo).
@@ -193,10 +210,15 @@ Nenhuma decisão grande antes destes:
 
 | Semana | O quê | Resultado esperado |
 |---|---|---|
-| 1 | Fechar o painel atrás de login. Ligar para a Trinks (itens 1 e 2) | Bloqueador de LGPD resolvido |
-| 2 | Conversar com 5 franqueados: mostrar o painel e ouvir | Validação de que a dor é da rede, não só sua |
-| 3 | Configurar 2 lojas piloto com dados reais | Prova de que roda fora do Limão |
-| 4 | Apresentar para a franqueadora — ver [[03-conversa-com-a-franqueadora]] | Uma decisão: piloto oficial, sim ou não |
+| 1 | **Fechar o painel atrás de login. Suspender o sync do HubSpot.** Ligar para a Trinks (item 1) | As três exposições da seção 6 de [[05-analise-contratual]] contidas |
+| 2 | **Uma hora com advogado de franquias**, com as cinco perguntas da seção 9 de [[05-analise-contratual]] | Saber se 13.13 alcança o software — a resposta define tudo |
+| 3 | Preparar a conversa: proposta de Fornecedor Homologado + NDA ou memorando prévio | Poder demonstrar sem entregar o ativo |
+| 4 | Apresentar para a franqueadora — ver [[03-conversa-com-a-franqueadora]] | Uma decisão: negociar homologação, sim ou não |
+
+**O que saiu do plano:** configurar lojas piloto. Cada loja adicional antes da
+autorização escrita multiplica a exposição às cláusulas 21.1 e 19.3.3 (ix) — R$ 200 mil
+de multa cada, cumuláveis. O piloto continua sendo o pedido certo; ele só passou para
+depois do papel assinado, não antes.
 
 ---
 

@@ -9,6 +9,11 @@ tags: [fast, comercial, franqueadora]
 
 # Roteiro da conversa com a franqueadora
 
+> ⚠️ **Não tenha esta conversa antes de ler [[05-analise-contratual]] e de falar com um
+> advogado.** A cláusula 13.13 do seu contrato cede à franqueadora a propriedade de
+> qualquer inovação resultante da operação da unidade. Uma demonstração detalhada sem
+> nada assinado pode entregar o ativo de graça. O roteiro abaixo já está ajustado a isso.
+
 ## O enquadramento
 
 Não chegue como fornecedor vendendo software. Chegue como **franqueado que resolveu um
@@ -33,15 +38,24 @@ ranking, benchmark de ticket e ocupação, alerta automático quando uma loja ca
 desvios abaixo do padrão dela. A franqueadora deixa de saber o que foi reportado e
 passa a saber o que aconteceu.
 
-**4. O pedido (2 min).** Não peça contrato. Peça **piloto de 5 lojas por 60 dias, sem
-custo**, e a apresentação para os franqueados que toparem. É um pedido pequeno demais
-para virar "não".
+**4. O pedido (2 min).** Não peça contrato e não peça piloto ainda. Peça **um memorando
+de entendimento para avaliar a homologação** — um papel curto dizendo que vocês vão
+conversar sobre o produto, que ele existe e é seu enquanto a conversa corre, e que o
+piloto vem depois. É um pedido pequeno demais para virar "não", e é ele que protege o
+ativo enquanto a negociação anda.
 
-**5. O modelo, se perguntarem (3 min).** Plano da loja de R$ 199 a R$ 549, cobrado no
-boleto do royalty. Painel da Rede à parte. Ponto de equilíbrio em 21% da rede — não é
-um projeto que precisa de todo mundo para funcionar.
+**5. O modelo, se perguntarem (3 min).** Fornecedor Homologado, como o Trinks e o Sults
+já são: plano da loja de R$ 199 a R$ 549 cobrado como Taxa de Software, no trilho que a
+cláusula 7.6 já criou. Painel da Rede à parte. Ponto de equilíbrio em 21% da rede — não
+é um projeto que precisa de todo mundo para funcionar.
 
 ## As quatro objeções
+
+**"Pela cláusula 13.13, isso já é nosso."**
+> "Pode ser — e é justamente por isso que eu vim trazer em vez de sair usando. O que eu
+> tenho para oferecer não é só o código, é o tempo: isso levou meses de operação real
+> para calibrar e eu sigo sendo o único que entende as regras. Vamos combinar uma
+> contrapartida e vocês ficam com o produto **e** com quem sabe operá-lo."
 
 **"Vamos desenvolver internamente."**
 > "Faz sentido. Leva de 6 a 9 meses e uma equipe. Enquanto isso, o piloto roda e vocês
@@ -67,7 +81,7 @@ um projeto que precisa de todo mundo para funcionar.
 
 - [ ] Painel do Limão aberto e **com login** (não mostre a URL pública)
 - [ ] Uma página com: ponto de equilíbrio, preço, o que a franqueadora recebe
-- [ ] A proposta de piloto de 60 dias por escrito, em uma página
+- [ ] O memorando de entendimento, em uma página, já redigido pelo advogado
 - [ ] Os 8 números da seção 9 do [[02-business-plan]] já respondidos, se der tempo
 
 ## O que NÃO levar
@@ -75,3 +89,5 @@ um projeto que precisa de todo mundo para funcionar.
 - Arquitetura, banco de dados, linguagem de programação
 - Projeção de receita de 5 anos (soa a vendedor)
 - Pedido de exclusividade na primeira conversa
+- **O código, o repositório, ou uma demonstração técnica detalhada** — mostre o painel
+  funcionando, não como ele foi feito

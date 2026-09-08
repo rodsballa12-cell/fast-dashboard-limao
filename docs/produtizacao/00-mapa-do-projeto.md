@@ -20,6 +20,7 @@ tags: [fast, produtizacao, saas, franquia, trinks]
 | 02 | [[02-business-plan]] | Modelo de negócio, preço, custos, cenários, riscos | Você + franqueadora + eventual sócio/investidor |
 | 03 | [[03-conversa-com-a-franqueadora]] | O roteiro e os números da reunião | Você |
 | 04 | [[04-metodo-de-prompts]] | Como me pedir isso com menos idas e voltas | Você |
+| 05 | [[05-analise-contratual]] | **Leia primeiro.** O que o contrato FAST e os termos da Trinks permitem, proíbem e exigem | Você + seu advogado |
 
 ## Versão publicada (para compartilhar)
 
@@ -28,6 +29,11 @@ O business plan também está publicado como página web, pronta para mandar por
 (privada por padrão — só abre para quem você compartilhar pelo menu da página).
 
 ## Resumo em cinco linhas
+
+> **Atualização de 08/09/2026, após a leitura do contrato:** a cláusula 13.13 cede à
+> franqueadora a propriedade de toda "invenção, aperfeiçoamento ou inovação" resultante
+> da operação da unidade. A titularidade do painel é disputável, e a primeira ação do
+> projeto passou a ser jurídica, não técnica. Ver [[05-analise-contratual]].
 
 1. O motor de análise **já é multi-loja** — a identidade da loja vem de variável de
    ambiente, não está escrita no código. Isso encurta muito o caminho.
