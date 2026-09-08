@@ -432,12 +432,12 @@
         <span id="midias-atualizado" style="margin-left:auto;font-size:11px;color:var(--ink-3);align-self:center"></span>
       </div>
       <div id="midias-kpis"></div>
+      <div id="midias-geo"></div>
+      <div id="midias-demo"></div>
       <div id="midias-crossings"></div>
       <div id="midias-direcionamentos"></div>
       <div id="midias-campanhas"></div>
       <div id="midias-trend"></div>
-      <div id="midias-geo"></div>
-      <div id="midias-demo"></div>
       <div id="midias-placement"></div>
       <div id="midias-funil"></div>
       <div id="midias-recomendacoes"></div>
@@ -4540,7 +4540,17 @@ function renderMidias(){
   if(focoGeo){
     const bairrosOrdenados = (focoGeo.bairros_no_raio_5km || []).slice().sort((a,b)=>b.mulheres_25_65_estimadas-a.mulheres_25_65_estimadas);
     const priColor = p => ({core:'#22c55e','alta':'#3b82f6','media':'#f59e0b','baixa (competitivo)':'#ef4444'})[p]||'var(--muted)';
-    geoBox.innerHTML = `<section class="card"><h2>🌍 Foco geográfico · Limão-SP</h2>
+    // Info de alcance orgânico do Google Meu Negócio (se conectado)
+    const gmbAlcance = MID.google_business && MID.google_business.kpis_30d ? `
+      <div style="margin-top:14px;padding:12px;background:rgba(66,133,244,.06);border-left:3px solid #4285F4;border-radius:6px;font-size:12px;color:var(--ink-2);line-height:1.5">
+        <strong style="color:#4285F4">📍 Alcance orgânico complementar (Google Meu Negócio):</strong>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">
+          <div><strong>${nfmt(MID.google_business.kpis_30d.views_maps)}</strong> views Google Maps 30d<br><span style="color:var(--ink-3);font-size:10.5px">busca geolocalizada — quem procura salão perto</span></div>
+          <div><strong>${nfmt(MID.google_business.kpis_30d.views_search)}</strong> views Google Search 30d<br><span style="color:var(--ink-3);font-size:10.5px">busca por marca ou keyword</span></div>
+          <div><strong>${nfmt(MID.google_business.kpis_30d.actions_directions)}</strong> pediram rota<br><span style="color:var(--ink-3);font-size:10.5px">intenção alta de vinda — bairros próximos</span></div>
+        </div>
+      </div>` : '';
+    geoBox.innerHTML = `<section class="card" style="border-left:4px solid #10b981"><h2>🌍 Foco geográfico · Limão-SP</h2>
       <div class="cap">📍 ${focoGeo.endereco_loja} · raio atual: <strong>${focoGeo.raio_atual_km}km</strong> (Msg) · <strong>${focoGeo.raio_atual_ad_sets.vagas}km</strong> (Vagas)</div>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px">
@@ -4593,6 +4603,7 @@ function renderMidias(){
       <div style="margin-top:14px;padding:12px;background:rgba(168,85,247,.08);border-left:4px solid #a855f7;border-radius:6px;font-size:12px">
         <strong>💡 Recomendação do gestor:</strong> ${focoGeo.recomendacao_gestor}
       </div>
+      ${gmbAlcance}
     </section>`;
   } else { geoBox.innerHTML=''; }
 
@@ -4602,7 +4613,7 @@ function renderMidias(){
   if(demo.length){
     const stColor = s => ({escalar:'#22c55e', top:'#22c55e', manter:'#3b82f6', cortar:'#ef4444', otimizar:'#f59e0b'})[s]||'var(--muted)';
     const stLabel = s => ({escalar:'📈 escalar',top:'⭐ top',manter:'✅ manter',cortar:'✂️ cortar',otimizar:'🔧 otimizar'})[s]||s;
-    demoBox.innerHTML = `<section class="card"><h2>👥 Demografia · ${janelaTxt(qDemo)}${seloJanela(qDemo)}</h2>
+    demoBox.innerHTML = `<section class="card" style="border-left:4px solid #ec4899"><h2>👥 Demografia · ${janelaTxt(qDemo)}${seloJanela(qDemo)}</h2>
       <div class="cap">Idade × gênero × performance. Base pra reajustar targeting.</div>
       <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
       <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
