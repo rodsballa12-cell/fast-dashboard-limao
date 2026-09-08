@@ -12,7 +12,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install deps
-        run: pip install requests
+        run: pip install requests python-dotenv
       - name: Probe endpoints comissões
         env:
           TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
