@@ -1,13 +1,19 @@
 {
-  "gerado_em": "2026-09-08T03:29:56-03:00",
+  "gerado_em": "2026-09-08T11:56:14-03:00",
   "hoje": "2026-09-08",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 30,
   "dias_atipicos": {
+    "2026-09-08": {
+      "ratio": 0.32,
+      "tipo": "baixo",
+      "mediana_dow": 415.0,
+      "caixa": 134.0
+    },
     "2026-09-01": {
-      "ratio": 2.07,
+      "ratio": 2.13,
       "tipo": "alto",
-      "mediana_dow": 428.5,
+      "mediana_dow": 415.0,
       "caixa": 885.0
     },
     "2026-08-10": {
@@ -32,21 +38,21 @@
   "sazonalidade": {
     "peso_dow": {
       "Seg": 7.0,
-      "Ter": 4.3,
+      "Ter": 3.9,
       "Qua": 8.2,
-      "Qui": 14.1,
-      "Sex": 18.3,
-      "Sáb": 40.5,
+      "Qui": 14.2,
+      "Sex": 18.4,
+      "Sáb": 40.6,
       "Dom": 7.7
     },
     "meta_dia_por_dow": {
-      "Seg": 1029.33,
-      "Ter": 588.29,
-      "Qua": 1123.93,
-      "Qui": 2069.92,
-      "Sex": 2689.49,
-      "Sáb": 5941.35,
-      "Dom": 1129.64
+      "Seg": 1034.06,
+      "Ter": 539.41,
+      "Qua": 1129.1,
+      "Qui": 2079.45,
+      "Sex": 2701.88,
+      "Sáb": 5968.71,
+      "Dom": 1130.26
     },
     "n_dias_dow_mes": {
       "Seg": 4,
@@ -77,35 +83,35 @@
       },
       {
         "h": 10,
-        "pct_acum": 5.7
+        "pct_acum": 6.0
       },
       {
         "h": 11,
-        "pct_acum": 14.5
+        "pct_acum": 14.7
       },
       {
         "h": 12,
-        "pct_acum": 22.3
+        "pct_acum": 22.5
       },
       {
         "h": 13,
-        "pct_acum": 28.8
+        "pct_acum": 28.9
       },
       {
         "h": 14,
-        "pct_acum": 36.8
+        "pct_acum": 36.9
       },
       {
         "h": 15,
-        "pct_acum": 44.8
+        "pct_acum": 44.9
       },
       {
         "h": 16,
-        "pct_acum": 52.1
+        "pct_acum": 52.2
       },
       {
         "h": 17,
-        "pct_acum": 63.7
+        "pct_acum": 63.8
       },
       {
         "h": 18,
@@ -124,7 +130,7 @@
         "pct_acum": 99.8
       }
     ],
-    "amostra_dias_ano": 41,
+    "amostra_dias_ano": 42,
     "data_inicio_domingo": "2026-08-30",
     "domingo_ativo_no_mes": true,
     "peso_sem_do_mes": {
@@ -138,7 +144,7 @@
       {
         "sem_do_mes": 1,
         "n_dias": 7,
-        "meta_total": 12404.68,
+        "meta_total": 12411.47,
         "peso_pct": 18.0,
         "datas": [
           "2026-09-01",
@@ -153,7 +159,7 @@
       {
         "sem_do_mes": 2,
         "n_dias": 7,
-        "meta_total": 10856.81,
+        "meta_total": 10862.75,
         "peso_pct": 15.8,
         "datas": [
           "2026-09-08",
@@ -168,7 +174,7 @@
       {
         "sem_do_mes": 3,
         "n_dias": 7,
-        "meta_total": 11278.84,
+        "meta_total": 11285.02,
         "peso_pct": 16.4,
         "datas": [
           "2026-09-15",
@@ -183,7 +189,7 @@
       {
         "sem_do_mes": 4,
         "n_dias": 7,
-        "meta_total": 24200.93,
+        "meta_total": 24214.16,
         "peso_pct": 35.1,
         "datas": [
           "2026-09-22",
@@ -198,7 +204,7 @@
       {
         "sem_do_mes": 5,
         "n_dias": 2,
-        "meta_total": 1258.72,
+        "meta_total": 1226.59,
         "peso_pct": 14.7,
         "datas": [
           "2026-09-29",
@@ -223,43 +229,43 @@
     },
     "fonte_mes_ano": "uniforme (aguarda ≥1 ano fechado · framework pronto pra 2027)",
     "meta_por_data": {
-      "2026-09-01": 529.83,
-      "2026-09-02": 1012.24,
-      "2026-09-03": 1748.46,
-      "2026-09-04": 2271.81,
-      "2026-09-05": 5018.66,
-      "2026-09-06": 954.21,
-      "2026-09-07": 869.47,
-      "2026-09-08": 463.72,
-      "2026-09-09": 885.94,
-      "2026-09-10": 1530.28,
-      "2026-09-11": 1988.33,
-      "2026-09-12": 4392.42,
-      "2026-09-13": 835.14,
-      "2026-09-14": 760.98,
-      "2026-09-15": 481.75,
-      "2026-09-16": 920.37,
-      "2026-09-17": 1589.77,
-      "2026-09-18": 2065.62,
-      "2026-09-19": 4563.17,
-      "2026-09-20": 867.6,
-      "2026-09-21": 790.56,
-      "2026-09-22": 1033.68,
-      "2026-09-23": 1974.84,
-      "2026-09-24": 3411.16,
-      "2026-09-25": 4432.19,
-      "2026-09-26": 9791.16,
-      "2026-09-27": 1861.61,
-      "2026-09-28": 1696.29,
-      "2026-09-29": 432.48,
-      "2026-09-30": 826.24
+      "2026-09-01": 485.81,
+      "2026-09-02": 1016.91,
+      "2026-09-03": 1756.51,
+      "2026-09-04": 2282.27,
+      "2026-09-05": 5041.77,
+      "2026-09-06": 954.73,
+      "2026-09-07": 873.47,
+      "2026-09-08": 425.19,
+      "2026-09-09": 890.01,
+      "2026-09-10": 1537.33,
+      "2026-09-11": 1997.49,
+      "2026-09-12": 4412.65,
+      "2026-09-13": 835.6,
+      "2026-09-14": 764.48,
+      "2026-09-15": 441.72,
+      "2026-09-16": 924.61,
+      "2026-09-17": 1597.09,
+      "2026-09-18": 2075.14,
+      "2026-09-19": 4584.18,
+      "2026-09-20": 868.08,
+      "2026-09-21": 794.2,
+      "2026-09-22": 947.79,
+      "2026-09-23": 1983.93,
+      "2026-09-24": 3426.87,
+      "2026-09-25": 4452.6,
+      "2026-09-26": 9836.24,
+      "2026-09-27": 1862.63,
+      "2026-09-28": 1704.1,
+      "2026-09-29": 396.54,
+      "2026-09-30": 830.05
     }
   },
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 2105,
-    "saldoRestante": 7895
+    "totalUtilizado": 2112,
+    "saldoRestante": 7888
   },
   "metas_franqueadora": {
     "recepcionistas": 2,
@@ -598,9 +604,9 @@
         "cartao": {
           "stone_recebido": 0.0,
           "stone_n": 0,
-          "trinks_vendido": 0.0,
-          "trinks_n": 0,
-          "a_receber_d30": 0.0
+          "trinks_vendido": 34.0,
+          "trinks_n": 1,
+          "a_receber_d30": 32.81
         },
         "dinheiro": {
           "total": 0.0,
@@ -609,7 +615,7 @@
         },
         "resumo": {
           "recebido_total": 0.0,
-          "a_receber": 0.0
+          "a_receber": 32.81
         },
         "periodo_ini": "2026-09-08",
         "periodo_fim": "2026-09-08"
@@ -630,9 +636,9 @@
         "cartao": {
           "stone_recebido": 0.0,
           "stone_n": 0,
-          "trinks_vendido": 0.0,
-          "trinks_n": 0,
-          "a_receber_d30": 0.0
+          "trinks_vendido": 34.0,
+          "trinks_n": 1,
+          "a_receber_d30": 32.81
         },
         "dinheiro": {
           "total": 0.0,
@@ -641,7 +647,7 @@
         },
         "resumo": {
           "recebido_total": 0.0,
-          "a_receber": 0.0
+          "a_receber": 32.81
         },
         "periodo_ini": "2026-09-07",
         "periodo_fim": "2026-09-13"
@@ -708,9 +714,9 @@
         "cartao": {
           "stone_recebido": 2044.35,
           "stone_n": 11,
-          "trinks_vendido": 6740.3,
-          "trinks_n": 57,
-          "a_receber_d30": 4460.04
+          "trinks_vendido": 6774.3,
+          "trinks_n": 58,
+          "a_receber_d30": 4492.85
         },
         "dinheiro": {
           "total": 494.0,
@@ -755,7 +761,7 @@
         },
         "resumo": {
           "recebido_total": 3322.26,
-          "a_receber": 4460.04
+          "a_receber": 4492.85
         },
         "periodo_ini": "2026-09-01",
         "periodo_fim": "2026-09-30"
@@ -827,9 +833,9 @@
         "cartao": {
           "stone_recebido": 15542.68,
           "stone_n": 51,
-          "trinks_vendido": 42477.4,
-          "trinks_n": 358,
-          "a_receber_d30": 25448.01
+          "trinks_vendido": 42511.4,
+          "trinks_n": 359,
+          "a_receber_d30": 25480.82
         },
         "dinheiro": {
           "total": 2235.0,
@@ -969,7 +975,7 @@
         },
         "resumo": {
           "recebido_total": 28378.25,
-          "a_receber": 25448.01
+          "a_receber": 25480.82
         },
         "periodo_ini": "2026-01-01",
         "periodo_fim": "2026-12-31"
@@ -1200,19 +1206,19 @@
         "dias_medio_recebimento": 1
       },
       "credito": {
-        "bruto": 4167.15,
-        "n": 33,
+        "bruto": 4201.15,
+        "n": 34,
         "mdr_pct": 2.08,
-        "liq_espera": 4080.47,
-        "liq_antecipar": 4012.74,
-        "custo_antecipacao": 67.74,
+        "liq_espera": 4113.77,
+        "liq_antecipar": 4045.48,
+        "custo_antecipacao": 68.29,
         "dias_medio_recebimento": 30
       },
       "total": {
-        "bruto": 6740.3,
-        "liq_espera": 6616.06,
-        "liq_antecipar": 6546.92,
-        "custo_antecipacao": 69.14,
+        "bruto": 6774.3,
+        "liq_espera": 6649.35,
+        "liq_antecipar": 6579.66,
+        "custo_antecipacao": 69.69,
         "custo_pct": 1.05
       },
       "taxa_antecipacao_mensal_pct": 1.66,
@@ -1302,9 +1308,15 @@
     },
     "gap_trinks_stone": {
       "ultima_data_stone": "2026-09-04T17:01:00",
-      "vendas_trinks_apos_n": 37,
-      "vendas_trinks_apos_v": 4820.3,
+      "vendas_trinks_apos_n": 38,
+      "vendas_trinks_apos_v": 4854.3,
       "vendas_apos_lista": [
+        {
+          "data": "2026-09-08T10:37",
+          "valor": 34.0,
+          "meio": "Visa",
+          "cliente": "Mayne Lais Temarck"
+        },
         {
           "data": "2026-09-06T14:44",
           "valor": 79.0,
@@ -1528,7 +1540,7 @@
           "cliente": "Carilone Da Silvia Moreira "
         }
       ],
-      "horas_desatualizado": 82.5
+      "horas_desatualizado": 90.9
     }
   },
   "auditoria_cancelados": {
@@ -1585,7 +1597,7 @@
         "v": 159.0
       },
       {
-        "nome": "Eunice Santos Nascimento ",
+        "nome": "Eunice Santos Nascimento",
         "n": 1,
         "v": 83.0
       },
@@ -1703,7 +1715,7 @@
         "id": 526561332,
         "data": "2026-09-04T12:46:00",
         "valor": 83.0,
-        "profissional": "Eunice Santos Nascimento ",
+        "profissional": "Eunice Santos Nascimento",
         "cliente": "Mayara ishimaru",
         "servico": "PÉS E MÃOS",
         "sem_prof": false,
@@ -2902,9 +2914,119 @@
             "receita": 2742.0
           }
         }
+      },
+      "2026-W37": {
+        "periodo_ini": "2026-09-07",
+        "periodo_fim": "2026-09-08",
+        "kpis": {
+          "caixa": 134.0,
+          "receita_serv": 134.0,
+          "atend_fin": 2,
+          "atend_canc": 0,
+          "atend_total": 2,
+          "n_trans": 1,
+          "ticket_trans": 134.0,
+          "cliente_dia": 1,
+          "ticket_medio": 134.0,
+          "taxa_canc": 0.0,
+          "dias_op": 1,
+          "clientes_unicos": 1,
+          "em_atendimento": 0,
+          "n_prof_ativos": 2,
+          "rs_hora_salao": 5.58,
+          "horas_operacao_periodo": 24.0,
+          "utilizacao_agregada_pct": 0.3
+        },
+        "categorias": {
+          "pacotes": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos": {
+            "v": 134.0,
+            "n": 2,
+            "pct": 100.0
+          },
+          "produtos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "fast_retoque": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos_gerais": {
+            "v": 134.0,
+            "n": 2,
+            "pct": 100.0
+          }
+        },
+        "novos_vs_recorr": {
+          "novos": {
+            "clientes": 0,
+            "atend": 0,
+            "receita": 0.0
+          },
+          "recorrentes": {
+            "clientes": 1,
+            "atend": 2,
+            "receita": 134.0
+          }
+        }
       }
     },
     "dias": {
+      "2026-09-08": {
+        "kpis": {
+          "caixa": 134.0,
+          "receita_serv": 134.0,
+          "atend_fin": 2,
+          "atend_canc": 0,
+          "atend_total": 2,
+          "n_trans": 1,
+          "ticket_trans": 134.0,
+          "cliente_dia": 1,
+          "ticket_medio": 134.0,
+          "taxa_canc": 0.0,
+          "dias_op": 1,
+          "clientes_unicos": 1,
+          "em_atendimento": 0,
+          "n_prof_ativos": 2,
+          "rs_hora_salao": 11.17,
+          "horas_operacao_periodo": 12.0,
+          "utilizacao_agregada_pct": 0.7
+        },
+        "categorias": {
+          "pacotes": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos": {
+            "v": 134.0,
+            "n": 2,
+            "pct": 100.0
+          },
+          "produtos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "fast_retoque": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos_gerais": {
+            "v": 134.0,
+            "n": 2,
+            "pct": 100.0
+          }
+        }
+      },
       "2026-09-06": {
         "kpis": {
           "caixa": 866.0,
@@ -4974,48 +5096,48 @@
   "abas": {
     "anual": {
       "kpis": {
-        "caixa": 56555.4,
-        "receita_serv": 52043.1,
-        "atend_fin": 828,
+        "caixa": 56689.4,
+        "receita_serv": 52177.1,
+        "atend_fin": 830,
         "atend_canc": 50,
-        "atend_total": 881,
-        "n_trans": 510,
-        "ticket_trans": 110.89,
-        "cliente_dia": 494,
-        "ticket_medio": 114.48,
+        "atend_total": 883,
+        "n_trans": 511,
+        "ticket_trans": 110.94,
+        "cliente_dia": 495,
+        "ticket_medio": 114.52,
         "taxa_canc": 5.7,
-        "dias_op": 41,
+        "dias_op": 42,
         "clientes_unicos": 362,
         "em_atendimento": 2,
         "n_prof_ativos": 22,
-        "rs_hora_salao": 107.11,
+        "rs_hora_salao": 107.37,
         "horas_operacao_periodo": 528.0,
         "utilizacao_agregada_pct": 5.7,
-        "ticket_meta": 176.31,
-        "ticket_meta_periodo": 159.38,
-        "ticket_atingimento_pct": 64.9,
-        "ticket_gap_por_atend": 61.83,
-        "visitas_projetadas": 1804,
-        "visitas_restantes": 1310,
+        "ticket_meta": 175.94,
+        "ticket_meta_periodo": 159.12,
+        "ticket_atingimento_pct": 65.1,
+        "ticket_gap_por_atend": 61.42,
+        "visitas_projetadas": 1807,
+        "visitas_restantes": 1312,
         "ticket_meta_status": "em_curso",
-        "ticket_meta_deficit_caixa": 230966.7,
+        "ticket_meta_deficit_caixa": 230832.7,
         "ticket_meta_supera_caixa": 0.0
       },
       "meta": {
         "meta": 287522.1,
-        "realizado": 56555.4,
+        "realizado": 56689.4,
         "pct": 19.7,
-        "falta": 230966.7,
+        "falta": 230832.7,
         "dias_realizados": 43,
         "dias_total": 157,
         "dias_restantes": 114,
-        "necessario_dia": 2026.02,
-        "ritmo_dia": 1315.24,
-        "projecao": 206492.97,
-        "projecao_pct": 71.8,
+        "necessario_dia": 2024.85,
+        "ritmo_dia": 1318.36,
+        "projecao": 206982.23,
+        "projecao_pct": 72.0,
         "meta_ate_hoje": 78748.09,
-        "pct_ate_hoje": 71.8,
-        "saldo_ate_hoje": -22192.69
+        "pct_ate_hoje": 72.0,
+        "saldo_ate_hoje": -22058.69
       },
       "categorias": {
         "pacotes": {
@@ -5024,8 +5146,8 @@
           "pct": 11.3
         },
         "servicos": {
-          "v": 52043.1,
-          "n": 828,
+          "v": 52177.1,
+          "n": 830,
           "pct": 92.0
         },
         "produtos": {
@@ -5039,9 +5161,9 @@
           "pct": 4.0
         },
         "servicos_gerais": {
-          "v": 49785.1,
-          "n": 816,
-          "pct": 88.0
+          "v": 49919.1,
+          "n": 818,
+          "pct": 88.1
         }
       },
       "meses": {
@@ -5120,23 +5242,23 @@
           "dias_op": 27
         },
         "2026-09": {
-          "caixa": 9033.3,
-          "receita_serv": 8043.0,
-          "atend_fin": 130,
-          "clientes_unicos": 77,
-          "n_trans": 84,
-          "ticket_trans": 107.54,
-          "taxa_canc": 2.3,
+          "caixa": 9167.3,
+          "receita_serv": 8177.0,
+          "atend_fin": 132,
+          "clientes_unicos": 78,
+          "n_trans": 85,
+          "ticket_trans": 107.85,
+          "taxa_canc": 2.2,
           "categorias": {
             "pacotes": {
               "v": 270.0,
               "n": 1,
-              "pct": 3.0
+              "pct": 2.9
             },
             "servicos": {
-              "v": 8612.0,
-              "n": 137,
-              "pct": 95.3
+              "v": 8746.0,
+              "n": 139,
+              "pct": 95.4
             },
             "produtos": {
               "v": 151.3,
@@ -5146,24 +5268,24 @@
             "fast_retoque": {
               "v": 378.0,
               "n": 2,
-              "pct": 4.2
+              "pct": 4.1
             },
             "servicos_gerais": {
-              "v": 8234.0,
-              "n": 135,
-              "pct": 91.2
+              "v": 8368.0,
+              "n": 137,
+              "pct": 91.3
             }
           },
-          "dias_op": 6
+          "dias_op": 7
         }
       },
       "top_ltv": {
         "total_clientes": 362,
-        "receita_total": 52043.1,
+        "receita_total": 52177.1,
         "uma_vez": 162,
         "duas_mais": 200,
         "pareto20_n": 72,
-        "pareto20_v": 23716.1,
+        "pareto20_v": 23805.1,
         "pareto20_pct": 45.6,
         "top": [
           {
@@ -5251,8 +5373,8 @@
         },
         "recorrentes": {
           "clientes": 200,
-          "atend": 666,
-          "receita": 39904.1
+          "atend": 668,
+          "receita": 40038.1
         }
       },
       "rentabilidade_hora": [
@@ -5426,13 +5548,13 @@
         },
         {
           "nome": "FAST ESCOVA - MODELADA",
-          "n": 64,
-          "v": 6320.1,
+          "n": 65,
+          "v": 6419.1,
           "min_medio": 45,
-          "ticket": 98.75,
+          "ticket": 98.76,
           "rs_hora": 131.67,
-          "horas_total": 48.0,
-          "pct_faturamento": 11.2,
+          "horas_total": 48.8,
+          "pct_faturamento": 11.3,
           "confianca": "alta",
           "tipo": "cadeira"
         },
@@ -5456,7 +5578,7 @@
           "ticket": 35.0,
           "rs_hora": 700.0,
           "horas_total": 0.8,
-          "pct_faturamento": 1.1,
+          "pct_faturamento": 1.0,
           "confianca": "alta",
           "tipo": "addon"
         },
@@ -5504,7 +5626,7 @@
           "ticket": 49.5,
           "rs_hora": 297.0,
           "horas_total": 0.7,
-          "pct_faturamento": 0.4,
+          "pct_faturamento": 0.3,
           "confianca": "media",
           "tipo": "addon"
         },
@@ -5558,57 +5680,57 @@
         },
         {
           "h": 10,
-          "media": 0.54,
-          "n_total": 22
+          "media": 0.55,
+          "n_total": 23
         },
         {
           "h": 11,
-          "media": 1.12,
+          "media": 1.1,
           "n_total": 46
         },
         {
           "h": 12,
-          "media": 1.1,
+          "media": 1.07,
           "n_total": 45
         },
         {
           "h": 13,
-          "media": 0.85,
+          "media": 0.83,
           "n_total": 35
         },
         {
           "h": 14,
-          "media": 0.98,
+          "media": 0.95,
           "n_total": 40
         },
         {
           "h": 15,
-          "media": 0.98,
+          "media": 0.95,
           "n_total": 40
         },
         {
           "h": 16,
-          "media": 1.05,
+          "media": 1.02,
           "n_total": 43
         },
         {
           "h": 17,
-          "media": 1.51,
+          "media": 1.48,
           "n_total": 62
         },
         {
           "h": 18,
-          "media": 1.54,
+          "media": 1.5,
           "n_total": 63
         },
         {
           "h": 19,
-          "media": 1.59,
+          "media": 1.55,
           "n_total": 65
         },
         {
           "h": 20,
-          "media": 0.68,
+          "media": 0.67,
           "n_total": 28
         }
       ],
@@ -5635,18 +5757,18 @@
           "horas_trab": 36.4
         },
         {
+          "nome": "Regina Matheus",
+          "n": 62,
+          "v": 4480.0,
+          "ticket_medio": 72.26,
+          "horas_trab": 39.5
+        },
+        {
           "nome": "Katyane Augusta Muniz",
           "n": 55,
           "v": 4386.1,
           "ticket_medio": 79.75,
           "horas_trab": 36.0
-        },
-        {
-          "nome": "Regina Matheus",
-          "n": 61,
-          "v": 4381.0,
-          "ticket_medio": 71.82,
-          "horas_trab": 38.8
         },
         {
           "nome": "Giovanna Guedes Da Silva",
@@ -5719,16 +5841,16 @@
           "ticket_medio_serv": 67.69
         },
         {
+          "nome": "Regina Matheus",
+          "n_serv": 62,
+          "v": 4480.0,
+          "ticket_medio_serv": 72.26
+        },
+        {
           "nome": "Katyane Augusta Muniz",
           "n_serv": 55,
           "v": 4386.1,
           "ticket_medio_serv": 79.75
-        },
-        {
-          "nome": "Regina Matheus",
-          "n_serv": 61,
-          "v": 4381.0,
-          "ticket_medio_serv": 71.82
         },
         {
           "nome": "Prof desligado #722618",
@@ -5774,9 +5896,9 @@
         },
         {
           "nome": "Eunice Santos Nascimento",
-          "n_serv": 14,
-          "v": 565.0,
-          "ticket_medio_serv": 40.36
+          "n_serv": 15,
+          "v": 600.0,
+          "ticket_medio_serv": 40.0
         },
         {
           "nome": "Prof desligado #707880",
@@ -5842,9 +5964,9 @@
         },
         {
           "nome": "FAST ESCOVA - MODELADA",
-          "n": 64,
-          "v": 6320.1,
-          "min": 2880
+          "n": 65,
+          "v": 6419.1,
+          "min": 2925
         },
         {
           "nome": "PÉS E MÃOS",
@@ -5912,18 +6034,18 @@
           "nome": "Mastercard",
           "n": 134,
           "v": 18149.15,
-          "pct": 32.1
+          "pct": 32.0
         },
         {
           "nome": "PIX",
           "n": 93,
           "v": 11907.0,
-          "pct": 21.1
+          "pct": 21.0
         },
         {
           "nome": "Visa",
-          "n": 80,
-          "v": 9832.0,
+          "n": 81,
+          "v": 9866.0,
           "pct": 17.4
         },
         {
@@ -5961,6 +6083,12 @@
           "n": 2,
           "v": 146.0,
           "pct": 0.3
+        },
+        {
+          "nome": "Depósito",
+          "n": 1,
+          "v": 100.0,
+          "pct": 0.2
         },
         {
           "nome": "Crédito de Cliente",
@@ -6016,7 +6144,7 @@
         "cabelo": {
           "n_cadeiras": 5,
           "capacidade_horas": 2640.0,
-          "horas_ocupadas": 253.7,
+          "horas_ocupadas": 254.5,
           "utilizacao_pct": 9.6
         },
         "maquiagem": {
@@ -6028,62 +6156,62 @@
         "unhas": {
           "n_cadeiras": 8,
           "capacidade_horas": 4224.0,
-          "horas_ocupadas": 188.3,
+          "horas_ocupadas": 188.8,
           "utilizacao_pct": 4.5
         }
       },
       "densidade_hora": [
         {
           "h": 8,
-          "media_simultaneos": 0.23
+          "media_simultaneos": 0.22
         },
         {
           "h": 9,
-          "media_simultaneos": 0.68
+          "media_simultaneos": 0.66
         },
         {
           "h": 10,
-          "media_simultaneos": 0.71
+          "media_simultaneos": 0.72
         },
         {
           "h": 11,
-          "media_simultaneos": 0.84
+          "media_simultaneos": 0.82
         },
         {
           "h": 12,
-          "media_simultaneos": 1.05
-        },
-        {
-          "h": 13,
           "media_simultaneos": 1.03
         },
         {
+          "h": 13,
+          "media_simultaneos": 1.01
+        },
+        {
           "h": 14,
-          "media_simultaneos": 1.05
+          "media_simultaneos": 1.02
         },
         {
           "h": 15,
-          "media_simultaneos": 1.15
+          "media_simultaneos": 1.13
         },
         {
           "h": 16,
-          "media_simultaneos": 1.37
+          "media_simultaneos": 1.34
         },
         {
           "h": 17,
-          "media_simultaneos": 1.69
+          "media_simultaneos": 1.65
         },
         {
           "h": 18,
-          "media_simultaneos": 1.19
+          "media_simultaneos": 1.17
         },
         {
           "h": 19,
-          "media_simultaneos": 0.56
+          "media_simultaneos": 0.55
         },
         {
           "h": 20,
-          "media_simultaneos": 0.14
+          "media_simultaneos": 0.13
         }
       ],
       "parcelas": [
@@ -6102,8 +6230,8 @@
         {
           "meio": "Visa",
           "parcelas": 1,
-          "n": 80,
-          "v": 9832.0
+          "n": 81,
+          "v": 9866.0
         },
         {
           "meio": "Maestro/Redeshop",
@@ -6142,6 +6270,12 @@
           "v": 146.0
         },
         {
+          "meio": "Depósito",
+          "parcelas": 1,
+          "n": 1,
+          "v": 100.0
+        },
+        {
           "meio": "Crédito de Cliente",
           "parcelas": 1,
           "n": 1,
@@ -6151,14 +6285,14 @@
       "categoria_native": [
         {
           "nome": "Escova",
-          "n": 328,
-          "v": 22601.76,
+          "n": 329,
+          "v": 22700.76,
           "pct_receita": 40.0
         },
         {
           "nome": "Unhas",
-          "n": 310,
-          "v": 15136.0,
+          "n": 311,
+          "v": 15171.0,
           "pct_receita": 26.8
         },
         {
@@ -6171,7 +6305,7 @@
           "nome": "Tratamento",
           "n": 104,
           "v": 5127.34,
-          "pct_receita": 9.1
+          "pct_receita": 9.0
         },
         {
           "nome": "Retoque",
@@ -6463,7 +6597,7 @@
           "novos": 7,
           "atend": 12,
           "receita": 685.0,
-          "receita_ltv": 784.0
+          "receita_ltv": 918.0
         },
         {
           "data": "2026-08-11",
@@ -6739,8 +6873,8 @@
             ],
             "recomendar": [
               "FAST ESCOVA - LISA",
-              "FAST HIDRATAÇÃO - FAST MASK",
-              "PÉS"
+              "PÉS",
+              "FAST HIDRATAÇÃO - FAST MASK"
             ]
           },
           {
@@ -6766,8 +6900,8 @@
             ],
             "recomendar": [
               "MÃOS",
-              "FAST HIDRATAÇÃO - FAST MASK",
-              "PÉS"
+              "PÉS",
+              "FAST HIDRATAÇÃO - FAST MASK"
             ]
           },
           {
@@ -6886,7 +7020,7 @@
             "recomendar": [
               "FAST ESCOVA - LISA",
               "PÉS E MÃOS",
-              "FAST HIDRATAÇÃO - FAST MASK"
+              "PÉS"
             ]
           },
           {
@@ -7105,22 +7239,22 @@
             "nome": "Instagram",
             "n_clientes": 87,
             "receita": 10443.0,
-            "pct_receita": 20.1,
+            "pct_receita": 20.0,
             "ticket_medio_cliente": 120.03
           },
           {
             "nome": "Passou Em Frente",
             "n_clientes": 58,
             "receita": 8621.0,
-            "pct_receita": 16.6,
+            "pct_receita": 16.5,
             "ticket_medio_cliente": 148.64
           },
           {
             "nome": "Outdoor",
             "n_clientes": 27,
-            "receita": 4218.0,
-            "pct_receita": 8.1,
-            "ticket_medio_cliente": 156.22
+            "receita": 4352.0,
+            "pct_receita": 8.3,
+            "ticket_medio_cliente": 161.19
           },
           {
             "nome": "Indicação Familiar",
@@ -7218,15 +7352,15 @@
           {
             "nome": "F",
             "n_clientes": 299,
-            "receita": 39593.0,
+            "receita": 39727.0,
             "pct_receita": 76.1,
-            "ticket_medio_cliente": 132.42
+            "ticket_medio_cliente": 132.87
           },
           {
             "nome": "O",
             "n_clientes": 59,
             "receita": 11287.1,
-            "pct_receita": 21.7,
+            "pct_receita": 21.6,
             "ticket_medio_cliente": 191.31
           },
           {
@@ -7242,7 +7376,7 @@
         "cobertura_pct": 0.0,
         "sem_dado": {
           "n": 362,
-          "receita": 52043.1
+          "receita": 52177.1
         },
         "top": []
       },
@@ -7721,9 +7855,9 @@
         "n_uma_vez": 162,
         "n_recorrentes": 200,
         "pct_recorrentes": 55.2,
-        "ltv_medio": 143.77,
-        "ticket_medio_visita": 105.35,
-        "freq_media_visitas": 1.36,
+        "ltv_medio": 144.14,
+        "ticket_medio_visita": 105.41,
+        "freq_media_visitas": 1.37,
         "n_alerta_churn": 49,
         "n_aniv_14d": 22,
         "n_obs_vip": 42
@@ -7742,35 +7876,35 @@
     },
     "mensal": {
       "kpis": {
-        "caixa": 9033.3,
-        "receita_serv": 8043.0,
-        "atend_fin": 130,
+        "caixa": 9167.3,
+        "receita_serv": 8177.0,
+        "atend_fin": 132,
         "atend_canc": 3,
-        "atend_total": 133,
-        "n_trans": 84,
-        "ticket_trans": 107.54,
-        "cliente_dia": 79,
-        "ticket_medio": 114.35,
-        "taxa_canc": 2.3,
-        "dias_op": 6,
-        "clientes_unicos": 77,
+        "atend_total": 135,
+        "n_trans": 85,
+        "ticket_trans": 107.85,
+        "cliente_dia": 80,
+        "ticket_medio": 114.59,
+        "taxa_canc": 2.2,
+        "dias_op": 7,
+        "clientes_unicos": 78,
         "em_atendimento": 0,
         "n_prof_ativos": 10,
-        "rs_hora_salao": 100.37,
+        "rs_hora_salao": 101.86,
         "horas_operacao_periodo": 90.0,
-        "utilizacao_agregada_pct": 5.5,
-        "caixa_delta_pct": -40.8,
-        "atend_delta_pct": -31.2,
-        "cliente_dia_delta_pct": -26.9,
-        "caixa_delta_perdia_pct": -30.9,
-        "atend_delta_perdia_pct": -19.8,
-        "cliente_dia_delta_perdia_pct": -14.7,
+        "utilizacao_agregada_pct": 5.6,
+        "caixa_delta_pct": -39.9,
+        "atend_delta_pct": -30.2,
+        "cliente_dia_delta_pct": -25.9,
+        "caixa_delta_perdia_pct": -39.9,
+        "atend_delta_perdia_pct": -30.2,
+        "cliente_dia_delta_perdia_pct": -25.9,
         "dias_com_movimento": {
-          "atual": 6,
+          "atual": 7,
           "anterior": 7
         },
-        "ticket_delta_pct": -19.0,
-        "caixa_delta_bruto_pct": -40.8,
+        "ticket_delta_pct": -18.8,
+        "caixa_delta_bruto_pct": -39.9,
         "periodo_ant_ref": {
           "periodo_ini": "2026-08-01",
           "periodo_fim": "2026-08-08",
@@ -7802,11 +7936,11 @@
             "Sex",
             "Sáb"
           ],
-          "peso_semana_atual_pct": 104.3,
-          "peso_semana_anterior_pct": 140.5,
+          "peso_semana_atual_pct": 103.9,
+          "peso_semana_anterior_pct": 140.6,
           "razao_peso": 1.35,
           "comparavel": false,
-          "caixa_delta_ajustado_pct": -20.2,
+          "caixa_delta_ajustado_pct": -18.6,
           "dias_atipicos_na_base": {
             "2026-08-06": {
               "ratio": 2.59,
@@ -7816,42 +7950,42 @@
             }
           }
         },
-        "ticket_meta": 161.29,
-        "ticket_meta_periodo": 151.9,
-        "ticket_atingimento_pct": 70.9,
-        "ticket_gap_por_atend": 46.94,
-        "visitas_projetadas": 395,
-        "visitas_restantes": 316,
+        "ticket_meta": 193.28,
+        "ticket_meta_periodo": 174.93,
+        "ticket_atingimento_pct": 59.3,
+        "ticket_gap_por_atend": 78.69,
+        "visitas_projetadas": 343,
+        "visitas_restantes": 263,
         "ticket_meta_status": "em_curso",
-        "ticket_meta_deficit_caixa": 50966.7,
+        "ticket_meta_deficit_caixa": 50832.7,
         "ticket_meta_supera_caixa": 0.0
       },
       "meta": {
         "meta": 60000,
-        "realizado": 9033.3,
-        "pct": 15.1,
-        "falta": 50966.7,
-        "dias_realizados": 6,
+        "realizado": 9167.3,
+        "pct": 15.3,
+        "falta": 50832.7,
+        "dias_realizados": 7,
         "dias_total": 30,
-        "dias_restantes": 24,
-        "necessario_dia": 2123.61,
-        "ritmo_dia": 1505.55,
-        "projecao": 45166.5,
-        "projecao_pct": 75.3,
-        "meta_ate_hoje": 12000.0,
-        "pct_ate_hoje": 75.3,
-        "saldo_ate_hoje": -2966.7
+        "dias_restantes": 23,
+        "necessario_dia": 2210.12,
+        "ritmo_dia": 1309.61,
+        "projecao": 39288.43,
+        "projecao_pct": 65.5,
+        "meta_ate_hoje": 14000.0,
+        "pct_ate_hoje": 65.5,
+        "saldo_ate_hoje": -4832.7
       },
       "categorias": {
         "pacotes": {
           "v": 270.0,
           "n": 1,
-          "pct": 3.0
+          "pct": 2.9
         },
         "servicos": {
-          "v": 8612.0,
-          "n": 137,
-          "pct": 95.3
+          "v": 8746.0,
+          "n": 139,
+          "pct": 95.4
         },
         "produtos": {
           "v": 151.3,
@@ -7861,12 +7995,12 @@
         "fast_retoque": {
           "v": 378.0,
           "n": 2,
-          "pct": 4.2
+          "pct": 4.1
         },
         "servicos_gerais": {
-          "v": 8234.0,
-          "n": 135,
-          "pct": 91.2
+          "v": 8368.0,
+          "n": 137,
+          "pct": 91.3
         }
       },
       "novos_vs_recorr": {
@@ -7876,9 +8010,9 @@
           "receita": 5348.0
         },
         "recorrentes": {
-          "clientes": 33,
-          "atend": 50,
-          "receita": 2695.0
+          "clientes": 34,
+          "atend": 52,
+          "receita": 2829.0
         }
       },
       "rentabilidade_hora": [
@@ -7944,14 +8078,14 @@
         },
         {
           "nome": "FAST ESCOVA - MODELADA",
-          "n": 4,
-          "v": 396.0,
+          "n": 5,
+          "v": 495.0,
           "min_medio": 45,
           "ticket": 99.0,
           "rs_hora": 132.0,
-          "horas_total": 3.0,
-          "pct_faturamento": 4.4,
-          "confianca": "media",
+          "horas_total": 3.8,
+          "pct_faturamento": 5.4,
+          "confianca": "alta",
           "tipo": "cadeira"
         },
         {
@@ -7962,7 +8096,7 @@
           "ticket": 60.0,
           "rs_hora": 120.0,
           "horas_total": 2.0,
-          "pct_faturamento": 2.7,
+          "pct_faturamento": 2.6,
           "confianca": "media",
           "tipo": "cadeira"
         },
@@ -7986,7 +8120,7 @@
           "ticket": 70.62,
           "rs_hora": 94.17,
           "horas_total": 30.0,
-          "pct_faturamento": 31.3,
+          "pct_faturamento": 30.8,
           "confianca": "alta",
           "tipo": "cadeira"
         },
@@ -7998,7 +8132,7 @@
           "ticket": 83.0,
           "rs_hora": 83.0,
           "horas_total": 15.0,
-          "pct_faturamento": 13.8,
+          "pct_faturamento": 13.6,
           "confianca": "alta",
           "tipo": "cadeira"
         },
@@ -8010,19 +8144,19 @@
           "ticket": 34.98,
           "rs_hora": 69.95,
           "horas_total": 10.0,
-          "pct_faturamento": 7.7,
+          "pct_faturamento": 7.6,
           "confianca": "alta",
           "tipo": "cadeira"
         },
         {
           "nome": "ESMALTAÇÃO",
-          "n": 5,
-          "v": 150.0,
+          "n": 6,
+          "v": 185.0,
           "min_medio": 30,
-          "ticket": 30.0,
-          "rs_hora": 60.0,
-          "horas_total": 2.5,
-          "pct_faturamento": 1.7,
+          "ticket": 30.83,
+          "rs_hora": 61.67,
+          "horas_total": 3.0,
+          "pct_faturamento": 2.0,
           "confianca": "alta",
           "tipo": "cadeira"
         },
@@ -8034,7 +8168,7 @@
           "ticket": 26.96,
           "rs_hora": 53.92,
           "horas_total": 6.0,
-          "pct_faturamento": 3.6,
+          "pct_faturamento": 3.5,
           "confianca": "alta",
           "tipo": "cadeira"
         },
@@ -8058,7 +8192,7 @@
           "ticket": 49.38,
           "rs_hora": 296.25,
           "horas_total": 1.3,
-          "pct_faturamento": 4.4,
+          "pct_faturamento": 4.3,
           "confianca": "alta",
           "tipo": "addon"
         },
@@ -8153,72 +8287,77 @@
           "d": 6,
           "n": 11,
           "v": 866.0
+        },
+        {
+          "d": 8,
+          "n": 2,
+          "v": 134.0
         }
       ],
       "hora_media": [
         {
           "h": 8,
-          "media": 0.17,
+          "media": 0.14,
           "n_total": 1
         },
         {
           "h": 9,
-          "media": 0.5,
+          "media": 0.43,
           "n_total": 3
         },
         {
           "h": 10,
-          "media": 1.17,
-          "n_total": 7
+          "media": 1.14,
+          "n_total": 8
         },
         {
           "h": 11,
-          "media": 2.0,
+          "media": 1.71,
           "n_total": 12
         },
         {
           "h": 12,
-          "media": 1.17,
+          "media": 1.0,
           "n_total": 7
         },
         {
           "h": 13,
-          "media": 0.33,
+          "media": 0.29,
           "n_total": 2
         },
         {
           "h": 14,
-          "media": 1.0,
+          "media": 0.86,
           "n_total": 6
         },
         {
           "h": 15,
-          "media": 0.83,
+          "media": 0.71,
           "n_total": 5
         },
         {
           "h": 16,
-          "media": 0.67,
+          "media": 0.57,
           "n_total": 4
         },
         {
           "h": 17,
-          "media": 1.67,
+          "media": 1.43,
           "n_total": 10
         },
         {
           "h": 18,
-          "media": 2.0,
+          "media": 1.71,
           "n_total": 12
         },
         {
           "h": 19,
-          "media": 1.67,
+          "media": 1.43,
           "n_total": 10
         },
         {
           "h": 20,
-          "media": 0.5,
+          "media": 0.43,
           "n_total": 3
         }
       ],
@@ -8232,10 +8371,10 @@
         },
         {
           "nome": "Regina Matheus",
-          "n": 19,
-          "v": 1453.0,
-          "ticket_medio": 76.47,
-          "horas_trab": 13.1
+          "n": 20,
+          "v": 1552.0,
+          "ticket_medio": 77.6,
+          "horas_trab": 13.8
         },
         {
           "nome": "Raphaela Da Silva Farias",
@@ -8253,10 +8392,10 @@
         },
         {
           "nome": "Eunice Santos Nascimento",
-          "n": 14,
-          "v": 565.0,
-          "ticket_medio": 40.36,
-          "horas_trab": 8.0
+          "n": 15,
+          "v": 600.0,
+          "ticket_medio": 40.0,
+          "horas_trab": 8.5
         },
         {
           "nome": "Tais Cristina Leite Cabral",
@@ -8315,16 +8454,16 @@
           "min": 600
         },
         {
+          "nome": "FAST ESCOVA - MODELADA",
+          "n": 5,
+          "v": 495.0,
+          "min": 225
+        },
+        {
           "nome": "FAST MAKE CASUAL",
           "n": 3,
           "v": 437.0,
           "min": 90
-        },
-        {
-          "nome": "FAST ESCOVA - MODELADA",
-          "n": 4,
-          "v": 396.0,
-          "min": 180
         },
         {
           "nome": "FAST HIDRATAÇÃO - FAST MASK",
@@ -8364,9 +8503,9 @@
         },
         {
           "nome": "ESMALTAÇÃO",
-          "n": 5,
-          "v": 150.0,
-          "min": 150
+          "n": 6,
+          "v": 185.0,
+          "min": 180
         }
       ],
       "meios_pagamento": [
@@ -8374,37 +8513,43 @@
           "nome": "Mastercard",
           "n": 22,
           "v": 2801.15,
-          "pct": 31.0
+          "pct": 30.6
         },
         {
           "nome": "PIX",
           "n": 17,
           "v": 1799.0,
-          "pct": 19.9
+          "pct": 19.6
         },
         {
           "nome": "Maestro/Redeshop",
           "n": 16,
           "v": 1769.15,
-          "pct": 19.6
+          "pct": 19.3
         },
         {
           "nome": "Visa",
-          "n": 11,
-          "v": 1366.0,
-          "pct": 15.1
+          "n": 12,
+          "v": 1400.0,
+          "pct": 15.3
         },
         {
           "nome": "Visa Electron",
           "n": 7,
           "v": 725.0,
-          "pct": 8.0
+          "pct": 7.9
         },
         {
           "nome": "Dinheiro",
           "n": 7,
           "v": 494.0,
-          "pct": 5.5
+          "pct": 5.4
+        },
+        {
+          "nome": "Depósito",
+          "n": 1,
+          "v": 100.0,
+          "pct": 1.1
         },
         {
           "nome": "Elo Débito",
@@ -8460,8 +8605,8 @@
         "cabelo": {
           "n_cadeiras": 5,
           "capacidade_horas": 450.0,
-          "horas_ocupadas": 38.0,
-          "utilizacao_pct": 8.4
+          "horas_ocupadas": 38.8,
+          "utilizacao_pct": 8.6
         },
         "maquiagem": {
           "n_cadeiras": 3,
@@ -8472,58 +8617,58 @@
         "unhas": {
           "n_cadeiras": 8,
           "capacidade_horas": 720.0,
-          "horas_ocupadas": 34.6,
-          "utilizacao_pct": 4.8
+          "horas_ocupadas": 35.1,
+          "utilizacao_pct": 4.9
         }
       },
       "densidade_hora": [
         {
           "h": 8,
-          "media_simultaneos": 0.53
+          "media_simultaneos": 0.45
         },
         {
           "h": 9,
-          "media_simultaneos": 1.41
+          "media_simultaneos": 1.21
         },
         {
           "h": 10,
-          "media_simultaneos": 0.91
+          "media_simultaneos": 0.93
         },
         {
           "h": 11,
-          "media_simultaneos": 0.87
+          "media_simultaneos": 0.77
         },
         {
           "h": 12,
-          "media_simultaneos": 1.28
+          "media_simultaneos": 1.1
         },
         {
           "h": 13,
-          "media_simultaneos": 0.54
+          "media_simultaneos": 0.46
         },
         {
           "h": 14,
-          "media_simultaneos": 1.04
+          "media_simultaneos": 0.89
         },
         {
           "h": 15,
-          "media_simultaneos": 1.0
+          "media_simultaneos": 0.85
         },
         {
           "h": 16,
-          "media_simultaneos": 1.45
+          "media_simultaneos": 1.24
         },
         {
           "h": 17,
-          "media_simultaneos": 1.49
+          "media_simultaneos": 1.27
         },
         {
           "h": 18,
-          "media_simultaneos": 1.74
+          "media_simultaneos": 1.49
         },
         {
           "h": 19,
-          "media_simultaneos": 0.84
+          "media_simultaneos": 0.72
         },
         {
           "h": 20,
@@ -8533,35 +8678,35 @@
     },
     "semanal": {
       "kpis": {
-        "caixa": 0.0,
-        "receita_serv": 0.0,
-        "atend_fin": 0,
+        "caixa": 134.0,
+        "receita_serv": 134.0,
+        "atend_fin": 2,
         "atend_canc": 0,
-        "atend_total": 0,
-        "n_trans": 0,
-        "ticket_trans": 0.0,
-        "cliente_dia": 0,
-        "ticket_medio": 0.0,
+        "atend_total": 2,
+        "n_trans": 1,
+        "ticket_trans": 134.0,
+        "cliente_dia": 1,
+        "ticket_medio": 134.0,
         "taxa_canc": 0.0,
-        "dias_op": 0,
-        "clientes_unicos": 0,
+        "dias_op": 1,
+        "clientes_unicos": 1,
         "em_atendimento": 0,
-        "n_prof_ativos": 0,
-        "rs_hora_salao": 0.0,
+        "n_prof_ativos": 2,
+        "rs_hora_salao": 5.58,
         "horas_operacao_periodo": 24.0,
-        "utilizacao_agregada_pct": 0.0,
-        "caixa_delta_pct": -100.0,
-        "atend_delta_pct": -100.0,
-        "cliente_dia_delta_pct": -100.0,
-        "caixa_delta_perdia_pct": null,
-        "atend_delta_perdia_pct": null,
-        "cliente_dia_delta_perdia_pct": null,
+        "utilizacao_agregada_pct": 0.3,
+        "caixa_delta_pct": -90.5,
+        "atend_delta_pct": -87.5,
+        "cliente_dia_delta_pct": -90.0,
+        "caixa_delta_perdia_pct": -80.9,
+        "atend_delta_perdia_pct": -75.0,
+        "cliente_dia_delta_perdia_pct": -80.0,
         "dias_com_movimento": {
-          "atual": 0,
+          "atual": 1,
           "anterior": 2
         },
-        "ticket_delta_pct": -100.0,
-        "caixa_delta_bruto_pct": -100.0,
+        "ticket_delta_pct": -4.7,
+        "caixa_delta_bruto_pct": -90.5,
         "periodo_ant_ref": {
           "periodo_ini": "2026-08-31",
           "periodo_fim": "2026-09-01",
@@ -8584,47 +8729,47 @@
             "Seg",
             "Ter"
           ],
-          "peso_semana_atual_pct": 11.3,
-          "peso_semana_anterior_pct": 11.3,
+          "peso_semana_atual_pct": 11.0,
+          "peso_semana_anterior_pct": 11.0,
           "razao_peso": 1.0,
           "comparavel": true,
-          "caixa_delta_ajustado_pct": -100.0,
+          "caixa_delta_ajustado_pct": -90.5,
           "dias_atipicos_na_base": {
             "2026-09-01": {
-              "ratio": 2.07,
+              "ratio": 2.13,
               "tipo": "alto",
-              "mediana_dow": 428.5,
+              "mediana_dow": 415.0,
               "caixa": 885.0
             }
           }
         },
-        "ticket_meta": 0.0,
-        "ticket_meta_periodo": 0.0,
-        "ticket_atingimento_pct": 0.0,
-        "ticket_gap_por_atend": 0.0,
-        "visitas_projetadas": 0,
-        "visitas_restantes": 0,
-        "ticket_meta_status": "encerrado_deficit",
-        "ticket_meta_deficit_caixa": 10965.3,
+        "ticket_meta": 1806.29,
+        "ticket_meta_periodo": 1567.39,
+        "ticket_atingimento_pct": 7.4,
+        "ticket_gap_por_atend": 1672.29,
+        "visitas_projetadas": 7,
+        "visitas_restantes": 6,
+        "ticket_meta_status": "em_curso",
+        "ticket_meta_deficit_caixa": 10837.74,
         "ticket_meta_supera_caixa": 0.0,
         "periodo_ini": "2026-09-07",
         "periodo_fim": "2026-09-13"
       },
       "meta": {
-        "meta": 10965.3,
-        "realizado": 0.0,
-        "pct": 0.0,
-        "falta": 10965.3,
-        "dias_realizados": 0,
+        "meta": 10971.74,
+        "realizado": 134.0,
+        "pct": 1.2,
+        "falta": 10837.74,
+        "dias_realizados": 1,
         "dias_total": 7,
-        "dias_restantes": 7,
-        "necessario_dia": 1566.47,
-        "ritmo_dia": 0.0,
-        "projecao": 0.0,
-        "projecao_pct": 0.0,
-        "meta_ate_hoje": null,
-        "pct_ate_hoje": null,
-        "saldo_ate_hoje": null
+        "dias_restantes": 6,
+        "necessario_dia": 1806.29,
+        "ritmo_dia": 134.0,
+        "projecao": 938.0,
+        "projecao_pct": 8.5,
+        "meta_ate_hoje": 1567.39,
+        "pct_ate_hoje": 8.5,
+        "saldo_ate_hoje": -1433.39
       },
       "categorias": {
         "pacotes": {
@@ -8633,9 +8778,9 @@
           "pct": 0.0
         },
         "servicos": {
-          "v": 0.0,
-          "n": 0,
-          "pct": 0.0
+          "v": 134.0,
+          "n": 2,
+          "pct": 100.0
         },
         "produtos": {
           "v": 0.0,
@@ -8648,9 +8793,9 @@
           "pct": 0.0
         },
         "servicos_gerais": {
-          "v": 0.0,
-          "n": 0,
-          "pct": 0.0
+          "v": 134.0,
+          "n": 2,
+          "pct": 100.0
         }
       },
       "novos_vs_recorr": {
@@ -8660,9 +8805,9 @@
           "receita": 0.0
         },
         "recorrentes": {
-          "clientes": 0,
-          "atend": 0,
-          "receita": 0.0
+          "clientes": 1,
+          "atend": 2,
+          "receita": 134.0
         }
       },
       "por_dow": [
@@ -8673,8 +8818,8 @@
         },
         {
           "nome": "Ter",
-          "n": 0,
-          "v": 0.0
+          "n": 2,
+          "v": 134.0
         },
         {
           "nome": "Qua",
@@ -8715,8 +8860,8 @@
         },
         {
           "h": 10,
-          "media": 0.0,
-          "n_total": 0
+          "media": 1.0,
+          "n_total": 1
         },
         {
           "h": 11,
@@ -8769,12 +8914,83 @@
           "n_total": 0
         }
       ],
-      "ranking_prof": [],
-      "ranking_prof_total_n": 0,
-      "ranking_serv": [],
-      "rentabilidade_hora": [],
-      "meios_pagamento": [],
-      "clientes_top": [],
+      "ranking_prof": [
+        {
+          "nome": "Regina Matheus",
+          "n": 1,
+          "v": 99.0,
+          "ticket_medio": 99.0,
+          "horas_trab": 0.8
+        },
+        {
+          "nome": "Eunice Santos Nascimento",
+          "n": 1,
+          "v": 35.0,
+          "ticket_medio": 35.0,
+          "horas_trab": 0.5
+        }
+      ],
+      "ranking_prof_total_n": 2,
+      "ranking_serv": [
+        {
+          "nome": "FAST ESCOVA - MODELADA",
+          "n": 1,
+          "v": 99.0,
+          "min": 45
+        },
+        {
+          "nome": "ESMALTAÇÃO",
+          "n": 1,
+          "v": 35.0,
+          "min": 30
+        }
+      ],
+      "rentabilidade_hora": [
+        {
+          "nome": "FAST ESCOVA - MODELADA",
+          "n": 1,
+          "v": 99.0,
+          "min_medio": 45,
+          "ticket": 99.0,
+          "rs_hora": 132.0,
+          "horas_total": 0.8,
+          "pct_faturamento": 73.9,
+          "confianca": "baixa",
+          "tipo": "cadeira"
+        },
+        {
+          "nome": "ESMALTAÇÃO",
+          "n": 1,
+          "v": 35.0,
+          "min_medio": 30,
+          "ticket": 35.0,
+          "rs_hora": 70.0,
+          "horas_total": 0.5,
+          "pct_faturamento": 26.1,
+          "confianca": "baixa",
+          "tipo": "cadeira"
+        }
+      ],
+      "meios_pagamento": [
+        {
+          "nome": "Depósito",
+          "n": 1,
+          "v": 100.0,
+          "pct": 74.6
+        },
+        {
+          "nome": "Visa",
+          "n": 1,
+          "v": 34.0,
+          "pct": 25.4
+        }
+      ],
+      "clientes_top": [
+        {
+          "nome": "Mayne Lais Temarck",
+          "n": 2
+        }
+      ],
       "semana_anterior": {
         "periodo_ini": "2026-08-31",
         "periodo_fim": "2026-09-01",
@@ -8792,8 +9008,8 @@
         "cabelo": {
           "n_cadeiras": 5,
           "capacidade_horas": 120.0,
-          "horas_ocupadas": 0.0,
-          "utilizacao_pct": 0.0
+          "horas_ocupadas": 0.8,
+          "utilizacao_pct": 0.6
         },
         "maquiagem": {
           "n_cadeiras": 3,
@@ -8804,8 +9020,8 @@
         "unhas": {
           "n_cadeiras": 8,
           "capacidade_horas": 192.0,
-          "horas_ocupadas": 0.0,
-          "utilizacao_pct": 0.0
+          "horas_ocupadas": 0.5,
+          "utilizacao_pct": 0.3
         }
       },
       "densidade_hora": [
@@ -8819,11 +9035,11 @@
         },
         {
           "h": 10,
-          "media_simultaneos": 0.0
+          "media_simultaneos": 1.07
         },
         {
           "h": 11,
-          "media_simultaneos": 0.0
+          "media_simultaneos": 0.18
         },
         {
           "h": 12,
@@ -8865,23 +9081,23 @@
     },
     "diario": {
       "kpis": {
-        "caixa": 0.0,
-        "receita_serv": 0.0,
-        "atend_fin": 0,
+        "caixa": 134.0,
+        "receita_serv": 134.0,
+        "atend_fin": 2,
         "atend_canc": 0,
-        "atend_total": 0,
-        "n_trans": 0,
-        "ticket_trans": 0.0,
-        "cliente_dia": 0,
-        "ticket_medio": 0.0,
+        "atend_total": 2,
+        "n_trans": 1,
+        "ticket_trans": 134.0,
+        "cliente_dia": 1,
+        "ticket_medio": 134.0,
         "taxa_canc": 0.0,
-        "dias_op": 0,
-        "clientes_unicos": 0,
+        "dias_op": 1,
+        "clientes_unicos": 1,
         "em_atendimento": 0,
-        "n_prof_ativos": 0,
-        "rs_hora_salao": 0.0,
+        "n_prof_ativos": 2,
+        "rs_hora_salao": 11.17,
         "horas_operacao_periodo": 12.0,
-        "utilizacao_agregada_pct": 0.0,
+        "utilizacao_agregada_pct": 0.7,
         "caixa_delta_pct": null,
         "atend_delta_pct": null,
         "cliente_dia_delta_pct": null,
@@ -8889,14 +9105,14 @@
         "atend_delta_perdia_pct": null,
         "cliente_dia_delta_perdia_pct": null,
         "dias_com_movimento": {
-          "atual": 0,
+          "atual": 1,
           "anterior": 1
         },
         "ticket_delta_pct": null,
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "data": "2026-09-01",
-          "hora_max": 3.48,
+          "hora_max": 11.93,
           "caixa": 0.0,
           "atend_fin": 0,
           "cliente_dia": 0,
@@ -8910,59 +9126,59 @@
           "composicao_anterior": [
             "Ter"
           ],
-          "peso_semana_atual_pct": 4.3,
-          "peso_semana_anterior_pct": 4.3,
+          "peso_semana_atual_pct": 3.9,
+          "peso_semana_anterior_pct": 3.9,
           "razao_peso": 1.0,
           "comparavel": true,
           "caixa_delta_ajustado_pct": null,
           "dias_atipicos_na_base": {
             "2026-09-01": {
-              "ratio": 2.07,
+              "ratio": 2.13,
               "tipo": "alto",
-              "mediana_dow": 428.5,
+              "mediana_dow": 415.0,
               "caixa": 885.0
             }
           }
         },
         "pace_intraday": {
-          "hora_atual_str": "03:29",
-          "hora_atual_num": 3.48,
-          "pct_esperado_agora": 0.0,
-          "meta_dia": 463.72,
-          "meta_esperada_agora": 0.0,
-          "realizado_agora": 0.0,
-          "pace_delta": 0.0,
-          "pace_ratio_pct": 100.0,
-          "projecao_dia": 0.0,
+          "hora_atual_str": "11:56",
+          "hora_atual_num": 11.93,
+          "pct_esperado_agora": 14.1,
+          "meta_dia": 425.19,
+          "meta_esperada_agora": 60.04,
+          "realizado_agora": 134.0,
+          "pace_delta": 73.96,
+          "pace_ratio_pct": 223.2,
+          "projecao_dia": 949.01,
           "opera_hoje": true
         },
         "ticket_meta": 0.0,
-        "ticket_meta_periodo": 0.0,
+        "ticket_meta_periodo": 425.19,
         "ticket_atingimento_pct": 0.0,
         "ticket_gap_por_atend": 0.0,
-        "visitas_projetadas": 0,
+        "visitas_projetadas": 1,
         "visitas_restantes": 0,
-        "ticket_meta_status": "fechado",
-        "ticket_meta_deficit_caixa": 463.72,
+        "ticket_meta_status": "encerrado_deficit",
+        "ticket_meta_deficit_caixa": 291.19,
         "ticket_meta_supera_caixa": 0.0,
         "dia_semana": "Ter",
         "data": "2026-09-08"
       },
       "meta": {
-        "meta": 463.72,
-        "realizado": 0.0,
-        "pct": 0.0,
-        "falta": 463.72,
+        "meta": 425.19,
+        "realizado": 134.0,
+        "pct": 31.5,
+        "falta": 291.19,
         "dias_realizados": 1,
         "dias_total": 1,
         "dias_restantes": 0,
         "necessario_dia": 0.0,
-        "ritmo_dia": 0.0,
-        "projecao": 0.0,
-        "projecao_pct": 0.0,
-        "meta_ate_hoje": 463.72,
-        "pct_ate_hoje": 0.0,
-        "saldo_ate_hoje": -463.72
+        "ritmo_dia": 134.0,
+        "projecao": 134.0,
+        "projecao_pct": 31.5,
+        "meta_ate_hoje": 425.19,
+        "pct_ate_hoje": 31.5,
+        "saldo_ate_hoje": -291.19
       },
       "categorias": {
         "pacotes": {
@@ -8971,9 +9187,9 @@
           "pct": 0.0
         },
         "servicos": {
-          "v": 0.0,
-          "n": 0,
-          "pct": 0.0
+          "v": 134.0,
+          "n": 2,
+          "pct": 100.0
         },
         "produtos": {
           "v": 0.0,
@@ -8986,9 +9202,9 @@
           "pct": 0.0
         },
         "servicos_gerais": {
-          "v": 0.0,
-          "n": 0,
-          "pct": 0.0
+          "v": 134.0,
+          "n": 2,
+          "pct": 100.0
         }
       },
       "hora_abs": [
@@ -9004,8 +9220,8 @@
         },
         {
           "h": 10,
-          "n": 0,
-          "v": 0.0
+          "n": 1,
+          "v": 134.0
         },
         {
           "h": 11,
@@ -9058,18 +9274,89 @@
           "v": 0.0
         }
       ],
-      "ranking_prof": [],
-      "ranking_prof_total_n": 0,
-      "ranking_serv": [],
-      "rentabilidade_hora": [],
-      "meios_pagamento": [],
-      "clientes_top": [],
+      "ranking_prof": [
+        {
+          "nome": "Regina Matheus",
+          "n": 1,
+          "v": 99.0,
+          "ticket_medio": 99.0,
+          "horas_trab": 0.8
+        },
+        {
+          "nome": "Eunice Santos Nascimento",
+          "n": 1,
+          "v": 35.0,
+          "ticket_medio": 35.0,
+          "horas_trab": 0.5
+        }
+      ],
+      "ranking_prof_total_n": 2,
+      "ranking_serv": [
+        {
+          "nome": "FAST ESCOVA - MODELADA",
+          "n": 1,
+          "v": 99.0,
+          "min": 45
+        },
+        {
+          "nome": "ESMALTAÇÃO",
+          "n": 1,
+          "v": 35.0,
+          "min": 30
+        }
+      ],
+      "rentabilidade_hora": [
+        {
+          "nome": "FAST ESCOVA - MODELADA",
+          "n": 1,
+          "v": 99.0,
+          "min_medio": 45,
+          "ticket": 99.0,
+          "rs_hora": 132.0,
+          "horas_total": 0.8,
+          "pct_faturamento": 73.9,
+          "confianca": "baixa",
+          "tipo": "cadeira"
+        },
+        {
+          "nome": "ESMALTAÇÃO",
+          "n": 1,
+          "v": 35.0,
+          "min_medio": 30,
+          "ticket": 35.0,
+          "rs_hora": 70.0,
+          "horas_total": 0.5,
+          "pct_faturamento": 26.1,
+          "confianca": "baixa",
+          "tipo": "cadeira"
+        }
+      ],
+      "meios_pagamento": [
+        {
+          "nome": "Depósito",
+          "n": 1,
+          "v": 100.0,
+          "pct": 74.6
+        },
+        {
+          "nome": "Visa",
+          "n": 1,
+          "v": 34.0,
+          "pct": 25.4
+        }
+      ],
+      "clientes_top": [
+        {
+          "nome": "Mayne Lais Temarck",
+          "n": 2
+        }
+      ],
       "cadeiras_utilizacao": {
         "cabelo": {
           "n_cadeiras": 5,
           "capacidade_horas": 60.0,
-          "horas_ocupadas": 0.0,
-          "utilizacao_pct": 0.0
+          "horas_ocupadas": 0.8,
+          "utilizacao_pct": 1.2
         },
         "maquiagem": {
           "n_cadeiras": 3,
@@ -9080,8 +9367,8 @@
         "unhas": {
           "n_cadeiras": 8,
           "capacidade_horas": 96.0,
-          "horas_ocupadas": 0.0,
-          "utilizacao_pct": 0.0
+          "horas_ocupadas": 0.5,
+          "utilizacao_pct": 0.5
         }
       },
       "densidade_hora": [
@@ -9095,11 +9382,11 @@
         },
         {
           "h": 10,
-          "media_simultaneos": 0.0
+          "media_simultaneos": 1.07
         },
         {
           "h": 11,
-          "media_simultaneos": 0.0
+          "media_simultaneos": 0.18
         },
         {
           "h": 12,
@@ -9142,30 +9429,55 @@
   },
   "insights": {
     "diario": [],
-    "semanal": [],
+    "semanal": [
+      {
+        "tipo": "atencao",
+        "titulo": "Ritmo/dia -81% vs semana passada",
+        "texto": "Esta semana: R$ 134,00/dia · semana anterior (08-31-09-01): R$ 703,00/dia.",
+        "acao": "Queda — checar se algo mudou (feriado, doença, chuva). Ativar top clientes."
+      },
+      {
+        "tipo": "atencao",
+        "titulo": "Semana abaixo da meta",
+        "texto": "Projeção R$ 938,00 (8%). Gap de R$ 1.672,29/dia para os 6 dias restantes.",
+        "acao": "Ativar campanha WhatsApp pras top 20 clientes AGORA — retorno médio 3-4 walk-ins no fim de semana."
+      },
+      {
+        "tipo": "atencao",
+        "titulo": "Concentração em Regina (74%)",
+        "texto": "Regina Matheus = R$ 99,00 (ticket médio R$ 99,00). Se ficar doente, cai muita coisa junto.",
+        "acao": "Treinar 2ª profissional pros serviços que ela mais faz. Distribuir walk-ins mais equilibrado nas próximas semanas."
+      }
+    ],
     "mensal": [
       {
         "tipo": "critico",
         "titulo": "Mês projeta ABAIXO de 80% da meta",
-        "texto": "Projeção R$ 45.166,50 (75%). Ritmo R$ 1.505,55/dia vs necessário R$ 2.123,61/dia. Gap: R$ 618,06/dia.",
-        "acao": "Restam 24 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
+        "texto": "Projeção R$ 39.288,43 (66%). Ritmo R$ 1.309,61/dia vs necessário R$ 2.210,12/dia. Gap: R$ 900,51/dia.",
+        "acao": "Restam 23 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
+      },
+      {
+        "tipo": "atencao",
+        "titulo": "Ritmo/dia -14% vs mês anterior",
+        "texto": "Este mês: R$ 1.309,61/dia. Mês anterior: R$ 1.516,49/dia.",
+        "acao": "Queda relevante — investigar: mesma equipe? mesma escala? algo mudou na região?"
       },
       {
         "tipo": "info",
-        "titulo": "Retenção saudável (43% recorrentes)",
-        "texto": "33 clientes voltaram — vale mais que 3× esse número em novos.",
+        "titulo": "Retenção saudável (44% recorrentes)",
+        "texto": "34 clientes voltaram — vale mais que 3× esse número em novos.",
         "acao": "Continuar. Escalar aquisição sem sacrificar o cuidado com quem já vem."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos = 1.7% do caixa (R$ 151,30). Se chegasse a 8%, seriam +R$ 571,36/mês.",
+        "texto": "Produtos = 1.7% do caixa (R$ 151,30). Se chegasse a 8%, seriam +R$ 582,08/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 6%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 100,37.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 101,86.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -9203,7 +9515,7 @@
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 107,11. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 107,37. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
