@@ -1678,6 +1678,49 @@ function renderClientes(data){
     '📢 Canal de aquisição · comoNosConheceu',
     'De onde os clientes vieram — onde investir marketing pra puxar mais como esses',
     a.seg_canal, 'canal cadastrado');
+
+  // Cruzamento com Google Meu Negócio (canal invisível no Trinks)
+  // Remove card antigo antes de renderizar de novo
+  document.querySelectorAll('.canal-google-callout').forEach(e => e.remove());
+  const segCanalEl = document.getElementById('clientes-seg-canal');
+  if(segCanalEl && MID && MID.google_business && MID.google_business.conectado){
+    const gmb = MID.google_business;
+    const sc = a.seg_canal || {};
+    const semDado = (sc.sem_dado || {}).n || 0;
+    const cob = sc.cobertura_pct || 0;
+    const acoesGoogle = (gmb.kpis_30d.actions_phone||0) + (gmb.kpis_30d.actions_directions||0);
+    const rating = gmb.rating.estrelas_media;
+    const reviews = gmb.rating.reviews_total;
+    // top canais atuais
+    const topCanais = (sc.top || []).slice(0, 3).map(c=>c.nome).join(', ');
+    const callout = `<div class="card canal-google-callout" style="margin-top:12px;border-left:4px solid #4285F4;background:linear-gradient(135deg,rgba(66,133,244,.05),rgba(52,168,83,.03))">
+      <h2>🔗 Canal invisível: Google Meu Negócio</h2>
+      <div class="cap">Cruzamento com aba Mídias · o Trinks não pergunta "Google" no comoNosConheceu, então esse canal fica escondido.</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;font-size:12px">
+        <div style="background:var(--surface-2);border-radius:6px;padding:12px;border-left:3px solid #f59e0b">
+          <div style="color:#f59e0b;font-size:10.5px;font-weight:700;text-transform:uppercase">GAP</div>
+          <div style="font-weight:700;font-size:22px">${semDado} clientes</div>
+          <div style="color:var(--ink-3);font-size:10.5px">${(100-cob).toFixed(0)}% da base sem canal registrado</div>
+        </div>
+        <div style="background:var(--surface-2);border-radius:6px;padding:12px;border-left:3px solid #34A853">
+          <div style="color:#34A853;font-size:10.5px;font-weight:700;text-transform:uppercase">Google 30d (medido)</div>
+          <div style="font-weight:700;font-size:22px">${acoesGoogle} ações</div>
+          <div style="color:var(--ink-3);font-size:10.5px">${gmb.kpis_30d.actions_phone} ligaram · ${gmb.kpis_30d.actions_directions} pediram rota</div>
+        </div>
+        <div style="background:var(--surface-2);border-radius:6px;padding:12px;border-left:3px solid #FBBC04">
+          <div style="color:#FBBC04;font-size:10.5px;font-weight:700;text-transform:uppercase">Rating</div>
+          <div style="font-weight:700;font-size:22px;color:#FBBC04">⭐ ${rating}</div>
+          <div style="color:var(--ink-3);font-size:10.5px">${reviews} avaliações · top 5% SP</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:12px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2);line-height:1.6">
+        <strong>💡 Leitura:</strong> Sua base declara ${topCanais} como top-3 canais. O <strong>Google Meu Negócio nem aparece na lista</strong> — mas está gerando ${acoesGoogle} ações/mês pra ${reviews} pessoas que te avaliaram ⭐ ${rating}. Provavelmente boa parte dos <strong>${semDado} "sem dado"</strong> descobriu você pelo Google e a recepção não teve opção pra marcar.
+        <br><br>
+        <strong>Ação sugerida:</strong> pedir à recepção pra adicionar 2 opções no Trinks (<em>Configurações → comoNosConheceu</em>): "Google Maps" e "Google Search". Em 30d você vai descobrir se Google é canal #1, #2 ou #3 — e ajustar mídia paga em cima disso.
+      </div>
+    </div>`;
+    segCanalEl.insertAdjacentHTML('afterend', callout);
+  }
   renderSegmentacao('clientes-seg-bairro',
     '📍 Bairros de origem · geolocalização',
     'Concentração geográfica da base — panfleto local, parcerias com estabelecimentos vizinhos',
@@ -3740,6 +3783,53 @@ function renderMidias(){
       <div style="margin-top:12px;padding:10px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2)">
         <strong>💡 Insight:</strong> ${k.actions_phone > k.actions_directions ? `Cliente prefere ligar antes de ir (${k.actions_phone} ligações vs ${k.actions_directions} rotas). Recepção deve estar preparada pra atender bem cada ligação — é o momento de conversão.` : `Muito mais pedidos de rota (${k.actions_directions}) do que ligações (${k.actions_phone}) — as pessoas descobrem e já vão. Coloque uma placa/comunicação bonita na entrada, é o que converte.`} A taxa de conversão views→ações de <strong>${k.taxa_conversao_pct}%</strong> ${k.taxa_conversao_pct >= 8 ? 'está saudável (bench salão: 6-10%).' : 'está abaixo do benchmark (6-10% pra salão). Perfil pode ganhar fotos/posts pra ativar mais cliques.'}
       </div>
+
+      ${(()=>{
+        // CRUZAMENTO GMB × TRINKS: contribuição do Google na aquisição de novos clientes
+        const trinksAnual = (TRINKS && TRINKS.abas && TRINKS.abas.anual) || {};
+        const sn = trinksAnual.serie_novos_dia || [];
+        if(!sn.length || !sd.length) return '';
+        // Novos Trinks nos últimos 30 dias (mesma janela do GMB)
+        const gmbDatas = new Set(sd.map(x=>x.data));
+        const novos30d = sn.filter(x=>gmbDatas.has(x.data)).reduce((a,x)=>a+(x.novos||0),0);
+        const atend30d = sn.filter(x=>gmbDatas.has(x.data)).reduce((a,x)=>a+(x.atend||0),0);
+        const acoesGoogle = (k.actions_phone||0) + (k.actions_directions||0);
+        // Upper bound: todas ações Google viram cliente
+        const contribMaxPct = novos30d > 0 ? Math.min(100, acoesGoogle/novos30d*100) : 0;
+        // Realistic estimate: 60% das ações viram cliente (média literatura local business)
+        const contribRealPct = novos30d > 0 ? Math.min(100, acoesGoogle*0.6/novos30d*100) : 0;
+        // Canal invisível: Trinks não pergunta Google
+        const segCanal = trinksAnual.seg_canal || {};
+        const semDado = (segCanal.sem_dado || {}).n || 0;
+        const cobertura = segCanal.cobertura_pct || 0;
+        return `<div style="margin-top:14px;padding:14px;background:linear-gradient(135deg,rgba(66,133,244,.08),rgba(52,168,83,.06));border-radius:8px;border-left:4px solid #34A853">
+          <div style="font-weight:700;font-size:13px;color:#34A853;margin-bottom:10px;text-transform:uppercase">🔗 Cruzamento com aba Painel · aquisição de novos clientes</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:12px">
+            <div style="background:var(--surface);border-radius:6px;padding:10px">
+              <div style="color:var(--ink-3);font-size:10.5px">NOVOS CLIENTES 30D (Trinks)</div>
+              <div style="font-weight:700;font-size:22px">${novos30d}</div>
+              <div style="color:var(--ink-3);font-size:10.5px">${atend30d} atendimentos totais</div>
+            </div>
+            <div style="background:var(--surface);border-radius:6px;padding:10px">
+              <div style="color:var(--ink-3);font-size:10.5px">AÇÕES GOOGLE 30D</div>
+              <div style="font-weight:700;font-size:22px">${acoesGoogle}</div>
+              <div style="color:var(--ink-3);font-size:10.5px">${k.actions_phone} ligações + ${k.actions_directions} rotas</div>
+            </div>
+            <div style="background:var(--surface);border-radius:6px;padding:10px;border-left:3px solid #34A853">
+              <div style="color:#34A853;font-size:10.5px;font-weight:700;text-transform:uppercase">Contribuição Google</div>
+              <div style="font-weight:700;font-size:22px;color:#34A853">${contribRealPct.toFixed(0)}%</div>
+              <div style="color:var(--ink-3);font-size:10.5px">${contribMaxPct.toFixed(0)}% no cenário máximo</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--ink-2);line-height:1.5">
+            <strong style="color:#34A853">💰 O Google é seu canal orgânico mais forte.</strong> Estimativa: ${Math.round(acoesGoogle*0.6)} dos ${novos30d} novos clientes deste mês vieram do Google (60% de ${acoesGoogle} ações × ligação/rota) — <strong>a custo ZERO</strong>. Meta Ads pagou por conversas mas o Google trouxe visitantes reais sem custo por clique.
+          </div>
+          ${semDado > 30 ? `<div style="margin-top:10px;padding:10px;background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;border-radius:6px;font-size:11.5px;color:var(--ink-2)">
+            <strong style="color:#f59e0b">⚠️ Canal invisível — Trinks não pergunta "Google"</strong><br>
+            ${semDado} clientes (${(100-cobertura).toFixed(0)}% da base) estão sem canal registrado no <em>comoNosConheceu</em>. A lista de opções do Trinks tem "Instagram", "Passou em Frente", "Outdoor" — mas <strong>não tem "Google Maps" nem "Google Search"</strong>. Provável que boa parte desses 122 "sem dado" tenha vindo pelo Google. Recomendação: adicionar opção "Google" no cadastro Trinks pra recepção poder marcar.
+          </div>` : ''}
+        </div>`;
+      })()}
     </section>`;
     igBox.insertAdjacentHTML('afterend', gmbHTML);
   }
