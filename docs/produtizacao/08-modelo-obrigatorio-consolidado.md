@@ -120,7 +120,32 @@ mais fácil de aprovar, porque:
 Um modelo de dependência total só é seguro depois que a titularidade estiver resolvida
 por escrito — ver [[05-analise-contratual]].
 
-## 8. Recomendação
+## 8. Os dois cenários, como entraram no BP
+
+O business plan em HTML e a planilha passaram a apresentar os dois lado a lado. O seletor
+está na célula **B7 da aba Premissas**: 1 = com homologação, 0 = sem. Ele reconfigura sete
+premissas de uma vez.
+
+| | Sem homologação | Com homologação |
+|---|---:|---:|
+| Preço por loja | R$ 319 | R$ 299 |
+| Teto de adoção | 65% | 95% |
+| Mês central da curva | 16 | 12 |
+| Inclinação da curva | 0,32 | 0,45 |
+| CAC por loja | R$ 400 | R$ 50 |
+| Cobrança por loja | R$ 3 | R$ 0 |
+| Participação da franqueadora | 0% | 25% |
+| **Capital necessário** | **R$ 267.088** | **R$ 191.609** |
+| **1º mês positivo** | M15 | **M11** |
+| **Caixa volta a zero** | M23 | **M17** |
+| **Resultado no ano 3** | R$ 883.248 | R$ 859.394 |
+| **Lojas no mês 36** | 389 | **570** |
+
+Repare no ponto de equilíbrio: ele **sobe** com a homologação, de 128 para 136 lojas, porque
+o preço menor e a participação reduzem a margem por loja. O que compensa com folga é a
+velocidade — 231 lojas pagando no fim do ano 1, contra 69.
+
+## 9. Recomendação
 
 Peça **obrigatório a R$ 299 com participação de até 25%**, com as quatro travas da
 seção 5. Aceite até 30% se o preço ficar em R$ 299. Recuse a combinação R$ 249 com 30%:

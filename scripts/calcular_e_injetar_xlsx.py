@@ -46,40 +46,37 @@ def calcular(caminho: pathlib.Path) -> dict[tuple[str, str], object]:
 
 
 # ---------------------------------------------------------------- 2. conferir
+import cenarios_def as CD
+
+BASE = CD.rodar(CD.CENARIOS[1])          # a aba Premissas está no modelo COM homologação
+MC = CD.COM["ticket"] - CD.CVAR_COM
+
 ESPERADO_GERAL = [
-    ("PREMISSAS", "B12", 319.0, 0.01, "ticket médio"),
-    ("PREMISSAS", "B19", 45.0, 0.01, "custo variável"),
-    ("PREMISSAS", "B20", 274.0, 0.01, "margem de contribuição"),
-    ("MODELO MENSAL", "M40", 953229, 2, "caixa no mês 36"),
-    ("RESUMO", "B7", 267088, 2, "capital necessário"),
-    ("RESUMO", "B9", 15, 0, "1º mês positivo"),
-    ("RESUMO", "B10", 23, 0, "mês em que o caixa zera"),
-    ("RESUMO", "B17", 1526137, 2, "receita ano 3"),
-    ("RESUMO", "C17", 883248, 2, "resultado ano 3"),
-    ("RESUMO", "B20", 127.74, 0.05, "ponto de equilíbrio"),
-    ("RESUMO", "B21", 91.24, 0.05, "ponto de equilíbrio com painel"),
-    ("RESUMO", "B30", 1.46, 0.02, "payback do CAC"),
-    ("RESUMO", "B32", 45.67, 0.05, "LTV / CAC"),
+    ("PREMISSAS", "B9",  CD.COM["ticket"], 0.01, "preço por loja em uso"),
+    ("PREMISSAS", "B31", CD.CVAR_COM, 0.01, "custo variável"),
+    ("PREMISSAS", "B32", MC, 0.01, "margem de contribuição"),
+    ("MODELO MENSAL", "M40", sum(BASE["anos"]), 2, "caixa no mês 36"),
+    ("RESUMO", "B7", BASE["capital"], 2, "capital necessário"),
+    ("RESUMO", "B9", BASE["be"], 0, "1º mês positivo"),
+    ("RESUMO", "B10", BASE["cz"], 0, "mês em que o caixa zera"),
+    ("RESUMO", "B15", BASE["recs"][0], 2, "receita ano 1"),
+    ("RESUMO", "C15", BASE["anos"][0], 2, "resultado ano 1"),
+    ("RESUMO", "B16", BASE["recs"][1], 2, "receita ano 2"),
+    ("RESUMO", "C16", BASE["anos"][1], 2, "resultado ano 2"),
+    ("RESUMO", "B17", BASE["recs"][2], 2, "receita ano 3"),
+    ("RESUMO", "C17", BASE["anos"][2], 2, "resultado ano 3"),
+    ("RESUMO", "B20", CD.FREG / MC, 0.05, "ponto de equilíbrio"),
+    ("RESUMO", "B21", (CD.FREG - CD.REDE_MES) / MC, 0.05, "ponto de equilíbrio com painel"),
+    ("RESUMO", "B30", CD.COM["cac"] / MC, 0.02, "payback do CAC"),
 ]
 
-# (nome, 1º mês positivo, caixa zera, capital, receita ano 3, resultado ano 3, lojas)
-ESPERADO_CEN = [
-    ("Base",                       15, 23, 267088, 1526137,  883248, 389),
-    ("Adoção metade",              19, 35, 327402,  823069,  291624, 195),
-    ("Atraso 6 meses",             21, 29, 292811, 1417651,  752896, 386),
-    ("Preço 20% menor",            17, 27, 302405, 1244028,  601139, 389),
-    ("Sem Painel da Rede",         17, 26, 335658, 1406137,  763248, 389),
-    ("Participação 20%",           17, 28, 318259, 1220910,  578021, 389),
-    ("Participação 35%",           19, 35, 377326,  991989,  349100, 389),
-    ("Participação 50%",           23,  0, 474338,  763069,  120180, 389),
-    ("Pior caso combinado",        33,  0, 500221,  499736,  -42641, 193),
-    ("Enxuta",                     13, 21, 214871, 1526137, 1003248, 389),
-    ("OBRIGATÓRIO sem particip.",  10, 16, 178701, 1748830, 1051296, 570),
-    ("OBRIGATÓRIO particip. 20%",  12, 19, 200150, 1399064,  701530, 570),
-    ("OBRIGATÓRIO particip. 30%",  13, 21, 215809, 1224181,  526647, 570),
-    ("OBRIGATÓRIO 299 · 30%",      12, 18, 198024, 1453133,  755599, 570),
-]
-LIN_RES = 21
+ESPERADO_CEN = []
+for c in CD.CENARIOS:
+    r = CD.rodar(c)
+    ESPERADO_CEN.append((c["nome"][:30], r["be"], r["cz"], r["capital"],
+                         r["rec3"], r["res3"], r["lojas36"]))
+
+LIN_RES = 21   # primeira linha da tabela de resultados na aba Cenários
 
 
 def conferir(vals) -> bool:

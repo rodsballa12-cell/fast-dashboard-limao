@@ -6,6 +6,8 @@ o resumo e os nove cenários.
 """
 import pathlib
 from openpyxl import Workbook
+
+import cenarios_def as CD
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
@@ -132,124 +134,181 @@ ws["B23"].fill = F_INPUT
 # ================================================================ PREMISSAS
 ps = wb.create_sheet("Premissas")
 ps.sheet_view.showGridLines = False
-for col, w in zip("ABCDE", (42, 14, 12, 52, 2)):
+for col, w in zip("ABCDEF", (40, 14, 13, 13, 50, 2)):
     ps.column_dimensions[col].width = w
 ps["A1"] = "Premissas"
 ps["A1"].font = TITULO
-ps["A2"] = "Edite apenas as células azuis. As amarelas são as que mais mudam o resultado."
+ps["A2"] = ("Edite apenas as células azuis. A célula B7 escolhe o modelo comercial e "
+            "reconfigura sete premissas de uma vez.")
 ps["A2"].font = SUB
-cab(ps, 4, ["Premissa", "Valor", "Unidade", "Origem / observação"])
+cab(ps, 4, ["Premissa", "Em uso", "Sem homologação", "Com homologação", "Origem / observação"])
 
-L = {}   # rótulo -> endereço absoluto
+L = {}
 
 
 def prem(linha, rotulo, valor, unidade, obs, fmt=RS, chave=None, destaque=False, formula=None):
     ps.cell(row=linha, column=1, value=rotulo).font = PRETO
     c = ps.cell(row=linha, column=2, value=formula if formula else valor)
     c.font = PRETO if formula else AZUL
-    c.number_format = fmt
-    c.border = BORDA
+    c.number_format, c.border = fmt, BORDA
     if destaque:
         c.fill = F_INPUT
     ps.cell(row=linha, column=3, value=unidade).font = SUB
-    o = ps.cell(row=linha, column=4, value=obs)
-    o.font = SUB
-    o.alignment = Alignment(wrap_text=True, vertical="top")
+    o = ps.cell(row=linha, column=5, value=obs)
+    o.font, o.alignment = SUB, Alignment(wrap_text=True, vertical="top")
     if chave:
         L[chave] = f"Premissas!$B${linha}"
     return linha
 
 
-secao(ps, 6, "PLANOS E MIX")
-ps.cell(row=7, column=1, value="Plano").font = NEGRITO
-ps.cell(row=7, column=2, value="Preço R$/mês").font = NEGRITO
-ps.cell(row=7, column=3, value="Mix").font = NEGRITO
+# ---------- o seletor de modelo comercial ----------
+secao(ps, 6, "MODELO COMERCIAL — a chave que muda tudo", ate=5)
+ps.cell(row=7, column=1, value="Modelo em uso  (1 = COM homologação · 0 = SEM homologação)").font = NEGRITO
+c = ps.cell(row=7, column=2, value=1)
+c.font, c.number_format, c.border, c.fill = AZUL, NUM, BORDA, F_INPUT
+o = ps.cell(row=7, column=5,
+            value="1 = homologado obrigatório em toda a rede, com cobrança consolidada pela "
+                  "franqueadora. 0 = venda voluntária, loja a loja. Trocar aqui reconfigura "
+                  "as sete linhas abaixo de uma vez.")
+o.font, o.alignment = Font(name=FONTE, size=10, color="8A5210", italic=True), \
+    Alignment(wrap_text=True, vertical="top")
+ps.row_dimensions[7].height = 42
+
+MODELO = [
+    ("Preço por loja", RS2, "=B24", 299.0, "ticket",
+     "Sem homologação vem do mix de planos; com homologação é preço único para a rede toda."),
+    ("Teto de adoção", PCT, 0.65, 0.95, "teto",
+     "Obrigatório não é venda: os 5% que faltam são lojas em implantação e em transição."),
+    ("Mês central da curva", NUM1, 16.0, 12.0, "centro",
+     "A franqueadora marca prazo — não há convencimento loja a loja."),
+    ("Inclinação da curva", "0.00", 0.32, 0.45, "k",
+     "Implantação em bloco, não gota a gota."),
+    ("CAC por loja", RS, 400.0, 50.0, "cac",
+     "Sem esforço de venda, sobra só o onboarding."),
+    ("Cobrança por loja", RS2, 3.0, 0.0, "cobranca",
+     "No consolidado é uma fatura só: a taxa por loja desaparece."),
+    ("Participação da franqueadora", PCT, 0.0, 0.25, "share",
+     "O que a franqueadora cobra para tornar obrigatório e cobrar das lojas por você."),
+]
+for i, (rot, fmt, vol, obr, chave, obs) in enumerate(MODELO):
+    r = 9 + i
+    ps.cell(row=r, column=1, value=rot).font = PRETO
+    b = ps.cell(row=r, column=2, value=f"=IF($B$7=1,D{r},C{r})")
+    b.font, b.number_format, b.border, b.fill = NEGRITO, fmt, BORDA, F_TOTAL
+    cv = ps.cell(row=r, column=3, value=vol)
+    cv.font = VERDE if isinstance(vol, str) else AZUL
+    co = ps.cell(row=r, column=4, value=obr)
+    co.font = AZUL
+    for cc in (cv, co):
+        cc.number_format, cc.border = fmt, BORDA
+    co.fill = F_INPUT
+    ob = ps.cell(row=r, column=5, value=obs)
+    ob.font, ob.alignment = SUB, Alignment(wrap_text=True, vertical="top")
+    L[chave] = f"Premissas!$B${r}"
+ps.cell(row=8, column=3, value="Sem homologação").font = NEGRITO
+ps.cell(row=8, column=4, value="Com homologação").font = NEGRITO
+
+# ---------- planos e mix (só valem no modelo voluntário) ----------
+secao(ps, 17, "PLANOS E MIX — usados apenas no modelo SEM homologação", ate=5)
+ps.cell(row=18, column=1, value="Plano").font = NEGRITO
+ps.cell(row=18, column=2, value="Preço R$/mês").font = NEGRITO
+ps.cell(row=18, column=3, value="Mix").font = NEGRITO
 for i, (nome, preco, mix) in enumerate(
         [("Essencial", 199, 0.40), ("Gestão", 349, 0.45), ("Crescimento", 549, 0.15)]):
-    lin = 8 + i
-    ps.cell(row=lin, column=1, value=nome).font = PRETO
-    c = ps.cell(row=lin, column=2, value=preco)
+    r = 19 + i
+    ps.cell(row=r, column=1, value=nome).font = PRETO
+    c = ps.cell(row=r, column=2, value=preco)
     c.font, c.number_format, c.border, c.fill = AZUL, RS, BORDA, F_INPUT
-    m = ps.cell(row=lin, column=3, value=mix)
+    m = ps.cell(row=r, column=3, value=mix)
     m.font, m.number_format, m.border, m.fill = AZUL, PCT, BORDA, F_INPUT
-ps.cell(row=11, column=1, value="Soma do mix (precisa dar 100%)").font = NEGRITO
-c = ps.cell(row=11, column=3, value="=SUM(C8:C10)")
+ps.cell(row=22, column=1, value="Soma do mix (precisa dar 100%)").font = NEGRITO
+c = ps.cell(row=22, column=3, value="=SUM(C19:C21)")
 c.font, c.number_format, c.fill = PRETO, PCT, F_TOTAL
-ps.cell(row=12, column=1, value="Ticket médio por loja").font = NEGRITO
-c = ps.cell(row=12, column=2, value="=SUMPRODUCT(B8:B10,C8:C10)")
+ps.cell(row=24, column=1, value="Ticket médio do mix").font = NEGRITO
+c = ps.cell(row=24, column=2, value="=SUMPRODUCT(B19:B21,C19:C21)")
 c.font, c.number_format, c.fill, c.border = PRETO, RS2, F_TOTAL, BORDA
-ps.cell(row=12, column=3, value="R$/mês").font = SUB
-ps.cell(row=12, column=4, value="Preço médio ponderado pelo mix acima.").font = SUB
-L["ticket"] = "Premissas!$B$12"
+ps.cell(row=24, column=5, value="É este o preço usado quando B7 = 0.").font = SUB
 
-secao(ps, 14, "CUSTO POR LOJA")
-prem(15, "Infraestrutura", 8, "R$/mês", "Servidor, banco e armazenamento rateados. A medir no piloto (item P1).")
-prem(16, "Suporte", 34, "R$/mês", "1 pessoa de CS para ~175 lojas. A medir no piloto (item N2).")
-prem(17, "Cobrança", 3, "R$/mês", "Taxa da plataforma de pagamento recorrente.")
-prem(18, "API / parceria de dados", 0, "R$/mês",
-     "Zero enquanto a cota for do plano da loja. Item T2/T4 da Descoberta — se a Trinks "
-     "cobrar por parceria, é aqui que entra.", destaque=True)
-prem(19, "Custo variável total", None, "R$/mês", "Soma dos quatro acima.",
-     chave="cvar", formula="=SUM(B15:B18)")
-ps["B19"].fill = F_TOTAL
-prem(20, "Margem de contribuição", None, "R$/mês", "Ticket médio menos custo variável.",
-     chave="mc", formula="=B12-B19")
-ps["B20"].fill = F_TOTAL
-prem(21, "Margem de contribuição %", None, "%", "", fmt=PCT, formula="=IF(B12=0,0,B20/B12)")
-ps["B21"].fill = F_TOTAL
+# ---------- custo por loja ----------
+secao(ps, 26, "CUSTO POR LOJA", ate=5)
+prem(27, "Infraestrutura", 8, "R$/mês", "Servidor, banco e armazenamento rateados. A medir no piloto (item P1).")
+prem(28, "Suporte", 34, "R$/mês", "1 pessoa de CS para ~175 lojas. A medir no piloto (item N2).")
+prem(29, "Cobrança", None, "R$/mês", "Vem do bloco Modelo comercial (linha 14).",
+     fmt=RS2, formula=f"={L['cobranca']}")
+prem(30, "API / parceria de dados", 0, "R$/mês",
+     "Zero enquanto a cota for do plano da loja. Itens T2 e T4 da Descoberta.", destaque=True)
+prem(31, "Custo variável total", None, "R$/mês", "Soma das quatro linhas acima.",
+     fmt=RS2, chave="cvar", formula="=SUM(B27:B30)")
+ps["B31"].fill = F_TOTAL
+prem(32, "Margem de contribuição", None, "R$/mês", "Preço por loja menos custo variável.",
+     fmt=RS2, chave="mc", formula=f"={L['ticket']}-B31")
+ps["B32"].fill = F_TOTAL
+prem(33, "Margem de contribuição %", None, "%", "", fmt=PCT,
+     formula=f"=IF({L['ticket']}=0,0,B32/{L['ticket']})")
+ps["B33"].fill = F_TOTAL
 
-secao(ps, 23, "AQUISIÇÃO E RETENÇÃO")
-prem(24, "CAC — custo de adquirir uma loja", 400, "R$", "Onboarding mais rateio de eventos da rede.", chave="cac")
-prem(25, "Churn mensal", 0.015, "%/mês",
-     "Conservador; inclui fechamento de loja. Usado só no LTV — a curva de adoção já é líquida.",
+# ---------- retenção ----------
+secao(ps, 35, "RETENÇÃO", ate=5)
+prem(36, "Churn mensal", 0.015, "%/mês",
+     "Conservador; inclui fechamento de loja. Usado só no LTV — a curva de adoção já é "
+     "líquida. No modelo obrigatório o churn real tende a ser menor ainda.",
      fmt=PCT, chave="churn")
 
-secao(ps, 27, "REDE E ADOÇÃO")
-prem(28, "Lojas na rede hoje", 431, "lojas",
+# ---------- rede ----------
+secao(ps, 38, "REDE E CRONOGRAMA", ate=5)
+prem(39, "Lojas na rede hoje", 431, "lojas",
      "Fast Escova 401 + Fast Spa 30 em operação no fim de 2026. Fonte: Times Brasil / "
      "Mapa das Franquias, 09/2026.", fmt=NUM, chave="rede0")
-prem(29, "Lojas na rede no mês 36", 600, "lojas",
-     "Plano de expansão da rede: +159 lojas em 2026. Fonte: mesma acima.", fmt=NUM, chave="rede36")
-prem(30, "Teto de adoção", 0.65, "% da rede",
-     "Lojas novas em ramp-up, multi-unidade que negocia à parte, resistentes. Adoção total "
-     "em rede de franquia é ficção.", fmt=PCT, chave="teto", destaque=True)
-prem(31, "Mês em que começam as vendas", 7, "mês", "Depois do acordo jurídico e do piloto.", fmt=NUM, chave="inicio")
-prem(32, "Mês central da curva", 16, "mês", "Ponto de inflexão da adoção.", fmt=NUM, chave="centro")
-prem(33, "Inclinação da curva", 0.32, "", "Quanto maior, mais rápida a adoção.", fmt='0.00', chave="k")
-prem(34, "Atraso na homologação", 0, "meses",
+prem(40, "Lojas na rede no mês 36", 600, "lojas",
+     "Plano de expansão: +159 lojas em 2026. Fonte: mesma acima.", fmt=NUM, chave="rede36")
+prem(41, "Mês em que começam as vendas", 7, "mês",
+     "Depois do acordo jurídico e do piloto.", fmt=NUM, chave="inicio")
+prem(42, "Atraso na homologação", 0, "meses",
      "Empurra todo o cronograma. Teste 6 para ver o efeito de a franqueadora demorar.",
      fmt=NUM, chave="atraso", destaque=True)
 
-secao(ps, 36, "PAINEL DA REDE (FRANQUEADORA)")
-prem(37, "Mensalidade", 10000, "R$/mês", "Meio da faixa proposta de R$ 8 a 15 mil.", chave="rede_mes", destaque=True)
-prem(38, "Mês de início", 9, "mês", "Depois da Fase 2, quando o painel da rede existe.", fmt=NUM, chave="rede_ini")
+# ---------- painel da rede ----------
+secao(ps, 44, "PAINEL DA REDE (FRANQUEADORA)", ate=5)
+prem(45, "Mensalidade", 10000, "R$/mês", "Meio da faixa proposta de R$ 8 a 15 mil.",
+     chave="rede_mes", destaque=True)
+prem(46, "Mês de início", 9, "mês", "Depois da Fase 2, quando o painel da rede existe.",
+     fmt=NUM, chave="rede_ini")
 
-secao(ps, 40, "CUSTO FIXO POR FASE")
-prem(41, "Fase 0 — até o mês 2", 5000, "R$/mês", "Jurídico e negociação.", chave="f0")
-prem(42, "Fase 1 — meses 3 a 5", 22000, "R$/mês", "Dev sênior parceiro 16k + infra 3k + jurídico/contábil 3k.", chave="f1")
-prem(43, "Fase 2 — meses 6 a 8", 28000, "R$/mês", "Acrescenta CS meio período.", chave="f2")
-prem(44, "Regime — mês 9 em diante", 35000, "R$/mês",
+# ---------- custo fixo ----------
+secao(ps, 48, "CUSTO FIXO POR FASE", ate=5)
+prem(49, "Fase 0 — até o mês 2", 5000, "R$/mês", "Jurídico e negociação.", chave="f0")
+prem(50, "Fase 1 — meses 3 a 5", 22000, "R$/mês", "Dev sênior parceiro 16k + infra 3k + jurídico 3k.", chave="f1")
+prem(51, "Fase 2 — meses 6 a 8", 28000, "R$/mês", "Acrescenta CS meio período.", chave="f2")
+prem(52, "Regime — mês 9 em diante", 35000, "R$/mês",
      "Dev 16k + CS 6k + infra e contabilidade 3k + pró-labore 10k. Sem pró-labore: 25.000.",
      chave="freg", destaque=True)
 
-secao(ps, 46, "INVESTIMENTOS NÃO RECORRENTES")
-prem(47, "Mês 1", 8000, "R$", "Fechar o acesso, contratos, jurídico inicial.", chave="cap1")
-prem(48, "Mês 3", 12000, "R$", "Setup do MVP: infraestrutura, ferramentas, marca.", chave="cap3")
-prem(49, "Mês 6", 10000, "R$", "Painel da rede e integração de cobrança.", chave="cap6")
+# ---------- investimentos ----------
+secao(ps, 54, "INVESTIMENTOS NÃO RECORRENTES", ate=5)
+prem(55, "Mês 1", 8000, "R$", "Fechar o acesso, contratos, jurídico inicial.", chave="cap1")
+prem(56, "Mês 3", 12000, "R$", "Setup do MVP: infraestrutura, ferramentas, marca.", chave="cap3")
+prem(57, "Mês 6", 10000, "R$", "Painel da rede e integração de cobrança.", chave="cap6")
 
-secao(ps, 51, "ACORDO E IMPOSTOS")
-prem(52, "Participação da franqueadora na receita", 0.0, "%",
-     "Cenário de negociação. Até 35% o negócio se paga; a 50% não volta em 36 meses.",
-     fmt=PCT, chave="share", destaque=True)
-prem(53, "Impostos sobre a receita", 0.0, "%",
+# ---------- impostos ----------
+secao(ps, 59, "IMPOSTOS", ate=5)
+prem(60, "Impostos sobre a receita", 0.0, "%",
      "ITEM N3 EM ABERTO — no Simples anexo III, algo entre 6% e 16%. Preencher assim que "
      "o contador responder.", fmt=PCT, chave="imposto", destaque=True)
-ps["A53"].fill = F_ALERTA
+ps["A60"].fill = F_ALERTA
 
-ps["A55"] = "Fontes de mercado: Times Brasil, Mapa das Franquias e Portal do Franchising (setembro de 2026)."
-ps["A55"].font = SUB
-ps["A56"] = "Cláusulas citadas: contrato de franquia FAST Escova assinado em 27/01/2026, e Termos de Uso da Trinks."
-ps["A56"].font = SUB
+secao(ps, 65, "AUXILIARES — usados pela aba Cenários", ate=5)
+prem(66, "Custo variável sem homologação", None, "R$/mês",
+     "Infra + suporte + cobrança por loja + API.", fmt=RS2, chave="cvar_sem",
+     formula="=B27+B28+C14+B30")
+prem(67, "Custo variável com homologação", None, "R$/mês",
+     "A cobrança por loja desaparece: é uma fatura só.", fmt=RS2, chave="cvar_com",
+     formula="=B27+B28+D14+B30")
+
+ps["A62"] = "Fontes de mercado: Times Brasil, Mapa das Franquias e Portal do Franchising (setembro de 2026)."
+ps["A62"].font = SUB
+ps["A63"] = ("Cláusulas que sustentam a obrigatoriedade: 7.6, 12.8, 12.11, 2.3 e xlii do contrato "
+             "de franquia assinado em 27/01/2026.")
+ps["A63"].font = SUB
 
 # ================================================================ MODELO MENSAL
 ms = wb.create_sheet("Modelo mensal")
@@ -428,68 +487,65 @@ cs["A2"] = ("Cada cenário recalcula os 36 meses com suas próprias premissas. "
 cs["A2"].font = SUB
 cs.column_dimensions["A"].width = 38
 
-CEN = [
-    # nome,                                  ticket, teto,  atraso, share, rede, fixo,  cac, centro, cvar
-    ("Base — modelo voluntário",             None,  None,  0, 0.00, None, None, None, None, None, None),
-    ("Adoção metade — 33% da rede",          None,  0.325, 0, 0.00, None, None, None, None, None, None),
-    ("Homologação atrasa 6 meses",           None,  None,  6, 0.00, None, None, None, None, None, None),
-    ("Preço 20% menor",                      255.0, None,  0, 0.00, None, None, None, None, None, None),
-    ("Sem o Painel da Rede",                 None,  None,  0, 0.00, 0,    None, None, None, None, None),
-    ("Participação de 20% à franqueadora",   None,  None,  0, 0.20, None, None, None, None, None, None),
-    ("Participação de 35%",                  None,  None,  0, 0.35, None, None, None, None, None, None),
-    ("Participação de 50%",                  None,  None,  0, 0.50, None, None, None, None, None, None),
-    ("Pior caso combinado",                  None,  0.325, 6, 0.35, None, None, None, None, None, None),
-    ("Enxuta — sem pró-labore",              None,  None,  0, 0.00, None, 25000, None, None, None, None),
-    ("OBRIGATÓRIO · sem participação",       249.0, 0.95,  0, 0.00, None, None, 50.0, 12.0, 42.0, 0.45),
-    ("OBRIGATÓRIO · participação 20%",       249.0, 0.95,  0, 0.20, None, None, 50.0, 12.0, 42.0, 0.45),
-    ("OBRIGATÓRIO · participação 30%",       249.0, 0.95,  0, 0.30, None, None, 50.0, 12.0, 42.0, 0.45),
-    ("OBRIGATÓRIO R$ 299 · participação 30%", 299.0, 0.95, 0, 0.30, None, None, 50.0, 12.0, 42.0, 0.45),
-]
-PARAM = [("Ticket médio", RS2, L["ticket"]), ("Teto de adoção", PCT, L["teto"]),
-         ("Atraso (meses)", NUM, None), ("Participação franqueadora", PCT, None),
-         ("Painel da Rede", RS, L["rede_mes"]), ("Custo fixo em regime", RS, L["freg"]),
-         ("CAC por loja", RS, L["cac"]), ("Mês central da curva", NUM1, L["centro"]),
-         ("Custo variável por loja", RS2, L["cvar"]),
-         ("Inclinação da curva", '0.00', L["k"])]
-NP = len(PARAM)
+LINHA_MOD = CD.LINHA          # parâmetro -> linha do bloco MODELO COMERCIAL
+COL_QUAL = {"SEM": "C", "COM": "D"}
+GLOBAL = {"atraso": L["atraso"], "rede": L["rede_mes"], "fixo": L["freg"]}
+CVAR_REF = {"SEM": L["cvar_sem"], "COM": L["cvar_com"]}
+
+PARAM_ROT = [("Preço por loja", RS2), ("Teto de adoção", PCT), ("Atraso (meses)", NUM),
+             ("Participação franqueadora", PCT), ("Painel da Rede", RS),
+             ("Custo fixo em regime", RS), ("CAC por loja", RS),
+             ("Mês central", NUM1), ("Custo variável", RS2), ("Inclinação", "0.00")]
+NP = len(PARAM_ROT)
+CEN = CD.CENARIOS
 
 secao(cs, 4, "PREMISSAS DE CADA CENÁRIO", ate=NP + 1)
-cab(cs, 5, ["Cenário"] + [p[0] for p in PARAM],
-    [40, 13, 12, 11, 14, 13, 15, 12, 13, 14, 13])
-for i, (nome, *vals) in enumerate(CEN):
+cab(cs, 5, ["Cenário"] + [r[0] for r in PARAM_ROT],
+    [46, 13, 12, 11, 14, 13, 15, 12, 11, 13, 11])
+
+
+def celula_param(c, nome_par):
+    """Link para as Premissas quando o cenário não sobrescreve; número quando sobrescreve."""
+    base = CD._base(c["qual"])
+    valor, padrao = c[nome_par], base[nome_par]
+    if valor != padrao:
+        return valor, AZUL
+    if nome_par == "cvar":
+        return f"={CVAR_REF[c['qual']]}", VERDE
+    if nome_par in GLOBAL:
+        return f"={GLOBAL[nome_par]}", VERDE
+    return f"=Premissas!${COL_QUAL[c['qual']]}${LINHA_MOD[nome_par]}", VERDE
+
+
+for i, c in enumerate(CEN):
     r = 6 + i
-    obr = nome.startswith("OBRIGAT")
-    c0 = cs.cell(row=r, column=1, value=nome)
-    c0.font = NEGRITO if (i == 0 or obr) else PRETO
-    for j, v in enumerate(vals):
-        c = cs.cell(row=r, column=2 + j)
-        if v is None:
-            c.value = f"={PARAM[j][2]}" if PARAM[j][2] else 0
-            c.font = VERDE if PARAM[j][2] else AZUL
-        else:
-            c.value = v
-            c.font = AZUL
-        c.number_format, c.border = PARAM[j][1], BORDA
-    if i == 0 or obr:
+    principal = i < 2
+    n = cs.cell(row=r, column=1, value=c["nome"])
+    n.font = NEGRITO if principal else PRETO
+    for j, nome_par in enumerate(CD.PARAMS):
+        val, fonte = celula_param(c, nome_par)
+        cel = cs.cell(row=r, column=2 + j, value=val)
+        cel.font, cel.number_format, cel.border = fonte, PARAM_ROT[j][1], BORDA
+    if principal:
         for col in range(1, NP + 2):
             cs.cell(row=r, column=col).fill = F_TOTAL if i == 0 else F_ALERTA
 
-LIN_RES = 21            # primeira linha da tabela de resultados
-CAB_GRADE = 42          # cabeçalho da grade
-GR0 = 44                # primeiro mês da grade
+LIN_RES = 21
+CAB_GRADE = 40
+GR0 = 42
 COL0 = 3
 LARG = 7
 
-secao(cs, CAB_GRADE - 1, "GRADE DE CÁLCULO — 36 meses por cenário (pode ocultar estas linhas)", ate=101)
+secao(cs, CAB_GRADE - 1, "GRADE DE CÁLCULO — 36 meses por cenário (pode ocultar estas linhas)", ate=90)
 cs.cell(row=CAB_GRADE, column=1, value="Mês").font = NEGRITO
-for i, (nome, *_) in enumerate(CEN):
+for i, c in enumerate(CEN):
     base = COL0 + i * LARG
-    t = cs.cell(row=CAB_GRADE, column=base, value=nome)
+    t = cs.cell(row=CAB_GRADE, column=base, value=c["nome"])
     t.font = Font(name=FONTE, size=8, bold=True, color="1F4C88")
-    for j, h in enumerate(["lojas", "receita", "custos", "result.", "caixa", "aux+", "auxcx"]):
-        if j:
-            c = cs.cell(row=CAB_GRADE, column=base + j, value=h)
-            c.font = Font(name=FONTE, size=8, color="6A675E")
+    for j, h in enumerate(["", "receita", "custos", "result.", "caixa", "aux+", "auxcx"]):
+        if h:
+            x = cs.cell(row=CAB_GRADE, column=base + j, value=h)
+            x.font = Font(name=FONTE, size=8, color="6A675E")
 
 for i in range(len(CEN)):
     pr = 6 + i
@@ -497,8 +553,8 @@ for i in range(len(CEN)):
     cl, cr, cc = (get_column_letter(base + k) for k in (0, 1, 2))
     cres, ccx, ca1, ca2 = (get_column_letter(base + k) for k in (3, 4, 5, 6))
     tic, tet, atr, sha = f"$B${pr}", f"$C${pr}", f"$D${pr}", f"$E${pr}"
-    red, fix, cac, cen, cva = f"$F${pr}", f"$G${pr}", f"$H${pr}", f"$I${pr}", f"$J${pr}"
-    inc = f"$K${pr}"
+    red, fix, cac, cen, cva, inc = (f"$F${pr}", f"$G${pr}", f"$H${pr}",
+                                    f"$I${pr}", f"$J${pr}", f"$K${pr}")
     for k in range(36):
         r = GR0 + k
         ant = r - 1
@@ -517,7 +573,7 @@ for i in range(len(CEN)):
             f"+IF($A{r}=1+{atr},{L['cap1']},IF($A{r}=3+{atr},{L['cap3']},"
             f"IF($A{r}=6+{atr},{L['cap6']},0))))")
         cs[f"{cres}{r}"] = f"={cr}{r}+{cc}{r}"
-        cs[f"{ccx}{r}"] = (f"={ccx}{ant}+{cres}{r}") if k else f"={cres}{r}"
+        cs[f"{ccx}{r}"] = f"={ccx}{ant}+{cres}{r}" if k else f"={cres}{r}"
         cs[f"{ca1}{r}"] = f"=IF({cres}{r}>0,$A{r},9999)"
         cs[f"{ca2}{r}"] = f"=IF({ccx}{r}>0,$A{r},9999)"
         for col, fmt in ((cl, NUM1), (cr, RS), (cc, RS), (cres, RS), (ccx, RS),
@@ -527,10 +583,9 @@ for i in range(len(CEN)):
 
 secao(cs, LIN_RES - 2, "RESULTADO DE CADA CENÁRIO", ate=7)
 cab(cs, LIN_RES - 1, ["Cenário", "1º mês positivo", "Caixa volta a zero", "Capital necessário",
-                      "Receita ano 3 (líquida de participação e impostos)", "Resultado ano 3",
-                      "Lojas no mês 36"],
-    [40, 15, 17, 17, 20, 16, 15])
-for i, (nome, *_) in enumerate(CEN):
+                      "Receita ano 3", "Resultado ano 3", "Lojas no mês 36"],
+    [46, 15, 17, 17, 16, 16, 15])
+for i, c in enumerate(CEN):
     r = LIN_RES + i
     base = COL0 + i * LARG
     cl = get_column_letter(base)
@@ -539,40 +594,37 @@ for i, (nome, *_) in enumerate(CEN):
     ccx = get_column_letter(base + 4)
     ca1 = get_column_letter(base + 5)
     ca2 = get_column_letter(base + 6)
-    ini, fim = GR0, GR0 + 35
+    ini_g, fim_g = GR0, GR0 + 35
     y3i, y3f = GR0 + 24, GR0 + 35
-    vals = [
-        (2, f'=IF(MIN({ca1}{ini}:{ca1}{fim})=9999,0,MIN({ca1}{ini}:{ca1}{fim}))', NUM),
-        (3, f'=IF(MIN({ca2}{ini}:{ca2}{fim})=9999,0,MIN({ca2}{ini}:{ca2}{fim}))', NUM),
-        (4, f"=-MIN({ccx}{ini}:{ccx}{fim})", RS),
-        (5, f"=SUM({cr}{y3i}:{cr}{y3f})", RS),
-        (6, f"=SUM({cres}{y3i}:{cres}{y3f})", RS),
-        (7, f"={cl}{fim}", NUM),
-    ]
-    obr = nome.startswith("OBRIGAT")
-    cs.cell(row=r, column=1, value=nome).font = NEGRITO if (i == 0 or obr) else PRETO
-    for col, formula, fmt in vals:
-        c = cs.cell(row=r, column=col, value=formula)
-        c.font, c.number_format, c.border = PRETO, fmt, BORDA
-    if i == 0 or obr:
+    n = cs.cell(row=r, column=1, value=c["nome"])
+    n.font = NEGRITO if i < 2 else PRETO
+    for col, formula, fmt in [
+            (2, f'=IF(MIN({ca1}{ini_g}:{ca1}{fim_g})=9999,0,MIN({ca1}{ini_g}:{ca1}{fim_g}))', NUM),
+            (3, f'=IF(MIN({ca2}{ini_g}:{ca2}{fim_g})=9999,0,MIN({ca2}{ini_g}:{ca2}{fim_g}))', NUM),
+            (4, f"=-MIN({ccx}{ini_g}:{ccx}{fim_g})", RS),
+            (5, f"=SUM({cr}{y3i}:{cr}{y3f})", RS),
+            (6, f"=SUM({cres}{y3i}:{cres}{y3f})", RS),
+            (7, f"={cl}{fim_g}", NUM)]:
+        cel = cs.cell(row=r, column=col, value=formula)
+        cel.font, cel.number_format, cel.border = PRETO, fmt, BORDA
+    if i < 2:
         for col in range(1, 8):
             cs.cell(row=r, column=col).fill = F_TOTAL if i == 0 else F_ALERTA
 
-cs[f"A{LIN_RES + len(CEN) + 1}"] = (
-    "Zero em \"1º mês positivo\" ou \"caixa volta a zero\" significa que não acontece dentro "
-    "dos 36 meses. A receita destes cenários já está líquida de participação e de impostos; "
-    "a do Resumo é bruta, com os impostos em linha própria.")
-cs[f"A{LIN_RES + len(CEN) + 1}"].font = SUB
-cs[f"A{LIN_RES + len(CEN) + 3}"] = (
-    "CENÁRIOS EM DESTAQUE: homologação obrigatória em toda a rede, com a franqueadora "
-    "cobrando das lojas e repassando de forma consolidada. Adesão de 95%, rampa mais rápida "
-    "(mês central 12 e inclinação 0,45 porque a franqueadora marca prazo), CAC de R$ 50 "
-    "porque não há venda, e custo variável de R$ 42 porque a "
-    "cobrança vira uma fatura só. O preço cai para R$ 249 porque um custo imposto a todos "
-    "precisa ser defensável até para a loja mais fraca.")
-cs[f"A{LIN_RES + len(CEN) + 3}"].font = Font(name=FONTE, size=9, italic=True, color="8A5210")
-cs[f"A{LIN_RES + len(CEN) + 3}"].alignment = Alignment(wrap_text=True, vertical="top")
-cs.row_dimensions[LIN_RES + len(CEN) + 3].height = 58
+nota = LIN_RES + len(CEN) + 1
+cs[f"A{nota}"] = ("Zero em \"1º mês positivo\" ou \"caixa volta a zero\" significa que não "
+                  "acontece dentro dos 36 meses. A receita já está líquida de participação e "
+                  "de impostos.")
+cs[f"A{nota}"].font = SUB
+cs[f"A{nota + 2}"] = (
+    "AS DUAS LINHAS EM DESTAQUE SÃO A DECISÃO. Sem homologação: você vende loja a loja, "
+    "a R$ 319, e chega a 65% da rede. Com homologação: a franqueadora torna o produto "
+    "obrigatório como já fez com Trinks e Sults, cobra das lojas e repassa consolidado — "
+    "adesão de 95%, preço único de R$ 299, CAC quase nulo, e 25% da receita fica com ela. "
+    "Todas as outras linhas são sensibilidades em torno dessas duas.")
+cs[f"A{nota + 2}"].font = Font(name=FONTE, size=9, italic=True, color="8A5210")
+cs[f"A{nota + 2}"].alignment = Alignment(wrap_text=True, vertical="top")
+cs.row_dimensions[nota + 2].height = 58
 
 # ================================================================ DESCOBERTA
 ds = wb.create_sheet("Descoberta")

@@ -9,6 +9,15 @@ tags: [fast, business-plan, saas, franquia, modelo-financeiro]
 
 # FAST Insights — Business Plan detalhado
 
+> ⚠️ **ATUALIZADO — o plano agora roda em dois cenários.** Ver [[08-modelo-obrigatorio-consolidado]].
+> **Sem homologação:** venda loja a loja, R$ 319, teto de 65% da rede → capital de R$ 267 mil,
+> caixa zera no mês 23, resultado de ano 3 de R$ 883 mil, 389 lojas.
+> **Com homologação:** obrigatório em toda a rede, preço único de R$ 299, 25% da receita para a
+> franqueadora → **capital de R$ 192 mil, caixa zera no mês 17, resultado de ano 3 de R$ 859 mil,
+> 570 lojas.** Praticamente o mesmo resultado com 28% menos capital e seis meses de antecedência.
+> As seções abaixo mantêm o detalhamento do cenário sem homologação; os dois estão lado a lado
+> na planilha (aba Cenários) e no BP em HTML.
+
 > **Leia antes:** [[05-analise-contratual]]. Este plano assume que a questão da
 > titularidade (cláusula 13.13) será resolvida por acordo escrito com a franqueadora.
 > **Sem esse acordo, nada abaixo é executável.**
@@ -25,8 +34,8 @@ tags: [fast, business-plan, saas, franquia, modelo-financeiro]
 | **Modelo** | Fornecedor Homologado. Taxa de Software paga pela loja, no trilho que a cláusula 7.6 já criou. Painel da Rede vendido à franqueadora |
 | **Preço** | R$ 199 / 349 / 549 por loja. Ticket médio modelado R$ 319 |
 | **Economia unitária** | Margem de contribuição R$ 274/loja/mês (86%). Payback do CAC: 1,5 mês |
-| **Capital necessário** | **R$ 267 mil** até o caixa virar (R$ 215 mil na versão enxuta) |
-| **Retorno** | Ano 2: R$ 968 mil de receita. Ano 3: R$ 1,53 mi de receita, R$ 883 mil de resultado |
+| **Capital necessário** | **R$ 192 mil com homologação · R$ 267 mil sem** |
+| **Retorno** | Com homologação — ano 2: R$ 1,28 mi de receita. Ano 3: R$ 1,56 mi de receita, R$ 859 mil de resultado |
 | **Ponto de equilíbrio** | 128 lojas pagando (92 com o Painel da Rede) — 21% a 30% da rede |
 | **Risco nº 1** | A franqueadora reivindicar a titularidade pela 13.13 sem contrapartida |
 
