@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Probe: descobre qual endpoint Trinks retorna as comissões por serviço/profissional.
-
-Faz requests HTTP diretas pra ver o status code REAL (o TrinksClient
-esconde 404 devolvendo stub vazio, mascarando "não achou" como "0 regras").
-"""
-import json, os, sys, traceback
+"""Probe v3: reprocessa endpoints comissão com sleep pra evitar 429 do run anterior."""
+import json, os, sys, time, traceback
 import requests
 
 API_KEY = os.getenv("TRINKS_API_KEY", "").strip()
@@ -16,94 +12,94 @@ HEADERS = {
     "Content-Type": "application/json",
     "Accept": "application/json",
 }
+SLEEP = 1.2  # ~50 req/min
 
 
-def try_get(path, params=None, label=None):
-    label = label or path
-    url = BASE + path
+def hit(path, params=None, method="GET"):
+    print(f"\n[{method}] {path} params={params or {}}")
+    time.sleep(SLEEP)
     try:
-        r = requests.get(url, headers=HEADERS, params=params or {}, timeout=15)
-        status = r.status_code
-        body = None
+        if method == "GET":
+            r = requests.get(BASE + path, headers=HEADERS, params=params or {}, timeout=15)
+        else:
+            r = requests.post(BASE + path, headers=HEADERS, json=params or {}, timeout=15)
+        print(f"  status={r.status_code}")
         try:
             body = r.json()
         except Exception:
             body = r.text[:400]
-        print(f"\n[{status}] GET {path} params={params or {}}")
-        # Sumariza body
         if isinstance(body, dict):
             keys = list(body.keys())
-            print(f"  keys: {keys[:20]}")
             data = body.get("data")
-            if isinstance(data, list):
-                print(f"  data: {len(data)} items · totalRecords={body.get('totalRecords','?')}")
-                if data:
-                    print(f"  amostra[0]:", json.dumps(data[0], ensure_ascii=False, indent=2)[:800])
+            tr = body.get("totalRecords", body.get("total", "?"))
+            print(f"  keys={keys[:15]} totalRecords={tr}")
+            if isinstance(data, list) and data:
+                print(f"  data[{len(data)}] amostra[0]:")
+                print("  ", json.dumps(data[0], ensure_ascii=False, indent=2)[:1200])
+            elif isinstance(data, list):
+                print(f"  data=[] (vazio)")
+            elif data is None and body.get("message"):
+                print(f"  message: {body.get('message')}")
             else:
-                snippet = json.dumps(body, ensure_ascii=False, indent=2)
-                print(f"  body:", snippet[:800])
+                print(f"  body:", json.dumps(body, ensure_ascii=False)[:500])
+        elif isinstance(body, list):
+            print(f"  list[{len(body)}]")
+            if body:
+                print("  ", json.dumps(body[0], ensure_ascii=False)[:600])
         else:
-            print(f"  text: {body[:400]}")
-        return status, body
+            print(f"  raw: {str(body)[:400]}")
+        return r.status_code, body
     except Exception as e:
-        print(f"\n[ERR] GET {path}: {type(e).__name__}: {str(e)[:200]}")
+        print(f"  ERR {type(e).__name__}: {str(e)[:200]}")
         return None, None
 
 
 def main():
-    if not API_KEY or not EID:
-        print("❌ TRINKS_API_KEY / TRINKS_ESTABELECIMENTO_ID ausentes")
-        sys.exit(1)
     print(f"Estabelecimento: {EID[:6]}...")
+    print("Sleep entre calls: %.1fs (~%d req/min)\n" % (SLEEP, 60/SLEEP))
+
+    # IDs de amostra do probe anterior
+    SID = 15450779
+    PID = 930860
+
+    # Bloco A — /profissionais/comissoes com filtros
+    hit("/v1/profissionais/comissoes")
+    hit("/v1/profissionais/comissoes", {"profissionalId": PID})
+    hit("/v1/profissionais/comissoes", {"idProfissional": PID})
+    hit("/v1/profissionais/comissoes", {"servicoId": SID})
+    hit("/v1/profissionais/comissoes", {"pageSize": 500})
+
+    # Bloco B — variações de rota (aguardado o cooldown do run 3)
+    hit("/v1/comissoes")
+    hit("/v1/comissoes", {"profissionalId": PID})
+    hit("/v1/comissoes/regras")
+    hit("/v1/regras-comissao")
+    hit("/v1/servicos-profissionais")
+    hit("/v1/servicos-profissionais", {"pageSize": 200})
+    hit("/v1/profissionais-servicos")
+
+    # Bloco C — recurso relação n:n (candidato principal)
+    hit(f"/v1/servicos/{SID}/profissionais/{PID}")
+    hit(f"/v1/profissionais/{PID}/servicos/{SID}")
+
+    # Bloco D — variantes com include
+    hit(f"/v1/servicos/{SID}", {"include": "comissoes"})
+    hit(f"/v1/servicos/{SID}", {"include": "profissionais.comissao"})
+    hit(f"/v1/profissionais/{PID}", {"include": "comissoes"})
+    hit(f"/v1/profissionais/{PID}", {"include": "servicos.comissao"})
+
+    # Bloco E — backoffice / configuracoes / cadastros
+    hit("/v1/backoffice/comissoes")
+    hit("/v1/cadastros/comissoes")
+    hit("/v1/configuracoes/comissoes")
+
+    # Bloco F — endpoints internos do backoffice (long shot)
+    hit("/backoffice/api/comissoes")
+    hit("/api/backoffice/comissoes")
+    hit("/backoffice/comissoes")
 
     print("\n" + "=" * 70)
-    print("PROBE COMPLETO: comissões Trinks")
-    print("=" * 70)
-
-    # 1) Baseline
-    try_get("/v1/profissionais/comissoes", {"pageSize": 200})
-
-    # 2) Serviços — pega ID de amostra
-    _, sv = try_get("/v1/servicos", {"pageSize": 3})
-    servs = (sv or {}).get("data", []) if isinstance(sv, dict) else []
-    sid = servs[0].get("id") if servs else None
-
-    # 3) Profissionais
-    _, pv = try_get("/v1/profissionais", {"pageSize": 3})
-    profs = (pv or {}).get("data", []) if isinstance(pv, dict) else []
-    pid = profs[0].get("id") if profs else None
-    print(f"\n[info] IDs pra probing: servico={sid} profissional={pid}")
-
-    # 4) Endpoints aninhados
-    if sid:
-        try_get(f"/v1/servicos/{sid}/profissionais")
-        try_get(f"/v1/servicos/{sid}/comissoes")
-        try_get(f"/v1/servicos/{sid}")  # ver campos completos
-    if pid:
-        try_get(f"/v1/profissionais/{pid}/servicos")
-        try_get(f"/v1/profissionais/{pid}/comissoes")
-        try_get(f"/v1/profissionais/{pid}")  # ver campos completos
-
-    # 5) Outros paths raiz
-    try_get("/v1/servicos/comissoes")
-    try_get("/v1/comissoes")
-    try_get("/v1/backoffice/comissoes")
-    try_get("/v1/cadastros/comissoes")
-    try_get("/v1/configuracoes/comissoes")
-
-    # 6) Serviços × profissionais (relação N:N)
-    try_get("/v1/servicos-profissionais")
-    if sid and pid:
-        try_get(f"/v1/servicos/{sid}/profissionais/{pid}")
-        try_get(f"/v1/profissionais/{pid}/servicos/{sid}")
-
-    # 7) Include query
-    if sid:
-        try_get(f"/v1/servicos/{sid}", {"include": "profissionais"})
-        try_get(f"/v1/servicos/{sid}", {"include": "comissoes"})
-
-    print("\n" + "=" * 70)
-    print("Fim do probe. Endpoints que retornam 200 + data preenchido = provável hit.")
+    print("FIM DO PROBE V3.")
     print("=" * 70)
 
 
