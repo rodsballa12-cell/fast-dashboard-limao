@@ -1,108 +1,109 @@
 # -*- coding: utf-8 -*-
 """Probe: descobre qual endpoint Trinks retorna as comissões por serviço/profissional.
 
-Rodrigo confirmou que /BackOffice/ManterCadastro/Servicos na UI mostra comissão
-por profissional × serviço. O endpoint /v1/profissionais/comissoes retorna 0.
-Testa 8 alternativas e loga qual devolve o dado.
-
-Roda via workflow probe_comissoes.yml. Não modifica nenhum JSON — só imprime.
+Faz requests HTTP diretas pra ver o status code REAL (o TrinksClient
+esconde 404 devolvendo stub vazio, mascarando "não achou" como "0 regras").
 """
 import json, os, sys, traceback
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import requests
 
-from trinks_common import TrinksClient  # já autentica com secrets
-
-
-def dump(label, resp, limit=3):
-    print(f"\n===== {label} =====")
-    if resp is None:
-        print("  (None)")
-        return
-    if isinstance(resp, dict):
-        keys = list(resp.keys())
-        print(f"  dict keys: {keys[:20]}")
-        # Se tem items/data/etc, dumpa amostra
-        for k in ("items", "data", "results", "servicos", "profissionais"):
-            v = resp.get(k)
-            if isinstance(v, list) and v:
-                print(f"  {k}: {len(v)} items · sample:")
-                print("  ", json.dumps(v[0], ensure_ascii=False, indent=2)[:1500])
-                return
-        print(f"  content: {json.dumps(resp, ensure_ascii=False, indent=2)[:1500]}")
-    elif isinstance(resp, list):
-        print(f"  list: {len(resp)} items")
-        for i in range(min(limit, len(resp))):
-            print(f"  [{i}]:", json.dumps(resp[i], ensure_ascii=False, indent=2)[:800])
-    else:
-        print(f"  raw: {str(resp)[:800]}")
+API_KEY = os.getenv("TRINKS_API_KEY", "").strip()
+EID = os.getenv("TRINKS_ESTABELECIMENTO_ID", "").strip()
+BASE = "https://api.trinks.com"
+HEADERS = {
+    "apiKey": API_KEY,
+    "estabelecimentoId": EID,
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+}
 
 
-def try_endpoint(t, path, params=None):
-    print(f"\n[try] GET {path} params={params}")
+def try_get(path, params=None, label=None):
+    label = label or path
+    url = BASE + path
     try:
-        r = t.get(path, params or {})
-        return r
+        r = requests.get(url, headers=HEADERS, params=params or {}, timeout=15)
+        status = r.status_code
+        body = None
+        try:
+            body = r.json()
+        except Exception:
+            body = r.text[:400]
+        print(f"\n[{status}] GET {path} params={params or {}}")
+        # Sumariza body
+        if isinstance(body, dict):
+            keys = list(body.keys())
+            print(f"  keys: {keys[:20]}")
+            data = body.get("data")
+            if isinstance(data, list):
+                print(f"  data: {len(data)} items · totalRecords={body.get('totalRecords','?')}")
+                if data:
+                    print(f"  amostra[0]:", json.dumps(data[0], ensure_ascii=False, indent=2)[:800])
+            else:
+                snippet = json.dumps(body, ensure_ascii=False, indent=2)
+                print(f"  body:", snippet[:800])
+        else:
+            print(f"  text: {body[:400]}")
+        return status, body
     except Exception as e:
-        print(f"  ERRO: {type(e).__name__}: {str(e)[:200]}")
-        return None
+        print(f"\n[ERR] GET {path}: {type(e).__name__}: {str(e)[:200]}")
+        return None, None
 
 
 def main():
-    t = TrinksClient()
-    print("=" * 70)
-    print("PROBE: descobrindo endpoint de comissões Trinks")
-    print("=" * 70)
-
-    # 1) Baseline — endpoint atual do refresh
-    r1 = try_endpoint(t, "/v1/profissionais/comissoes", {"pageSize": 200})
-    dump("1. /v1/profissionais/comissoes", r1)
-
-    # 2) Serviços — checar se tem campo comissão que passamos batido
-    r2 = try_endpoint(t, "/v1/servicos", {"pageSize": 5})
-    dump("2. /v1/servicos (busca campo comissão)", r2)
-    if isinstance(r2, dict) and "items" in r2 and r2["items"]:
-        print("  CAMPOS do primeiro serviço:", list(r2["items"][0].keys()))
-    elif isinstance(r2, list) and r2:
-        print("  CAMPOS do primeiro serviço:", list(r2[0].keys()))
-
-    # 3) Serviço específico + profissionais (endpoint aninhado)
-    #    Trinks às vezes expõe /servicos/{id}/profissionais com comissão
-    servs = r2.get("items") if isinstance(r2, dict) else r2 if isinstance(r2, list) else []
-    if servs:
-        sid = servs[0].get("id")
-        r3 = try_endpoint(t, f"/v1/servicos/{sid}/profissionais")
-        dump(f"3. /v1/servicos/{sid}/profissionais", r3)
-
-    # 4) Profissional + serviços (variante inversa)
-    r4a = try_endpoint(t, "/v1/profissionais", {"pageSize": 5})
-    profs = r4a.get("items") if isinstance(r4a, dict) else r4a if isinstance(r4a, list) else []
-    if profs:
-        pid = profs[0].get("id")
-        r4 = try_endpoint(t, f"/v1/profissionais/{pid}/servicos")
-        dump(f"4. /v1/profissionais/{pid}/servicos", r4)
-
-    # 5) Endpoint direto do BackOffice (pode ser exposto no v1)
-    r5 = try_endpoint(t, "/v1/servicos/comissoes")
-    dump("5. /v1/servicos/comissoes", r5)
-
-    # 6) Endpoint que agrupa
-    r6 = try_endpoint(t, "/v1/comissoes")
-    dump("6. /v1/comissoes", r6)
-
-    # 7) Serviço específico com include
-    if servs:
-        sid = servs[0].get("id")
-        r7 = try_endpoint(t, f"/v1/servicos/{sid}", {"include": "profissionais,comissoes"})
-        dump(f"7. /v1/servicos/{sid}?include=...", r7)
-
-    # 8) Profissional específico com include
-    if profs:
-        pid = profs[0].get("id")
-        r8 = try_endpoint(t, f"/v1/profissionais/{pid}", {"include": "comissoes,servicos"})
-        dump(f"8. /v1/profissionais/{pid}?include=...", r8)
+    if not API_KEY or not EID:
+        print("❌ TRINKS_API_KEY / TRINKS_ESTABELECIMENTO_ID ausentes")
+        sys.exit(1)
+    print(f"Estabelecimento: {EID[:6]}...")
 
     print("\n" + "=" * 70)
-    print("Probe concluído. Envie o output completo pra análise.")
+    print("PROBE COMPLETO: comissões Trinks")
+    print("=" * 70)
+
+    # 1) Baseline
+    try_get("/v1/profissionais/comissoes", {"pageSize": 200})
+
+    # 2) Serviços — pega ID de amostra
+    _, sv = try_get("/v1/servicos", {"pageSize": 3})
+    servs = (sv or {}).get("data", []) if isinstance(sv, dict) else []
+    sid = servs[0].get("id") if servs else None
+
+    # 3) Profissionais
+    _, pv = try_get("/v1/profissionais", {"pageSize": 3})
+    profs = (pv or {}).get("data", []) if isinstance(pv, dict) else []
+    pid = profs[0].get("id") if profs else None
+    print(f"\n[info] IDs pra probing: servico={sid} profissional={pid}")
+
+    # 4) Endpoints aninhados
+    if sid:
+        try_get(f"/v1/servicos/{sid}/profissionais")
+        try_get(f"/v1/servicos/{sid}/comissoes")
+        try_get(f"/v1/servicos/{sid}")  # ver campos completos
+    if pid:
+        try_get(f"/v1/profissionais/{pid}/servicos")
+        try_get(f"/v1/profissionais/{pid}/comissoes")
+        try_get(f"/v1/profissionais/{pid}")  # ver campos completos
+
+    # 5) Outros paths raiz
+    try_get("/v1/servicos/comissoes")
+    try_get("/v1/comissoes")
+    try_get("/v1/backoffice/comissoes")
+    try_get("/v1/cadastros/comissoes")
+    try_get("/v1/configuracoes/comissoes")
+
+    # 6) Serviços × profissionais (relação N:N)
+    try_get("/v1/servicos-profissionais")
+    if sid and pid:
+        try_get(f"/v1/servicos/{sid}/profissionais/{pid}")
+        try_get(f"/v1/profissionais/{pid}/servicos/{sid}")
+
+    # 7) Include query
+    if sid:
+        try_get(f"/v1/servicos/{sid}", {"include": "profissionais"})
+        try_get(f"/v1/servicos/{sid}", {"include": "comissoes"})
+
+    print("\n" + "=" * 70)
+    print("Fim do probe. Endpoints que retornam 200 + data preenchido = provável hit.")
     print("=" * 70)
 
 
