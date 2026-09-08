@@ -1,0 +1,38 @@
+name: WhatsApp — teste de fumaça (hello_world)
+
+# Dispara o template hello_world (aprovado por padrão pela Meta) pro número
+# passado como input. Serve pra validar que META_ACCESS_TOKEN + META_PHONE_NUMBER_ID
+# estão corretos e que o destinatário está na allow-list de teste.
+# Depois que o setup estabilizar (número real registrado + template próprio aprovado),
+# esse workflow pode ser removido.
+
+on:
+  workflow_dispatch:
+    inputs:
+      destino:
+        description: 'Número destino no formato internacional (só dígitos, ex: 5511966129197)'
+        required: true
+        default: '5511966129197'
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enviar hello_world
+        env:
+          TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          PHONE_ID: ${{ secrets.META_PHONE_NUMBER_ID }}
+          DEST: ${{ inputs.destino }}
+        run: |
+          echo "Phone ID: ${PHONE_ID:0:6}...${PHONE_ID: -4}"
+          echo "Token: ${TOKEN:0:6}...${TOKEN: -6}"
+          echo "Destino: $DEST"
+          echo "---"
+          resp=$(curl -sS -w "\nHTTP:%{http_code}" \
+            -X POST "https://graph.facebook.com/v25.0/${PHONE_ID}/messages" \
+            -H "Authorization: Bearer ${TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"messaging_product\":\"whatsapp\",\"to\":\"${DEST}\",\"type\":\"template\",\"template\":{\"name\":\"hello_world\",\"language\":{\"code\":\"en_US\"}}}")
+          echo "$resp"
+          # Falha o job se HTTP não for 200
+          echo "$resp" | grep -q "HTTP:200" || exit 1
