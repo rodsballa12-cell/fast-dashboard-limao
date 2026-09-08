@@ -396,11 +396,11 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
 <nav class="toc" aria-label="Seções">
   <a href="#s1">01 · Onde estamos</a>
   <a href="#s2">02 · Produto</a>
-  <a href="#s3">03 · Estrutura jurídica</a>
-  <a href="#s4">04 · Mercado</a>
-  <a href="#s5">05 · Preços</a>
-  <a href="#s6">06 · Go-to-market</a>
-  <a href="#s7">07 · Financeiro</a>
+  <a href="#s3">03 · Mercado</a>
+  <a href="#s4">04 · Preços</a>
+  <a href="#s5">05 · Go-to-market</a>
+  <a href="#s6">06 · Financeiro</a>
+  <a href="#s7">07 · Estrutura jurídica</a>
   <a href="#s8">08 · Riscos</a>
   <a href="#s9">09 · Portões</a>
   <a href="#s10">10 · O que falta descobrir</a>
@@ -412,7 +412,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
   <div class="fig"><span class="n">mês 17</span><span class="l">caixa volta a zero · contra mês 23</span></div>
   <div class="fig"><span class="n">570 lojas</span><span class="l">no mês 36 · contra 389</span></div>
 </div>
-<div class="docnote"><p style="margin:0"><strong>Sobre este arquivo.</strong> Documento autônomo: funciona sem internet, pode ser enviado por e-mail e imprime em 25 páginas. Use o botão no topo para salvar em PDF. As tabelas financeiras saem da planilha <code>FAST-Insights-modelo-financeiro.xlsx</code>, cujas fórmulas foram conferidas uma a uma contra um modelo independente em Python.</p></div><p class="note">Modelo de 36 meses com premissas explícitas na seção 07. Os números em destaque acima são do cenário COM homologação; o plano inteiro está calculado nos dois desenhos, lado a lado. Toda projeção é estimativa, e os 34 itens da seção 10 são exatamente o que ainda pode derrubá-la.</p>
+<div class="docnote"><p style="margin:0"><strong>Sobre este arquivo.</strong> Documento autônomo: funciona sem internet, pode ser enviado por e-mail e imprime em 25 páginas. Use o botão no topo para salvar em PDF. As tabelas financeiras saem da planilha <code>FAST-Insights-modelo-financeiro.xlsx</code>, cujas fórmulas foram conferidas uma a uma contra um modelo independente em Python.</p></div><p class="note">Modelo de 36 meses com premissas explícitas na seção 06. Os números em destaque acima são do cenário COM homologação; o plano inteiro está calculado nos dois desenhos, lado a lado. Toda projeção é estimativa, e os 34 itens da seção 10 são exatamente o que ainda pode derrubá-la.</p>
 <div class="callout" style="max-width:none">
   <span class="k">Os dois cenários</span>
   <p><strong>Nos dois casos você é Fornecedor Homologado</strong> — vender à rede por fora não é uma opção, dispara as cláusulas 21.1 e 19.3.3&nbsp;(ix). O que muda é a adesão:</p>
@@ -464,53 +464,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
 </section>
 
 <section id="s3">
-  <div class="shead"><span class="snum">03</span><h2>Estrutura jurídica</h2></div>
-  <p>Três formas de destravar a 13.13. A escolha define quem investe o capital — R$ 192 mil com homologação, R$ 267 mil sem — e quem fica com o resultado.</p>
-  <p class="note"><strong>São dois eixos independentes, e vale não confundi-los.</strong> Esta seção decide <em>de quem é o produto</em> (titularidade: licenciar, sociedade ou vender). A seção 05 decide <em>como ele chega às lojas</em> (distribuição: adesão voluntária ou obrigatória). Qualquer uma das três estruturas abaixo funciona com qualquer um dos dois cenários.</p>
-  <div class="opts">
-    <div class="opt">
-      <h4>A · Licenciamento</h4>
-      <dl>
-        <dt>Dono</dt><dd>Você, com licença à rede</dd>
-        <dt>Recebe</dt><dd>Royalty por loja ativa</dd>
-        <dt>Investe</dt><dd>Você</dd>
-        <dt>Upside ano 3</dt><dd>R$ 859 mil com homologação</dd>
-        <dt>Risco 13.13</dt><dd>Alto — ela pode contestar</dd>
-      </dl>
-      <p class="note" style="margin:0">Melhor cenário financeiro, mais difícil de conseguir: exige que ela abra mão de um direito que já tem no papel. <strong>Peça esta.</strong></p>
-    </div>
-    <div class="opt pick">
-      <span class="rec">Aceite esta</span>
-      <h4>B · Joint venture</h4>
-      <dl>
-        <dt>Dono</dt><dd>Sociedade nova</dd>
-        <dt>Recebe</dt><dd>Participação + pró-labore</dd>
-        <dt>Investe</dt><dd>A sociedade</dd>
-        <dt>Upside ano 3</dt><dd>Sua fatia de R$ 859 mil</dd>
-        <dt>Risco 13.13</dt><dd>Neutralizado</dd>
-      </dl>
-      <p class="note" style="margin:0">O provável, e é bom: neutraliza a cláusula, divide o capital e mantém upside.</p>
-    </div>
-    <div class="opt">
-      <h4>C · Venda do ativo</h4>
-      <dl>
-        <dt>Dono</dt><dd>Franqueadora</dd>
-        <dt>Recebe</dt><dd>À vista + earn-out</dd>
-        <dt>Investe</dt><dd>Ela</dd>
-        <dt>Upside ano 3</dt><dd>Zero após o pagamento</dd>
-        <dt>Risco 13.13</dt><dd>Neutralizado</dd>
-      </dl>
-      <p class="note" style="margin:0">Põe dinheiro no bolso e encerra o assunto. Considere se a negociação travar, ou se você concluir que não quer tocar uma empresa de software.</p>
-    </div>
-  </div>
-  <div class="callout">
-    <span class="k">Regra inegociável nas três</span>
-    <p>Nada de código, repositório ou demonstração técnica detalhada antes de documento assinado. Mostrar o painel funcionando, sim; mostrar como ele foi feito, não.</p>
-  </div>
-</section>
-
-<section id="s4">
-  <div class="shead"><span class="snum">04</span><h2>Mercado</h2></div>
+  <div class="shead"><span class="snum">03</span><h2>Mercado</h2></div>
   <div class="tw">
     <table>
       <thead><tr><th>Camada</th><th>Definição</th><th class="num">Lojas</th><th class="num">Receita potencial/ano</th></tr></thead>
@@ -543,8 +497,8 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
   </div>
 </section>
 
-<section id="s5">
-  <div class="shead"><span class="snum">05</span><h2>Modelo e preços</h2></div>
+<section id="s4">
+  <div class="shead"><span class="snum">04</span><h2>Modelo e preços</h2></div>
   <p>Fornecedor Homologado, espelhando o que a rede já faz com Trinks e Sults. A pergunta que resta é se a adesão é voluntária ou obrigatória — e ela muda sete premissas de uma vez.</p>
   <div class="tw">
     <table>
@@ -593,8 +547,8 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
   </ul>
 </section>
 
-<section id="s6">
-  <div class="shead"><span class="snum">06</span><h2>Go-to-market</h2></div>
+<section id="s5">
+  <div class="shead"><span class="snum">05</span><h2>Go-to-market</h2></div>
   <div class="tw">
     <table>
       <thead><tr><th>Etapa</th><th class="num">Duração</th><th>O que acontece</th><th>Marco de saída</th></tr></thead>
@@ -629,8 +583,8 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
   <p class="note"><strong>Por que nunca 100%:</strong> lojas novas em ramp-up, franqueados multi-unidade que negociam à parte, lojas em transição societária. Adoção total em rede de franquia é ficção — mas 95% sob obrigação contratual é realista, contra 65% no melhor caso da venda voluntária.</p>
 </section>
 
-<section id="s7">
-  <div class="shead"><span class="snum">07</span><h2>Financeiro</h2></div>
+<section id="s6">
+  <div class="shead"><span class="snum">06</span><h2>Financeiro</h2></div>
 
   <h3>Premissas</h3>
   <div class="tw">
@@ -783,6 +737,66 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
   <p class="note"><strong>Lacuna conhecida:</strong> a projeção está antes dos impostos da empresa de software (item N3). A uma alíquota de 10% sobre a receita, o resultado do ano 3 cairia de R$ 859 mil para cerca de R$ 704 mil no cenário com homologação, e de R$ 883 mil para cerca de R$ 731 mil sem. Não muda a decisão, mas precisa entrar antes de virar proposta formal.</p>
 </section>
 
+<section id="s7">
+  <div class="shead"><span class="snum">07</span><h2>Estrutura jurídica</h2></div>
+  <p class="lead">Agora que o número existe, a pergunta muda: <strong>de quem é esse resultado?</strong> A cláusula 13.13 da seção 01 diz que a inovação pertence à franqueadora. Há três formas de destravá-la, e cada uma divide de um jeito o que a seção anterior acabou de calcular.</p>
+
+  <div class="opts">
+    <div class="opt">
+      <h4>A · Licenciamento</h4>
+      <dl>
+        <dt>Dono</dt><dd>Você, com licença à rede</dd>
+        <dt>Recebe</dt><dd>Royalty por loja ativa</dd>
+        <dt>Investe</dt><dd>Você</dd>
+        <dt>Risco 13.13</dt><dd>Alto — ela pode contestar</dd>
+      </dl>
+      <p class="note" style="margin:0">Melhor cenário financeiro, mais difícil de conseguir: exige que ela abra mão de um direito que já tem no papel. <strong>Peça esta.</strong></p>
+    </div>
+    <div class="opt pick">
+      <span class="rec">Aceite esta</span>
+      <h4>B · Joint venture</h4>
+      <dl>
+        <dt>Dono</dt><dd>Sociedade nova</dd>
+        <dt>Recebe</dt><dd>Participação + pró-labore</dd>
+        <dt>Investe</dt><dd>A sociedade</dd>
+        <dt>Risco 13.13</dt><dd>Neutralizado</dd>
+      </dl>
+      <p class="note" style="margin:0">O provável, e é bom: neutraliza a cláusula, divide o capital e mantém upside.</p>
+    </div>
+    <div class="opt">
+      <h4>C · Venda do ativo</h4>
+      <dl>
+        <dt>Dono</dt><dd>Franqueadora</dd>
+        <dt>Recebe</dt><dd>À vista + earn-out</dd>
+        <dt>Investe</dt><dd>Ela</dd>
+        <dt>Risco 13.13</dt><dd>Neutralizado</dd>
+      </dl>
+      <p class="note" style="margin:0">Põe dinheiro no bolso e encerra o assunto. Considere se a negociação travar, ou se você concluir que não quer tocar uma empresa de software.</p>
+    </div>
+  </div>
+
+  <h3>As duas decisões se cruzam — e o cruzamento é o seu resultado</h3>
+  <p>Esta seção decide <strong>de quem é o produto</strong>. A seção 04 decidiu <strong>como ele chega às lojas</strong>. São independentes: qualquer uma das três estruturas funciona com qualquer um dos dois cenários. O que muda é quanto sobra para você no ano 3.</p>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Estrutura de titularidade</th><th class="num">Sem homologação obrigatória</th><th class="num">Com homologação obrigatória</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A · Licenciamento</strong> — o resultado é seu</td><td class="num pos">R$ 883 mil</td><td class="num pos">R$ 859 mil</td></tr>
+        <tr class="total"><td><strong>B · Joint venture</strong> — sua fatia, num 50/50</td><td class="num pos">R$ 442 mil</td><td class="num pos">R$ 430 mil</td></tr>
+        <tr><td><strong>C · Venda do ativo</strong> — recorrência zero</td><td colspan="2">Valor à vista, negociado como múltiplo da receita anual — o múltiplo é o que se negocia, e não está modelado aqui</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Resultado do ano 3, antes dos impostos da software house. A divisão 50/50 na linha B é uma suposição para dar ordem de grandeza — a fatia real é exatamente o que se negocia. Repare que a coluna da direita é levemente menor e mesmo assim é a recomendada: ela chega lá com R$ 75 mil a menos de capital e seis meses antes.</p>
+
+  <div class="callout">
+    <span class="k">Regra inegociável nas três</span>
+    <p>Nada de código, repositório ou demonstração técnica detalhada antes de documento assinado. Mostrar o painel funcionando, sim; mostrar como ele foi feito, não.</p>
+  </div>
+
+  <p>Qual das três sai depende de uma resposta que ainda não temos — se a 13.13 alcança um software que você escreveu. É o item J1 da seção 10, e o portão G1 da seção 09 existe exatamente para não deixar este plano avançar sem ela.</p>
+</section>
+
 <section id="s8">
   <div class="shead"><span class="snum">08</span><h2>Riscos</h2></div>
   <div class="tw">
@@ -929,7 +943,7 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.92em;background:var(--surf
       ['J2','b','A Lei de Software (9.609/98) muda algo, sendo o autor pessoa física, fora de vínculo empregatício e com ferramentas próprias?','Define a força do seu argumento de titularidade.'],
       ['J3','b','Qual o risco real das três exposições atuais — painel público, sync do HubSpot, campanhas — e em que ordem corrigir?','Define o que fazer <b>nesta semana</b>.'],
       ['J4','e','Como demonstrar o produto à franqueadora sem entregar o ativo? Existe NDA ou memorando que preserve minha posição?','Define se a reunião da semana 4 pode acontecer.'],
-      ['J5','e','Qual estrutura usar: PJ separada, sociedade com a franqueadora, ou licenciamento? Posso ser sócio de uma software house sendo franqueado?','Define qual das três estruturas da seção 03 é viável.'],
+      ['J5','e','Qual estrutura usar: PJ separada, sociedade com a franqueadora, ou licenciamento? Posso ser sócio de uma software house sendo franqueado?','Define qual das três estruturas da seção 07 é viável.'],
       ['J6','e','Sendo franqueado <em>e</em> fornecedor homologado ao mesmo tempo, há conflito a tratar no contrato de fornecimento?','Define cláusulas do contrato de homologação.'],
       ['J7','e','Se eu construir do zero um produto genérico para salões, fora do horário e sem material dos MANUAIS, a 13.13 ainda alcança? Que provas de segregação preciso produzir desde já?','Define se o plano B existe — e as provas precisam começar <b>antes</b>, não depois.']
     ]},
