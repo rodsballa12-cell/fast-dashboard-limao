@@ -1427,15 +1427,33 @@ function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_
   const badgeTaxa = cfg && taxaEfetiva > 0
     ? ` <span class="hi">(taxa efetiva ${taxaEfetiva.toFixed(1)}% · comissão R$ ${totalComEquipe.toLocaleString('pt-BR',{maximumFractionDigits:0})})</span>` : '';
 
+  // Reconciliação com faturamento: pacotes + produtos + serviços sem prof executor
   const naoAtribuido = Math.max((caixa||0) - totalReceitaEquipe, 0);
-  const reconcHint = caixa > 0 ? `<div class="cap" style="margin-top:6px;font-size:11.5px">💰 <strong>Faturamento total do período:</strong> ${brl0(caixa)} · <strong>Atribuído a profissionais</strong> (serviços com prof executor): ${brl0(totalReceitaEquipe)} · <strong>Não atribuído</strong>: ${brl0(naoAtribuido)} <span style="color:var(--ink-3)">(pacotes, produtos e serviços sem prof executor no Trinks — não entram na base de comissão)</span></div>` : '';
+  const naoAtribShare = caixa > 0 ? (naoAtribuido/caixa*100) : 0;
+  const naoAtribRow = (caixa > 0 && naoAtribuido > 0.5) ? `<tr style="background:var(--surface-2);color:var(--ink-2);font-style:italic">
+    <td>Não atribuível a prof <span style="font-size:11px;color:var(--ink-3);font-style:normal">(pacotes + produtos + serviços sem prof executor no Trinks — fora da base de comissão)</span></td>
+    <td style="text-align:right">—</td>
+    <td style="text-align:right">—</td>
+    <td style="text-align:right">—</td>
+    <td style="text-align:right">${brl0(naoAtribuido)}</td>
+    <td style="text-align:right">${naoAtribShare.toFixed(0)}%</td>
+    <td style="text-align:right">—</td>
+  </tr>` : '';
+  const totalFatRow = caixa > 0 ? `<tr style="background:var(--accent-soft,rgba(245,184,0,.15));color:var(--ink);font-weight:800;border-top:2px solid var(--accent)">
+    <td>TOTAL FATURAMENTO ${periodo_label.toUpperCase()}</td>
+    <td style="text-align:right">—</td>
+    <td style="text-align:right">—</td>
+    <td style="text-align:right">—</td>
+    <td style="text-align:right">${brl0(caixa)}</td>
+    <td style="text-align:right">100%</td>
+    <td style="text-align:right">${cfg ? brl0(totalComEquipe) : '—'}</td>
+  </tr>` : '';
   el.innerHTML = `<div class="card">
     <h2>👥 Profissionais + Comissões · ${periodo_label}${badgeTaxa}${totalBadge}</h2>
     <div class="cap">Ranking por receita de serviços atribuída ao prof executor. Comissão estimada = receita_prof × taxa efetiva do período. ${cfg ? '' : '<em>Aguardando <code>data/comissoes.json</code> pra calcular comissão.</em>'}</div>
-    ${reconcHint}
     <div style="overflow-x:auto;margin-top:10px"><table class="simple">
       <thead><tr><th>Profissional</th><th style="text-align:right">Atend</th><th style="text-align:right">Horas</th><th style="text-align:right">Ticket médio</th><th style="text-align:right">Receita serv</th><th style="text-align:right">% equipe</th><th style="text-align:right">Comissão</th></tr></thead>
-      <tbody>${rowsProf}${totalRow}</tbody>
+      <tbody>${rowsProf}${totalRow}${naoAtribRow}${totalFatRow}</tbody>
     </table></div>
     ${catBlock}
   </div>`;
