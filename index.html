@@ -2107,8 +2107,8 @@ function renderAnual(data){
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   // Categorias nativas Trinks agora vivem dentro do card "Detalhamento por categoria"
   renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
-  // UNIFICADO · Profissionais + Comissões. Anual não tem ranking_prof anual dedicado, usa mensal como aproximação.
-  renderProfComissoes('per-prof', 'ano', (data.abas.mensal||{}).ranking_prof || [], (data.abas.mensal||{}).ranking_prof_total_n || 0, a.categoria_native, k.caixa || 0);
+  // UNIFICADO · Profissionais + Comissões · Ano usa seu próprio ranking_prof anual.
+  renderProfComissoes('per-prof', 'ano', a.ranking_prof || [], a.ranking_prof_total_n || 0, a.categoria_native, k.caixa || 0);
   renderInsights('per-insights', 'Ano 2026', (data.insights||{}).anual);
 }
 
