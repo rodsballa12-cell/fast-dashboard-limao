@@ -2,8 +2,17 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAST Limão — Painel Trinks</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F5B800" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B0B0F" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FAST Limão">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23F5B800'/%3E%3Ctext x='90' y='128' font-family='Georgia,serif' font-size='120' font-weight='700' text-anchor='middle' fill='%230A0A0C'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F5B800'/%3E%3Ctext x='32' y='46' font-family='Georgia,serif' font-size='44' font-weight='700' text-anchor='middle' fill='%230A0A0C'%3EF%3C/text%3E%3C/svg%3E">
+<title>FAST Limão — Painel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -247,6 +256,110 @@
   @media (max-width:1100px){ .kpi-grid.fin5{grid-template-columns:repeat(3,1fr);} }
   @media (max-width:760px){ .dre-ind{grid-template-columns:repeat(2,1fr);} .kpi-grid.fin5{grid-template-columns:repeat(2,1fr);} }
   @media (max-width:820px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.grid-2b{grid-template-columns:1fr;}.categ-grid{grid-template-columns:1fr;}.meta-row{grid-template-columns:repeat(2,1fr);}.brand-txt h1{font-size:18px;}.logo svg{height:44px;width:44px;}.kpi .value{font-size:24px;}.tab-btn{padding:10px 12px;font-size:12.5px;}}
+
+  /* ===== MOBILE FIRST · iOS/Android ===== */
+  /* Tablet e celular grande (até 640px) */
+  @media (max-width:640px){
+    body{font-size:14.5px;line-height:1.5;}
+    .wrap{padding:16px 14px 80px;max-width:100%;}
+    header{padding-bottom:16px;margin-bottom:18px;gap:10px;}
+    .brand{gap:10px;}
+    .brand-txt h1{font-size:17px;}
+    .brand-txt .sub{font-size:11px;}
+    .logo svg{height:40px;width:40px;}
+    .meta{gap:6px;font-size:11px;}
+    .chip{padding:5px 10px;font-size:11px;}
+    .btn-refresh,.btn-sync{padding:9px 14px;font-size:12px;min-height:40px;}
+
+    /* Tabs viram scroll horizontal com hint */
+    .tabs{gap:3px;padding:3px;margin-bottom:18px;position:sticky;top:0;z-index:30;
+      overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;
+      backdrop-filter:saturate(180%) blur(10px);background:color-mix(in srgb,var(--surface-2) 85%,transparent);}
+    .tab-btn{padding:9px 14px;font-size:12.5px;min-height:40px;flex-shrink:0;}
+    .tab-btn .subn{display:none;}
+
+    /* KPIs em 2 col por padrão */
+    .kpi-grid{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
+    .kpi{padding:14px 16px;border-radius:12px;}
+    .kpi .value{font-size:22px;}
+    .kpi .label{font-size:10.5px;}
+    .kpi .foot{font-size:11px;margin-top:6px;}
+
+    /* KPI grid fin5 (financeiro) — 2 col */
+    .kpi-grid.fin5{grid-template-columns:repeat(2,1fr);}
+
+    /* Cards mais compactos */
+    .card{padding:16px 18px;border-radius:12px;margin-bottom:12px;}
+    .card h2{font-size:15px;}
+    .card .cap{font-size:12px;margin-bottom:12px;}
+
+    /* Meta card */
+    .meta-card{padding:18px 20px;border-radius:16px;}
+    .meta-card h2{font-size:17px;}
+    .meta-row{grid-template-columns:repeat(2,1fr);gap:10px;}
+    .meta-cell{padding:12px 14px;border-radius:10px;}
+    .meta-cell .v{font-size:19px;}
+
+    /* Categ tiles em 1 coluna */
+    .categ-grid{grid-template-columns:1fr;gap:10px;}
+    .categ-tile{padding:14px;}
+    .categ-tile .v{font-size:20px;}
+
+    /* Tabelas: scroll horizontal com sombra na direita indicando overflow */
+    .card table,.dre-wrap table{min-width:520px;font-size:12px;}
+    .card>div[style*="overflow-x"],.dre-wrap{position:relative;}
+    .card>div[style*="overflow-x"]::after,.dre-wrap::after{
+      content:'';position:absolute;top:0;right:0;bottom:0;width:24px;
+      background:linear-gradient(90deg,transparent,var(--surface));
+      pointer-events:none;opacity:.6;
+    }
+
+    /* Insights e cards de alerta com menos padding */
+    .insight,.insights-box,.audit,.insight-card,.dec-item{padding:12px 14px;}
+
+    /* Botões touch-friendly em qualquer lugar */
+    button{min-height:40px;}
+
+    /* Barras de dow/hora em mobile: menos altura */
+    .bars-dow{height:110px;}
+    .bars-hora{height:90px;}
+    .bars-dia{height:130px;}
+
+    /* Sub-abas de período (Ano/Mês/Semana/Hoje) também sticky */
+    #per-controls,.periodo-btn{min-height:40px;}
+
+    /* Header vira coluna se apertar demais */
+    header{flex-direction:column;align-items:flex-start;}
+    .meta{width:100%;justify-content:flex-start;}
+
+    /* Foco de input pra não ter zoom automático no iOS (font-size:16px) */
+    input[type="text"],input[type="password"],input[type="number"],textarea{font-size:16px;}
+
+    /* Safe-area inset pra notch iPhone */
+    .wrap{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right));padding-bottom:max(80px,env(safe-area-inset-bottom));}
+  }
+
+  /* Celular pequeno (iPhone SE / Android compacto) */
+  @media (max-width:400px){
+    body{font-size:14px;}
+    .wrap{padding:14px 12px 80px;}
+    .brand-txt h1{font-size:16px;}
+    .logo svg{height:36px;width:36px;}
+    /* KPI grid em coluna única em telas MUITO estreitas */
+    .kpi-grid.fin5{grid-template-columns:1fr;}
+    .kpi .value{font-size:20px;}
+    .meta-row{grid-template-columns:1fr;}
+    .tab-btn{padding:8px 12px;font-size:12px;}
+    .card{padding:14px 16px;}
+    .card h2{font-size:14.5px;}
+  }
+
+  /* Prevenir tap highlight cinza chato do iOS/Android */
+  *{-webkit-tap-highlight-color:transparent;}
+  button,a,.tab-btn,.periodo-btn{-webkit-tap-highlight-color:rgba(0,0,0,.05);}
+
+  /* Melhorar scroll momentum em iOS */
+  html,body{-webkit-overflow-scrolling:touch;}
 </style>
 </head>
 <body>
