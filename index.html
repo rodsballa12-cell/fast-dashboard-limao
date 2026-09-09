@@ -883,9 +883,38 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
     const cor_sub = sub_pct >= 100 ? 'up' : (sub_pct >= 70 ? 'warn' : 'dn');
     const cor_sub_proj = sub_proj_pct >= 90 ? 'up' : (sub_proj_pct >= 70 ? 'warn' : 'dn');
     const sub_row = `<tr style="font-weight:700;background:var(--surface-2);color:var(--accent)"><td>SUBTOTAL NATIVAS</td><td>${brl0(sub_meta)}</td><td>${brl0(sub_real)}</td><td class="${cor_sub}">${pct(sub_pct)}</td><td>${brl0(Math.max(sub_meta-sub_real,0))}</td><td class="${cor_sub_proj}">${brl0(sub_proj)} (${pct(sub_proj_pct)})</td></tr>`;
+
+    // Linha "Outros (Pacotes + Produtos)" pra fechar com TOTAL META da franqueadora.
+    // Nativas cobrem só SERVIÇOS (meta_serv). Pacotes + Produtos vêm dos blocos
+    // franqueadora acima — aqui replicamos como agregado pra sub-total geral bater
+    // com meta_valor (ex: R$ 60.000 no mês) e realizado geral com meta_realizado.
+    const meta_pacotes = (catmes.pacotes || 0) * esc;
+    const meta_produtos = (catmes.produtos || 0) * esc;
+    const meta_outros = meta_pacotes + meta_produtos;
+    const real_pacotes = (c.pacotes||{}).v || 0;
+    const real_produtos = (c.produtos||{}).v || 0;
+    const real_outros = real_pacotes + real_produtos;
+    const n_outros = ((c.pacotes||{}).n || 0) + ((c.produtos||{}).n || 0);
+    const pct_outros = meta_outros > 0 ? real_outros/meta_outros*100 : 0;
+    const cor_outros = pct_outros >= 100 ? 'up' : (pct_outros >= 70 ? 'warn' : 'dn');
+    const proj_outros = real_outros * ratio_proj;
+    const proj_pct_outros = meta_outros > 0 ? proj_outros/meta_outros*100 : 0;
+    const cor_outros_proj = proj_pct_outros >= 90 ? 'up' : (proj_pct_outros >= 70 ? 'warn' : 'dn');
+    const outros_row = meta_outros > 0 ? `<tr><td>Outros <span style="color:var(--ink-3);font-size:11px">(Pacotes + Produtos)</span></td><td>${brl0(meta_outros)}</td><td>${brl0(real_outros)}</td><td class="${cor_outros}">${pct(pct_outros)}</td><td>${brl0(Math.max(meta_outros-real_outros,0))}</td><td class="${cor_outros_proj}">${brl0(proj_outros)} (${pct(proj_pct_outros)})</td></tr>` : '';
+
+    // Grande total combinando nativas + outros
+    const gt_meta = sub_meta + meta_outros;
+    const gt_real = sub_real + real_outros;
+    const gt_pct = gt_meta > 0 ? gt_real/gt_meta*100 : 0;
+    const cor_gt = gt_pct >= 100 ? 'up' : (gt_pct >= 70 ? 'warn' : 'dn');
+    const gt_proj = sub_proj + proj_outros;
+    const gt_proj_pct = gt_meta > 0 ? gt_proj/gt_meta*100 : 0;
+    const cor_gt_proj = gt_proj_pct >= 90 ? 'up' : (gt_proj_pct >= 70 ? 'warn' : 'dn');
+    const grand_total_row = meta_outros > 0 ? `<tr style="font-weight:700;background:var(--accent-soft,rgba(245,184,0,.15));color:var(--ink)"><td>TOTAL NATIVAS + OUTROS</td><td>${brl0(gt_meta)}</td><td>${brl0(gt_real)}</td><td class="${cor_gt}">${pct(gt_pct)}</td><td>${brl0(Math.max(gt_meta-gt_real,0))}</td><td class="${cor_gt_proj}">${brl0(gt_proj)} (${pct(gt_proj_pct)})</td></tr>` : '';
+
     const fonte = usaConfig ? 'shares OFICIAIS · config.json → meta_categoria_nativa_share' : 'mix do próprio período (fallback)';
     const sep = `<tr style="background:var(--surface-2)"><td colspan="6" style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;font-weight:700">🏷 Categorias nativas Trinks · meta = share × meta serv do período (${brl0(meta_serv_periodo)}) · ${fonte}</td></tr>`;
-    native_rows = sep + rows_native + sub_row;
+    native_rows = sep + rows_native + sub_row + outros_row + grand_total_row;
   }
 
   const esc_desc = esc >= 12 ? 'meta anual (12× mensal)' : esc === 1 ? 'meta cheia do mês' : `${(esc*100).toFixed(0)}% da meta mensal (proporcional ao período)`;
@@ -1311,19 +1340,28 @@ function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_
   const totalBadge = (ranking_prof_total_n && ranking_prof_total_n > rp.slice(0,12).length)
     ? ` <span style="color:var(--ink-3);font-size:11px;font-weight:400">(top 12 de ${ranking_prof_total_n})</span>` : '';
 
-  // Detalhamento das categorias que compõem a taxa efetiva (colapsado)
-  const catRows = catBreak.map(c => `<tr>
-    <td>${c.nome}</td>
-    <td style="text-align:right">${c.n_atend}</td>
-    <td style="text-align:right">${brl0(c.receita)}</td>
-    <td style="text-align:right">${c.taxa_pct.toFixed(0)}%</td>
-    <td style="text-align:right;color:#22c55e;font-weight:700">${brl0(c.comissao)}</td>
-  </tr>`).join('');
+  // Detalhamento das categorias — mesmas 7 colunas do Prof pra leitura paralela:
+  // Categoria | Atend | Taxa | Ticket médio | Receita | % serviços | Comissão
+  const catRows = catBreak.map(c => {
+    const ticketCat = c.n_atend > 0 ? c.receita/c.n_atend : 0;
+    const shareServ = receitaServ > 0 ? c.receita/receitaServ*100 : 0;
+    return `<tr>
+      <td>${c.nome}</td>
+      <td style="text-align:right">${c.n_atend}</td>
+      <td style="text-align:right">${c.taxa_pct.toFixed(0)}%</td>
+      <td style="text-align:right">${brl(ticketCat)}</td>
+      <td style="text-align:right">${brl0(c.receita)}</td>
+      <td style="text-align:right">${shareServ.toFixed(0)}%</td>
+      <td style="text-align:right;color:#22c55e;font-weight:700">${brl0(c.comissao)}</td>
+    </tr>`;
+  }).join('');
   const catTotalRow = catBreak.length ? `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700">
     <td>TOTAL SERVIÇOS</td>
     <td style="text-align:right">${catBreak.reduce((a,x)=>a+x.n_atend,0)}</td>
-    <td style="text-align:right">${brl0(receitaServ)}</td>
     <td style="text-align:right">${taxaEfetiva.toFixed(1)}%</td>
+    <td style="text-align:right">—</td>
+    <td style="text-align:right">${brl0(receitaServ)}</td>
+    <td style="text-align:right">100%</td>
     <td style="text-align:right">${brl0(comissaoTotal)}</td>
   </tr>` : '';
   const pctSobreCaixa = caixa > 0 ? (comissaoTotal/caixa*100) : 0;
@@ -1331,7 +1369,7 @@ function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_
     <details style="margin-top:12px"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);padding:8px 12px;background:var(--surface-2);border-radius:6px;font-weight:600">🧮 Categorias que compõem a taxa efetiva (${taxaEfetiva.toFixed(1)}%)</summary>
       <div class="cap" style="margin-top:8px">Taxa oficial Trinks BackOffice por categoria (<code>data/comissoes.json</code>). Ponderada pelo mix real do período. Sobre caixa total (${brl0(caixa)}) = ${pctSobreCaixa.toFixed(1)}%.</div>
       <div style="overflow-x:auto"><table class="simple">
-        <thead><tr><th>Categoria</th><th style="text-align:right">Atend</th><th style="text-align:right">Receita</th><th style="text-align:right">Taxa</th><th style="text-align:right">Comissão</th></tr></thead>
+        <thead><tr><th>Categoria</th><th style="text-align:right">Atend</th><th style="text-align:right">Taxa</th><th style="text-align:right">Ticket médio</th><th style="text-align:right">Receita</th><th style="text-align:right">% serviços</th><th style="text-align:right">Comissão</th></tr></thead>
         <tbody>${catRows}${catTotalRow}</tbody>
       </table></div>
     </details>` : '';
