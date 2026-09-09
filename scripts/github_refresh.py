@@ -311,8 +311,10 @@ def analisar(agend, transac, ini: date, fim: date):
           "horas_trab": round(v["min"] / 60, 1)} for k, v in prof.items()],
         key=lambda x: -x["v"]
     )
-    ranking_prof = ranking_prof_full[:12]
-    ranking_prof_total_n = len(ranking_prof_full)  # útil pra badge "de N total"
+    # Envia lista completa — frontend limita a exibição a top 12 mas soma tudo pra
+    # TOTAL EQUIPE fechar com receita_serv total.
+    ranking_prof = ranking_prof_full
+    ranking_prof_total_n = len(ranking_prof_full)
 
     # === PROFISSIONAL EXECUTOR (idProfissionalQueRealizouServico) ===
     # Vem da TRANSAÇÃO (não do agendamento). Compara com o prof da comanda pra detectar

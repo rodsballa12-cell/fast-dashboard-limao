@@ -843,7 +843,7 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
       ref.forEach(c => { mix_ref[norm(c.nome)] = (c.v||0) / ref_total; });
     }
     let sub_meta = 0, sub_real = 0, sub_atend = 0;
-    const rows_native = categoria_native.slice(0,15).map(cn => {
+    const rows_native = categoria_native.map(cn => {
       const share = mix_ref[norm(cn.nome)] != null ? mix_ref[norm(cn.nome)] : 0;
       const meta_cn = meta_serv_periodo * share;
       const real_cn = cn.v || 0;
@@ -1572,8 +1572,11 @@ function renderDesvioTabela(container_id, cat){
     </div>`;
     return;
   }
-  const rows = dv.map(d => {
-    const cor = d.sinal === 'desconto' ? 'var(--crit)' : (d.sinal === 'premium' ? 'var(--good)' : 'var(--ink-3)');
+  // Só serviços COM DESVIO (>=3%). Aderentes ficam num comentário resumo.
+  const desvios = dv.filter(d => d.sinal !== 'ok');
+  const aderentes = c.n_total - desvios.length;
+  const rows = desvios.map(d => {
+    const cor = d.sinal === 'desconto' ? 'var(--crit)' : 'var(--good)';
     const sinal = d.diff >= 0 ? '+' : '';
     return `<tr>
       <td>${d.servico}</td>
@@ -1583,16 +1586,16 @@ function renderDesvioTabela(container_id, cat){
       <td style="text-align:right;color:${cor};font-weight:700;">${sinal}${d.pct}%</td>
     </tr>`;
   }).join('');
-  // CONSOLIDAÇÃO M · low-signal (operacional, não decisão diária) → collapsed
   el.innerHTML = `<div class="card">
-    <details><summary style="cursor:pointer;font-weight:700;font-size:15px;list-style:disclosure-closed">📐 Preço praticado vs tabela <span style="font-size:11px;color:var(--ink-3);font-weight:400">(${c.n_com_desvio}/${c.n_total} c/ desvio)</span></summary>
-      <div class="cap" style="margin-top:8px">${c.n_com_desvio} de ${c.n_total} serviços fogem da tabela oficial em ±3% ou mais. <strong>Desconto</strong> = cobrando menos; <strong>premium</strong> = cobrando mais.</div>
-      <table class="simple">
+    <details><summary style="cursor:pointer;font-weight:700;font-size:15px;list-style:disclosure-closed">📐 Preço praticado vs tabela <span style="font-size:11px;color:var(--ink-3);font-weight:400">(${desvios.length} c/ desvio de ${c.n_total} · ${aderentes} aderentes)</span></summary>
+      <div class="cap" style="margin-top:8px">${desvios.length} de ${c.n_total} serviços fogem da tabela oficial em ±3% ou mais. <strong>Desconto</strong> = cobrando menos; <strong>premium</strong> = cobrando mais.</div>
+      ${desvios.length ? `<table class="simple">
         <thead><tr><th>Serviço</th><th>Tabela</th><th>Praticado</th><th>Diferença</th><th>%</th></tr></thead>
         <tbody>${rows}</tbody>
-      </table>
+      </table>` : ''}
       <div class="insight" style="margin-top:12px;">
-        <strong>Ação:</strong> descontos sistemáticos ≥ 10% podem ser política de fidelização ou brecha de fluxo. Premium consistente sinaliza upsell natural.
+        ✅ <strong>${aderentes} de ${c.n_total} serviços (${((aderentes/c.n_total)*100).toFixed(0)}%)</strong> estão aderentes ao preço da tabela oficial (desvio &lt; 3%). A recepção está cobrando conforme o cadastrado — sem ação necessária pra esses itens.
+        ${desvios.length ? '<br><br><strong>Ação nos ' + desvios.length + ' com desvio:</strong> descontos sistemáticos ≥ 10% podem ser política de fidelização ou brecha de fluxo. Premium consistente sinaliza upsell natural.' : ''}
       </div>
     </details>
   </div>`;
