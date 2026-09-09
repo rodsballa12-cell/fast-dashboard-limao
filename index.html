@@ -813,20 +813,23 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
   ];
   const ratio_proj = meta_realizado>0 && meta_valor>0 ? meta_projecao/meta_realizado : 1;
   const proj_pct = meta_valor>0 ? meta_projecao/meta_valor*100 : 0;
+  // Valores exibidos = LÍQUIDO (bruto × ratio_liquido). Ratio_liquido = caixa/bruto.
+  // Descontos de inauguração/promoção ficam DILUÍDOS proporcionalmente em cada row,
+  // sem linha extra poluindo a tabela. TOTAL fecha com caixa diretamente.
+  const _desc_v_franq = Math.abs(descontos || 0);
+  const _bruto_franq = rows.reduce((s,r) => s + ((c[r.k]||{}).v || 0), 0);
+  const ratio_liq = _bruto_franq > 0 ? Math.max(0, (_bruto_franq - _desc_v_franq)) / _bruto_franq : 1;
   const tabela_rows=rows.map(r=>{
     const cat=c[r.k]||{v:0,n:0,pct:0};
     const meta_cat=r.meta_mes * esc;
-    const pct_ating=meta_cat>0?cat.v/meta_cat*100:0;
-    const proj_cat=cat.v * ratio_proj;
+    const real_cat = (cat.v||0) * ratio_liq;  // aplica ajuste líquido
+    const pct_ating=meta_cat>0?real_cat/meta_cat*100:0;
+    const proj_cat=real_cat * ratio_proj;
     const proj_pct_cat=meta_cat>0?proj_cat/meta_cat*100:0;
     const cor=pct_ating>=100?'up':(pct_ating>=70?'warn':'dn');
     const cor_proj=proj_pct_cat>=90?'up':(proj_pct_cat>=70?'warn':'dn');
-    return `<tr title="${r.desc}"><td>${r.nome}</td><td>${brl0(meta_cat)}</td><td>${brl0(cat.v)}</td><td class="${cor}">${pct(pct_ating)}</td><td>${brl0(Math.max(meta_cat-cat.v,0))}</td><td class="${cor_proj}">${brl0(proj_cat)} (${pct(proj_pct_cat)})</td></tr>`;
+    return `<tr title="${r.desc}"><td>${r.nome}</td><td>${brl0(meta_cat)}</td><td>${brl0(real_cat)}</td><td class="${cor}">${pct(pct_ating)}</td><td>${brl0(Math.max(meta_cat-real_cat,0))}</td><td class="${cor_proj}">${brl0(proj_cat)} (${pct(proj_pct_cat)})</td></tr>`;
   }).join('');
-  // Realizado das 4 rows é BRUTO; TOTAL META usa caixa (LÍQUIDO). Diferença = descontos.
-  const _desc_v_franq = Math.abs(descontos || 0);
-  const bruto_franq = rows.reduce((s,r) => { const cat=c[r.k]||{v:0}; return s+cat.v; }, 0);
-  const desc_franq_row = _desc_v_franq > 0.5 ? `<tr><td>(−) Descontos <span style="color:var(--ink-3);font-size:11px">(caixa = bruto − descontos)</span></td><td style="color:var(--ink-3)">—</td><td style="color:var(--crit)">−${brl0(_desc_v_franq)}</td><td style="color:var(--ink-3)">—</td><td style="color:var(--ink-3)">—</td><td style="color:var(--ink-3)">—</td></tr>` : '';
   const total_row=`<tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL META</td><td>${brl0(meta_valor)}</td><td>${brl0(meta_realizado)}</td><td>${pct(meta_valor>0?meta_realizado/meta_valor*100:0)}</td><td>${brl0(Math.max(meta_valor-meta_realizado,0))}</td><td>${brl0(meta_projecao)} (${pct(proj_pct)})</td></tr>`;
 
   // Categorias nativas Trinks: meta = share OFICIAL (config.meta_categoria_nativa_share)
@@ -891,7 +894,7 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
       const meta_cn_pac = meta_pacotes * share_pac;
       const meta_cn = meta_cn_serv + meta_cn_pac;
       const rd = real_by_norm[k] || { v: 0, n: 0, pac_v: 0 };
-      const real_cn = rd.v;
+      const real_cn = (rd.v||0) * ratio_liq;  // aplica ajuste líquido
       const pct_cn = meta_cn > 0 ? real_cn/meta_cn*100 : 0;
       const falta_cn = Math.max(meta_cn - real_cn, 0);
       const proj_cn = real_cn * ratio_proj;
@@ -909,9 +912,9 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
       return `<tr><td>${nome}</td><td>${metaTxt}${metaBreak}</td><td>${brl0(real_cn)}${pacTag}</td><td class="${cor_cn}">${pctTxt}</td><td>${faltaTxt}</td><td class="${meta_cn>0?cor_proj:''}">${projTxt}</td></tr>`;
     }).join('');
 
-    // Row PRODUTOS (linha própria)
+    // Row PRODUTOS (linha própria) — também aplica ratio_liq
     const meta_produtos = (catmes.produtos || 0) * esc;
-    const real_produtos = (c.produtos||{}).v || 0;
+    const real_produtos = ((c.produtos||{}).v || 0) * ratio_liq;
     const pct_produtos = meta_produtos > 0 ? real_produtos/meta_produtos*100 : 0;
     const cor_produtos = pct_produtos >= 100 ? 'up' : (pct_produtos >= 70 ? 'warn' : 'dn');
     const proj_produtos = real_produtos * ratio_proj;
@@ -919,8 +922,8 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
     const cor_produtos_proj = proj_pct_produtos >= 90 ? 'up' : (proj_pct_produtos >= 70 ? 'warn' : 'dn');
     const produtos_row = meta_produtos > 0 ? `<tr><td>Produtos</td><td>${brl0(meta_produtos)}</td><td>${brl0(real_produtos)}</td><td class="${cor_produtos}">${pct(pct_produtos)}</td><td>${brl0(Math.max(meta_produtos-real_produtos,0))}</td><td class="${cor_produtos_proj}">${brl0(proj_produtos)} (${pct(proj_pct_produtos)})</td></tr>` : '';
 
-    // Pacotes sem classificação (share_pac_sc × meta_pacotes)
-    const real_pac_sc = (pacotes_sem_categoria_v != null) ? pacotes_sem_categoria_v : ((c.pacotes||{}).v || 0);
+    // Pacotes sem classificação (share_pac_sc × meta_pacotes) — também líquido
+    const real_pac_sc = ((pacotes_sem_categoria_v != null ? pacotes_sem_categoria_v : ((c.pacotes||{}).v || 0))) * ratio_liq;
     const meta_pac_sc = meta_pacotes * share_pac_sc;
     const pct_pac_sc = meta_pac_sc > 0 ? real_pac_sc/meta_pac_sc*100 : 0;
     const cor_pac_sc = meta_pac_sc > 0 ? (pct_pac_sc>=100?'up':(pct_pac_sc>=70?'warn':'dn')) : '';
@@ -941,11 +944,9 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
       sub_real += rd.v;
       sub_proj += rd.v * ratio_proj;
     });
-    // (-) Descontos: sum de categorias é BRUTO, mas caixa é LÍQUIDO. Diferença = descontos.
-    const desc_v = Math.abs(descontos || 0);
+    // Valores já vieram líquidos (ratio_liq aplicado em cada row), então gt_real = soma direta.
     const gt_meta = sub_meta + meta_produtos + meta_pac_sc;
-    const gt_real_bruto = sub_real + real_produtos + real_pac_sc;
-    const gt_real = gt_real_bruto - desc_v;
+    const gt_real = sub_real + real_produtos + real_pac_sc;
     const proj_outros = (real_produtos + real_pac_sc) * ratio_proj;
     const meta_outros = meta_produtos + meta_pac_sc;
     const gt_pct = gt_meta > 0 ? gt_real/gt_meta*100 : 0;
@@ -953,9 +954,8 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
     const gt_proj = sub_proj + proj_outros;
     const gt_proj_pct = gt_meta > 0 ? gt_proj/gt_meta*100 : 0;
     const cor_gt_proj = gt_proj_pct >= 90 ? 'up' : (gt_proj_pct >= 70 ? 'warn' : 'dn');
-    // Linha explícita de Descontos (só se houver) — mantém consistência entre bruto e caixa
-    const desc_row = desc_v > 0.5 ? `<tr><td>(−) Descontos <span style="color:var(--ink-3);font-size:11px">(caixa = bruto − descontos)</span></td><td style="color:var(--ink-3)">—</td><td style="color:var(--crit)">−${brl0(desc_v)}</td><td style="color:var(--ink-3)">—</td><td style="color:var(--ink-3)">—</td><td style="color:var(--ink-3)">—</td></tr>` : '';
-    const grand_total_row = meta_outros > 0 ? `<tr style="font-weight:700;background:var(--accent-soft,rgba(245,184,0,.15));color:var(--ink)"><td>TOTAL META (NATIVAS + PROD + PAC${desc_v>0.5?' − DESC':''})</td><td>${brl0(gt_meta)}</td><td>${brl0(gt_real)}</td><td class="${cor_gt}">${pct(gt_pct)}</td><td>${brl0(Math.max(gt_meta-gt_real,0))}</td><td class="${cor_gt_proj}">${brl0(gt_proj)} (${pct(gt_proj_pct)})</td></tr>` : '';
+    const desc_row = '';  // linha removida — descontos diluídos proporcionalmente em cada row
+    const grand_total_row = meta_outros > 0 ? `<tr style="font-weight:700;background:var(--accent-soft,rgba(245,184,0,.15));color:var(--ink)"><td>TOTAL META (NATIVAS + PROD + PAC)</td><td>${brl0(gt_meta)}</td><td>${brl0(gt_real)}</td><td class="${cor_gt}">${pct(gt_pct)}</td><td>${brl0(Math.max(gt_meta-gt_real,0))}</td><td class="${cor_gt_proj}">${brl0(gt_proj)} (${pct(gt_proj_pct)})</td></tr>` : '';
 
     const fonte = usaConfig ? 'shares OFICIAIS · config.json → meta_categoria_nativa_share' : 'mix do próprio período (fallback)';
     const totalPacClassificado = Object.values(pacCat).reduce((s,v)=>s+v,0);
@@ -970,7 +970,8 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
     <div class="card">
       <h2>Detalhamento por categoria · Meta vs Realizado ${titulo}</h2>
       <div class="cap">Metas <strong>fixas da franqueadora</strong> × ${nrec} recepcionistas. Escala: ${esc_desc}. Projeção assume ritmo atual.</div>
-      <table class="simple"><thead><tr><th>Categoria</th><th>Meta</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção / Vendas</th></tr></thead><tbody>${tabela_rows}${desc_franq_row}${total_row}${native_rows}</tbody></table>
+      <table class="simple"><thead><tr><th>Categoria</th><th>Meta</th><th>Realizado <span style="font-size:10px;color:var(--ink-3);font-weight:400">(líquido)</span></th><th>%</th><th>Falta</th><th>Projeção / Vendas</th></tr></thead><tbody>${tabela_rows}${total_row}${native_rows}</tbody></table>
+      ${_desc_v_franq > 0.5 ? `<div class="cap" style="margin-top:6px;font-size:11px;color:var(--ink-3)">💡 R$ ${_desc_v_franq.toLocaleString('pt-BR',{maximumFractionDigits:0})} de descontos concentrados na INAUGURAÇÃO (23-24/07/2026 · cortesias) já foram diluídos proporcionalmente em cada linha — todos os valores acima são LÍQUIDOS.</div>` : ''}
     </div>`;
 }
 
