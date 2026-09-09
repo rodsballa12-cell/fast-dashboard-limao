@@ -319,13 +319,41 @@ def analisar(agend, transac, ini: date, fim: date):
     )
 
     # rankings — inclui ticket médio e minutos ocupados
-    prof = defaultdict(lambda: {"n": 0, "v": 0.0, "min": 0})
+    # v (receita) vem das TRANSAÇÕES agrupadas por prof executor — mesma fonte de
+    # categoria_native.v, garantindo que sum(ranking_prof.v) == sum(categoria_native.v).
+    # n (atendimentos) e min (duração) vêm dos AGENDAMENTOS finalizados (fonte
+    # confiável de contagem e ocupação de cadeira).
+    prof_meta = defaultdict(lambda: {"n": 0, "min": 0})
     for a in fin:
         nome = ((a.get("profissional") or {}).get("nome") or "").strip().title() or "—"
-        prof[nome]["n"] += 1
-        prof[nome]["v"] += float(a.get("valor") or 0)
-        prof[nome]["min"] += int(a.get("duracaoEmMinutos") or 0)
-    n_prof_ativos = len(prof)  # profissionais que atenderam alguém no período
+        prof_meta[nome]["n"] += 1
+        prof_meta[nome]["min"] += int(a.get("duracaoEmMinutos") or 0)
+
+    # Mapa id → nome pra resolver prof executor das transações
+    _prof_id_nome_early = getattr(analisar, "_prof_id_nome_cache", None) or {}
+    for a in fin:
+        pid = (a.get("profissional") or {}).get("id")
+        pnome = (a.get("profissional") or {}).get("nome") or ""
+        if pid: _prof_id_nome_early[pid] = pnome.strip().title()
+
+    prof_v_exec = defaultdict(float)
+    for tx in tr:
+        for s in (tx.get("servicos") or []):
+            exec_id = s.get("idProfissionalQueRealizouServico")
+            nome_exec = _prof_id_nome_early.get(exec_id) if exec_id else None
+            if not nome_exec:
+                nome_exec = f"Prof desligado #{exec_id}" if exec_id else "(serviço sem prof)"
+            prof_v_exec[nome_exec] += float(s.get("preco") or 0)
+
+    all_prof_names = set(prof_meta.keys()) | set(prof_v_exec.keys())
+    prof = {}
+    for nome in all_prof_names:
+        prof[nome] = {
+            "n": prof_meta.get(nome, {"n": 0})["n"],
+            "v": prof_v_exec.get(nome, 0.0),
+            "min": prof_meta.get(nome, {"min": 0})["min"],
+        }
+    n_prof_ativos = len(prof_meta)  # profissionais que atenderam alguém no período
     ranking_prof_full = sorted(
         [{"nome": k, "n": v["n"], "v": brl_round(v["v"]),
           "ticket_medio": brl_round(v["v"] / max(v["n"], 1)),
