@@ -734,12 +734,12 @@ def _cli_totalpagar_no_periodo(transac, ini: date, fim: date):
     return out
 
 
-def top_ltv(agend, transac, ini: date, fim: date, limite=15):
-    """B4 · LTV agora usa totalPagar (caixa) por cliente, não só receita_serv."""
+def top_ltv(agend, transac, ini: date, fim: date, limite=15, tel_map=None, aniv_map=None):
+    """B4 · LTV agora usa totalPagar (caixa) por cliente, não só receita_serv.
+    tel_map/aniv_map opcionais: enriquecem cada top-cliente com telefone e
+    aniversário (facilita contato direto pelo painel)."""
     cli_tp = _cli_totalpagar_no_periodo(transac, ini, fim)
-    ltv = defaultdict(lambda: {"n": 0, "v": 0.0, "nome": ""})
-    # nº de visitas ainda vem dos agendamentos finalizados (define frequência),
-    # mas o valor (v) agora é o totalPagar acumulado do cliente no período.
+    ltv = defaultdict(lambda: {"n": 0, "v": 0.0, "nome": "", "cid": None})
     for a in agend:
         if (a.get("status") or {}).get("nome") != "Finalizado": continue
         dt = parse_trinks_dt(a["dataHoraInicio"]).date() if a.get("dataHoraInicio") else None
@@ -748,13 +748,22 @@ def top_ltv(agend, transac, ini: date, fim: date, limite=15):
         if cid is None: continue
         ltv[cid]["n"] += 1
         ltv[cid]["nome"] = (a.get("cliente") or {}).get("nome") or ""
-    # popula v a partir do cli_tp — clientes sem transação ficam com 0
+        ltv[cid]["cid"] = cid
     for cid, d in ltv.items():
         d["v"] = cli_tp.get(cid, 0.0)
-    lst = sorted(
-        [{"nome": (d["nome"] or "").title(), "n": d["n"], "v": brl_round(d["v"])} for d in ltv.values()],
-        key=lambda x: -x["v"]
-    )
+    _MESES = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]
+    def _row(d):
+        cid = d["cid"]
+        item = {"nome": (d["nome"] or "").title(), "n": d["n"], "v": brl_round(d["v"])}
+        if tel_map: item["telefone"] = tel_map.get(cid, "")
+        if aniv_map:
+            info = aniv_map.get(cid)
+            if info:
+                m, day, _ = info
+                item["data_aniversario"] = f"{day:02d}/{m:02d}"
+                item["data_aniversario_txt"] = f"{day} {_MESES[m-1]}"
+        return item
+    lst = sorted([_row(d) for d in ltv.values()], key=lambda x: -x["v"])
     total = sum(x["v"] for x in lst)
     uma = sum(1 for x in lst if x["n"] == 1)
     p20 = max(1, len(lst) * 20 // 100)
@@ -1205,7 +1214,7 @@ def main():
     nvr_ano = novos_vs_recorr(fin_ano, cad_map, ini_ano, criterio="visitas_no_periodo",
                               transac_periodo=transac, ini_periodo=ini_ano, fim_periodo=fim_ano)
 
-    ltv_ano = top_ltv(agend, transac, ini_ano, fim_ano)
+    ltv_ano = top_ltv(agend, transac, ini_ano, fim_ano, tel_map=tel_map, aniv_map=aniv_map)
 
     # === Semana anterior — MESMA JANELA (apples-to-apples) ===
     # Se hoje é quarta (3 dias na semana atual: seg-ter-qua), comparar com
