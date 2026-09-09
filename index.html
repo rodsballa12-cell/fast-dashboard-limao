@@ -394,6 +394,9 @@
   </div>
 
   <div id="content" style="display:none;">
+    <!-- INSIGHTS GLOBAL · consolidação L: 1 painel global no lugar de 6 caixas por aba -->
+    <div id="global-insights" style="margin-bottom:14px"></div>
+
     <div class="tabs" role="tablist">
       <button class="tab-btn" role="tab" aria-selected="true" data-tab="painel">📊 Painel<span class="subn" id="tab-painel-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="clientes">👥 Clientes<span class="subn" id="tab-clientes-sub"></span></button>
@@ -417,117 +420,41 @@
         </div>
       </div>
 
-    <!-- ANUAL · foco: evolução financeira, mix, operação -->
-    <div class="periodo-panel" id="periodo-anual">
-      <div class="audit"><div>📅</div><div><strong>Panorama do ano · evolução financeira.</strong> Loja abriu 23/07/2026. Aqui: trajetória mês-a-mês, mix, rentabilidade. Base de clientes fica na aba <strong>Clientes</strong>.</div></div>
-      <!-- 1. CONTEXTO: onde estamos vs onde queremos -->
-      <div id="anual-kpis"></div>
-      <div id="anual-ancora"></div>
-      <div id="anual-meta"></div>
-      <!-- 2. TRAJETÓRIA: evolução do ano -->
-      <div id="anual-meses"></div>
-      <!-- 3. QUALIDADE DO MIX -->
-      <div id="anual-ticket-meta"></div>
-      <div id="anual-categorias"></div>
-      <div id="anual-categoria-native"></div>
-      <div id="anual-desvio-tabela"></div>
-      <div id="anual-novos"></div>
-      <div id="anual-rentabilidade"></div>
-      <!-- 4. OPERAÇÃO -->
-      <div id="anual-utilizacao"></div>
-      <div id="anual-hora"></div>
-      <!-- 5. LEITURA AUTOMÁTICA (embaixo, secundário) -->
-      <div id="anual-insights"></div>
-    </div>
-
-    <!-- MENSAL · foco: bater meta do mês, ajustar até o fechamento -->
-    <div class="periodo-panel active" id="periodo-mensal">
-      <div class="audit"><div>🎯</div><div><strong>Onde você está no mês.</strong> Trajetória diária, projeção de fechamento, alavancas pra ajustar antes de fechar o mês.</div></div>
-      <!-- 1. CONTEXTO: caixa vs meta -->
-      <div id="mensal-kpis"></div>
-      <div id="mensal-meta"></div>
-      <div id="mensal-heatmap"></div>
-      <!-- 2. TRAJETÓRIA: como o mês está desenhando -->
-      <div id="mensal-dia"></div>
-      <!-- 3. ALAVANCAS: mix, ticket, categorias -->
-      <div id="mensal-categorias"></div>
-      <div id="mensal-ticket-meta"></div>
-      <div id="mensal-novos"></div>
-      <!-- 4. RENTABILIDADE por serviço -->
-      <div id="mensal-rentabilidade"></div>
-      <!-- 5. OPERAÇÃO: quem/como/quando -->
-      <div class="grid-2b">
-        <div id="mensal-prof"></div>
-        <div id="mensal-meios"></div>
-      </div>
-      <div id="mensal-utilizacao"></div>
-      <div id="mensal-hora"></div>
-      <!-- 6. RELACIONAMENTO -->
-      <div id="mensal-topcli"></div>
-      <!-- 7. LEITURA AUTOMÁTICA -->
-      <div id="mensal-insights"></div>
-    </div>
-
-    <!-- SEMANAL · foco: escala próx semana + campanhas curtas -->
-    <div class="periodo-panel" id="periodo-semanal">
-      <div class="audit"><div>📊</div><div><strong>Semana corrente</strong> — decida escala e campanhas de WhatsApp. Compare com semana anterior pra ver se está acelerando ou perdendo tração.</div></div>
+    <!-- PAINEL UNIFICADO · CONSOLIDAÇÃO A · 1 conjunto de cards, dispatch por período -->
+    <div class="periodo-panel active" id="periodo-shared">
+      <div class="audit" id="per-audit"></div>
+      <!-- AÇÃO AGORA · só Diário -->
+      <div id="per-pace"></div>
       <!-- 1. CONTEXTO -->
-      <div id="semanal-kpis"></div>
-      <div id="semanal-meta"></div>
-      <!-- 2. COMPARAÇÃO (a alavanca principal da semana) -->
-      <div id="semanal-comparacao"></div>
-      <!-- 3. ONDE O CAIXA SE CONCENTRA (dia da semana) -->
-      <div id="semanal-dow"></div>
-      <div id="semanal-google-dow"></div>
-      <!-- 4. MIX + TICKET -->
-      <div id="semanal-categorias"></div>
-      <div id="semanal-ticket-meta"></div>
-      <div id="semanal-novos"></div>
-      <!-- 5. RENTABILIDADE -->
-      <div id="semanal-rentabilidade"></div>
-      <!-- 6. OPERAÇÃO -->
+      <div id="per-kpis"></div>
+      <div id="per-ancora"></div>
+      <div id="per-meta"></div>
+      <div id="per-heatmap"></div>
+      <div id="per-comparacao"></div>
+      <!-- 2. TRAJETÓRIA -->
+      <div id="per-meses"></div>
+      <div id="per-dia"></div>
+      <div id="per-dow"></div>
+      <div id="per-google-dow"></div>
+      <!-- SALA AGORA · só Diário -->
+      <div id="per-sala-wrap"></div>
+      <!-- 3. MIX / TICKET / CATEGORIAS -->
+      <div id="per-categorias"></div>
+      <div id="per-ticket-meta"></div>
+      <div id="per-novos"></div>
+      <!-- 4. RENTABILIDADE -->
+      <div id="per-rentabilidade"></div>
+      <div id="per-categoria-native"></div>
+      <div id="per-desvio-tabela"></div>
+      <!-- 5. OPERAÇÃO -->
       <div class="grid-2b">
-        <div id="semanal-prof"></div>
-        <div id="semanal-meios"></div>
+        <div id="per-prof"></div>
+        <div id="per-meios"></div>
       </div>
-      <div id="semanal-utilizacao"></div>
-      <div id="semanal-hora"></div>
-      <!-- 7. RELACIONAMENTO -->
-      <div id="semanal-topcli"></div>
-      <!-- 8. LEITURA AUTOMÁTICA -->
-      <div id="semanal-insights"></div>
-    </div>
-
-    <!-- DIÁRIO · foco: decisão AGORA (chamar reforço, puxar cliente) -->
-    <div class="periodo-panel" id="periodo-diario">
-      <div class="audit"><div>🔴</div><div><strong>HOJE — atualiza de hora em hora</strong> (11h→21h BRT). Checkpoints operacionais em tempo real: se está atrás do pace, hora de agir.</div></div>
-      <!-- 1. AÇÃO AGORA: pace intraday + KPIs (o que mais importa em tempo real) -->
-      <div id="diario-pace"></div>
-      <div id="diario-kpis"></div>
-      <div id="diario-meta"></div>
-      <!-- 2. SALA AGORA: quem está trabalhando, o que está vendendo, quando entra cliente -->
-      <div class="sala-wrap">
-        <div class="sala-header">
-          <h3>🎬 SALA AGORA</h3>
-          <div class="sub">Visão viva da operação · quem trabalha, o que vende, quando entra</div>
-        </div>
-        <div class="sala-grid">
-          <div id="diario-prof"></div>
-          <div id="diario-serv"></div>
-          <div id="diario-hora"></div>
-        </div>
-      </div>
-      <!-- 3. MIX + PAGAMENTOS -->
-      <div id="diario-categorias"></div>
-      <div id="diario-meios"></div>
-      <!-- 4. TICKET + RENTABILIDADE -->
-      <div id="diario-ticket-meta"></div>
-      <div id="diario-rentabilidade"></div>
-      <!-- 5. RELACIONAMENTO -->
-      <div id="diario-topcli"></div>
-      <div id="diario-utilizacao"></div>
-      <!-- 6. LEITURA AUTOMÁTICA -->
-      <div id="diario-insights"></div>
+      <div id="per-utilizacao"></div>
+      <div id="per-hora"></div>
+      <!-- 6. RELACIONAMENTO -->
+      <div id="per-topcli"></div>
     </div>
     </div><!-- /tab-painel -->
 
@@ -557,7 +484,6 @@
     <!-- AUDITORIA -->
     <div class="panel" id="tab-auditoria">
       <div class="audit"><div>🛡️</div><div><strong>Controle de risco financeiro.</strong> Como a loja é walk-in only, cancelamento com valor > 0 é sempre suspeito e precisa justificativa. Aqui você vê caso a caso.</div></div>
-      <div id="auditoria-insights"></div>
       <div id="auditoria-resumo"></div>
       <div id="auditoria-por-prof"></div>
       <div id="auditoria-executor"></div>
@@ -568,7 +494,6 @@
     <!-- STONE -->
     <div class="panel" id="tab-stone">
       <div class="audit" id="stone-audit"><div>🏦</div><div><strong>O que a loja vendeu vs o dinheiro que caiu.</strong> Cartão de crédito leva 30 dias pra virar caixa. Aqui você vê o fluxo real e decide se vale antecipar.</div></div>
-      <div id="stone-insights"></div>
       <div id="stone-parcelas"></div>
       <div id="stone-content"></div>
     </div>
@@ -1872,59 +1797,135 @@ async function csvExport(filename, headers, rows){
 }
 
 // ============= RENDER INSIGHTS =============
-function renderInsights(container_id, titulo_aba, insights){
+// Placeholder legado — insights agora renderizam em bloco global (renderGlobalInsights).
+function renderInsights(container_id, _titulo_aba, _insights){
   const el = document.getElementById(container_id);
+  if(el) el.innerHTML = '';
+}
+
+// CONSOLIDAÇÃO L · painel único de Ações Recomendadas no topo do dashboard.
+// Consome todas as fontes data.insights.{anual,mensal,semanal,diario,auditoria,stone,clientes,financeiro,midias}
+// e mostra 1 caixa colapsada por severidade, com chip mostrando de qual aba veio.
+function renderGlobalInsights(data){
+  const el = document.getElementById('global-insights');
   if(!el) return;
-  if(!insights || insights.length === 0){ el.innerHTML=''; return; }
-  // ordenar por severidade: critico > atencao > oportunidade > info
+  const ins = data.insights || {};
+  const abaMap = {
+    anual:{label:'Ano',emoji:'📅',tab:'painel'},
+    mensal:{label:'Mês',emoji:'🎯',tab:'painel'},
+    semanal:{label:'Semana',emoji:'📊',tab:'painel'},
+    diario:{label:'Hoje',emoji:'🔴',tab:'painel'},
+    clientes:{label:'Clientes',emoji:'👥',tab:'clientes'},
+    stone:{label:'Stone',emoji:'🏦',tab:'stone'},
+    auditoria:{label:'Auditoria',emoji:'🛡️',tab:'auditoria'},
+    financeiro:{label:'Financeiro',emoji:'💰',tab:'financeiro'},
+    midias:{label:'Mídias',emoji:'📣',tab:'midias'},
+  };
+  const flat = [];
+  Object.entries(abaMap).forEach(([k,meta]) => {
+    (ins[k] || []).forEach(i => flat.push({...i, _aba:k, _abaMeta:meta}));
+  });
+  if(!flat.length){ el.innerHTML = ''; return; }
   const ordem = {critico:0, atencao:1, oportunidade:2, info:3};
-  const sorted = [...insights].sort((a,b)=>(ordem[a.tipo]??9)-(ordem[b.tipo]??9));
-  const cards = sorted.map(i=>{
+  flat.sort((a,b) => (ordem[a.tipo]??9)-(ordem[b.tipo]??9));
+  const crit = flat.filter(i=>i.tipo==='critico').length;
+  const aten = flat.filter(i=>i.tipo==='atencao').length;
+  const opor = flat.filter(i=>i.tipo==='oportunidade').length;
+  const cards = flat.map(i => {
     const tag = {critico:'CRÍTICO',atencao:'ATENÇÃO',oportunidade:'OPORTUNIDADE',info:'INFO'}[i.tipo] || 'INFO';
+    const m = i._abaMeta;
     return `<div class="insight-card ${i.tipo}">
-      <div class="ic-head"><span class="ic-tag">${tag}</span>${i.titulo}</div>
+      <div class="ic-head">
+        <span class="ic-tag">${tag}</span>
+        <span class="ic-aba" data-tab="${m.tab}" title="Ir para aba ${m.label}" style="margin-left:6px;font-size:10.5px;font-weight:700;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--border);padding:2px 8px;border-radius:999px;cursor:pointer">${m.emoji} ${m.label}</span>
+        <span style="margin-left:8px">${i.titulo}</span>
+      </div>
       <div class="ic-body">${i.texto}</div>
       ${i.acao ? `<div class="ic-acao">${i.acao}</div>` : ''}
     </div>`;
   }).join('');
-  el.innerHTML = `<div class="insights-box">
-    <h3>🎯 Ações Recomendadas · ${titulo_aba} <span class="badge-count">${sorted.length}</span></h3>
-    ${cards}
+  const abertoInicial = crit > 0 || flat.length <= 4;
+  el.innerHTML = `<div class="insights-box" style="border-left:4px solid var(--accent)">
+    <h3 style="cursor:pointer;user-select:none" id="global-insights-toggle">
+      🎯 Ações Recomendadas
+      <span class="badge-count">${flat.length}</span>
+      ${crit ? `<span style="margin-left:8px;font-size:11px;background:#ef4444;color:#fff;padding:2px 8px;border-radius:999px">${crit} crítico${crit>1?'s':''}</span>` : ''}
+      ${aten ? `<span style="margin-left:6px;font-size:11px;background:#f59e0b;color:#fff;padding:2px 8px;border-radius:999px">${aten} atenção</span>` : ''}
+      ${opor ? `<span style="margin-left:6px;font-size:11px;background:#22c55e;color:#fff;padding:2px 8px;border-radius:999px">${opor} oportunidade${opor>1?'s':''}</span>` : ''}
+      <span id="global-insights-caret" style="float:right;font-size:14px;color:var(--ink-3)">${abertoInicial?'▼':'▶'}</span>
+    </h3>
+    <div id="global-insights-body" style="${abertoInicial?'':'display:none'}">${cards}</div>
   </div>`;
+  const tog = document.getElementById('global-insights-toggle');
+  const body = document.getElementById('global-insights-body');
+  const caret = document.getElementById('global-insights-caret');
+  if(tog && body){
+    tog.addEventListener('click', () => {
+      const aberto = body.style.display !== 'none';
+      body.style.display = aberto ? 'none' : '';
+      if(caret) caret.textContent = aberto ? '▶' : '▼';
+    });
+  }
+  // Chip da aba clica pra ir direto
+  el.querySelectorAll('.ic-aba').forEach(chip => {
+    chip.addEventListener('click', ev => {
+      ev.stopPropagation();
+      const tab = chip.dataset.tab;
+      const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+      if(btn) btn.click();
+    });
+  });
 }
 
 // ============= RENDER POR ABA =============
+// CONSOLIDAÇÃO A · limpa todos os cards do Painel unificado antes de re-render
+function clearPerContainers(){
+  ['per-pace','per-kpis','per-ancora','per-meta','per-heatmap','per-comparacao',
+   'per-meses','per-dia','per-dow','per-google-dow','per-sala-wrap',
+   'per-categorias','per-ticket-meta','per-novos','per-rentabilidade',
+   'per-categoria-native','per-desvio-tabela',
+   'per-prof','per-meios','per-utilizacao','per-hora','per-topcli'
+  ].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = ''; });
+}
+
+const PER_AUDIT_TXT = {
+  anual: `<div>📅</div><div><strong>Panorama do ano · evolução financeira.</strong> Loja abriu 23/07/2026. Aqui: trajetória mês-a-mês, mix, rentabilidade. Base de clientes fica na aba <strong>Clientes</strong>.</div>`,
+  mensal: `<div>🎯</div><div><strong>Onde você está no mês.</strong> Trajetória diária, projeção de fechamento, alavancas pra ajustar antes de fechar o mês.</div>`,
+  semanal: `<div>📊</div><div><strong>Semana corrente</strong> — decida escala e campanhas de WhatsApp. Compare com semana anterior pra ver se está acelerando ou perdendo tração.</div>`,
+  diario: `<div>🔴</div><div><strong>HOJE — atualiza de hora em hora</strong> (11h→21h BRT). Checkpoints operacionais em tempo real: se está atrás do pace, hora de agir.</div>`,
+};
+
 function renderAnual(data){
   const a=data.abas.anual;
   const k=a.kpis;
-  renderInsights('anual-insights','Anual 2026',(data.insights||{}).anual);
-  renderKPIs('anual-kpis',[
+  const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.anual;
+  renderKPIs('per-kpis',[
     {label:'Caixa · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`padrão Trinks`},
     {label:'Base',value:k.clientes_unicos+'',foot:`${((k.cliente_dia||0)/Math.max(k.clientes_unicos,1)).toFixed(1)} visitas/cliente médio`}
   ]);
-  renderAncora('anual-ancora', a.categoria_native, a.kpis);
-  if(a.meta && a.meta.meta) renderMetaProgress('anual-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
-  renderTicketMeta('anual-ticket-meta', 'ano', k);
+  renderAncora('per-ancora', a.categoria_native, a.kpis);
+  if(a.meta && a.meta.meta) renderMetaProgress('per-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
+  renderTicketMeta('per-ticket-meta', 'ano', k);
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
     const esc = (a.meta.meta||0) / mm;
-    renderCategoriasMeta('anual-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc);
+    renderCategoriasMeta('per-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc);
   }
 
   // Tabela mensal
   const meses=Object.entries(a.meses||{}).sort();
   const mrows=meses.map(([ym,m])=>[ym,m.dias_op,brl0(m.caixa),brl0(m.receita_serv),m.atend_fin,m.clientes_unicos,brl(m.ticket_trans)]);
-  renderTable('anual-meses','📅 Trajetória do ano · mês a mês','Compare meses fechados vs corrente — vê se está acelerando ou perdendo tração',['Mês','Dias','Caixa','Receita','Atend','Únicos','Ticket'],mrows);
+  renderTable('per-meses','📅 Trajetória do ano · mês a mês','Compare meses fechados vs corrente — vê se está acelerando ou perdendo tração',['Mês','Dias','Caixa','Receita','Atend','Únicos','Ticket'],mrows);
 
-  renderRentabilidade('anual-rentabilidade', '💰 Rentabilidade por serviço', '2026 · R$/hora ao lado do volume revela onde há upside real', a.rentabilidade_hora || []);
-  renderBarsHora('anual-hora','⏱ Fluxo típico do dia · 2026 <span class="hi">('+k.dias_op+' dias op.)</span>','Curva média · define escala e horário de campanhas',a.hora_media,true,'');
-  renderUtilizacao('anual-utilizacao', 'ano', k, a);
-  if(a.novos_vs_recorr) renderNovosRecorr('anual-novos', a.novos_vs_recorr, 'ano');
-  renderCategoriaNativa('anual-categoria-native', a.categoria_native);
-  renderDesvioTabela('anual-desvio-tabela', data.catalogo_servicos);
+  renderRentabilidade('per-rentabilidade', '💰 Rentabilidade por serviço', '2026 · R$/hora ao lado do volume revela onde há upside real', a.rentabilidade_hora || []);
+  renderBarsHora('per-hora','⏱ Fluxo típico do dia · 2026 <span class="hi">('+k.dias_op+' dias op.)</span>','Curva média · define escala e horário de campanhas',a.hora_media,true,'');
+  renderUtilizacao('per-utilizacao', 'ano', k, a);
+  if(a.novos_vs_recorr) renderNovosRecorr('per-novos', a.novos_vs_recorr, 'ano');
+  renderCategoriaNativa('per-categoria-native', a.categoria_native);
+  renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
 }
 
 function renderClientes(data){
@@ -2068,67 +2069,61 @@ function renderClientes(data){
 
 function renderMensal(data){
   const m=data.abas.mensal, k=m.kpis;
-  var _sub=document.getElementById('tab-mensal-sub'); if(_sub) _sub.textContent='';
+  const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.mensal;
   if(k.em_atendimento>0){document.getElementById('chip-live').style.display='';document.getElementById('chip-live').innerHTML=`<span class="dot"></span> ${k.em_atendimento} em atendim.`;document.getElementById('chip-live').className='chip live';}
-  renderInsights('mensal-insights','Mês corrente',(data.insights||{}).mensal);
-  renderKPIs('mensal-kpis',[
+  renderKPIs('per-kpis',[
     {label:'Caixa · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
-    // O delta do ticket sai da MESMA janela dos outros cards (01 a hoje do mês
-    // passado), não do mês fechado — o rótulo antigo dizia "mês passado" e fazia
-    // parecer comparação contra o mês inteiro.
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`(caixa÷visitas · padrão Trinks)`, delta_pct:k.ticket_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
   ]);
-  renderAvisoBase('mensal-kpis', k);
-  renderMetaProgress('mensal-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
-  renderHeatmapMeta('mensal-heatmap', data.sazonalidade, m.por_dia_mes, data.hoje);
-  renderTicketMeta('mensal-ticket-meta', 'mês', k);
-  renderUtilizacao('mensal-utilizacao', 'mês', k, m);
+  renderAvisoBase('per-kpis', k);
+  renderMetaProgress('per-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
+  renderHeatmapMeta('per-heatmap', data.sazonalidade, m.por_dia_mes, data.hoje);
+  renderTicketMeta('per-ticket-meta', 'mês', k);
+  renderUtilizacao('per-utilizacao', 'mês', k, m);
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
-    renderCategoriasMeta('mensal-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm);
+    renderCategoriasMeta('per-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm);
   }
 
-  if(m.novos_vs_recorr) renderNovosRecorr('mensal-novos', m.novos_vs_recorr, 'mês');
+  if(m.novos_vs_recorr) renderNovosRecorr('per-novos', m.novos_vs_recorr, 'mês');
 
-  renderRentabilidade('mensal-rentabilidade', '💰 Rentabilidade · onde tá o R$/hora forte', 'mês · o "âncora" traz volume, a "jóia" traz margem — combine os dois em pacote', m.rentabilidade_hora || []);
+  renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · onde tá o R$/hora forte', 'mês · o "âncora" traz volume, a "jóia" traz margem — combine os dois em pacote', m.rentabilidade_hora || []);
 
-  renderBarsDia('mensal-dia','📈 Trajetória do mês · dia a dia','Onde bombou, onde travou — vê quais dias-alavanca faltam pra bater meta',m.por_dia_mes,'');
-  renderBarsHora('mensal-hora','⏱ Fluxo típico do dia · mês <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · usa pra dimensionar equipe e horário de campanhas',m.hora_media,true,'');
-  renderRankingProf('mensal-prof','👥 Profissionais do mês','Receita + ticket médio · ticket alto = quem faz upsell (replicar prática)',m.ranking_prof, m.ranking_prof_total_n);
-  renderMeiosPagamento('mensal-meios','💳 Mix de pagamentos · mês','Muito cartão = mais MDR + espera 30d · muito PIX = caixa na hora',m.meios_pagamento);
-  renderTopClientes('mensal-topcli','⭐ Clientes que mais voltaram · mês','Ranking por visitas — quem sumiu vs mês passado merece investigação', m.clientes_top || [], '<strong>Ação:</strong> WhatsApp/agradecimento pra quem voltou 3+ vezes no mês. Se alguém sumiu do ranking vs mês anterior, ligar.');
+  renderBarsDia('per-dia','📈 Trajetória do mês · dia a dia','Onde bombou, onde travou — vê quais dias-alavanca faltam pra bater meta',m.por_dia_mes,'');
+  renderBarsHora('per-hora','⏱ Fluxo típico do dia · mês <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · usa pra dimensionar equipe e horário de campanhas',m.hora_media,true,'');
+  renderRankingProf('per-prof','👥 Profissionais do mês','Receita + ticket médio · ticket alto = quem faz upsell (replicar prática)',m.ranking_prof, m.ranking_prof_total_n);
+  renderMeiosPagamento('per-meios','💳 Mix de pagamentos · mês','Muito cartão = mais MDR + espera 30d · muito PIX = caixa na hora',m.meios_pagamento);
+  renderTopClientes('per-topcli','⭐ Clientes que mais voltaram · mês','Ranking por visitas — quem sumiu vs mês passado merece investigação', m.clientes_top || [], '<strong>Ação:</strong> WhatsApp/agradecimento pra quem voltou 3+ vezes no mês. Se alguém sumiu do ranking vs mês anterior, ligar.');
 }
 
 function renderSemanal(data){
   const s=data.abas.semanal, k=s.kpis;
-  var _s=document.getElementById('tab-semanal-sub'); if(_s) _s.textContent='';
-  renderInsights('semanal-insights','Semana corrente',(data.insights||{}).semanal);
-  renderKPIs('semanal-kpis',[
+  const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.semanal;
+  renderKPIs('per-kpis',[
     {label:'Caixa · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
-    // Mesma janela parcial dos cards ao lado, não a semana fechada anterior.
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Dias operados',value:k.dias_op+'',foot:`de ${s.meta.dias_total} da semana`}
   ]);
-  renderAvisoBase('semanal-kpis', k);
-  renderMetaProgress('semanal-meta','Meta Semanal',s.meta,'Soma das metas diárias dos dias da semana (cada dia ponderado pelo peso histórico do DOW)');
-  renderTicketMeta('semanal-ticket-meta', 'semana', k);
-  renderComparacaoSemana('semanal-comparacao', k, s.semana_anterior);
-  renderUtilizacao('semanal-utilizacao', 'semana', k, s);
+  renderAvisoBase('per-kpis', k);
+  renderMetaProgress('per-meta','Meta Semanal',s.meta,'Soma das metas diárias dos dias da semana (cada dia ponderado pelo peso histórico do DOW)');
+  renderTicketMeta('per-ticket-meta', 'semana', k);
+  renderComparacaoSemana('per-comparacao', k, s.semana_anterior);
+  renderUtilizacao('per-utilizacao', 'semana', k, s);
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
-    renderCategoriasMeta('semanal-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm);
+    renderCategoriasMeta('per-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm);
   }
-  if(s.novos_vs_recorr) renderNovosRecorr('semanal-novos', s.novos_vs_recorr, 'semana');
-  renderRentabilidade('semanal-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
-  renderBarsDow('semanal-dow','📊 Onde o caixa se concentra na semana','Distribuição por dia · decide onde reforçar equipe e campanha',s.por_dow,'');
+  if(s.novos_vs_recorr) renderNovosRecorr('per-novos', s.novos_vs_recorr, 'semana');
+  renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
+  renderBarsDow('per-dow','📊 Onde o caixa se concentra na semana','Distribuição por dia · decide onde reforçar equipe e campanha',s.por_dow,'');
   // Cruzamento Semanal × Mídias: quando Google gera ação vs quando a loja fatura
   (function(){
-    const el = document.getElementById('semanal-google-dow');
+    const el = document.getElementById('per-google-dow');
     if(!el) return;
     if(typeof MID === 'undefined' || !MID || !MID.google_business || !MID.google_business.serie_diaria_30d) { el.innerHTML=''; return; }
     const gmb = MID.google_business.serie_diaria_30d;
@@ -2190,40 +2185,66 @@ function renderSemanal(data){
       <tbody>${linhas}</tbody></table></div>
     </div>`;
   })();
-  renderBarsHora('semanal-hora','⏱ Fluxo típico do dia · semana <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · define escala e horário de campanhas',s.hora_media,true,'');
-  renderRankingProf('semanal-prof','👥 Profissionais da semana','Receita + ticket médio da semana · replicar quem faz upsell',s.ranking_prof, s.ranking_prof_total_n);
-  renderMeiosPagamento('semanal-meios','💳 Mix de pagamentos · semana','Fluxo de caixa: PIX+dinheiro imediato · cartão só em 30d',s.meios_pagamento);
-  renderTopClientes('semanal-topcli','⭐ Clientes recorrentes da semana','Quem apareceu 2+ vezes · alinhe equipe pra tratamento VIP', s.clientes_top || [], '<strong>Prioridade da equipe:</strong> quem apareceu 2+ vezes na semana merece tratamento VIP na próxima visita.');
+  renderBarsHora('per-hora','⏱ Fluxo típico do dia · semana <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · define escala e horário de campanhas',s.hora_media,true,'');
+  renderRankingProf('per-prof','👥 Profissionais da semana','Receita + ticket médio da semana · replicar quem faz upsell',s.ranking_prof, s.ranking_prof_total_n);
+  renderMeiosPagamento('per-meios','💳 Mix de pagamentos · semana','Fluxo de caixa: PIX+dinheiro imediato · cartão só em 30d',s.meios_pagamento);
+  renderTopClientes('per-topcli','⭐ Clientes recorrentes da semana','Quem apareceu 2+ vezes · alinhe equipe pra tratamento VIP', s.clientes_top || [], '<strong>Prioridade da equipe:</strong> quem apareceu 2+ vezes na semana merece tratamento VIP na próxima visita.');
 }
 
 function renderDiario(data){
   const d=data.abas.diario, k=d.kpis;
-  var _d=document.getElementById('tab-diario-sub'); if(_d) _d.textContent='';
-  renderInsights('diario-insights','Hoje',(data.insights||{}).diario);
-  renderKPIs('diario-kpis',[
+  const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.diario;
+  renderKPIs('per-kpis',[
     {label:'Caixa · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · +${k.em_atendimento} em curso`, delta_pct:k.cliente_dia_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Ticket / visita',value:(k.cliente_dia||0)>0?brl(k.ticket_medio||0):'—',foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
   ]);
-  renderAvisoBase('diario-kpis', k);
-  renderMetaProgress('diario-meta','Meta Diária',d.meta,'Meta específica do dia da semana atual (peso histórico do DOW × META_MENSAL, respeitando jornada)');
-  renderPaceIntraday('diario-pace', k.pace_intraday, (data.sazonalidade||{}).curva_horaria);
-  renderTicketMeta('diario-ticket-meta', 'hoje', k);
-  renderUtilizacao('diario-utilizacao', 'hoje', k, d);
+  renderAvisoBase('per-kpis', k);
+  renderMetaProgress('per-meta','Meta Diária',d.meta,'Meta específica do dia da semana atual (peso histórico do DOW × META_MENSAL, respeitando jornada)');
+  renderPaceIntraday('per-pace', k.pace_intraday, (data.sazonalidade||{}).curva_horaria);
+  renderTicketMeta('per-ticket-meta', 'hoje', k);
+  renderUtilizacao('per-utilizacao', 'hoje', k, d);
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
-    renderCategoriasMeta('diario-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao, mf, d.meta.meta/mm);
+    renderCategoriasMeta('per-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao, mf, d.meta.meta/mm);
   }
-  renderRentabilidade('diario-rentabilidade', '💰 Rentabilidade · R$/hora HOJE', 'sinal em tempo real do mix — dá pra empurrar serviço mais rentável no restante do dia', d.rentabilidade_hora || []);
-  renderBarsHora('diario-hora','⏱ Fluxo por hora · HOJE','Onde tá vazio, onde tá cheio · decide chamar cliente pelo WhatsApp',d.hora_abs,false,'');
-  renderRankingProf('diario-prof','👥 Quem está trabalhando AGORA','Ranking do dia · ordenado por receita',d.ranking_prof, d.ranking_prof_total_n);
+  renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora HOJE', 'sinal em tempo real do mix — dá pra empurrar serviço mais rentável no restante do dia', d.rentabilidade_hora || []);
 
-  const sRows=d.ranking_serv.map(s=>[s.nome,s.n,brl0(s.v)]);
-  renderTable('diario-serv','💇 O que a loja vendeu HOJE','Serviços do dia por volume · valida mix da sala',['Serviço','Qtd','Receita'],sRows);
-  renderMeiosPagamento('diario-meios','💳 Meios de pagamento · HOJE','Cash-flow: PIX cai na hora, cartão só em 30 dias',d.meios_pagamento);
-  renderTopClientes('diario-topcli','⭐ Clientes na loja HOJE','Quem passou por aqui · tratamento VIP antes de sair', d.clientes_top || [], '<strong>Ação agora:</strong> se algum cliente-chave está aqui hoje, alinhe a equipe para atenção especial antes de sair.');
+  // SALA AGORA · exclusivo do Diário — injeta wrapper com 3 sub-cards
+  const salaEl = document.getElementById('per-sala-wrap');
+  if(salaEl){
+    salaEl.innerHTML = `<div class="sala-wrap">
+      <div class="sala-header">
+        <h3>🎬 SALA AGORA</h3>
+        <div class="sub">Visão viva da operação · quem trabalha, o que vende, quando entra</div>
+      </div>
+      <div class="sala-grid">
+        <div id="per-sala-prof"></div>
+        <div id="per-sala-serv"></div>
+        <div id="per-sala-hora"></div>
+      </div>
+    </div>`;
+    renderRankingProf('per-sala-prof','👥 Quem está trabalhando AGORA','Ranking do dia · ordenado por receita',d.ranking_prof, d.ranking_prof_total_n);
+    const sRows=d.ranking_serv.map(s=>[s.nome,s.n,brl0(s.v)]);
+    renderTable('per-sala-serv','💇 O que a loja vendeu HOJE','Serviços do dia por volume · valida mix da sala',['Serviço','Qtd','Receita'],sRows);
+    renderBarsHora('per-sala-hora','⏱ Fluxo por hora · HOJE','Onde tá vazio, onde tá cheio · decide chamar cliente pelo WhatsApp',d.hora_abs,false,'');
+  }
+
+  renderMeiosPagamento('per-meios','💳 Meios de pagamento · HOJE','Cash-flow: PIX cai na hora, cartão só em 30 dias',d.meios_pagamento);
+  renderTopClientes('per-topcli','⭐ Clientes na loja HOJE','Quem passou por aqui · tratamento VIP antes de sair', d.clientes_top || [], '<strong>Ação agora:</strong> se algum cliente-chave está aqui hoje, alinhe a equipe para atenção especial antes de sair.');
+}
+
+// CONSOLIDAÇÃO A · dispatcher central: limpa e re-renderiza só o período ativo
+function renderPeriodoAtivo(data){
+  if(!data || !data.abas) return;
+  clearPerContainers();
+  const per = periodoAtivo();
+  if(per === 'anual')   renderAnual(data);
+  else if(per === 'semanal') renderSemanal(data);
+  else if(per === 'diario')  renderDiario(data);
+  else renderMensal(data);
 }
 
 // ============= TABS =============
@@ -2238,15 +2259,13 @@ function setupTabs(){
     document.getElementById('tab-'+b.dataset.tab).classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
   }));
-  // Pills de período dentro de Painel
+  // Pills de período dentro de Painel — CONSOLIDAÇÃO A: 1 painel único, re-renderiza
   const perBtns = document.querySelectorAll('.periodo-btn');
-  const perPanels = document.querySelectorAll('.periodo-panel');
   perBtns.forEach(b => b.addEventListener('click', () => {
     perBtns.forEach(x => x.setAttribute('aria-selected','false'));
-    perPanels.forEach(p => p.classList.remove('active'));
     b.setAttribute('aria-selected','true');
-    document.getElementById('periodo-'+b.dataset.periodo).classList.add('active');
     window._perOffset = 0;
+    if(typeof TRINKS !== 'undefined' && TRINKS) renderPeriodoAtivo(TRINKS);
     atualizarNavPeriodo();
   }));
 
@@ -2348,7 +2367,7 @@ function navegarPeriodo(delta){
 
 // Card com KPIs do período histórico selecionado
 function mostrarCardHistorico(per, id){
-  const painel = document.getElementById('periodo-' + per);
+  const painel = document.getElementById('periodo-shared');
   if(!painel) return;
   let card = document.getElementById('per-card-hist');
   if(!card){
@@ -2419,7 +2438,6 @@ function renderAuditoria(data){
   const resumoEl = document.getElementById('auditoria-resumo');
   const profEl = document.getElementById('auditoria-por-prof');
   const listaEl = document.getElementById('auditoria-lista');
-  renderInsights('auditoria-insights','Auditoria · risco financeiro',(data.insights||{}).auditoria);
 
   if(!aud || !aud.lista){
     if(subEl) subEl.textContent = 'sem dados';
@@ -2601,7 +2619,6 @@ function renderStone(data){
   const s = data.stone;
   const el = document.getElementById('stone-content');
   const subEl = document.getElementById('tab-stone-sub');
-  renderInsights('stone-insights','Stone · Reconciliação',(data.insights||{}).stone);
   // Cash-flow por parcelamento (Trinks) — sempre renderiza mesmo sem stone csv
   renderParcelas('stone-parcelas', (data.abas.anual||{}).parcelas);
   if(!s){
@@ -2921,10 +2938,7 @@ async function load(showToast=false){
         }
       }
     } catch(_){}
-    renderAnual(data);
-    renderMensal(data);
-    renderSemanal(data);
-    renderDiario(data);
+    renderPeriodoAtivo(data);   // CONSOLIDAÇÃO A · painel único, dispatch por período
     renderClientes(data);
     renderStone(data);
     renderAuditoria(data);
@@ -2932,6 +2946,8 @@ async function load(showToast=false){
     // O funil de Mídias soma clientes novos do Trinks na janela escolhida:
     // quando o dado do Trinks chega depois, a aba precisa se redesenhar.
     if(MID) renderMidias();
+    // CONSOLIDAÇÃO L · painel global de Ações Recomendadas
+    renderGlobalInsights(data);
     if(!window._tabsSet){ setupTabs(); window._tabsSet=true; }
     const dt=new Date(data.gerado_em);
     const ageMin=Math.floor((Date.now()-dt.getTime())/60000);
