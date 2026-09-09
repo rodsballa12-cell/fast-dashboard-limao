@@ -4726,25 +4726,9 @@ function renderMidias(){
     </div>`;
   }
 
-  // Direcionamentos estratégicos (destaque)
+  // Direcionamentos + Recomendações agora vão pro #midias-insights unificado no rodapé (padrão insight-card, ordenado por severidade). Direcionamento tem prioridade P1/P2/P3; Recomendação tem sev crit/warn/ok. Ambos viram insight-card com badge crítico/atenção/oportunidade.
   const dirBox = document.getElementById('midias-direcionamentos');
-  if(MID.direcionamentos_estrategicos && MID.direcionamentos_estrategicos.length){
-    const priColor = p => ({P1:'#ef4444', P2:'#f59e0b', P3:'#3b82f6'})[p] || 'var(--muted)';
-    dirBox.innerHTML = `<section class="card" style="border-left:4px solid #a855f7">
-      <h2>🎯 Direcionamentos estratégicos · descobertas do gestor</h2>
-      <div class="cap">Ações de alto impacto identificadas na análise mais recente. Priorizadas por retorno esperado.</div>
-      <div style="display:grid;gap:10px;margin-top:12px">
-      ${MID.direcionamentos_estrategicos.map(d=>`<div style="background:var(--surface-2);border-radius:8px;padding:14px;border-left:3px solid ${priColor(d.prioridade)}">
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
-          <span style="background:${priColor(d.prioridade)};color:#fff;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px">${d.prioridade}</span>
-          <span style="font-weight:700;font-size:14px">${d.titulo}</span>
-          <span style="margin-left:auto;font-size:11px;color:var(--ink-3)">Impacto ${d.impacto_estimado}</span>
-        </div>
-        <div style="font-size:12px;color:var(--ink-2);margin-top:6px"><strong style="color:var(--ink-3);font-size:10.5px;text-transform:uppercase">Descoberta:</strong> ${d.descoberta}</div>
-        <div style="font-size:12px;color:var(--accent);margin-top:8px;font-weight:600">→ ${d.acao}</div>
-      </div>`).join('')}
-      </div></section>`;
-  } else { dirBox.innerHTML=''; }
+  if(dirBox) dirBox.innerHTML = '';
 
   // Trend diário
   const trendBox = document.getElementById('midias-trend');
@@ -5084,42 +5068,48 @@ function renderMidias(){
     </section>`;
   }
 
-  // CONSOLIDAÇÃO I · Recomendações + Insights unificados em 1 card com colunas
-  const sev={crit:'🔴',warn:'🟡',ok:'🟢'};
+  // Recomendações e Direcionamentos viram insight-card padrão (mesmo layout das outras abas), ordenados por severidade e mostrados no rodapé em #midias-insights.
   const mdBold = t => t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
   const recBox = document.getElementById('midias-recomendacoes');
-  const temRec = MID.recomendacoes && MID.recomendacoes.length;
-  const temIns = MID.insights_narrativa && MID.insights_narrativa.length;
-  if(temRec || temIns){
-    recBox.innerHTML = `<div class="card">
-      <h2>💡 Gerente Marketing · recomendações + insights</h2>
-      <div class="cap">Ações a aprovar/rejeitar via <code>/marketing-fast</code> · leitura narrativa dos dados da semana</div>
-      <div style="display:grid;grid-template-columns:${temRec && temIns ? '1.4fr 1fr' : '1fr'};gap:16px;margin-top:12px;align-items:start">
-        ${temRec ? `<div>
-          <div style="font-size:10.5px;font-weight:700;color:var(--ink-3);text-transform:uppercase;margin-bottom:8px">🎯 Recomendações (${MID.recomendacoes.length})</div>
-          ${MID.recomendacoes.map((d,i)=>`<div class="dec-item ${d.sev}" style="margin-top:8px;padding:12px;border-left:4px solid ${d.sev==='crit'?'#ef4444':d.sev==='warn'?'#f59e0b':'#22c55e'};background:var(--surface-2);border-radius:6px">
-            <div style="font-weight:600"><span style="opacity:.7">${i+1}.</span> ${sev[d.sev]||''} ${d.titulo}</div>
-            <div style="color:var(--ink-2);font-size:12.5px;margin-top:4px">${d.detalhe}</div>
-            <div style="color:var(--accent);font-size:12px;margin-top:6px;font-weight:600">→ ${d.acao}</div>
-          </div>`).join('')}
-        </div>` : ''}
-        ${temIns ? `<div>
-          <div style="font-size:10.5px;font-weight:700;color:var(--ink-3);text-transform:uppercase;margin-bottom:8px">🧠 Leitura da semana</div>
-          <ul style="margin:0 0 0 18px;line-height:1.7;color:var(--ink-2);font-size:12.5px">
-            ${MID.insights_narrativa.map(t=>`<li style="margin-bottom:6px">${mdBold(t)}</li>`).join('')}
-          </ul>
-        </div>` : ''}
-      </div>
-    </div>`;
-  } else {
-    recBox.innerHTML = '';
-  }
-  // Slot #midias-insights: caixa de Ações Recomendadas específica de Mídias
-  if(typeof TRINKS !== 'undefined' && TRINKS && TRINKS.insights){
-    renderInsights('midias-insights', 'Mídias', TRINKS.insights.midias);
-  } else {
-    const oldIns = document.getElementById('midias-insights');
-    if(oldIns) oldIns.innerHTML = '';
+  if(recBox) recBox.innerHTML = '';
+
+  const midiasInsights = [];
+  // Mapeia direcionamentos estratégicos (prioridade P1/P2/P3 → severidade)
+  const priTipo = { P1:'critico', P2:'atencao', P3:'oportunidade' };
+  (MID.direcionamentos_estrategicos || []).forEach(d => {
+    midiasInsights.push({
+      tipo: priTipo[d.prioridade] || 'info',
+      titulo: `${d.prioridade || ''} · ${d.titulo}`.trim().replace(/^·\s*/, ''),
+      texto: `<strong style="color:var(--ink-3);font-size:10.5px;text-transform:uppercase">Descoberta:</strong> ${d.descoberta}${d.impacto_estimado ? ` <span style="color:var(--ink-3)">· Impacto ${d.impacto_estimado}</span>` : ''}`,
+      acao: d.acao,
+    });
+  });
+  // Mapeia recomendações do Gerente Marketing (sev crit/warn/ok → severidade)
+  const sevTipo = { crit:'critico', warn:'atencao', ok:'oportunidade' };
+  (MID.recomendacoes || []).forEach(d => {
+    midiasInsights.push({
+      tipo: sevTipo[d.sev] || 'info',
+      titulo: d.titulo,
+      texto: d.detalhe,
+      acao: d.acao,
+    });
+  });
+  // Insights do backend Trinks pra aba Mídias
+  const bkMidias = (typeof TRINKS !== 'undefined' && TRINKS && TRINKS.insights) ? (TRINKS.insights.midias || []) : [];
+  bkMidias.forEach(i => midiasInsights.push(i));
+
+  renderInsights('midias-insights', 'Mídias · gestor + backend', midiasInsights);
+
+  // Leitura narrativa da semana fica embaixo, como bullets simples (não é acionável, então não vira insight-card)
+  const midEl = document.getElementById('midias-insights');
+  if(midEl && MID.insights_narrativa && MID.insights_narrativa.length){
+    midEl.insertAdjacentHTML('beforeend', `<div class="card" style="margin-top:12px">
+      <h2>🧠 Leitura da semana</h2>
+      <div class="cap">Contexto narrativo dos dados · não é ação, é interpretação.</div>
+      <ul style="margin:8px 0 0 20px;line-height:1.8;color:var(--ink-2)">
+        ${MID.insights_narrativa.map(t=>`<li>${mdBold(t)}</li>`).join('')}
+      </ul>
+    </div>`);
   }
 }
 
