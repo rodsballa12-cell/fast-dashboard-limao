@@ -2093,22 +2093,32 @@ function renderInsights(container_id, titulo_aba, insights){
   const crit = sorted.filter(i=>i.tipo==='critico').length;
   const aten = sorted.filter(i=>i.tipo==='atencao').length;
   const opor = sorted.filter(i=>i.tipo==='oportunidade').length;
+  const corTipo = {critico:'#ef4444', atencao:'#f59e0b', oportunidade:'#22c55e', info:'#3b82f6'};
   const cards = sorted.map(i=>{
-    const tag = {critico:'CRÍTICO',atencao:'ATENÇÃO',oportunidade:'OPORTUNIDADE',info:'INFO'}[i.tipo] || 'INFO';
+    const cor = corTipo[i.tipo] || '#3b82f6';
+    const dot = `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${cor};box-shadow:0 0 0 2px ${cor}33;margin-right:8px;vertical-align:middle;flex-shrink:0"></span>`;
     return `<div class="insight-card ${i.tipo}">
-      <div class="ic-head"><span class="ic-tag">${tag}</span>${i.titulo}</div>
+      <div class="ic-head" style="display:flex;align-items:center">${dot}<span>${i.titulo}</span></div>
       <div class="ic-body">${i.texto}</div>
       ${i.acao ? `<div class="ic-acao">${i.acao}</div>` : ''}
     </div>`;
   }).join('');
+  // Farol: 3 bolinhas coloridas sempre presentes (vermelho → amarelo → verde),
+  // apenas o número dentro, sem palavras. Bolinha com contagem 0 fica opaca.
+  // Mesma ordem dos comentários abaixo (crítico → atenção → oportunidade → info).
+  const farolDot = (n, cor) => {
+    const ativo = n > 0;
+    const opa = ativo ? '1' : '.35';
+    return `<span title="${n}" style="display:inline-flex;align-items:center;justify-content:center;margin-left:6px;width:24px;height:24px;border-radius:50%;background:${cor};color:#fff;font-size:12px;font-weight:800;opacity:${opa};box-shadow:0 0 0 2px ${cor}33">${n}</span>`;
+  };
   el.innerHTML = `<div class="insights-box" style="margin-top:20px;border-left:4px solid var(--accent)">
     <h3>🎯 Ações Recomendadas · ${titulo_aba}
       <span class="badge-count">${sorted.length}</span>
-      ${crit ? `<span style="margin-left:8px;font-size:11px;background:#ef4444;color:#fff;padding:2px 8px;border-radius:999px">${crit} crítico${crit>1?'s':''}</span>` : ''}
-      ${aten ? `<span style="margin-left:6px;font-size:11px;background:#f59e0b;color:#fff;padding:2px 8px;border-radius:999px">${aten} atenção</span>` : ''}
-      ${opor ? `<span style="margin-left:6px;font-size:11px;background:#22c55e;color:#fff;padding:2px 8px;border-radius:999px">${opor} oportunidade${opor>1?'s':''}</span>` : ''}
+      ${farolDot(crit, '#ef4444')}
+      ${farolDot(aten, '#f59e0b')}
+      ${farolDot(opor, '#22c55e')}
     </h3>
-    <div class="cap" style="margin-top:6px">Ordenadas do mais prioritário (crítico) pro menos (info).</div>
+    <div class="cap" style="margin-top:6px">Ordenadas do mais prioritário (vermelho) pro menos (verde).</div>
     ${cards}
   </div>`;
 }
