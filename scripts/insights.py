@@ -387,9 +387,9 @@ def _insights_anual(aba):
     if n_alerta >= 3:
         top_churn = churn.get("top", [])[:3]
         nomes = ", ".join(c.get("cliente","?").split()[0] for c in top_churn)
-        ins.append(_mk("critico", f"{n_alerta} clientes de valor sumidos (LTV {_fmt(ltv_risco)})",
-            f"Clientes que vieram 3+ vezes e não voltam há 14+ dias. Top: {nomes} (e mais {n_alerta-3}).",
-            f"Ver aba Anual > Clientes em risco. Mensagem personalizada + voucher pode salvar 30-40% do LTV — potencial resgate {_fmt(ltv_risco*0.35)}."))
+        ins.append(_mk("critico", f"{n_alerta} clientes que sumiram (LTV {_fmt(ltv_risco)})",
+            f"Vieram 3+ vezes e não voltam há 14+ dias. Top: {nomes} (e mais {n_alerta-3}).",
+            f"Ver aba Clientes → 🛟 Clientes que sumiram. WhatsApp pessoal citando último serviço + voucher salva 30-40% do LTV — potencial resgate {_fmt(ltv_risco*0.35)}."))
 
     # 6. Aniversariantes próximos (semana)
     aniv = aba.get("aniversariantes") or []

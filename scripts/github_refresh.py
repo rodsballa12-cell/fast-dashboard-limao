@@ -1322,6 +1322,7 @@ def main():
     # === Churn early warning: clientes ≥3 visitas nos primeiros 30 dias e sumidos há 14+ dias ===
     churn_candidatos = []
     cli_visitas = defaultdict(list)  # {id: [dates]}
+    cli_servicos = defaultdict(list)  # {id: [(date, servico_nome), ...]} — pra apoiar conversa WA
     cli_nome = {}
     # B4 · cli_valor agora usa CAIXA (totalPagar) por cliente, não só receita_serv.
     # Isso corrige LTV subestimado, Pareto 20, ranking top clientes, cross-sell, aniv.
@@ -1336,12 +1337,24 @@ def main():
             continue
         cli_visitas[cid].append(dt)
         cli_nome[cid] = (a.get("cliente") or {}).get("nome") or ""
+        _sn = ((a.get("servico") or {}).get("nome") or "").strip()
+        if _sn:
+            cli_servicos[cid].append((dt, _sn))
     for cid, datas in cli_visitas.items():
         if len(datas) < 3: continue
         datas_sorted = sorted(datas)
         ultima = datas_sorted[-1]
         dias_sem_vir = (hoje - ultima).days
         if dias_sem_vir >= 14:
+            # Últimos 3 serviços únicos (mais recentes primeiro) pra apoiar mensagem WA
+            servs_ord = sorted(cli_servicos.get(cid, []), key=lambda x: x[0], reverse=True)
+            ult_servs = []
+            _seen = set()
+            for _dt, _nome in servs_ord:
+                _n = _nome.title()
+                if _n and _n not in _seen:
+                    _seen.add(_n); ult_servs.append(_n)
+                if len(ult_servs) >= 3: break
             churn_candidatos.append({
                 "cliente": cli_nome[cid].title(),
                 "n_visitas": len(datas),
@@ -1349,6 +1362,7 @@ def main():
                 "ultima_visita": ultima.isoformat(),
                 "dias_sem_vir": dias_sem_vir,
                 "telefone": tel_map.get(cid, ""),
+                "ultimos_servicos": ult_servs,
             })
     churn_candidatos.sort(key=lambda x: -x["ltv"])
     churn = {

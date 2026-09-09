@@ -461,7 +461,6 @@
       <div id="clientes-snapshot"></div>
       <!-- 2. AÇÕES AGORA -->
       <div id="clientes-obs-alertas"></div>
-      <div id="clientes-obs-agend"></div>
       <div id="clientes-aniv"></div>
       <div id="clientes-churn"></div>
       <div id="clientes-cross-sell"></div>
@@ -1843,29 +1842,7 @@ function renderCategoriaNativa(container_id, categorias){
   </div>`;
 }
 
-function renderObsAgend(container_id, lista){
-  const el = document.getElementById(container_id);
-  if(!el || !lista || lista.length === 0){ if(el) el.innerHTML = ''; return; }
-  const waLink = tel => tel ? `<a href="https://wa.me/${tel.replace(/\D/g,'')}" target="_blank" style="color:#22c55e;text-decoration:none;font-weight:600;">📱</a>` : '';
-  const rows = lista.slice(0,20).map(o=>{
-    const notes = o.observacoes.map(x=>`<div style="font-size:11.5px;padding:3px 0;"><strong style="color:${x.tipo==='est'?'#f59e0b':'#3b82f6'}">${x.tipo==='est'?'EST':'CLI'}:</strong> ${x.texto.slice(0,120)}</div>`).join('');
-    return `<tr>
-      <td>${o.cliente}</td>
-      <td>${o.n_visitas}</td>
-      <td>${brl0(o.ltv)}</td>
-      <td style="max-width:400px;">${notes}</td>
-      <td>${waLink(o.telefone)}</td>
-    </tr>`;
-  }).join('');
-  el.innerHTML = `<div class="card">
-    <h2>📝 Observações por atendimento <span class="hi">(${lista.length} clientes com nota)</span></h2>
-    <div class="cap">Notas registradas em atendimentos: EST = estabelecimento (equipe), CLI = cliente (preferência dita por ele). Contexto operacional pra pré-atendimento — checar antes de chamar o cliente.</div>
-    <table class="simple">
-      <thead><tr><th>Cliente</th><th>Visitas</th><th>LTV</th><th>Observações</th><th></th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-  </div>`;
-}
+// renderObsAgend absorvido em renderObsAlertas (card unificado "Observações sobre clientes")
 
 // CONSOLIDAÇÃO H · Snapshot absorve LTV Pareto + Novos vs Recorrentes do ano
 function renderClientesSnapshot(container_id, snap, ltv, nvr){
@@ -1873,49 +1850,28 @@ function renderClientesSnapshot(container_id, snap, ltv, nvr){
   if(!el || !snap) return;
   const pct = (a,b) => b>0 ? (a/b*100).toFixed(0)+'%' : '—';
   const cor30 = snap.ativos_30d / snap.total_base > 0.4 ? '#22c55e' : (snap.ativos_30d / snap.total_base > 0.25 ? '#f59e0b' : '#ef4444');
-  const ltvBloco = (ltv && ltv.total_clientes) ? `
-    <div class="meta-row">
-      <div class="meta-cell"><div class="l">Pareto 20% (Ano)</div><div class="v accent">${ltv.pareto20_n||0}</div><div class="d" style="font-size:10px;color:var(--ink-3)">${brl0(ltv.pareto20_v||0)} · ${pct(ltv.pareto20_v||0, ltv.receita_total||1)} da receita</div></div>
-      <div class="meta-cell"><div class="l">LTV top-20 médio</div><div class="v">${brl0((ltv.top && ltv.top.length ? ltv.top.slice(0,20).reduce((s,c)=>s+c.v,0)/Math.min(20,ltv.top.length) : 0))}</div></div>
-      <div class="meta-cell"><div class="l">1ª visita só</div><div class="v ${(ltv.uma_vez||0)>0?'warn':''}">${ltv.uma_vez||0}</div><div class="d" style="font-size:10px;color:var(--ink-3)">${(ltv.total_clientes||0)>0?((ltv.uma_vez||0)/ltv.total_clientes*100).toFixed(0):0}% da base</div></div>
-      <div class="meta-cell"><div class="l">Únicos no ano</div><div class="v">${ltv.total_clientes||0}</div></div>
-    </div>` : '';
-  const nvrBloco = nvr ? `
-    <div class="meta-row" style="border-top:1px dashed var(--border);padding-top:10px">
-      <div class="meta-cell"><div class="l">🆕 Novos (Ano)</div><div class="v accent">${nvr.novos.clientes}</div><div class="d" style="font-size:10px;color:var(--ink-3)">${brl0(nvr.novos.receita)} · ${nvr.novos.atend} atend</div></div>
-      <div class="meta-cell"><div class="l">🔁 Recorrentes (Ano)</div><div class="v">${nvr.recorrentes.clientes}</div><div class="d" style="font-size:10px;color:var(--ink-3)">${brl0(nvr.recorrentes.receita)} · ${nvr.recorrentes.atend} atend</div></div>
-      <div class="meta-cell"><div class="l">Taxa retenção</div><div class="v">${(() => { const tot = (nvr.novos.clientes||0) + (nvr.recorrentes.clientes||0); return tot > 0 ? ((nvr.recorrentes.clientes/tot)*100).toFixed(1) : '0.0'; })()}%</div></div>
-      <div class="meta-cell"><div class="l">Receita recorrente</div><div class="v">${pct(nvr.recorrentes.receita, (nvr.novos.receita||0)+(nvr.recorrentes.receita||0))}</div></div>
-    </div>` : '';
+  const retencao = nvr ? (() => { const tot = (nvr.novos.clientes||0) + (nvr.recorrentes.clientes||0); return tot > 0 ? ((nvr.recorrentes.clientes/tot)*100).toFixed(0)+'%' : '—'; })() : '—';
   el.innerHTML = `<div class="card">
     <h2>📊 Base de clientes · snapshot</h2>
-    <div class="cap">Estado vivo da base — foto do agora. Ativos = com visita nos últimos N dias. Recorrentes = 2+ visitas totais.</div>
+    <div class="cap">Foto do agora — só o que gera ação. Detalhes por período nos cards abaixo.</div>
     <div class="categ-grid">
-      ${tile('','Base total', snap.total_base+'', `${snap.n_recorrentes} recorrentes · ${snap.n_uma_vez} só 1 visita`, 'accent')}
-      ${tile('c2','Ativos 30 dias', `<span style="color:${cor30}">${snap.ativos_30d}</span>`, `${pct(snap.ativos_30d, snap.total_base)} da base`)}
-      ${tile('','Novos (últ 30d)', snap.novos_30d+'', `taxa aquisição: ${pct(snap.novos_30d, snap.total_base)}/mês`)}
-      ${tile(snap.dormentes_60d>0?'c3':'','Dormentes 60d+', snap.dormentes_60d>0 ? `<span class="dn">${snap.dormentes_60d}</span>` : `<span class="up">${snap.dormentes_60d}</span>`, snap.dormentes_60d>0 ? `LTV parado em ${pct(snap.dormentes_60d, snap.total_base)} da base` : `nenhum cliente sumido 60d+`)}
+      ${tile('','Base total', snap.total_base+'', `${snap.n_recorrentes} voltaram · ${snap.n_uma_vez} vieram só 1x`, 'accent')}
+      ${tile('c2','Ativos 30d', `<span style="color:${cor30}">${snap.ativos_30d}</span>`, `${pct(snap.ativos_30d, snap.total_base)} da base`)}
+      ${tile('','Novos (30d)', snap.novos_30d+'', `taxa aquisição: ${pct(snap.novos_30d, snap.total_base)}/mês`)}
+      ${tile('','LTV médio', brl0(snap.ltv_medio), `ticket ${brl0(snap.ticket_medio_visita)}/visita · retenção ${retencao}`)}
     </div>
-    <div class="meta-row" style="margin-top:14px;">
-      <div class="meta-cell"><div class="l">Ativos 60d</div><div class="v">${snap.ativos_60d}</div></div>
-      <div class="meta-cell"><div class="l">Ativos 90d</div><div class="v">${snap.ativos_90d}</div></div>
-      <div class="meta-cell"><div class="l">LTV médio</div><div class="v accent">${brl0(snap.ltv_medio)}</div></div>
-      <div class="meta-cell"><div class="l">Ticket / visita</div><div class="v">${brl0(snap.ticket_medio_visita)}</div></div>
+    <div class="categ-grid" style="margin-top:10px">
+      ${tile(snap.n_alerta_churn>0?'c3':'','🛟 Sumidos', snap.n_alerta_churn>0 ? `<span class="dn">${snap.n_alerta_churn}</span>` : `<span class="up">0</span>`, snap.n_alerta_churn>0 ? `ver card abaixo pra contato` : `ninguém sumido`)}
+      ${tile('','🎂 Aniversários 14d', snap.n_aniv_14d>0 ? `<span class="warn">${snap.n_aniv_14d}</span>` : '0', snap.n_aniv_14d>0 ? `ver card abaixo pra parabenizar` : `sem aniversariantes`)}
+      ${tile(snap.dormentes_60d>0?'c3':'','Dormentes 60d+', snap.dormentes_60d>0 ? `<span class="dn">${snap.dormentes_60d}</span>` : `<span class="up">0</span>`, snap.dormentes_60d>0 ? `${pct(snap.dormentes_60d, snap.total_base)} da base` : `nenhum sumido 60d+`)}
+      ${tile('','1ª visita só', (ltv && (ltv.uma_vez||0)>0) ? `<span class="warn">${ltv.uma_vez}</span>` : '0', `${(ltv && ltv.total_clientes) ? ((ltv.uma_vez||0)/ltv.total_clientes*100).toFixed(0) : 0}% da base — foco em 2ª visita`)}
     </div>
-    <div class="meta-row">
-      <div class="meta-cell"><div class="l">Freq média visitas</div><div class="v">${snap.freq_media_visitas}</div></div>
-      <div class="meta-cell"><div class="l">% recorrentes</div><div class="v">${snap.pct_recorrentes}%</div></div>
-      <div class="meta-cell"><div class="l">Alertas churn</div><div class="v ${snap.n_alerta_churn>0?'dn':'up'}">${snap.n_alerta_churn}</div></div>
-      <div class="meta-cell"><div class="l">Aniversários 14d</div><div class="v ${snap.n_aniv_14d>0?'warn':''}">${snap.n_aniv_14d}</div></div>
-    </div>
-    ${ltvBloco}
-    ${nvrBloco}
     <div class="insight" style="margin-top:14px;">
       <strong>Direcionamento:</strong> ${
         snap.dormentes_60d === 0 && (snap.total_base < 300 || snap.novos_30d > snap.dormentes_60d)
           ? `base ainda jovem — sem dormentes 60d+. Prioridade: aquisição + fidelizar 2ª visita (${snap.n_uma_vez} vieram só 1 vez).`
           : snap.dormentes_60d > snap.ativos_30d
-            ? `mais dormentes (${snap.dormentes_60d}) que ativos 30d (${snap.ativos_30d}) — prioridade é resgatar antes de captar. Ver aba Churn.`
+            ? `mais dormentes (${snap.dormentes_60d}) que ativos 30d (${snap.ativos_30d}) — prioridade é resgatar antes de captar.`
             : `base saudável — ativos 30d (${snap.ativos_30d}) supera dormentes (${snap.dormentes_60d}). Foco na aquisição e cross-sell.`
       }
     </div>
@@ -1982,22 +1938,48 @@ function renderSegmentacao(container_id, titulo, subtitulo, seg, sem_dado_label)
   </div>`;
 }
 
-function renderObsAlertas(container_id, obs){
+// Unifica alertas do cadastro (permanentes) com observações por atendimento (histórico)
+// num único card. Cliente aparece só 1x, com todas as notas concatenadas.
+function renderObsAlertas(container_id, obs_cadastro, obs_agend){
   const el = document.getElementById(container_id);
-  if(!el || !obs || obs.length === 0){ if(el) el.innerHTML = ''; return; }
+  if(!el) return;
+  const cadastro = obs_cadastro || [];
+  const agend = obs_agend || [];
+  if(cadastro.length === 0 && agend.length === 0){ el.innerHTML = ''; return; }
   const waLink = tel => tel ? `<a href="https://wa.me/${tel.replace(/\D/g,'')}" target="_blank" style="color:#22c55e;text-decoration:none;font-weight:600;">📱</a>` : '';
-  const rows = obs.slice(0,20).map(o => `<tr>
-    <td>${o.cliente}</td>
-    <td style="max-width:340px">${o.obs}</td>
-    <td>${o.n_visitas}</td>
-    <td>${brl0(o.ltv)}</td>
-    <td>${waLink(o.telefone)}</td>
-  </tr>`).join('');
+  // Merge por nome do cliente
+  const merged = {};
+  cadastro.forEach(o => {
+    const key = o.cliente;
+    merged[key] = merged[key] || { cliente: o.cliente, telefone: o.telefone, n_visitas: o.n_visitas, ltv: o.ltv, cadastro: [], atend: [] };
+    merged[key].cadastro.push(o.obs);
+    merged[key].telefone = merged[key].telefone || o.telefone;
+  });
+  agend.forEach(o => {
+    const key = o.cliente;
+    merged[key] = merged[key] || { cliente: o.cliente, telefone: o.telefone, n_visitas: o.n_visitas, ltv: o.ltv, cadastro: [], atend: [] };
+    (o.observacoes||[]).forEach(x => merged[key].atend.push(x));
+    merged[key].n_visitas = merged[key].n_visitas || o.n_visitas;
+    merged[key].ltv = merged[key].ltv || o.ltv;
+    merged[key].telefone = merged[key].telefone || o.telefone;
+  });
+  const lista = Object.values(merged).sort((a,b) => (b.ltv||0) - (a.ltv||0));
+  const rows = lista.slice(0,30).map(o => {
+    const notasCad = o.cadastro.map(t => `<div style="font-size:11.5px;padding:2px 0"><strong style="color:#f59e0b">CADASTRO:</strong> ${t}</div>`).join('');
+    const notasAt = o.atend.map(x => `<div style="font-size:11.5px;padding:2px 0"><strong style="color:${x.tipo==='est'?'#3b82f6':'#22c55e'}">${x.tipo==='est'?'EQUIPE':'CLIENTE'}:</strong> ${(x.texto||'').slice(0,120)}</div>`).join('');
+    return `<tr>
+      <td style="vertical-align:top">${o.cliente}</td>
+      <td style="max-width:420px">${notasCad}${notasAt}</td>
+      <td style="vertical-align:top;text-align:right">${o.n_visitas||'—'}</td>
+      <td style="vertical-align:top;text-align:right">${brl0(o.ltv||0)}</td>
+      <td style="vertical-align:top">${waLink(o.telefone)}</td>
+    </tr>`;
+  }).join('');
   el.innerHTML = `<div class="card">
-    <h2>⚠️ Alertas de clientes <span class="hi">(${obs.length} com observações)</span></h2>
-    <div class="cap">Notas cadastradas no Trinks pelo estabelecimento: alergias, preferências, restrições. Cliente sensa quando é lembrado — checklist antes da visita.</div>
+    <h2>📝 Observações sobre clientes <span class="hi">(${lista.length} clientes com nota)</span></h2>
+    <div class="cap">Consolida <strong>cadastro</strong> (alergias, preferências permanentes) e <strong>atendimento</strong> (notas deixadas em visitas específicas — EQUIPE ou CLIENTE). Checklist antes de chamar o cliente. Ordenado por LTV.</div>
     <table class="simple">
-      <thead><tr><th>Cliente</th><th>Observação</th><th>Visitas</th><th>LTV</th><th></th></tr></thead>
+      <thead><tr><th>Cliente</th><th>Notas</th><th style="text-align:right">Visitas</th><th style="text-align:right">LTV</th><th></th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
   </div>`;
@@ -2064,26 +2046,33 @@ function renderChurn(container_id, churn){
   const el = document.getElementById(container_id);
   if(!el || !churn) return;
   if(!churn.n_alerta){
-    el.innerHTML = `<div class="card"><h2>🛟 Clientes em risco de churn</h2><div class="cap">Base saudável · zero clientes de valor sumidos</div></div>`;
+    el.innerHTML = `<div class="card"><h2>🛟 Clientes que sumiram</h2><div class="cap">Base saudável · ninguém de valor sumiu</div></div>`;
     return;
   }
   const waLink = tel => tel ? `<a href="https://wa.me/${tel.replace(/\D/g,'')}" target="_blank" style="color:#22c55e;text-decoration:none;font-weight:600;">📱 WhatsApp</a>` : '<span style="color:var(--muted)">—</span>';
-  const rows = (churn.top || []).map(c => `<tr>
-    <td>${c.cliente}</td>
-    <td>${c.n_visitas}</td>
-    <td>${brl0(c.ltv)}</td>
-    <td>${c.ultima_visita.slice(-5).replace('-','/')}</td>
-    <td><span class="dn">${c.dias_sem_vir}d</span></td>
-    <td>${waLink(c.telefone)}</td>
-  </tr>`).join('');
+  const rows = (churn.top || []).map(c => {
+    const servs = (c.ultimos_servicos || []).slice(0,3);
+    const servsHtml = servs.length
+      ? servs.map(s => `<span style="display:inline-block;background:var(--surface-2);border-radius:4px;padding:2px 6px;font-size:11px;margin:1px 3px 1px 0;color:var(--ink-2)">${s}</span>`).join('')
+      : '<span style="color:var(--muted);font-size:11px">—</span>';
+    return `<tr>
+      <td>${c.cliente}</td>
+      <td>${c.n_visitas}</td>
+      <td>${brl0(c.ltv)}</td>
+      <td>${c.ultima_visita.slice(-5).replace('-','/')}</td>
+      <td><span class="dn">${c.dias_sem_vir}d</span></td>
+      <td style="max-width:280px">${servsHtml}</td>
+      <td>${waLink(c.telefone)}</td>
+    </tr>`;
+  }).join('');
   el.innerHTML = `<div class="card">
-    <h2>🛟 Clientes em risco de churn <span class="hi">(${churn.n_alerta} alertas · LTV em risco ${brl0(churn.ltv_em_risco)})</span></h2>
-    <div class="cap">Clientes com ≥3 visitas que não voltam há 14+ dias. Ordenados por LTV. Clica no WhatsApp e manda mensagem pessoal + voucher — resgate 30-40%.</div>
+    <h2>🛟 Clientes que sumiram <span class="hi">(${churn.n_alerta} · LTV em risco ${brl0(churn.ltv_em_risco)})</span></h2>
+    <div class="cap">Já vieram 3+ vezes e não voltam há 14+ dias. Ordenados por LTV. Manda WhatsApp pessoal citando o último serviço — resgate típico 30-40%.</div>
     <table class="simple">
-      <thead><tr><th>Cliente</th><th>Visitas</th><th>LTV</th><th>Última</th><th>Sem vir</th><th>Contato</th></tr></thead>
+      <thead><tr><th>Cliente</th><th>Visitas</th><th>LTV</th><th>Última</th><th>Sem vir</th><th>Últimos serviços</th><th>Contato</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
-    <div class="insight"><strong>Ação sugerida:</strong> WhatsApp direto pros 5 primeiros hoje (não campanha em massa). Oferecer R$ 20-30 de desconto na próxima visita. Retorno médio esperado: ${brl0(churn.ltv_em_risco * 0.35)}.</div>
+    <div class="insight"><strong>Ação sugerida:</strong> WhatsApp pros 5 primeiros hoje (não massa). Use os serviços que ela já consome pra propor a próxima — "Vi que faz tempo que você não vem fazer sua <em>[último serviço]</em>, tá com R$ 20 pra você essa semana." Retorno esperado: ${brl0(churn.ltv_em_risco * 0.35)}.</div>
   </div>`;
 }
 
@@ -2279,8 +2268,7 @@ function renderClientes(data){
   renderClientesSnapshot('clientes-snapshot', snap, a.top_ltv, a.novos_vs_recorr);
 
   // 2. Ações AGORA
-  renderObsAlertas('clientes-obs-alertas', a.obs_alertas);
-  renderObsAgend('clientes-obs-agend', a.obs_agend_alertas);
+  renderObsAlertas('clientes-obs-alertas', a.obs_alertas, a.obs_agend_alertas);
   renderAniversariantes('clientes-aniv', a.aniversariantes);
   renderChurn('clientes-churn', a.churn_early);
 
@@ -2319,7 +2307,7 @@ function renderClientes(data){
           <div>${statusTxt}</div>
         </div>
         ${!ativo && totalRecusas > 0 ? `<div style="margin-top:12px;padding:10px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2)">
-          <strong>💡 Sinal:</strong> Os ${(a.aniversariantes||[]).length} aniversariantes na tabela abaixo e os ${((a.churn_early||{}).top||[]).length} clientes em risco de churn NÃO estão sendo lembrados. Cada dia perdido é oportunidade jogada fora — a Beleza Boost tem urgência em desbloquear a verificação Meta pra automação começar a rodar.
+          <strong>💡 Sinal:</strong> Os ${(a.aniversariantes||[]).length} aniversariantes na tabela abaixo e os ${((a.churn_early||{}).top||[]).length} clientes que sumiram NÃO estão sendo lembrados. Cada dia perdido é oportunidade jogada fora — a Beleza Boost tem urgência em desbloquear a verificação Meta pra automação começar a rodar.
         </div>` : ''}
       </div>`;
       anivEl.insertAdjacentHTML('beforebegin', html);
