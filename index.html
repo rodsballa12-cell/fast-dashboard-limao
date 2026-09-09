@@ -794,7 +794,7 @@ function renderMetaProgress(container_id, titulo, meta, subtitle){
   document.getElementById(container_id).innerHTML=html;
 }
 
-function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta_realizado, meta_projecao, metas_franq, escala, categoria_native, categoria_native_ref, pacotes_por_categoria, pacotes_sem_categoria_v, pacotes_por_categoria_ref, pacotes_sem_categoria_v_ref){
+function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta_realizado, meta_projecao, metas_franq, escala, categoria_native, categoria_native_ref, pacotes_por_categoria, pacotes_sem_categoria_v, pacotes_por_categoria_ref, pacotes_sem_categoria_v_ref, descontos){
   // Metas FIXAS da franqueadora × N recepcionistas (config.json).
   // Sem inferência de mix. Cada categoria tem alvo próprio, imposto de fora.
   // `escala` escala meta mensal → período atual (ex: 0.5 = meio mês; 12 = ano).
@@ -823,6 +823,10 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
     const cor_proj=proj_pct_cat>=90?'up':(proj_pct_cat>=70?'warn':'dn');
     return `<tr title="${r.desc}"><td>${r.nome}</td><td>${brl0(meta_cat)}</td><td>${brl0(cat.v)}</td><td class="${cor}">${pct(pct_ating)}</td><td>${brl0(Math.max(meta_cat-cat.v,0))}</td><td class="${cor_proj}">${brl0(proj_cat)} (${pct(proj_pct_cat)})</td></tr>`;
   }).join('');
+  // Realizado das 4 rows é BRUTO; TOTAL META usa caixa (LÍQUIDO). Diferença = descontos.
+  const _desc_v_franq = Math.abs(descontos || 0);
+  const bruto_franq = rows.reduce((s,r) => { const cat=c[r.k]||{v:0}; return s+cat.v; }, 0);
+  const desc_franq_row = _desc_v_franq > 0.5 ? `<tr><td>(−) Descontos <span style="color:var(--ink-3);font-size:11px">(caixa = bruto − descontos)</span></td><td style="color:var(--ink-3)">—</td><td style="color:var(--crit)">−${brl0(_desc_v_franq)}</td><td style="color:var(--ink-3)">—</td><td style="color:var(--ink-3)">—</td><td style="color:var(--ink-3)">—</td></tr>` : '';
   const total_row=`<tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL META</td><td>${brl0(meta_valor)}</td><td>${brl0(meta_realizado)}</td><td>${pct(meta_valor>0?meta_realizado/meta_valor*100:0)}</td><td>${brl0(Math.max(meta_valor-meta_realizado,0))}</td><td>${brl0(meta_projecao)} (${pct(proj_pct)})</td></tr>`;
 
   // Categorias nativas Trinks: meta = share OFICIAL (config.meta_categoria_nativa_share)
@@ -937,8 +941,11 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
       sub_real += rd.v;
       sub_proj += rd.v * ratio_proj;
     });
+    // (-) Descontos: sum de categorias é BRUTO, mas caixa é LÍQUIDO. Diferença = descontos.
+    const desc_v = Math.abs(descontos || 0);
     const gt_meta = sub_meta + meta_produtos + meta_pac_sc;
-    const gt_real = sub_real + real_produtos + real_pac_sc;
+    const gt_real_bruto = sub_real + real_produtos + real_pac_sc;
+    const gt_real = gt_real_bruto - desc_v;
     const proj_outros = (real_produtos + real_pac_sc) * ratio_proj;
     const meta_outros = meta_produtos + meta_pac_sc;
     const gt_pct = gt_meta > 0 ? gt_real/gt_meta*100 : 0;
@@ -946,14 +953,16 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
     const gt_proj = sub_proj + proj_outros;
     const gt_proj_pct = gt_meta > 0 ? gt_proj/gt_meta*100 : 0;
     const cor_gt_proj = gt_proj_pct >= 90 ? 'up' : (gt_proj_pct >= 70 ? 'warn' : 'dn');
-    const grand_total_row = meta_outros > 0 ? `<tr style="font-weight:700;background:var(--accent-soft,rgba(245,184,0,.15));color:var(--ink)"><td>TOTAL META (NATIVAS + PROD + PAC)</td><td>${brl0(gt_meta)}</td><td>${brl0(gt_real)}</td><td class="${cor_gt}">${pct(gt_pct)}</td><td>${brl0(Math.max(gt_meta-gt_real,0))}</td><td class="${cor_gt_proj}">${brl0(gt_proj)} (${pct(gt_proj_pct)})</td></tr>` : '';
+    // Linha explícita de Descontos (só se houver) — mantém consistência entre bruto e caixa
+    const desc_row = desc_v > 0.5 ? `<tr><td>(−) Descontos <span style="color:var(--ink-3);font-size:11px">(caixa = bruto − descontos)</span></td><td style="color:var(--ink-3)">—</td><td style="color:var(--crit)">−${brl0(desc_v)}</td><td style="color:var(--ink-3)">—</td><td style="color:var(--ink-3)">—</td><td style="color:var(--ink-3)">—</td></tr>` : '';
+    const grand_total_row = meta_outros > 0 ? `<tr style="font-weight:700;background:var(--accent-soft,rgba(245,184,0,.15));color:var(--ink)"><td>TOTAL META (NATIVAS + PROD + PAC${desc_v>0.5?' − DESC':''})</td><td>${brl0(gt_meta)}</td><td>${brl0(gt_real)}</td><td class="${cor_gt}">${pct(gt_pct)}</td><td>${brl0(Math.max(gt_meta-gt_real,0))}</td><td class="${cor_gt_proj}">${brl0(gt_proj)} (${pct(gt_proj_pct)})</td></tr>` : '';
 
     const fonte = usaConfig ? 'shares OFICIAIS · config.json → meta_categoria_nativa_share' : 'mix do próprio período (fallback)';
     const totalPacClassificado = Object.values(pacCat).reduce((s,v)=>s+v,0);
     const infoPac = totalPacClassificado > 0
       ? ` · pacotes classificados por keyword: ${brl0(totalPacClassificado)} distribuídos nas nativas acima (+ pac. na coluna Realizado)` : '';
     const sep = `<tr style="background:var(--surface-2)"><td colspan="6" style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;font-weight:700">🏷 Categorias nativas Trinks · meta = share × meta serv do período (${brl0(meta_serv_periodo)}) · ${fonte}${infoPac}</td></tr>`;
-    native_rows = sep + rows_native + produtos_row + pac_sc_row + grand_total_row;
+    native_rows = sep + rows_native + produtos_row + pac_sc_row + desc_row + grand_total_row;
   }
 
   const esc_desc = esc >= 12 ? 'meta anual (12× mensal)' : esc === 1 ? 'meta cheia do mês' : `${(esc*100).toFixed(0)}% da meta mensal (proporcional ao período)`;
@@ -961,7 +970,7 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
     <div class="card">
       <h2>Detalhamento por categoria · Meta vs Realizado ${titulo}</h2>
       <div class="cap">Metas <strong>fixas da franqueadora</strong> × ${nrec} recepcionistas. Escala: ${esc_desc}. Projeção assume ritmo atual.</div>
-      <table class="simple"><thead><tr><th>Categoria</th><th>Meta</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção / Vendas</th></tr></thead><tbody>${tabela_rows}${total_row}${native_rows}</tbody></table>
+      <table class="simple"><thead><tr><th>Categoria</th><th>Meta</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção / Vendas</th></tr></thead><tbody>${tabela_rows}${desc_franq_row}${total_row}${native_rows}</tbody></table>
     </div>`;
 }
 
@@ -2197,7 +2206,7 @@ function renderAnual(data){
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
     const esc = (a.meta.meta||0) / mm;
-    renderCategoriasMeta('per-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc, a.categoria_native, a.categoria_native, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.pacotes_por_categoria, a.pacotes_sem_categoria_v);
+    renderCategoriasMeta('per-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc, a.categoria_native, a.categoria_native, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.descontos);
   }
 
   // Trajetória mensal · enxuta (4 colunas: Mês, Caixa, Atend, Ticket) + linha de subtotal.
@@ -2377,7 +2386,7 @@ function renderMensal(data){
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
-    renderCategoriasMeta('per-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm, m.categoria_native, (data.abas.anual||{}).categoria_native, m.pacotes_por_categoria, m.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v);
+    renderCategoriasMeta('per-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm, m.categoria_native, (data.abas.anual||{}).categoria_native, m.pacotes_por_categoria, m.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, m.descontos);
   }
 
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
@@ -2410,7 +2419,7 @@ function renderSemanal(data){
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
-    renderCategoriasMeta('per-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm, s.categoria_native, (data.abas.anual||{}).categoria_native, s.pacotes_por_categoria, s.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v);
+    renderCategoriasMeta('per-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm, s.categoria_native, (data.abas.anual||{}).categoria_native, s.pacotes_por_categoria, s.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, s.descontos);
   }
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
@@ -2504,7 +2513,7 @@ function renderDiario(data){
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
-    renderCategoriasMeta('per-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao, mf, d.meta.meta/mm, d.categoria_native, (data.abas.anual||{}).categoria_native, d.pacotes_por_categoria, d.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v);
+    renderCategoriasMeta('per-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao, mf, d.meta.meta/mm, d.categoria_native, (data.abas.anual||{}).categoria_native, d.pacotes_por_categoria, d.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, d.descontos);
   }
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora HOJE', 'sinal em tempo real do mix — dá pra empurrar serviço mais rentável no restante do dia', d.rentabilidade_hora || []);
 
