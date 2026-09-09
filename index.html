@@ -394,9 +394,6 @@
   </div>
 
   <div id="content" style="display:none;">
-    <!-- INSIGHTS GLOBAL · consolidação L: 1 painel global no lugar de 6 caixas por aba -->
-    <div id="global-insights" style="margin-bottom:14px"></div>
-
     <div class="tabs" role="tablist">
       <button class="tab-btn" role="tab" aria-selected="true" data-tab="painel">📊 Painel<span class="subn" id="tab-painel-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="clientes">👥 Clientes<span class="subn" id="tab-clientes-sub"></span></button>
@@ -452,6 +449,8 @@
       <div id="per-prof"></div>
       <div id="per-utilizacao"></div>
       <div id="per-hora"></div>
+      <!-- ÚLTIMO · Ações Recomendadas específicas do período ativo -->
+      <div id="per-insights"></div>
     </div>
     </div><!-- /tab-painel -->
 
@@ -474,6 +473,8 @@
       <div id="clientes-seg-genero"></div>
       <!-- 5. RANKING (LTV Pareto + Novos vs Recorr absorvidos pelo Snapshot acima) -->
       <div id="clientes-topcli"></div>
+      <!-- ÚLTIMO · Ações Recomendadas Clientes -->
+      <div id="clientes-insights"></div>
     </div>
 
     <!-- AUDITORIA -->
@@ -484,12 +485,16 @@
       <div id="auditoria-executor"></div>
       <div id="auditoria-comissoes"></div>
       <div id="auditoria-lista"></div>
+      <!-- ÚLTIMO · Ações Recomendadas Auditoria -->
+      <div id="auditoria-insights"></div>
     </div>
 
     <!-- STONE -->
     <div class="panel" id="tab-stone">
       <div class="audit" id="stone-audit"><div>🏦</div><div><strong>O que a loja vendeu vs o dinheiro que caiu.</strong> Cartão de crédito leva 30 dias pra virar caixa. Aqui você vê o fluxo real e decide se vale antecipar.</div></div>
       <div id="stone-content"></div>
+      <!-- ÚLTIMO · Ações Recomendadas Stone -->
+      <div id="stone-insights"></div>
     </div>
 
     <div class="panel" id="tab-financeiro">
@@ -497,6 +502,8 @@
       <div id="fin-kpis"></div>
       <div id="fin-content"></div>
       <div id="fin-decisoes"></div>
+      <!-- ÚLTIMO · Ações Recomendadas Financeiro -->
+      <div id="financeiro-insights"></div>
     </div>
 
     <div class="panel" id="tab-midias">
@@ -1812,84 +1819,34 @@ async function csvExport(filename, headers, rows){
 }
 
 // ============= RENDER INSIGHTS =============
-// Placeholder legado — insights agora renderizam em bloco global (renderGlobalInsights).
-function renderInsights(container_id, _titulo_aba, _insights){
+// Ações Recomendadas · caixa por aba, ordenada por severidade (crítico → info)
+function renderInsights(container_id, titulo_aba, insights){
   const el = document.getElementById(container_id);
-  if(el) el.innerHTML = '';
-}
-
-// CONSOLIDAÇÃO L · painel único de Ações Recomendadas no topo do dashboard.
-// Consome todas as fontes data.insights.{anual,mensal,semanal,diario,auditoria,stone,clientes,financeiro,midias}
-// e mostra 1 caixa colapsada por severidade, com chip mostrando de qual aba veio.
-function renderGlobalInsights(data){
-  const el = document.getElementById('global-insights');
   if(!el) return;
-  const ins = data.insights || {};
-  const abaMap = {
-    anual:{label:'Ano',emoji:'📅',tab:'painel'},
-    mensal:{label:'Mês',emoji:'🎯',tab:'painel'},
-    semanal:{label:'Semana',emoji:'📊',tab:'painel'},
-    diario:{label:'Hoje',emoji:'🔴',tab:'painel'},
-    clientes:{label:'Clientes',emoji:'👥',tab:'clientes'},
-    stone:{label:'Stone',emoji:'🏦',tab:'stone'},
-    auditoria:{label:'Auditoria',emoji:'🛡️',tab:'auditoria'},
-    financeiro:{label:'Financeiro',emoji:'💰',tab:'financeiro'},
-    midias:{label:'Mídias',emoji:'📣',tab:'midias'},
-  };
-  const flat = [];
-  Object.entries(abaMap).forEach(([k,meta]) => {
-    (ins[k] || []).forEach(i => flat.push({...i, _aba:k, _abaMeta:meta}));
-  });
-  if(!flat.length){ el.innerHTML = ''; return; }
+  if(!insights || insights.length === 0){ el.innerHTML=''; return; }
   const ordem = {critico:0, atencao:1, oportunidade:2, info:3};
-  flat.sort((a,b) => (ordem[a.tipo]??9)-(ordem[b.tipo]??9));
-  const crit = flat.filter(i=>i.tipo==='critico').length;
-  const aten = flat.filter(i=>i.tipo==='atencao').length;
-  const opor = flat.filter(i=>i.tipo==='oportunidade').length;
-  const cards = flat.map(i => {
+  const sorted = [...insights].sort((a,b)=>(ordem[a.tipo]??9)-(ordem[b.tipo]??9));
+  const crit = sorted.filter(i=>i.tipo==='critico').length;
+  const aten = sorted.filter(i=>i.tipo==='atencao').length;
+  const opor = sorted.filter(i=>i.tipo==='oportunidade').length;
+  const cards = sorted.map(i=>{
     const tag = {critico:'CRÍTICO',atencao:'ATENÇÃO',oportunidade:'OPORTUNIDADE',info:'INFO'}[i.tipo] || 'INFO';
-    const m = i._abaMeta;
     return `<div class="insight-card ${i.tipo}">
-      <div class="ic-head">
-        <span class="ic-tag">${tag}</span>
-        <span class="ic-aba" data-tab="${m.tab}" title="Ir para aba ${m.label}" style="margin-left:6px;font-size:10.5px;font-weight:700;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--border);padding:2px 8px;border-radius:999px;cursor:pointer">${m.emoji} ${m.label}</span>
-        <span style="margin-left:8px">${i.titulo}</span>
-      </div>
+      <div class="ic-head"><span class="ic-tag">${tag}</span>${i.titulo}</div>
       <div class="ic-body">${i.texto}</div>
       ${i.acao ? `<div class="ic-acao">${i.acao}</div>` : ''}
     </div>`;
   }).join('');
-  const abertoInicial = crit > 0 || flat.length <= 4;
-  el.innerHTML = `<div class="insights-box" style="border-left:4px solid var(--accent)">
-    <h3 style="cursor:pointer;user-select:none" id="global-insights-toggle">
-      🎯 Ações Recomendadas
-      <span class="badge-count">${flat.length}</span>
+  el.innerHTML = `<div class="insights-box" style="margin-top:20px;border-left:4px solid var(--accent)">
+    <h3>🎯 Ações Recomendadas · ${titulo_aba}
+      <span class="badge-count">${sorted.length}</span>
       ${crit ? `<span style="margin-left:8px;font-size:11px;background:#ef4444;color:#fff;padding:2px 8px;border-radius:999px">${crit} crítico${crit>1?'s':''}</span>` : ''}
       ${aten ? `<span style="margin-left:6px;font-size:11px;background:#f59e0b;color:#fff;padding:2px 8px;border-radius:999px">${aten} atenção</span>` : ''}
       ${opor ? `<span style="margin-left:6px;font-size:11px;background:#22c55e;color:#fff;padding:2px 8px;border-radius:999px">${opor} oportunidade${opor>1?'s':''}</span>` : ''}
-      <span id="global-insights-caret" style="float:right;font-size:14px;color:var(--ink-3)">${abertoInicial?'▼':'▶'}</span>
     </h3>
-    <div id="global-insights-body" style="${abertoInicial?'':'display:none'}">${cards}</div>
+    <div class="cap" style="margin-top:6px">Ordenadas do mais prioritário (crítico) pro menos (info).</div>
+    ${cards}
   </div>`;
-  const tog = document.getElementById('global-insights-toggle');
-  const body = document.getElementById('global-insights-body');
-  const caret = document.getElementById('global-insights-caret');
-  if(tog && body){
-    tog.addEventListener('click', () => {
-      const aberto = body.style.display !== 'none';
-      body.style.display = aberto ? 'none' : '';
-      if(caret) caret.textContent = aberto ? '▶' : '▼';
-    });
-  }
-  // Chip da aba clica pra ir direto
-  el.querySelectorAll('.ic-aba').forEach(chip => {
-    chip.addEventListener('click', ev => {
-      ev.stopPropagation();
-      const tab = chip.dataset.tab;
-      const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
-      if(btn) btn.click();
-    });
-  });
 }
 
 // ============= RENDER POR ABA =============
@@ -1899,7 +1856,7 @@ function clearPerContainers(){
    'per-meses','per-dia','per-dow','per-google-dow','per-sala-wrap',
    'per-categorias','per-ticket-meta','per-rentabilidade',
    'per-categoria-native','per-desvio-tabela',
-   'per-prof','per-utilizacao','per-hora'
+   'per-prof','per-utilizacao','per-hora','per-insights'
   ].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = ''; });
 }
 
@@ -1941,6 +1898,7 @@ function renderAnual(data){
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   renderCategoriaNativa('per-categoria-native', a.categoria_native);
   renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
+  renderInsights('per-insights', 'Ano 2026', (data.insights||{}).anual);
 }
 
 function renderClientes(data){
@@ -2064,6 +2022,7 @@ function renderClientes(data){
   // CONSOLIDAÇÃO H · LTV Pareto + Novos vs Recorr agora ficam dentro do Snapshot acima
   renderTopClientes('clientes-topcli', '⭐ Base fiel · ranking de visitas 2026', 'Foco de retenção — perder um destes machuca o LTV',
     a.clientes_top || [], '<strong>Concentração da base:</strong> priorize fidelização/relacionamento com quem visita alto — perder um destes = perder receita recorrente.');
+  renderInsights('clientes-insights', 'Clientes', (data.insights||{}).clientes);
 }
 
 function renderMensal(data){
@@ -2096,6 +2055,7 @@ function renderMensal(data){
   renderRankingProf('per-prof','👥 Profissionais do mês','Receita + ticket médio · ticket alto = quem faz upsell (replicar prática)',m.ranking_prof, m.ranking_prof_total_n);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro (card "Quando o dinheiro entra")
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes (aba canônica)
+  renderInsights('per-insights', 'Mês corrente', (data.insights||{}).mensal);
 }
 
 function renderSemanal(data){
@@ -2188,6 +2148,7 @@ function renderSemanal(data){
   renderRankingProf('per-prof','👥 Profissionais da semana','Receita + ticket médio da semana · replicar quem faz upsell',s.ranking_prof, s.ranking_prof_total_n);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
+  renderInsights('per-insights', 'Semana corrente', (data.insights||{}).semanal);
 }
 
 function renderDiario(data){
@@ -2233,6 +2194,7 @@ function renderDiario(data){
 
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
+  renderInsights('per-insights', 'Hoje', (data.insights||{}).diario);
 }
 
 // CONSOLIDAÇÃO A · dispatcher central: limpa e re-renderiza só o período ativo
@@ -2611,6 +2573,7 @@ function renderAuditoria(data){
         x.preco_ref||'', x.stone_match_nomes.join(' | '), x.match_por_nome?'sim':'nao'
       ]));
   });
+  renderInsights('auditoria-insights', 'Auditoria · risco financeiro', (data.insights||{}).auditoria);
 }
 
 // ============= LOAD =============
@@ -2939,6 +2902,7 @@ function renderStone(data){
       }
     });
   });
+  renderInsights('stone-insights', 'Stone · Reconciliação', (data.insights||{}).stone);
 }
 
 async function load(showToast=false){
@@ -2973,8 +2937,6 @@ async function load(showToast=false){
     // O funil de Mídias soma clientes novos do Trinks na janela escolhida:
     // quando o dado do Trinks chega depois, a aba precisa se redesenhar.
     if(MID) renderMidias();
-    // CONSOLIDAÇÃO L · painel global de Ações Recomendadas
-    renderGlobalInsights(data);
     if(!window._tabsSet){ setupTabs(); window._tabsSet=true; }
     const dt=new Date(data.gerado_em);
     const ageMin=Math.floor((Date.now()-dt.getTime())/60000);
@@ -3632,6 +3594,9 @@ function renderFinanceiro(){
     } else {
       decisoesEl.innerHTML='';
     }
+  }
+  if(typeof TRINKS !== 'undefined' && TRINKS && TRINKS.insights){
+    renderInsights('financeiro-insights', 'Financeiro', TRINKS.insights.financeiro);
   }
 }
 
@@ -5149,9 +5114,13 @@ function renderMidias(){
   } else {
     recBox.innerHTML = '';
   }
-  // Slot antigo #midias-insights fica vazio (bloco consolidado acima)
-  const oldIns = document.getElementById('midias-insights');
-  if(oldIns) oldIns.innerHTML = '';
+  // Slot #midias-insights: caixa de Ações Recomendadas específica de Mídias
+  if(typeof TRINKS !== 'undefined' && TRINKS && TRINKS.insights){
+    renderInsights('midias-insights', 'Mídias', TRINKS.insights.midias);
+  } else {
+    const oldIns = document.getElementById('midias-insights');
+    if(oldIns) oldIns.innerHTML = '';
+  }
 }
 
 async function loadMidias(){
