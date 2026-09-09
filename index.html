@@ -444,11 +444,12 @@
       <div id="per-categoria-native"></div>
       <div id="per-desvio-tabela"></div>
       <!-- 5. OPERAÇÃO -->
+      <!-- Profissionais + Comissões unificados num único card -->
       <div id="per-prof"></div>
       <div id="per-utilizacao"></div>
       <div id="per-hora"></div>
-      <!-- 6. COMISSÕES · taxa Trinks BackOffice ponderada pelo mix do período -->
-      <div id="per-comissoes"></div>
+      <!-- per-comissoes vazio (mantido pro clear e retrocompatibilidade) -->
+      <div id="per-comissoes" style="display:none"></div>
       <!-- ÚLTIMO · Ações Recomendadas específicas do período ativo -->
       <div id="per-insights"></div>
     </div>
@@ -1214,9 +1215,109 @@ function renderProfExecutor(container_id, exec_ranking){
   </div>`;
 }
 
-// Comissão por período · usa taxa oficial por categoria (Trinks BackOffice) + receita
-// do período. Optimização: taxa efetiva ponderada pelo mix REAL do período, não pelo ano.
-// Produção por prof abre em <details> pra manter o card enxuto.
+// UNIFICADO · Profissionais + Comissões num único card por período.
+// Junta o ranking prof (receita/atend/horas) com comissão estimada aplicando taxa
+// efetiva ponderada pelo mix de categorias do período. Categorias que compõem a
+// taxa vão em <details> pra manter o card focado no que decide (o que cada prof
+// produziu e vai receber).
+function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_prof_total_n, categoria_native, caixa){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  const cfg = (typeof COMISSOES_CFG !== 'undefined' && COMISSOES_CFG) || null;
+  const rp = (ranking_prof || []);
+  const cats_in = (categoria_native || []);
+
+  // Taxa efetiva ponderada pelo mix (se comissoes.json carregou)
+  let taxaEfetiva = 0, comissaoTotal = 0, receitaServ = 0, catBreak = [];
+  if(cfg && cats_in.length){
+    const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+    const taxaCat = (nome) => {
+      const map = cfg.por_categoria || {};
+      if(nome in map) return map[nome];
+      const nn = norm(nome);
+      for(const k in map){ if(norm(k) === nn) return map[k]; }
+      return cfg.regra_padrao_pct || 0.32;
+    };
+    catBreak = cats_in.map(c => {
+      const taxa = taxaCat(c.nome);
+      return { nome: c.nome, receita: c.v||0, n_atend: c.n||0, taxa_pct: taxa*100, comissao: (c.v||0)*taxa };
+    }).sort((a,b)=>b.receita-a.receita);
+    receitaServ = catBreak.reduce((a,x)=>a+x.receita, 0);
+    comissaoTotal = catBreak.reduce((a,x)=>a+x.comissao, 0);
+    taxaEfetiva = receitaServ > 0 ? (comissaoTotal/receitaServ*100) : 0;
+  }
+
+  // Tabela principal: prof + comissão estimada
+  const totalReceitaEquipe = rp.reduce((s,p)=>s+(p.v||0), 0) || 1;
+  const rowsProf = rp.slice(0, 12).map(p => {
+    const rec = p.v || 0;
+    const com = taxaEfetiva > 0 ? rec * (taxaEfetiva/100) : 0;
+    const shareEq = rec/totalReceitaEquipe*100;
+    return `<tr>
+      <td>${p.nome}</td>
+      <td style="text-align:right">${p.n||0}</td>
+      <td style="text-align:right">${(p.horas_trab||0).toFixed(1)}h</td>
+      <td style="text-align:right">${brl(p.ticket_medio || (p.n ? rec/p.n : 0))}</td>
+      <td style="text-align:right">${brl0(rec)}</td>
+      <td style="text-align:right">${shareEq.toFixed(0)}%</td>
+      <td style="text-align:right;color:#a855f7;font-weight:700">${cfg ? brl0(com) : '—'}</td>
+    </tr>`;
+  }).join('');
+  const somaAtend = rp.reduce((a,p)=>a+(p.n||0),0);
+  const somaHoras = rp.reduce((a,p)=>a+(p.horas_trab||0),0);
+  const totalComEquipe = totalReceitaEquipe * (taxaEfetiva/100);
+  const totalRow = `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700">
+    <td>TOTAL EQUIPE (${rp.length})</td>
+    <td style="text-align:right">${somaAtend}</td>
+    <td style="text-align:right">${somaHoras.toFixed(1)}h</td>
+    <td style="text-align:right">—</td>
+    <td style="text-align:right">${brl0(totalReceitaEquipe)}</td>
+    <td style="text-align:right">100%</td>
+    <td style="text-align:right">${cfg ? brl0(totalComEquipe) : '—'}</td>
+  </tr>`;
+  const totalBadge = (ranking_prof_total_n && ranking_prof_total_n > rp.slice(0,12).length)
+    ? ` <span style="color:var(--ink-3);font-size:11px;font-weight:400">(top 12 de ${ranking_prof_total_n})</span>` : '';
+
+  // Detalhamento das categorias que compõem a taxa efetiva (colapsado)
+  const catRows = catBreak.map(c => `<tr>
+    <td>${c.nome}</td>
+    <td style="text-align:right">${c.n_atend}</td>
+    <td style="text-align:right">${brl0(c.receita)}</td>
+    <td style="text-align:right">${c.taxa_pct.toFixed(0)}%</td>
+    <td style="text-align:right;color:#22c55e;font-weight:700">${brl0(c.comissao)}</td>
+  </tr>`).join('');
+  const catTotalRow = catBreak.length ? `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700">
+    <td>TOTAL SERVIÇOS</td>
+    <td style="text-align:right">${catBreak.reduce((a,x)=>a+x.n_atend,0)}</td>
+    <td style="text-align:right">${brl0(receitaServ)}</td>
+    <td style="text-align:right">${taxaEfetiva.toFixed(1)}%</td>
+    <td style="text-align:right">${brl0(comissaoTotal)}</td>
+  </tr>` : '';
+  const pctSobreCaixa = caixa > 0 ? (comissaoTotal/caixa*100) : 0;
+  const catBlock = catBreak.length ? `
+    <details style="margin-top:12px"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);padding:8px 12px;background:var(--surface-2);border-radius:6px;font-weight:600">🧮 Categorias que compõem a taxa efetiva (${taxaEfetiva.toFixed(1)}%)</summary>
+      <div class="cap" style="margin-top:8px">Taxa oficial Trinks BackOffice por categoria (<code>data/comissoes.json</code>). Ponderada pelo mix real do período. Sobre caixa total (${brl0(caixa)}) = ${pctSobreCaixa.toFixed(1)}%.</div>
+      <div style="overflow-x:auto"><table class="simple">
+        <thead><tr><th>Categoria</th><th style="text-align:right">Atend</th><th style="text-align:right">Receita</th><th style="text-align:right">Taxa</th><th style="text-align:right">Comissão</th></tr></thead>
+        <tbody>${catRows}${catTotalRow}</tbody>
+      </table></div>
+    </details>` : '';
+
+  const badgeTaxa = cfg && taxaEfetiva > 0
+    ? ` <span class="hi">(taxa efetiva ${taxaEfetiva.toFixed(1)}% · comissão R$ ${totalComEquipe.toLocaleString('pt-BR',{maximumFractionDigits:0})})</span>` : '';
+
+  el.innerHTML = `<div class="card">
+    <h2>👥 Profissionais + Comissões · ${periodo_label}${badgeTaxa}${totalBadge}</h2>
+    <div class="cap">Ranking por receita de serviços atribuída ao prof executor. Comissão estimada = receita_prof × taxa efetiva do período. ${cfg ? '' : '<em>Aguardando <code>data/comissoes.json</code> pra calcular comissão.</em>'}</div>
+    <div style="overflow-x:auto;margin-top:10px"><table class="simple">
+      <thead><tr><th>Profissional</th><th style="text-align:right">Atend</th><th style="text-align:right">Horas</th><th style="text-align:right">Ticket médio</th><th style="text-align:right">Receita serv</th><th style="text-align:right">% equipe</th><th style="text-align:right">Comissão</th></tr></thead>
+      <tbody>${rowsProf}${totalRow}</tbody>
+    </table></div>
+    ${catBlock}
+  </div>`;
+}
+
+// Comissão por período · fallback API antigo (mantido para compat)
 function renderComissoesPer(container_id, periodo_label, categoria_native, ranking_prof, caixa){
   const el = document.getElementById(container_id);
   if(!el) return;
@@ -2006,7 +2107,8 @@ function renderAnual(data){
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   // Categorias nativas Trinks agora vivem dentro do card "Detalhamento por categoria"
   renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
-  renderComissoesPer('per-comissoes', 'ano', a.categoria_native, [], k.caixa || 0);
+  // UNIFICADO · Profissionais + Comissões. Anual não tem ranking_prof anual dedicado, usa mensal como aproximação.
+  renderProfComissoes('per-prof', 'ano', (data.abas.mensal||{}).ranking_prof || [], (data.abas.mensal||{}).ranking_prof_total_n || 0, a.categoria_native, k.caixa || 0);
   renderInsights('per-insights', 'Ano 2026', (data.insights||{}).anual);
 }
 
@@ -2161,10 +2263,10 @@ function renderMensal(data){
 
   renderBarsDia('per-dia','📈 Trajetória do mês · dia a dia','Onde bombou, onde travou — vê quais dias-alavanca faltam pra bater meta',m.por_dia_mes,'');
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · mês <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · usa pra dimensionar equipe e horário de campanhas',m.hora_media,true,'');
-  renderRankingProf('per-prof','👥 Profissionais do mês','Receita + ticket médio · ticket alto = quem faz upsell (replicar prática)',m.ranking_prof, m.ranking_prof_total_n);
+  // UNIFICADO · Profissionais + Comissões num único card
+  renderProfComissoes('per-prof', 'mês', m.ranking_prof, m.ranking_prof_total_n, m.categoria_native, k.caixa || 0);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro (card "Quando o dinheiro entra")
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes (aba canônica)
-  renderComissoesPer('per-comissoes', 'mês', m.categoria_native, m.ranking_prof, k.caixa || 0);
   renderInsights('per-insights', 'Mês corrente', (data.insights||{}).mensal);
 }
 
@@ -2255,10 +2357,10 @@ function renderSemanal(data){
     </div>`;
   })();
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · semana <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · define escala e horário de campanhas',s.hora_media,true,'');
-  renderRankingProf('per-prof','👥 Profissionais da semana','Receita + ticket médio da semana · replicar quem faz upsell',s.ranking_prof, s.ranking_prof_total_n);
+  // UNIFICADO · Profissionais + Comissões num único card
+  renderProfComissoes('per-prof', 'semana', s.ranking_prof, s.ranking_prof_total_n, s.categoria_native, k.caixa || 0);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
-  renderComissoesPer('per-comissoes', 'semana', s.categoria_native, s.ranking_prof, k.caixa || 0);
   renderInsights('per-insights', 'Semana corrente', (data.insights||{}).semanal);
 }
 
@@ -2305,7 +2407,8 @@ function renderDiario(data){
 
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
-  renderComissoesPer('per-comissoes', 'hoje', d.categoria_native, d.ranking_prof, k.caixa || 0);
+  // UNIFICADO · Profissionais + Comissões num único card (Diário mantém a "SALA AGORA" acima como visão em tempo real)
+  renderProfComissoes('per-prof', 'hoje', d.ranking_prof, d.ranking_prof_total_n, d.categoria_native, k.caixa || 0);
   renderInsights('per-insights', 'Hoje', (data.insights||{}).diario);
 }
 
