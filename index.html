@@ -941,8 +941,9 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
       const share_pac = mix_pac_ref[k] != null ? mix_pac_ref[k] : 0;
       sub_meta += meta_serv_periodo * share_serv + meta_pacotes * share_pac;
       const rd = real_by_norm[k] || { v: 0 };
-      sub_real += rd.v;
-      sub_proj += rd.v * ratio_proj;
+      const rd_liq = (rd.v||0) * ratio_liq;  // acumulação em LÍQUIDO pra fechar com o total das rows
+      sub_real += rd_liq;
+      sub_proj += rd_liq * ratio_proj;
     });
     // Valores já vieram líquidos (ratio_liq aplicado em cada row), então gt_real = soma direta.
     const gt_meta = sub_meta + meta_produtos + meta_pac_sc;
