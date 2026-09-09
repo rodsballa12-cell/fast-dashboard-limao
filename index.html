@@ -425,12 +425,10 @@
       <!-- 1. CONTEXTO -->
       <div id="per-kpis"></div>
       <div id="per-ancora"></div>
-      <!-- CONSOLIDAÇÃO B · Meta com sub-visões colapsáveis (ticket-alvo + categorias) -->
+      <!-- Meta + Ticket alvo + Detalhamento por categoria expostos direto (sem retrair) -->
       <div id="per-meta"></div>
-      <details open style="margin:-6px 0 12px 0"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);padding:8px 14px;background:var(--surface-2);border-radius:8px;font-weight:600">🎯 Alavancas da meta · ticket alvo × visitas + quebra por categoria</summary>
-        <div id="per-ticket-meta"></div>
-        <div id="per-categorias"></div>
-      </details>
+      <div id="per-ticket-meta"></div>
+      <div id="per-categorias"></div>
       <div id="per-heatmap"></div>
       <div id="per-comparacao"></div>
       <!-- 2. TRAJETÓRIA -->
@@ -795,7 +793,7 @@ function renderMetaProgress(container_id, titulo, meta, subtitle){
   document.getElementById(container_id).innerHTML=html;
 }
 
-function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta_realizado, meta_projecao, metas_franq, escala, categoria_native){
+function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta_realizado, meta_projecao, metas_franq, escala, categoria_native, categoria_native_ref){
   // Metas FIXAS da franqueadora × N recepcionistas (config.json).
   // Sem inferência de mix. Cada categoria tem alvo próprio, imposto de fora.
   // `escala` escala meta mensal → período atual (ex: 0.5 = meio mês; 12 = ano).
@@ -826,14 +824,34 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
   }).join('');
   const total_row=`<tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL META</td><td>${brl0(meta_valor)}</td><td>${brl0(meta_realizado)}</td><td>${pct(meta_valor>0?meta_realizado/meta_valor*100:0)}</td><td>${brl0(Math.max(meta_valor-meta_realizado,0))}</td><td>${brl0(meta_projecao)} (${pct(proj_pct)})</td></tr>`;
 
-  // Categorias nativas Trinks (campo servicos[].categoria) — unificadas aqui como
-  // rows extras, ordenadas por receita. Mostra Vendas · Receita · % da receita.
+  // Categorias nativas Trinks (campo servicos[].categoria) — unificadas como rows extras.
+  // Meta projetada: usa mix ANUAL de cada categoria (categoria_native_ref) aplicado
+  // à meta de SERVIÇOS do período (Serviços gerais + Fast Retoque). Se a categoria
+  // trouxe 40% da receita de serviços do ano, esperamos 40% da meta de serviços aqui.
   let native_rows = '';
   if(categoria_native && categoria_native.length){
-    const sep = `<tr style="background:var(--surface-2)"><td colspan="6" style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;font-weight:700">🏷 Categorias nativas Trinks · quebra por catálogo (sem meta)</td></tr>`;
-    native_rows = sep + categoria_native.slice(0,15).map(cn =>
-      `<tr><td>${cn.nome}</td><td style="color:var(--ink-3)">—</td><td>${brl0(cn.v)}</td><td>${cn.pct_receita}%</td><td style="color:var(--ink-3)">—</td><td style="color:var(--ink-3)">${cn.n} vendas</td></tr>`
-    ).join('');
+    const meta_serv_periodo = ((catmes.servicos_gerais || 0) + (catmes.fast_retoque || 0)) * esc;
+    // Constrói mapa de mix de referência (anual). Fallback: mix do próprio período.
+    const ref = (categoria_native_ref && categoria_native_ref.length) ? categoria_native_ref : categoria_native;
+    const ref_total = ref.reduce((s,c)=>s+(c.v||0), 0) || 1;
+    const mix_ref = {};
+    ref.forEach(c => { mix_ref[c.nome] = (c.v||0) / ref_total; });
+    let sub_meta = 0, sub_real = 0, sub_atend = 0;
+    const rows_native = categoria_native.slice(0,15).map(cn => {
+      const share = mix_ref[cn.nome] != null ? mix_ref[cn.nome] : (cn.v||0)/Math.max(ref_total,1);
+      const meta_cn = meta_serv_periodo * share;
+      const real_cn = cn.v || 0;
+      const pct_cn = meta_cn > 0 ? real_cn/meta_cn*100 : 0;
+      const falta_cn = Math.max(meta_cn - real_cn, 0);
+      const cor_cn = pct_cn >= 100 ? 'up' : (pct_cn >= 70 ? 'warn' : 'dn');
+      sub_meta += meta_cn; sub_real += real_cn; sub_atend += (cn.n||0);
+      return `<tr><td>${cn.nome}</td><td>${brl0(meta_cn)}</td><td>${brl0(real_cn)}</td><td class="${cor_cn}">${pct(pct_cn)}</td><td>${brl0(falta_cn)}</td><td style="color:var(--ink-3)">${cn.n||0} vendas</td></tr>`;
+    }).join('');
+    const sub_pct = sub_meta > 0 ? sub_real/sub_meta*100 : 0;
+    const cor_sub = sub_pct >= 100 ? 'up' : (sub_pct >= 70 ? 'warn' : 'dn');
+    const sub_row = `<tr style="font-weight:700;background:var(--surface-2);color:var(--accent)"><td>SUBTOTAL NATIVAS</td><td>${brl0(sub_meta)}</td><td>${brl0(sub_real)}</td><td class="${cor_sub}">${pct(sub_pct)}</td><td>${brl0(Math.max(sub_meta-sub_real,0))}</td><td style="color:var(--ink-3)">${sub_atend} vendas</td></tr>`;
+    const sep = `<tr style="background:var(--surface-2)"><td colspan="6" style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;font-weight:700">🏷 Categorias nativas Trinks · meta projetada pelo mix anual · aplicada à meta de serviços do período (${brl0(meta_serv_periodo)})</td></tr>`;
+    native_rows = sep + rows_native + sub_row;
   }
 
   const esc_desc = esc >= 12 ? 'meta anual (12× mensal)' : esc === 1 ? 'meta cheia do mês' : `${(esc*100).toFixed(0)}% da meta mensal (proporcional ao período)`;
@@ -1955,7 +1973,7 @@ function renderAnual(data){
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
     const esc = (a.meta.meta||0) / mm;
-    renderCategoriasMeta('per-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc, a.categoria_native);
+    renderCategoriasMeta('per-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc, a.categoria_native, a.categoria_native);
   }
 
   // Trajetória mensal · enxuta (4 colunas: Mês, Caixa, Atend, Ticket) + linha de subtotal.
@@ -2134,7 +2152,7 @@ function renderMensal(data){
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
-    renderCategoriasMeta('per-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm, m.categoria_native);
+    renderCategoriasMeta('per-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm, m.categoria_native, (data.abas.anual||{}).categoria_native);
   }
 
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
@@ -2167,7 +2185,7 @@ function renderSemanal(data){
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
-    renderCategoriasMeta('per-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm, s.categoria_native);
+    renderCategoriasMeta('per-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm, s.categoria_native, (data.abas.anual||{}).categoria_native);
   }
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
@@ -2261,7 +2279,7 @@ function renderDiario(data){
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
-    renderCategoriasMeta('per-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao, mf, d.meta.meta/mm, d.categoria_native);
+    renderCategoriasMeta('per-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao, mf, d.meta.meta/mm, d.categoria_native, (data.abas.anual||{}).categoria_native);
   }
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora HOJE', 'sinal em tempo real do mix — dá pra empurrar serviço mais rentável no restante do dia', d.rentabilidade_hora || []);
 
