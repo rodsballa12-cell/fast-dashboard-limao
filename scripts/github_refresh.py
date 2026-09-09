@@ -1565,12 +1565,14 @@ def main():
     dow_hist_n = {i: 0 for i in range(7)}
     tr_ano = [x for x in transac if x.get("dataHora")
               and ini_ano <= parse_trinks_dt(x["dataHora"]).date() <= fim_ano]
-    for t in tr_ano:
+    # ATENÇÃO: usar variável _tx (não `t`) — `t` é o cliente Trinks lá em cima e
+    # o loop `for t in tr_ano` estava sombrando, quebrando `t.consumo()` no final.
+    for _tx in tr_ano:
         try:
-            dt = parse_trinks_dt(t["dataHora"]).date()
-            dow_hist_v[dt.weekday()] += float(t.get("totalPagar") or 0)
+            _dt = parse_trinks_dt(_tx["dataHora"]).date()
+            dow_hist_v[_dt.weekday()] += float(_tx.get("totalPagar") or 0)
         except Exception: pass
-    dias_vistos = {parse_trinks_dt(t["dataHora"]).date() for t in tr_ano}
+    dias_vistos = {parse_trinks_dt(_tx["dataHora"]).date() for _tx in tr_ano}
     for d in dias_vistos:
         dow_hist_n[d.weekday()] += 1
 
@@ -1659,10 +1661,10 @@ def main():
 
     # B6 · peso da semana no mês também vem de transações (caixa real)
     sem_v_per_mes = defaultdict(lambda: defaultdict(float))  # {(y,m): {sem_num: caixa}}
-    for t in tr_ano:
+    for _tx in tr_ano:
         try:
-            dt = parse_trinks_dt(t["dataHora"]).date()
-            sem_v_per_mes[(dt.year, dt.month)][sem_do_mes(dt)] += float(t.get("totalPagar") or 0)
+            _dt = parse_trinks_dt(_tx["dataHora"]).date()
+            sem_v_per_mes[(_dt.year, _dt.month)][sem_do_mes(_dt)] += float(_tx.get("totalPagar") or 0)
         except Exception: pass
     today_ym = (hoje.year, hoje.month)
     meses_fechados = [ym for ym in sem_v_per_mes if ym < today_ym and sum(sem_v_per_mes[ym].values()) > 0]
@@ -1685,10 +1687,10 @@ def main():
     # (dez/jul costumam ser mais fortes em beleza)
     # B6 · peso do mês no ano também por transação (caixa real)
     mes_v_hist_ano = defaultdict(lambda: defaultdict(float))  # {ano: {mes: caixa}}
-    for t in tr_ano:
+    for _tx in tr_ano:
         try:
-            dt = parse_trinks_dt(t["dataHora"]).date()
-            mes_v_hist_ano[dt.year][dt.month] += float(t.get("totalPagar") or 0)
+            _dt = parse_trinks_dt(_tx["dataHora"]).date()
+            mes_v_hist_ano[_dt.year][_dt.month] += float(_tx.get("totalPagar") or 0)
         except Exception: pass
     anos_fechados = [y for y, meses in mes_v_hist_ano.items()
                      if y < hoje.year and len(meses) >= 10]  # exigir pelo menos 10 meses do ano
