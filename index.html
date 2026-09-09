@@ -7,12 +7,12 @@
 <meta name="theme-color" content="#0B0B0F" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="FAST Limão">
+<meta name="apple-mobile-web-app-title" content="Ritmo Fast · Limão">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="format-detection" content="telephone=no">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%23F5B800'/%3E%3Ctext x='90' y='128' font-family='Georgia,serif' font-size='120' font-weight='700' text-anchor='middle' fill='%230A0A0C'%3EF%3C/text%3E%3C/svg%3E">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23F5B800'/%3E%3Ctext x='32' y='46' font-family='Georgia,serif' font-size='44' font-weight='700' text-anchor='middle' fill='%230A0A0C'%3EF%3C/text%3E%3C/svg%3E">
-<title>FAST Limão — Painel</title>
+<title>Ritmo Fast · Escova Limão</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -374,8 +374,8 @@
         </svg>
       </div>
       <div class="brand-txt">
-        <h1>Painel Trinks · <span style="color:var(--accent)">Limão</span></h1>
-        <span class="sub">São Paulo · id 276461 · abertura 23/07/2026 · <strong style="color:var(--accent)">meta ago R$ 60k</strong></span>
+        <h1 id="brand-title">Ritmo <span style="color:var(--accent)">Fast</span></h1>
+        <span class="sub" id="brand-sub">São Paulo · id 276461 · abertura 23/07/2026</span>
       </div>
     </div>
     <div class="meta">
@@ -3619,6 +3619,38 @@ async function loadWaFila(){
   }catch(e){ console.warn('wa_fila.json indisponível', e); }
 }
 loadWaFila();
+
+// Identidade da unidade (marca/tipo/filial) — permite rebrandear sem tocar HTML
+let CONFIG = null;
+async function loadConfig(){
+  try{
+    const r = await fetch('data/config.json?_='+Date.now(), {cache:'no-store'});
+    if(!r.ok) return;
+    CONFIG = await r.json();
+    const u = CONFIG.unidade || {};
+    if(u.produto && u.marca){
+      // Header: "Ritmo Fast" + subtítulo "Escova · Limão · São Paulo"
+      const title = document.getElementById('brand-title');
+      const sub = document.getElementById('brand-sub');
+      if(title){
+        title.innerHTML = `${u.produto} <span style="color:var(--accent)">${u.marca}</span>` +
+          (u.tipo || u.filial ? ` · <span style="color:var(--ink-2);font-weight:600">${[u.tipo, u.filial].filter(Boolean).join(' ')}</span>` : '');
+      }
+      if(sub){
+        const partes = [u.cidade, 'id 276461', 'abertura 23/07/2026'].filter(Boolean);
+        sub.textContent = partes.join(' · ');
+      }
+      // Título da aba do navegador
+      const parts = [u.produto, u.marca].filter(Boolean).join(' ');
+      const detalhe = [u.tipo, u.filial].filter(Boolean).join(' ');
+      document.title = detalhe ? `${parts} · ${detalhe}` : parts;
+      // Ícone/nome curto do PWA na tela do celular
+      const pwaTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+      if(pwaTitle) pwaTitle.setAttribute('content', `${parts} · ${u.filial || ''}`.trim());
+    }
+  }catch(e){ console.warn('config.json indisponível', e); }
+}
+loadConfig();
 
 // Regras de comissão exportadas do Trinks BackOffice (config local)
 let COMISSOES_CFG = null;
