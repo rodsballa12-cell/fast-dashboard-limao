@@ -370,6 +370,7 @@ def analisar(agend, transac, ini: date, fim: date):
     # A data de abertura sai do próprio dado (primeiro atendimento registrado),
     # sem constante cravada.
     _hoje = datetime.now(BRT).date()
+    _agora = datetime.now(BRT)
     _primeiro_atend = min(
         (parse_trinks_dt(a["dataHoraInicio"]).date()
          for a in agend if a.get("dataHoraInicio")),
@@ -377,11 +378,20 @@ def analisar(agend, transac, ini: date, fim: date):
     )
     _ini_cap = max(ini, _primeiro_atend) if _primeiro_atend else ini
     _fim_cap = min(fim, _hoje)
+    # Hora provável de abertura (padrão salão 09h). Pra ficar exato, mover pra config.
+    _HORA_ABERTURA = int(_cfg.get("hora_abertura", 9))
     horas_operacao_periodo = 0.0
     _cur = _ini_cap
     while _cur <= _fim_cap:
         if opera_no_dia(_cur):
-            horas_operacao_periodo += HORAS_POR_DOW[_cur.weekday()]
+            capacidade_dia = HORAS_POR_DOW[_cur.weekday()]
+            # Se for HOJE e o dia ainda não fechou, pro-rateia pelas horas decorridas
+            # desde a abertura. Antes: o Diário mostrava 3% ocupação às 10h porque o
+            # denominador era 12h (jornada inteira) mas ainda só passou 1h.
+            if _cur == _hoje:
+                horas_decorridas = max(0.0, (_agora.hour + _agora.minute/60.0) - _HORA_ABERTURA)
+                capacidade_dia = min(capacidade_dia, horas_decorridas)
+            horas_operacao_periodo += capacidade_dia
         _cur += timedelta(days=1)
 
     cadeiras_detalhe = {}
@@ -2285,6 +2295,7 @@ def main():
             },
             "mensal": {
                 "kpis": a_mensal["kpis"], "meta": meta_mensal, "categorias": a_mensal["categorias"],
+                "categoria_native": a_mensal.get("categoria_native", []),
                 "novos_vs_recorr": nvr_mes, "rentabilidade_hora": a_mensal["rentabilidade_hora"],
                 "por_dia_mes": a_mensal["por_dia_mes"],
                 "hora_media": hora_media(a_mensal["hora_abs"], a_mensal["kpis"]["dias_op"]),
@@ -2299,6 +2310,7 @@ def main():
             "semanal": {
                 "kpis": {**a_semanal["kpis"], "periodo_ini": seg.isoformat(), "periodo_fim": dom.isoformat()},
                 "meta": meta_sem, "categorias": a_semanal["categorias"],
+                "categoria_native": a_semanal.get("categoria_native", []),
                 "novos_vs_recorr": nvr_sem,
                 "por_dow": a_semanal["por_dow"],
                 "hora_media": hora_media(a_semanal["hora_abs"], a_semanal["kpis"]["dias_op"]),
@@ -2315,6 +2327,7 @@ def main():
             "diario": {
                 "kpis": {**a_diario["kpis"], "dia_semana": DOW_NOMES[hoje.weekday()], "data": hoje.isoformat()},
                 "meta": meta_dia, "categorias": a_diario["categorias"],
+                "categoria_native": a_diario.get("categoria_native", []),
                 "hora_abs": a_diario["hora_abs"], "ranking_prof": a_diario["ranking_prof"],
                 "ranking_prof_total_n": a_diario.get("ranking_prof_total_n", 0),
                 "ranking_serv": a_diario["ranking_serv"],

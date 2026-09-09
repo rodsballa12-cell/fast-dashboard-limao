@@ -569,34 +569,10 @@ function deltaChip(delta_pct, invert){
   return `<span style="color:${cor};font-size:11px;font-weight:600;margin-left:6px;">${arrow} ${sign}${delta_pct.toFixed(1)}%</span>`;
 }
 
-// Avisa quando a janela de comparação tem composição de dia-da-semana muito
-// diferente da atual. Sem isso o card mostra "-63,5%" e parece queda do
-// negócio, quando é ter+qua+qui medido contra sáb+dom+seg.
-function renderAvisoBase(kpis_id, k){
-  document.querySelectorAll(`.aviso-base[data-for="${kpis_id}"]`).forEach(e=>e.remove());
-  const b = k && k.base_comparacao;
-  const el = document.getElementById(kpis_id);
-  if(!b || !el) return;
-  const atip = Object.entries(b.dias_atipicos_na_base || {});
-  if(b.comparavel && !atip.length) return;
-
-  const partes = [];
-  if(!b.comparavel){
-    partes.push(`Agora: <b class="dowlist">${(b.composicao_atual||[]).join(' + ')}</b> — ${b.peso_semana_atual_pct}% do faturamento de uma semana.
-      Base: <b class="dowlist">${(b.composicao_anterior||[]).join(' + ')}</b> — ${b.peso_semana_anterior_pct}%.`);
-    if(b.razao_peso) partes.push(`A base carrega <b>${String(b.razao_peso).replace('.',',')}×</b> mais peso.`);
-    if(b.caixa_delta_ajustado_pct !== null && b.caixa_delta_ajustado_pct !== undefined && k.caixa_delta_pct !== null)
-      partes.push(`Corrigida a composição, o caixa faz <b>${pct(b.caixa_delta_ajustado_pct)}</b> em vez de ${pct(k.caixa_delta_pct)}.`);
-  }
-  if(atip.length){
-    const txt = atip.map(([iso,i])=>`${fmtDate(iso)} (${String(i.ratio).replace('.',',')}× o normal do dia da semana)`).join(', ');
-    partes.push(`A base contém ${atip.length===1?'um dia atípico':'dias atípicos'}: <b>${txt}</b>.`);
-  }
-  el.insertAdjacentHTML('beforebegin',
-    `<div class="aviso-base" data-for="${kpis_id}">
-       <span class="tit">⚖️ Leia o comparativo com ressalva</span>${partes.join(' ')}
-     </div>`);
-}
+// renderAvisoBase removido a pedido: o aviso "Leia o comparativo com ressalva"
+// poluía o topo dos KPIs. A base de comparação segue no JSON (kpis.base_comparacao)
+// caso alguém queira reativar; por enquanto fica silencioso.
+function renderAvisoBase(_kpis_id, _k){ /* no-op */ }
 
 function kpiCard(cls_,label,value,foot,accent,delta_pct,delta_label){
   const chip = deltaChip(delta_pct);
@@ -752,30 +728,24 @@ function renderTicketMeta(container_id, periodo_label, kpis){
     : `<div class="progress"><div class="progress-fill" style="width:100%; background:${cor_bar};"></div></div>
        <div class="progress-labels"><span>&nbsp;</span><span class="now">${header_val}</span><span>&nbsp;</span></div>`;
 
+  // Layout enxuto: alvo, atual, gap, ação. Sem meta-rows redundantes.
+  const gapLabel = status==='em_curso' ? 'Gap / visita' : (status==='encerrado_deficit' ? 'Déficit' : status==='encerrado_batido' ? 'Superação' : '—');
+  const gapVal = status==='em_curso' ? (gap>0?brl(gap):'zero')
+               : status==='encerrado_deficit' ? '−'+brl0(deficit)
+               : status==='encerrado_batido' ? '+'+brl0(supera) : '—';
+  const gapCor = status==='encerrado_batido' ? 'up' : (status==='fechado' ? '' : (gap>0 || deficit>0 ? 'warn' : 'up'));
+
   const html = `
     <section class="meta-card">
-      <h2><span style="color:var(--accent)">🎫</span> Ticket ${periodo_label} · alvo dinâmico da meta <span style="color:var(--accent)">${header_val}</span> / visita</h2>
-      <div class="sub">${sub}</div>
+      <h2><span style="color:var(--accent)">🎫</span> Ticket ${periodo_label} · alvo <span style="color:var(--accent)">${header_val}</span> / visita</h2>
       ${barra}
-      <div class="meta-row" style="margin-top:20px;">
-        <div class="meta-cell"><div class="l">Ticket atual</div><div class="v ${cor}">${real>0?brl(real):'—'}</div></div>
-        <div class="meta-cell"><div class="l">${status==='em_curso'?'Alvo restante':'Ticket ideal'}</div><div class="v accent">${alvo_rest>0?brl(alvo_rest):'—'}</div></div>
-        <div class="meta-cell"><div class="l">${status==='em_curso'?'Gap / visita':(status==='encerrado_deficit'?'Déficit caixa':'Superação')}</div><div class="v ${status==='encerrado_batido'?'up':(status==='fechado'?'':'warn')}">${status==='em_curso'?(gap>0?brl(gap):'zero'):(status==='encerrado_deficit'?brl0(deficit):(status==='encerrado_batido'?'+'+brl0(supera):'—'))}</div></div>
-        <div class="meta-cell"><div class="l">Alvo médio período</div><div class="v">${alvo_periodo>0?brl(alvo_periodo):'—'}</div></div>
+      <div class="meta-row" style="margin-top:16px;">
+        <div class="meta-cell"><div class="l">Atual</div><div class="v ${cor}">${real>0?brl(real):'—'}</div></div>
+        <div class="meta-cell"><div class="l">Alvo</div><div class="v accent">${alvo_rest>0?brl(alvo_rest):'—'}</div></div>
+        <div class="meta-cell"><div class="l">${gapLabel}</div><div class="v ${gapCor}">${gapVal}</div></div>
+        <div class="meta-cell"><div class="l">Visitas</div><div class="v">${visitas}${vis_rest>0?` <span style="font-size:11px;color:var(--ink-3)">+${vis_rest} projet.</span>`:''}</div></div>
       </div>
-      <div class="meta-row">
-        <div class="meta-cell"><div class="l">Visitas atuais</div><div class="v">${visitas}</div></div>
-        <div class="meta-cell"><div class="l">Visitas projetadas</div><div class="v">${vis_proj}</div></div>
-        <div class="meta-cell"><div class="l">Visitas restantes</div><div class="v">${vis_rest}</div></div>
-        <div class="meta-cell"><div class="l">Serv/visita</div><div class="v">${serv_por_visita}</div></div>
-      </div>
-      <div class="meta-row">
-        <div class="meta-cell"><div class="l">Caixa atual</div><div class="v accent">${brl0(kpis.caixa)}</div></div>
-        <div class="meta-cell"><div class="l">${status==='em_curso'?'Impacto restante':'Meta período'}</div><div class="v ${status==='encerrado_deficit'?'dn':(status==='encerrado_batido'?'up':'warn')}">${status==='em_curso'?(upside_rest>0?brl0(upside_rest)+' pra fechar':'—'):brl0(kpis.caixa + deficit - supera)}</div></div>
-        <div class="meta-cell"><div class="l">&nbsp;</div><div class="v">&nbsp;</div></div>
-        <div class="meta-cell"><div class="l">&nbsp;</div><div class="v">&nbsp;</div></div>
-      </div>
-      <div class="cap" style="margin-top:14px;padding:10px 12px;background:var(--surface-2);border-radius:8px;">${acao}</div>
+      <div class="cap" style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;">${acao}</div>
     </section>`;
   document.getElementById(container_id).innerHTML = html;
 }
@@ -822,28 +792,23 @@ function renderMetaProgress(container_id, titulo, meta, subtitle){
   document.getElementById(container_id).innerHTML=html;
 }
 
-function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta_realizado, meta_projecao, metas_franq, escala){
+function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta_realizado, meta_projecao, metas_franq, escala, categoria_native){
   // Metas FIXAS da franqueadora × N recepcionistas (config.json).
   // Sem inferência de mix. Cada categoria tem alvo próprio, imposto de fora.
   // `escala` escala meta mensal → período atual (ex: 0.5 = meio mês; 12 = ano).
+  // A pedido: sem caixas resumidas em cima da tabela; unificar Categorias Nativas Trinks
+  // como rows extras abaixo do TOTAL (uma tabela só).
   const c=categorias||{};
   const franq = metas_franq || {};
   const catmes = franq.categorias_mensal || {};
   const esc = escala || 1;
   const nrec = franq.recepcionistas || 1;
   const rows=[
-    {k:'servicos_gerais', nome:'Serviços gerais', meta_mes: catmes.servicos_gerais || 0, cls_:'c2', desc:'escova + demais serviços (exclui Fast Retoque)'},
-    {k:'fast_retoque',    nome:'Fast Retoque',    meta_mes: catmes.fast_retoque || 0,    cls_:'',   desc:`meta oficial franqueadora · R$ ${(catmes.fast_retoque||0).toLocaleString('pt-BR')} · ${nrec} recepcionistas`},
-    {k:'pacotes',         nome:'Pacotes',         meta_mes: catmes.pacotes || 0,         cls_:'',   desc:`meta oficial franqueadora · R$ ${(catmes.pacotes||0).toLocaleString('pt-BR')} · ${nrec} recepcionistas`},
-    {k:'produtos',        nome:'Produtos',        meta_mes: catmes.produtos || 0,        cls_:'c3', desc:`meta oficial franqueadora · R$ ${(catmes.produtos||0).toLocaleString('pt-BR')} · ${nrec} recepcionistas`},
+    {k:'servicos_gerais', nome:'Serviços gerais', meta_mes: catmes.servicos_gerais || 0, desc:'escova + demais serviços (exclui Fast Retoque)'},
+    {k:'fast_retoque',    nome:'Fast Retoque',    meta_mes: catmes.fast_retoque || 0,    desc:`meta oficial franqueadora · R$ ${(catmes.fast_retoque||0).toLocaleString('pt-BR')} · ${nrec} rec.`},
+    {k:'pacotes',         nome:'Pacotes',         meta_mes: catmes.pacotes || 0,         desc:`meta oficial franqueadora · R$ ${(catmes.pacotes||0).toLocaleString('pt-BR')} · ${nrec} rec.`},
+    {k:'produtos',        nome:'Produtos',        meta_mes: catmes.produtos || 0,        desc:`meta oficial franqueadora · R$ ${(catmes.produtos||0).toLocaleString('pt-BR')} · ${nrec} rec.`},
   ];
-  const tiles=rows.map(r=>{
-    const cat=c[r.k]||{v:0,n:0,pct:0};
-    const meta_cat=r.meta_mes * esc;
-    const pct_ating=meta_cat>0?cat.v/meta_cat*100:0;
-    const cor=pct_ating>=100?'up':(pct_ating>=70?'warn':'dn');
-    return tile(r.cls_,r.nome,brl0(cat.v),`vs meta ${brl0(meta_cat)} · <span class="${cor}">${pct(pct_ating)}</span>`);
-  }).join('');
   const ratio_proj = meta_realizado>0 && meta_valor>0 ? meta_projecao/meta_realizado : 1;
   const proj_pct = meta_valor>0 ? meta_projecao/meta_valor*100 : 0;
   const tabela_rows=rows.map(r=>{
@@ -854,17 +819,26 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
     const proj_pct_cat=meta_cat>0?proj_cat/meta_cat*100:0;
     const cor=pct_ating>=100?'up':(pct_ating>=70?'warn':'dn');
     const cor_proj=proj_pct_cat>=90?'up':(proj_pct_cat>=70?'warn':'dn');
-    const share_meta = meta_valor>0 ? (meta_cat/meta_valor*100).toFixed(0) : 0;
-    return `<tr title="${r.desc}"><td>${r.nome} (${share_meta}%)</td><td>${brl0(meta_cat)}</td><td>${brl0(cat.v)}</td><td class="${cor}">${pct(pct_ating)}</td><td>${brl0(Math.max(meta_cat-cat.v,0))}</td><td class="${cor_proj}">${brl0(proj_cat)} (${pct(proj_pct_cat)})</td></tr>`;
+    return `<tr title="${r.desc}"><td>${r.nome}</td><td>${brl0(meta_cat)}</td><td>${brl0(cat.v)}</td><td class="${cor}">${pct(pct_ating)}</td><td>${brl0(Math.max(meta_cat-cat.v,0))}</td><td class="${cor_proj}">${brl0(proj_cat)} (${pct(proj_pct_cat)})</td></tr>`;
   }).join('');
-  const total_row=`<tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL</td><td>${brl0(meta_valor)}</td><td>${brl0(meta_realizado)}</td><td>${pct(meta_valor>0?meta_realizado/meta_valor*100:0)}</td><td>${brl0(Math.max(meta_valor-meta_realizado,0))}</td><td>${brl0(meta_projecao)} (${pct(proj_pct)})</td></tr>`;
+  const total_row=`<tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL META</td><td>${brl0(meta_valor)}</td><td>${brl0(meta_realizado)}</td><td>${pct(meta_valor>0?meta_realizado/meta_valor*100:0)}</td><td>${brl0(Math.max(meta_valor-meta_realizado,0))}</td><td>${brl0(meta_projecao)} (${pct(proj_pct)})</td></tr>`;
+
+  // Categorias nativas Trinks (campo servicos[].categoria) — unificadas aqui como
+  // rows extras, ordenadas por receita. Mostra Vendas · Receita · % da receita.
+  let native_rows = '';
+  if(categoria_native && categoria_native.length){
+    const sep = `<tr style="background:var(--surface-2)"><td colspan="6" style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;font-weight:700">🏷 Categorias nativas Trinks · quebra por catálogo (sem meta)</td></tr>`;
+    native_rows = sep + categoria_native.slice(0,15).map(cn =>
+      `<tr><td>${cn.nome}</td><td style="color:var(--ink-3)">—</td><td>${brl0(cn.v)}</td><td>${cn.pct_receita}%</td><td style="color:var(--ink-3)">—</td><td style="color:var(--ink-3)">${cn.n} vendas</td></tr>`
+    ).join('');
+  }
+
   const esc_desc = esc >= 12 ? 'meta anual (12× mensal)' : esc === 1 ? 'meta cheia do mês' : `${(esc*100).toFixed(0)}% da meta mensal (proporcional ao período)`;
   document.getElementById(container_id).innerHTML=`
     <div class="card">
       <h2>Detalhamento por categoria · Meta vs Realizado ${titulo}</h2>
-      <div class="cap">Metas <strong>fixas da franqueadora</strong> × ${nrec} recepcionistas — não deriva de mix estatístico. Escala aplicada: ${esc_desc}. "Serviços gerais" = resto após Pacotes+Fast Retoque+Produtos. Projeção assume ritmo atual até o fim do período.</div>
-      <div class="categ-grid">${tiles}</div>
-      <table class="simple"><thead><tr><th>Categoria</th><th>Meta</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção</th></tr></thead><tbody>${tabela_rows}${total_row}</tbody></table>
+      <div class="cap">Metas <strong>fixas da franqueadora</strong> × ${nrec} recepcionistas. Escala: ${esc_desc}. Projeção assume ritmo atual.</div>
+      <table class="simple"><thead><tr><th>Categoria</th><th>Meta</th><th>Realizado</th><th>%</th><th>Falta</th><th>Projeção / Vendas</th></tr></thead><tbody>${tabela_rows}${total_row}${native_rows}</tbody></table>
     </div>`;
 }
 
@@ -1881,26 +1855,41 @@ function renderAnual(data){
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`padrão Trinks`},
     {label:'Base',value:k.clientes_unicos+'',foot:`${((k.cliente_dia||0)/Math.max(k.clientes_unicos,1)).toFixed(1)} visitas/cliente médio`}
   ]);
-  renderAncora('per-ancora', a.categoria_native, a.kpis);
+  // Âncora removida a pedido — informação estática (muda 1×/ano) não merece card fixo
   if(a.meta && a.meta.meta) renderMetaProgress('per-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
   renderTicketMeta('per-ticket-meta', 'ano', k);
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
     const esc = (a.meta.meta||0) / mm;
-    renderCategoriasMeta('per-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc);
+    renderCategoriasMeta('per-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc, a.categoria_native);
   }
 
-  // Tabela mensal
+  // Trajetória mensal · enxuta (4 colunas: Mês, Caixa, Atend, Ticket) + linha de subtotal.
   const meses=Object.entries(a.meses||{}).sort();
-  const mrows=meses.map(([ym,m])=>[ym,m.dias_op,brl0(m.caixa),brl0(m.receita_serv),m.atend_fin,m.clientes_unicos,brl(m.ticket_trans)]);
-  renderTable('per-meses','📅 Trajetória do ano · mês a mês','Compare meses fechados vs corrente — vê se está acelerando ou perdendo tração',['Mês','Dias','Caixa','Receita','Atend','Únicos','Ticket'],mrows);
+  const nomesMes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const mrows=meses.map(([ym,m])=>{
+    const [y,mm] = ym.split('-');
+    const nomeMes = nomesMes[parseInt(mm)-1] + '/' + y.slice(2);
+    return [nomeMes, brl0(m.caixa), m.atend_fin, brl(m.ticket_trans)];
+  });
+  const sub_caixa = meses.reduce((s,[,m])=>s+(m.caixa||0), 0);
+  const sub_atend = meses.reduce((s,[,m])=>s+(m.atend_fin||0), 0);
+  const sub_ticket = sub_atend > 0 ? sub_caixa / sub_atend : 0;
+  const subtotal_row = `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700"><td>SUBTOTAL</td><td>${brl0(sub_caixa)}</td><td>${sub_atend}</td><td>${brl(sub_ticket)}</td></tr>`;
+  const tabela_html = `<div class="card">
+    <h2>📅 Trajetória do ano · mês a mês</h2>
+    <div class="cap">Fechados + mês corrente. Acompanhe se está acelerando.</div>
+    <table class="simple"><thead><tr><th>Mês</th><th>Caixa</th><th>Atend</th><th>Ticket</th></tr></thead>
+    <tbody>${mrows.map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('')}${subtotal_row}</tbody></table>
+  </div>`;
+  document.getElementById('per-meses').innerHTML = tabela_html;
 
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade por serviço', '2026 · R$/hora ao lado do volume revela onde há upside real', a.rentabilidade_hora || []);
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · 2026 <span class="hi">('+k.dias_op+' dias op.)</span>','Curva média · define escala e horário de campanhas',a.hora_media,true,'');
   renderUtilizacao('per-utilizacao', 'ano', k, a);
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
-  renderCategoriaNativa('per-categoria-native', a.categoria_native);
+  // Categorias nativas Trinks agora vivem dentro do card "Detalhamento por categoria"
   renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
   renderInsights('per-insights', 'Ano 2026', (data.insights||{}).anual);
 }
@@ -2047,7 +2036,7 @@ function renderMensal(data){
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
-    renderCategoriasMeta('per-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm);
+    renderCategoriasMeta('per-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm, m.categoria_native);
   }
 
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
@@ -2079,7 +2068,7 @@ function renderSemanal(data){
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
-    renderCategoriasMeta('per-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm);
+    renderCategoriasMeta('per-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm, s.categoria_native);
   }
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
@@ -2172,7 +2161,7 @@ function renderDiario(data){
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
-    renderCategoriasMeta('per-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao, mf, d.meta.meta/mm);
+    renderCategoriasMeta('per-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao, mf, d.meta.meta/mm, d.categoria_native);
   }
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora HOJE', 'sinal em tempo real do mix — dá pra empurrar serviço mais rentável no restante do dia', d.rentabilidade_hora || []);
 
