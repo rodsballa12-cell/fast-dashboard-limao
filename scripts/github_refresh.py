@@ -2168,6 +2168,9 @@ def main():
         print(f"[agend detail] {n_fetched} buscas novas · cache {len(agend_det_cache)} IDs")
 
     # === DESVIO da tabela (preço praticado vs oficial do catálogo) ===
+    # Traz TODOS os serviços com histórico de venda (o card é colapsável, então
+    # a lista completa não polui). Ordena por magnitude do desvio · desvios <3%
+    # ganham sinal 'ok' pra sinalizar que estão dentro da tabela.
     desvio_tabela = []
     for nome, info in tabela_precos.items():
         praticado = preco_mediano_geral.get(nome)
@@ -2176,15 +2179,17 @@ def main():
         if tabela <= 0: continue
         diff = praticado - tabela
         pct = diff / tabela * 100
-        # Só reporta desvios ≥ 3% (evita ruído de arredondamento)
-        if abs(pct) < 3: continue
+        if abs(pct) < 3:
+            sinal = "ok"
+        else:
+            sinal = "desconto" if diff < 0 else "premium"
         desvio_tabela.append({
             "servico": nome,
             "tabela": round(tabela, 2),
             "praticado": round(praticado, 2),
             "diff": round(diff, 2),
             "pct": round(pct, 1),
-            "sinal": "desconto" if diff < 0 else "premium",
+            "sinal": sinal,
         })
     desvio_tabela.sort(key=lambda x: -abs(x["pct"]))
 

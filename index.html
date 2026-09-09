@@ -427,7 +427,7 @@
       <div id="per-ancora"></div>
       <!-- CONSOLIDAÇÃO B · Meta com sub-visões colapsáveis (ticket-alvo + categorias) -->
       <div id="per-meta"></div>
-      <details style="margin:-6px 0 12px 0"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);padding:8px 14px;background:var(--surface-2);border-radius:8px;font-weight:600">🎯 Alavancas da meta · ticket alvo × visitas + quebra por categoria</summary>
+      <details open style="margin:-6px 0 12px 0"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);padding:8px 14px;background:var(--surface-2);border-radius:8px;font-weight:600">🎯 Alavancas da meta · ticket alvo × visitas + quebra por categoria</summary>
         <div id="per-ticket-meta"></div>
         <div id="per-categorias"></div>
       </details>
@@ -984,13 +984,26 @@ function renderRentabilidade(container_id, titulo, periodo_label, lista){
     ${(anchor && corRSH(anchor.rs_hora)==='dn') ? '<br><strong>Ação:</strong> a âncora rende pouco por hora — casar com o melhor R$/h como combo aumenta ticket sem consumir mais cadeira.' : ''}
   </div>` : '';
 
+  // Layout compacto por padrão: só o resumo do que importa. Detalhamento completo
+  // (tabelas + add-ons + amostra pequena) fica dentro de <details> pra consulta.
+  const top3 = conf.slice(0, 3);
+  const top3Str = top3.length
+    ? top3.map((s,i)=>`<div style="flex:1;min-width:0"><div style="font-size:10.5px;color:var(--ink-3);font-weight:700">#${i+1} R$/HORA</div><div style="font-weight:700;font-size:14px;line-height:1.2">${s.nome}</div><div style="font-size:13px;color:var(--good)">${brl(s.rs_hora)}/h</div></div>`).join('')
+    : '<div style="color:var(--ink-3);font-size:13px">Sem serviços de cadeira com amostra ≥3 no período.</div>';
+  const anchorTxt = anchor
+    ? `<div style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:12.5px;color:var(--ink-2)"><strong>🎯 Âncora:</strong> ${anchor.nome} = <strong>${anchor.pct_faturamento.toFixed(1)}%</strong> do faturamento serv · ${anchor.horas_total.toFixed(0)}h cadeira ocupada a <span class="${corRSH(anchor.rs_hora)}">${brl(anchor.rs_hora)}/h</span>. ${corRSH(anchor.rs_hora)==='dn' ? '<span class="warn">Casar com o top R$/h como combo aumenta ticket sem consumir mais cadeira.</span>' : ''}</div>`
+    : '';
   document.getElementById(container_id).innerHTML = `<div class="card">
     <h2>⚡ Rentabilidade por hora · ${periodo_label} <span class="hi">(${totalHorasCadeira.toFixed(0)}h cadeira ocupada)</span></h2>
-    <div class="cap">Serviços de cadeira exclusiva ordenados por R$/hora. Aplicações rápidas (&lt;15 min) em seção separada — não bloqueiam cadeira.</div>
-    ${tblConf}
-    ${tblBaixa}
-    ${insight}
-    ${tblAddons}
+    <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap">${top3Str}</div>
+    ${anchorTxt}
+    <details style="margin-top:12px"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);padding:8px 12px;background:var(--surface-2);border-radius:6px;font-weight:600">📊 Ver quadro completo · tabela de rentabilidade + add-ons</summary>
+      <div class="cap" style="margin-top:10px">Serviços de cadeira exclusiva ordenados por R$/hora. Aplicações rápidas (&lt;15 min) em seção separada — não bloqueiam cadeira. Verde = ≥ R$ ${p75.toFixed(0)}/h (top 25%). Vermelho = abaixo de R$ ${median.toFixed(0)}/h (mediana).</div>
+      ${tblConf}
+      ${tblBaixa}
+      ${insight}
+      ${tblAddons}
+    </details>
   </div>`;
 }
 
@@ -1352,7 +1365,7 @@ function renderDesvioTabela(container_id, cat){
     return;
   }
   const rows = dv.map(d => {
-    const cor = d.sinal === 'desconto' ? 'var(--crit)' : 'var(--good)';
+    const cor = d.sinal === 'desconto' ? 'var(--crit)' : (d.sinal === 'premium' ? 'var(--good)' : 'var(--ink-3)');
     const sinal = d.diff >= 0 ? '+' : '';
     return `<tr>
       <td>${d.servico}</td>
@@ -1873,9 +1886,13 @@ function renderAnual(data){
     const nomeMes = nomesMes[parseInt(mm)-1] + '/' + y.slice(2);
     return [nomeMes, brl0(m.caixa), m.atend_fin, brl(m.ticket_trans)];
   });
+  // Subtotal · ticket = caixa / n_trans (mesmo denominador do ticket_trans de cada mês).
+  // Antes usava sum(atend_fin) como denominador → não fechava com a média das linhas
+  // porque atend_fin ≠ n_trans (uma transação pode consolidar N atendimentos).
   const sub_caixa = meses.reduce((s,[,m])=>s+(m.caixa||0), 0);
   const sub_atend = meses.reduce((s,[,m])=>s+(m.atend_fin||0), 0);
-  const sub_ticket = sub_atend > 0 ? sub_caixa / sub_atend : 0;
+  const sub_trans = meses.reduce((s,[,m])=>s+(m.n_trans||0), 0);
+  const sub_ticket = sub_trans > 0 ? sub_caixa / sub_trans : 0;
   const subtotal_row = `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700"><td>SUBTOTAL</td><td>${brl0(sub_caixa)}</td><td>${sub_atend}</td><td>${brl(sub_ticket)}</td></tr>`;
   const tabela_html = `<div class="card">
     <h2>📅 Trajetória do ano · mês a mês</h2>
