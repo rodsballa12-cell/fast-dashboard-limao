@@ -825,33 +825,42 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
   }).join('');
   const total_row=`<tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL META</td><td>${brl0(meta_valor)}</td><td>${brl0(meta_realizado)}</td><td>${pct(meta_valor>0?meta_realizado/meta_valor*100:0)}</td><td>${brl0(Math.max(meta_valor-meta_realizado,0))}</td><td>${brl0(meta_projecao)} (${pct(proj_pct)})</td></tr>`;
 
-  // Categorias nativas Trinks (campo servicos[].categoria) — unificadas como rows extras.
-  // Meta projetada: usa mix ANUAL de cada categoria (categoria_native_ref) aplicado
-  // à meta de SERVIÇOS do período (Serviços gerais + Fast Retoque). Se a categoria
-  // trouxe 40% da receita de serviços do ano, esperamos 40% da meta de serviços aqui.
+  // Categorias nativas Trinks: meta = share OFICIAL (config.meta_categoria_nativa_share)
+  // × meta de SERVIÇOS do período. Assim cada categoria tem % de atingimento próprio,
+  // independente do mix realizado no período. Fallback: mix do próprio período (tautológico).
   let native_rows = '';
   if(categoria_native && categoria_native.length){
     const meta_serv_periodo = ((catmes.servicos_gerais || 0) + (catmes.fast_retoque || 0)) * esc;
-    // Constrói mapa de mix de referência (anual). Fallback: mix do próprio período.
-    const ref = (categoria_native_ref && categoria_native_ref.length) ? categoria_native_ref : categoria_native;
-    const ref_total = ref.reduce((s,c)=>s+(c.v||0), 0) || 1;
-    const mix_ref = {};
-    ref.forEach(c => { mix_ref[c.nome] = (c.v||0) / ref_total; });
+    const shareCfg = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.meta_categoria_nativa_share) || null;
+    const usaConfig = !!(shareCfg && Object.keys(shareCfg).filter(k => !k.startsWith('_')).length);
+    const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+    let mix_ref = {};
+    if(usaConfig){
+      Object.entries(shareCfg).forEach(([k,v]) => { if(!k.startsWith('_')) mix_ref[norm(k)] = v; });
+    } else {
+      const ref = (categoria_native_ref && categoria_native_ref.length) ? categoria_native_ref : categoria_native;
+      const ref_total = ref.reduce((s,c)=>s+(c.v||0), 0) || 1;
+      ref.forEach(c => { mix_ref[norm(c.nome)] = (c.v||0) / ref_total; });
+    }
     let sub_meta = 0, sub_real = 0, sub_atend = 0;
     const rows_native = categoria_native.slice(0,15).map(cn => {
-      const share = mix_ref[cn.nome] != null ? mix_ref[cn.nome] : (cn.v||0)/Math.max(ref_total,1);
+      const share = mix_ref[norm(cn.nome)] != null ? mix_ref[norm(cn.nome)] : 0;
       const meta_cn = meta_serv_periodo * share;
       const real_cn = cn.v || 0;
       const pct_cn = meta_cn > 0 ? real_cn/meta_cn*100 : 0;
       const falta_cn = Math.max(meta_cn - real_cn, 0);
       const cor_cn = pct_cn >= 100 ? 'up' : (pct_cn >= 70 ? 'warn' : 'dn');
       sub_meta += meta_cn; sub_real += real_cn; sub_atend += (cn.n||0);
-      return `<tr><td>${cn.nome}</td><td>${brl0(meta_cn)}</td><td>${brl0(real_cn)}</td><td class="${cor_cn}">${pct(pct_cn)}</td><td>${brl0(falta_cn)}</td><td style="color:var(--ink-3)">${cn.n||0} vendas</td></tr>`;
+      const metaTxt = meta_cn > 0 ? brl0(meta_cn) : '<span style="color:var(--ink-3)">sem share</span>';
+      const pctTxt = meta_cn > 0 ? pct(pct_cn) : '—';
+      const faltaTxt = meta_cn > 0 ? brl0(falta_cn) : '—';
+      return `<tr><td>${cn.nome}</td><td>${metaTxt}</td><td>${brl0(real_cn)}</td><td class="${cor_cn}">${pctTxt}</td><td>${faltaTxt}</td><td style="color:var(--ink-3)">${cn.n||0} vendas</td></tr>`;
     }).join('');
     const sub_pct = sub_meta > 0 ? sub_real/sub_meta*100 : 0;
     const cor_sub = sub_pct >= 100 ? 'up' : (sub_pct >= 70 ? 'warn' : 'dn');
     const sub_row = `<tr style="font-weight:700;background:var(--surface-2);color:var(--accent)"><td>SUBTOTAL NATIVAS</td><td>${brl0(sub_meta)}</td><td>${brl0(sub_real)}</td><td class="${cor_sub}">${pct(sub_pct)}</td><td>${brl0(Math.max(sub_meta-sub_real,0))}</td><td style="color:var(--ink-3)">${sub_atend} vendas</td></tr>`;
-    const sep = `<tr style="background:var(--surface-2)"><td colspan="6" style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;font-weight:700">🏷 Categorias nativas Trinks · meta projetada pelo mix anual · aplicada à meta de serviços do período (${brl0(meta_serv_periodo)})</td></tr>`;
+    const fonte = usaConfig ? 'shares OFICIAIS · config.json → meta_categoria_nativa_share' : 'mix do próprio período (fallback · define shares no config.json pra desvio real)';
+    const sep = `<tr style="background:var(--surface-2)"><td colspan="6" style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;font-weight:700">🏷 Categorias nativas Trinks · meta = share × meta serv do período (${brl0(meta_serv_periodo)}) · ${fonte}</td></tr>`;
     native_rows = sep + rows_native + sub_row;
   }
 
@@ -3862,6 +3871,10 @@ async function loadConfig(){
       // Ícone/nome curto do PWA na tela do celular
       const pwaTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
       if(pwaTitle) pwaTitle.setAttribute('content', `${parts} · ${u.filial || ''}`.trim());
+    }
+    // Re-renderiza Painel se meta_categoria_nativa_share chegou depois do primeiro paint
+    if(typeof TRINKS !== 'undefined' && TRINKS && CONFIG.meta_categoria_nativa_share){
+      try{ renderPeriodoAtivo(TRINKS); }catch(e){}
     }
   }catch(e){ console.warn('config.json indisponível', e); }
 }
