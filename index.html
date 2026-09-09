@@ -903,13 +903,10 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
       const cor_proj = proj_pct_cn >= 90 ? 'up' : (proj_pct_cn >= 70 ? 'warn' : 'dn');
       const nome = canon_names[k] || k;
       const metaTxt = meta_cn > 0 ? brl0(meta_cn) : '<span style="color:var(--ink-3)">sem share</span>';
-      const metaBreak = (meta_cn_pac > 0 && meta_cn_serv > 0)
-        ? ` <span style="color:var(--ink-3);font-size:10px;font-weight:400">(${brl0(meta_cn_serv)}s+${brl0(meta_cn_pac)}p)</span>` : '';
       const pctTxt = meta_cn > 0 ? pct(pct_cn) : '—';
       const faltaTxt = meta_cn > 0 ? brl0(falta_cn) : '—';
       const projTxt = meta_cn > 0 ? `${brl0(proj_cn)} (${pct(proj_pct_cn)})` : `${rd.n} vendas`;
-      const pacTag = (rd.pac_v||0) > 0 ? ` <span style="color:var(--ink-3);font-size:10.5px;font-weight:400">+${brl0(rd.pac_v)} pac.</span>` : '';
-      return `<tr><td>${nome}</td><td>${metaTxt}${metaBreak}</td><td>${brl0(real_cn)}${pacTag}</td><td class="${cor_cn}">${pctTxt}</td><td>${faltaTxt}</td><td class="${meta_cn>0?cor_proj:''}">${projTxt}</td></tr>`;
+      return `<tr><td>${nome}</td><td>${metaTxt}</td><td>${brl0(real_cn)}</td><td class="${cor_cn}">${pctTxt}</td><td>${faltaTxt}</td><td class="${meta_cn>0?cor_proj:''}">${projTxt}</td></tr>`;
     }).join('');
 
     // Row PRODUTOS (linha própria) — também aplica ratio_liq
@@ -966,7 +963,7 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
     const fonte = usaConfig ? 'shares OFICIAIS · config.json → meta_categoria_nativa_share' : 'mix do próprio período (fallback)';
     const totalPacClassificado = Object.values(pacCat).reduce((s,v)=>s+v,0);
     const infoPac = totalPacClassificado > 0
-      ? ` · pacotes classificados por keyword: ${brl0(totalPacClassificado)} distribuídos nas nativas acima (+ pac. na coluna Realizado)` : '';
+      ? ` · pacotes classificados por keyword (${brl0(totalPacClassificado)}) distribuídos nas nativas acima` : '';
     const sep = `<tr style="background:var(--surface-2)"><td colspan="6" style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.5px;font-weight:700">🏷 Categorias nativas Trinks · meta = share × meta serv do período (${brl0(meta_serv_periodo)}) · ${fonte}${infoPac}</td></tr>`;
     native_rows = sep + rows_native + produtos_row + pac_sc_row + desc_row + grand_total_row;
   }
@@ -2226,7 +2223,7 @@ function renderAnual(data){
     {label:'Faturamento · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`padrão Trinks`},
-    {label:'Base',value:k.clientes_unicos+'',foot:`${((k.cliente_dia||0)/Math.max(k.clientes_unicos,1)).toFixed(1)} visitas/cliente médio`}
+    {label:'Clientes únicos',value:k.clientes_unicos+'',foot:`${((k.cliente_dia||0)/Math.max(k.clientes_unicos,1)).toFixed(1)} visitas/cliente médio`}
   ]);
   // Âncora removida a pedido — informação estática (muda 1×/ano) não merece card fixo
   if(a.meta && a.meta.meta) renderMetaProgress('per-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
