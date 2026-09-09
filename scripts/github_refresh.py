@@ -243,6 +243,8 @@ def analisar(agend, transac, ini: date, fim: date):
     parcelas_agg = defaultdict(lambda: {"n": 0, "v": 0.0})
     # CATEGORIA nativa Trinks vinda de transacao.servicos[].categoria
     categoria_native = defaultdict(lambda: {"n": 0, "v": 0.0})
+    # Pacotes classificados por keyword no nome (Trinks não devolve categoria explícita)
+    pacotes_por_categoria = defaultdict(float)
     hora_c = defaultdict(int); hora_v = defaultdict(float)
 
     for t in tr:
@@ -259,6 +261,25 @@ def analisar(agend, transac, ini: date, fim: date):
             q = int(p.get("quantidade") or 1)
             pac_v += float(p.get("valorUnitario") or 0) * q
             pac_n += q
+            # Tenta classificar o pacote numa categoria nativa Trinks pelo nome
+            # (o Trinks não devolve categoria explícita pro pacote, só o nome tipo
+            # "4 MÃOS + 2 PÉS"). Se casar, distribui em pacotes_por_categoria.
+            _nome_pac = (p.get("nome") or "").lower()
+            _cat_pac = None
+            if any(k in _nome_pac for k in ("mão","mãos","mao","maos","pé","pés","pe ","pes","unha")):
+                _cat_pac = "Unhas"
+            elif any(k in _nome_pac for k in ("escova","chapinha","babyliss","penteado","secagem")):
+                _cat_pac = "Escova"
+            elif any(k in _nome_pac for k in ("maquiag","make","noiva")):
+                _cat_pac = "Maquiagem"
+            elif any(k in _nome_pac for k in ("retoque",)):
+                _cat_pac = "Retoque"
+            elif any(k in _nome_pac for k in ("hidrat","tratamento","botox","queratin","reconstru","cauter","selagem")):
+                _cat_pac = "Tratamento"
+            elif any(k in _nome_pac for k in ("harmoniz","progressiv","aliment","alisamento")):
+                _cat_pac = "Harmonização"
+            if _cat_pac:
+                pacotes_por_categoria[_cat_pac] += float(p.get("valorUnitario") or 0) * q
         for p in (t.get("produtos") or []):
             q = int(p.get("quantidade") or 1)
             prod_v += float(p.get("valorUnitario") or 0) * q
@@ -567,6 +588,8 @@ def analisar(agend, transac, ini: date, fim: date):
         "trocos": brl_round(trocos),
         "parcelas": parcelas_list,
         "categoria_native": categoria_native_list,
+        "pacotes_por_categoria": {k: brl_round(v) for k, v in pacotes_por_categoria.items()},
+        "pacotes_sem_categoria_v": brl_round(pac_v - sum(pacotes_por_categoria.values())),
     }
 
 
@@ -2290,6 +2313,8 @@ def main():
                 "densidade_hora": a_anual["densidade_hora"],
                 "parcelas": a_anual.get("parcelas", []),
                 "categoria_native": a_anual.get("categoria_native", []),
+                "pacotes_por_categoria": a_anual.get("pacotes_por_categoria", {}),
+                "pacotes_sem_categoria_v": a_anual.get("pacotes_sem_categoria_v", 0),
                 "churn_early": churn,
                 "serie_novos_dia": serie_novos_dia,
                 "cross_sell": cross_sell_data,
@@ -2305,6 +2330,8 @@ def main():
             "mensal": {
                 "kpis": a_mensal["kpis"], "meta": meta_mensal, "categorias": a_mensal["categorias"],
                 "categoria_native": a_mensal.get("categoria_native", []),
+                "pacotes_por_categoria": a_mensal.get("pacotes_por_categoria", {}),
+                "pacotes_sem_categoria_v": a_mensal.get("pacotes_sem_categoria_v", 0),
                 "novos_vs_recorr": nvr_mes, "rentabilidade_hora": a_mensal["rentabilidade_hora"],
                 "por_dia_mes": a_mensal["por_dia_mes"],
                 "hora_media": hora_media(a_mensal["hora_abs"], a_mensal["kpis"]["dias_op"]),
@@ -2320,6 +2347,8 @@ def main():
                 "kpis": {**a_semanal["kpis"], "periodo_ini": seg.isoformat(), "periodo_fim": dom.isoformat()},
                 "meta": meta_sem, "categorias": a_semanal["categorias"],
                 "categoria_native": a_semanal.get("categoria_native", []),
+                "pacotes_por_categoria": a_semanal.get("pacotes_por_categoria", {}),
+                "pacotes_sem_categoria_v": a_semanal.get("pacotes_sem_categoria_v", 0),
                 "novos_vs_recorr": nvr_sem,
                 "por_dow": a_semanal["por_dow"],
                 "hora_media": hora_media(a_semanal["hora_abs"], a_semanal["kpis"]["dias_op"]),
@@ -2337,6 +2366,8 @@ def main():
                 "kpis": {**a_diario["kpis"], "dia_semana": DOW_NOMES[hoje.weekday()], "data": hoje.isoformat()},
                 "meta": meta_dia, "categorias": a_diario["categorias"],
                 "categoria_native": a_diario.get("categoria_native", []),
+                "pacotes_por_categoria": a_diario.get("pacotes_por_categoria", {}),
+                "pacotes_sem_categoria_v": a_diario.get("pacotes_sem_categoria_v", 0),
                 "hora_abs": a_diario["hora_abs"], "ranking_prof": a_diario["ranking_prof"],
                 "ranking_prof_total_n": a_diario.get("ranking_prof_total_n", 0),
                 "ranking_serv": a_diario["ranking_serv"],
