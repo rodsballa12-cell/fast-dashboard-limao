@@ -2279,47 +2279,9 @@ function renderClientes(data){
   renderAniversariantes('clientes-aniv', a.aniversariantes);
   renderChurn('clientes-churn', a.churn_early);
 
-  // Cruzamento Clientes × WhatsApp Automation — status do disparo hoje
+  // Cruzamento Clientes × WhatsApp Automation removido a pedido (baixo signal no dia-a-dia).
+  // Status do kill switch continua controlável via data/config.json → disparo_wa.ativo.
   document.querySelectorAll('.wa-status-card').forEach(e => e.remove());
-  if(WA_FILA){
-    const ativo = WA_FILA.ativo;
-    const total = WA_FILA.total || 0;
-    const recusas = WA_FILA.recusas || {};
-    const totalRecusas = Object.values(recusas).reduce((a,b)=>a+b,0);
-    const porCamp = WA_FILA.por_campanha || {};
-    const geradoEm = WA_FILA.gerado_em ? new Date(WA_FILA.gerado_em).toLocaleDateString('pt-BR') + ' ' + new Date(WA_FILA.gerado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '?';
-    const janIni = (WA_FILA.janela_envio||{}).inicio || 9;
-    const janFim = (WA_FILA.janela_envio||{}).fim || 20;
-    let statusBg, statusBorder, statusEmoji, statusTitulo, statusTxt;
-    if(!ativo){
-      statusBg = 'rgba(239,68,68,.08)'; statusBorder = '#ef4444';
-      statusEmoji = '🔴'; statusTitulo = 'WhatsApp automático DESLIGADO';
-      statusTxt = `Kill switch (<code>disparo_wa.ativo=false</code>) impede qualquer envio. ${totalRecusas > 0 ? `<strong>${totalRecusas} pessoas seriam contatadas hoje</strong> ${recusas['kill switch desligado'] ? `(${recusas['kill switch desligado']} pelo kill switch)` : ''} mas nada será enviado.` : 'Fila vazia ou nada pra disparar hoje.'} Ativação pendente da verificação empresarial Meta.`;
-    } else if(total > 0){
-      statusBg = 'rgba(34,197,94,.08)'; statusBorder = '#22c55e';
-      statusEmoji = '🟢'; statusTitulo = `WhatsApp automático ATIVO — ${total} envios previstos hoje`;
-      statusTxt = `Fila do dia com ${total} mensagens. ${Object.entries(porCamp).map(([c,n])=>`${n} de ${c}`).join(' · ')}. Janela de envio ${janIni}h-${janFim}h BRT.`;
-    } else {
-      statusBg = 'rgba(59,130,246,.08)'; statusBorder = '#3b82f6';
-      statusEmoji = '🟡'; statusTitulo = 'WhatsApp automático ATIVO — nada pra enviar hoje';
-      statusTxt = `Kill switch ligado mas fila do dia está vazia (nenhum aniversariante nem dormente elegível hoje).`;
-    }
-    // Insert em posição próxima aos aniversariantes
-    const anivEl = document.getElementById('clientes-aniv');
-    if(anivEl){
-      const html = `<div class="card wa-status-card" style="background:${statusBg};border-left:4px solid ${statusBorder};margin-top:12px">
-        <h2>💬 Status WhatsApp automático · ${geradoEm}</h2>
-        <div style="font-size:13px;color:var(--ink-2);line-height:1.6;margin-top:8px">
-          <div style="font-size:15px;font-weight:700;margin-bottom:6px">${statusEmoji} ${statusTitulo}</div>
-          <div>${statusTxt}</div>
-        </div>
-        ${!ativo && totalRecusas > 0 ? `<div style="margin-top:12px;padding:10px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2)">
-          <strong>💡 Sinal:</strong> Os ${(a.aniversariantes||[]).length} aniversariantes na tabela abaixo e os ${((a.churn_early||{}).top||[]).length} clientes que sumiram NÃO estão sendo lembrados. Cada dia perdido é oportunidade jogada fora — a Beleza Boost tem urgência em desbloquear a verificação Meta pra automação começar a rodar.
-        </div>` : ''}
-      </div>`;
-      anivEl.insertAdjacentHTML('beforebegin', html);
-    }
-  }
   renderCrossSell('clientes-cross-sell', a.cross_sell);
 
   // 3. Qualidade de cadastro + executor real
