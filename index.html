@@ -428,7 +428,12 @@
       <!-- 1. CONTEXTO -->
       <div id="per-kpis"></div>
       <div id="per-ancora"></div>
+      <!-- CONSOLIDAÇÃO B · Meta com sub-visões colapsáveis (ticket-alvo + categorias) -->
       <div id="per-meta"></div>
+      <details style="margin:-6px 0 12px 0"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);padding:8px 14px;background:var(--surface-2);border-radius:8px;font-weight:600">🎯 Alavancas da meta · ticket alvo × visitas + quebra por categoria</summary>
+        <div id="per-ticket-meta"></div>
+        <div id="per-categorias"></div>
+      </details>
       <div id="per-heatmap"></div>
       <div id="per-comparacao"></div>
       <!-- 2. TRAJETÓRIA -->
@@ -438,9 +443,7 @@
       <div id="per-google-dow"></div>
       <!-- SALA AGORA · só Diário -->
       <div id="per-sala-wrap"></div>
-      <!-- 3. MIX / TICKET / CATEGORIAS -->
-      <div id="per-categorias"></div>
-      <div id="per-ticket-meta"></div>
+      <!-- (per-categorias e per-ticket-meta agora dentro do <details> da Meta acima) -->
       <!-- 4. RENTABILIDADE -->
       <div id="per-rentabilidade"></div>
       <div id="per-categoria-native"></div>
@@ -469,10 +472,8 @@
       <div id="clientes-seg-canal"></div>
       <div id="clientes-seg-bairro"></div>
       <div id="clientes-seg-genero"></div>
-      <!-- 5. RANKING E BASE FINANCEIRA -->
-      <div id="clientes-ltv"></div>
+      <!-- 5. RANKING (LTV Pareto + Novos vs Recorr absorvidos pelo Snapshot acima) -->
       <div id="clientes-topcli"></div>
-      <div id="clientes-novos"></div>
     </div>
 
     <!-- AUDITORIA -->
@@ -1376,16 +1377,18 @@ function renderDesvioTabela(container_id, cat){
       <td style="text-align:right;color:${cor};font-weight:700;">${sinal}${d.pct}%</td>
     </tr>`;
   }).join('');
+  // CONSOLIDAÇÃO M · low-signal (operacional, não decisão diária) → collapsed
   el.innerHTML = `<div class="card">
-    <h2>📐 Preço praticado vs tabela</h2>
-    <div class="cap">${c.n_com_desvio} de ${c.n_total} serviços fogem da tabela oficial em ±3% ou mais. <strong>Desconto</strong> = cobrando menos; <strong>premium</strong> = cobrando mais.</div>
-    <table class="simple">
-      <thead><tr><th>Serviço</th><th>Tabela</th><th>Praticado</th><th>Diferença</th><th>%</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <div class="insight" style="margin-top:12px;">
-      <strong>Ação:</strong> descontos sistemáticos ≥ 10% podem ser política de fidelização ou brecha de fluxo. Premium consistente sinaliza upsell natural.
-    </div>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:15px;list-style:disclosure-closed">📐 Preço praticado vs tabela <span style="font-size:11px;color:var(--ink-3);font-weight:400">(${c.n_com_desvio}/${c.n_total} c/ desvio)</span></summary>
+      <div class="cap" style="margin-top:8px">${c.n_com_desvio} de ${c.n_total} serviços fogem da tabela oficial em ±3% ou mais. <strong>Desconto</strong> = cobrando menos; <strong>premium</strong> = cobrando mais.</div>
+      <table class="simple">
+        <thead><tr><th>Serviço</th><th>Tabela</th><th>Praticado</th><th>Diferença</th><th>%</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="insight" style="margin-top:12px;">
+        <strong>Ação:</strong> descontos sistemáticos ≥ 10% podem ser política de fidelização ou brecha de fluxo. Premium consistente sinaliza upsell natural.
+      </div>
+    </details>
   </div>`;
 }
 
@@ -1484,13 +1487,15 @@ function renderCategoriaNativa(container_id, categorias){
     <td style="text-align:right;">${brl0(c.v)}</td>
     <td style="text-align:right;">${c.pct_receita}%</td>
   </tr>`).join('');
+  // CONSOLIDAÇÃO M · low-signal → collapsed <details>
   el.innerHTML = `<div class="card">
-    <h2>🏷 Categorias nativas Trinks</h2>
-    <div class="cap">Agregação vinda do próprio Trinks (campo <code>servicos[].categoria</code>). Complementa a classificação por cadeira física — mostra como a loja organiza o menu no sistema.</div>
-    <table class="simple">
-      <thead><tr><th>Categoria</th><th>Vendas</th><th>Receita</th><th>%</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
+    <details><summary style="cursor:pointer;font-weight:700;font-size:15px;list-style:disclosure-closed"> 🏷 Categorias nativas Trinks <span style="font-size:11px;color:var(--ink-3);font-weight:400">(debug/catálogo)</span></summary>
+      <div class="cap" style="margin-top:8px">Agregação vinda do próprio Trinks (campo <code>servicos[].categoria</code>). Complementa a classificação por cadeira física — mostra como a loja organiza o menu no sistema.</div>
+      <table class="simple">
+        <thead><tr><th>Categoria</th><th>Vendas</th><th>Receita</th><th>%</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </details>
   </div>`;
 }
 
@@ -1518,11 +1523,26 @@ function renderObsAgend(container_id, lista){
   </div>`;
 }
 
-function renderClientesSnapshot(container_id, snap){
+// CONSOLIDAÇÃO H · Snapshot absorve LTV Pareto + Novos vs Recorrentes do ano
+function renderClientesSnapshot(container_id, snap, ltv, nvr){
   const el = document.getElementById(container_id);
   if(!el || !snap) return;
   const pct = (a,b) => b>0 ? (a/b*100).toFixed(0)+'%' : '—';
   const cor30 = snap.ativos_30d / snap.total_base > 0.4 ? '#22c55e' : (snap.ativos_30d / snap.total_base > 0.25 ? '#f59e0b' : '#ef4444');
+  const ltvBloco = (ltv && ltv.total_clientes) ? `
+    <div class="meta-row">
+      <div class="meta-cell"><div class="l">Pareto 20% (Ano)</div><div class="v accent">${ltv.pareto20_n||0}</div><div class="d" style="font-size:10px;color:var(--ink-3)">${brl0(ltv.pareto20_v||0)} · ${pct(ltv.pareto20_v||0, ltv.receita_total||1)} da receita</div></div>
+      <div class="meta-cell"><div class="l">LTV top-20 médio</div><div class="v">${brl0((ltv.top && ltv.top.length ? ltv.top.slice(0,20).reduce((s,c)=>s+c.v,0)/Math.min(20,ltv.top.length) : 0))}</div></div>
+      <div class="meta-cell"><div class="l">1ª visita só</div><div class="v ${(ltv.uma_vez||0)>0?'warn':''}">${ltv.uma_vez||0}</div><div class="d" style="font-size:10px;color:var(--ink-3)">${(ltv.total_clientes||0)>0?((ltv.uma_vez||0)/ltv.total_clientes*100).toFixed(0):0}% da base</div></div>
+      <div class="meta-cell"><div class="l">Únicos no ano</div><div class="v">${ltv.total_clientes||0}</div></div>
+    </div>` : '';
+  const nvrBloco = nvr ? `
+    <div class="meta-row" style="border-top:1px dashed var(--border);padding-top:10px">
+      <div class="meta-cell"><div class="l">🆕 Novos (Ano)</div><div class="v accent">${nvr.novos.clientes}</div><div class="d" style="font-size:10px;color:var(--ink-3)">${brl0(nvr.novos.receita)} · ${nvr.novos.atend} atend</div></div>
+      <div class="meta-cell"><div class="l">🔁 Recorrentes (Ano)</div><div class="v">${nvr.recorrentes.clientes}</div><div class="d" style="font-size:10px;color:var(--ink-3)">${brl0(nvr.recorrentes.receita)} · ${nvr.recorrentes.atend} atend</div></div>
+      <div class="meta-cell"><div class="l">Taxa retenção</div><div class="v">${((nvr.taxa_retencao||0)*100).toFixed(1)}%</div></div>
+      <div class="meta-cell"><div class="l">Receita recorrente</div><div class="v">${pct(nvr.recorrentes.receita, (nvr.novos.receita||0)+(nvr.recorrentes.receita||0))}</div></div>
+    </div>` : '';
   el.innerHTML = `<div class="card">
     <h2>📊 Base de clientes · snapshot</h2>
     <div class="cap">Estado vivo da base — foto do agora. Ativos = com visita nos últimos N dias. Recorrentes = 2+ visitas totais.</div>
@@ -1544,6 +1564,8 @@ function renderClientesSnapshot(container_id, snap){
       <div class="meta-cell"><div class="l">Alertas churn</div><div class="v ${snap.n_alerta_churn>0?'dn':'up'}">${snap.n_alerta_churn}</div></div>
       <div class="meta-cell"><div class="l">Aniversários 14d</div><div class="v ${snap.n_aniv_14d>0?'warn':''}">${snap.n_aniv_14d}</div></div>
     </div>
+    ${ltvBloco}
+    ${nvrBloco}
     <div class="insight" style="margin-top:14px;">
       <strong>Direcionamento:</strong> ${
         snap.dormentes_60d === 0 && (snap.total_base < 300 || snap.novos_30d > snap.dormentes_60d)
@@ -1926,8 +1948,8 @@ function renderClientes(data){
   const snap = a.clientes_snapshot;
   document.getElementById('tab-clientes-sub').textContent = snap ? `${snap.total_base} base · ${snap.ativos_30d} ativos 30d` : '';
 
-  // 1. Snapshot da base
-  renderClientesSnapshot('clientes-snapshot', snap);
+  // 1. Snapshot da base — CONSOLIDAÇÃO H · absorve LTV Pareto + Novos vs Recorr do ano
+  renderClientesSnapshot('clientes-snapshot', snap, a.top_ltv, a.novos_vs_recorr);
 
   // 2. Ações AGORA
   renderObsAlertas('clientes-obs-alertas', a.obs_alertas);
@@ -2038,26 +2060,10 @@ function renderClientes(data){
     'Perfil da base — informa mix de serviços, comunicação, produtos parceiros',
     a.seg_genero, 'gênero');
 
-  // 5. Ranking / Base financeira
-  const ltv = a.top_ltv || {};
-  const ltv_rows = (ltv.top || []).map((c,i)=>[i+1,c.nome,c.n,brl0(c.v)]);
-  document.getElementById('clientes-ltv').innerHTML = `
-    <div class="card">
-      <h2>💎 LTV · quem sustenta a receita 2026 <span class="hi">(${ltv.total_clientes||0} únicos)</span></h2>
-      <div class="cap">Quem paga a conta da loja. Se o top 20 sai, quanto machuca? Perder aqui = receita recorrente perdida.</div>
-      <div class="categ-grid">
-        ${tile('','Total únicos', (ltv.total_clientes||0)+'', `R$ ${((ltv.receita_total||0)/Math.max(ltv.total_clientes||1,1)).toFixed(0)} LTV médio`)}
-        ${tile('c2','Pareto top 20%', (ltv.pareto20_n||0)+' clientes', `${brl0(ltv.pareto20_v||0)} · <span class="up">${pct(ltv.pareto20_pct||0)}</span>`)}
-        ${tile('c3','Só 1 visita (churn?)', (ltv.uma_vez||0)+'', `<span class="dn">${(ltv.total_clientes||0)>0?((ltv.uma_vez||0)/ltv.total_clientes*100).toFixed(0):0}% da base</span>`)}
-      </div>
-      <table class="simple"><thead><tr><th>#</th><th>Cliente</th><th>Visitas</th><th>LTV</th></tr></thead>
-      <tbody>${ltv_rows.map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('')}</tbody></table>
-    </div>`;
-
+  // 5. Ranking canônico de fidelidade (visitas)
+  // CONSOLIDAÇÃO H · LTV Pareto + Novos vs Recorr agora ficam dentro do Snapshot acima
   renderTopClientes('clientes-topcli', '⭐ Base fiel · ranking de visitas 2026', 'Foco de retenção — perder um destes machuca o LTV',
     a.clientes_top || [], '<strong>Concentração da base:</strong> priorize fidelização/relacionamento com quem visita alto — perder um destes = perder receita recorrente.');
-
-  if(a.novos_vs_recorr) renderNovosRecorr('clientes-novos', a.novos_vs_recorr, 'ano');
 }
 
 function renderMensal(data){
@@ -2243,7 +2249,7 @@ function renderPeriodoAtivo(data){
 // ============= TABS =============
 function setupTabs(){
   // Abas top-level (Painel, Stone, Auditoria)
-  const topBtns = document.querySelectorAll('.tab-btn:not(.periodo-btn):not(.midias-per-btn)');
+  const topBtns = document.querySelectorAll('.tab-btn:not(.periodo-btn):not(.midias-per-btn):not(.stone-per-btn)');
   const topPanels = document.querySelectorAll('#content > .panel');
   topBtns.forEach(b => b.addEventListener('click', () => {
     topBtns.forEach(x => x.setAttribute('aria-selected','false'));
@@ -2749,16 +2755,28 @@ function renderStone(data){
       </div>`;
   }
 
+  // CONSOLIDAÇÃO K · Stone por período agora 1 seletor + 1 tabela dinâmica
   const bloco_periodos = `
-    <h2 style="font-family:Georgia,serif;font-size:16px;margin:24px 0 8px;color:var(--ink);">📊 Dados por período</h2>
-    <div class="grid-2b">
-      ${periodo_card('Hoje','hoje', ' · imediato')}
-      ${periodo_card('Semana','semana', ' · seg-dom')}
-    </div>
-    <div class="grid-2b">
-      ${periodo_card('Mês','mes', ' · mês corrente')}
-      ${periodo_card('Ano','ano', ' · 2026')}
+    <div class="card" style="margin-top:16px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <h2 style="margin:0">📊 Dados Stone por período</h2>
+        <div class="stone-per-btns" style="display:flex;gap:4px;margin-left:auto">
+          <button class="tab-btn stone-per-btn" data-stone-per="hoje" aria-selected="false" style="padding:6px 12px;font-size:12px">Hoje</button>
+          <button class="tab-btn stone-per-btn" data-stone-per="semana" aria-selected="false" style="padding:6px 12px;font-size:12px">Semana</button>
+          <button class="tab-btn stone-per-btn" data-stone-per="mes" aria-selected="true" style="padding:6px 12px;font-size:12px">Mês</button>
+          <button class="tab-btn stone-per-btn" data-stone-per="ano" aria-selected="false" style="padding:6px 12px;font-size:12px">Ano</button>
+        </div>
+      </div>
+      <div id="stone-periodo-body">${periodo_card('Mês','mes', ' · mês corrente')}</div>
     </div>`;
+  // Guarda função no window pra ser chamada pelo handler abaixo
+  window._stonePeriodCard = periodo_card;
+  window._stonePeriodMap = {
+    hoje: ['Hoje', ' · imediato'],
+    semana: ['Semana', ' · seg-dom'],
+    mes: ['Mês', ' · mês corrente'],
+    ano: ['Ano', ' · 2026'],
+  };
 
   // ============ SEÇÃO 3: FLUXO CAIXA + RECEBÍVEIS ============
   const bloco_fluxo = `<div class="card">
@@ -2781,10 +2799,12 @@ function renderStone(data){
   if(s.recebiveis_cartao && s.recebiveis_cartao.length){
     const rows = s.recebiveis_cartao.map(r=>`<tr><td>${(r.data||'').slice(-5).replace('-','/')}</td><td>${brl0(r.valor)}</td></tr>`).join('');
     const tot = s.recebiveis_cartao.reduce((s,r)=>s+r.valor,0);
+    // CONSOLIDAÇÃO M · lista bruta útil só p/ conferência contábil → collapsed
     bloco_receb = `<div class="card">
-      <h2>💳 Recebíveis de cartão creditados (todos)</h2>
-      <div class="cap">Vendas de cartão que já caíram na conta (30 dias após a venda) · valor líquido descontada a taxa</div>
-      <table class="simple"><thead><tr><th>Data</th><th>Valor</th></tr></thead><tbody>${rows}<tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>TOTAL</td><td>${brl0(tot)}</td></tr></tbody></table>
+      <details><summary style="cursor:pointer;font-weight:700;font-size:15px;list-style:disclosure-closed">💳 Recebíveis de cartão creditados <span style="font-size:11px;color:var(--ink-3);font-weight:400">(${s.recebiveis_cartao.length} lançamentos · ${brl0(tot)} total)</span></summary>
+        <div class="cap" style="margin-top:8px">Vendas de cartão que já caíram na conta (30 dias após a venda) · valor líquido descontada a taxa</div>
+        <table class="simple"><thead><tr><th>Data</th><th>Valor</th></tr></thead><tbody>${rows}<tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>TOTAL</td><td>${brl0(tot)}</td></tr></tbody></table>
+      </details>
     </div>`;
   }
 
@@ -2905,6 +2925,20 @@ function renderStone(data){
   }
 
   el.innerHTML = bloco_alerta + bloco_gap + bloco_orf_stone + bloco_orf_trinks + bloco_periodos + bloco_dinheiro + bloco_aplicacao + bloco_fluxo + bloco_receb;
+
+  // CONSOLIDAÇÃO K · handler do seletor Stone por período
+  document.querySelectorAll('.stone-per-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.stone-per-btn').forEach(b => b.setAttribute('aria-selected','false'));
+      btn.setAttribute('aria-selected','true');
+      const perKey = btn.dataset.stonePer;
+      const meta = window._stonePeriodMap && window._stonePeriodMap[perKey];
+      const body = document.getElementById('stone-periodo-body');
+      if(meta && body && window._stonePeriodCard){
+        body.innerHTML = window._stonePeriodCard(meta[0], perKey, meta[1]);
+      }
+    });
+  });
 }
 
 async function load(showToast=false){
@@ -3667,18 +3701,19 @@ function renderMidias(){
     return `<span style="color:${cor};font-size:10px;font-weight:600;margin-left:4px">${arrow}${sign}${pct.toFixed(1)}%</span>`;
   };
 
-  // Status das conexões
-  document.getElementById('midias-status').innerHTML = `<section class="card"><h2>🔌 Fontes conectadas</h2>
-    <div class="cap">Gerado em ${gerado} · fonte: ${MID.fonte}</div>
-    <div class="meta-row" style="margin-top:12px">
-      <div class="categ-tile"><div class="n">Meta Ads</div><div class="v" style="color:#22c55e">✅ ativo</div><div class="d">${M.ad_account_nome} · ${M.ad_account_id}</div></div>
-      <div class="categ-tile"><div class="n">Instagram</div><div class="v" style="color:#22c55e">✅ básico</div><div class="d">@${MID.instagram.handle} · ${MID.instagram.followers.toLocaleString('pt-BR')} seguidores · ${MID.instagram.posts_total} posts</div></div>
-      <div class="categ-tile"><div class="n">Facebook Page</div><div class="v" style="color:${MID.facebook_page&&MID.facebook_page.conectado?'#22c55e':'#f59e0b'}">${MID.facebook_page&&MID.facebook_page.conectado?'✅ ativo':'⏳ pendente'}</div><div class="d">${MID.facebook_page?MID.facebook_page.nome:'Aguardando auth'}</div></div>
-      <div class="categ-tile"><div class="n">Google Ads</div><div class="v" style="color:${MID.google_ads.conectado?'#22c55e':'#f59e0b'}">${MID.google_ads.conectado?'✅ ativo':'⏳ pendente'}</div><div class="d">${MID.google_ads.mensagem||''}</div></div>
-      <div class="categ-tile"><div class="n">Google Meu Negócio</div><div class="v" style="color:${MID.google_business&&MID.google_business.conectado?'#22c55e':'#f59e0b'}">${MID.google_business&&MID.google_business.conectado?'✅ ativo':'⏳ pendente'}</div><div class="d">${MID.google_business?'⭐ '+MID.google_business.rating.estrelas_media+' · '+MID.google_business.rating.reviews_total+' reviews':'Aguardando auth'}</div></div>
-      <div class="categ-tile"><div class="n">HubSpot CRM</div><div class="v" style="color:#22c55e">✅ leitura</div><div class="d">Portal ${MID.hubspot.portal_id} · ${MID.hubspot.contatos} contatos</div></div>
-      <div class="categ-tile"><div class="n">WhatsApp API</div><div class="v" style="color:${MID.whatsapp_cloud_api.conectado?'#22c55e':'#ef4444'}">${MID.whatsapp_cloud_api.conectado?'✅ ativo':'🚫 bloqueado'}</div><div class="d">${MID.whatsapp_cloud_api.mensagem||''}</div></div>
-    </div></section>`;
+  // CONSOLIDAÇÃO M · fontes viraram chips 1-linha (info de infra, não decisão)
+  const chip = (nome, ok, det, cor) => `<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;font-size:11px;color:var(--ink-2)" title="${det.replace(/"/g,'&quot;')}"><span style="color:${cor}">${ok?'●':'○'}</span>${nome}</span>`;
+  document.getElementById('midias-status').innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 14px 0;font-size:11px;color:var(--ink-3)">
+    <span>🔌 Fontes:</span>
+    ${chip('Meta Ads', true, `${M.ad_account_nome} · ${M.ad_account_id}`, '#22c55e')}
+    ${chip('Instagram', true, `@${MID.instagram.handle} · ${MID.instagram.followers.toLocaleString('pt-BR')} seguidores`, '#22c55e')}
+    ${chip('Facebook', !!(MID.facebook_page&&MID.facebook_page.conectado), MID.facebook_page?MID.facebook_page.nome:'Aguardando auth', MID.facebook_page&&MID.facebook_page.conectado?'#22c55e':'#f59e0b')}
+    ${chip('Google Ads', !!MID.google_ads.conectado, MID.google_ads.mensagem||'', MID.google_ads.conectado?'#22c55e':'#f59e0b')}
+    ${chip('Google Meu Negócio', !!(MID.google_business&&MID.google_business.conectado), MID.google_business?'⭐ '+MID.google_business.rating.estrelas_media+' · '+MID.google_business.rating.reviews_total+' reviews':'Aguardando auth', MID.google_business&&MID.google_business.conectado?'#22c55e':'#f59e0b')}
+    ${chip('HubSpot', true, `Portal ${MID.hubspot.portal_id} · ${MID.hubspot.contatos} contatos`, '#22c55e')}
+    ${chip('WhatsApp API', !!MID.whatsapp_cloud_api.conectado, MID.whatsapp_cloud_api.mensagem||'', MID.whatsapp_cloud_api.conectado?'#22c55e':'#ef4444')}
+    <span style="margin-left:auto;font-size:10px">Gerado ${gerado} · ${MID.fonte}</span>
+  </div>`;
 
   // KPI-ESTRELA em destaque + 3 períodos
   const p7=M.por_periodo['7d'], p30=M.por_periodo['30d'], pmtd=M.por_periodo['mtd'];
@@ -5084,27 +5119,39 @@ function renderMidias(){
     </section>`;
   }
 
-  // Recomendações
+  // CONSOLIDAÇÃO I · Recomendações + Insights unificados em 1 card com colunas
   const sev={crit:'🔴',warn:'🟡',ok:'🟢'};
-  document.getElementById('midias-recomendacoes').innerHTML = `<div class="card"><h2>💡 Recomendações do Gerente Marketing</h2>
-    <div class="cap">Aprovar/rejeitar no chat com <code>/marketing-fast</code></div>
-    ${MID.recomendacoes.map((d,i)=>`<div class="dec-item ${d.sev}" style="margin-top:8px;padding:12px;border-left:4px solid ${d.sev==='crit'?'#ef4444':d.sev==='warn'?'#f59e0b':'#22c55e'};background:var(--surface-2);border-radius:6px">
-      <div style="font-weight:600"><span style="opacity:.7">${i+1}.</span> ${sev[d.sev]||''} ${d.titulo}</div>
-      <div style="color:var(--ink-2);font-size:12.5px;margin-top:4px">${d.detalhe}</div>
-      <div style="color:var(--accent);font-size:12px;margin-top:6px;font-weight:600">→ ${d.acao}</div>
-    </div>`).join('')}
-    </div>`;
-
-  // Insights narrativos
   const mdBold = t => t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
-  document.getElementById('midias-insights').innerHTML = `<div class="card"><h2>🧠 Insights da semana</h2>
-    <ul style="margin:8px 0 0 20px;line-height:1.8;color:var(--ink-2)">
-      ${MID.insights_narrativa.map(t=>`<li>${mdBold(t)}</li>`).join('')}
-    </ul>
-    <div style="margin-top:16px;padding:12px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-3)">
-      Próxima atualização: rodar <code>/marketing-fast atualizar aba midias</code> — regenera este JSON com dados frescos do Supermetrics.
-    </div>
+  const recBox = document.getElementById('midias-recomendacoes');
+  const temRec = MID.recomendacoes && MID.recomendacoes.length;
+  const temIns = MID.insights_narrativa && MID.insights_narrativa.length;
+  if(temRec || temIns){
+    recBox.innerHTML = `<div class="card">
+      <h2>💡 Gerente Marketing · recomendações + insights</h2>
+      <div class="cap">Ações a aprovar/rejeitar via <code>/marketing-fast</code> · leitura narrativa dos dados da semana</div>
+      <div style="display:grid;grid-template-columns:${temRec && temIns ? '1.4fr 1fr' : '1fr'};gap:16px;margin-top:12px;align-items:start">
+        ${temRec ? `<div>
+          <div style="font-size:10.5px;font-weight:700;color:var(--ink-3);text-transform:uppercase;margin-bottom:8px">🎯 Recomendações (${MID.recomendacoes.length})</div>
+          ${MID.recomendacoes.map((d,i)=>`<div class="dec-item ${d.sev}" style="margin-top:8px;padding:12px;border-left:4px solid ${d.sev==='crit'?'#ef4444':d.sev==='warn'?'#f59e0b':'#22c55e'};background:var(--surface-2);border-radius:6px">
+            <div style="font-weight:600"><span style="opacity:.7">${i+1}.</span> ${sev[d.sev]||''} ${d.titulo}</div>
+            <div style="color:var(--ink-2);font-size:12.5px;margin-top:4px">${d.detalhe}</div>
+            <div style="color:var(--accent);font-size:12px;margin-top:6px;font-weight:600">→ ${d.acao}</div>
+          </div>`).join('')}
+        </div>` : ''}
+        ${temIns ? `<div>
+          <div style="font-size:10.5px;font-weight:700;color:var(--ink-3);text-transform:uppercase;margin-bottom:8px">🧠 Leitura da semana</div>
+          <ul style="margin:0 0 0 18px;line-height:1.7;color:var(--ink-2);font-size:12.5px">
+            ${MID.insights_narrativa.map(t=>`<li style="margin-bottom:6px">${mdBold(t)}</li>`).join('')}
+          </ul>
+        </div>` : ''}
+      </div>
     </div>`;
+  } else {
+    recBox.innerHTML = '';
+  }
+  // Slot antigo #midias-insights fica vazio (bloco consolidado acima)
+  const oldIns = document.getElementById('midias-insights');
+  if(oldIns) oldIns.innerHTML = '';
 }
 
 async function loadMidias(){
