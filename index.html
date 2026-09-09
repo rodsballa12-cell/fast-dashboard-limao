@@ -441,16 +441,12 @@
       <!-- 3. MIX / TICKET / CATEGORIAS -->
       <div id="per-categorias"></div>
       <div id="per-ticket-meta"></div>
-      <div id="per-novos"></div>
       <!-- 4. RENTABILIDADE -->
       <div id="per-rentabilidade"></div>
       <div id="per-categoria-native"></div>
       <div id="per-desvio-tabela"></div>
       <!-- 5. OPERAÇÃO -->
-      <div class="grid-2b">
-        <div id="per-prof"></div>
-        <div id="per-meios"></div>
-      </div>
+      <div id="per-prof"></div>
       <div id="per-utilizacao"></div>
       <div id="per-hora"></div>
       <!-- 6. RELACIONAMENTO -->
@@ -494,7 +490,6 @@
     <!-- STONE -->
     <div class="panel" id="tab-stone">
       <div class="audit" id="stone-audit"><div>🏦</div><div><strong>O que a loja vendeu vs o dinheiro que caiu.</strong> Cartão de crédito leva 30 dias pra virar caixa. Aqui você vê o fluxo real e decide se vale antecipar.</div></div>
-      <div id="stone-parcelas"></div>
       <div id="stone-content"></div>
     </div>
 
@@ -1882,9 +1877,9 @@ function renderGlobalInsights(data){
 function clearPerContainers(){
   ['per-pace','per-kpis','per-ancora','per-meta','per-heatmap','per-comparacao',
    'per-meses','per-dia','per-dow','per-google-dow','per-sala-wrap',
-   'per-categorias','per-ticket-meta','per-novos','per-rentabilidade',
+   'per-categorias','per-ticket-meta','per-rentabilidade',
    'per-categoria-native','per-desvio-tabela',
-   'per-prof','per-meios','per-utilizacao','per-hora','per-topcli'
+   'per-prof','per-utilizacao','per-hora','per-topcli'
   ].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = ''; });
 }
 
@@ -1923,7 +1918,7 @@ function renderAnual(data){
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade por serviço', '2026 · R$/hora ao lado do volume revela onde há upside real', a.rentabilidade_hora || []);
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · 2026 <span class="hi">('+k.dias_op+' dias op.)</span>','Curva média · define escala e horário de campanhas',a.hora_media,true,'');
   renderUtilizacao('per-utilizacao', 'ano', k, a);
-  if(a.novos_vs_recorr) renderNovosRecorr('per-novos', a.novos_vs_recorr, 'ano');
+  // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   renderCategoriaNativa('per-categoria-native', a.categoria_native);
   renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
 }
@@ -2088,14 +2083,14 @@ function renderMensal(data){
     renderCategoriasMeta('per-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm);
   }
 
-  if(m.novos_vs_recorr) renderNovosRecorr('per-novos', m.novos_vs_recorr, 'mês');
+  // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
 
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · onde tá o R$/hora forte', 'mês · o "âncora" traz volume, a "jóia" traz margem — combine os dois em pacote', m.rentabilidade_hora || []);
 
   renderBarsDia('per-dia','📈 Trajetória do mês · dia a dia','Onde bombou, onde travou — vê quais dias-alavanca faltam pra bater meta',m.por_dia_mes,'');
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · mês <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · usa pra dimensionar equipe e horário de campanhas',m.hora_media,true,'');
   renderRankingProf('per-prof','👥 Profissionais do mês','Receita + ticket médio · ticket alto = quem faz upsell (replicar prática)',m.ranking_prof, m.ranking_prof_total_n);
-  renderMeiosPagamento('per-meios','💳 Mix de pagamentos · mês','Muito cartão = mais MDR + espera 30d · muito PIX = caixa na hora',m.meios_pagamento);
+  // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro (card "Quando o dinheiro entra")
   renderTopClientes('per-topcli','⭐ Clientes que mais voltaram · mês','Ranking por visitas — quem sumiu vs mês passado merece investigação', m.clientes_top || [], '<strong>Ação:</strong> WhatsApp/agradecimento pra quem voltou 3+ vezes no mês. Se alguém sumiu do ranking vs mês anterior, ligar.');
 }
 
@@ -2118,7 +2113,7 @@ function renderSemanal(data){
     const mm = mf.meta_mensal_total || 60000;
     renderCategoriasMeta('per-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm);
   }
-  if(s.novos_vs_recorr) renderNovosRecorr('per-novos', s.novos_vs_recorr, 'semana');
+  // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
   renderBarsDow('per-dow','📊 Onde o caixa se concentra na semana','Distribuição por dia · decide onde reforçar equipe e campanha',s.por_dow,'');
   // Cruzamento Semanal × Mídias: quando Google gera ação vs quando a loja fatura
@@ -2187,7 +2182,7 @@ function renderSemanal(data){
   })();
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · semana <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · define escala e horário de campanhas',s.hora_media,true,'');
   renderRankingProf('per-prof','👥 Profissionais da semana','Receita + ticket médio da semana · replicar quem faz upsell',s.ranking_prof, s.ranking_prof_total_n);
-  renderMeiosPagamento('per-meios','💳 Mix de pagamentos · semana','Fluxo de caixa: PIX+dinheiro imediato · cartão só em 30d',s.meios_pagamento);
+  // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   renderTopClientes('per-topcli','⭐ Clientes recorrentes da semana','Quem apareceu 2+ vezes · alinhe equipe pra tratamento VIP', s.clientes_top || [], '<strong>Prioridade da equipe:</strong> quem apareceu 2+ vezes na semana merece tratamento VIP na próxima visita.');
 }
 
@@ -2232,7 +2227,7 @@ function renderDiario(data){
     renderBarsHora('per-sala-hora','⏱ Fluxo por hora · HOJE','Onde tá vazio, onde tá cheio · decide chamar cliente pelo WhatsApp',d.hora_abs,false,'');
   }
 
-  renderMeiosPagamento('per-meios','💳 Meios de pagamento · HOJE','Cash-flow: PIX cai na hora, cartão só em 30 dias',d.meios_pagamento);
+  // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   renderTopClientes('per-topcli','⭐ Clientes na loja HOJE','Quem passou por aqui · tratamento VIP antes de sair', d.clientes_top || [], '<strong>Ação agora:</strong> se algum cliente-chave está aqui hoje, alinhe a equipe para atenção especial antes de sair.');
 }
 
@@ -2620,7 +2615,7 @@ function renderStone(data){
   const el = document.getElementById('stone-content');
   const subEl = document.getElementById('tab-stone-sub');
   // Cash-flow por parcelamento (Trinks) — sempre renderiza mesmo sem stone csv
-  renderParcelas('stone-parcelas', (data.abas.anual||{}).parcelas);
+  // CONSOLIDAÇÃO F · parcelas Stone agora consolidadas no card Financeiro "Quando o dinheiro entra"
   if(!s){
     if(subEl) subEl.textContent='sem CSV';
     el.innerHTML = `<div class="card"><h2>🏦 Aguardando CSV Stone</h2><div class="cap">Faça upload do extrato Stone no repo para ativar</div>
