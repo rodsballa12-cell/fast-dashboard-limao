@@ -449,6 +449,8 @@
       <div id="per-prof"></div>
       <div id="per-utilizacao"></div>
       <div id="per-hora"></div>
+      <!-- 6. COMISSÕES · taxa Trinks BackOffice ponderada pelo mix do período -->
+      <div id="per-comissoes"></div>
       <!-- ÚLTIMO · Ações Recomendadas específicas do período ativo -->
       <div id="per-insights"></div>
     </div>
@@ -483,7 +485,8 @@
       <div id="auditoria-resumo"></div>
       <div id="auditoria-por-prof"></div>
       <div id="auditoria-executor"></div>
-      <div id="auditoria-comissoes"></div>
+      <!-- Comissões movido pro Painel · quebra por período (ano/mês/semana/hoje) -->
+      <div id="auditoria-comissoes" style="display:none"></div>
       <div id="auditoria-lista"></div>
       <!-- ÚLTIMO · Ações Recomendadas Auditoria -->
       <div id="auditoria-insights"></div>
@@ -1193,6 +1196,83 @@ function renderProfExecutor(container_id, exec_ranking){
   </div>`;
 }
 
+// Comissão por período · usa taxa oficial por categoria (Trinks BackOffice) + receita
+// do período. Optimização: taxa efetiva ponderada pelo mix REAL do período, não pelo ano.
+// Produção por prof abre em <details> pra manter o card enxuto.
+function renderComissoesPer(container_id, periodo_label, categoria_native, ranking_prof, caixa){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  const cfg = (typeof COMISSOES_CFG !== 'undefined' && COMISSOES_CFG) || null;
+  if(!cfg){ el.innerHTML = ''; return; }
+  const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+  const taxaCat = (nome) => {
+    const map = cfg.por_categoria || {};
+    if(nome in map) return map[nome];
+    const nn = norm(nome);
+    for(const k in map){ if(norm(k) === nn) return map[k]; }
+    return cfg.regra_padrao_pct || 0.32;
+  };
+
+  const cat = (categoria_native || []).map(c => {
+    const taxa = taxaCat(c.nome);
+    return { nome: c.nome, receita: c.v || 0, n_atend: c.n || 0, taxa_pct: taxa*100, comissao: (c.v||0)*taxa };
+  }).sort((a,b) => b.receita - a.receita);
+
+  if(!cat.length){ el.innerHTML = ''; return; }
+
+  const receitaTotal = cat.reduce((a,x)=>a+x.receita, 0);
+  const comissaoTotal = cat.reduce((a,x)=>a+x.comissao, 0);
+  const taxaEfetiva = receitaTotal > 0 ? (comissaoTotal/receitaTotal*100) : 0;
+  const pctSobreCaixa = caixa > 0 ? (comissaoTotal/caixa*100) : 0;
+
+  const rows = cat.map(c => `<tr>
+    <td>${c.nome}</td>
+    <td style="text-align:right">${c.n_atend}</td>
+    <td style="text-align:right">${brl0(c.receita)}</td>
+    <td style="text-align:right">${c.taxa_pct.toFixed(0)}%</td>
+    <td style="text-align:right;color:#22c55e;font-weight:700">${brl0(c.comissao)}</td>
+  </tr>`).join('');
+  const totalRow = `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700">
+    <td>TOTAL ${periodo_label.toUpperCase()}</td>
+    <td style="text-align:right">${cat.reduce((a,x)=>a+x.n_atend,0)}</td>
+    <td style="text-align:right">${brl0(receitaTotal)}</td>
+    <td style="text-align:right">${taxaEfetiva.toFixed(1)}%</td>
+    <td style="text-align:right">${brl0(comissaoTotal)}</td>
+  </tr>`;
+
+  // Produção por profissional — usa ranking_prof.v (receita de serviços) × taxa efetiva
+  const rp = ranking_prof || [];
+  const prodRows = rp.length ? rp.map(p => {
+    const rec = p.v || 0;
+    const com = rec * (taxaEfetiva/100);
+    return `<tr><td>${p.nome}</td><td style="text-align:right">${p.n||0}</td><td style="text-align:right">${brl0(rec)}</td><td style="text-align:right;color:#a855f7;font-weight:700">${brl0(com)}</td></tr>`;
+  }).join('') : '';
+  const prodTotal = rp.reduce((a,x)=>a+(x.v||0), 0);
+  const prodTotalCom = prodTotal * (taxaEfetiva/100);
+  const prodTotalRow = rp.length ? `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700">
+    <td>TOTAL EQUIPE (${rp.length})</td>
+    <td style="text-align:right">${rp.reduce((a,x)=>a+(x.n||0),0)}</td>
+    <td style="text-align:right">${brl0(prodTotal)}</td>
+    <td style="text-align:right">${brl0(prodTotalCom)}</td>
+  </tr>` : '';
+
+  el.innerHTML = `<div class="card" style="border-left:4px solid #22c55e">
+    <h2>💰 Comissões · ${periodo_label} <span class="hi">(taxa efetiva ${taxaEfetiva.toFixed(1)}%)</span></h2>
+    <div class="cap">Taxa oficial por categoria (Trinks BackOffice · <code>data/comissoes.json</code>). Ponderada pelo mix real do período. Sobre caixa total (${brl0(caixa)}) = ${pctSobreCaixa.toFixed(1)}%.</div>
+    <div style="overflow-x:auto;margin-top:10px"><table class="simple">
+      <thead><tr><th>Categoria</th><th style="text-align:right">Atend</th><th style="text-align:right">Receita</th><th style="text-align:right">Taxa</th><th style="text-align:right">Comissão</th></tr></thead>
+      <tbody>${rows}${totalRow}</tbody>
+    </table></div>
+    ${rp.length ? `<details style="margin-top:12px"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);padding:8px 12px;background:var(--surface-2);border-radius:6px;font-weight:600">👤 Comissão estimada por profissional (${periodo_label})</summary>
+      <div class="cap" style="margin-top:8px">Taxa efetiva ponderada aplicada sobre receita de serviços de cada prof. Estimativa — não separa qual categoria cada prof fez.</div>
+      <div style="overflow-x:auto"><table class="simple">
+        <thead><tr><th>Profissional</th><th style="text-align:right">Atend</th><th style="text-align:right">Receita serv</th><th style="text-align:right">Comissão estim.</th></tr></thead>
+        <tbody>${prodRows}${prodTotalRow}</tbody>
+      </table></div>
+    </details>` : ''}
+  </div>`;
+}
+
 function renderComissoes(container_id, comissoes, prof_meta, data){
   const el = document.getElementById(container_id);
   if(!el) return;
@@ -1847,7 +1927,7 @@ function clearPerContainers(){
    'per-meses','per-dia','per-dow','per-google-dow','per-sala-wrap',
    'per-categorias','per-ticket-meta','per-rentabilidade',
    'per-categoria-native','per-desvio-tabela',
-   'per-prof','per-utilizacao','per-hora','per-insights'
+   'per-prof','per-utilizacao','per-hora','per-comissoes','per-insights'
   ].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = ''; });
 }
 
@@ -1908,6 +1988,7 @@ function renderAnual(data){
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   // Categorias nativas Trinks agora vivem dentro do card "Detalhamento por categoria"
   renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
+  renderComissoesPer('per-comissoes', 'ano', a.categoria_native, [], k.caixa || 0);
   renderInsights('per-insights', 'Ano 2026', (data.insights||{}).anual);
 }
 
@@ -2065,6 +2146,7 @@ function renderMensal(data){
   renderRankingProf('per-prof','👥 Profissionais do mês','Receita + ticket médio · ticket alto = quem faz upsell (replicar prática)',m.ranking_prof, m.ranking_prof_total_n);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro (card "Quando o dinheiro entra")
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes (aba canônica)
+  renderComissoesPer('per-comissoes', 'mês', m.categoria_native, m.ranking_prof, k.caixa || 0);
   renderInsights('per-insights', 'Mês corrente', (data.insights||{}).mensal);
 }
 
@@ -2158,6 +2240,7 @@ function renderSemanal(data){
   renderRankingProf('per-prof','👥 Profissionais da semana','Receita + ticket médio da semana · replicar quem faz upsell',s.ranking_prof, s.ranking_prof_total_n);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
+  renderComissoesPer('per-comissoes', 'semana', s.categoria_native, s.ranking_prof, k.caixa || 0);
   renderInsights('per-insights', 'Semana corrente', (data.insights||{}).semanal);
 }
 
@@ -2204,6 +2287,7 @@ function renderDiario(data){
 
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
+  renderComissoesPer('per-comissoes', 'hoje', d.categoria_native, d.ranking_prof, k.caixa || 0);
   renderInsights('per-insights', 'Hoje', (data.insights||{}).diario);
 }
 
@@ -2573,7 +2657,7 @@ function renderAuditoria(data){
   </div>`;
   // Ranking executor (idProfissionalQueRealizouServico) — cross-reference contra ranking prof
   renderProfExecutor('auditoria-executor', (data.abas.anual||{}).ranking_prof_executor);
-  renderComissoes('auditoria-comissoes', data.comissoes, data.prof_meta, data);
+  // Comissões agora vivem no Painel (per-comissoes), com quebra por período
   document.getElementById('btn-csv-audit')?.addEventListener('click', () => {
     csvExport('auditoria-cancelamentos.csv',
       ['Risco','Data','Valor','Profissional','Cliente','Serviço','Sem prof','Valor atípico','Preço ref','Stone match','Match por nome'],
@@ -3668,7 +3752,9 @@ async function loadComissoes(){
   try{
     const r = await fetch('data/comissoes.json?_='+Date.now(), {cache:'no-store'});
     if(r.ok){ COMISSOES_CFG = await r.json();
-      if(typeof data !== 'undefined' && data && data.auditoria_cancelados){ try{ renderAuditoria(data); }catch(e){} }
+      // Re-renderiza Painel (per-comissoes) e Auditoria caso a config chegue depois do primeiro render
+      if(typeof TRINKS !== 'undefined' && TRINKS){ try{ renderPeriodoAtivo(TRINKS); }catch(e){} }
+      if(typeof TRINKS !== 'undefined' && TRINKS && TRINKS.auditoria_cancelados){ try{ renderAuditoria(TRINKS); }catch(e){} }
     }
   }catch(e){ console.warn('comissoes.json indisponível', e); }
 }
