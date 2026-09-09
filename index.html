@@ -435,7 +435,6 @@
       <div id="per-meses"></div>
       <div id="per-dia"></div>
       <div id="per-dow"></div>
-      <div id="per-google-dow"></div>
       <!-- SALA AGORA · só Diário -->
       <div id="per-sala-wrap"></div>
       <!-- (per-categorias e per-ticket-meta agora dentro do <details> da Meta acima) -->
@@ -524,6 +523,7 @@
       <div id="midias-demo"></div>
       <div id="midias-instagram"></div>
       <div id="midias-crossings"></div>
+      <div id="midias-google-dow"></div>
       <div id="midias-direcionamentos"></div>
       <div id="midias-campanhas"></div>
       <div id="midias-trend"></div>
@@ -2201,7 +2201,7 @@ function renderInsights(container_id, titulo_aba, insights){
 // CONSOLIDAÇÃO A · limpa todos os cards do Painel unificado antes de re-render
 function clearPerContainers(){
   ['per-pace','per-kpis','per-ancora','per-meta','per-heatmap','per-comparacao',
-   'per-meses','per-dia','per-dow','per-google-dow','per-sala-wrap',
+   'per-meses','per-dia','per-dow','per-sala-wrap',
    'per-categorias','per-ticket-meta','per-rentabilidade',
    'per-categoria-native','per-desvio-tabela',
    'per-prof','per-utilizacao','per-hora','per-comissoes','per-insights'
@@ -2450,70 +2450,7 @@ function renderSemanal(data){
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
   renderBarsDow('per-dow','📊 Onde o caixa se concentra na semana','Distribuição por dia · decide onde reforçar equipe e campanha',s.por_dow,'');
-  // Cruzamento Semanal × Mídias: quando Google gera ação vs quando a loja fatura
-  (function(){
-    const el = document.getElementById('per-google-dow');
-    if(!el) return;
-    if(typeof MID === 'undefined' || !MID || !MID.google_business || !MID.google_business.serie_diaria_30d) { el.innerHTML=''; return; }
-    const gmb = MID.google_business.serie_diaria_30d;
-    // Agrupa por DOW (0=Dom, 6=Sáb)
-    const dowNomes = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-    const byDow = dowNomes.map(n=>({dow:n, phone:0, dir:0, views:0, dias:0}));
-    gmb.forEach(x=>{
-      const dt = new Date(x.data+'T12:00:00');
-      const dw = dt.getDay();
-      byDow[dw].phone += x.actions_phone||0;
-      byDow[dw].dir   += x.actions_directions||0;
-      byDow[dw].views += x.views_total||0;
-      byDow[dw].dias  += 1;
-    });
-    // Média por DOW (para 30d, tipicamente 4-5 dias de cada dow)
-    const rows = byDow.map(d=>({
-      dow: d.dow,
-      views_med: d.dias>0 ? d.views/d.dias : 0,
-      phone_med: d.dias>0 ? d.phone/d.dias : 0,
-      dir_med: d.dias>0 ? d.dir/d.dias : 0,
-      acoes_med: d.dias>0 ? (d.phone+d.dir)/d.dias : 0,
-    }));
-    // Caixa Trinks por DOW (média histórica) — vem de s.por_dow
-    const trDow = (s.por_dow || []);
-    // trDow tem items {dow: 'Segunda', caixa: X, atend: Y}? Vamos tentar
-    const trMap = {};
-    trDow.forEach(x=>{
-      const nome = (x.nome || x.dow || '').toLowerCase();
-      const short = nome.startsWith('dom') ? 'Dom' : nome.startsWith('seg') ? 'Seg' : nome.startsWith('ter') ? 'Ter' : nome.startsWith('qua') ? 'Qua' : nome.startsWith('qui') ? 'Qui' : nome.startsWith('sex') ? 'Sex' : nome.startsWith('sáb') || nome.startsWith('sab') ? 'Sáb' : null;
-      if(short) trMap[short] = { caixa: x.caixa||x.v||0, atend: x.atend||x.n||0 };
-    });
-    const linhas = rows.map(r=>{
-      const tr = trMap[r.dow] || {caixa:0, atend:0};
-      // Alinhamento: dia com muita ação Google mas pouco caixa = subaproveitado
-      const ratio = tr.caixa > 0 && r.acoes_med > 0 ? tr.caixa/r.acoes_med : null;
-      return `<tr style="border-bottom:1px solid var(--surface-2)">
-        <td style="padding:8px;font-weight:600">${r.dow}</td>
-        <td style="text-align:right;padding:8px">${r.views_med.toFixed(0)}</td>
-        <td style="text-align:right;padding:8px">${r.phone_med.toFixed(1)}</td>
-        <td style="text-align:right;padding:8px">${r.dir_med.toFixed(1)}</td>
-        <td style="text-align:right;padding:8px;font-weight:700">${r.acoes_med.toFixed(1)}</td>
-        <td style="text-align:right;padding:8px">${tr.caixa > 0 ? brl0(tr.caixa) : '—'}</td>
-        <td style="text-align:right;padding:8px">${tr.atend || '—'}</td>
-      </tr>`;
-    }).join('');
-    el.innerHTML = `<div class="card" style="border-left:4px solid #4285F4;margin-top:12px">
-      <h2>📍 Google Meu Negócio por dia da semana × caixa Trinks</h2>
-      <div class="cap">Cruzamento aba Semanal × Mídias. Quando o Google gera ação (ligação/rota) vs quando o caixa da loja acontece. Se um DOW tem muita ação e pouco caixa, capacidade está subaproveitada; se tem pouca ação e caixa alto, o dia se autossustenta sem Google.</div>
-      <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
-      <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
-        <th style="text-align:left;padding:8px">DOW</th>
-        <th style="text-align:right;padding:8px">Views médios</th>
-        <th style="text-align:right;padding:8px">📞 Ligações</th>
-        <th style="text-align:right;padding:8px">📍 Rotas</th>
-        <th style="text-align:right;padding:8px">Ações totais</th>
-        <th style="text-align:right;padding:8px">Fat. hist.</th>
-        <th style="text-align:right;padding:8px">Atend hist.</th>
-      </tr></thead>
-      <tbody>${linhas}</tbody></table></div>
-    </div>`;
-  })();
+  // Cruzamento Google × Faturamento por DOW: movido pra aba Mídia (renderMidiasGoogleDow)
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · semana <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · define escala e horário de campanhas',s.hora_media,true,'');
   // UNIFICADO · Profissionais + Comissões num único card
   renderProfComissoes('per-prof', 'semana', s.ranking_prof, s.ranking_prof_total_n, s.categoria_native, k.caixa || 0);
@@ -4045,6 +3982,71 @@ loadComissoes();
 
 // ============= MÍDIAS SOCIAIS =============
 let MID = null;
+
+// Google Meu Negócio × Faturamento Trinks por DOW
+// Cruza ação Google (ligações + rotas dos últimos 30d) com o faturamento
+// histórico do salão por dia da semana. Base histórica = por_dow do ANUAL
+// (mais robusto que semana isolada).
+function renderMidiasGoogleDow(){
+  const el = document.getElementById('midias-google-dow');
+  if(!el) return;
+  el.innerHTML = '';
+  if(!MID || !MID.google_business || !MID.google_business.serie_diaria_30d) return;
+  if(typeof TRINKS === 'undefined' || !TRINKS || !TRINKS.abas || !TRINKS.abas.anual) return;
+  const trDow = TRINKS.abas.anual.por_dow || [];
+  const gmb = MID.google_business.serie_diaria_30d;
+  const dowNomes = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const byDow = dowNomes.map(n=>({dow:n, phone:0, dir:0, views:0, dias:0}));
+  gmb.forEach(x=>{
+    const dt = new Date(x.data+'T12:00:00');
+    const dw = dt.getDay();
+    byDow[dw].phone += x.actions_phone||0;
+    byDow[dw].dir   += x.actions_directions||0;
+    byDow[dw].views += x.views_total||0;
+    byDow[dw].dias  += 1;
+  });
+  const rows = byDow.map(d=>({
+    dow: d.dow,
+    views_med: d.dias>0 ? d.views/d.dias : 0,
+    phone_med: d.dias>0 ? d.phone/d.dias : 0,
+    dir_med: d.dias>0 ? d.dir/d.dias : 0,
+    acoes_med: d.dias>0 ? (d.phone+d.dir)/d.dias : 0,
+  }));
+  const trMap = {};
+  trDow.forEach(x=>{
+    const nome = (x.nome || x.dow || '').toLowerCase();
+    const short = nome.startsWith('dom') ? 'Dom' : nome.startsWith('seg') ? 'Seg' : nome.startsWith('ter') ? 'Ter' : nome.startsWith('qua') ? 'Qua' : nome.startsWith('qui') ? 'Qui' : nome.startsWith('sex') ? 'Sex' : nome.startsWith('sáb') || nome.startsWith('sab') ? 'Sáb' : null;
+    if(short) trMap[short] = { caixa: x.caixa||x.v||0, atend: x.atend||x.n||0 };
+  });
+  const linhas = rows.map(r=>{
+    const tr = trMap[r.dow] || {caixa:0, atend:0};
+    return `<tr style="border-bottom:1px solid var(--surface-2)">
+      <td style="padding:8px;font-weight:600">${r.dow}</td>
+      <td style="text-align:right;padding:8px">${r.views_med.toFixed(0)}</td>
+      <td style="text-align:right;padding:8px">${r.phone_med.toFixed(1)}</td>
+      <td style="text-align:right;padding:8px">${r.dir_med.toFixed(1)}</td>
+      <td style="text-align:right;padding:8px;font-weight:700">${r.acoes_med.toFixed(1)}</td>
+      <td style="text-align:right;padding:8px">${tr.caixa > 0 ? brl0(tr.caixa) : '—'}</td>
+      <td style="text-align:right;padding:8px">${tr.atend || '—'}</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<div class="card" style="border-left:4px solid #4285F4;margin-top:12px">
+    <h2>📍 Google Meu Negócio por dia da semana × faturamento Trinks</h2>
+    <div class="cap">Cruzamento Mídia × Trinks. Quando o Google gera ação (ligação/rota) vs quando o faturamento acontece. Se um DOW tem muita ação e pouco faturamento, capacidade está subaproveitada; se tem pouca ação e faturamento alto, o dia se autossustenta sem Google. Base: ações Google 30d + faturamento histórico anual por DOW.</div>
+    <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
+    <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+      <th style="text-align:left;padding:8px">DOW</th>
+      <th style="text-align:right;padding:8px">Views médios</th>
+      <th style="text-align:right;padding:8px">📞 Ligações</th>
+      <th style="text-align:right;padding:8px">📍 Rotas</th>
+      <th style="text-align:right;padding:8px">Ações totais</th>
+      <th style="text-align:right;padding:8px">Fat. hist.</th>
+      <th style="text-align:right;padding:8px">Atend hist.</th>
+    </tr></thead>
+    <tbody>${linhas}</tbody></table></div>
+  </div>`;
+}
+
 function renderMidias(){
   if(!MID) return;
   const gerado = new Date(MID.gerado_em).toLocaleDateString('pt-BR') + ' ' + new Date(MID.gerado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
@@ -5507,6 +5509,9 @@ function renderMidias(){
   bkMidias.forEach(i => midiasInsights.push(i));
 
   renderInsights('midias-insights', 'Mídias · gestor + backend', midiasInsights);
+
+  // Google Meu Negócio × Faturamento Trinks por DOW (consolidado na aba Mídia)
+  renderMidiasGoogleDow();
 
   // Leitura narrativa da semana fica embaixo, como bullets simples (não é acionável, então não vira insight-card)
   const midEl = document.getElementById('midias-insights');
