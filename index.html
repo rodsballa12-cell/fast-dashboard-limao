@@ -449,8 +449,6 @@
       <div id="per-prof"></div>
       <div id="per-utilizacao"></div>
       <div id="per-hora"></div>
-      <!-- 6. RELACIONAMENTO -->
-      <div id="per-topcli"></div>
     </div>
     </div><!-- /tab-painel -->
 
@@ -1879,7 +1877,7 @@ function clearPerContainers(){
    'per-meses','per-dia','per-dow','per-google-dow','per-sala-wrap',
    'per-categorias','per-ticket-meta','per-rentabilidade',
    'per-categoria-native','per-desvio-tabela',
-   'per-prof','per-utilizacao','per-hora','per-topcli'
+   'per-prof','per-utilizacao','per-hora'
   ].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = ''; });
 }
 
@@ -2091,7 +2089,7 @@ function renderMensal(data){
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · mês <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · usa pra dimensionar equipe e horário de campanhas',m.hora_media,true,'');
   renderRankingProf('per-prof','👥 Profissionais do mês','Receita + ticket médio · ticket alto = quem faz upsell (replicar prática)',m.ranking_prof, m.ranking_prof_total_n);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro (card "Quando o dinheiro entra")
-  renderTopClientes('per-topcli','⭐ Clientes que mais voltaram · mês','Ranking por visitas — quem sumiu vs mês passado merece investigação', m.clientes_top || [], '<strong>Ação:</strong> WhatsApp/agradecimento pra quem voltou 3+ vezes no mês. Se alguém sumiu do ranking vs mês anterior, ligar.');
+  // CONSOLIDAÇÃO E · Top clientes agora só em Clientes (aba canônica)
 }
 
 function renderSemanal(data){
@@ -2183,7 +2181,7 @@ function renderSemanal(data){
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · semana <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · define escala e horário de campanhas',s.hora_media,true,'');
   renderRankingProf('per-prof','👥 Profissionais da semana','Receita + ticket médio da semana · replicar quem faz upsell',s.ranking_prof, s.ranking_prof_total_n);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
-  renderTopClientes('per-topcli','⭐ Clientes recorrentes da semana','Quem apareceu 2+ vezes · alinhe equipe pra tratamento VIP', s.clientes_top || [], '<strong>Prioridade da equipe:</strong> quem apareceu 2+ vezes na semana merece tratamento VIP na próxima visita.');
+  // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
 }
 
 function renderDiario(data){
@@ -2228,7 +2226,7 @@ function renderDiario(data){
   }
 
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
-  renderTopClientes('per-topcli','⭐ Clientes na loja HOJE','Quem passou por aqui · tratamento VIP antes de sair', d.clientes_top || [], '<strong>Ação agora:</strong> se algum cliente-chave está aqui hoje, alinhe a equipe para atenção especial antes de sair.');
+  // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
 }
 
 // CONSOLIDAÇÃO A · dispatcher central: limpa e re-renderiza só o período ativo
