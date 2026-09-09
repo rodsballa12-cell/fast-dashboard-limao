@@ -450,12 +450,16 @@ def analisar(agend, transac, ini: date, fim: date):
     # tipo="addon" e mostrados em seção separada (não competem no ranking R$/h).
     MIN_CADEIRA_EXCLUSIVA = 15  # abaixo disso = add-on/aplicação, não ocupa cadeira
     rent_hora = []
-    total_caixa_ref = max(caixa, 1)
+    # B3 · pct_faturamento agora usa serv_v (bruto de serviços) como denominador em vez
+    # de caixa. O numerador (v["v"]) também é serv bruto, então a soma dos pct fecha
+    # em 100% entre serviços. Antes dividia serv/caixa e nunca fechava (produto/pacote
+    # ficavam de fora do numerador).
+    total_serv_ref = max(serv_v, 1)
     for k, v in serv.items():
         if v["min"] > 0:
             min_medio = round(v["min"] / max(v["n"], 1))
             horas_total = v["min"] / 60
-            pct_fat = v["v"] / total_caixa_ref * 100
+            pct_fat = v["v"] / total_serv_ref * 100
             conf = "alta" if v["n"] >= 5 else ("media" if v["n"] >= 3 else "baixa")
             tipo = "addon" if min_medio < MIN_CADEIRA_EXCLUSIVA else "cadeira"
             rent_hora.append({
@@ -525,13 +529,17 @@ def analisar(agend, transac, ini: date, fim: date):
         },
         "cadeiras_utilizacao": cadeiras_detalhe,
         "densidade_hora": densidade_hora,
+        # B1 · pct das categorias usa o BRUTO como denominador (numerador = valor bruto
+        # de pacote/serviço/produto, então dividir por `caixa` líquido inflava a soma
+        # acima de 100%). Agora `pct` soma exatamente 100% entre pac+serv+prod.
         "categorias": {
-            "pacotes": {"v": brl_round(pac_v), "n": pac_n, "pct": round(pac_v / max(caixa, 1) * 100, 1)},
-            "servicos": {"v": brl_round(serv_v), "n": serv_n, "pct": round(serv_v / max(caixa, 1) * 100, 1)},
-            "produtos": {"v": brl_round(prod_v), "n": prod_n, "pct": round(prod_v / max(caixa, 1) * 100, 1)},
-            "fast_retoque": {"v": brl_round(fast_retoque_v), "n": fast_retoque_n, "pct": round(fast_retoque_v / max(caixa, 1) * 100, 1)},
+            "pacotes":   {"v": brl_round(pac_v),  "n": pac_n,  "pct": round(pac_v  / max(pac_v + serv_v + prod_v, 1) * 100, 1)},
+            "servicos":  {"v": brl_round(serv_v), "n": serv_n, "pct": round(serv_v / max(pac_v + serv_v + prod_v, 1) * 100, 1)},
+            "produtos":  {"v": brl_round(prod_v), "n": prod_n, "pct": round(prod_v / max(pac_v + serv_v + prod_v, 1) * 100, 1)},
+            "fast_retoque":    {"v": brl_round(fast_retoque_v), "n": fast_retoque_n,
+                                "pct": round(fast_retoque_v / max(pac_v + serv_v + prod_v, 1) * 100, 1)},
             "servicos_gerais": {"v": brl_round(serv_v - fast_retoque_v), "n": max(serv_n - fast_retoque_n, 0),
-                                "pct": round(max(serv_v - fast_retoque_v, 0) / max(caixa, 1) * 100, 1)},
+                                "pct": round(max(serv_v - fast_retoque_v, 0) / max(pac_v + serv_v + prod_v, 1) * 100, 1)},
         },
         "meios_pagamento": meios,
         "hora_abs": hora_abs,
@@ -647,8 +655,28 @@ def calc_meta(caixa, meta, dias_real, dias_total):
     }
 
 
-def top_ltv(agend, ini: date, fim: date, limite=15):
+def _cli_totalpagar_no_periodo(transac, ini: date, fim: date):
+    """B4 helper · dict cid → sum(totalPagar) para transações no período.
+    Usado por top_ltv e novos_vs_recorr para atribuir CAIXA (serv+prod+pac)
+    ao cliente, em vez de só receita_serv."""
+    out = defaultdict(float)
+    for t in transac:
+        dh = t.get("dataHora")
+        if not dh: continue
+        dt = parse_trinks_dt(dh).date()
+        if not (ini <= dt <= fim): continue
+        cid = (t.get("cliente") or {}).get("id")
+        if cid is None: continue
+        out[cid] += float(t.get("totalPagar") or 0)
+    return out
+
+
+def top_ltv(agend, transac, ini: date, fim: date, limite=15):
+    """B4 · LTV agora usa totalPagar (caixa) por cliente, não só receita_serv."""
+    cli_tp = _cli_totalpagar_no_periodo(transac, ini, fim)
     ltv = defaultdict(lambda: {"n": 0, "v": 0.0, "nome": ""})
+    # nº de visitas ainda vem dos agendamentos finalizados (define frequência),
+    # mas o valor (v) agora é o totalPagar acumulado do cliente no período.
     for a in agend:
         if (a.get("status") or {}).get("nome") != "Finalizado": continue
         dt = parse_trinks_dt(a["dataHoraInicio"]).date() if a.get("dataHoraInicio") else None
@@ -656,8 +684,10 @@ def top_ltv(agend, ini: date, fim: date, limite=15):
         cid = (a.get("cliente") or {}).get("id")
         if cid is None: continue
         ltv[cid]["n"] += 1
-        ltv[cid]["v"] += float(a.get("valor") or 0)
         ltv[cid]["nome"] = (a.get("cliente") or {}).get("nome") or ""
+    # popula v a partir do cli_tp — clientes sem transação ficam com 0
+    for cid, d in ltv.items():
+        d["v"] = cli_tp.get(cid, 0.0)
     lst = sorted(
         [{"nome": (d["nome"] or "").title(), "n": d["n"], "v": brl_round(d["v"])} for d in ltv.values()],
         key=lambda x: -x["v"]
@@ -675,7 +705,8 @@ def top_ltv(agend, ini: date, fim: date, limite=15):
     }
 
 
-def novos_vs_recorr(fin_mes, cadastro_map, ini_mes: date, criterio: str = "cadastro_vs_periodo"):
+def novos_vs_recorr(fin_mes, cadastro_map, ini_mes: date, criterio: str = "cadastro_vs_periodo",
+                    transac_periodo=None, ini_periodo: date = None, fim_periodo: date = None):
     """
     Classifica clientes como novos vs recorrentes.
 
@@ -710,8 +741,15 @@ def novos_vs_recorr(fin_mes, cadastro_map, ini_mes: date, criterio: str = "cadas
             if cad.date() >= ini_mes: novos_ids.add(cid)
             else: rec_ids.add(cid)
 
-    r_novos = sum(float(a.get("valor") or 0) for a in fin_mes if (a.get("cliente") or {}).get("id") in novos_ids)
-    r_rec = sum(float(a.get("valor") or 0) for a in fin_mes if (a.get("cliente") or {}).get("id") in rec_ids)
+    # B5 · receita agora é totalPagar (caixa) atribuído ao cliente, não agend.valor.
+    # Precisa transac_periodo + ini/fim; se não vier, cai no comportamento antigo (compat).
+    if transac_periodo is not None and ini_periodo is not None and fim_periodo is not None:
+        cli_tp = _cli_totalpagar_no_periodo(transac_periodo, ini_periodo, fim_periodo)
+        r_novos = sum(cli_tp.get(cid, 0.0) for cid in novos_ids)
+        r_rec   = sum(cli_tp.get(cid, 0.0) for cid in rec_ids)
+    else:
+        r_novos = sum(float(a.get("valor") or 0) for a in fin_mes if (a.get("cliente") or {}).get("id") in novos_ids)
+        r_rec   = sum(float(a.get("valor") or 0) for a in fin_mes if (a.get("cliente") or {}).get("id") in rec_ids)
     a_novos = sum(1 for a in fin_mes if (a.get("cliente") or {}).get("id") in novos_ids)
     a_rec = sum(1 for a in fin_mes if (a.get("cliente") or {}).get("id") in rec_ids)
     return {
@@ -1088,20 +1126,23 @@ def main():
     fin_mes = [a for a in agend if (a.get("status") or {}).get("nome") == "Finalizado"
                and a.get("dataHoraInicio")
                and ini_mes <= parse_trinks_dt(a["dataHoraInicio"]).date() <= fim_mes]
-    nvr_mes = novos_vs_recorr(fin_mes, cad_map, ini_mes)
+    nvr_mes = novos_vs_recorr(fin_mes, cad_map, ini_mes,
+                              transac_periodo=transac, ini_periodo=ini_mes, fim_periodo=fim_mes)
 
-    # novos_vs_recorr também pra semanal e anual
+    # novos_vs_recorr também pra semanal e anual (B5 · usa totalPagar por cliente)
     fin_sem = [a for a in agend if (a.get("status") or {}).get("nome") == "Finalizado"
                and a.get("dataHoraInicio") and seg <= parse_trinks_dt(a["dataHoraInicio"]).date() <= dom]
-    nvr_sem = novos_vs_recorr(fin_sem, cad_map, seg)
+    nvr_sem = novos_vs_recorr(fin_sem, cad_map, seg,
+                              transac_periodo=transac, ini_periodo=seg, fim_periodo=dom)
     fin_ano = [a for a in agend if (a.get("status") or {}).get("nome") == "Finalizado"
                and a.get("dataHoraInicio") and ini_ano <= parse_trinks_dt(a["dataHoraInicio"]).date() <= fim_ano]
     # Para o ano usamos 'visitas_no_periodo': novo = 1 atend, recorrente = 2+
     # (a lógica 'cadastro_vs_periodo' zera os recorrentes quando a loja abriu
     # dentro do período — todos os clientes ficam classificados como novos)
-    nvr_ano = novos_vs_recorr(fin_ano, cad_map, ini_ano, criterio="visitas_no_periodo")
+    nvr_ano = novos_vs_recorr(fin_ano, cad_map, ini_ano, criterio="visitas_no_periodo",
+                              transac_periodo=transac, ini_periodo=ini_ano, fim_periodo=fim_ano)
 
-    ltv_ano = top_ltv(agend, ini_ano, fim_ano)
+    ltv_ano = top_ltv(agend, transac, ini_ano, fim_ano)
 
     # === Semana anterior — MESMA JANELA (apples-to-apples) ===
     # Se hoje é quarta (3 dias na semana atual: seg-ter-qua), comparar com
@@ -1219,7 +1260,9 @@ def main():
     churn_candidatos = []
     cli_visitas = defaultdict(list)  # {id: [dates]}
     cli_nome = {}
-    cli_valor = defaultdict(float)
+    # B4 · cli_valor agora usa CAIXA (totalPagar) por cliente, não só receita_serv.
+    # Isso corrige LTV subestimado, Pareto 20, ranking top clientes, cross-sell, aniv.
+    cli_valor = _cli_totalpagar_no_periodo(transac, ini_ano, fim_ano)
     for a in agend:
         if (a.get("status") or {}).get("nome") != "Finalizado": continue
         cid = (a.get("cliente") or {}).get("id")
@@ -1230,7 +1273,6 @@ def main():
             continue
         cli_visitas[cid].append(dt)
         cli_nome[cid] = (a.get("cliente") or {}).get("nome") or ""
-        cli_valor[cid] += float(a.get("valor") or 0)
     for cid, datas in cli_visitas.items():
         if len(datas) < 3: continue
         datas_sorted = sorted(datas)
@@ -1507,14 +1549,18 @@ def main():
     # === SAZONALIDADE: pesos por dia da semana + curva horária ===
     # Fonte: histórico anual acumulado. Peso ponderado por horas de operação de cada dow
     # (dom = 6h, outros = 12h por padrão), pra domingo ser proporcionalmente estimado.
+    # B6 · sazonalidade agora usa CAIXA (totalPagar) por DOW, não receita_serv.
+    # Metas por dia calibradas com o valor real que a loja recebe (inclui produto/pacote).
     dow_hist_v = {i: 0.0 for i in range(7)}
     dow_hist_n = {i: 0 for i in range(7)}
-    for a in fin_ano:
+    tr_ano = [x for x in transac if x.get("dataHora")
+              and ini_ano <= parse_trinks_dt(x["dataHora"]).date() <= fim_ano]
+    for t in tr_ano:
         try:
-            dt = parse_trinks_dt(a["dataHoraInicio"]).date()
-            dow_hist_v[dt.weekday()] += float(a.get("valor") or 0)
+            dt = parse_trinks_dt(t["dataHora"]).date()
+            dow_hist_v[dt.weekday()] += float(t.get("totalPagar") or 0)
         except Exception: pass
-    dias_vistos = {parse_trinks_dt(a["dataHoraInicio"]).date() for a in fin_ano if a.get("dataHoraInicio")}
+    dias_vistos = {parse_trinks_dt(t["dataHora"]).date() for t in tr_ano}
     for d in dias_vistos:
         dow_hist_n[d.weekday()] += 1
 
@@ -1601,11 +1647,12 @@ def main():
     def sem_do_mes(d: date) -> int:
         return (d.day - 1) // 7 + 1  # 1..5
 
+    # B6 · peso da semana no mês também vem de transações (caixa real)
     sem_v_per_mes = defaultdict(lambda: defaultdict(float))  # {(y,m): {sem_num: caixa}}
-    for a in fin_ano:
+    for t in tr_ano:
         try:
-            dt = parse_trinks_dt(a["dataHoraInicio"]).date()
-            sem_v_per_mes[(dt.year, dt.month)][sem_do_mes(dt)] += float(a.get("valor") or 0)
+            dt = parse_trinks_dt(t["dataHora"]).date()
+            sem_v_per_mes[(dt.year, dt.month)][sem_do_mes(dt)] += float(t.get("totalPagar") or 0)
         except Exception: pass
     today_ym = (hoje.year, hoje.month)
     meses_fechados = [ym for ym in sem_v_per_mes if ym < today_ym and sum(sem_v_per_mes[ym].values()) > 0]
@@ -1626,11 +1673,12 @@ def main():
 
     # === PESO MÊS-DO-ANO: para 2027 em diante, com histórico de 2026 ===
     # (dez/jul costumam ser mais fortes em beleza)
+    # B6 · peso do mês no ano também por transação (caixa real)
     mes_v_hist_ano = defaultdict(lambda: defaultdict(float))  # {ano: {mes: caixa}}
-    for a in fin_ano:
+    for t in tr_ano:
         try:
-            dt = parse_trinks_dt(a["dataHoraInicio"]).date()
-            mes_v_hist_ano[dt.year][dt.month] += float(a.get("valor") or 0)
+            dt = parse_trinks_dt(t["dataHora"]).date()
+            mes_v_hist_ano[dt.year][dt.month] += float(t.get("totalPagar") or 0)
         except Exception: pass
     anos_fechados = [y for y, meses in mes_v_hist_ano.items()
                      if y < hoje.year and len(meses) >= 10]  # exigir pelo menos 10 meses do ano

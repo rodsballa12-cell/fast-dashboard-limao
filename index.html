@@ -917,8 +917,12 @@ function renderRankingProf(container_id, titulo, subtitle, prof_list, total_n){
   const totalBadge = (total_n && total_n > prof_list.slice(0,10).length)
     ? ` <span style="color:var(--ink-3);font-size:11px;font-weight:400">(top 10 de ${total_n})</span>`
     : '';
-  renderTable(container_id, titulo + totalBadge, subtitle,
-    ['Profissional','Atend','Receita','Ticket médio','Horas trab'], rows);
+  // B2 · "Receita serv" (não caixa) — o valor é serv_v atribuído ao prof executor do
+  // agendamento. Não inclui produto/pacote da mesma comanda (esses ficam no ticket
+  // médio da recepção, não atribuídos ao prof específico).
+  renderTable(container_id, titulo + totalBadge,
+    (subtitle ? subtitle + ' · ' : '') + '<span style="color:var(--ink-3);font-size:11px">valores da coluna Receita = só serviço, sem produto/pacote da mesma comanda</span>',
+    ['Profissional','Atend','Receita serv','Ticket médio','Horas trab'], rows);
 }
 
 // ============= RENTABILIDADE POR HORA =============
@@ -1547,7 +1551,7 @@ function renderClientesSnapshot(container_id, snap, ltv, nvr){
     <div class="meta-row" style="border-top:1px dashed var(--border);padding-top:10px">
       <div class="meta-cell"><div class="l">🆕 Novos (Ano)</div><div class="v accent">${nvr.novos.clientes}</div><div class="d" style="font-size:10px;color:var(--ink-3)">${brl0(nvr.novos.receita)} · ${nvr.novos.atend} atend</div></div>
       <div class="meta-cell"><div class="l">🔁 Recorrentes (Ano)</div><div class="v">${nvr.recorrentes.clientes}</div><div class="d" style="font-size:10px;color:var(--ink-3)">${brl0(nvr.recorrentes.receita)} · ${nvr.recorrentes.atend} atend</div></div>
-      <div class="meta-cell"><div class="l">Taxa retenção</div><div class="v">${((nvr.taxa_retencao||0)*100).toFixed(1)}%</div></div>
+      <div class="meta-cell"><div class="l">Taxa retenção</div><div class="v">${(() => { const tot = (nvr.novos.clientes||0) + (nvr.recorrentes.clientes||0); return tot > 0 ? ((nvr.recorrentes.clientes/tot)*100).toFixed(1) : '0.0'; })()}%</div></div>
       <div class="meta-cell"><div class="l">Receita recorrente</div><div class="v">${pct(nvr.recorrentes.receita, (nvr.novos.receita||0)+(nvr.recorrentes.receita||0))}</div></div>
     </div>` : '';
   el.innerHTML = `<div class="card">
@@ -1768,7 +1772,7 @@ function renderComparacaoSemana(container_id, atual, anterior){
       ${tile('','Caixa esta semana', brl0(atual.caixa), `<span class="${cor_c}">${sinal_c}${brl0(delta_caixa)}</span> vs anterior`)}
       ${tile('c2','Média/dia atual', brl0(media_atu), `<span class="${cor_c}">${sinal_c}${delta_media_pct.toFixed(0)}%</span> vs anterior (${brl0(media_ant)}/dia)`)}
       ${tile('c3','Atendimentos', atual.atend_fin+'', `${anterior.atend_fin} sem passada · <span class="${atual.atend_fin>=anterior.atend_fin?'up':'dn'}">${atual.atend_fin-anterior.atend_fin>=0?'+':''}${atual.atend_fin-anterior.atend_fin}</span>`)}
-      ${tile('','Ticket', brl(atual.ticket_trans), `${brl(anterior.ticket_trans)} sem passada`)}
+      ${tile('','Ticket / visita', brl(atual.ticket_medio||0), `${brl(anterior.ticket_medio||0)} sem passada`)}
     </div>
   </div>`;
 }
