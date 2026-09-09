@@ -922,16 +922,6 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
     const cor_produtos_proj = proj_pct_produtos >= 90 ? 'up' : (proj_pct_produtos >= 70 ? 'warn' : 'dn');
     const produtos_row = meta_produtos > 0 ? `<tr><td>Produtos</td><td>${brl0(meta_produtos)}</td><td>${brl0(real_produtos)}</td><td class="${cor_produtos}">${pct(pct_produtos)}</td><td>${brl0(Math.max(meta_produtos-real_produtos,0))}</td><td class="${cor_produtos_proj}">${brl0(proj_produtos)} (${pct(proj_pct_produtos)})</td></tr>` : '';
 
-    // Pacotes sem classificação (share_pac_sc × meta_pacotes) — também líquido
-    const real_pac_sc = ((pacotes_sem_categoria_v != null ? pacotes_sem_categoria_v : ((c.pacotes||{}).v || 0))) * ratio_liq;
-    const meta_pac_sc = meta_pacotes * share_pac_sc;
-    const pct_pac_sc = meta_pac_sc > 0 ? real_pac_sc/meta_pac_sc*100 : 0;
-    const cor_pac_sc = meta_pac_sc > 0 ? (pct_pac_sc>=100?'up':(pct_pac_sc>=70?'warn':'dn')) : '';
-    const proj_pac_sc = real_pac_sc * ratio_proj;
-    const proj_pct_pac_sc = meta_pac_sc > 0 ? proj_pac_sc/meta_pac_sc*100 : 0;
-    const cor_pac_sc_proj = proj_pct_pac_sc >= 90 ? 'up' : (proj_pct_pac_sc >= 70 ? 'warn' : 'dn');
-    const pac_sc_row = (meta_pac_sc > 0 || real_pac_sc > 0) ? `<tr><td>Pacotes s/ classificação <span style="color:var(--ink-3);font-size:11px">(nome não bateu keyword)</span></td><td>${brl0(meta_pac_sc)}</td><td>${brl0(real_pac_sc)}</td><td class="${cor_pac_sc}">${meta_pac_sc>0?pct(pct_pac_sc):'—'}</td><td>${meta_pac_sc>0?brl0(Math.max(meta_pac_sc-real_pac_sc,0)):'—'}</td><td class="${cor_pac_sc_proj}">${meta_pac_sc>0?brl0(proj_pac_sc)+' ('+pct(proj_pct_pac_sc)+')':'—'}</td></tr>` : '';
-
     // Grande total combinando NATIVAS + PROD + PAC-SC (todas as fontes)
     // Nativas.meta já inclui share_serv + share_pac ⇒ sub_meta_native = meta_serv + meta_pacotes_classificados_ref
     // Somando pac_sc + produtos, fecha com meta_valor (franqueadora total).
@@ -945,7 +935,22 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
       sub_real += rd_liq;
       sub_proj += rd_liq * ratio_proj;
     });
-    // Valores já vieram líquidos (ratio_liq aplicado em cada row), então gt_real = soma direta.
+
+    // Pacotes sem classificação — absorve o resíduo de arredondamento pra fechar
+    // com o caixa (meta_realizado). Diferença típica R$ 20-30 (arred. por linha
+    // em brl_round no backend). Fica na linha semanticamente correta (pacotes
+    // sem keyword vs classificados) sem poluir com uma "conciliação" separada.
+    const real_pac_sc_raw = ((pacotes_sem_categoria_v != null ? pacotes_sem_categoria_v : ((c.pacotes||{}).v || 0))) * ratio_liq;
+    const real_pac_sc_target = (meta_realizado||0) - sub_real - real_produtos;
+    const real_pac_sc = real_pac_sc_target > 0 ? real_pac_sc_target : real_pac_sc_raw;
+    const meta_pac_sc = meta_pacotes * share_pac_sc;
+    const pct_pac_sc = meta_pac_sc > 0 ? real_pac_sc/meta_pac_sc*100 : 0;
+    const cor_pac_sc = meta_pac_sc > 0 ? (pct_pac_sc>=100?'up':(pct_pac_sc>=70?'warn':'dn')) : '';
+    const proj_pac_sc = real_pac_sc * ratio_proj;
+    const proj_pct_pac_sc = meta_pac_sc > 0 ? proj_pac_sc/meta_pac_sc*100 : 0;
+    const cor_pac_sc_proj = proj_pct_pac_sc >= 90 ? 'up' : (proj_pct_pac_sc >= 70 ? 'warn' : 'dn');
+    const pac_sc_row = (meta_pac_sc > 0 || real_pac_sc > 0) ? `<tr><td>Pacotes s/ classificação <span style="color:var(--ink-3);font-size:11px">(nome não bateu keyword)</span></td><td>${brl0(meta_pac_sc)}</td><td>${brl0(real_pac_sc)}</td><td class="${cor_pac_sc}">${meta_pac_sc>0?pct(pct_pac_sc):'—'}</td><td>${meta_pac_sc>0?brl0(Math.max(meta_pac_sc-real_pac_sc,0)):'—'}</td><td class="${cor_pac_sc_proj}">${meta_pac_sc>0?brl0(proj_pac_sc)+' ('+pct(proj_pct_pac_sc)+')':'—'}</td></tr>` : '';
+
     const gt_meta = sub_meta + meta_produtos + meta_pac_sc;
     const gt_real = sub_real + real_produtos + real_pac_sc;
     const proj_outros = (real_produtos + real_pac_sc) * ratio_proj;
