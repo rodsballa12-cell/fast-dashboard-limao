@@ -539,7 +539,7 @@
 
     <footer>
       <div><strong>Fonte:</strong> API Trinks (<code>api.trinks.com/v1</code>) · <strong>Refresh automático:</strong> de hora em hora, 11h→21h BRT (11×/dia) via GitHub Actions</div>
-      <div style="margin-top:4px;">Caixa = <code>Σ(transacoes.formasPagamentos.valor)</code> · categorias = decomposição de <code>pacotes[] + servicos[] + produtos[]</code></div>
+      <div style="margin-top:4px;">Faturamento = <code>Σ(transacoes.formasPagamentos.valor)</code> · categorias = decomposição de <code>pacotes[] + servicos[] + produtos[]</code></div>
       <div style="margin-top:4px;"><strong>Loja abriu 23/07/2026 · Meta Ago R$ 60.000</strong></div>
     </footer>
   </div>
@@ -699,21 +699,21 @@ function renderTicketMeta(container_id, periodo_label, kpis){
   } else if(status === 'encerrado_batido'){
     cor='up'; cor_bar='#22c55e';
     header_val = `META BATIDA · +${brl0(supera)}`;
-    sub = `Período encerrado com meta de caixa superada. Ticket médio efetivo: ${brl(real)}/visita em ${visitas} visitas.`;
-    acao = `<strong class="up">Meta de caixa batida com folga de ${brl0(supera)}.</strong> Ticket de ${brl(real)}/visita foi suficiente com ${visitas} visitas. Padrão pra replicar no próximo período.`;
+    sub = `Período encerrado com meta de faturamento superada. Ticket médio efetivo: ${brl(real)}/visita em ${visitas} visitas.`;
+    acao = `<strong class="up">Meta de faturamento batida com folga de ${brl0(supera)}.</strong> Ticket de ${brl(real)}/visita foi suficiente com ${visitas} visitas. Padrão pra replicar no próximo período.`;
   } else if(status === 'encerrado_deficit'){
     cor='dn'; cor_bar='#ef4444';
     header_val = `DÉFICIT · −${brl0(deficit)}`;
     // qual ticket teria batido meta com as visitas que houve?
     const ticket_ideal = visitas>0 ? (kpis.caixa + deficit) / visitas : 0;
     sub = `Período encerrado abaixo da meta. Ticket médio efetivo: ${brl(real)}/visita em ${visitas} visitas.`;
-    acao = `<strong class="warn">Meta de caixa perdida por ${brl0(deficit)}.</strong> Ticket foi ${brl(real)}/vis — pra ter batido, precisava ${brl(ticket_ideal)}/vis nas mesmas ${visitas} visitas, ou puxar mais volume mantendo ticket. Diagnóstico pro próximo período: mix (${serv_por_visita} serv/vis) ou atração (visitas insuficientes).`;
+    acao = `<strong class="warn">Meta de faturamento perdida por ${brl0(deficit)}.</strong> Ticket foi ${brl(real)}/vis — pra ter batido, precisava ${brl(ticket_ideal)}/vis nas mesmas ${visitas} visitas, ou puxar mais volume mantendo ticket. Diagnóstico pro próximo período: mix (${serv_por_visita} serv/vis) ou atração (visitas insuficientes).`;
   } else {
     // em_curso
     cor = real>=alvo_rest?'up':(real>=alvo_rest*0.85?'warn':'dn');
     cor_bar = real>=alvo_rest?'#22c55e':(real>=alvo_rest*0.85?'#f59e0b':'#ef4444');
     header_val = brl(alvo_rest);
-    sub = 'Alvo <strong>não é fixo</strong> — é calculado como <em>caixa que falta ÷ visitas projetadas restantes</em>, no ritmo atual. Se atrair mais visitas, o alvo cai; se puxar menos, sobe. Base: 1 visita = 1 cliente em 1 dia (padrão Trinks).';
+    sub = 'Alvo <strong>não é fixo</strong> — é calculado como <em>faturamento que falta ÷ visitas projetadas restantes</em>, no ritmo atual. Se atrair mais visitas, o alvo cai; se puxar menos, sobe. Base: 1 visita = 1 cliente em 1 dia (padrão Trinks).';
     if(real>=alvo_rest){
       acao = `<strong class="up">Ticket atual (${brl(real)}) já supera o necessário (${brl(alvo_rest)}) pra bater meta.</strong> Manter mix e volume até o fim do período. Verificar se dá pra puxar mais visitas sem perder ticket.`;
     } else if(gap<=10){
@@ -1114,7 +1114,7 @@ function renderRentabilidade(container_id, titulo, periodo_label, lista){
     Verde = ≥ R$ ${p75.toFixed(0)}/h (top 25% da loja). Vermelho = abaixo de R$ ${median.toFixed(0)}/h (mediana).
     <br><br>
     ${gold ? `<strong>💎 Melhor rentabilidade real:</strong> ${gold.nome} rende <strong>${brl(gold.rs_hora)}/h</strong> com ${gold.n} atendimentos.` : ''}
-    ${anchor ? `<br><strong>🎯 Âncora do faturamento:</strong> ${anchor.nome} = ${anchor.pct_faturamento.toFixed(1)}% do caixa (${anchor.horas_total.toFixed(0)}h de cadeira ocupada) a ${brl(anchor.rs_hora)}/h.` : ''}
+    ${anchor ? `<br><strong>🎯 Âncora do faturamento:</strong> ${anchor.nome} = ${anchor.pct_faturamento.toFixed(1)}% do faturamento (${anchor.horas_total.toFixed(0)}h de cadeira ocupada) a ${brl(anchor.rs_hora)}/h.` : ''}
     ${(anchor && corRSH(anchor.rs_hora)==='dn') ? '<br><strong>Ação:</strong> a âncora rende pouco por hora — casar com o melhor R$/h como combo aumenta ticket sem consumir mais cadeira.' : ''}
   </div>` : '';
 
@@ -1167,9 +1167,9 @@ function renderTopClientes(container_id, titulo, subtitle, clientes, insight){
 function renderCategTile(container_id, titulo, subtitle, categorias){
   const c=categorias||{};
   const tiles=[
-    tile('','Pacotes',brl0((c.pacotes||{}).v),`${(c.pacotes||{}).n||0} vendidos · ${pct((c.pacotes||{}).pct)} caixa`),
-    tile('c2','Serviços',brl0((c.servicos||{}).v),`${(c.servicos||{}).n||0} realizados · ${pct((c.servicos||{}).pct)} caixa`),
-    tile('c3','Produtos',brl0((c.produtos||{}).v),`${(c.produtos||{}).n||0} vendas · ${pct((c.produtos||{}).pct)} caixa`),
+    tile('','Pacotes',brl0((c.pacotes||{}).v),`${(c.pacotes||{}).n||0} vendidos · ${pct((c.pacotes||{}).pct)} do faturamento`),
+    tile('c2','Serviços',brl0((c.servicos||{}).v),`${(c.servicos||{}).n||0} realizados · ${pct((c.servicos||{}).pct)} do faturamento`),
+    tile('c3','Produtos',brl0((c.produtos||{}).v),`${(c.produtos||{}).n||0} vendas · ${pct((c.produtos||{}).pct)} do faturamento`),
   ].join('');
   document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="categ-grid">${tiles}</div></div>`;
 }
@@ -1277,7 +1277,7 @@ function renderParcelas(container_id, parcelas){
     <div class="cap">O valor recebido não é imediato quando a venda é parcelada. Cartão 1x cai em D+30, 3x cai em 3 parcelas mensais. Aqui você vê o cronograma real esperado.</div>
     <div class="categ-grid">
       ${tile('','À vista (PIX + dinheiro + 1x)', brl0(avista), `${(avista/total*100).toFixed(0)}% da receita`, 'up')}
-      ${tile('c2','Parcelado 2x+', brl0(parc_v), `${pct_parcelado}% da receita · caixa diluído`)}
+      ${tile('c2','Parcelado 2x+', brl0(parc_v), `${pct_parcelado}% da receita · faturamento diluído`)}
       ${tile('c3','Parcela média por venda parcelada', parc_v>0 ? brl0(parc_v / parcelas.filter(p=>p.parcelas>1).reduce((s,p)=>s+p.v/p.parcelas*p.n,0) * total / parc_v ) : '—', 'valor cai por mês')}
     </div>
     <table class="simple">
@@ -1285,7 +1285,7 @@ function renderParcelas(container_id, parcelas){
       <tbody>${rows}</tbody>
     </table>
     <div class="insight" style="margin-top:12px;">
-      <strong>Antecipação Stone:</strong> se ${pct_parcelado}% do caixa está parcelado, decisão é o custo (~1,66%/mês) vs necessidade de capital. Com fluxo saudável, evitar antecipação de rotina — custo mata margem.
+      <strong>Antecipação Stone:</strong> se ${pct_parcelado}% do faturamento está parcelado, decisão é o custo (~1,66%/mês) vs necessidade de capital. Com fluxo saudável, evitar antecipação de rotina — custo mata margem.
     </div>
   </div>`;
 }
@@ -1417,7 +1417,7 @@ function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_
   const pctSobreCaixa = caixa > 0 ? (comissaoTotal/caixa*100) : 0;
   const catBlock = catBreak.length ? `
     <details style="margin-top:12px"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);padding:8px 12px;background:var(--surface-2);border-radius:6px;font-weight:600">🧮 Categorias que compõem a taxa efetiva (${taxaEfetiva.toFixed(1)}%)</summary>
-      <div class="cap" style="margin-top:8px">Taxa oficial Trinks BackOffice por categoria (<code>data/comissoes.json</code>). Ponderada pelo mix real do período. Sobre caixa total (${brl0(caixa)}) = ${pctSobreCaixa.toFixed(1)}%.</div>
+      <div class="cap" style="margin-top:8px">Taxa oficial Trinks BackOffice por categoria (<code>data/comissoes.json</code>). Ponderada pelo mix real do período. Sobre faturamento total (${brl0(caixa)}) = ${pctSobreCaixa.toFixed(1)}%.</div>
       <div style="overflow-x:auto"><table class="simple">
         <thead><tr><th>Categoria</th><th style="text-align:right">Atend</th><th style="text-align:right">Taxa</th><th style="text-align:right">Ticket médio</th><th style="text-align:right">Receita</th><th style="text-align:right">% serviços</th><th style="text-align:right">Comissão</th></tr></thead>
         <tbody>${catRows}${catTotalRow}</tbody>
@@ -1498,7 +1498,7 @@ function renderComissoesPer(container_id, periodo_label, categoria_native, ranki
 
   el.innerHTML = `<div class="card" style="border-left:4px solid #22c55e">
     <h2>💰 Comissões · ${periodo_label} <span class="hi">(taxa efetiva ${taxaEfetiva.toFixed(1)}%)</span></h2>
-    <div class="cap">Taxa oficial por categoria (Trinks BackOffice · <code>data/comissoes.json</code>). Ponderada pelo mix real do período. Sobre caixa total (${brl0(caixa)}) = ${pctSobreCaixa.toFixed(1)}%.</div>
+    <div class="cap">Taxa oficial por categoria (Trinks BackOffice · <code>data/comissoes.json</code>). Ponderada pelo mix real do período. Sobre faturamento total (${brl0(caixa)}) = ${pctSobreCaixa.toFixed(1)}%.</div>
     <div style="overflow-x:auto;margin-top:10px"><table class="simple">
       <thead><tr><th>Categoria</th><th style="text-align:right">Atend</th><th style="text-align:right">Receita</th><th style="text-align:right">Taxa</th><th style="text-align:right">Comissão</th></tr></thead>
       <tbody>${rows}${totalRow}</tbody>
@@ -2079,7 +2079,7 @@ function renderComparacaoSemana(container_id, atual, anterior){
     <h2>📈 Semana × Semana anterior</h2>
     <div class="cap">Comparação com ${anterior.periodo_ini.slice(-5).replace('-','/')} — ${anterior.periodo_fim.slice(-5).replace('-','/')}</div>
     <div class="categ-grid" style="grid-template-columns:repeat(4,1fr)">
-      ${tile('','Caixa esta semana', brl0(atual.caixa), `<span class="${cor_c}">${sinal_c}${brl0(delta_caixa)}</span> vs anterior`)}
+      ${tile('','Faturamento esta semana', brl0(atual.caixa), `<span class="${cor_c}">${sinal_c}${brl0(delta_caixa)}</span> vs anterior`)}
       ${tile('c2','Média/dia atual', brl0(media_atu), `<span class="${cor_c}">${sinal_c}${delta_media_pct.toFixed(0)}%</span> vs anterior (${brl0(media_ant)}/dia)`)}
       ${tile('c3','Atendimentos', atual.atend_fin+'', `${anterior.atend_fin} sem passada · <span class="${atual.atend_fin>=anterior.atend_fin?'up':'dn'}">${atual.atend_fin-anterior.atend_fin>=0?'+':''}${atual.atend_fin-anterior.atend_fin}</span>`)}
       ${tile('','Ticket / visita', brl(atual.ticket_medio||0), `${brl(anterior.ticket_medio||0)} sem passada`)}
@@ -2163,7 +2163,6 @@ function renderInsights(container_id, titulo_aba, insights){
   };
   el.innerHTML = `<div class="insights-box" style="margin-top:20px;border-left:4px solid var(--accent)">
     <h3>🎯 Ações Recomendadas · ${titulo_aba}
-      <span class="badge-count">${sorted.length}</span>
       ${farolDot(crit, '#ef4444')}
       ${farolDot(aten, '#f59e0b')}
       ${farolDot(opor, '#22c55e')}
@@ -2196,7 +2195,7 @@ function renderAnual(data){
   const k=a.kpis;
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.anual;
   renderKPIs('per-kpis',[
-    {label:'Caixa · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
+    {label:'Faturamento · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`padrão Trinks`},
     {label:'Base',value:k.clientes_unicos+'',foot:`${((k.cliente_dia||0)/Math.max(k.clientes_unicos,1)).toFixed(1)} visitas/cliente médio`}
@@ -2230,7 +2229,7 @@ function renderAnual(data){
   const tabela_html = `<div class="card">
     <h2>📅 Trajetória do ano · mês a mês</h2>
     <div class="cap">Fechados + mês corrente. Acompanhe se está acelerando.</div>
-    <table class="simple"><thead><tr><th>Mês</th><th>Caixa</th><th>Atend</th><th>Ticket</th></tr></thead>
+    <table class="simple"><thead><tr><th>Mês</th><th>Faturamento</th><th>Atend</th><th>Ticket</th></tr></thead>
     <tbody>${mrows.map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('')}${subtotal_row}</tbody></table>
   </div>`;
   document.getElementById('per-meses').innerHTML = tabela_html;
@@ -2375,7 +2374,7 @@ function renderMensal(data){
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.mensal;
   if(k.em_atendimento>0){document.getElementById('chip-live').style.display='';document.getElementById('chip-live').innerHTML=`<span class="dot"></span> ${k.em_atendimento} em atendim.`;document.getElementById('chip-live').className='chip live';}
   renderKPIs('per-kpis',[
-    {label:'Caixa · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
+    {label:'Faturamento · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`(caixa÷visitas · padrão Trinks)`, delta_pct:k.ticket_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
@@ -2408,7 +2407,7 @@ function renderSemanal(data){
   const s=data.abas.semanal, k=s.kpis;
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.semanal;
   renderKPIs('per-kpis',[
-    {label:'Caixa · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
+    {label:'Faturamento · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Dias operados',value:k.dias_op+'',foot:`de ${s.meta.dias_total} da semana`}
@@ -2484,7 +2483,7 @@ function renderSemanal(data){
         <th style="text-align:right;padding:8px">📞 Ligações</th>
         <th style="text-align:right;padding:8px">📍 Rotas</th>
         <th style="text-align:right;padding:8px">Ações totais</th>
-        <th style="text-align:right;padding:8px">Caixa hist.</th>
+        <th style="text-align:right;padding:8px">Fat. hist.</th>
         <th style="text-align:right;padding:8px">Atend hist.</th>
       </tr></thead>
       <tbody>${linhas}</tbody></table></div>
@@ -2502,7 +2501,7 @@ function renderDiario(data){
   const d=data.abas.diario, k=d.kpis;
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.diario;
   renderKPIs('per-kpis',[
-    {label:'Caixa · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
+    {label:'Faturamento · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · +${k.em_atendimento} em curso`, delta_pct:k.cliente_dia_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Ticket / visita',value:(k.cliente_dia||0)>0?brl(k.ticket_medio||0):'—',foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
@@ -2704,7 +2703,7 @@ function mostrarCardHistorico(per, id){
       <button onclick="window._perOffset=0;atualizarNavPeriodo();" style="background:var(--surface-2);color:var(--ink);border:1px solid var(--ink-3);padding:6px 12px;font-size:11px;border-radius:6px;cursor:pointer">↻ Voltar ao atual</button>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;font-size:12px">
-      <div><div style="color:var(--ink-3);font-size:10.5px">Caixa</div><div style="font-weight:700;font-size:18px">${brl0(k.caixa||0)}</div></div>
+      <div><div style="color:var(--ink-3);font-size:10.5px">Faturamento</div><div style="font-weight:700;font-size:18px">${brl0(k.caixa||0)}</div></div>
       <div><div style="color:var(--ink-3);font-size:10.5px">Atendimentos</div><div style="font-weight:700;font-size:18px">${k.atend_fin||0}</div><div style="color:var(--ink-3);font-size:10px">${k.atend_canc||0} cancelados</div></div>
       <div><div style="color:var(--ink-3);font-size:10.5px">Clientes únicos</div><div style="font-weight:700;font-size:18px">${k.clientes_unicos||0}</div></div>
       <div><div style="color:var(--ink-3);font-size:10.5px">Ticket médio</div><div style="font-weight:700;font-size:18px">${brl(k.ticket_medio||0)}</div></div>
