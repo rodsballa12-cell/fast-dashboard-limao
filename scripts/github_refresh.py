@@ -475,18 +475,23 @@ def analisar(agend, transac, ini: date, fim: date):
     addons_all  = [x for x in rent_hora if x["tipo"] == "addon"]
     rent_hora = cadeira_top + addons_all
 
+    # por_dow: mesmo motivo que por_dia_mes — usa CAIXA (transações), não só receita_serv.
     by_dow = defaultdict(lambda: {"n": 0, "v": 0.0})
-    for a in fin:
-        dt = parse_trinks_dt(a["dataHoraInicio"])
+    for t in tr:
+        dt = parse_trinks_dt(t["dataHora"])
         by_dow[DOW_NOMES[dt.weekday()]]["n"] += 1
-        by_dow[DOW_NOMES[dt.weekday()]]["v"] += float(a.get("valor") or 0)
+        by_dow[DOW_NOMES[dt.weekday()]]["v"] += float(t.get("totalPagar") or 0)
     dow_list = [{"nome": n, "n": by_dow[n]["n"], "v": brl_round(by_dow[n]["v"])} for n in DOW_NOMES]
 
+    # por_dia_mes agora usa CAIXA (serviços + produtos + pacotes), não só receita_serv.
+    # Antes: iterava sobre `fin` somando valor do agendamento — batia com Trinks
+    # "Serviços" mas não com "Total Recebido". Agora itera sobre `tr` (transações)
+    # e usa totalPagar, alinhando com o valor de caixa que o BackOffice mostra.
     by_day = defaultdict(lambda: {"n": 0, "v": 0.0})
-    for a in fin:
-        dt = parse_trinks_dt(a["dataHoraInicio"])
+    for t in tr:
+        dt = parse_trinks_dt(t["dataHora"])
         by_day[dt.day]["n"] += 1
-        by_day[dt.day]["v"] += float(a.get("valor") or 0)
+        by_day[dt.day]["v"] += float(t.get("totalPagar") or 0)
     dia_list = [{"d": d, "n": by_day[d]["n"], "v": brl_round(by_day[d]["v"])} for d in sorted(by_day)]
 
     cli_c = Counter((a.get("cliente") or {}).get("nome") for a in fin if (a.get("cliente") or {}).get("nome"))
