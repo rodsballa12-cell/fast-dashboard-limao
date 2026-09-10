@@ -1936,14 +1936,14 @@ function renderClientesSnapshot(container_id, snap, ltv, nvr){
   }
 
   el.innerHTML = `<div class="card">
-    <h2>📊 Base de clientes · foto do agora</h2>
-    <div class="cap">Do maior número pra ação imediata — quem você tem, quem voltou, quem precisa da sua atenção HOJE.</div>
+    <h2>📊 Base de clientes · ano ${new Date().getFullYear()} <span style="font-weight:400;font-size:12px;color:var(--ink-3)">(acumulado)</span></h2>
+    <div class="cap">Do maior número pra ação imediata — quem você tem no ano, quem voltou nos últimos 30d, quem precisa da sua atenção HOJE.</div>
 
     <!-- HERO: base total + divisão fiéis vs uma-vez -->
     <div style="text-align:center;padding:22px 16px;background:var(--surface-2);border-radius:12px;margin-top:14px">
-      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Sua base total</div>
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Sua base total · ano ${new Date().getFullYear()}</div>
       <div style="font-size:52px;font-weight:800;color:var(--accent);line-height:1.05;margin:4px 0">${totalBase}</div>
-      <div style="font-size:13px;color:var(--ink-2)">pessoas conhecem sua loja</div>
+      <div style="font-size:13px;color:var(--ink-2)">pessoas atendidas desde a abertura</div>
       <div style="display:flex;justify-content:center;gap:36px;margin-top:16px;flex-wrap:wrap;font-size:12.5px">
         <div><span style="font-size:22px;font-weight:800;color:var(--good)">${pctFieis}%</span> <span style="color:var(--ink-2)">voltaram (fiéis)</span></div>
         <div style="color:var(--border)">|</div>
@@ -2772,8 +2772,8 @@ function renderAuditoria(data){
   }
 
   resumoEl.innerHTML = `<div class="card">
-    <h2>🛡️ Auditoria · foto do agora</h2>
-    <div class="cap">Cada cancelamento com valor passa por 3 filtros de risco (Stone, valor, profissional). Aqui só o que precisa da sua atenção.</div>
+    <h2>🛡️ Auditoria · ano ${new Date().getFullYear()} <span style="font-weight:400;font-size:12px;color:var(--ink-3)">(acumulado desde a abertura)</span></h2>
+    <div class="cap">Cada cancelamento com valor do ano passa por 3 filtros de risco (Stone, valor, profissional). Aqui só o que precisa da sua atenção.</div>
 
     <!-- HERO: score de saúde -->
     <div style="text-align:center;padding:22px 16px;background:var(--surface-2);border-radius:12px;margin-top:14px">
@@ -3322,12 +3322,12 @@ function renderStone(data){
   }
 
   const bloco_hero = `<div class="card">
-    <h2>🏦 Stone · foto do agora</h2>
-    <div class="cap">Tudo que a loja vendeu vs. o que já caiu (e o que ainda vai cair). Do maior número pra ação.</div>
+    <h2>🏦 Stone · ano ${new Date().getFullYear()} <span style="font-weight:400;font-size:12px;color:var(--ink-3)">(acumulado desde a abertura)</span></h2>
+    <div class="cap">Tudo que a loja vendeu vs. o que já caiu (e o que ainda vai cair). Reconciliação acumulada de todo o ano.</div>
 
     <!-- HERO -->
     <div style="text-align:center;padding:22px 16px;background:var(--surface-2);border-radius:12px;margin-top:14px">
-      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">${ehSaudavel?'Situação do caixa':'⚠️ Precisa reconciliar'}</div>
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">${ehSaudavel?'Situação do caixa · acumulado':'⚠️ Precisa reconciliar · acumulado'}</div>
       <div style="font-size:48px;font-weight:800;color:${ehSaudavel?'var(--good)':'var(--crit)'};line-height:1.05;margin:4px 0">${ehSaudavel?'✅':'🚨'}</div>
       <div style="font-size:13px;color:var(--ink-2)">${ehSaudavel?'Todo dinheiro do Trinks bateu com o Stone':`R$ ${orfaos_v.toFixed(0)} em ${orfaos_n} lançamentos sem par`}</div>
       <div style="display:flex;justify-content:center;gap:36px;margin-top:16px;flex-wrap:wrap;font-size:12.5px">
@@ -4547,11 +4547,13 @@ function renderMidias(){
   // CONSOLIDAÇÃO M · fontes viraram chips 1-linha (info de infra, não decisão)
   const chip = (nome, ok, det, cor) => `<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;font-size:11px;color:var(--ink-2)" title="${det.replace(/"/g,'&quot;')}"><span style="color:${cor}">${ok?'●':'○'}</span>${nome}</span>`;
 
-  // === HERO leigo-friendly · Mídia · foto do agora ===
-  const pmtdH = (M.por_periodo && M.por_periodo.mtd) || {};
-  const gastoMes = pmtdH.gasto || 0;
-  const convMes = pmtdH.conversas_msg || 0;
-  const cpaMes = pmtdH.cpa_msg || 0;
+  // === HERO leigo-friendly · Mídia · ano acumulado ===
+  // Usa janela 90d (cobre julho→set, todo o período operado desde a abertura).
+  // Quando existir 'ano' no por_periodo do backend, trocar aqui.
+  const heroP = (M.por_periodo && (M.por_periodo.ano || M.por_periodo['90d'] || M.por_periodo.mtd)) || {};
+  const gastoMes = heroP.gasto || 0;
+  const convMes = heroP.conversas_msg || 0;
+  const cpaMes = heroP.cpa_msg || 0;
   const cpaMeta = (bench.cpa_msg_meta || 25);
   const cpaCor = cpaMes && cpaMes <= cpaMeta*0.85 ? 'var(--good)' : (cpaMes && cpaMes <= cpaMeta*1.15 ? 'var(--warn)' : 'var(--crit)');
   const cpaCtx = cpaMes ? (cpaMes <= cpaMeta*0.85 ? 'ótimo, muito abaixo da meta' : cpaMes <= cpaMeta*1.15 ? 'na meta' : `caro, ${((cpaMes/cpaMeta-1)*100).toFixed(0)}% acima da meta`) : '—';
@@ -4572,14 +4574,14 @@ function renderMidias(){
   }
 
   document.getElementById('midias-status').innerHTML = `<div class="card">
-    <h2>📣 Mídia · foto do agora</h2>
+    <h2>📣 Mídia · ano ${new Date().getFullYear()} <span style="font-weight:400;font-size:12px;color:var(--ink-3)">(acumulado desde a abertura)</span></h2>
     <div class="cap">Do maior número (quanto investe e quantos clientes traz) pras ações imediatas nos cards abaixo.</div>
 
     <!-- HERO -->
     <div style="text-align:center;padding:22px 16px;background:var(--surface-2);border-radius:12px;margin-top:14px">
-      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Este mês · Meta Ads</div>
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Ano ${new Date().getFullYear()} · Meta Ads</div>
       <div style="font-size:44px;font-weight:800;color:var(--accent);line-height:1.05;margin:4px 0">${brl0(gastoMes)}</div>
-      <div style="font-size:13px;color:var(--ink-2)">investidos até agora</div>
+      <div style="font-size:13px;color:var(--ink-2)">investidos desde a abertura</div>
       <div style="display:flex;justify-content:center;gap:32px;margin-top:16px;flex-wrap:wrap;font-size:12.5px">
         <div><span style="font-size:22px;font-weight:800;color:var(--ink)">${convMes}</span> <span style="color:var(--ink-2)">conversas geradas</span></div>
         <div style="color:var(--border)">|</div>
@@ -4593,19 +4595,19 @@ function renderMidias(){
       <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Seus canais</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid #E4405F">
-          <div style="font-size:11px;color:#E4405F;font-weight:800;text-transform:uppercase">📱 Meta Ads</div>
+          <div style="font-size:11px;color:#E4405F;font-weight:800;text-transform:uppercase">📱 Meta Ads · ano</div>
           <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${brl0(gastoMes)}</div>
           <div style="font-size:11px;color:var(--ink-2)">${convMes} conversas · CPA ${cpaMes?brl(cpaMes):'—'}</div>
         </div>
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid #C13584">
-          <div style="font-size:11px;color:#C13584;font-weight:800;text-transform:uppercase">📷 Instagram</div>
+          <div style="font-size:11px;color:#C13584;font-weight:800;text-transform:uppercase">📷 Instagram · hoje</div>
           <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${igSeg.toLocaleString('pt-BR')}</div>
           <div style="font-size:11px;color:var(--ink-2)">seguidores · @${MID.instagram.handle} · orgânico</div>
         </div>
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid #4285F4">
-          <div style="font-size:11px;color:#4285F4;font-weight:800;text-transform:uppercase">📍 Google Meu Negócio</div>
+          <div style="font-size:11px;color:#4285F4;font-weight:800;text-transform:uppercase">📍 Google Negócio · 30d</div>
           <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${gmbAcoes}</div>
-          <div style="font-size:11px;color:var(--ink-2)">ações em 30d ${gmbRating?`· ⭐ ${gmbRating}`:''} · orgânico</div>
+          <div style="font-size:11px;color:var(--ink-2)">ações ${gmbRating?`· ⭐ ${gmbRating}`:''} · orgânico</div>
         </div>
       </div>
     </div>
