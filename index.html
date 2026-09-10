@@ -1915,32 +1915,91 @@ function renderCategoriaNativa(container_id, categorias){
 function renderClientesSnapshot(container_id, snap, ltv, nvr){
   const el = document.getElementById(container_id);
   if(!el || !snap) return;
-  const pct = (a,b) => b>0 ? (a/b*100).toFixed(0)+'%' : '—';
-  const cor30 = snap.ativos_30d / snap.total_base > 0.4 ? '#22c55e' : (snap.ativos_30d / snap.total_base > 0.25 ? '#f59e0b' : '#ef4444');
-  const retencao = nvr ? (() => { const tot = (nvr.novos.clientes||0) + (nvr.recorrentes.clientes||0); return tot > 0 ? ((nvr.recorrentes.clientes/tot)*100).toFixed(0)+'%' : '—'; })() : '—';
+  const totalBase = snap.total_base || 0;
+  const pctFieis = totalBase > 0 ? Math.round(snap.n_recorrentes/totalBase*100) : 0;
+  const pctUma   = totalBase > 0 ? Math.round(snap.n_uma_vez/totalBase*100) : 0;
+  const pctAtivos30 = totalBase > 0 ? Math.round(snap.ativos_30d/totalBase*100) : 0;
+  const pctNovos30  = totalBase > 0 ? Math.round(snap.novos_30d/totalBase*100) : 0;
+  const corAtivos = pctAtivos30 >= 40 ? 'up' : (pctAtivos30 >= 25 ? 'warn' : 'dn');
+  const churnRs = brl0(((snap.ltv_em_risco || (ltv && ltv.ltv_em_risco)) || (snap.n_alerta_churn*(snap.ltv_medio||0))));
+  // Contextos textuais que interpretam o número
+  const ctxAtivos = pctAtivos30 >= 50 ? 'muito boa — mais da metade da base voltou' : (pctAtivos30 >= 30 ? 'saudável — base ativa' : 'baixa — precisa reengajar');
+  const ctxUma = pctUma >= 50 ? 'preocupante — mais da metade vem uma vez só' : (pctUma >= 30 ? 'atenção — muita gente não volta' : 'sob controle');
+  // Direcionamento narrativo
+  let direcionamento;
+  if(snap.dormentes_60d === 0 && (totalBase < 300 || snap.novos_30d > snap.dormentes_60d)){
+    direcionamento = `Sua base é <strong>jovem e crescendo</strong>. Ninguém sumiu de vez ainda. Seu foco: <strong>fazer os ${snap.n_uma_vez} clientes que vieram só uma vez voltarem pela segunda</strong> (aí eles viram fiéis).`;
+  } else if(snap.dormentes_60d > snap.ativos_30d){
+    direcionamento = `Você tem <strong>mais gente sumida (${snap.dormentes_60d}) do que gente ativa (${snap.ativos_30d})</strong>. Antes de gastar em novos clientes, chame quem já veio — sai muito mais barato.`;
+  } else {
+    direcionamento = `Base <strong>saudável</strong>. Continue captando novos e ofereça um serviço a mais pros que já vêm (cross-sell) — é aumento de ticket sem gastar em mídia.`;
+  }
+
   el.innerHTML = `<div class="card">
-    <h2>📊 Base de clientes · snapshot</h2>
-    <div class="cap">Foto do agora — só o que gera ação. Detalhes por período nos cards abaixo.</div>
-    <div class="categ-grid">
-      ${tile('','Base total', snap.total_base+'', `${snap.n_recorrentes} voltaram · ${snap.n_uma_vez} vieram só 1x`, 'accent')}
-      ${tile('c2','Ativos 30d', `<span style="color:${cor30}">${snap.ativos_30d}</span>`, `${pct(snap.ativos_30d, snap.total_base)} da base`)}
-      ${tile('','Novos (30d)', snap.novos_30d+'', `taxa aquisição: ${pct(snap.novos_30d, snap.total_base)}/mês`)}
-      ${tile('','LTV médio', brl0(snap.ltv_medio), `ticket ${brl0(snap.ticket_medio_visita)}/visita · retenção ${retencao}`)}
+    <h2>📊 Base de clientes · foto do agora</h2>
+    <div class="cap">Do maior número pra ação imediata — quem você tem, quem voltou, quem precisa da sua atenção HOJE.</div>
+
+    <!-- HERO: base total + divisão fiéis vs uma-vez -->
+    <div style="text-align:center;padding:22px 16px;background:var(--surface-2);border-radius:12px;margin-top:14px">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Sua base total</div>
+      <div style="font-size:52px;font-weight:800;color:var(--accent);line-height:1.05;margin:4px 0">${totalBase}</div>
+      <div style="font-size:13px;color:var(--ink-2)">pessoas conhecem sua loja</div>
+      <div style="display:flex;justify-content:center;gap:36px;margin-top:16px;flex-wrap:wrap;font-size:12.5px">
+        <div><span style="font-size:22px;font-weight:800;color:var(--good)">${pctFieis}%</span> <span style="color:var(--ink-2)">voltaram (fiéis)</span></div>
+        <div style="color:var(--border)">|</div>
+        <div><span style="font-size:22px;font-weight:800;color:${pctUma>=45?'var(--warn)':'var(--ink-2)'}">${pctUma}%</span> <span style="color:var(--ink-2)">vieram só 1 vez</span></div>
+      </div>
     </div>
-    <div class="categ-grid" style="margin-top:10px">
-      ${tile(snap.n_alerta_churn>0?'c3':'','🛟 Sumidos', snap.n_alerta_churn>0 ? `<span class="dn">${snap.n_alerta_churn}</span>` : `<span class="up">0</span>`, snap.n_alerta_churn>0 ? `ver card abaixo pra contato` : `ninguém sumido`)}
-      ${tile('','🎂 Aniversários 14d', snap.n_aniv_14d>0 ? `<span class="warn">${snap.n_aniv_14d}</span>` : '0', snap.n_aniv_14d>0 ? `ver card abaixo pra parabenizar` : `sem aniversariantes`)}
-      ${tile(snap.dormentes_60d>0?'c3':'','Dormentes 60d+', snap.dormentes_60d>0 ? `<span class="dn">${snap.dormentes_60d}</span>` : `<span class="up">0</span>`, snap.dormentes_60d>0 ? `${pct(snap.dormentes_60d, snap.total_base)} da base` : `nenhum sumido 60d+`)}
-      ${tile('','1ª visita só', (ltv && (ltv.uma_vez||0)>0) ? `<span class="warn">${ltv.uma_vez}</span>` : '0', `${(ltv && ltv.total_clientes) ? ((ltv.uma_vez||0)/ltv.total_clientes*100).toFixed(0) : 0}% da base — foco em 2ª visita`)}
+
+    <!-- BLOCO ESTE MÊS -->
+    <div style="margin-top:16px">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Este mês</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--good)">
+          <div style="font-size:24px;font-weight:800;color:var(--ink)"><span class="${corAtivos}">${snap.ativos_30d}</span></div>
+          <div style="font-size:12px;color:var(--ink-2);margin-top:2px">clientes <strong>voltaram</strong> nos últimos 30 dias</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:4px">${pctAtivos30}% da base — ${ctxAtivos}</div>
+        </div>
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--accent)">
+          <div style="font-size:24px;font-weight:800;color:var(--ink)">${snap.novos_30d}</div>
+          <div style="font-size:12px;color:var(--ink-2);margin-top:2px">clientes <strong>novos</strong> chegaram</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:4px">${pctNovos30}% do total — ritmo de crescimento</div>
+        </div>
+      </div>
     </div>
-    <div class="insight" style="margin-top:14px;">
-      <strong>Direcionamento:</strong> ${
-        snap.dormentes_60d === 0 && (snap.total_base < 300 || snap.novos_30d > snap.dormentes_60d)
-          ? `base ainda jovem — sem dormentes 60d+. Prioridade: aquisição + fidelizar 2ª visita (${snap.n_uma_vez} vieram só 1 vez).`
-          : snap.dormentes_60d > snap.ativos_30d
-            ? `mais dormentes (${snap.dormentes_60d}) que ativos 30d (${snap.ativos_30d}) — prioridade é resgatar antes de captar.`
-            : `base saudável — ativos 30d (${snap.ativos_30d}) supera dormentes (${snap.dormentes_60d}). Foco na aquisição e cross-sell.`
-      }
+
+    <!-- BLOCO VALOR MÉDIO -->
+    <div style="margin-top:16px">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Cada cliente rende, em média</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        <div style="padding:10px 12px;background:var(--surface-2);border-radius:8px;text-align:center">
+          <div style="font-size:20px;font-weight:800;color:var(--accent)">${brl0(snap.ltv_medio)}</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:2px">total no ano</div>
+        </div>
+        <div style="padding:10px 12px;background:var(--surface-2);border-radius:8px;text-align:center">
+          <div style="font-size:20px;font-weight:800;color:var(--ink)">${brl0(snap.ticket_medio_visita)}</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:2px">por visita</div>
+        </div>
+        <div style="padding:10px 12px;background:var(--surface-2);border-radius:8px;text-align:center">
+          <div style="font-size:20px;font-weight:800;color:var(--ink)">${(snap.freq_media_visitas||1).toFixed(1)}</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:2px">visitas por pessoa</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOCO AÇÃO AGORA -->
+    <div style="margin-top:16px;padding:14px 16px;background:var(--accent-soft);border-radius:10px;border:1px solid var(--accent)">
+      <div style="font-size:11px;color:var(--ink);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:10px">📱 Precisam da sua atenção HOJE</div>
+      <div style="display:grid;gap:8px;font-size:13px;color:var(--ink)">
+        <div>🎂 <strong>${snap.n_aniv_14d} aniversariantes</strong> nos próximos 14 dias ${snap.n_aniv_14d>0?'— manda WhatsApp com brinde, retenção quase de graça':''}</div>
+        <div>🛟 <strong>${snap.n_alerta_churn} clientes sumiram</strong> ${snap.n_alerta_churn>0?`(vieram 3+ vezes e não voltam há 14+ dias, LTV em risco ${churnRs}) — chama pessoal antes de perder`:'— ninguém de valor está sumido, base saudável'}</div>
+        ${(ltv && (ltv.uma_vez||0)>0) ? `<div>⚠️ <strong>${ltv.uma_vez} pessoas vieram só uma vez</strong> — se você converter 20% pra 2ª visita, são ${Math.round((ltv.uma_vez||0)*0.2)} clientes recorrentes a mais</div>` : ''}
+      </div>
+      <div style="font-size:11px;color:var(--ink-3);margin-top:8px">👇 Cards abaixo têm as listas com WhatsApp direto</div>
+    </div>
+
+    <div class="insight" style="margin-top:14px">
+      <strong>👉 O que fazer agora:</strong> ${direcionamento}
     </div>
   </div>`;
 }
