@@ -1,11 +1,38 @@
 {
   "unidade": {
-    "_desc": "Identidade da unidade — usado no header, título da aba, PWA. Trocar aqui pra rebrandear a mesma base de código.",
+    "_desc": "Identidade da unidade ATIVA (compat legado — hoje espelha unidades.escova). Trocar via seletor no header.",
     "produto": "Ritmo",
     "marca": "Fast",
     "tipo": "Escova",
     "filial": "Limão",
     "cidade": "São Paulo"
+  },
+  "unidades": {
+    "_desc": "Múltiplas unidades sob a mesma base de código. Cada uma tem estabelecimentoId Trinks próprio + contas Meta/IG/Stone/CNPJ separadas. Seletor no header alterna entre escova / spa / consolidado. Consolidado soma as duas quando ambas têm dados.",
+    "escova": {
+      "produto": "Ritmo",
+      "marca": "Fast",
+      "tipo": "Escova",
+      "filial": "Limão",
+      "cidade": "São Paulo",
+      "trinks_estabelecimento_id": 276461,
+      "data_inauguracao": "2026-07-23",
+      "cor_accent": "#F5B800",
+      "emoji": "🥂",
+      "data_prefix": ""
+    },
+    "spa": {
+      "produto": "Ritmo",
+      "marca": "Fast",
+      "tipo": "SPA",
+      "filial": "Limão",
+      "cidade": "São Paulo",
+      "trinks_estabelecimento_id": null,
+      "data_inauguracao": "2026-09-25",
+      "cor_accent": "#7CB342",
+      "emoji": "🧖",
+      "data_prefix": "spa/"
+    }
   },
   "meta_categoria_nativa_share": {
     "_desc": "Share OFICIAL de cada categoria nativa Trinks sobre a meta de SERVIÇOS (Serviços gerais + Fast Retoque). Sum deve ser ~1.0. Aplicado em todos os períodos: meta_cat_periodo = share × meta_serv_periodo. % de atingimento varia por período conforme cada categoria performa vs esse share. Ajustar quando o mix ideal mudar. Defaults iniciais baseados no mix realizado do ano 2026 até 09/09.",

@@ -80,6 +80,20 @@
   .chip.fresh{border-color:var(--good);color:var(--good);}
   .chip.fresh .dot{background:var(--good);}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+  .unidade-seletor{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:3px;gap:2px;box-shadow:var(--shadow-sm);}
+  .unidade-seletor .unid-btn{background:transparent;color:var(--ink-2);border:none;border-radius:999px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;font-weight:600;transition:all .18s;letter-spacing:.02em;}
+  .unidade-seletor .unid-btn:hover{color:var(--ink);background:var(--surface);}
+  .unidade-seletor .unid-btn.active{background:var(--accent);color:#0A0A0C;box-shadow:var(--shadow-sm);}
+  .unidade-seletor .unid-btn.active[data-unidade="spa"]{background:#7CB342;}
+  .unidade-seletor .unid-btn.active[data-unidade="consolidado"]{background:#8B5CF6;color:#fff;}
+  .placeholder-unidade{max-width:720px;margin:80px auto 40px;padding:48px 32px;background:var(--surface);border:1px solid var(--border);border-radius:16px;text-align:center;box-shadow:var(--shadow);}
+  .placeholder-unidade .emoji-big{font-size:64px;line-height:1;margin-bottom:16px;display:block;}
+  .placeholder-unidade h2{font-size:24px;margin:0 0 10px;color:var(--ink);}
+  .placeholder-unidade .sub{color:var(--ink-3);font-size:13px;margin-bottom:24px;}
+  .placeholder-unidade .countdown{background:var(--surface-2);border-radius:12px;padding:20px;margin:20px 0;font-size:14px;}
+  .placeholder-unidade .countdown strong{font-size:32px;color:var(--accent);display:block;margin-bottom:4px;}
+  .placeholder-unidade .abas-list{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:20px;}
+  .placeholder-unidade .abas-list span{background:var(--surface-2);color:var(--ink-2);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;}
   .btn-refresh{background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-size:12px;font-family:inherit;cursor:pointer;transition:all .18s cubic-bezier(0.4,0,0.2,1);font-weight:600;box-shadow:var(--shadow-sm);}
   .btn-refresh:hover{background:var(--accent);color:#0A0A0C;border-color:var(--accent);transform:translateY(-1px);box-shadow:var(--shadow);}
   .btn-refresh:disabled{opacity:.5;cursor:not-allowed;transform:none;}
@@ -270,6 +284,7 @@
     .meta{gap:6px;font-size:11px;}
     .chip{padding:5px 10px;font-size:11px;}
     .btn-refresh,.btn-sync{padding:9px 14px;font-size:12px;min-height:40px;}
+    .unidade-seletor .unid-btn{padding:7px 10px;font-size:11px;}
 
     /* Tabs viram scroll horizontal com hint */
     .tabs{gap:3px;padding:3px;margin-bottom:18px;position:sticky;top:0;z-index:30;
@@ -379,6 +394,11 @@
       </div>
     </div>
     <div class="meta">
+      <div id="unidade-seletor" class="unidade-seletor" role="tablist" aria-label="Seletor de unidade">
+        <button class="unid-btn active" data-unidade="escova" title="Fast Escova · aberto desde 23/07/2026">🥂 Escova</button>
+        <button class="unid-btn" data-unidade="spa" title="Fast SPA · inauguração 25/09/2026">🧖 SPA</button>
+        <button class="unid-btn" data-unidade="consolidado" title="Escova + SPA somados">📊 Consolidado</button>
+      </div>
       <span class="chip" id="chip-updated">carregando…</span>
       <span class="chip" id="chip-age" style="display:none;"></span>
       <span class="chip" id="chip-cota" style="display:none;"></span>
@@ -3123,12 +3143,137 @@ function renderStone(data){
   renderInsights('stone-insights', 'Stone · Reconciliação', (data.insights||{}).stone);
 }
 
+// ============= UNIDADE ATIVA (multi-unidade) =============
+// Estado: 'escova' (default) | 'spa' | 'consolidado'
+// - escova → carrega data/dashboard_data.json (path atual, sem prefix)
+// - spa → carrega data/spa/dashboard_data.json (404 = placeholder até SPA abrir)
+// - consolidado → carrega data/consolidado/dashboard_data.json (404 = usa escova + nota)
+let UNIDADE_ATIVA = localStorage.getItem('unidade_ativa') || 'escova';
+let UNIDADE_SEM_DADOS = false;  // true quando o payload não existe (placeholder)
+
+function unidadeInfo(u){
+  const cfg = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.unidades) || {};
+  if(u === 'consolidado') return { emoji: '📊', nome: 'Consolidado', tipo: 'Escova + SPA', accent: '#8B5CF6', prefix: 'consolidado/', data_inauguracao: null };
+  return cfg[u] || { emoji: '❓', nome: u, tipo: u, accent: 'var(--accent)', prefix: (u==='escova'?'':`${u}/`), data_inauguracao: null };
+}
+
+function pathData(arquivo){
+  const info = unidadeInfo(UNIDADE_ATIVA);
+  const prefix = info.data_prefix != null ? info.data_prefix : info.prefix;
+  return `data/${prefix||''}${arquivo}`;
+}
+
+function atualizarHeaderUnidade(){
+  const info = unidadeInfo(UNIDADE_ATIVA);
+  const title = document.getElementById('brand-title');
+  const sub = document.getElementById('brand-sub');
+  if(title){
+    if(UNIDADE_ATIVA === 'consolidado'){
+      title.innerHTML = `Ritmo <span style="color:var(--accent)">Fast</span> · <span style="color:#8B5CF6">Consolidado</span>`;
+    } else {
+      const cor = info.accent || 'var(--accent)';
+      title.innerHTML = `${info.produto || 'Ritmo'} <span style="color:${cor}">${info.marca || 'Fast'}</span> <span style="color:var(--ink-3);font-weight:500">· ${info.tipo || ''}</span>`;
+    }
+  }
+  if(sub){
+    if(UNIDADE_ATIVA === 'consolidado'){
+      sub.textContent = 'FAST Limão · Escova + SPA consolidados';
+    } else {
+      const dInaug = info.data_inauguracao;
+      const dTxt = dInaug ? dInaug.split('-').reverse().join('/') : '?';
+      const id = info.trinks_estabelecimento_id;
+      sub.textContent = `${info.cidade || ''} · ${id ? 'id '+id : 'sem id Trinks ainda'} · abertura ${dTxt}`;
+    }
+  }
+  // Atualiza classe ativa nos botões
+  document.querySelectorAll('.unid-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.unidade === UNIDADE_ATIVA);
+  });
+}
+
+function renderPlaceholderUnidade(){
+  const info = unidadeInfo(UNIDADE_ATIVA);
+  const dInaug = info.data_inauguracao;
+  let countdownHtml = '';
+  if(dInaug){
+    const hoje = new Date();
+    const alvo = new Date(dInaug + 'T00:00:00');
+    const dias = Math.ceil((alvo - hoje) / (1000*60*60*24));
+    const dTxt = dInaug.split('-').reverse().join('/');
+    if(dias > 0){
+      countdownHtml = `<div class="countdown"><strong>${dias} ${dias===1?'dia':'dias'}</strong>até a inauguração em <strong style="font-size:14px;color:var(--ink)">${dTxt}</strong></div>`;
+    } else {
+      countdownHtml = `<div class="countdown">Aberto desde <strong style="font-size:14px;color:var(--ink)">${dTxt}</strong> — payload em preparação (rode o refresh backend com o estabelecimentoId Trinks configurado).</div>`;
+    }
+  }
+  const placeholderHtml = `<div class="placeholder-unidade">
+    <span class="emoji-big">${info.emoji || '❓'}</span>
+    <h2>${info.produto || 'Ritmo'} ${info.marca || 'Fast'} · ${info.tipo || ''}</h2>
+    <div class="sub">${info.cidade || ''} · ${info.filial || ''}</div>
+    ${countdownHtml}
+    <div style="font-size:13px;color:var(--ink-2);line-height:1.6;margin-top:10px">
+      Esta unidade ainda não tem dados no dashboard. Quando o Trinks começar a registrar transações, esta aba vai apresentar exatamente as mesmas seções de Escova:
+    </div>
+    <div class="abas-list">
+      <span>📊 Painel</span><span>💰 Financeiro</span><span>🏦 Stone</span>
+      <span>🛡 Auditoria</span><span>👥 Clientes</span><span>📣 Mídia</span>
+    </div>
+    <div style="font-size:11px;color:var(--ink-3);margin-top:24px">
+      Para começar a coletar: preencher <code>data/config.json → unidades.${UNIDADE_ATIVA}.trinks_estabelecimento_id</code> e rodar o refresh backend.
+    </div>
+  </div>`;
+  // Esconde todas as abas e mostra o placeholder num contêiner dedicado
+  const content = document.getElementById('content');
+  const existing = document.getElementById('unidade-placeholder');
+  if(existing) existing.remove();
+  const wrap = document.createElement('div');
+  wrap.id = 'unidade-placeholder';
+  wrap.innerHTML = placeholderHtml;
+  content.style.display = '';
+  document.getElementById('loading').style.display = 'none';
+  // Esconde nav de abas + painéis
+  const tabsEl = document.querySelector('.tabs');
+  if(tabsEl) tabsEl.style.display = 'none';
+  document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
+  content.appendChild(wrap);
+}
+
+function limparPlaceholder(){
+  const existing = document.getElementById('unidade-placeholder');
+  if(existing) existing.remove();
+  const tabsEl = document.querySelector('.tabs');
+  if(tabsEl) tabsEl.style.display = '';
+}
+
+async function switchUnidade(nova){
+  if(nova === UNIDADE_ATIVA) return;
+  UNIDADE_ATIVA = nova;
+  localStorage.setItem('unidade_ativa', nova);
+  atualizarHeaderUnidade();
+  limparPlaceholder();
+  document.getElementById('loading').style.display = '';
+  document.getElementById('content').style.display = 'none';
+  await reloadAllTabs(false);
+}
+
 async function load(showToast=false){
   const btn=document.getElementById('btn-reload');
   if(btn){btn.disabled=true;btn.textContent='🔄 Atualizando…';}
   try {
-    const resp = await fetch('data/dashboard_data.json?_='+Date.now(), {cache:'no-store'});
-    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    const dashPath = pathData('dashboard_data.json');
+    const resp = await fetch(dashPath+'?_='+Date.now(), {cache:'no-store'});
+    if(!resp.ok){
+      // Unidade sem payload → placeholder e sair silenciosamente
+      if(resp.status === 404 && UNIDADE_ATIVA !== 'escova'){
+        UNIDADE_SEM_DADOS = true;
+        renderPlaceholderUnidade();
+        if(btn){btn.disabled=false;btn.textContent='🔄 Atualizar dados';}
+        return;
+      }
+      throw new Error('HTTP '+resp.status);
+    }
+    UNIDADE_SEM_DADOS = false;
+    limparPlaceholder();
     const data = await resp.json();
     TRINKS = data;
     // Atualiza label do nav de período assim que TRINKS chega
@@ -3819,8 +3964,9 @@ function renderFinanceiro(){
 }
 
 async function loadFinanceiro(){
+  if(UNIDADE_SEM_DADOS) return;  // placeholder mode
   try{
-    const r = await fetch('data/financeiro.json?_='+Date.now(), {cache:'no-store'});
+    const r = await fetch(pathData('financeiro.json')+'?_='+Date.now(), {cache:'no-store'});
     if(r.ok){ FIN = await r.json(); renderFinanceiro(); }
   }catch(e){ console.warn('financeiro.json indisponível', e); }
 }
@@ -3845,27 +3991,15 @@ async function loadConfig(){
     const r = await fetch('data/config.json?_='+Date.now(), {cache:'no-store'});
     if(!r.ok) return;
     CONFIG = await r.json();
-    const u = CONFIG.unidade || {};
-    if(u.produto && u.marca){
-      // Header: "Ritmo Fast" + subtítulo "Escova · Limão · São Paulo"
-      const title = document.getElementById('brand-title');
-      const sub = document.getElementById('brand-sub');
-      if(title){
-        title.innerHTML = `${u.produto} <span style="color:var(--accent)">${u.marca}</span>` +
-          (u.tipo || u.filial ? ` · <span style="color:var(--ink-2);font-weight:600">${[u.tipo, u.filial].filter(Boolean).join(' ')}</span>` : '');
-      }
-      if(sub){
-        const partes = [u.cidade, 'id 276461', 'abertura 23/07/2026'].filter(Boolean);
-        sub.textContent = partes.join(' · ');
-      }
-      // Título da aba do navegador
-      const parts = [u.produto, u.marca].filter(Boolean).join(' ');
-      const detalhe = [u.tipo, u.filial].filter(Boolean).join(' ');
-      document.title = detalhe ? `${parts} · ${detalhe}` : parts;
-      // Ícone/nome curto do PWA na tela do celular
-      const pwaTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
-      if(pwaTitle) pwaTitle.setAttribute('content', `${parts} · ${u.filial || ''}`.trim());
-    }
+    // Header agora vem de atualizarHeaderUnidade() (multi-unidade)
+    try{ atualizarHeaderUnidade(); }catch(e){}
+    // Título da aba do navegador + PWA
+    const u = (CONFIG.unidades && CONFIG.unidades[UNIDADE_ATIVA]) || CONFIG.unidade || {};
+    const parts = [u.produto, u.marca].filter(Boolean).join(' ');
+    const detalhe = [u.tipo, u.filial].filter(Boolean).join(' ');
+    document.title = detalhe ? `${parts} · ${detalhe}` : parts;
+    const pwaTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+    if(pwaTitle) pwaTitle.setAttribute('content', `${parts} · ${u.filial || ''}`.trim());
     // Re-renderiza Painel se meta_categoria_nativa_share chegou depois do primeiro paint
     if(typeof TRINKS !== 'undefined' && TRINKS && CONFIG.meta_categoria_nativa_share){
       try{ renderPeriodoAtivo(TRINKS); }catch(e){}
@@ -5492,8 +5626,9 @@ function renderMidias(){
 }
 
 async function loadMidias(){
+  if(UNIDADE_SEM_DADOS) return;  // placeholder mode
   try{
-    const r = await fetch('data/midias_sociais.json?_='+Date.now(), {cache:'no-store'});
+    const r = await fetch(pathData('midias_sociais.json')+'?_='+Date.now(), {cache:'no-store'});
     if(r.ok){ MID = await r.json(); renderMidias(); }
   }catch(e){ console.warn('midias_sociais.json indisponível', e); }
 }
@@ -5559,6 +5694,13 @@ document.querySelectorAll('.midias-per-btn').forEach(b => b.addEventListener('cl
 }));
 
 document.getElementById('btn-reload').addEventListener('click', refreshInteligente);
+
+// Seletor de unidade (multi-unidade)
+document.querySelectorAll('.unid-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchUnidade(btn.dataset.unidade));
+});
+// Estado inicial visual (loadConfig também chama, mas cobre o caso do config demorar)
+try{ atualizarHeaderUnidade(); }catch(e){}
 
 // auto-refresh a cada 5min (se aba visível) — TODAS as abas
 reloadAllTabs();
