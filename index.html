@@ -4005,7 +4005,10 @@ function renderFinanceiro(){
   const dias_op_atual = kmes.dias_op || 0;
   const dias_op_mes = TRINKS && TRINKS.dias_op_mes ? TRINKS.dias_op_mes : 26;
   const proj_ritmo = dias_op_atual > 0 ? (rec_atual / dias_op_atual) * dias_op_mes : 0;
-  const meta_mes = 60000;
+  // Meta mensal ÚNICA = franqueadora Trinks (mesmo número em todos os cards)
+  const tMensalM = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.meta) || {};
+  const mesMetaOfi = tMensalM.meta || 60000;
+  const meta_mes = mesMetaOfi;
 
   // Detecta se Excel já foi atualizado pro mês corrente (baseline no mês em curso)
   const mesNomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -4057,30 +4060,29 @@ function renderFinanceiro(){
     ? `<span style="background:rgba(52,199,89,.15);color:var(--good);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600">✓ Excel de ${excelMesLabel}/${anoAtual}</span>`
     : `<span style="background:rgba(255,203,5,.15);color:var(--warn);padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600">⚠ Excel de ${excelMesLabel} · atualize pra ver projeção do mês</span>`;
 
-  const projLabel = excelDoMesCorrente ? 'PROJETADO (EXCEL)' : 'PROJEÇÃO POR RITMO';
-  const projHint = excelDoMesCorrente
-    ? `orçamento do painel Excel · baseline ${baselineFmt}`
-    : `linear · ritmo atual × ${dias_op_mes}d op · sem Excel do mês ainda`;
+  // Meta única = franqueadora Trinks (mesma que o hero e o Painel do mês usam).
+  // Excel do mês fica só como referência de trabalho (badge), sem virar KPI.
+  const metaMesUnica = mesMetaOfi;  // já resolvido acima: TRINKS.abas.mensal.meta.meta
 
   const mesEmCursoCard = `<div class="card" style="border-left:3px solid var(--accent);margin-bottom:14px">
     <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
       <h2 style="margin:0">🎯 ${mesNome}/${String(anoAtual).slice(-2)} em curso — Trinks live</h2>
       ${excelBadge}
     </div>
-    <div class="cap">Receita direto do Trinks (atualiza sozinho). Projetado vem do Excel quando você atualiza o painel — você faz a cada 15 dias.</div>
+    <div class="cap">Receita direto do Trinks (atualiza sozinho). Meta é a oficial da franqueadora (${brl0(metaMesUnica)}/mês) — mesmo número em todos os cards.</div>
     ${(()=>{
-      const falta_projMes  = Math.max(proj_final - rec_atual, 0);
+      const falta_meta     = Math.max(metaMesUnica - rec_atual, 0);
       const dias_rest      = Math.max(dias_op_mes - dias_op_atual, 0);
       const ritmo_atual    = rec_atual / Math.max(dias_op_atual, 1);
-      const ritmo_precisa  = dias_rest > 0 ? falta_projMes / dias_rest : 0;
+      const ritmo_precisa  = dias_rest > 0 ? falta_meta / dias_rest : 0;
       const gap_ritmo      = ritmo_precisa - ritmo_atual;
-      const perc_realizado = proj_final > 0 ? rec_atual / proj_final : 0;
-      const barFalta = `<div class="be-bar"><span style="width:${(perc_realizado*100).toFixed(1)}%"></span></div>`
-        + `<div class="be-leg">${(perc_realizado*100).toFixed(0)}% realizado · faltam ${dias_rest}d</div>`;
+      const perc_realizado = metaMesUnica > 0 ? rec_atual / metaMesUnica : 0;
+      const barFalta = `<div class="be-bar"><span style="width:${Math.min(100,perc_realizado*100).toFixed(1)}%"></span></div>`
+        + `<div class="be-leg">${(perc_realizado*100).toFixed(0)}% da meta · faltam ${dias_rest}d</div>`;
       return `<div class="kpi-grid fin5" style="margin-top:12px">
       ${kpiCard('k1','RECEITA ATÉ HOJE', brl0(rec_atual), `${dias_op_atual}d operados · ritmo R\$ ${ritmo_atual.toFixed(0)}/dia`, null)}
-      ${kpiCard('k2', projLabel, brl0(proj_final), projHint, null)}
-      ${kpiCard('k3 kpi-be','FALTA FATURAR NO MÊS', brl0(falta_projMes), barFalta, null)}
+      ${kpiCard('k2','META DO MÊS · FRANQUEADORA', brl0(metaMesUnica), `mesmo número usado em todo o painel (Trinks · fonte única)`, null)}
+      ${kpiCard('k3 kpi-be','FALTA PRA META', brl0(falta_meta), barFalta, null)}
       ${kpiCard('k4','RITMO NECESSÁRIO', 'R\$ '+ritmo_precisa.toFixed(0)+'/dia', `atual R\$ ${ritmo_atual.toFixed(0)}/dia · ${gap_ritmo>0?'acelerar +':'sobra '}R\$ ${Math.abs(gap_ritmo).toFixed(0)}/dia`, null)}
       ${kpiCard('k5','RESULTADO PROJETADO', brl0(res_proj), `EBITDA se fechar em ${brl0(proj_final)} · ${mesAntNome} foi ${brl0(rec_ant)}`, null)}
     </div>`;
@@ -4097,7 +4099,7 @@ function renderFinanceiro(){
   const var_real_kpi  = custo_var_proj * ratio_rec_kpi;
   const fixo_real_kpi = custo_fixo * ratio_dia_kpi;
   const res_real_kpi  = rec_atual - var_real_kpi - fixo_real_kpi;
-  const atg_real_kpi  = rec_atual / 60000;
+  const atg_real_kpi  = mesMetaOfi > 0 ? rec_atual / mesMetaOfi : 0;
   const falta_fechar  = Math.max(proj_final - rec_atual, 0);
   const bePercReal    = Math.max(0, Math.min(1, rec_atual / beMes));
   const beBarReal     = `<div class="be-bar"><span style="width:${(bePercReal*100).toFixed(1)}%"></span></div>`
@@ -4109,12 +4111,11 @@ function renderFinanceiro(){
   const anoAtualHero = new Date().getFullYear();
   const tAnoM = (TRINKS && TRINKS.abas && TRINKS.abas.anual && TRINKS.abas.anual.meta) || {};
   const tAnoK = (TRINKS && TRINKS.abas && TRINKS.abas.anual && TRINKS.abas.anual.kpis) || {};
-  const tMensalM = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.meta) || {};
   const anoRec  = tAnoK.caixa || 0;                 // realizado real ano (Trinks)
   const anoMeta = tAnoM.meta || 0;                  // meta anual franqueadora
   const anoProj = tAnoM.projecao || anoRec;         // projeção ritmo atual ano
   const anoProjPct = anoMeta > 0 ? (anoProj/anoMeta*100) : 0;
-  const mesMetaOfi = tMensalM.meta || 60000;        // meta mensal franqueadora
+  // mesMetaOfi já declarado acima no bloco mesEmCurso (fonte única)
 
   // Estrutura de custo (Excel — fonte única)
   const mcAtualHero = (E.cenarios && E.cenarios[0] && E.cenarios[0].mc) || 0;
@@ -4252,7 +4253,7 @@ function renderFinanceiro(){
     kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), `Conta corrente da PJ · posição ${baselineFmt}`, null),
     kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), `snapshot no Excel · atualiza a cada 15 dias`, null),
     kpiCard('k3',`RESULTADO REALIZADO ${mpLbl}`, brl0(res_real_kpi), `custos prorateados: variáveis a ${(ratio_rec_kpi*100).toFixed(0)}% da receita, fixos a ${(ratio_dia_kpi*100).toFixed(0)}% dos dias`, null),
-    kpiCard('k4',`${mpLbl} × META (real)`, finPct(atg_real_kpi), brl0(rec_atual)+' de R$ 60.000 · faltam '+brl0(60000-rec_atual)+' pra meta', null),
+    kpiCard('k4',`${mpLbl} × META (real)`, finPct(atg_real_kpi), brl0(rec_atual)+' de '+brl0(mesMetaOfi)+' · faltam '+brl0(Math.max(mesMetaOfi-rec_atual,0))+' pra meta', null),
     kpiCard('k5 kpi-be',`FALTA PRA EQUILÍBRIO (${mpLbl})`, brl0(Math.max(beMes-rec_atual,0)), beBarReal, null),
   ].join('')+'</section>';
 
