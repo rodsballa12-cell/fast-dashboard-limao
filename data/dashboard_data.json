@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-09T22:55:56-03:00",
+  "gerado_em": "2026-09-09T23:33:22-03:00",
   "hoje": "2026-09-09",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 30,
@@ -264,8 +264,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 2375,
-    "saldoRestante": 7625
+    "totalUtilizado": 2384,
+    "saldoRestante": 7616
   },
   "metas_franqueadora": {
     "recepcionistas": 2,
@@ -1273,114 +1273,247 @@
     ],
     "antecipacao_analise": {
       "debito": {
-        "bruto": 3162.15,
-        "n": 30,
+        "bruto": 427.0,
+        "n": 4,
         "mdr_pct": 1.46,
-        "liq_espera": 3115.98,
-        "liq_antecipar": 3114.26,
-        "custo_antecipacao": 1.72,
-        "dias_medio_recebimento": 1
+        "liq_espera": 420.77,
+        "liq_antecipar": 420.53,
+        "custo_antecipacao": 0.23,
+        "dias_medio_recebimento": 1,
+        "dias_medio_restante": 1.0,
+        "prazo_dias": 1
       },
       "credito": {
-        "bruto": 5741.3,
-        "n": 43,
+        "bruto": 18510.3,
+        "n": 146,
         "mdr_pct": 2.08,
-        "liq_espera": 5621.88,
-        "liq_antecipar": 5528.56,
-        "custo_antecipacao": 93.32,
-        "dias_medio_recebimento": 30
+        "liq_espera": 18125.29,
+        "liq_antecipar": 17967.0,
+        "custo_antecipacao": 158.28,
+        "dias_medio_recebimento": 30,
+        "dias_medio_restante": 15.8,
+        "prazo_dias": 30
       },
       "total": {
-        "bruto": 8903.45,
-        "liq_espera": 8737.86,
-        "liq_antecipar": 8642.82,
-        "custo_antecipacao": 95.05,
-        "custo_pct": 1.09
+        "bruto": 18937.3,
+        "liq_espera": 18546.06,
+        "liq_antecipar": 18387.55,
+        "custo_antecipacao": 158.51,
+        "custo_pct": 0.85
       },
+      "confronto_a_receber": {
+        "a_receber_extrato": 21148.14,
+        "pendente_vendas": 18546.06,
+        "diferenca": -2602.08
+      },
+      "cronograma_liberacao": [
+        {
+          "data": "2026-09-10",
+          "bruto": 604.0
+        },
+        {
+          "data": "2026-09-11",
+          "bruto": 391.0
+        },
+        {
+          "data": "2026-09-12",
+          "bruto": 745.0
+        },
+        {
+          "data": "2026-09-13",
+          "bruto": 79.0
+        },
+        {
+          "data": "2026-09-14",
+          "bruto": 2564.0
+        },
+        {
+          "data": "2026-09-16",
+          "bruto": 471.0
+        },
+        {
+          "data": "2026-09-17",
+          "bruto": 357.0
+        },
+        {
+          "data": "2026-09-18",
+          "bruto": 267.0
+        },
+        {
+          "data": "2026-09-19",
+          "bruto": 223.0
+        },
+        {
+          "data": "2026-09-20",
+          "bruto": 1368.0
+        },
+        {
+          "data": "2026-09-21",
+          "bruto": 1842.0
+        },
+        {
+          "data": "2026-09-23",
+          "bruto": 461.0
+        },
+        {
+          "data": "2026-09-24",
+          "bruto": 158.0
+        },
+        {
+          "data": "2026-09-25",
+          "bruto": 312.0
+        },
+        {
+          "data": "2026-09-26",
+          "bruto": 384.0
+        },
+        {
+          "data": "2026-09-27",
+          "bruto": 485.0
+        },
+        {
+          "data": "2026-09-28",
+          "bruto": 1686.0
+        },
+        {
+          "data": "2026-09-29",
+          "bruto": 503.0
+        },
+        {
+          "data": "2026-09-30",
+          "bruto": 296.0
+        },
+        {
+          "data": "2026-10-01",
+          "bruto": 423.0
+        },
+        {
+          "data": "2026-10-02",
+          "bruto": 415.0
+        },
+        {
+          "data": "2026-10-03",
+          "bruto": 501.0
+        },
+        {
+          "data": "2026-10-04",
+          "bruto": 727.0
+        },
+        {
+          "data": "2026-10-05",
+          "bruto": 1768.15
+        },
+        {
+          "data": "2026-10-06",
+          "bruto": 333.0
+        },
+        {
+          "data": "2026-10-08",
+          "bruto": 758.15
+        },
+        {
+          "data": "2026-10-09",
+          "bruto": 816.0
+        }
+      ],
       "taxa_antecipacao_mensal_pct": 1.66,
-      "obs": "Taxas Stone oficiais SIIBELLO (Débito 1,46% · Crédito 1x 2,08% · Antecipação Automática 1,66%). TODAS as vendas são 1x (zero parcelamento)."
+      "obs": "Só vendas ainda não liberadas (débito D+1 · crédito 1x D+30). Taxas Stone oficiais SIIBELLO (Débito 1,46% · Crédito 1x 2,08% · Antecipação Automática 1,66% a.m., cobrada pro-rata pelos dias que faltam). Todas as vendas são 1x."
     },
     "aplicacao_reserva": {
-      "saldo_aplicado": 36314.54,
+      "saldo_aplicado": 7349.42,
       "total_aportes_periodo": 36314.54,
+      "total_resgates_periodo": 28965.12,
+      "resgates_n": 1,
+      "ultimo_resgate": "2026-09-04",
       "transf_recebidas_periodo": 2896.43,
-      "dias_medio_aporte": 19.0,
-      "rendimento_estimado_pct": 0.71,
-      "rendimento_estimado_r": 259.3,
-      "saldo_com_rendimento_estimado": 36573.84,
+      "dias_medio_aporte": 2.2,
+      "rendimento_estimado_pct": 0.08,
+      "rendimento_estimado_r": 6.05,
+      "rendimento_periodo_r": 207.52,
+      "saldo_com_rendimento_estimado": 7355.47,
       "historico_dias": 42,
       "ultimos_movs": [
         {
           "data": "2026-08-29",
           "aporte": 501.75,
+          "resgate": 0.0,
           "transf_recebida": 0.0,
           "saldo_aplicado_acum": 21910.79
         },
         {
           "data": "2026-08-31",
           "aporte": 4260.63,
+          "resgate": 0.0,
           "transf_recebida": 0.0,
           "saldo_aplicado_acum": 26171.42
         },
         {
           "data": "2026-09-01",
           "aporte": 202.65,
+          "resgate": 0.0,
           "transf_recebida": 0.0,
           "saldo_aplicado_acum": 26374.07
         },
         {
           "data": "2026-09-02",
           "aporte": 967.59,
+          "resgate": 0.0,
           "transf_recebida": 0.0,
           "saldo_aplicado_acum": 27341.66
         },
         {
           "data": "2026-09-03",
           "aporte": 815.0,
+          "resgate": 0.0,
           "transf_recebida": 0.0,
           "saldo_aplicado_acum": 28156.66
         },
         {
           "data": "2026-09-04",
           "aporte": 921.51,
+          "resgate": 28965.12,
           "transf_recebida": 0.0,
-          "saldo_aplicado_acum": 29078.17
+          "saldo_aplicado_acum": 113.05
         },
         {
           "data": "2026-09-05",
           "aporte": 713.36,
+          "resgate": 0.0,
           "transf_recebida": 0.0,
-          "saldo_aplicado_acum": 29791.53
+          "saldo_aplicado_acum": 826.41
         },
         {
           "data": "2026-09-06",
           "aporte": 176.85,
+          "resgate": 0.0,
           "transf_recebida": 0.0,
-          "saldo_aplicado_acum": 29968.38
+          "saldo_aplicado_acum": 1003.26
         },
         {
           "data": "2026-09-08",
           "aporte": 4886.98,
+          "resgate": 0.0,
           "transf_recebida": 0.0,
-          "saldo_aplicado_acum": 34855.36
+          "saldo_aplicado_acum": 5890.24
         },
         {
           "data": "2026-09-09",
           "aporte": 1459.18,
+          "resgate": 0.0,
           "transf_recebida": 0.0,
-          "saldo_aplicado_acum": 36314.54
+          "saldo_aplicado_acum": 7349.42
         }
       ],
-      "obs": "Saldo bate com valor real confirmado por Rodrigo 12/08 (R$ 14.110,05). Rendimento estimado usa CDI ~14,5% a.a. como referência.",
+      "obs": "Saldo = varreduras acumuladas menos resgates. Rendimento estimado usa CDI ~14,5% a.a. apropriado dia a dia sobre o saldo do dia — é estimativa, o valor oficial é o do app Stone.",
       "meta_objetivo": 150000.0,
-      "pct_atingimento_meta": 24.21,
-      "falta_para_meta": 113685.46,
+      "pct_atingimento_meta": 4.9,
+      "falta_para_meta": 142650.58,
       "rendimento_previsto_30d": 159.2,
       "produto": "CDB Stone 100% CDI",
       "resgate": "imediato",
       "ultima_conferencia_app": "2026-08-23",
       "ritmo_aporte_mensal_est": 38754.3,
-      "meses_ate_meta_est": 2.9
+      "meses_ate_meta_est": 3.7
     },
     "gap_trinks_stone": {
       "ultima_data_stone": "2026-09-09T20:21:00",
@@ -1394,7 +1527,7 @@
           "cliente": "Marcia Roseli "
         }
       ],
-      "horas_desatualizado": 2.6
+      "horas_desatualizado": 3.2
     }
   },
   "auditoria_cancelados": {
@@ -5789,14 +5922,14 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Prof desligado #38018",
+          "nome": "Prof desligado #707880",
           "n": 0,
           "v": 535.0,
           "ticket_medio": 535.0,
           "horas_trab": 0.0
         },
         {
-          "nome": "Prof desligado #707880",
+          "nome": "Prof desligado #38018",
           "n": 0,
           "v": 535.0,
           "ticket_medio": 535.0,
@@ -5859,32 +5992,11 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Bianca Doria Araujo Santos",
-          "n": 8,
+          "nome": "Patricia Helena Ferreira",
+          "n": 12,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 4.9
-        },
-        {
-          "nome": "Vanessa Nascimento D Silva",
-          "n": 4,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 2.0
-        },
-        {
-          "nome": "Julia Kathleen Souza Da Silva",
-          "n": 11,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 5.5
-        },
-        {
-          "nome": "Giovanna Guedes Da Silva",
-          "n": 65,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 35.1
+          "horas_trab": 6.3
         },
         {
           "nome": "Cacilda Guimarães",
@@ -5894,25 +6006,18 @@
           "horas_trab": 1.5
         },
         {
-          "nome": "Lidiane Quiteria Da Silva",
-          "n": 9,
+          "nome": "Bianca Doria Araujo Santos",
+          "n": 8,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 5.2
+          "horas_trab": 4.9
         },
         {
-          "nome": "Eliana Sampaio Cerqueira",
-          "n": 1,
+          "nome": "Julia Kathleen Souza Da Silva",
+          "n": 11,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 0.5
-        },
-        {
-          "nome": "Kimberly Soares Vasconcelos",
-          "n": 4,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.8
+          "horas_trab": 5.5
         },
         {
           "nome": "Aline Dos Santos Gonzaga",
@@ -5922,11 +6027,11 @@
           "horas_trab": 1.6
         },
         {
-          "nome": "Jeniffer Roberta De Oliveira Felix",
-          "n": 17,
+          "nome": "Vanessa Nascimento D Silva",
+          "n": 4,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 9.2
+          "horas_trab": 2.0
         },
         {
           "nome": "Niedja Rafaelle Leite Nunes",
@@ -5936,18 +6041,46 @@
           "horas_trab": 2.4
         },
         {
-          "nome": "Patricia Helena Ferreira",
-          "n": 12,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 6.3
-        },
-        {
           "nome": "Sandra Margarete Da Silva",
           "n": 6,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 3.5
+        },
+        {
+          "nome": "Giovanna Guedes Da Silva",
+          "n": 65,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 35.1
+        },
+        {
+          "nome": "Lidiane Quiteria Da Silva",
+          "n": 9,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 5.2
+        },
+        {
+          "nome": "Kimberly Soares Vasconcelos",
+          "n": 4,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 1.8
+        },
+        {
+          "nome": "Jeniffer Roberta De Oliveira Felix",
+          "n": 17,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 9.2
+        },
+        {
+          "nome": "Eliana Sampaio Cerqueira",
+          "n": 1,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 0.5
         }
       ],
       "ranking_prof_total_n": 36,
@@ -9728,7 +9861,7 @@
         "caixa_delta_bruto_pct": 65.9,
         "periodo_ant_ref": {
           "data": "2026-09-02",
-          "hora_max": 22.92,
+          "hora_max": 23.55,
           "caixa": 797.0,
           "atend_fin": 15,
           "cliente_dia": 12,
@@ -9750,8 +9883,8 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "22:55",
-          "hora_atual_num": 22.92,
+          "hora_atual_str": "23:33",
+          "hora_atual_num": 23.55,
           "pct_esperado_agora": 100.0,
           "meta_dia": 972.55,
           "meta_esperada_agora": 972.55,
@@ -9936,18 +10069,18 @@
           "horas_trab": 1.8
         },
         {
-          "nome": "Prof desligado #609387",
-          "n": 0,
-          "v": 79.0,
-          "ticket_medio": 79.0,
-          "horas_trab": 0.0
-        },
-        {
           "nome": "Erika Thais Pereira Melim",
           "n": 5,
           "v": 79.0,
           "ticket_medio": 15.8,
           "horas_trab": 2.5
+        },
+        {
+          "nome": "Prof desligado #609387",
+          "n": 0,
+          "v": 79.0,
+          "ticket_medio": 79.0,
+          "horas_trab": 0.0
         },
         {
           "nome": "Tais Cristina Leite Cabral",
@@ -10347,8 +10480,8 @@
       },
       {
         "tipo": "info",
-        "titulo": "Aplicação Stone: R$ 36.314,54",
-        "texto": "Rendendo cerca de R$ 412,08/mês se estiver acompanhando o CDI (14,5% a.a.). Bom hedge contra a antecipação.",
+        "titulo": "Aplicação Stone: R$ 7.349,42",
+        "texto": "Rendendo cerca de R$ 83,40/mês se estiver acompanhando o CDI (14,5% a.a.). Bom hedge contra a antecipação.",
         "acao": "Confirmar no app Stone que a aplicação bate CDI. Se render menos, migrar pra Tesouro Selic ou CDB de banco digital (mesma liquidez, rendimento igual/melhor)."
       }
     ],
