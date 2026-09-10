@@ -3350,22 +3350,53 @@ async function switchUnidade(nova){
   await reloadAllTabs(false);
 }
 
+// Banner exibido no topo da aba ativa quando os dados vieram da Escova
+// como scaffolding (SPA/Consolidado ainda sem payload próprio).
+function renderScaffoldingBanner(){
+  document.querySelectorAll('.scaffolding-banner').forEach(e => e.remove());
+  if(!UNIDADE_SCAFFOLDING || UNIDADE_ATIVA === 'escova') return;
+  const info = unidadeInfo(UNIDADE_ATIVA);
+  const cor = { spa: '#24B3A6', consolidado: '#B8935E' }[UNIDADE_ATIVA] || 'var(--accent)';
+  let msg;
+  if(UNIDADE_ATIVA === 'consolidado'){
+    msg = `<strong>📊 Consolidado · preview</strong> — mostrando somente os números da <strong>Escova</strong> por enquanto. Quando as conexões da SPA subirem, o consolidado passa a somar as duas unidades automaticamente.`;
+  } else {
+    const dInaug = info.data_inauguracao;
+    const dTxt = dInaug ? dInaug.split('-').reverse().join('/') : '';
+    msg = `<strong>${info.emoji||'🧖'} ${info.tipo||'SPA'} · preview</strong> — usando <strong>estrutura + números da Escova</strong> como scaffolding. Dados reais da SPA entram quando o Trinks da unidade for conectado${dTxt?` (inauguração ${dTxt})`:''}.`;
+  }
+  const html = `<div class="scaffolding-banner" style="background:${cor}22;border-left:4px solid ${cor};border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12.5px;color:var(--ink-2);line-height:1.55">${msg}</div>`;
+  // Insere no topo de cada painel de aba
+  document.querySelectorAll('.panel').forEach(p => {
+    p.insertAdjacentHTML('afterbegin', html);
+  });
+}
+
+// Fetch com fallback: tenta primeiro o path da unidade ativa; se 404 e a
+// unidade for SPA/Consolidado, usa o path da Escova como scaffolding
+// (preview da estrutura com os números da Escova) até o backend gerar os
+// payloads dedicados data/spa/… e data/consolidado/…
+let UNIDADE_SCAFFOLDING = false;  // true quando os dados exibidos vêm da Escova
+async function fetchUnidade(arquivo){
+  const info = unidadeInfo(UNIDADE_ATIVA);
+  const prefix = info.data_prefix != null ? info.data_prefix : (info.prefix||'');
+  const tryPath = `data/${prefix}${arquivo}?_=${Date.now()}`;
+  let r = await fetch(tryPath, {cache:'no-store'});
+  if(!r.ok && UNIDADE_ATIVA !== 'escova' && r.status === 404){
+    // fallback: usa dados da Escova
+    r = await fetch(`data/${arquivo}?_=${Date.now()}`, {cache:'no-store'});
+    if(r.ok) UNIDADE_SCAFFOLDING = true;
+  }
+  return r;
+}
+
 async function load(showToast=false){
   const btn=document.getElementById('btn-reload');
   if(btn){btn.disabled=true;btn.textContent='🔄 Atualizando…';}
   try {
-    const dashPath = pathData('dashboard_data.json');
-    const resp = await fetch(dashPath+'?_='+Date.now(), {cache:'no-store'});
-    if(!resp.ok){
-      // Unidade sem payload → placeholder e sair silenciosamente
-      if(resp.status === 404 && UNIDADE_ATIVA !== 'escova'){
-        UNIDADE_SEM_DADOS = true;
-        renderPlaceholderUnidade();
-        if(btn){btn.disabled=false;btn.textContent='🔄 Atualizar dados';}
-        return;
-      }
-      throw new Error('HTTP '+resp.status);
-    }
+    UNIDADE_SCAFFOLDING = false;  // reset por load
+    const resp = await fetchUnidade('dashboard_data.json');
+    if(!resp.ok) throw new Error('HTTP '+resp.status);
     UNIDADE_SEM_DADOS = false;
     limparPlaceholder();
     const data = await resp.json();
@@ -3433,6 +3464,7 @@ async function load(showToast=false){
     else{chipAge.className='chip stale';chipAge.innerHTML=`<span class="dot"></span> há ${Math.floor(ageMin/60)}h${ageMin%60}m ⚠️ desatualizado`;}
     document.getElementById('loading').style.display='none';
     document.getElementById('content').style.display='';
+    try{ renderScaffoldingBanner(); }catch(e){}
     if(showToast) toast(`✅ Dados recarregados<br><small>Snapshot de ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} BRT · idade ${ageMin} min</small>`);
   } catch(e){
     if(showToast) toast(`❌ <strong>Erro</strong> ao recarregar: ${e.message}`, true);
@@ -4060,7 +4092,7 @@ function renderFinanceiro(){
 async function loadFinanceiro(){
   if(UNIDADE_SEM_DADOS) return;  // placeholder mode
   try{
-    const r = await fetch(pathData('financeiro.json')+'?_='+Date.now(), {cache:'no-store'});
+    const r = await fetchUnidade('financeiro.json');
     if(r.ok){ FIN = await r.json(); renderFinanceiro(); }
   }catch(e){ console.warn('financeiro.json indisponível', e); }
 }
@@ -5722,7 +5754,7 @@ function renderMidias(){
 async function loadMidias(){
   if(UNIDADE_SEM_DADOS) return;  // placeholder mode
   try{
-    const r = await fetch(pathData('midias_sociais.json')+'?_='+Date.now(), {cache:'no-store'});
+    const r = await fetchUnidade('midias_sociais.json');
     if(r.ok){ MID = await r.json(); renderMidias(); }
   }catch(e){ console.warn('midias_sociais.json indisponível', e); }
 }
