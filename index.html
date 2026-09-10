@@ -3044,48 +3044,95 @@ function renderStone(data){
   // Análise de antecipação REAL (via stone_processor.py)
   const antec = s.antecipacao_analise || null;
 
-  const bloco_alerta = `
-    <div class="meta-card" style="border-top-color:${cor_topo};">
-      <h2><span style="color:${cor_topo}">${status_ico}</span> Status reconciliação · <span style="color:${cor_topo}">${status_txt}</span></h2>
-      <div class="sub">Separado por natureza · risco real vs recebíveis aguardando</div>
-      <div class="meta-row">
-        <div class="meta-cell" style="border-left:3px solid ${nc.orfaos_stone_n?'var(--warn)':'var(--good)'};"><div class="l">🟡 Órfãos Stone</div><div class="v ${nc.orfaos_stone_n?'warn':'good'}">${brl0(nc.orfaos_stone_v)}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">${nc.orfaos_stone_n} PIX Stone sem Trinks</div></div>
-        <div class="meta-cell" style="border-left:3px solid ${nc.orfaos_trinks_n?'var(--crit)':'var(--good)'};"><div class="l">🔴 Órfãos Trinks</div><div class="v ${nc.orfaos_trinks_n?'crit':'good'}">${brl0(nc.orfaos_trinks_v)}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">${nc.orfaos_trinks_n} PIX Trinks sem Stone</div></div>
-        <div class="meta-cell" style="border-left:3px solid var(--good);"><div class="l">🟢 Aguardando D+30</div><div class="v good">${brl0(nc.a_receber_d30)}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">Recebível normal · cartão cai em ~30d</div></div>
-        <div class="meta-cell" style="border-left:3px solid var(--accent);"><div class="l">✅ Conciliados</div><div class="v" style="color:var(--accent)">${nc.matches_consolidados}</div><div style="font-size:11px;color:var(--ink-3);margin-top:4px;">PIX matcheados automaticamente</div></div>
-      </div>
-    </div>
+  // bloco_alerta agora consolidado no hero (Onde está o dinheiro).
+  const bloco_alerta = '';
 
-    ${antec ? `
-    <div class="card" style="border-left:3px solid var(--accent-2);">
-      <h2>💡 Análise real de antecipação Stone · o que ainda não foi liberado</h2>
-      <div class="cap">Só vendas com liberação ainda pendente (débito D+1 · crédito 1× D+30) + taxas oficiais SIIBELLO. O custo é pro-rata: taxa mensal × dias que ainda faltam.</div>
-      <table class="simple">
-        <thead><tr><th>Modalidade</th><th>Nº vendas</th><th>Bruto</th><th>MDR</th><th>Faltam</th><th>Liq. esperando</th><th>Liq. antecipando</th><th>Custo antec.</th></tr></thead>
-        <tbody>
-          <tr><td>Débito (D+1)</td><td>${antec.debito.n}</td><td>${brl0(antec.debito.bruto)}</td><td>${antec.debito.mdr_pct.toFixed(2)}%</td><td>${antec.debito.dias_medio_restante != null ? antec.debito.dias_medio_restante + " d" : "—"}</td><td>${brl0(antec.debito.liq_espera)}</td><td>${brl0(antec.debito.liq_antecipar)}</td><td class="neu">${brl0(antec.debito.custo_antecipacao)} <em>(irrisório)</em></td></tr>
-          <tr><td>Crédito 1x (D+30)</td><td>${antec.credito.n}</td><td>${brl0(antec.credito.bruto)}</td><td>${antec.credito.mdr_pct.toFixed(2)}%</td><td>${antec.credito.dias_medio_restante != null ? antec.credito.dias_medio_restante + " d" : "—"}</td><td>${brl0(antec.credito.liq_espera)}</td><td>${brl0(antec.credito.liq_antecipar)}</td><td class="dn">${brl0(antec.credito.custo_antecipacao)}</td></tr>
-          <tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>TOTAL cartão</td><td>${antec.debito.n + antec.credito.n}</td><td>${brl0(antec.total.bruto)}</td><td>—</td><td>—</td><td>${brl0(antec.total.liq_espera)}</td><td>${brl0(antec.total.liq_antecipar)}</td><td>${brl0(antec.total.custo_antecipacao)} (${antec.total.custo_pct.toFixed(2)}%)</td></tr>
-        </tbody>
-      </table>
-      ${antec.confronto_a_receber ? `
-      <div class="cap" style="margin-top:10px;">
-        <strong>Confere com o card de reconciliação:</strong> aguardando liberação pelo extrato Stone
-        ${brl0(antec.confronto_a_receber.a_receber_extrato)} · pela fila de vendas do Trinks
-        ${brl0(antec.confronto_a_receber.pendente_vendas)} ·
-        diferença <span class="${Math.abs(antec.confronto_a_receber.diferenca) > 1500 ? 'warn' : 'neu'}">${brl0(antec.confronto_a_receber.diferenca)}</span>.
-        São dois caminhos para a mesma fila (extrato: vendido − creditado · Trinks: vendas que ainda não venceram).
-        Diferença grande pede conferência de recebível atrasado no app da Stone.
-      </div>` : ''}
-      <div class="insight">
-        <strong>Taxa Stone antecipação: ${antec.taxa_antecipacao_mensal_pct.toFixed(2)}% a.m.</strong> · <strong>MDR</strong>: 1,46% débito · 2,08% crédito 1x.
-        <br><strong>Débito não vale antecipar</strong> (cai em 1 dia · custo desprezível).
-        <br><strong>Crédito compensa antecipar SE:</strong>
-        <br>• Precisa capital pra oportunidade que rende <strong>>${antec.taxa_antecipacao_mensal_pct.toFixed(2)}%/mês</strong> (giro Advisory 1,5% <span class="dn">NÃO compensa</span>)
-        <br>• Tem CashMe/dívida com juros >${antec.taxa_antecipacao_mensal_pct.toFixed(2)}%/mês (nesse caso <span class="up">COMPENSA</span> quitar antecipado)
-        <br>• <em>Com folga de caixa, esperar 30 dias é grátis — não é risco</em>.
+  // === CARD DEDICADO · ANTECIPAR OU ESPERAR? ===
+  // Análise importante que merece card próprio: decisão binária de negócio,
+  // com 2 cenários lado a lado e regras claras de quando compensa.
+  let bloco_antecipacao = '';
+  if(antec){
+    const taxaAM = antec.taxa_antecipacao_mensal_pct || 1.66;
+    const brutoTotal = antec.total.bruto || 0;
+    const liqEspera = antec.total.liq_espera || 0;
+    const liqAntec  = antec.total.liq_antecipar || 0;
+    const custo     = antec.total.custo_antecipacao || 0;
+    const custoPct  = antec.total.custo_pct || 0;
+    // Recomendação contextual
+    let recomendacao, corRec;
+    if(custo < 50){
+      recomendacao = `<strong style="color:var(--good)">✅ Não antecipe.</strong> Valor pequeno (${brl0(custo)} de taxa), custo relativo baixo. Deixa cair sozinho — é grátis esperar 30 dias.`;
+      corRec = 'var(--good)';
+    } else if(taxaAM > 1.5){
+      recomendacao = `<strong style="color:var(--warn)">⚠️ Só antecipe se tiver uso &gt; ${taxaAM.toFixed(2)}%/mês pro dinheiro.</strong> Taxa Stone é ${taxaAM.toFixed(2)}%/mês — CDB (1,0-1,3%) e reserva simples <span class="dn">NÃO compensam</span>. Faz sentido só pra quitar CashMe/dívida cara ou oportunidade real com retorno acima disso.`;
+      corRec = 'var(--warn)';
+    } else {
+      recomendacao = `<strong>Analisar caso a caso.</strong> Taxa razoável (${taxaAM.toFixed(2)}%/mês). Se tem dívida ou oportunidade que rende mais que isso, compensa. Senão, esperar sai de graça.`;
+      corRec = 'var(--ink-2)';
+    }
+
+    bloco_antecipacao = `<div class="card" style="border-left:4px solid var(--accent-2)">
+      <h2>💡 Antecipar ou esperar? <span class="hi">análise de decisão</span></h2>
+      <div class="cap">Você tem <strong>${brl0(brutoTotal)}</strong> em cartão vendido, aguardando liberação Stone. Antecipar hoje custa taxa da Stone (${taxaAM.toFixed(2)}%/mês pro-rata pelos dias que faltam) — só faz sentido se o dinheiro vai render mais que isso em outro lugar.</div>
+
+      <!-- 2 CENÁRIOS LADO A LADO -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:14px">
+        <div style="padding:16px;background:var(--surface-2);border-radius:10px;border-left:3px solid var(--good)">
+          <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase;letter-spacing:.06em">⏳ Se esperar (padrão)</div>
+          <div style="font-size:32px;font-weight:800;color:var(--ink);margin:8px 0 2px">${brl0(liqEspera)}</div>
+          <div style="font-size:12px;color:var(--ink-2)">cai automático nos próximos ~30 dias</div>
+          <div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);font-size:11.5px;color:var(--ink-2)">
+            💰 Custo: <strong style="color:var(--good)">R$ 0</strong> (esperar é grátis)<br>
+            📅 Prazo: até 30 dias<br>
+            ✅ Recomendado se você tem folga de caixa
+          </div>
+        </div>
+        <div style="padding:16px;background:var(--surface-2);border-radius:10px;border-left:3px solid var(--warn)">
+          <div style="font-size:11px;color:var(--warn);font-weight:800;text-transform:uppercase;letter-spacing:.06em">⚡ Se antecipar tudo agora</div>
+          <div style="font-size:32px;font-weight:800;color:var(--ink);margin:8px 0 2px">${brl0(liqAntec)}</div>
+          <div style="font-size:12px;color:var(--ink-2)">cai na conta hoje mesmo</div>
+          <div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);font-size:11.5px;color:var(--ink-2)">
+            💸 Custo: <strong style="color:var(--crit)">${brl0(custo)}</strong> em taxa (${custoPct.toFixed(2)}% do bruto)<br>
+            📅 Prazo: agora<br>
+            ⚠️ Só se precisa capital ou tem dívida cara
+          </div>
+        </div>
       </div>
-    </div>` : ''}`;
+
+      <!-- REGRAS DE DECISÃO -->
+      <div style="margin-top:14px;padding:12px 14px;background:var(--surface-2);border-radius:8px">
+        <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px">Quando compensa antecipar?</div>
+        <div style="display:grid;gap:6px;font-size:12.5px;color:var(--ink-2);line-height:1.5">
+          <div>✅ <strong>COMPENSA</strong> pra quitar CashMe/dívida com juros &gt; ${taxaAM.toFixed(2)}%/mês</div>
+          <div>✅ <strong>COMPENSA</strong> se tem oportunidade real que rende mais que ${taxaAM.toFixed(2)}%/mês</div>
+          <div>❌ <strong>NÃO COMPENSA</strong> pra aplicar em CDB (1,0-1,3%/mês rende MENOS que o custo)</div>
+          <div>❌ <strong>NÃO COMPENSA</strong> pra giro operacional normal (loja tem caixa)</div>
+        </div>
+      </div>
+
+      <!-- RECOMENDAÇÃO -->
+      <div class="insight" style="margin-top:14px;border-left-color:${corRec}">
+        <strong>👉 Recomendação:</strong> ${recomendacao}
+      </div>
+
+      <!-- DETALHE POR MODALIDADE (retrátil) -->
+      <details style="margin-top:12px">
+        <summary style="cursor:pointer;font-size:12px;color:var(--ink-2);padding:8px 12px;background:var(--surface-2);border-radius:6px;font-weight:600">🔬 Ver breakdown por modalidade (débito D+1 · crédito D+30)</summary>
+        <div style="overflow-x:auto;margin-top:10px">
+          <table class="simple">
+            <thead><tr><th>Modalidade</th><th>Nº vendas</th><th>Bruto</th><th>MDR</th><th>Dias faltam</th><th>Se esperar</th><th>Se antecipar</th><th>Custo antec.</th></tr></thead>
+            <tbody>
+              <tr><td>Débito (D+1)</td><td>${antec.debito.n}</td><td>${brl0(antec.debito.bruto)}</td><td>${antec.debito.mdr_pct.toFixed(2)}%</td><td>${antec.debito.dias_medio_restante != null ? antec.debito.dias_medio_restante + ' d' : '—'}</td><td>${brl0(antec.debito.liq_espera)}</td><td>${brl0(antec.debito.liq_antecipar)}</td><td class="neu">${brl0(antec.debito.custo_antecipacao)} <em>(irrisório)</em></td></tr>
+              <tr><td>Crédito 1x (D+30)</td><td>${antec.credito.n}</td><td>${brl0(antec.credito.bruto)}</td><td>${antec.credito.mdr_pct.toFixed(2)}%</td><td>${antec.credito.dias_medio_restante != null ? antec.credito.dias_medio_restante + ' d' : '—'}</td><td>${brl0(antec.credito.liq_espera)}</td><td>${brl0(antec.credito.liq_antecipar)}</td><td class="dn">${brl0(antec.credito.custo_antecipacao)}</td></tr>
+              <tr style="background:var(--surface-2);color:var(--accent);font-weight:700"><td>TOTAL cartão</td><td>${antec.debito.n + antec.credito.n}</td><td>${brl0(antec.total.bruto)}</td><td>—</td><td>—</td><td>${brl0(antec.total.liq_espera)}</td><td>${brl0(antec.total.liq_antecipar)}</td><td>${brl0(antec.total.custo_antecipacao)} (${antec.total.custo_pct.toFixed(2)}%)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="cap" style="margin-top:8px">Taxa Stone antecipação: <strong>${taxaAM.toFixed(2)}%/mês</strong> · MDR: 1,46% débito · 2,08% crédito 1×. Custo é pro-rata (taxa mensal × dias que ainda faltam). Débito não vale antecipar (cai em 1 dia, custo desprezível).</div>
+        ${antec.confronto_a_receber ? `<div class="cap" style="margin-top:6px;font-size:11px"><strong>Confere:</strong> extrato Stone ${brl0(antec.confronto_a_receber.a_receber_extrato)} × fila vendas Trinks ${brl0(antec.confronto_a_receber.pendente_vendas)} · diferença <span class="${Math.abs(antec.confronto_a_receber.diferenca) > 1500 ? 'warn' : 'neu'}">${brl0(antec.confronto_a_receber.diferenca)}</span>.</div>` : ''}
+      </details>
+    </div>`;
+  }
 
   // Cards órfãos detalhados
   let bloco_orf_stone = '';
@@ -3408,9 +3455,9 @@ function renderStone(data){
 
   let direcStone;
   if(orfaos_v > 100){
-    direcStone = `<strong>Há ${brl0(orfaos_v)} em ${orfaos_n} transações que não bateram Stone × Trinks.</strong> Antes de olhar antecipação, resolva isso — pode ser dinheiro que caiu (Stone tem, Trinks não) OU venda registrada sem receber (Trinks tem, Stone não). Cada caso vira R$ real na sua conta ou economia de conflito com cliente.`;
-  } else if(aReceber > 5000 && custoAntec > 0){
-    direcStone = `<strong>${brl0(aReceber)} vão cair automaticamente</strong> nos próximos 30 dias (cartão de crédito). Se antecipar tudo agora, paga <strong>${brl0(custoAntec)}</strong> em taxa (${taxaMesPct.toFixed(2)}%/mês). Só antecipar se tem uma oportunidade que rende mais que isso — senão, esperar sai de graça.`;
+    direcStone = `<strong>Há ${brl0(orfaos_v)} em ${orfaos_n} transações que não bateram Stone × Trinks.</strong> Resolva isso primeiro — pode ser dinheiro que caiu (Stone tem, Trinks não) OU venda registrada sem receber (Trinks tem, Stone não). Cada caso vira R$ real na sua conta ou economia de conflito com cliente.`;
+  } else if(aReceber > 5000){
+    direcStone = `✅ <strong>Reconciliação em dia.</strong> Cartões liberam no ritmo normal. Ver card <strong>💡 Antecipar ou esperar?</strong> abaixo pra decidir sobre os ${brl0(aReceber)} de cartão pendente.`;
   } else {
     direcStone = `✅ <strong>Reconciliação em dia.</strong> Nenhum dinheiro perdido no meio, cartões liberam no ritmo normal. Continuar acompanhando quando entrar CSV Stone novo.`;
   }
@@ -3462,8 +3509,8 @@ function renderStone(data){
     </div>
   </div>`;
 
-  // bloco_alerta absorvido no bloco_hero (Status reconciliação + 4 estados unificados)
-  el.innerHTML = bloco_hero + bloco_gap + bloco_orf_stone + bloco_orf_trinks + bloco_periodos + bloco_dinheiro + bloco_aplicacao + bloco_fluxo + bloco_receb;
+  // bloco_alerta absorvido no bloco_hero. Antecipação vira card DEDICADO (bloco_antecipacao).
+  el.innerHTML = bloco_hero + bloco_gap + bloco_orf_stone + bloco_orf_trinks + bloco_antecipacao + bloco_periodos + bloco_dinheiro + bloco_aplicacao + bloco_fluxo + bloco_receb;
 
   // CONSOLIDAÇÃO K · handler do seletor Stone por período
   document.querySelectorAll('.stone-per-btn').forEach(btn => {
