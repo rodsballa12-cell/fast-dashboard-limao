@@ -85,8 +85,8 @@
   .unidade-seletor .unid-btn .unid-ico{flex-shrink:0;display:block;}
   .unidade-seletor .unid-btn:hover{color:var(--ink);background:var(--surface);}
   .unidade-seletor .unid-btn.active{background:var(--accent);color:#0A0A0C;box-shadow:var(--shadow-sm);}
-  /* Consolidado herda o gradient do logo: metade amarelo Escova, metade teal SPA */
-  .unidade-seletor .unid-btn.active[data-unidade="consolidado"]{background:linear-gradient(90deg,#FFD100 50%,#24B3A6 50%);color:#0A0A0C;}
+  /* Consolidado monocromático: preto puro com texto branco (mood B&W executivo) */
+  .unidade-seletor .unid-btn.active[data-unidade="consolidado"]{background:#0A0A0A;color:#FFFFFF;}
   .placeholder-unidade{max-width:720px;margin:80px auto 40px;padding:48px 32px;background:var(--surface);border:1px solid var(--border);border-radius:16px;text-align:center;box-shadow:var(--shadow);}
   .placeholder-unidade .emoji-big{font-size:64px;line-height:1;margin-bottom:16px;display:block;}
   .placeholder-unidade h2{font-size:24px;margin:0 0 10px;color:var(--ink);}
@@ -3198,7 +3198,7 @@ let UNIDADE_SEM_DADOS = false;  // true quando o payload não existe (placeholde
 
 function unidadeInfo(u){
   const cfg = (typeof CONFIG !== 'undefined' && CONFIG && CONFIG.unidades) || {};
-  if(u === 'consolidado') return { emoji: '📊', nome: 'Consolidado', tipo: 'Escova + SPA', accent: '#3F3F46', prefix: 'consolidado/', data_inauguracao: null };
+  if(u === 'consolidado') return { emoji: '📊', nome: 'Consolidado', tipo: 'Escova + SPA', accent: '#0A0A0A', prefix: 'consolidado/', data_inauguracao: null };
   return cfg[u] || { emoji: '❓', nome: u, tipo: u, accent: 'var(--accent)', prefix: (u==='escova'?'':`${u}/`), data_inauguracao: null };
 }
 
@@ -3253,7 +3253,7 @@ function atualizarHeaderUnidade(){
   const paletas = {
     escova:      { accent:'#F5B800', accent2:'#B88A00', accentSoft:'rgba(245,184,0,.15)',  tint:'rgba(245,184,0,.08)' },
     spa:         { accent:'#24B3A6', accent2:'#1A8578', accentSoft:'rgba(36,179,166,.15)', tint:'rgba(36,179,166,.08)' },
-    consolidado: { accent:'#3F3F46', accent2:'#27272A', accentSoft:'rgba(63,63,70,.12)', tint:'rgba(63,63,70,.06)' },
+    consolidado: { accent:'#0A0A0A', accent2:'#000000', accentSoft:'rgba(10,10,12,.06)', tint:'rgba(10,10,12,.04)' },
   };
   const p = paletas[UNIDADE_ATIVA] || paletas.escova;
   const root = document.documentElement;
@@ -3357,7 +3357,7 @@ function renderScaffoldingBanner(){
   document.querySelectorAll('.scaffolding-banner').forEach(e => e.remove());
   if(!UNIDADE_SCAFFOLDING || UNIDADE_ATIVA === 'escova') return;
   const info = unidadeInfo(UNIDADE_ATIVA);
-  const cor = { spa: '#24B3A6', consolidado: '#3F3F46' }[UNIDADE_ATIVA] || 'var(--accent)';
+  const cor = { spa: '#24B3A6', consolidado: '#0A0A0A' }[UNIDADE_ATIVA] || 'var(--accent)';
   let msg;
   if(UNIDADE_ATIVA === 'consolidado'){
     msg = `<strong>📊 Consolidado · preview</strong> — mostrando somente os números da <strong>Escova</strong> por enquanto. Quando as conexões da SPA subirem, o consolidado passa a somar as duas unidades automaticamente.`;
