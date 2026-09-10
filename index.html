@@ -2752,27 +2752,97 @@ function renderAuditoria(data){
 
   const info = r.info || 0;
   const semValor = aud.lista.filter(x => x.valor_zero).length;
-  // KPIs de resumo
-  const tiles = [
-    tile('', 'Total cancelamentos', aud.n_com_valor+'', `${semValor} sem cobrança · R$ ${aud.v_total.toFixed(2)} com valor`),
-    tile('c3', 'Sem risco (OK)', ((r.ok||0)+info)+'', 'nenhuma flag'),
-    tile('c2', 'Atenção operacional', atencao+'', 'sem prof OU valor atípico'),
-    tile('', 'Revisar (Stone hit)', revisar+'', 'match valor+dia · nome não bate'),
-  ];
-  const criticoTile = criticos > 0
-    ? `<div class="categ-tile" style="border-left-color:var(--crit)"><div class="n" style="color:var(--crit)">CRÍTICO — SKIMMING?</div><div class="v" style="color:var(--crit)">${criticos}</div><div class="d">nome do pagador Stone BATE com cliente cancelado</div></div>`
-    : `<div class="categ-tile" style="border-left-color:var(--good)"><div class="n" style="color:var(--good)">CRÍTICO — SKIMMING?</div><div class="v" style="color:var(--good)">0</div><div class="d">✅ nenhum match nome-para-nome</div></div>`;
-
+  const totalOk = (r.ok||0) + info;
+  const totalRisco = criticos + revisar + atencao;
+  const totalAnalis = totalOk + totalRisco;
+  const pctSaude = totalAnalis > 0 ? Math.round(totalOk/totalAnalis*100) : 100;
+  const corSaude = pctSaude >= 90 ? 'var(--good)' : (pctSaude >= 70 ? 'var(--warn)' : 'var(--crit)');
   const excluidos = aud.excluidos_inauguracao_n || 0;
-  const excluidosNota = excluidos > 0
-    ? `<div style="margin-top:10px;font-size:11.5px;color:var(--ink-3);border-top:1px dashed var(--border);padding-top:10px">📝 Também há <strong>${excluidos} cancelamentos até ${aud.data_corte||'23/07'}</strong> (R$ ${(aud.excluidos_inauguracao_v||0).toFixed(2)}) — excluídos por serem testes de inauguração.</div>`
-    : '';
+
+  // Direcionamento narrativo
+  let direcAudit;
+  if(criticos > 0){
+    direcAudit = `🚨 <strong>Você tem ${criticos} caso${criticos>1?'s':''} crítico${criticos>1?'s':''} de possível skimming</strong> (Stone recebeu o valor mas foi cancelado no Trinks — o dinheiro pode ter ficado com alguém no meio). Revisar HOJE, não amanhã.`;
+  } else if(revisar > 0){
+    direcAudit = `<strong>${revisar} caso${revisar>1?'s':''} pra revisar</strong> — valor e data batem com o Stone mas o nome está diferente. Pode ser colisão de nomes (comum) ou algo mais sério. Vale 10 min de olho.`;
+  } else if(atencao > 0){
+    direcAudit = `<strong>${atencao} caso${atencao>1?'s':''} de atenção operacional</strong> — sem profissional atribuído OU valor fora do padrão. Não é fraude, é processo. Treinar a recepção resolve.`;
+  } else {
+    direcAudit = `✅ <strong>Operação saudável</strong>. Nenhum cancelamento suspeito no período. Continue monitorando.`;
+  }
+
   resumoEl.innerHTML = `<div class="card">
-    <h2>🛡️ Resumo de risco</h2>
-    <div class="cap">Cada cancelamento com valor é analisado automaticamente contra 3 vetores de risco financeiro</div>
-    <div class="categ-grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">${criticoTile}${tiles.join('')}</div>
-    <div class="insight"><strong>Regras:</strong> <span style="color:var(--crit)">CRÍTICO</span> = Stone recebeu R$ igual no mesmo dia e nome do pagador bate com cliente cancelado (2+ tokens). <span style="color:var(--accent)">REVISAR</span> = valor+dia batem no Stone mas nome não confere (colisão provável). <span style="color:var(--warn)">ATENÇÃO</span> = sem prof atribuído OU valor diverge ±20% do preço mediano do serviço. <span style="color:var(--good)">OK</span> = cancelamento legítimo sem sinal.</div>
-    ${excluidosNota}
+    <h2>🛡️ Auditoria · foto do agora</h2>
+    <div class="cap">Cada cancelamento com valor passa por 3 filtros de risco (Stone, valor, profissional). Aqui só o que precisa da sua atenção.</div>
+
+    <!-- HERO: score de saúde -->
+    <div style="text-align:center;padding:22px 16px;background:var(--surface-2);border-radius:12px;margin-top:14px">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Saúde da operação</div>
+      <div style="font-size:52px;font-weight:800;color:${corSaude};line-height:1.05;margin:4px 0">${pctSaude}%</div>
+      <div style="font-size:13px;color:var(--ink-2)">dos ${totalAnalis} cancelamentos analisados estão OK</div>
+      <div style="display:flex;justify-content:center;gap:36px;margin-top:16px;flex-wrap:wrap;font-size:12.5px">
+        <div><span style="font-size:22px;font-weight:800;color:var(--good)">${totalOk}</span> <span style="color:var(--ink-2)">legítimos</span></div>
+        <div style="color:var(--border)">|</div>
+        <div><span style="font-size:22px;font-weight:800;color:${totalRisco>0?'var(--warn)':'var(--ink-2)'}">${totalRisco}</span> <span style="color:var(--ink-2)">precisam de olho</span></div>
+      </div>
+    </div>
+
+    <!-- BLOCO O QUE FOI ENCONTRADO -->
+    <div style="margin-top:16px">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">O que os filtros encontraram</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${criticos>0?'var(--crit)':'var(--good)'}">
+          <div style="font-size:11px;color:${criticos>0?'var(--crit)':'var(--good)'};font-weight:800;text-transform:uppercase">🚨 Crítico · skimming?</div>
+          <div style="font-size:26px;font-weight:800;color:${criticos>0?'var(--crit)':'var(--good)'};margin:2px 0">${criticos}</div>
+          <div style="font-size:11px;color:var(--ink-2)">${criticos>0?'nome do pagador Stone BATE com cliente cancelado':'✅ nenhum match nome-a-nome'}</div>
+        </div>
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${revisar>0?'var(--accent)':'var(--border)'}">
+          <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase">🔍 Revisar</div>
+          <div style="font-size:26px;font-weight:800;color:var(--ink);margin:2px 0">${revisar}</div>
+          <div style="font-size:11px;color:var(--ink-2)">valor+dia batem no Stone mas nome não confere</div>
+        </div>
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${atencao>0?'var(--warn)':'var(--border)'}">
+          <div style="font-size:11px;color:var(--warn);font-weight:800;text-transform:uppercase">⚠️ Atenção</div>
+          <div style="font-size:26px;font-weight:800;color:var(--ink);margin:2px 0">${atencao}</div>
+          <div style="font-size:11px;color:var(--ink-2)">sem prof atribuído OU valor atípico</div>
+        </div>
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--good)">
+          <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase">✓ Legítimos</div>
+          <div style="font-size:26px;font-weight:800;color:var(--ink);margin:2px 0">${totalOk}</div>
+          <div style="font-size:11px;color:var(--ink-2)">nenhuma flag de risco</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOCO CONTEXTO EM R$ -->
+    <div style="margin-top:16px">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Volume analisado</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        <div style="padding:10px 12px;background:var(--surface-2);border-radius:8px;text-align:center">
+          <div style="font-size:20px;font-weight:800;color:var(--accent)">${aud.n_com_valor}</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:2px">cancel. com valor</div>
+        </div>
+        <div style="padding:10px 12px;background:var(--surface-2);border-radius:8px;text-align:center">
+          <div style="font-size:20px;font-weight:800;color:var(--ink)">R$ ${aud.v_total.toFixed(0)}</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:2px">valor total analisado</div>
+        </div>
+        <div style="padding:10px 12px;background:var(--surface-2);border-radius:8px;text-align:center">
+          <div style="font-size:20px;font-weight:800;color:var(--ink)">${semValor}</div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:2px">sem cobrança (walk-in)</div>
+        </div>
+      </div>
+    </div>
+
+    ${totalRisco > 0 ? `<div style="margin-top:16px;padding:14px 16px;background:var(--accent-soft);border-radius:10px;border:1px solid var(--accent)">
+      <div style="font-size:11px;color:var(--ink);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">👇 Precisam da sua atenção</div>
+      <div style="font-size:13px;color:var(--ink);line-height:1.5">${direcAudit}</div>
+      <div style="font-size:11px;color:var(--ink-3);margin-top:8px">Rolagem abaixo: ranking por profissional (quem cancela mais?) + lista caso a caso.</div>
+    </div>` : ''}
+
+    <div class="insight" style="margin-top:14px">
+      <strong>👉 Direcionamento:</strong> ${direcAudit}
+    </div>
+    ${excluidos > 0 ? `<div style="margin-top:10px;font-size:11.5px;color:var(--ink-3);border-top:1px dashed var(--border);padding-top:10px">📝 ${excluidos} cancelamentos até ${aud.data_corte||'23/07'} (R$ ${(aud.excluidos_inauguracao_v||0).toFixed(2)}) foram excluídos por serem testes de inauguração.</div>` : ''}
   </div>`;
 
   // Ranking por profissional × produtividade (cruzamento aba Painel)
@@ -3232,7 +3302,77 @@ function renderStone(data){
       </div>`;
   }
 
-  el.innerHTML = bloco_alerta + bloco_gap + bloco_orf_stone + bloco_orf_trinks + bloco_periodos + bloco_dinheiro + bloco_aplicacao + bloco_fluxo + bloco_receb;
+  // === HERO leigo-friendly · a mesma linguagem da aba Clientes ===
+  const totalConciliado = nc.matches_consolidados || 0;
+  const orfaos_v = (nc.orfaos_stone_v||0) + (nc.orfaos_trinks_v||0);
+  const orfaos_n = (nc.orfaos_stone_n||0) + (nc.orfaos_trinks_n||0);
+  const aReceber = nc.a_receber_d30 || 0;
+  const ehSaudavel = orfaos_v < 100;
+  const custoAntec = antec ? (antec.total.custo_antecipacao || 0) : 0;
+  const liqTotal = antec ? ((antec.total.liq_espera || 0)) : 0;
+  const taxaMesPct = antec ? (antec.taxa_antecipacao_mensal_pct || 0) : 0;
+
+  let direcStone;
+  if(orfaos_v > 100){
+    direcStone = `<strong>Há ${brl0(orfaos_v)} em ${orfaos_n} transações que não bateram Stone × Trinks.</strong> Antes de olhar antecipação, resolva isso — pode ser dinheiro que caiu (Stone tem, Trinks não) OU venda registrada sem receber (Trinks tem, Stone não). Cada caso vira R$ real na sua conta ou economia de conflito com cliente.`;
+  } else if(aReceber > 5000 && custoAntec > 0){
+    direcStone = `<strong>${brl0(aReceber)} vão cair automaticamente</strong> nos próximos 30 dias (cartão de crédito). Se antecipar tudo agora, paga <strong>${brl0(custoAntec)}</strong> em taxa (${taxaMesPct.toFixed(2)}%/mês). Só antecipar se tem uma oportunidade que rende mais que isso — senão, esperar sai de graça.`;
+  } else {
+    direcStone = `✅ <strong>Reconciliação em dia.</strong> Nenhum dinheiro perdido no meio, cartões liberam no ritmo normal. Continuar acompanhando quando entrar CSV Stone novo.`;
+  }
+
+  const bloco_hero = `<div class="card">
+    <h2>🏦 Stone · foto do agora</h2>
+    <div class="cap">Tudo que a loja vendeu vs. o que já caiu (e o que ainda vai cair). Do maior número pra ação.</div>
+
+    <!-- HERO -->
+    <div style="text-align:center;padding:22px 16px;background:var(--surface-2);border-radius:12px;margin-top:14px">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">${ehSaudavel?'Situação do caixa':'⚠️ Precisa reconciliar'}</div>
+      <div style="font-size:48px;font-weight:800;color:${ehSaudavel?'var(--good)':'var(--crit)'};line-height:1.05;margin:4px 0">${ehSaudavel?'✅':'🚨'}</div>
+      <div style="font-size:13px;color:var(--ink-2)">${ehSaudavel?'Todo dinheiro do Trinks bateu com o Stone':`R$ ${orfaos_v.toFixed(0)} em ${orfaos_n} lançamentos sem par`}</div>
+      <div style="display:flex;justify-content:center;gap:36px;margin-top:16px;flex-wrap:wrap;font-size:12.5px">
+        <div><span style="font-size:22px;font-weight:800;color:var(--good)">${totalConciliado}</span> <span style="color:var(--ink-2)">conciliados</span></div>
+        ${orfaos_n > 0 ? `<div style="color:var(--border)">|</div><div><span style="font-size:22px;font-weight:800;color:var(--crit)">${orfaos_n}</span> <span style="color:var(--ink-2)">órfãos</span></div>` : ''}
+      </div>
+    </div>
+
+    <!-- BLOCO O QUE JÁ ESTÁ + O QUE VEM -->
+    <div style="margin-top:16px">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Onde está o dinheiro</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--good)">
+          <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase">🟢 Já caiu</div>
+          <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${totalConciliado} lançamentos</div>
+          <div style="font-size:11px;color:var(--ink-2)">bateram Stone × Trinks, contabilizado</div>
+        </div>
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${aReceber>0?'var(--accent)':'var(--border)'}">
+          <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase">🟡 Vai cair em ~30d</div>
+          <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${brl0(aReceber)}</div>
+          <div style="font-size:11px;color:var(--ink-2)">cartão de crédito, liberação automática</div>
+        </div>
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${orfaos_v>0?'var(--crit)':'var(--good)'}">
+          <div style="font-size:11px;color:${orfaos_v>0?'var(--crit)':'var(--good)'};font-weight:800;text-transform:uppercase">🔴 Órfãos</div>
+          <div style="font-size:22px;font-weight:800;color:${orfaos_v>0?'var(--crit)':'var(--ink)'};margin:2px 0">${brl0(orfaos_v)}</div>
+          <div style="font-size:11px;color:var(--ink-2)">${orfaos_v>0?'valor sem par — resolver hoje':'nenhum órfão, tudo casado'}</div>
+        </div>
+      </div>
+    </div>
+
+    ${antec && liqTotal > 0 ? `<div style="margin-top:16px">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Antecipar ou esperar?</div>
+      <div style="padding:14px 16px;background:var(--surface-2);border-radius:10px;font-size:13px;color:var(--ink-2);line-height:1.6">
+        Tem <strong style="color:var(--ink)">${brl0(liqTotal)}</strong> de cartão pra receber nos próximos dias.
+        Se antecipar tudo agora, paga <strong style="color:var(--crit)">${brl0(custoAntec)}</strong> em taxa (${taxaMesPct.toFixed(2)}%/mês da Stone).
+        Só vale a pena se sua próxima oportunidade rende mais que ${taxaMesPct.toFixed(2)}%/mês — senão, deixa cair sozinho.
+      </div>
+    </div>` : ''}
+
+    <div class="insight" style="margin-top:14px">
+      <strong>👉 Direcionamento:</strong> ${direcStone}
+    </div>
+  </div>`;
+
+  el.innerHTML = bloco_hero + bloco_alerta + bloco_gap + bloco_orf_stone + bloco_orf_trinks + bloco_periodos + bloco_dinheiro + bloco_aplicacao + bloco_fluxo + bloco_receb;
 
   // CONSOLIDAÇÃO K · handler do seletor Stone por período
   document.querySelectorAll('.stone-per-btn').forEach(btn => {
@@ -4406,16 +4546,85 @@ function renderMidias(){
 
   // CONSOLIDAÇÃO M · fontes viraram chips 1-linha (info de infra, não decisão)
   const chip = (nome, ok, det, cor) => `<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;font-size:11px;color:var(--ink-2)" title="${det.replace(/"/g,'&quot;')}"><span style="color:${cor}">${ok?'●':'○'}</span>${nome}</span>`;
-  document.getElementById('midias-status').innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 14px 0;font-size:11px;color:var(--ink-3)">
-    <span>🔌 Fontes:</span>
-    ${chip('Meta Ads', true, `${M.ad_account_nome} · ${M.ad_account_id}`, '#22c55e')}
-    ${chip('Instagram', true, `@${MID.instagram.handle} · ${MID.instagram.followers.toLocaleString('pt-BR')} seguidores`, '#22c55e')}
-    ${chip('Facebook', !!(MID.facebook_page&&MID.facebook_page.conectado), MID.facebook_page?MID.facebook_page.nome:'Aguardando auth', MID.facebook_page&&MID.facebook_page.conectado?'#22c55e':'#f59e0b')}
-    ${chip('Google Ads', !!MID.google_ads.conectado, MID.google_ads.mensagem||'', MID.google_ads.conectado?'#22c55e':'#f59e0b')}
-    ${chip('Google Meu Negócio', !!(MID.google_business&&MID.google_business.conectado), MID.google_business?'⭐ '+MID.google_business.rating.estrelas_media+' · '+MID.google_business.rating.reviews_total+' reviews':'Aguardando auth', MID.google_business&&MID.google_business.conectado?'#22c55e':'#f59e0b')}
-    ${chip('HubSpot', true, `Portal ${MID.hubspot.portal_id} · ${MID.hubspot.contatos} contatos`, '#22c55e')}
-    ${chip('WhatsApp API', !!MID.whatsapp_cloud_api.conectado, MID.whatsapp_cloud_api.mensagem||'', MID.whatsapp_cloud_api.conectado?'#22c55e':'#ef4444')}
-    <span style="margin-left:auto;font-size:10px">Gerado ${gerado} · ${MID.fonte}</span>
+
+  // === HERO leigo-friendly · Mídia · foto do agora ===
+  const pmtdH = (M.por_periodo && M.por_periodo.mtd) || {};
+  const gastoMes = pmtdH.gasto || 0;
+  const convMes = pmtdH.conversas_msg || 0;
+  const cpaMes = pmtdH.cpa_msg || 0;
+  const cpaMeta = (bench.cpa_msg_meta || 25);
+  const cpaCor = cpaMes && cpaMes <= cpaMeta*0.85 ? 'var(--good)' : (cpaMes && cpaMes <= cpaMeta*1.15 ? 'var(--warn)' : 'var(--crit)');
+  const cpaCtx = cpaMes ? (cpaMes <= cpaMeta*0.85 ? 'ótimo, muito abaixo da meta' : cpaMes <= cpaMeta*1.15 ? 'na meta' : `caro, ${((cpaMes/cpaMeta-1)*100).toFixed(0)}% acima da meta`) : '—';
+  const igSeg = (MID.instagram && MID.instagram.followers) || 0;
+  const gmb30 = MID.google_business && MID.google_business.kpis_30d;
+  const gmbAcoes = gmb30 ? ((gmb30.actions_phone||0) + (gmb30.actions_directions||0)) : 0;
+  const gmbRating = MID.google_business ? MID.google_business.rating.estrelas_media : null;
+
+  let direcMidia;
+  if(!gastoMes){
+    direcMidia = `<strong>Sem investimento no mês.</strong> Se a base está crescendo só com o orgânico + Google, é sinal bom — mas revisar se vale escalar (mídia paga acelera aquisição).`;
+  } else if(cpaMes > cpaMeta*1.3){
+    direcMidia = `<strong>CPA de ${brl(cpaMes)} está caro</strong> (meta ${brl(cpaMeta)}). Pausa o pior anúncio no card abaixo (🎨 Anúncios individuais) e realoca o budget nos que puxam CPA pra baixo.`;
+  } else if(cpaMes && cpaMes <= cpaMeta*0.7){
+    direcMidia = `<strong>CPA de ${brl(cpaMes)} está ótimo</strong> (30%+ abaixo da meta). Momento pra <strong>escalar</strong> — subir 20-40% do budget dos anúncios com status "escalar" no card abaixo.`;
+  } else {
+    direcMidia = `<strong>Mídia rodando na meta.</strong> Continua acompanhando CPA e frequência (se passar de 3, público cansa). Boa hora de testar novo criativo pra não estagnar.`;
+  }
+
+  document.getElementById('midias-status').innerHTML = `<div class="card">
+    <h2>📣 Mídia · foto do agora</h2>
+    <div class="cap">Do maior número (quanto investe e quantos clientes traz) pras ações imediatas nos cards abaixo.</div>
+
+    <!-- HERO -->
+    <div style="text-align:center;padding:22px 16px;background:var(--surface-2);border-radius:12px;margin-top:14px">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Este mês · Meta Ads</div>
+      <div style="font-size:44px;font-weight:800;color:var(--accent);line-height:1.05;margin:4px 0">${brl0(gastoMes)}</div>
+      <div style="font-size:13px;color:var(--ink-2)">investidos até agora</div>
+      <div style="display:flex;justify-content:center;gap:32px;margin-top:16px;flex-wrap:wrap;font-size:12.5px">
+        <div><span style="font-size:22px;font-weight:800;color:var(--ink)">${convMes}</span> <span style="color:var(--ink-2)">conversas geradas</span></div>
+        <div style="color:var(--border)">|</div>
+        <div><span style="font-size:22px;font-weight:800;color:${cpaCor}">${cpaMes?brl(cpaMes):'—'}</span> <span style="color:var(--ink-2)">custo por conversa</span></div>
+      </div>
+      ${cpaMes ? `<div style="font-size:11.5px;color:var(--ink-3);margin-top:6px">${cpaCtx} · meta ${brl(cpaMeta)}</div>` : ''}
+    </div>
+
+    <!-- BLOCO CANAIS ATIVOS -->
+    <div style="margin-top:16px">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Seus canais</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid #E4405F">
+          <div style="font-size:11px;color:#E4405F;font-weight:800;text-transform:uppercase">📱 Meta Ads</div>
+          <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${brl0(gastoMes)}</div>
+          <div style="font-size:11px;color:var(--ink-2)">${convMes} conversas · CPA ${cpaMes?brl(cpaMes):'—'}</div>
+        </div>
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid #C13584">
+          <div style="font-size:11px;color:#C13584;font-weight:800;text-transform:uppercase">📷 Instagram</div>
+          <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${igSeg.toLocaleString('pt-BR')}</div>
+          <div style="font-size:11px;color:var(--ink-2)">seguidores · @${MID.instagram.handle} · orgânico</div>
+        </div>
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid #4285F4">
+          <div style="font-size:11px;color:#4285F4;font-weight:800;text-transform:uppercase">📍 Google Meu Negócio</div>
+          <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${gmbAcoes}</div>
+          <div style="font-size:11px;color:var(--ink-2)">ações em 30d ${gmbRating?`· ⭐ ${gmbRating}`:''} · orgânico</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight" style="margin-top:14px">
+      <strong>👉 Direcionamento:</strong> ${direcMidia}
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);font-size:11px;color:var(--ink-3)">
+      <span>🔌 Fontes:</span>
+      ${chip('Meta Ads', true, `${M.ad_account_nome} · ${M.ad_account_id}`, '#22c55e')}
+      ${chip('Instagram', true, `@${MID.instagram.handle} · ${MID.instagram.followers.toLocaleString('pt-BR')} seguidores`, '#22c55e')}
+      ${chip('Facebook', !!(MID.facebook_page&&MID.facebook_page.conectado), MID.facebook_page?MID.facebook_page.nome:'Aguardando auth', MID.facebook_page&&MID.facebook_page.conectado?'#22c55e':'#f59e0b')}
+      ${chip('Google Ads', !!MID.google_ads.conectado, MID.google_ads.mensagem||'', MID.google_ads.conectado?'#22c55e':'#f59e0b')}
+      ${chip('Google Meu Negócio', !!(MID.google_business&&MID.google_business.conectado), MID.google_business?'⭐ '+MID.google_business.rating.estrelas_media+' · '+MID.google_business.rating.reviews_total+' reviews':'Aguardando auth', MID.google_business&&MID.google_business.conectado?'#22c55e':'#f59e0b')}
+      ${chip('HubSpot', true, `Portal ${MID.hubspot.portal_id} · ${MID.hubspot.contatos} contatos`, '#22c55e')}
+      ${chip('WhatsApp API', !!MID.whatsapp_cloud_api.conectado, MID.whatsapp_cloud_api.mensagem||'', MID.whatsapp_cloud_api.conectado?'#22c55e':'#ef4444')}
+      <span style="margin-left:auto;font-size:10px">Gerado ${gerado} · ${MID.fonte}</span>
+    </div>
   </div>`;
 
   // KPI-ESTRELA em destaque + 3 períodos
