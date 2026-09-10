@@ -3457,15 +3457,6 @@ function renderStone(data){
       </div>
     </div>
 
-    ${antec && liqTotal > 0 ? `<div style="margin-top:16px">
-      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Antecipar ou esperar?</div>
-      <div style="padding:14px 16px;background:var(--surface-2);border-radius:10px;font-size:13px;color:var(--ink-2);line-height:1.6">
-        Tem <strong style="color:var(--ink)">${brl0(liqTotal)}</strong> de cartão pra receber nos próximos dias.
-        Se antecipar tudo agora, paga <strong style="color:var(--crit)">${brl0(custoAntec)}</strong> em taxa (${taxaMesPct.toFixed(2)}%/mês da Stone).
-        Só vale a pena se sua próxima oportunidade rende mais que ${taxaMesPct.toFixed(2)}%/mês — senão, deixa cair sozinho.
-      </div>
-    </div>` : ''}
-
     <div class="insight" style="margin-top:14px">
       <strong>👉 Direcionamento:</strong> ${direcStone}
     </div>
