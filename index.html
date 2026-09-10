@@ -521,7 +521,7 @@
       <!-- 2. BASE FIEL (sobe antes das observações — visão de valor primeiro) -->
       <div id="clientes-topcli"></div>
       <!-- 3. AÇÕES AGORA -->
-      <div id="clientes-obs-alertas"></div>
+      <!-- clientes-obs-alertas removido: dados atuais sem sinal relevante -->
       <div id="clientes-aniv"></div>
       <div id="clientes-churn"></div>
       <div id="clientes-cross-sell"></div>
@@ -2394,7 +2394,9 @@ function renderClientes(data){
   renderClientesSnapshot('clientes-snapshot', snap, a.top_ltv, a.novos_vs_recorr);
 
   // 2. Ações AGORA
-  renderObsAlertas('clientes-obs-alertas', a.obs_alertas, a.obs_agend_alertas);
+  // renderObsAlertas removido: dados atuais sem sinal relevante (baixa cobertura de notas no Trinks).
+  // Função mantida em index.html pra reativar quando cadastro de observações amadurecer.
+  // renderObsAlertas('clientes-obs-alertas', a.obs_alertas, a.obs_agend_alertas);
   renderAniversariantes('clientes-aniv', a.aniversariantes);
   renderChurn('clientes-churn', a.churn_early);
 
