@@ -3336,24 +3336,29 @@ function renderStone(data){
       </div>
     </div>
 
-    <!-- BLOCO O QUE JÁ ESTÁ + O QUE VEM -->
+    <!-- BLOCO O QUE JÁ ESTÁ + O QUE VEM (4 estados unificados) -->
     <div style="margin-top:16px">
-      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Onde está o dinheiro</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Onde está o dinheiro · separado por natureza</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--good)">
-          <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase">🟢 Já caiu</div>
-          <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${totalConciliado} lançamentos</div>
-          <div style="font-size:11px;color:var(--ink-2)">bateram Stone × Trinks, contabilizado</div>
+          <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase">✅ Conciliados</div>
+          <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${totalConciliado}</div>
+          <div style="font-size:11px;color:var(--ink-2)">PIX matcheados automaticamente</div>
         </div>
-        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${aReceber>0?'var(--accent)':'var(--border)'}">
-          <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase">🟡 Vai cair em ~30d</div>
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${aReceber>0?'var(--good)':'var(--border)'}">
+          <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase">🟢 Aguardando D+30</div>
           <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${brl0(aReceber)}</div>
-          <div style="font-size:11px;color:var(--ink-2)">cartão de crédito, liberação automática</div>
+          <div style="font-size:11px;color:var(--ink-2)">recebível normal · cartão cai em ~30d</div>
         </div>
-        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${orfaos_v>0?'var(--crit)':'var(--good)'}">
-          <div style="font-size:11px;color:${orfaos_v>0?'var(--crit)':'var(--good)'};font-weight:800;text-transform:uppercase">🔴 Órfãos</div>
-          <div style="font-size:22px;font-weight:800;color:${orfaos_v>0?'var(--crit)':'var(--ink)'};margin:2px 0">${brl0(orfaos_v)}</div>
-          <div style="font-size:11px;color:var(--ink-2)">${orfaos_v>0?'valor sem par — resolver hoje':'nenhum órfão, tudo casado'}</div>
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${(nc.orfaos_stone_n||0)>0?'var(--warn)':'var(--good)'}">
+          <div style="font-size:11px;color:${(nc.orfaos_stone_n||0)>0?'var(--warn)':'var(--good)'};font-weight:800;text-transform:uppercase">🟡 Órfãos Stone</div>
+          <div style="font-size:22px;font-weight:800;color:${(nc.orfaos_stone_n||0)>0?'var(--warn)':'var(--ink)'};margin:2px 0">${brl0(nc.orfaos_stone_v||0)}</div>
+          <div style="font-size:11px;color:var(--ink-2)">${nc.orfaos_stone_n||0} PIX Stone sem Trinks</div>
+        </div>
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${(nc.orfaos_trinks_n||0)>0?'var(--crit)':'var(--good)'}">
+          <div style="font-size:11px;color:${(nc.orfaos_trinks_n||0)>0?'var(--crit)':'var(--good)'};font-weight:800;text-transform:uppercase">🔴 Órfãos Trinks</div>
+          <div style="font-size:22px;font-weight:800;color:${(nc.orfaos_trinks_n||0)>0?'var(--crit)':'var(--ink)'};margin:2px 0">${brl0(nc.orfaos_trinks_v||0)}</div>
+          <div style="font-size:11px;color:var(--ink-2)">${nc.orfaos_trinks_n||0} PIX Trinks sem Stone</div>
         </div>
       </div>
     </div>
@@ -3372,7 +3377,8 @@ function renderStone(data){
     </div>
   </div>`;
 
-  el.innerHTML = bloco_hero + bloco_alerta + bloco_gap + bloco_orf_stone + bloco_orf_trinks + bloco_periodos + bloco_dinheiro + bloco_aplicacao + bloco_fluxo + bloco_receb;
+  // bloco_alerta absorvido no bloco_hero (Status reconciliação + 4 estados unificados)
+  el.innerHTML = bloco_hero + bloco_gap + bloco_orf_stone + bloco_orf_trinks + bloco_periodos + bloco_dinheiro + bloco_aplicacao + bloco_fluxo + bloco_receb;
 
   // CONSOLIDAÇÃO K · handler do seletor Stone por período
   document.querySelectorAll('.stone-per-btn').forEach(btn => {
