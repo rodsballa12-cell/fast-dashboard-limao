@@ -1,6 +1,7 @@
 """Consolida os payloads das unidades (Escova + SPA) num único
 data/consolidado/dashboard_data.json somando numéricos leaf-por-leaf,
-concatenando rankings com badge (🥂 Escova / 🧖 SPA) e recalculando
+concatenando rankings com _unidade (escova/spa) — o frontend renderiza
+o ícone certo (secador / maca de massagem) — e recalculando
 percentuais/médias derivados.
 
 Fonte:
@@ -97,10 +98,10 @@ def merge_list(a, b, path=""):
     # Arrays por índice (dow, hora, etc.) — soma item-a-item se mesmo tamanho
     if key in ARRAY_POR_INDICE and len(a) == len(b):
         return [merge(x, y, path) for x, y in zip(a, b)]
-    # Rankings de prof — concat com badge, re-ordenar por v
+    # Rankings de prof — concat com metadado _unidade (frontend pinta ícone certo)
     if key in ARRAY_CONCAT_BADGE:
-        merged = [{**x, "nome": f"🥂 {x.get('nome','')}"} for x in a] + \
-                 [{**x, "nome": f"🧖 {x.get('nome','')}"} for x in b]
+        merged = [{**x, "_unidade": "escova"} for x in a] + \
+                 [{**x, "_unidade": "spa"} for x in b]
         merged.sort(key=lambda z: -(z.get("v") or 0))
         return merged
     # Arrays por chave (categoria_native, clientes_top, aniv) — agrupa por nome
