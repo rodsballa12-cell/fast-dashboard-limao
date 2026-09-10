@@ -212,6 +212,7 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     transf_stone = []
     debitos_transacao = []
     pix_enviados = []
+    resgates_aplicacao = []
 
     for r in recs:
         tipo = r.get("Tipo", "")
@@ -223,6 +224,16 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
 
         if mov == "Crédito" and (tipo == "Pix" or (tipo == "Transação" and origem and origem != "Desconhecido")):
             pix_stone_all.append({"data": data, "valor": valor, "tarifa": tarifa, "origem": origem or ""})
+        elif (mov == "Crédito" and tipo == "Transação"
+              and origem in ("", "Desconhecido")
+              and "STONE" in (r.get("Origem Instituição") or "").upper()):
+            # RESGATE da aplicação: dinheiro voltando da reserva para a conta.
+            # Não é entrada nova (não é venda) — é caixa que já estava contabilizado
+            # saindo da reserva, normalmente para uma sangria via PIX logo em seguida.
+            # Sem esta categoria o resgate ficava invisível e o saldo da reserva só
+            # crescia: em 04/09 saíram R$ 28.965,12 para a conta XP e o painel seguiu
+            # mostrando o valor como se ainda estivesse aplicado.
+            resgates_aplicacao.append({"data": data, "valor": valor})
         elif mov == "Crédito" and tipo == "Recebível de Cartão":
             cartao_stone_all.append({"data": data, "valor": valor})
         elif mov == "Crédito" and tipo == "Transferência entre contas Stone":
@@ -363,107 +374,179 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         "pix_enviados_n": len(pix_enviados),
     }
 
-    # ==== 6. APLICAÇÃO RESERVA STONE (calibrado com valor real Rodrigo 12/08) ====
-    # Padrão confirmado: cada crédito → débito "Transação" imediato = VARREDURA para aplicação
-    # As varreduras se ACUMULAM (não há resgate no extrato · dinheiro fica aplicado)
-    # Total aportado = total_saidas (validado: 14.110,05 em 12/08)
+    # ==== 6. APLICAÇÃO RESERVA STONE ====
+    # Padrão: cada crédito → débito "Transação" imediato = VARREDURA para a aplicação.
+    # As varreduras se acumulam, MENOS os resgates (crédito "Transação" vindo da
+    # própria Stone), que são dinheiro voltando da reserva para a conta — em geral
+    # às vésperas de uma sangria via PIX para o banco principal.
     from collections import defaultdict
     aportes_dia = defaultdict(float)
     transfer_recebidas_dia = defaultdict(float)
+    resgates_dia = defaultdict(float)
     for x in debitos_transacao:
         if x["data"]: aportes_dia[x["data"]] += x["valor"]
     for x in transf_stone:
         if x["data"]: transfer_recebidas_dia[x["data"]] += x["valor"]
+    for x in resgates_aplicacao:
+        if x["data"]: resgates_dia[x["data"]] += x["valor"]
 
-    dias_ord = sorted(set(list(aportes_dia.keys()) + list(transfer_recebidas_dia.keys())))
+    tot_resgates = sum(x["valor"] for x in resgates_aplicacao)
+    saldo_reserva = tot_saidas - tot_resgates
+
+    dias_ord = sorted(set(list(aportes_dia.keys()) + list(transfer_recebidas_dia.keys())
+                          + list(resgates_dia.keys())))
     historico = []
     saldo_acum = 0
     for d in dias_ord:
         s = aportes_dia.get(d, 0)
         r = transfer_recebidas_dia.get(d, 0)
-        saldo_acum += s  # só aportes contam para o saldo aplicado
+        g = resgates_dia.get(d, 0)
+        saldo_acum += s - g
         historico.append({
             "data": d.isoformat(),
             "aporte": _r(s),
+            "resgate": _r(g),
             "transf_recebida": _r(r),
             "saldo_aplicado_acum": _r(saldo_acum),
         })
 
-    # Estimativa de rendimento: CDI ~14,5% a.a. = ~1,13% a.m.
-    # Aporte médio ponderado por tempo:
-    from datetime import date as _date
-    dias_desde_hoje = 0
-    total_dias_ponderado = 0
-    for h in historico:
-        dt = _date.fromisoformat(h["data"])
-        dias = (hoje - dt).days if hoje else 0
-        total_dias_ponderado += h["aporte"] * dias
-    dias_medio_aporte = total_dias_ponderado / max(tot_saidas, 1) if tot_saidas else 0
-    rendimento_estimado_pct = 1.13 / 30 * dias_medio_aporte  # CDI %/mês * proporção
-    rendimento_estimado_r = tot_saidas * rendimento_estimado_pct / 100
+    # Rendimento estimado: CDI ~14,5% a.a. ≈ 1,13% a.m., apropriado dia a dia sobre o
+    # saldo efetivamente aplicado naquele dia. A versão anterior ponderava só os aportes
+    # pelo tempo, o que ignorava resgates e passou a superestimar assim que houve um.
+    #
+    # Duas janelas, porque um resgate separa dois dinheiros diferentes:
+    #  · período  = tudo desde o início do extrato (inclui juros de dinheiro já sacado)
+    #  · atual    = só depois do último resgate, que é o que ainda está rendendo
+    # Sem essa separação, o "saldo + rendimento" somaria a um saldo de R$ 7 mil os juros
+    # de um saldo de R$ 29 mil que já foi para a XP.
+    CDI_DIA_PCT = 1.13 / 30
+    ultimo_resgate_d = max((d for d, v in resgates_dia.items() if v > 0), default=None)
+
+    saldo_dia_acum = 0.0
+    soma_saldo_dias_atual = 0.0
+    rendimento_periodo_r = 0.0
+    rendimento_atual_r = 0.0
+    if dias_ord:
+        d = dias_ord[0]
+        while d <= hoje:
+            saldo_dia_acum += aportes_dia.get(d, 0) - resgates_dia.get(d, 0)
+            rendimento_periodo_r += saldo_dia_acum * CDI_DIA_PCT / 100
+            if ultimo_resgate_d is None or d > ultimo_resgate_d:
+                soma_saldo_dias_atual += saldo_dia_acum
+                rendimento_atual_r += saldo_dia_acum * CDI_DIA_PCT / 100
+            d += timedelta(days=1)
+
+    # "dias médios" = quantos dias o saldo ATUAL equivale a ter ficado aplicado
+    dias_medio_aporte = soma_saldo_dias_atual / saldo_reserva if saldo_reserva > 0 else 0
+    rendimento_estimado_r = rendimento_atual_r
+    rendimento_estimado_pct = (rendimento_atual_r / saldo_reserva * 100) if saldo_reserva > 0 else 0
 
     aplicacao_reserva = {
-        "saldo_aplicado": _r(tot_saidas),  # bate com valor real confirmado
+        "saldo_aplicado": _r(saldo_reserva),
         "total_aportes_periodo": _r(tot_saidas),
+        "total_resgates_periodo": _r(tot_resgates),
+        "resgates_n": len(resgates_aplicacao),
+        "ultimo_resgate": max((x["data"] for x in resgates_aplicacao if x["data"]), default=None),
         "transf_recebidas_periodo": _r(tot_retornos),
         "dias_medio_aporte": round(dias_medio_aporte, 1),
         "rendimento_estimado_pct": round(rendimento_estimado_pct, 2),
         "rendimento_estimado_r": _r(rendimento_estimado_r),
-        "saldo_com_rendimento_estimado": _r(tot_saidas + rendimento_estimado_r),
+        "rendimento_periodo_r": _r(rendimento_periodo_r),
+        "saldo_com_rendimento_estimado": _r(saldo_reserva + rendimento_estimado_r),
         "historico_dias": len(historico),
         "ultimos_movs": historico[-10:],
-        "obs": "Saldo bate com valor real confirmado por Rodrigo 12/08 (R$ 14.110,05). Rendimento estimado usa CDI ~14,5% a.a. como referência.",
+        "obs": ("Saldo = varreduras acumuladas menos resgates. Rendimento estimado usa "
+                "CDI ~14,5% a.a. apropriado dia a dia sobre o saldo do dia — é estimativa, "
+                "o valor oficial é o do app Stone."),
     }
+    if aplicacao_reserva["ultimo_resgate"]:
+        aplicacao_reserva["ultimo_resgate"] = aplicacao_reserva["ultimo_resgate"].isoformat()
 
     recebiveis_lista = [{"data": r["data"].isoformat() if r["data"] else None, "valor": _r(r["valor"])}
                        for r in sorted(cartao_stone_all, key=lambda x: x["data"] or date.min)]
 
-    # ==== ANÁLISE DE ANTECIPAÇÃO (real, com débito D+1 e crédito D+30) ====
-    # Só considera vendas do MÊS CORRENTE (ainda não caíram)
-    hoje_mes = (hoje.year, hoje.month)
-    debito_mes = [x for x in debito_trinks_all if x["data"] and (x["data"].year, x["data"].month) == hoje_mes]
-    credito_mes = [x for x in credito_trinks_all if x["data"] and (x["data"].year, x["data"].month) == hoje_mes]
+    # ==== ANÁLISE DE ANTECIPAÇÃO (sobre o que ainda NÃO foi liberado) ====
+    # A versão anterior somava as vendas do MÊS CORRENTE inteiro. Isso dava um número
+    # que não fechava com o "aguardando liberação" por dois motivos ao mesmo tempo:
+    #   1. incluía o débito do mês, que cai em D+1 e a essa altura já caiu — não dá
+    #      para antecipar dinheiro que já está na conta;
+    #   2. excluía o crédito 1x do mês ANTERIOR, que cai em D+30 e é justamente o
+    #      grosso da fila de liberação.
+    # Agora cada venda tem uma data prevista de liberação (D+1 débito · D+30 crédito)
+    # e só entra na conta o que ainda não venceu. O custo da antecipação é proporcional
+    # aos dias que faltam para cada venda, não 1,66% cheio para todo mundo.
+    PRAZO_DIAS = {"debito": 1, "credito1x": 30}
 
-    debito_bruto = sum(x["valor"] for x in debito_mes)
-    credito_bruto = sum(x["valor"] for x in credito_mes)
+    def _pendentes(vendas, prazo):
+        out = []
+        for x in vendas:
+            if not x.get("data"): continue
+            libera = x["data"] + timedelta(days=prazo)
+            if libera > hoje:
+                out.append({**x, "libera": libera, "dias_restantes": (libera - hoje).days})
+        return out
 
-    # Líquido esperando (só MDR):
-    debito_liq_espera = debito_bruto * (1 - TAXA_MDR["debito"])
-    credito_liq_espera = credito_bruto * (1 - TAXA_MDR["credito1x"])
+    def _bloco_antec(vendas, mdr, prazo):
+        bruto = sum(x["valor"] for x in vendas)
+        liq_espera = bruto * (1 - mdr)
+        # custo pro-rata: taxa mensal / 30 × dias que faltam, venda a venda
+        custo = sum(x["valor"] * (1 - mdr) * TAXA_ANTECIPACAO_MENSAL / 30 * x["dias_restantes"]
+                    for x in vendas)
+        dias_med = (sum(x["valor"] * x["dias_restantes"] for x in vendas) / bruto) if bruto else 0
+        return {
+            "bruto": _r(bruto), "n": len(vendas),
+            "mdr_pct": mdr * 100,
+            "liq_espera": _r(liq_espera),
+            "liq_antecipar": _r(liq_espera - custo),
+            "custo_antecipacao": _r(custo),
+            # prazo contratual da modalidade (D+N). NÃO mexer no significado: o ciclo
+            # de caixa do painel lê este campo como o D+N da liquidação.
+            "dias_medio_recebimento": prazo,
+            # dias que ainda faltam, ponderados por valor — é o que precifica a antecipação
+            "dias_medio_restante": round(dias_med, 1),
+            "prazo_dias": prazo,
+        }
 
-    # Líquido antecipando (MDR + taxa antecipação dias médios):
-    # débito: já cai amanhã, antecipar ~1 dia = 0.066% ≈ desprezível
-    # crédito 1x: cai em 30 dias → antecipar hoje = 1.99% pelo mês
-    debito_liq_antecipar = debito_liq_espera * (1 - TAXA_ANTECIPACAO_MENSAL / 30 * 1)  # 1 dia
-    credito_liq_antecipar = credito_liq_espera * (1 - TAXA_ANTECIPACAO_MENSAL)
+    debito_pend = _pendentes(debito_trinks_all, PRAZO_DIAS["debito"])
+    credito_pend = _pendentes(credito_trinks_all, PRAZO_DIAS["credito1x"])
+    b_deb = _bloco_antec(debito_pend, TAXA_MDR["debito"], PRAZO_DIAS["debito"])
+    b_cre = _bloco_antec(credito_pend, TAXA_MDR["credito1x"], PRAZO_DIAS["credito1x"])
 
-    custo_antec_debito = debito_liq_espera - debito_liq_antecipar
-    custo_antec_credito = credito_liq_espera - credito_liq_antecipar
+    tot_liq_espera = b_deb["liq_espera"] + b_cre["liq_espera"]
+    tot_custo = b_deb["custo_antecipacao"] + b_cre["custo_antecipacao"]
+
+    # Fila de liberação por semana — quando cada lote cai, se não antecipar
+    fila = defaultdict(float)
+    for x in debito_pend + credito_pend:
+        fila[x["libera"].isoformat()] += x["valor"]
+    cronograma = [{"data": d, "bruto": _r(v)} for d, v in sorted(fila.items())]
 
     antecipacao = {
-        "debito": {
-            "bruto": _r(debito_bruto), "n": len(debito_mes),
-            "mdr_pct": TAXA_MDR["debito"] * 100,
-            "liq_espera": _r(debito_liq_espera), "liq_antecipar": _r(debito_liq_antecipar),
-            "custo_antecipacao": _r(custo_antec_debito),
-            "dias_medio_recebimento": 1,
-        },
-        "credito": {
-            "bruto": _r(credito_bruto), "n": len(credito_mes),
-            "mdr_pct": TAXA_MDR["credito1x"] * 100,
-            "liq_espera": _r(credito_liq_espera), "liq_antecipar": _r(credito_liq_antecipar),
-            "custo_antecipacao": _r(custo_antec_credito),
-            "dias_medio_recebimento": 30,
-        },
+        "debito": b_deb,
+        "credito": b_cre,
         "total": {
-            "bruto": _r(debito_bruto + credito_bruto),
-            "liq_espera": _r(debito_liq_espera + credito_liq_espera),
-            "liq_antecipar": _r(debito_liq_antecipar + credito_liq_antecipar),
-            "custo_antecipacao": _r(custo_antec_debito + custo_antec_credito),
-            "custo_pct": round((custo_antec_debito + custo_antec_credito) / max(debito_liq_espera + credito_liq_espera, 1) * 100, 2),
+            "bruto": _r(b_deb["bruto"] + b_cre["bruto"]),
+            "liq_espera": _r(tot_liq_espera),
+            "liq_antecipar": _r(tot_liq_espera - tot_custo),
+            "custo_antecipacao": _r(tot_custo),
+            "custo_pct": round(tot_custo / max(tot_liq_espera, 1) * 100, 2),
         },
+        # Confronto com o "aguardando liberação" do card de reconciliação. Os dois
+        # números medem a mesma fila por caminhos diferentes: este parte das vendas
+        # do Trinks ainda não vencidas; o outro parte do extrato Stone (vendido menos
+        # creditado). Uma diferença pequena é normal (MDR médio × MDR por modalidade,
+        # venda registrada fora do horário do extrato); uma diferença grande é sinal
+        # de recebível atrasado e merece conferência no app da Stone.
+        "confronto_a_receber": {
+            "a_receber_extrato": _r(a_receber_total),
+            "pendente_vendas": _r(tot_liq_espera),
+            "diferenca": _r(tot_liq_espera - a_receber_total),
+        },
+        "cronograma_liberacao": cronograma[:30],
         "taxa_antecipacao_mensal_pct": TAXA_ANTECIPACAO_MENSAL * 100,
-        "obs": "Taxas Stone oficiais SIIBELLO (Débito 1,46% · Crédito 1x 2,08% · Antecipação Automática 1,66%). TODAS as vendas são 1x (zero parcelamento).",
+        "obs": ("Só vendas ainda não liberadas (débito D+1 · crédito 1x D+30). Taxas Stone "
+                "oficiais SIIBELLO (Débito 1,46% · Crédito 1x 2,08% · Antecipação Automática "
+                "1,66% a.m., cobrada pro-rata pelos dias que faltam). Todas as vendas são 1x."),
     }
 
     # ==== 7. GAP TEMPORAL Trinks × Stone (vendas apos ultimo lancamento CSV) ====
