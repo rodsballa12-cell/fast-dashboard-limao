@@ -7,6 +7,8 @@ import json, os, sys, copy
 from datetime import datetime, timezone, timedelta
 
 FACTOR = 0.42  # SPA sendo unidade menor/nova: ~42% do volume da Escova
+KEEP_TOP_N = 3  # top-N de cada ranking mantém o nome original → cross-unit "ambas"
+SUFFIX_SPA = " (SPA)"  # sufixo pra criar nomes SPA-exclusivos no mock
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Chaves cujos valores NÃO devem ser escalados (ids, datas, strings, flags, etc.)
@@ -69,6 +71,50 @@ def scale(obj, path=""):
     return copy.deepcopy(obj)
 
 
+# Arrays cujos itens carregam NOME DE PESSOA (prof ou cliente) — pra
+# criar diversidade visual no consolidado, renomeamos os N+ itens (deixamos
+# top-N intactos → viram "ambas" no consolidado).
+NOME_KEYS = {
+    "ranking_prof": "nome",
+    "ranking_prof_executor": "nome",
+    "ranking_serv": "nome",        # serviços — deixa como está (produto)
+    "rentabilidade_hora": "nome",  # também serviço
+    "clientes_top": "nome",
+    "aniversariantes": "cliente",
+    "cross_sell": "cliente",       # note: cross_sell.top é uma sublista tratada abaixo
+    "obs_alertas": "cliente",
+    "obs_agend_alertas": "cliente",
+    "top": "nome_or_cliente",       # top_ltv.top / churn_early.top / cross_sell.top
+}
+# Serviços (não são pessoas) — pula
+NOT_PESSOA = {"ranking_serv", "rentabilidade_hora"}
+
+
+def renomear_pessoas(obj):
+    """Walk recursivo: pra cada array em NOME_KEYS, mantém top KEEP_TOP_N
+    intacto e adiciona SUFIXO ' (SPA)' aos demais → cria itens exclusivos."""
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if k in NOME_KEYS and k not in NOT_PESSOA and isinstance(v, list):
+                field = NOME_KEYS[k]
+                for i, item in enumerate(v):
+                    if not isinstance(item, dict): continue
+                    if i < KEEP_TOP_N: continue
+                    # 'top' pode ter chave 'nome' (top_ltv) ou 'cliente' (churn/aniv/xsell)
+                    used_field = field
+                    if field == "nome_or_cliente":
+                        used_field = "nome" if "nome" in item else ("cliente" if "cliente" in item else None)
+                    if not used_field: continue
+                    nome = item.get(used_field)
+                    if isinstance(nome, str) and SUFFIX_SPA not in nome:
+                        item[used_field] = nome + SUFFIX_SPA
+            else:
+                renomear_pessoas(v)
+    elif isinstance(obj, list):
+        for x in obj:
+            renomear_pessoas(x)
+
+
 def main():
     src = os.path.join(ROOT, "data", "dashboard_data.json")
     dst_dir = os.path.join(ROOT, "data", "spa")
@@ -79,15 +125,16 @@ def main():
         escova = json.load(f)
 
     spa = scale(escova)
+    renomear_pessoas(spa)
 
     # Marca metadata como mock/spa
     spa["_mock"] = True
     spa["_mock_factor"] = FACTOR
-    spa["_mock_origem"] = "clone escalado de data/dashboard_data.json (Escova) — pré-conexão Trinks SPA"
+    spa["_mock_origem"] = f"clone escalado (factor={FACTOR}) + top-{KEEP_TOP_N} de cada ranking preservado como cross-unit + demais renomeados com sufixo '{SUFFIX_SPA}' pra criar diversidade escova/spa/ambas na visualização do consolidado"
 
     with open(dst, "w") as f:
         json.dump(spa, f, indent=2, ensure_ascii=False)
-    print(f"[mock_spa] gerado {dst} · factor={FACTOR}")
+    print(f"[mock_spa] gerado {dst} · factor={FACTOR} · top-{KEEP_TOP_N} cross-unit, resto SPA-exclusivo")
 
 
 if __name__ == "__main__":
