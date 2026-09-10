@@ -3110,28 +3110,122 @@ function renderStone(data){
     </div>`;
   }
 
-  // ============ SEÇÃO 2: KPIs POR PERÍODO ============
+  // ============ SEÇÃO 2: KPIs POR PERÍODO (reescrito com narrativa clara) ============
+  // 3 lentes independentes pra não misturar cross-temporal (Stone recebido HOJE =
+  // venda D-30; Trinks vendido HOJE = vai cair D+30):
+  //   a) DINHEIRO NO PERÍODO: o que efetivamente caiu na conta (PIX + cartão passado + dinheiro)
+  //   b) VENDIDO NO PERÍODO: o que a loja vendeu (Trinks · vira caixa depois)
+  //   c) TRÂNSITO: quanto ainda está a receber de cartão desse período (D+30)
   function periodo_card(nome_bonito, chave, sub){
     const d = p[chave];
     const din = d.dinheiro || {total:0, n:0};
-    const total = d.pix.stone_liquido + d.cartao.stone_recebido + din.total;
     const orfaos_periodo = (d.pix.orfaos_stone?.length || 0) + (d.pix.orfaos_trinks?.length || 0);
-    return `
-      <div class="card">
+
+    // LENTE A · DINHEIRO QUE CAIU NO PERÍODO (Stone recebido)
+    const recebido_pix     = d.pix.stone_liquido || 0;
+    const recebido_cartao  = d.cartao.stone_recebido || 0;  // cartão desses 30d ATRÁS caindo agora
+    const recebido_dinheiro= din.total || 0;
+    const recebido_total   = recebido_pix + recebido_cartao + recebido_dinheiro;
+
+    // LENTE B · VENDIDO NO PERÍODO (Trinks bruto — vira Stone daqui pra frente)
+    const vendido_pix      = d.pix.trinks_valor || 0;
+    const vendido_cartao   = d.cartao.trinks_vendido || 0;   // vai virar Stone D+30
+    const vendido_dinheiro = din.total || 0;                  // cai mesmo dia, igual a "recebido"
+    const vendido_total    = vendido_pix + vendido_cartao + vendido_dinheiro;
+
+    // LENTE C · A RECEBER (do que foi vendido nesse período)
+    const a_receber        = d.cartao.a_receber_d30 || 0;
+
+    // Detecta se HOJE está zerado por CSV Stone desatualizado
+    const csvDefasado = chave === 'hoje' && recebido_total === 0 && vendido_total === 0;
+    if(csvDefasado){
+      return `<div class="card">
         <h2>${nome_bonito}<span class="hi">${sub}</span></h2>
         <div class="cap">${d.periodo_ini?.slice(5).replace('-','/')} — ${d.periodo_fim?.slice(5).replace('-','/')}</div>
+        <div style="padding:20px;background:var(--surface-2);border-radius:10px;text-align:center;margin-top:12px">
+          <div style="font-size:32px;margin-bottom:8px">🕓</div>
+          <div style="font-size:14px;color:var(--ink-2);font-weight:600;margin-bottom:4px">CSV Stone ainda não tem o dia de hoje</div>
+          <div style="font-size:12px;color:var(--ink-3);line-height:1.5">Vendas ao vivo do Trinks aparecem na aba Painel. Aqui só entra depois que o CSV do dia é baixado — o portal Stone atualiza mais tarde.</div>
+        </div>
+      </div>`;
+    }
+
+    return `<div class="card">
+      <h2>${nome_bonito}<span class="hi">${sub}</span></h2>
+      <div class="cap">${d.periodo_ini?.slice(5).replace('-','/')} — ${d.periodo_fim?.slice(5).replace('-','/')} · ${din.n + d.pix.stone_n + d.cartao.trinks_n} transações no período</div>
+
+      <!-- HERO: dinheiro que caiu -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
+        <div style="padding:14px 16px;background:var(--surface-2);border-radius:10px;border-left:3px solid var(--good)">
+          <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase;letter-spacing:.06em">💰 Dinheiro que caiu no período</div>
+          <div style="font-size:28px;font-weight:800;color:var(--ink);margin:6px 0 2px">${brl0(recebido_total)}</div>
+          <div style="font-size:11px;color:var(--ink-3)">PIX + cartão (de vendas anteriores) + dinheiro</div>
+        </div>
+        <div style="padding:14px 16px;background:var(--surface-2);border-radius:10px;border-left:3px solid var(--accent)">
+          <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.06em">🎯 Loja vendeu no período</div>
+          <div style="font-size:28px;font-weight:800;color:var(--ink);margin:6px 0 2px">${brl0(vendido_total)}</div>
+          <div style="font-size:11px;color:var(--ink-3)">Trinks bruto · cartão vira caixa em ~30d</div>
+        </div>
+      </div>
+
+      <!-- QUEBRA POR FORMA -->
+      <div style="margin-top:14px">
+        <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px">Quebra por forma · o que caiu × o que foi vendido</div>
         <table class="simple">
-          <thead><tr><th>Métrica</th><th>PIX</th><th>Cartão</th><th>💵 Dinheiro</th><th>Total</th></tr></thead>
+          <thead><tr>
+            <th>Forma</th>
+            <th style="text-align:right">Caiu na conta</th>
+            <th style="text-align:right">Trinks vendeu</th>
+            <th style="text-align:right">Diferença</th>
+            <th>Interpretação</th>
+          </tr></thead>
           <tbody>
-            <tr><td>Recebido líquido</td><td>${brl0(d.pix.stone_liquido)}</td><td>${brl0(d.cartao.stone_recebido)}</td><td>${brl0(din.total)}</td><td><strong>${brl0(total)}</strong></td></tr>
-            <tr><td>Bruto Trinks</td><td>${brl0(d.pix.trinks_valor)}</td><td>${brl0(d.cartao.trinks_vendido)}</td><td>${brl0(din.total)}</td><td>${brl0(d.pix.trinks_valor + d.cartao.trinks_vendido + din.total)}</td></tr>
-            <tr><td>Nº transações</td><td>${d.pix.stone_n}</td><td>${d.cartao.stone_n}</td><td>${din.n}</td><td>${d.pix.stone_n + d.cartao.stone_n + din.n}</td></tr>
-            <tr><td>Matches PIX</td><td>${d.pix.matches_n}</td><td>—</td><td>—</td><td>${d.pix.matches_n}</td></tr>
-            <tr><td>Órfãos PIX</td><td class="${orfaos_periodo?'dn':'up'}">${orfaos_periodo}</td><td>—</td><td>—</td><td class="${orfaos_periodo?'dn':'up'}">${orfaos_periodo}</td></tr>
-            <tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>A receber D+30</td><td>—</td><td>${brl0(d.cartao.a_receber_d30)}</td><td>—</td><td>${brl0(d.cartao.a_receber_d30)}</td></tr>
+            <tr>
+              <td>⚡ <strong>PIX</strong></td>
+              <td style="text-align:right">${brl0(recebido_pix)}</td>
+              <td style="text-align:right">${brl0(vendido_pix)}</td>
+              <td style="text-align:right" class="${Math.abs(recebido_pix - vendido_pix) > 5 ? 'warn' : 'up'}">${recebido_pix - vendido_pix >= 0 ? '+' : ''}${brl0(recebido_pix - vendido_pix)}</td>
+              <td style="font-size:11.5px;color:var(--ink-2)">Cai no mesmo dia · deveria bater</td>
+            </tr>
+            <tr>
+              <td>💳 <strong>Cartão</strong></td>
+              <td style="text-align:right">${brl0(recebido_cartao)}</td>
+              <td style="text-align:right">${brl0(vendido_cartao)}</td>
+              <td style="text-align:right" style="color:var(--ink-3)">—</td>
+              <td style="font-size:11.5px;color:var(--ink-2)">Caiu ≠ vendeu · lentes diferentes (D-30 vs D+30). Ver "a receber" abaixo</td>
+            </tr>
+            <tr>
+              <td>💵 <strong>Dinheiro</strong></td>
+              <td style="text-align:right">${brl0(recebido_dinheiro)}</td>
+              <td style="text-align:right">${brl0(vendido_dinheiro)}</td>
+              <td style="text-align:right" class="up">R$ 0</td>
+              <td style="font-size:11.5px;color:var(--ink-2)">Fora Stone · cai no ato (mesmo valor nas 2 lentes)</td>
+            </tr>
+            <tr style="background:var(--surface-2);font-weight:700">
+              <td>TOTAL</td>
+              <td style="text-align:right">${brl0(recebido_total)}</td>
+              <td style="text-align:right">${brl0(vendido_total)}</td>
+              <td style="text-align:right">—</td>
+              <td style="font-size:11.5px;color:var(--ink-3)">2 lentes diferentes · não somar</td>
+            </tr>
           </tbody>
         </table>
-      </div>`;
+      </div>
+
+      <!-- A RECEBER + ÓRFÃOS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+        <div style="padding:10px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${a_receber > 0 ? 'var(--warn)' : 'var(--good)'}">
+          <div style="font-size:11px;color:${a_receber > 0 ? 'var(--warn)' : 'var(--good)'};font-weight:800;text-transform:uppercase">📅 Vai cair em ~30d</div>
+          <div style="font-size:18px;font-weight:800;color:var(--ink)">${brl0(a_receber)}</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">cartão de crédito desse período pendente</div>
+        </div>
+        <div style="padding:10px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${orfaos_periodo > 0 ? 'var(--crit)' : 'var(--good)'}">
+          <div style="font-size:11px;color:${orfaos_periodo > 0 ? 'var(--crit)' : 'var(--good)'};font-weight:800;text-transform:uppercase">🔴 PIX sem par</div>
+          <div style="font-size:18px;font-weight:800;color:var(--ink)">${orfaos_periodo}</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${orfaos_periodo > 0 ? 'PIX Stone×Trinks não bateram · investigar' : 'todos PIX conciliados no período'}</div>
+        </div>
+      </div>
+    </div>`;
   }
 
   // CONSOLIDAÇÃO K · Stone por período agora 1 seletor + 1 tabela dinâmica
