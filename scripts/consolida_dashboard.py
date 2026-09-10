@@ -52,11 +52,13 @@ ARRAY_POR_INDICE = {"por_dow", "hora_media", "hora_abs", "meses", "por_dia_mes",
 # Categorias/serviços têm taxonomia compartilhada (Unhas, Escova etc.) → não
 # marca unidade, só soma.
 ARRAY_POR_CHAVE = {
-    "categoria_native": None,   # taxonomia compartilhada, sem _unidade
-    "clientes_top":     "nome",
-    "top":              "nome",
-    "aniversariantes":  "cliente",
-    "cross_sell":       "cliente",
+    "categoria_native":     None,   # taxonomia compartilhada, sem _unidade
+    "clientes_top":         "nome",
+    "top":                  "nome",
+    "aniversariantes":      "cliente",
+    "cross_sell":           "cliente",
+    "obs_alertas":          "cliente",
+    "obs_agend_alertas":    "cliente",
 }
 
 # Rankings de profissionais — MESMA lógica de ARRAY_POR_CHAVE (agrega por nome
