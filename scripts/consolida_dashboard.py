@@ -47,19 +47,26 @@ IDENTIDADE = {
 # Chaves cujos arrays PRESERVAM ordem por índice (dow, hora, meses)
 ARRAY_POR_INDICE = {"por_dow", "hora_media", "hora_abs", "meses", "por_dia_mes", "dow_hist"}
 
-# Chaves cujos itens agregam por 'nome' ou 'k' (categorias, categoria_native, top clientes)
+# Chaves cujos itens agregam por 'nome' ou 'k' — soma numérico e marca _unidade
+# ('escova' / 'spa' / 'ambas') pra o frontend renderizar o ícone certo.
+# Categorias/serviços têm taxonomia compartilhada (Unhas, Escova etc.) → não
+# marca unidade, só soma.
 ARRAY_POR_CHAVE = {
-    "categoria_native": "nome",
-    "clientes_top": "nome",
-    "top": "nome",  # top ltv, top churn, etc
-    "aniversariantes": "cliente",
-    "cross_sell": "cliente",
+    "categoria_native": None,   # taxonomia compartilhada, sem _unidade
+    "clientes_top":     "nome",
+    "top":              "nome",
+    "aniversariantes":  "cliente",
+    "cross_sell":       "cliente",
 }
 
-# Chaves cujos itens são rankings de PROFISSIONAIS — concat com badge de unidade
-ARRAY_CONCAT_BADGE = {
-    "ranking_prof", "ranking_prof_executor", "ranking_serv",
-    "rentabilidade_hora",
+# Rankings de profissionais — MESMA lógica de ARRAY_POR_CHAVE (agrega por nome
+# e marca _unidade), pra prof que trabalha nas duas unidades vire UMA linha
+# com ícone 'ambas' em vez de duas linhas duplicadas.
+ARRAY_RANKING_PROF = {
+    "ranking_prof":          "nome",
+    "ranking_prof_executor": "nome",
+    "ranking_serv":          "nome",
+    "rentabilidade_hora":    "nome",
 }
 
 
@@ -98,23 +105,33 @@ def merge_list(a, b, path=""):
     # Arrays por índice (dow, hora, etc.) — soma item-a-item se mesmo tamanho
     if key in ARRAY_POR_INDICE and len(a) == len(b):
         return [merge(x, y, path) for x, y in zip(a, b)]
-    # Rankings de prof — concat com metadado _unidade (frontend pinta ícone certo)
-    if key in ARRAY_CONCAT_BADGE:
-        merged = [{**x, "_unidade": "escova"} for x in a] + \
-                 [{**x, "_unidade": "spa"} for x in b]
-        merged.sort(key=lambda z: -(z.get("v") or 0))
-        return merged
-    # Arrays por chave (categoria_native, clientes_top, aniv) — agrupa por nome
-    if key in ARRAY_POR_CHAVE:
-        kname = ARRAY_POR_CHAVE[key]
+    # Rankings de prof e agregações por chave (clientes/aniv/cross-sell/…):
+    # agrega por nome e anota _unidade: 'escova' | 'spa' | 'ambas'.
+    if key in ARRAY_RANKING_PROF or key in ARRAY_POR_CHAVE:
+        kname = (ARRAY_RANKING_PROF.get(key) or ARRAY_POR_CHAVE.get(key))
+        if kname is None:
+            # taxonomia compartilhada (categoria_native) — só soma por nome
+            idx = {}
+            for x in a + b:
+                k = x.get("nome") or "?"
+                idx[k] = merge(idx[k], x, path) if k in idx else copy.deepcopy(x)
+            return sorted(idx.values(), key=lambda z: -(z.get("v") or 0))
         idx = {}
-        for x in a + b:
+        origens = {}
+        for x in a:
+            k = x.get(kname) or "?"
+            idx[k] = copy.deepcopy(x); origens[k] = ["escova"]
+        for x in b:
             k = x.get(kname) or "?"
             if k in idx:
-                idx[k] = merge(idx[k], x, path)
+                idx[k] = merge(idx[k], x, path); origens[k].append("spa")
             else:
-                idx[k] = copy.deepcopy(x)
-        return sorted(idx.values(), key=lambda z: -(z.get("v") or z.get("ltv") or 0))
+                idx[k] = copy.deepcopy(x); origens[k] = ["spa"]
+        for k, v in idx.items():
+            origs = origens[k]
+            v["_unidade"] = "ambas" if len(origs) == 2 else origs[0]
+        sort_key = lambda z: -(z.get("v") or z.get("ltv") or 0)
+        return sorted(idx.values(), key=sort_key)
     # Categorias top-level (pacotes/servicos/produtos) — merge por índice se dict com 'k'
     if len(a) == len(b) and all(isinstance(x, dict) for x in a) and all(isinstance(y, dict) for y in b):
         # tenta match por 'k' ou 'nome'
