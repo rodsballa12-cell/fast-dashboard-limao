@@ -3985,7 +3985,11 @@ function renderFinanceiro(){
   // corrente, snapshot manual do Rodrigo).
   const k = {
     caixa_conta: FIN.kpis.caixa_conta,
-    a_receber_stone: FIN.kpis.a_receber_stone,
+    // A Receber Stone: preferir fonte Stone (CSV) sobre Excel snapshot manual.
+    // Assim fecha exato com o painel Stone (a_receber_d30 do nao_conciliado).
+    a_receber_stone: ((TRINKS && TRINKS.stone && TRINKS.stone.nao_conciliado && TRINKS.stone.nao_conciliado.a_receber_d30) != null)
+      ? TRINKS.stone.nao_conciliado.a_receber_d30
+      : FIN.kpis.a_receber_stone,
     resultado_mes: R.res_real,
     resultado_mes_caixa: R.res_caixa,
     receita_mes: R.receita_real,
@@ -4140,11 +4144,15 @@ function renderFinanceiro(){
   const anoAtingReal = anoMeta > 0 ? (anoRec/anoMeta*100) : 0;
 
   // === CENÁRIO 3: ANO PROJETADO (fim de 2026) ===
-  const custoFixoAno = custoFixoMes * 12;
+  // Loja abriu em jul/26 — não paga custo fixo os 12 meses do ano.
+  // Meses operados = dias_total (Trinks) / 30 (aprox) — cobre da abertura a 31/12.
+  const dias_total_ano = tAnoM.dias_total || 157;   // padrão Jul→Dez = ~183, mas Trinks já calcula certo
+  const meses_operados_ano = Math.max(1, dias_total_ano / 30.4);
+  const custoFixoAno = custoFixoMes * meses_operados_ano;
   const anoResProj = anoProj * mcAtualHero - custoFixoAno;
   const anoMargemProj = anoProj > 0 ? (anoResProj/anoProj*100) : 0;
   const corResProj = anoResProj >= 0 ? 'var(--good)' : 'var(--crit)';
-  const ritmoMensal = anoProj / 12;
+  const ritmoMensal = anoProj / meses_operados_ano;
 
   let direcFin;
   if(anoResProj < 0){
@@ -4213,7 +4221,7 @@ function renderFinanceiro(){
         linhas: [
           { label: 'Faturamento projetado', valor: brl0(anoProj) },
           { label: 'Custo variável (projeção)', valor: brl0(anoProj * (1 - mcAtualHero)) },
-          { label: 'Custo fixo (12 meses)', valor: brl0(custoFixoAno) },
+          { label: `Custo fixo (${meses_operados_ano.toFixed(1)} meses)`, valor: brl0(custoFixoAno) },
           { label: `Meta franqueadora`, valor: `${brl0(anoMeta)} <span style="color:${anoProjPct>=100?'var(--good)':anoProjPct>=80?'var(--warn)':'var(--crit)'}">(${anoProjPct.toFixed(0)}%)</span>` },
         ],
       })}
@@ -4231,7 +4239,7 @@ function renderFinanceiro(){
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--good)">
           <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase">📥 A receber Stone</div>
           <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${brl0(k.a_receber_stone)}</div>
-          <div style="font-size:11px;color:var(--ink-2)">cartão de crédito, cai automático em ~30d</div>
+          <div style="font-size:11px;color:var(--ink-2)">cartão de crédito, cai em ~30d · mesmo número da aba Stone</div>
         </div>
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${ritmoMensal >= beMesUnif ? 'var(--good)' : 'var(--warn)'}">
           <div style="font-size:11px;color:${ritmoMensal >= beMesUnif ? 'var(--good)' : 'var(--warn)'};font-weight:800;text-transform:uppercase">⚖️ Ponto de equilíbrio · mensal</div>
@@ -4245,13 +4253,13 @@ function renderFinanceiro(){
       <strong>👉 Direcionamento:</strong> ${direcFin}
     </div>
     <div style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:11px;color:var(--ink-3);line-height:1.55">
-      🔎 <strong>Auditoria dos números:</strong> Faturamento sempre do TRINKS (real + projeção pelo ritmo). Custos vêm do Excel: variável = ${((1-mcAtualHero)*100).toFixed(1)}% da receita (comissão + insumos + Simples + inadimplência), fixo = ${brl0(custoFixoMes)}/mês. Ponto de equilíbrio = custo_fixo ÷ margem_contribuição. Meta franqueadora = ${brl0(mesMetaOfi)}/mês × 12 = ${brl0(anoMeta)}/ano.
+      🔎 <strong>Auditoria dos números:</strong> Faturamento sempre do TRINKS (real + projeção pelo ritmo). Custos vêm do Excel: variável = ${((1-mcAtualHero)*100).toFixed(1)}% da receita, fixo = ${brl0(custoFixoMes)}/mês × <strong>${meses_operados_ano.toFixed(1)} meses operados</strong> (loja abriu em ${(CONFIG?.unidades?.escova?.data_inauguracao || '2026-07-23').split('-').reverse().join('/')} — não paga 12 meses). Ponto de equilíbrio = custo_fixo ÷ margem_contribuição. Meta franqueadora = ${brl0(mesMetaOfi)}/mês × ${meses_operados_ano.toFixed(1)} meses = ${brl0(anoMeta)}.
     </div>
   </div>`;
 
   document.getElementById('fin-kpis').innerHTML = bloco_hero_fin + mesEmCursoCard + '<section class="kpi-grid fin5">'+[
     kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), `Conta corrente da PJ · posição ${baselineFmt}`, null),
-    kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), `snapshot no Excel · atualiza a cada 15 dias`, null),
+    kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), `direto do CSV Stone · mesmo número da aba Stone`, null),
     kpiCard('k3',`RESULTADO REALIZADO ${mpLbl}`, brl0(res_real_kpi), `custos prorateados: variáveis a ${(ratio_rec_kpi*100).toFixed(0)}% da receita, fixos a ${(ratio_dia_kpi*100).toFixed(0)}% dos dias`, null),
     kpiCard('k4',`${mpLbl} × META (real)`, finPct(atg_real_kpi), brl0(rec_atual)+' de '+brl0(mesMetaOfi)+' · faltam '+brl0(Math.max(mesMetaOfi-rec_atual,0))+' pra meta', null),
     kpiCard('k5 kpi-be',`FALTA PRA EQUILÍBRIO (${mpLbl})`, brl0(Math.max(beMes-rec_atual,0)), beBarReal, null),
