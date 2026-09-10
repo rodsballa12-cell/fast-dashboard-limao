@@ -46,7 +46,7 @@
       "emoji": "🧖",
       "data_prefix": "spa/",
       "midia_ids": {
-        "_desc": "Provisionamento em andamento. IDs vão sendo preenchidos conforme cada conta sobe. Quando meta_ad_account_id + ig_user_id existirem, o Supermetrics MCP consegue rodar o pull SPA e gerar data/spa/midias_sociais.json — o frontend pega automático.",
+        "_desc": "Provisionamento em andamento. Mesma conta Meta (mesmo META_ACCESS_TOKEN) tem acesso às duas unidades — só os IDs mudam. Quando meta_ad_account_id + ig_user_id da SPA existirem, o Supermetrics MCP roda o pull SPA e gera data/spa/midias_sociais.json — frontend pega automático.",
         "meta_ad_account_id": null,
         "meta_ad_account_nome": null,
         "ig_handle": "fastspa.limao",

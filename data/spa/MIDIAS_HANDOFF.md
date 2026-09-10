@@ -10,8 +10,10 @@ Consolidado e a preview individual do SPA quando abrir (25/09/2026).
   Marketing FAST (Supermetrics MCP · Meta Ads + Instagram Insights +
   Facebook Insights + Google Business + HubSpot + WhatsApp Cloud).
   Trigger manual via `/marketing-fast`.
-- **SPA:** vai receber o MESMO schema em `data/spa/midias_sociais.json`,
-  gerado a partir das contas próprias da SPA (não compartilha com Escova).
+- **SPA:** vai receber o MESMO schema em `data/spa/midias_sociais.json`.
+  Ad Account, Página FB e IG são separados da Escova, mas o **mesmo
+  usuário Meta** (mesmo `META_ACCESS_TOKEN`) tem acesso às duas unidades
+  — só muda o `ad_account_id` / `page_id` / `ig_user_id` no pull.
 - **Consolidado:** o frontend pega automaticamente das duas pastas e junta
   no card `📣 Mídia · ano 2026`. Sem código pra mudar.
 
