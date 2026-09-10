@@ -1653,6 +1653,7 @@ function renderComissoes(container_id, comissoes, prof_meta, data){
       receita: p.v || 0,
       horas: p.horas_trab || 0,
       comissao_estim: (p.v || 0) * (taxaEfetivaPct/100),  // aplicando taxa efetiva ponderada
+      _unidade: p._unidade,  // preserva pra renderizar ícone no consolidado
     })).sort((a,b)=>b.receita-a.receita);
     const totalProfReceita = producao.reduce((a,x)=>a+x.receita,0);
     const totalProfCom = producao.reduce((a,x)=>a+x.comissao_estim,0);
@@ -1720,7 +1721,7 @@ function renderComissoes(container_id, comissoes, prof_meta, data){
           <th style="text-align:right;padding:6px;color:#a855f7">Comissão estim.</th>
         </tr></thead>
         <tbody>${producao.map(p=>`<tr style="border-bottom:1px solid var(--surface-2)">
-          <td style="padding:6px"><strong>${p.nome}</strong></td>
+          <td style="padding:6px"><strong>${nomeComIconeUnidade(p)}</strong></td>
           <td style="text-align:right;padding:6px">${p.atend}</td>
           <td style="text-align:right;padding:6px">${p.horas.toFixed(1)}h</td>
           <td style="text-align:right;padding:6px">${brl0(p.receita)}</td>
