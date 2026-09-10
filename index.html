@@ -81,7 +81,8 @@
   .chip.fresh .dot{background:var(--good);}
   @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
   .unidade-seletor{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:3px;gap:2px;box-shadow:var(--shadow-sm);}
-  .unidade-seletor .unid-btn{background:transparent;color:var(--ink-2);border:none;border-radius:999px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;font-weight:600;transition:all .18s;letter-spacing:.02em;}
+  .unidade-seletor .unid-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--ink-2);border:none;border-radius:999px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;font-weight:600;transition:all .18s;letter-spacing:.02em;}
+  .unidade-seletor .unid-btn .unid-ico{flex-shrink:0;display:block;}
   .unidade-seletor .unid-btn:hover{color:var(--ink);background:var(--surface);}
   .unidade-seletor .unid-btn.active{background:var(--accent);color:#0A0A0C;box-shadow:var(--shadow-sm);}
   .unidade-seletor .unid-btn.active[data-unidade="spa"]{background:#7CB342;}
@@ -398,9 +399,36 @@
     </div>
     <div class="meta">
       <div id="unidade-seletor" class="unidade-seletor" role="tablist" aria-label="Seletor de unidade">
-        <button class="unid-btn active" data-unidade="escova" title="Fast Escova · aberto desde 23/07/2026">🥂 Escova</button>
-        <button class="unid-btn" data-unidade="spa" title="Fast SPA · inauguração 25/09/2026">🧖 SPA</button>
-        <button class="unid-btn" data-unidade="consolidado" title="Escova + SPA somados">📊 Consolidado</button>
+        <button class="unid-btn active" data-unidade="escova" title="Fast Escova · aberto desde 23/07/2026">
+          <svg class="unid-ico" viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g fill="#FFD100" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round">
+              <path d="M3 9 Q3 6 6 6 L14 6 L21 4 L21 14 L14 12 L12 12 L12 18 Q12 20 10 20 L8 20 Q6 20 6 18 L6 12 Q3 12 3 10 Z"/>
+            </g>
+            <circle cx="6" cy="9.5" r="0.7" fill="currentColor"/>
+          </svg>
+          <span>Escova</span>
+        </button>
+        <button class="unid-btn" data-unidade="spa" title="Fast SPA · inauguração 25/09/2026">
+          <svg class="unid-ico" viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g stroke="currentColor" stroke-width="1.2" stroke-linejoin="round">
+              <ellipse cx="12" cy="18" rx="6" ry="2.5" fill="#4A5240"/>
+              <ellipse cx="10" cy="13" rx="5" ry="2.2" fill="#6B7660"/>
+              <ellipse cx="14" cy="8"  rx="4" ry="2"   fill="#7CB342"/>
+            </g>
+          </svg>
+          <span>SPA</span>
+        </button>
+        <button class="unid-btn" data-unidade="consolidado" title="Escova + SPA somados">
+          <svg class="unid-ico" viewBox="0 0 32 24" width="20" height="14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g stroke="currentColor" stroke-width="1.2" stroke-linejoin="round">
+              <path d="M3 9 Q3 6 6 6 L11 6 L15 4 L15 14 L11 12 L10 12 L10 18 Q10 20 8 20 L6 20 Q4 20 4 18 L4 12 Q3 12 3 10 Z" fill="#FFD100"/>
+              <ellipse cx="24" cy="18" rx="5" ry="2" fill="#4A5240"/>
+              <ellipse cx="22" cy="14" rx="4" ry="1.8" fill="#6B7660"/>
+              <ellipse cx="26" cy="10" rx="3.2" ry="1.6" fill="#7CB342"/>
+            </g>
+          </svg>
+          <span>Consolidado</span>
+        </button>
       </div>
       <span class="chip" id="chip-updated">carregando…</span>
       <span class="chip" id="chip-age" style="display:none;"></span>
