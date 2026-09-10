@@ -4103,61 +4103,122 @@ function renderFinanceiro(){
   const beBarReal     = `<div class="be-bar"><span style="width:${(bePercReal*100).toFixed(1)}%"></span></div>`
     + `<div class="be-leg">${finPct(bePercReal)} percorrido · equilíbrio em ${brl0(beMes)}/mês</div>`;
 
-  // === HERO leigo-friendly · Financeiro · ano acumulado ===
-  // FONTE ÚNICA de faturamento e meta: TRINKS (real + projeção).
-  // Excel entra APENAS pra custos (% comissão/insumos/Simples + fixo).
-  // Evita 2 números concorrentes de meta.
+  // === HERO leigo-friendly · Financeiro · 3 cenários alinhados com Trinks ===
+  // Fonte ÚNICA de faturamento e meta: TRINKS (real + projeção).
+  // Excel só entra pra custos (% comissão/insumos/Simples/inadimplência + fixo).
   const anoAtualHero = new Date().getFullYear();
   const tAnoM = (TRINKS && TRINKS.abas && TRINKS.abas.anual && TRINKS.abas.anual.meta) || {};
   const tAnoK = (TRINKS && TRINKS.abas && TRINKS.abas.anual && TRINKS.abas.anual.kpis) || {};
-  const anoRec = tAnoK.caixa || 0;                // realizado real (Trinks)
-  const anoMeta = tAnoM.meta || 0;                 // meta anual franqueadora
-  const anoProj = tAnoM.projecao || anoRec;        // projeção ritmo atual
-  const anoAtingimentoPct = anoMeta > 0 ? (anoRec/anoMeta*100) : 0;
+  const tMensalM = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.meta) || {};
+  const anoRec  = tAnoK.caixa || 0;                 // realizado real ano (Trinks)
+  const anoMeta = tAnoM.meta || 0;                  // meta anual franqueadora
+  const anoProj = tAnoM.projecao || anoRec;         // projeção ritmo atual ano
   const anoProjPct = anoMeta > 0 ? (anoProj/anoMeta*100) : 0;
+  const mesMetaOfi = tMensalM.meta || 60000;        // meta mensal franqueadora
 
-  // Resultado projetado = projeção Trinks × margem contribuição × … − custo fixo × 12
-  // Usa mesma margem_contribuicao do cenário atual do Excel (c0.mc) e custo fixo anualizado.
+  // Estrutura de custo (Excel — fonte única)
   const mcAtualHero = (E.cenarios && E.cenarios[0] && E.cenarios[0].mc) || 0;
-  const custoFixoAno = (E.custo_fixo_mes || 0) * 12;
+  const custoFixoMes = E.custo_fixo_mes || 0;
+  const beMesUnif = mcAtualHero > 0 ? (custoFixoMes / mcAtualHero) : beMes;
+
+  // === CENÁRIO 1: MÊS CORRENTE ===
+  // rec_atual, proj_final, res_proj já vêm do bloco mesEmCurso (Trinks live + Excel/ritmo)
+  const mesRes = res_proj;
+  const mesMargem = proj_final > 0 ? (mesRes/proj_final*100) : 0;
+  const corMesRes = mesRes >= 0 ? 'var(--good)' : 'var(--crit)';
+  const mesAtPct = mesMetaOfi > 0 ? (rec_atual/mesMetaOfi*100) : 0;
+
+  // === CENÁRIO 2: ANO ACUMULADO REAL (até agora) ===
+  // Faturado real Trinks × margem Excel − custo fixo × meses já corridos
+  const dias_ano_ate_hoje = tAnoM.dias_realizados || 0;
+  const meses_corridos = Math.max(1, dias_ano_ate_hoje/30);  // aprox
+  const custoFixoAcumulado = custoFixoMes * meses_corridos;
+  const anoResReal = anoRec * mcAtualHero - custoFixoAcumulado;
+  const anoMargemReal = anoRec > 0 ? (anoResReal/anoRec*100) : 0;
+  const corAnoResReal = anoResReal >= 0 ? 'var(--good)' : 'var(--crit)';
+  const anoAtingReal = anoMeta > 0 ? (anoRec/anoMeta*100) : 0;
+
+  // === CENÁRIO 3: ANO PROJETADO (fim de 2026) ===
+  const custoFixoAno = custoFixoMes * 12;
   const anoResProj = anoProj * mcAtualHero - custoFixoAno;
   const anoMargemProj = anoProj > 0 ? (anoResProj/anoProj*100) : 0;
   const corResProj = anoResProj >= 0 ? 'var(--good)' : 'var(--crit)';
-  const corMargemProj = anoMargemProj >= 0 ? 'var(--good)' : (anoMargemProj >= -15 ? 'var(--warn)' : 'var(--crit)');
-  const beMesUnif = mcAtualHero > 0 ? ((E.custo_fixo_mes||0) / mcAtualHero) : beMes;
   const ritmoMensal = anoProj / 12;
 
   let direcFin;
   if(anoResProj < 0){
     const gapMensal = Math.max(0, beMesUnif - ritmoMensal);
-    direcFin = `<strong>Projeção do ano no vermelho (${brl0(anoResProj)}).</strong> No ritmo atual, a loja fatura ~${brl0(ritmoMensal)}/mês — abaixo do ponto de equilíbrio (${brl0(beMesUnif)}/mês). Faltam <strong>${brl0(gapMensal)} de receita/mês</strong> pra virar o resultado. Alternativa: cortar custo fixo (aluguel, pessoal). Ver DRE abaixo pra ver a alavanca certa.`;
+    direcFin = `<strong>Projeção do ano no vermelho (${brl0(anoResProj)}).</strong> No ritmo atual, a loja fatura ~${brl0(ritmoMensal)}/mês — abaixo do ponto de equilíbrio (${brl0(beMesUnif)}/mês). Faltam <strong>${brl0(gapMensal)} de receita/mês</strong> pra virar o resultado. Alternativa: cortar custo fixo (aluguel, pessoal).`;
   } else if(anoMargemProj >= 15){
-    direcFin = `<strong>Projeção do ano no azul com margem saudável (${anoMargemProj.toFixed(1)}%).</strong> Foco: manter volume e ir cortando custo variável (comissão é a maior alavanca). Reserva Stone / investimento fazem sentido nesse cenário.`;
+    direcFin = `<strong>Projeção no azul com margem saudável (${anoMargemProj.toFixed(1)}%).</strong> Foco: manter volume e ir cortando custo variável (comissão é a maior alavanca).`;
   } else {
-    direcFin = `<strong>Projeção no azul mas margem apertada (${anoMargemProj.toFixed(1)}%).</strong> Espaço pra respirar existe, mas qualquer imprevisto vira prejuízo. Priorizar: subir ticket (cross-sell) OU renegociar 1-2 linhas fixas grandes (aluguel, marketing).`;
+    direcFin = `<strong>Projeção no azul mas margem apertada (${anoMargemProj.toFixed(1)}%).</strong> Espaço pra respirar existe, mas qualquer imprevisto vira prejuízo. Priorizar: subir ticket ou renegociar linhas fixas grandes.`;
   }
 
-  const bloco_hero_fin = `<div class="card">
-    <h2>💰 Financeiro · ano ${anoAtualHero} <span style="font-weight:400;font-size:12px;color:var(--ink-3)">(projeção · fonte única: Trinks + custos Excel)</span></h2>
-    <div class="cap">Onde a loja vai chegar no fim do ano se manter o ritmo atual. Faturamento do Trinks × custos da planilha — sem 2 números concorrentes de meta.</div>
-
-    <!-- HERO: resultado projetado do ano -->
-    <div style="text-align:center;padding:22px 16px;background:var(--surface-2);border-radius:12px;margin-top:14px">
-      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Resultado projetado do ano</div>
-      <div style="font-size:48px;font-weight:800;color:${corResProj};line-height:1.05;margin:4px 0">${brl0(anoResProj)}</div>
-      <div style="font-size:13px;color:var(--ink-2)">${anoResProj >= 0 ? 'lucro' : 'prejuízo'} se manter o ritmo · margem <span style="color:${corMargemProj};font-weight:700">${anoMargemProj.toFixed(1)}%</span></div>
-      <div style="display:flex;justify-content:center;gap:28px;margin-top:16px;flex-wrap:wrap;font-size:12.5px">
-        <div><span style="font-size:22px;font-weight:800;color:var(--ink)">${brl0(anoRec)}</span><br><span style="color:var(--ink-2)">faturado (real)</span></div>
-        <div style="color:var(--border)">|</div>
-        <div><span style="font-size:22px;font-weight:800;color:var(--ink)">${brl0(anoProj)}</span><br><span style="color:var(--ink-2)">projeção Trinks</span></div>
-        <div style="color:var(--border)">|</div>
-        <div><span style="font-size:22px;font-weight:800;color:var(--ink)">${brl0(anoMeta)}</span><br><span style="color:var(--ink-2)">meta franqueadora</span></div>
-        <div style="color:var(--border)">|</div>
-        <div><span style="font-size:22px;font-weight:800;color:${anoProjPct>=100?'var(--good)':anoProjPct>=80?'var(--warn)':'var(--crit)'}">${anoProjPct.toFixed(0)}%</span><br><span style="color:var(--ink-2)">projeção × meta</span></div>
+  // Card de cenário reutilizado 3x (MÊS · ANO REAL · ANO PROJETADO)
+  const cenarioCard = (opts) => {
+    const cor = opts.res >= 0 ? 'var(--good)' : 'var(--crit)';
+    const corMarg = opts.margem >= 0 ? 'var(--good)' : (opts.margem >= -15 ? 'var(--warn)' : 'var(--crit)');
+    const corBorda = opts.destaque ? 'var(--accent)' : 'var(--border)';
+    return `<div style="padding:16px;background:var(--surface-2);border-radius:12px;border-left:3px solid ${corBorda}">
+      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">${opts.tag}</div>
+      <div style="font-size:12px;color:var(--ink-2);margin-top:2px">${opts.subtitulo}</div>
+      <div style="font-size:32px;font-weight:800;color:${cor};line-height:1.05;margin:10px 0 2px">${brl0(opts.res)}</div>
+      <div style="font-size:11.5px;color:var(--ink-2)">${opts.res >= 0 ? 'lucro' : 'prejuízo'} · margem <span style="color:${corMarg};font-weight:700">${opts.margem.toFixed(1)}%</span></div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:grid;gap:4px;font-size:11.5px;color:var(--ink-2)">
+        ${opts.linhas.map(l => `<div style="display:flex;justify-content:space-between"><span>${l.label}</span><strong style="color:var(--ink)">${l.valor}</strong></div>`).join('')}
       </div>
+    </div>`;
+  };
+
+  const bloco_hero_fin = `<div class="card">
+    <h2>💰 Financeiro · ano ${anoAtualHero} <span style="font-weight:400;font-size:12px;color:var(--ink-3)">(fonte única: faturamento Trinks + custos Excel)</span></h2>
+    <div class="cap">3 cenários alinhados: como estamos NO MÊS, como está o ACUMULADO desde a abertura, e onde CHEGAMOS no fim do ano se manter o ritmo.</div>
+
+    <!-- 3 CENÁRIOS -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:14px">
+      ${cenarioCard({
+        tag: '📅 Mês corrente',
+        subtitulo: `${excelMesLabel}/${anoAtual} · realizado + projeção fim mês`,
+        res: mesRes,
+        margem: mesMargem,
+        destaque: false,
+        linhas: [
+          { label: 'Faturado até hoje', valor: brl0(rec_atual) },
+          { label: 'Projeção fim do mês', valor: brl0(proj_final) },
+          { label: `Meta franqueadora`, valor: brl0(mesMetaOfi) },
+          { label: `% atingimento`, valor: `<span style="color:${mesAtPct>=100?'var(--good)':mesAtPct>=80?'var(--warn)':'var(--crit)'}">${mesAtPct.toFixed(0)}%</span>` },
+        ],
+      })}
+      ${cenarioCard({
+        tag: '📊 Ano acumulado (real)',
+        subtitulo: `desde a abertura · ${dias_ano_ate_hoje} dias operados`,
+        res: anoResReal,
+        margem: anoMargemReal,
+        destaque: true,
+        linhas: [
+          { label: 'Faturado real', valor: brl0(anoRec) },
+          { label: 'Custo variável est.', valor: brl0(anoRec * (1 - mcAtualHero - 0)) },
+          { label: `Custo fixo (${meses_corridos.toFixed(1)} meses)`, valor: brl0(custoFixoAcumulado) },
+          { label: `% da meta anual`, valor: `<span style="color:${anoAtingReal>=100?'var(--good)':anoAtingReal>=50?'var(--warn)':'var(--crit)'}">${anoAtingReal.toFixed(0)}%</span>` },
+        ],
+      })}
+      ${cenarioCard({
+        tag: '🔮 Ano projetado',
+        subtitulo: 'se manter o ritmo atual até 31/12',
+        res: anoResProj,
+        margem: anoMargemProj,
+        destaque: false,
+        linhas: [
+          { label: 'Faturamento projetado', valor: brl0(anoProj) },
+          { label: 'Custo variável (projeção)', valor: brl0(anoProj * (1 - mcAtualHero)) },
+          { label: 'Custo fixo (12 meses)', valor: brl0(custoFixoAno) },
+          { label: `Meta franqueadora`, valor: `${brl0(anoMeta)} <span style="color:${anoProjPct>=100?'var(--good)':anoProjPct>=80?'var(--warn)':'var(--crit)'}">(${anoProjPct.toFixed(0)}%)</span>` },
+        ],
+      })}
     </div>
 
-    <!-- BLOCO CAIXA + A RECEBER + PONTO DE EQUILÍBRIO -->
+    <!-- SITUAÇÃO DE CAIXA -->
     <div style="margin-top:16px">
       <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Situação de caixa · agora</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
@@ -4173,14 +4234,17 @@ function renderFinanceiro(){
         </div>
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${ritmoMensal >= beMesUnif ? 'var(--good)' : 'var(--warn)'}">
           <div style="font-size:11px;color:${ritmoMensal >= beMesUnif ? 'var(--good)' : 'var(--warn)'};font-weight:800;text-transform:uppercase">⚖️ Ponto de equilíbrio · mensal</div>
-          <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${ritmoMensal >= beMesUnif ? '✓ batido no ritmo atual' : brl0(Math.max(beMesUnif-ritmoMensal,0)) + '/mês faltam'}</div>
-          <div style="font-size:11px;color:var(--ink-2)">ritmo atual ${brl0(ritmoMensal)}/mês · equilíbrio ${brl0(beMesUnif)}/mês</div>
+          <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${ritmoMensal >= beMesUnif ? '✓ batido no ritmo' : brl0(Math.max(beMesUnif-ritmoMensal,0)) + '/mês faltam'}</div>
+          <div style="font-size:11px;color:var(--ink-2)">ritmo ${brl0(ritmoMensal)}/mês · equilíbrio ${brl0(beMesUnif)}/mês</div>
         </div>
       </div>
     </div>
 
     <div class="insight" style="margin-top:14px">
       <strong>👉 Direcionamento:</strong> ${direcFin}
+    </div>
+    <div style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:11px;color:var(--ink-3);line-height:1.55">
+      🔎 <strong>Auditoria dos números:</strong> Faturamento sempre do TRINKS (real + projeção pelo ritmo). Custos vêm do Excel: variável = ${((1-mcAtualHero)*100).toFixed(1)}% da receita (comissão + insumos + Simples + inadimplência), fixo = ${brl0(custoFixoMes)}/mês. Ponto de equilíbrio = custo_fixo ÷ margem_contribuição. Meta franqueadora = ${brl0(mesMetaOfi)}/mês × 12 = ${brl0(anoMeta)}/ano.
     </div>
   </div>`;
 
