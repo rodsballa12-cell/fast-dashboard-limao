@@ -381,11 +381,14 @@
 <div class="wrap">
   <header>
     <div class="brand">
-      <div class="logo">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="FAST">
-          <rect width="100" height="100" rx="6" fill="#FFD100"/>
-          <circle cx="50" cy="45" r="30" fill="#FFFFFF"/>
-          <text x="50" y="86" text-anchor="middle" font-family="Georgia,'Times New Roman',Times,serif" font-style="italic" font-weight="500" font-size="100" fill="#0A0A0A">f</text>
+      <div class="logo" id="brand-logo">
+        <!-- Secador de cabelo amarelo · substituído por JS conforme unidade ativa -->
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Fast Escova · secador">
+          <g fill="#FFD100" stroke="#0A0A0A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M14 40 Q14 28 26 28 L60 28 L90 20 L90 62 L60 54 L50 54 L50 74 Q50 84 42 84 L34 84 Q26 84 26 74 L26 54 Q14 54 14 42 Z"/>
+          </g>
+          <circle cx="24" cy="41" r="3" fill="#0A0A0A"/>
+          <rect x="30" y="64" width="16" height="3" rx="1.5" fill="#0A0A0A"/>
         </svg>
       </div>
       <div class="brand-txt">
@@ -3163,10 +3166,36 @@ function pathData(arquivo){
   return `data/${prefix||''}${arquivo}`;
 }
 
+// SVG logos por unidade (viewBox 0 0 100 100)
+const LOGOS_UNIDADE = {
+  escova: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Fast Escova · secador">
+    <g fill="#FFD100" stroke="#0A0A0A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M14 40 Q14 28 26 28 L60 28 L90 20 L90 62 L60 54 L50 54 L50 74 Q50 84 42 84 L34 84 Q26 84 26 74 L26 54 Q14 54 14 42 Z"/>
+    </g>
+    <circle cx="24" cy="41" r="3" fill="#0A0A0A"/>
+    <rect x="30" y="64" width="16" height="3" rx="1.5" fill="#0A0A0A"/>
+  </svg>`,
+  spa: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Fast SPA · lotus">
+    <g fill="#7CB342" stroke="#0A0A0A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M50 82 Q30 74 22 60 Q30 56 40 60 Q34 46 42 34 Q50 42 50 54 Q50 42 58 34 Q66 46 60 60 Q70 56 78 60 Q70 74 50 82 Z"/>
+    </g>
+    <ellipse cx="50" cy="82" rx="24" ry="3" fill="#0A0A0A" opacity="0.15"/>
+  </svg>`,
+  consolidado: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="Fast Consolidado">
+    <g stroke="#0A0A0A" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+      <circle cx="36" cy="50" r="22" fill="#FFD100"/>
+      <circle cx="64" cy="50" r="22" fill="#7CB342" opacity="0.85"/>
+    </g>
+    <text x="50" y="58" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="24" fill="#0A0A0A">+</text>
+  </svg>`,
+};
+
 function atualizarHeaderUnidade(){
   const info = unidadeInfo(UNIDADE_ATIVA);
   const title = document.getElementById('brand-title');
   const sub = document.getElementById('brand-sub');
+  const logoEl = document.getElementById('brand-logo');
+  if(logoEl && LOGOS_UNIDADE[UNIDADE_ATIVA]) logoEl.innerHTML = LOGOS_UNIDADE[UNIDADE_ATIVA];
   if(title){
     if(UNIDADE_ATIVA === 'consolidado'){
       title.innerHTML = `Ritmo <span style="color:var(--accent)">Fast</span> · <span style="color:#8B5CF6">Consolidado</span>`;
