@@ -304,18 +304,16 @@ def analisar(agend, transac, ini: date, fim: date):
         for s in (t.get("servicos") or []):
             preco_s = float(s.get("preco") or 0)
             nome_s = s.get("nome") or ""
-            # Fallback catalogo: servico consumido via pacote (preco=0). Usa
-            # preco unitario do catalogo pra valorizar tanto serv_v quanto
-            # categoria_native. Bate com Trinks Relatorio de Comissoes.
-            if preco_s == 0:
-                preco_s = servicos_cat_preco.get(s.get("id"), 0)
+            # serv_v + categoria_native SEM valorizacao de pacote consumido
+            # (soma = caixa). A valorizacao de pacote fica isolada no
+            # ranking_prof_executor mais abaixo, pra bater com Trinks
+            # Relatorio de Comissoes sem inflar as demais visualizacoes.
             serv_v += preco_s
             serv_n += 1
             if is_fast_retoque(nome_s):
                 fast_retoque_v += preco_s
                 fast_retoque_n += 1
-            # Categoria nativa Trinks: preferir a que vem na transacao, fallback catalogo
-            cat = s.get("categoria") or servicos_catg.get(s.get("id"), "")
+            cat = s.get("categoria") or ""
             if isinstance(cat, dict): cat = cat.get("nome") or ""
             cat = (cat or "sem categoria").strip().title()
             categoria_native[cat]["n"] += 1
