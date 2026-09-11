@@ -140,12 +140,25 @@ jobs:
         if: steps.recency.outputs.skip != 'true'
         run: pip install requests
 
-      - name: Fetch Trinks + build dashboard
+      - name: Fetch Trinks + build dashboard (Escova)
         if: steps.recency.outputs.skip != 'true'
         env:
           TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
           TRINKS_ESTABELECIMENTO_ID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID }}
         run: python scripts/github_refresh.py
+
+      # Propaga refresh Escova pras 3 outras unidades derivadas:
+      #   - SPA dashboard (zero-state enquanto Trinks SPA nao existe)
+      #   - SPA financeiro (zero-state enquanto Excel SPA nao preenchido)
+      #   - Consolidado dashboard (Escova + SPA)
+      #   - Consolidado financeiro (=Escova enquanto SPA=0)
+      # Se refresh Escova pulou (early-exit), nao propaga — nada mudou.
+      - name: Regerar SPA + Consolidado
+        if: steps.recency.outputs.skip != 'true'
+        run: |
+          python scripts/build_spa_dashboard.py
+          python scripts/build_spa_financeiro.py
+          python scripts/consolida_dashboard.py
 
       - name: Commit e push
         if: steps.recency.outputs.skip != 'true'
@@ -165,7 +178,11 @@ jobs:
                    data/servicos_cache.json \
                    data/agend_detail_cache.json \
                    data/agendamentos_ano_cache.json \
-                   data/quota_status.json; do
+                   data/quota_status.json \
+                   data/spa/dashboard_data.json \
+                   data/spa/financeiro.json \
+                   data/consolidado/dashboard_data.json \
+                   data/consolidado/financeiro.json; do
             git add "$f" 2>/dev/null || true
           done
           # Se quota_status foi limpo (arquivo removido), stage a remoção
