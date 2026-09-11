@@ -4708,6 +4708,14 @@ function renderMidiasGoogleDow(){
   el.innerHTML = '';
   if(!MID || !MID.google_business || !MID.google_business.serie_diaria_30d) return;
   if(typeof TRINKS === 'undefined' || !TRINKS || !TRINKS.abas || !TRINKS.abas.anual) return;
+  // Unidade com Trinks mock (SPA pré-abertura) — placeholder honesto
+  if(TRINKS._mock){
+    el.innerHTML = `<div class="card" style="border-left:4px solid #4285F4;margin-top:12px">
+      <h2>📍 Google Meu Negócio × faturamento Trinks · por dia da semana</h2>
+      <div class="cap">Cruza ações Google com faturamento histórico por DOW. <strong>Aguardando conexão Trinks SPA</strong> — sem dado de faturamento real, o cruzamento não faz sentido ainda.</div>
+    </div>`;
+    return;
+  }
   const trDow = TRINKS.abas.anual.por_dow || [];
   const gmb = MID.google_business.serie_diaria_30d;
   const dowNomes = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
@@ -4770,6 +4778,19 @@ function renderMidiasCanalAquisicao(){
   if(!el) return;
   el.innerHTML = '';
   if(typeof TRINKS === 'undefined' || !TRINKS || !TRINKS.abas || !TRINKS.abas.anual) return;
+  // Unidade com Trinks mock (SPA pré-abertura) — sem clientes ainda pra saber origem
+  if(TRINKS._mock){
+    el.innerHTML = `<div class="card">
+      <h2>📢 Canal de aquisição · comoNosConheceu</h2>
+      <div class="cap">De onde os clientes vieram — dado vem do Trinks (campo comoNosConheceu).</div>
+      <div style="padding:20px;background:var(--surface-2);border-radius:10px;text-align:center;margin-top:12px">
+        <div style="font-size:32px;margin-bottom:8px">🕓</div>
+        <div style="font-size:14px;color:var(--ink-2);font-weight:600;margin-bottom:4px">Aguardando conexão Trinks SPA</div>
+        <div style="font-size:12px;color:var(--ink-3);line-height:1.5">Sem clientes atendidos ainda no Trinks da SPA (estabelecimentoId pendente · loja abre 25/09). Assim que a primeira cliente for atendida e o Trinks começar a registrar, o canal de aquisição aparece aqui.</div>
+      </div>
+    </div>`;
+    return;
+  }
   const a = TRINKS.abas.anual;
   if(!a.seg_canal) return;
   // Wrapper div pra renderSegmentacao poder popular
