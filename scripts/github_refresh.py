@@ -1933,11 +1933,11 @@ def main():
     # metas
     # Dias operacionais do mês real (respeita início do domingo)
     dias_op_mes_real = dias_operacionais_no_mes(hoje.year, hoje.month)
-    meta_mensal = calc_meta(a_mensal["kpis"]["caixa"], META_MENSAL, a_mensal["kpis"]["dias_op"], dias_op_mes_real)
+    meta_mensal = calc_meta(a_mensal["kpis"].get("faturamento_apurado") or a_mensal["kpis"]["caixa"], META_MENSAL, a_mensal["kpis"]["dias_op"], dias_op_mes_real)
 
     # Meta do DIA: valor específico da data (respeita dow + peso da semana-do-mês).
     meta_dia_valor = meta_por_data.get(hoje, 0.0) if opera_no_dia(hoje) else 0.0
-    meta_dia = calc_meta(a_diario["kpis"]["caixa"], meta_dia_valor, 1, 1)
+    meta_dia = calc_meta(a_diario["kpis"].get("faturamento_apurado") or a_diario["kpis"]["caixa"], meta_dia_valor, 1, 1)
 
     # === PACE INTRADAY: combina curva horária + hora atual ===
     # "Às 15h você já deveria ter feito X% da meta do dia".
@@ -1994,7 +1994,7 @@ def main():
             meta_sem_valor += meta_por_data.get(d, 0.0)
     if meta_sem_valor == 0:
         meta_sem_valor = round(META_MENSAL / max(dias_op_mes_real, 1) * dias_op_sem_real, 2)
-    meta_sem = calc_meta(a_semanal["kpis"]["caixa"], round(meta_sem_valor, 2),
+    meta_sem = calc_meta(a_semanal["kpis"].get("faturamento_apurado") or a_semanal["kpis"]["caixa"], round(meta_sem_valor, 2),
                          a_semanal["kpis"]["dias_op"], dias_op_sem_real)
 
     # META ANO: com histórico de meses fechados (2027+), usa peso_mes_ano pra ponderar
@@ -2022,7 +2022,7 @@ def main():
     fim_ano_dt = date(2026, 12, 31)
     dias_op_total = _dias_op(data_abertura, fim_ano_dt)
     dias_op_realizados = _dias_op(data_abertura, min(hoje, fim_ano_dt))
-    meta_ano = calc_meta(a_anual["kpis"]["caixa"], meta_ano_valor, dias_op_realizados, dias_op_total) if meta_ano_valor > 0 else {}
+    meta_ano = calc_meta(a_anual["kpis"].get("faturamento_apurado") or a_anual["kpis"]["caixa"], meta_ano_valor, dias_op_realizados, dias_op_total) if meta_ano_valor > 0 else {}
 
     # === Ticket meta OPERACIONAL: derivado da meta de caixa e das visitas projetadas ===
     # Racional: se o ritmo de visitas atual continuar até o fim do período, quanto precisa
