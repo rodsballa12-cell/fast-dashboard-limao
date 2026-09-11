@@ -1,6 +1,6 @@
 {
-  "gerado_em": "2026-09-10T22:00:16-03:00",
-  "hoje": "2026-09-10",
+  "gerado_em": "2026-09-11T02:53:20-03:00",
+  "hoje": "2026-09-11",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 30,
   "dias_atipicos": {
@@ -264,8 +264,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 2483,
-    "saldoRestante": 7517
+    "totalUtilizado": 2505,
+    "saldoRestante": 7495
   },
   "metas_franqueadora": {
     "recepcionistas": 2,
@@ -727,25 +727,19 @@
           "stone_liquido": 0.0,
           "stone_tarifa": 0.0,
           "stone_n": 0,
-          "trinks_valor": 79.0,
-          "trinks_n": 1,
+          "trinks_valor": 0.0,
+          "trinks_n": 0,
           "matches_n": 0,
           "orfaos_stone": [],
-          "orfaos_trinks": [
-            {
-              "data": "2026-09-10",
-              "valor": 79.0,
-              "cliente": "Giovanna Maia "
-            }
-          ],
-          "diff": -79.0
+          "orfaos_trinks": [],
+          "diff": 0.0
         },
         "cartao": {
           "stone_recebido": 0.0,
           "stone_n": 0,
-          "trinks_vendido": 706.0,
-          "trinks_n": 5,
-          "a_receber_d30": 681.29
+          "trinks_vendido": 0.0,
+          "trinks_n": 0,
+          "a_receber_d30": 0.0
         },
         "dinheiro": {
           "total": 0.0,
@@ -754,10 +748,10 @@
         },
         "resumo": {
           "recebido_total": 0.0,
-          "a_receber": 681.29
+          "a_receber": 0.0
         },
-        "periodo_ini": "2026-09-10",
-        "periodo_fim": "2026-09-10"
+        "periodo_ini": "2026-09-11",
+        "periodo_fim": "2026-09-11"
       },
       "semana": {
         "pix": {
@@ -1300,44 +1294,40 @@
     ],
     "antecipacao_analise": {
       "debito": {
-        "bruto": 158.0,
-        "n": 1,
+        "bruto": 0.0,
+        "n": 0,
         "mdr_pct": 1.46,
-        "liq_espera": 155.69,
-        "liq_antecipar": 155.61,
-        "custo_antecipacao": 0.09,
+        "liq_espera": 0.0,
+        "liq_antecipar": 0.0,
+        "custo_antecipacao": 0.0,
         "dias_medio_recebimento": 1,
-        "dias_medio_restante": 1.0,
+        "dias_medio_restante": 0,
         "prazo_dias": 1
       },
       "credito": {
-        "bruto": 18881.3,
-        "n": 147,
+        "bruto": 18490.3,
+        "n": 142,
         "mdr_pct": 2.08,
-        "liq_espera": 18488.57,
-        "liq_antecipar": 18331.41,
-        "custo_antecipacao": 157.16,
+        "liq_espera": 18105.7,
+        "liq_antecipar": 17958.77,
+        "custo_antecipacao": 146.93,
         "dias_medio_recebimento": 30,
-        "dias_medio_restante": 15.4,
+        "dias_medio_restante": 14.7,
         "prazo_dias": 30
       },
       "total": {
-        "bruto": 19039.3,
-        "liq_espera": 18644.26,
-        "liq_antecipar": 18487.01,
-        "custo_antecipacao": 157.25,
-        "custo_pct": 0.84
+        "bruto": 18490.3,
+        "liq_espera": 18105.7,
+        "liq_antecipar": 17958.77,
+        "custo_antecipacao": 146.93,
+        "custo_pct": 0.81
       },
       "confronto_a_receber": {
         "a_receber_extrato": 21148.14,
-        "pendente_vendas": 18644.26,
-        "diferenca": -2503.88
+        "pendente_vendas": 18105.7,
+        "diferenca": -3042.44
       },
       "cronograma_liberacao": [
-        {
-          "data": "2026-09-11",
-          "bruto": 549.0
-        },
         {
           "data": "2026-09-12",
           "bruto": 745.0
@@ -1453,11 +1443,11 @@
       "resgates_n": 1,
       "ultimo_resgate": "2026-09-04",
       "transf_recebidas_periodo": 2896.43,
-      "dias_medio_aporte": 3.2,
-      "rendimento_estimado_pct": 0.12,
-      "rendimento_estimado_r": 8.82,
-      "rendimento_periodo_r": 210.29,
-      "saldo_com_rendimento_estimado": 7358.24,
+      "dias_medio_aporte": 4.2,
+      "rendimento_estimado_pct": 0.16,
+      "rendimento_estimado_r": 11.59,
+      "rendimento_periodo_r": 213.06,
+      "saldo_com_rendimento_estimado": 7361.01,
       "historico_dias": 42,
       "ultimos_movs": [
         {
@@ -1585,7 +1575,7 @@
           "cliente": "Marcia Roseli "
         }
       ],
-      "horas_desatualizado": 25.7
+      "horas_desatualizado": 30.5
     }
   },
   "auditoria_cancelados": {
@@ -2983,7 +2973,7 @@
       },
       "2026-W37": {
         "periodo_ini": "2026-09-07",
-        "periodo_fim": "2026-09-10",
+        "periodo_fim": "2026-09-11",
         "kpis": {
           "caixa": 3432.15,
           "receita_serv": 2538.0,
@@ -5275,12 +5265,12 @@
         "rs_hora_salao": 108.67,
         "horas_operacao_periodo": 552.0,
         "utilizacao_agregada_pct": 5.8,
-        "ticket_meta": 175.84,
-        "ticket_meta_periodo": 158.5,
-        "ticket_atingimento_pct": 65.6,
-        "ticket_gap_por_atend": 60.48,
-        "visitas_projetadas": 1814,
-        "visitas_restantes": 1294,
+        "ticket_meta": 181.3,
+        "ticket_meta_periodo": 161.98,
+        "ticket_atingimento_pct": 63.6,
+        "ticket_gap_por_atend": 65.94,
+        "visitas_projetadas": 1775,
+        "visitas_restantes": 1255,
         "ticket_meta_status": "em_curso",
         "ticket_meta_deficit_caixa": 227534.55,
         "ticket_meta_supera_caixa": 0.0
@@ -5290,16 +5280,16 @@
         "realizado": 59987.55,
         "pct": 20.9,
         "falta": 227534.55,
-        "dias_realizados": 45,
+        "dias_realizados": 46,
         "dias_total": 157,
-        "dias_restantes": 112,
-        "necessario_dia": 2031.56,
-        "ritmo_dia": 1333.06,
-        "projecao": 209289.9,
-        "projecao_pct": 72.8,
-        "meta_ate_hoje": 82410.79,
-        "pct_ate_hoje": 72.8,
-        "saldo_ate_hoje": -22423.24
+        "dias_restantes": 111,
+        "necessario_dia": 2049.86,
+        "ritmo_dia": 1304.08,
+        "projecao": 204740.12,
+        "projecao_pct": 71.2,
+        "meta_ate_hoje": 84242.14,
+        "pct_ate_hoje": 71.2,
+        "saldo_ate_hoje": -24254.59
       },
       "categorias": {
         "pacotes": {
@@ -6102,18 +6092,18 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Kimberly Soares Vasconcelos",
-          "n": 4,
-          "v": 79.0,
-          "ticket_medio": 19.75,
-          "horas_trab": 1.8
-        },
-        {
           "nome": "Prof desligado #518669",
           "n": 0,
           "v": 79.0,
           "ticket_medio": 79.0,
           "horas_trab": 0.0
+        },
+        {
+          "nome": "Kimberly Soares Vasconcelos",
+          "n": 4,
+          "v": 79.0,
+          "ticket_medio": 19.75,
+          "horas_trab": 1.8
         },
         {
           "nome": "Prof desligado #729910",
@@ -6123,81 +6113,11 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Patricia Helena Ferreira",
-          "n": 12,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 6.3
-        },
-        {
-          "nome": "Eliana Sampaio Cerqueira",
-          "n": 1,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 0.5
-        },
-        {
-          "nome": "Jeniffer Roberta De Oliveira Felix",
-          "n": 17,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 9.2
-        },
-        {
-          "nome": "Lidiane Quiteria Da Silva",
-          "n": 9,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 5.2
-        },
-        {
-          "nome": "Julia Kathleen Souza Da Silva",
-          "n": 11,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 5.5
-        },
-        {
-          "nome": "Sandra Margarete Da Silva",
-          "n": 6,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 3.5
-        },
-        {
-          "nome": "Bianca Doria Araujo Santos",
-          "n": 8,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 4.9
-        },
-        {
-          "nome": "Vanessa Nascimento D Silva",
-          "n": 4,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 2.0
-        },
-        {
           "nome": "Giovanna Guedes Da Silva",
           "n": 65,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 35.1
-        },
-        {
-          "nome": "Cacilda Guimarães",
-          "n": 3,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.5
-        },
-        {
-          "nome": "Claudia Cabral Pereira",
-          "n": 1,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 0.8
         },
         {
           "nome": "Niedja Rafaelle Leite Nunes",
@@ -6207,11 +6127,81 @@
           "horas_trab": 2.4
         },
         {
+          "nome": "Lidiane Quiteria Da Silva",
+          "n": 9,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 5.2
+        },
+        {
+          "nome": "Claudia Cabral Pereira",
+          "n": 1,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 0.8
+        },
+        {
+          "nome": "Sandra Margarete Da Silva",
+          "n": 6,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 3.5
+        },
+        {
+          "nome": "Julia Kathleen Souza Da Silva",
+          "n": 11,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 5.5
+        },
+        {
+          "nome": "Eliana Sampaio Cerqueira",
+          "n": 1,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 0.5
+        },
+        {
+          "nome": "Vanessa Nascimento D Silva",
+          "n": 4,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 2.0
+        },
+        {
+          "nome": "Cacilda Guimarães",
+          "n": 3,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 1.5
+        },
+        {
+          "nome": "Jeniffer Roberta De Oliveira Felix",
+          "n": 17,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 9.2
+        },
+        {
           "nome": "Aline Dos Santos Gonzaga",
           "n": 4,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 1.6
+        },
+        {
+          "nome": "Patricia Helena Ferreira",
+          "n": 12,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 6.3
+        },
+        {
+          "nome": "Bianca Doria Araujo Santos",
+          "n": 8,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 4.9
         }
       ],
       "ranking_prof_total_n": 37,
@@ -6731,15 +6721,28 @@
       },
       "pacotes_sem_categoria_v": 2728.0,
       "churn_early": {
-        "n_alerta": 49,
-        "ltv_em_risco": 10973.0,
+        "n_alerta": 52,
+        "ltv_em_risco": 12487.0,
         "top": [
+          {
+            "cliente": "Brenda Vontes",
+            "n_visitas": 12,
+            "ltv": 1190.0,
+            "ultima_visita": "2026-08-28",
+            "dias_sem_vir": 14,
+            "telefone": "+55 (11) 92637-1009",
+            "ultimos_servicos": [
+              "Mãos",
+              "Fast Escova - Lisa",
+              "Adicional Escova Modeladora"
+            ]
+          },
           {
             "cliente": "Gabrielle Santana Penha ",
             "n_visitas": 9,
             "ltv": 988.0,
             "ultima_visita": "2026-08-24",
-            "dias_sem_vir": 17,
+            "dias_sem_vir": 18,
             "telefone": "+55 (11) 95144-7919",
             "ultimos_servicos": [
               "Fast Escova - Lisa",
@@ -6752,7 +6755,7 @@
             "n_visitas": 6,
             "ltv": 590.0,
             "ultima_visita": "2026-08-15",
-            "dias_sem_vir": 26,
+            "dias_sem_vir": 27,
             "telefone": "+55 (11) 97324-2894",
             "ultimos_servicos": [
               "Fast Hidratação - Fast Mask",
@@ -6765,7 +6768,7 @@
             "n_visitas": 4,
             "ltv": 483.0,
             "ultima_visita": "2026-08-06",
-            "dias_sem_vir": 35,
+            "dias_sem_vir": 36,
             "telefone": "+55 (27) 98117-7000",
             "ultimos_servicos": [
               "Mãos",
@@ -6778,7 +6781,7 @@
             "n_visitas": 5,
             "ltv": 428.0,
             "ultima_visita": "2026-08-21",
-            "dias_sem_vir": 20,
+            "dias_sem_vir": 21,
             "telefone": "+55 (11) 97252-2203",
             "ultimos_servicos": [
               "Pés",
@@ -6791,7 +6794,7 @@
             "n_visitas": 3,
             "ltv": 391.0,
             "ultima_visita": "2026-08-15",
-            "dias_sem_vir": 26,
+            "dias_sem_vir": 27,
             "telefone": "+55 (11) 96613-5556",
             "ultimos_servicos": [
               "Plástica Dos Pés Vip",
@@ -6804,7 +6807,7 @@
             "n_visitas": 5,
             "ltv": 361.0,
             "ultima_visita": "2026-08-18",
-            "dias_sem_vir": 23,
+            "dias_sem_vir": 24,
             "telefone": "+55 (11) 95412-0338",
             "ultimos_servicos": [
               "Fast Retoque",
@@ -6817,7 +6820,7 @@
             "n_visitas": 4,
             "ltv": 330.0,
             "ultima_visita": "2026-08-21",
-            "dias_sem_vir": 20,
+            "dias_sem_vir": 21,
             "telefone": "+55 (11) 97268-9849",
             "ultimos_servicos": [
               "Mãos",
@@ -6830,7 +6833,7 @@
             "n_visitas": 6,
             "ltv": 328.0,
             "ultima_visita": "2026-08-01",
-            "dias_sem_vir": 40,
+            "dias_sem_vir": 41,
             "telefone": "+55 (11) 99373-2349",
             "ultimos_servicos": [
               "Fast Escova - Modelada",
@@ -6843,7 +6846,7 @@
             "n_visitas": 3,
             "ltv": 297.0,
             "ultima_visita": "2026-08-07",
-            "dias_sem_vir": 34,
+            "dias_sem_vir": 35,
             "telefone": "+55 (11) 96915-7829",
             "ultimos_servicos": [
               "Design Sobrancelhas",
@@ -6855,7 +6858,7 @@
             "n_visitas": 3,
             "ltv": 283.0,
             "ultima_visita": "2026-08-01",
-            "dias_sem_vir": 40,
+            "dias_sem_vir": 41,
             "telefone": "+55 (11) 99253-1178",
             "ultimos_servicos": [
               "Cilios - Unidade",
@@ -6868,7 +6871,7 @@
             "n_visitas": 6,
             "ltv": 282.0,
             "ultima_visita": "2026-08-22",
-            "dias_sem_vir": 19,
+            "dias_sem_vir": 20,
             "telefone": "+55 (11) 99522-7718",
             "ultimos_servicos": [
               "Pés",
@@ -6880,7 +6883,7 @@
             "n_visitas": 3,
             "ltv": 263.0,
             "ultima_visita": "2026-08-15",
-            "dias_sem_vir": 26,
+            "dias_sem_vir": 27,
             "telefone": "+55 (11) 95214-5258",
             "ultimos_servicos": [
               "Cilios - Unidade",
@@ -6893,7 +6896,7 @@
             "n_visitas": 3,
             "ltv": 259.0,
             "ultima_visita": "2026-08-01",
-            "dias_sem_vir": 40,
+            "dias_sem_vir": 41,
             "telefone": "+55 (11) 98854-4031",
             "ultimos_servicos": [
               "Buço",
@@ -6906,7 +6909,7 @@
             "n_visitas": 4,
             "ltv": 252.0,
             "ultima_visita": "2026-08-07",
-            "dias_sem_vir": 34,
+            "dias_sem_vir": 35,
             "telefone": "+55 (11) 99238-4006",
             "ultimos_servicos": [
               "Fast Escova - Lisa",
@@ -6919,7 +6922,7 @@
             "n_visitas": 3,
             "ltv": 245.0,
             "ultima_visita": "2026-08-21",
-            "dias_sem_vir": 20,
+            "dias_sem_vir": 21,
             "telefone": "+55 (11) 99928-5562",
             "ultimos_servicos": [
               "Plástica Dos Pés Vip",
@@ -6932,7 +6935,7 @@
             "n_visitas": 3,
             "ltv": 237.0,
             "ultima_visita": "2026-08-08",
-            "dias_sem_vir": 33,
+            "dias_sem_vir": 34,
             "telefone": "+55 (11) 98185-7824",
             "ultimos_servicos": [
               "Fast Escova - Lisa"
@@ -6943,7 +6946,7 @@
             "n_visitas": 3,
             "ltv": 228.0,
             "ultima_visita": "2026-08-26",
-            "dias_sem_vir": 15,
+            "dias_sem_vir": 16,
             "telefone": "+55 (92) 99367-0529",
             "ultimos_servicos": [
               "Buço",
@@ -6955,7 +6958,7 @@
             "n_visitas": 4,
             "ltv": 222.0,
             "ultima_visita": "2026-08-01",
-            "dias_sem_vir": 40,
+            "dias_sem_vir": 41,
             "telefone": "+55 (11) 94838-7568",
             "ultimos_servicos": [
               "Design Sobrancelhas",
@@ -6968,25 +6971,12 @@
             "n_visitas": 4,
             "ltv": 209.0,
             "ultima_visita": "2026-08-07",
-            "dias_sem_vir": 34,
+            "dias_sem_vir": 35,
             "telefone": "+55 (17) 99782-1688",
             "ultimos_servicos": [
               "Buço",
               "Design Sobrancelhas",
               "Esmaltação"
-            ]
-          },
-          {
-            "cliente": "Goiacy Soares Lima Araújo",
-            "n_visitas": 3,
-            "ltv": 205.0,
-            "ultima_visita": "2026-08-22",
-            "dias_sem_vir": 19,
-            "telefone": "+55 (11) 99294-8108",
-            "ultimos_servicos": [
-              "Mãos",
-              "Fast Hidratação - Fast Mask",
-              "Fast Escova - Lisa"
             ]
           }
         ]
@@ -7579,25 +7569,9 @@
       },
       "aniversariantes": [
         {
-          "cliente": "Alyne Moreno Da Silva",
-          "data_aniv": "10/09",
-          "dias": 0,
-          "n_visitas": 1,
-          "ltv": 79.0,
-          "telefone": "+55 (11) 96172-9969"
-        },
-        {
-          "cliente": "Jessica Gonçalves Peres",
-          "data_aniv": "10/09",
-          "dias": 0,
-          "n_visitas": 1,
-          "ltv": 79.0,
-          "telefone": "+55 (11) 94197-5043"
-        },
-        {
           "cliente": "Simone Oliveira ",
           "data_aniv": "11/09",
-          "dias": 1,
+          "dias": 0,
           "n_visitas": 2,
           "ltv": 126.0,
           "telefone": "+55 (11) 94039-2278"
@@ -7605,7 +7579,7 @@
         {
           "cliente": "Patricia Da Silva Melo ",
           "data_aniv": "12/09",
-          "dias": 2,
+          "dias": 1,
           "n_visitas": 1,
           "ltv": 83.0,
           "telefone": "+55 (11) 99778-4030"
@@ -7613,7 +7587,7 @@
         {
           "cliente": "Camill341524A S. Santos",
           "data_aniv": "12/09",
-          "dias": 2,
+          "dias": 1,
           "n_visitas": 1,
           "ltv": 79.0,
           "telefone": "+55 (11) 94791-3901"
@@ -7621,7 +7595,7 @@
         {
           "cliente": "Clara Spinola Alves",
           "data_aniv": "14/09",
-          "dias": 4,
+          "dias": 3,
           "n_visitas": 3,
           "ltv": 99.0,
           "telefone": "+55 (11) 95854-6231"
@@ -7629,7 +7603,7 @@
         {
           "cliente": "Rose Rocha",
           "data_aniv": "14/09",
-          "dias": 4,
+          "dias": 3,
           "n_visitas": 1,
           "ltv": 79.0,
           "telefone": "+55 (11) 97819-3073"
@@ -7637,7 +7611,7 @@
         {
           "cliente": "Marli Gomes",
           "data_aniv": "15/09",
-          "dias": 5,
+          "dias": 4,
           "n_visitas": 1,
           "ltv": 83.0,
           "telefone": "+55 (11) 99326-8686"
@@ -7645,7 +7619,7 @@
         {
           "cliente": "Marcia Roseli ",
           "data_aniv": "16/09",
-          "dias": 6,
+          "dias": 5,
           "n_visitas": 4,
           "ltv": 178.0,
           "telefone": "+55 (11) 98039-1195"
@@ -7653,7 +7627,7 @@
         {
           "cliente": "Ludmila Peleias",
           "data_aniv": "16/09",
-          "dias": 6,
+          "dias": 5,
           "n_visitas": 2,
           "ltv": 158.0,
           "telefone": "+55 (11) 98438-7584"
@@ -7661,7 +7635,7 @@
         {
           "cliente": "Caroline Solto Lima",
           "data_aniv": "16/09",
-          "dias": 6,
+          "dias": 5,
           "n_visitas": 2,
           "ltv": 0.0,
           "telefone": "+55 (11) 97496-4761"
@@ -7669,7 +7643,7 @@
         {
           "cliente": "Jackline Barbosa ",
           "data_aniv": "17/09",
-          "dias": 7,
+          "dias": 6,
           "n_visitas": 1,
           "ltv": 79.0,
           "telefone": "+55 (11) 98461-9155"
@@ -7677,7 +7651,7 @@
         {
           "cliente": "Thais Taglieri Reginaldo",
           "data_aniv": "18/09",
-          "dias": 8,
+          "dias": 7,
           "n_visitas": 3,
           "ltv": 268.0,
           "telefone": "+55 (11) 94123-8207"
@@ -7685,7 +7659,7 @@
         {
           "cliente": "Critane Sayuri",
           "data_aniv": "18/09",
-          "dias": 8,
+          "dias": 7,
           "n_visitas": 3,
           "ltv": 165.0,
           "telefone": "+55 (11) 99365-6269"
@@ -7693,7 +7667,7 @@
         {
           "cliente": "Julia Rios De Lima ",
           "data_aniv": "19/09",
-          "dias": 9,
+          "dias": 8,
           "n_visitas": 1,
           "ltv": 47.0,
           "telefone": "+55 (11) 97105-8035"
@@ -7701,7 +7675,7 @@
         {
           "cliente": "Grasieli Batista",
           "data_aniv": "20/09",
-          "dias": 10,
+          "dias": 9,
           "n_visitas": 3,
           "ltv": 114.0,
           "telefone": "+55 (11) 97135-1599"
@@ -7709,7 +7683,7 @@
         {
           "cliente": "Rose Citty",
           "data_aniv": "20/09",
-          "dias": 10,
+          "dias": 9,
           "n_visitas": 2,
           "ltv": 79.0,
           "telefone": "+55 (11) 99322-7185"
@@ -7717,7 +7691,7 @@
         {
           "cliente": "Fernanda Feitoza ",
           "data_aniv": "21/09",
-          "dias": 11,
+          "dias": 10,
           "n_visitas": 1,
           "ltv": 79.0,
           "telefone": "+55 (11) 94902-9326"
@@ -7725,10 +7699,18 @@
         {
           "cliente": "Sabrina Silva Avezedo ",
           "data_aniv": "22/09",
-          "dias": 12,
+          "dias": 11,
           "n_visitas": 4,
           "ltv": 205.0,
           "telefone": "+55 (11) 97883-3849"
+        },
+        {
+          "cliente": "Maria Francisca Alves",
+          "data_aniv": "25/09",
+          "dias": 14,
+          "n_visitas": 1,
+          "ltv": 83.0,
+          "telefone": "+55 (11) 99232-1179"
         }
       ],
       "seg_canal": {
@@ -8363,19 +8345,19 @@
       ],
       "clientes_snapshot": {
         "total_base": 374,
-        "ativos_30d": 250,
+        "ativos_30d": 246,
         "ativos_60d": 374,
         "ativos_90d": 374,
         "dormentes_60d": 0,
-        "novos_30d": 215,
+        "novos_30d": 210,
         "n_uma_vez": 165,
         "n_recorrentes": 209,
         "pct_recorrentes": 55.9,
         "ltv_medio": 160.12,
         "ticket_medio_visita": 115.16,
         "freq_media_visitas": 1.39,
-        "n_alerta_churn": 49,
-        "n_aniv_14d": 19,
+        "n_alerta_churn": 52,
+        "n_aniv_14d": 18,
         "n_obs_vip": 44
       },
       "clientes_cadastro": {
@@ -8409,27 +8391,27 @@
         "rs_hora_salao": 109.35,
         "horas_operacao_periodo": 114.0,
         "utilizacao_agregada_pct": 5.9,
-        "caixa_delta_pct": -26.4,
-        "atend_delta_pct": -11.2,
-        "cliente_dia_delta_pct": -9.5,
-        "caixa_delta_perdia_pct": -34.6,
-        "atend_delta_perdia_pct": -21.1,
-        "cliente_dia_delta_perdia_pct": -19.5,
+        "caixa_delta_pct": -28.2,
+        "atend_delta_pct": -15.3,
+        "cliente_dia_delta_pct": -13.9,
+        "caixa_delta_perdia_pct": -28.2,
+        "atend_delta_perdia_pct": -15.3,
+        "cliente_dia_delta_perdia_pct": -13.9,
         "dias_com_movimento": {
           "atual": 9,
-          "anterior": 8
+          "anterior": 9
         },
-        "ticket_delta_pct": -18.7,
-        "caixa_delta_bruto_pct": -26.4,
+        "ticket_delta_pct": -16.6,
+        "caixa_delta_bruto_pct": -28.2,
         "periodo_ant_ref": {
           "periodo_ini": "2026-08-01",
-          "periodo_fim": "2026-08-10",
-          "janela_dias": 10,
-          "caixa": 16947.1,
-          "atend_fin": 205,
-          "cliente_dia": 116,
-          "ticket_medio": 146.1,
-          "dias_op": 8
+          "periodo_fim": "2026-08-11",
+          "janela_dias": 11,
+          "caixa": 17362.1,
+          "atend_fin": 215,
+          "cliente_dia": 122,
+          "ticket_medio": 142.31,
+          "dias_op": 9
         },
         "base_comparacao": {
           "composicao_atual": [
@@ -8442,7 +8424,8 @@
             "Seg",
             "Ter",
             "Qua",
-            "Qui"
+            "Qui",
+            "Sex"
           ],
           "composicao_anterior": [
             "Sáb",
@@ -8454,13 +8437,14 @@
             "Sex",
             "Sáb",
             "Dom",
-            "Seg"
+            "Seg",
+            "Ter"
           ],
-          "peso_semana_atual_pct": 126.9,
-          "peso_semana_anterior_pct": 155.5,
-          "razao_peso": 1.23,
-          "comparavel": false,
-          "caixa_delta_ajustado_pct": -9.8,
+          "peso_semana_atual_pct": 144.5,
+          "peso_semana_anterior_pct": 161.8,
+          "razao_peso": 1.12,
+          "comparavel": true,
+          "caixa_delta_ajustado_pct": -19.6,
           "dias_atipicos_na_base": {
             "2026-08-10": {
               "ratio": 2.65,
@@ -9035,18 +9019,18 @@
           "horas_trab": 3.5
         },
         {
-          "nome": "Prof desligado #518669",
-          "n": 0,
-          "v": 79.0,
-          "ticket_medio": 79.0,
-          "horas_trab": 0.0
-        },
-        {
           "nome": "Kimberly Soares Vasconcelos",
           "n": 4,
           "v": 79.0,
           "ticket_medio": 19.75,
           "horas_trab": 1.8
+        },
+        {
+          "nome": "Prof desligado #518669",
+          "n": 0,
+          "v": 79.0,
+          "ticket_medio": 79.0,
+          "horas_trab": 0.0
         },
         {
           "nome": "Claudia Cabral Pereira",
@@ -9318,49 +9302,51 @@
         "rs_hora_salao": 71.5,
         "horas_operacao_periodo": 48.0,
         "utilizacao_agregada_pct": 3.7,
-        "caixa_delta_pct": -9.7,
-        "atend_delta_pct": -16.1,
-        "cliente_dia_delta_pct": -35.0,
-        "caixa_delta_perdia_pct": 20.4,
-        "atend_delta_perdia_pct": 11.8,
-        "cliente_dia_delta_perdia_pct": -13.3,
+        "caixa_delta_pct": -36.6,
+        "atend_delta_pct": -40.9,
+        "cliente_dia_delta_pct": -53.6,
+        "caixa_delta_perdia_pct": 5.6,
+        "atend_delta_perdia_pct": -1.5,
+        "cliente_dia_delta_perdia_pct": -22.6,
         "dias_com_movimento": {
           "atual": 3,
-          "anterior": 4
+          "anterior": 5
         },
-        "ticket_delta_pct": 39.0,
-        "caixa_delta_bruto_pct": -9.7,
+        "ticket_delta_pct": 36.5,
+        "caixa_delta_bruto_pct": -36.6,
         "periodo_ant_ref": {
           "periodo_ini": "2026-08-31",
-          "periodo_fim": "2026-09-03",
-          "janela_dias": 4,
+          "periodo_fim": "2026-09-04",
+          "janela_dias": 5,
           "sem_completa_fim": "2026-09-06",
-          "caixa": 3800.0,
-          "atend_fin": 62,
-          "n_trans": 44,
-          "ticket_trans": 86.36,
-          "ticket_medio": 95.0,
-          "cliente_dia": 40,
-          "dias_op": 4
+          "caixa": 5415.0,
+          "atend_fin": 88,
+          "n_trans": 60,
+          "ticket_trans": 90.25,
+          "ticket_medio": 96.7,
+          "cliente_dia": 56,
+          "dias_op": 5
         },
         "base_comparacao": {
           "composicao_atual": [
             "Seg",
             "Ter",
             "Qua",
-            "Qui"
+            "Qui",
+            "Sex"
           ],
           "composicao_anterior": [
             "Seg",
             "Ter",
             "Qua",
-            "Qui"
+            "Qui",
+            "Sex"
           ],
-          "peso_semana_atual_pct": 36.2,
-          "peso_semana_anterior_pct": 36.2,
+          "peso_semana_atual_pct": 53.8,
+          "peso_semana_anterior_pct": 53.8,
           "razao_peso": 1.0,
           "comparavel": true,
-          "caixa_delta_ajustado_pct": -9.7,
+          "caixa_delta_ajustado_pct": -36.6,
           "dias_atipicos_na_base": {
             "2026-09-01": {
               "ratio": 2.0,
@@ -9628,11 +9614,11 @@
           "horas_trab": 3.0
         },
         {
-          "nome": "Andy Alexia Lera Colanere",
-          "n": 2,
+          "nome": "Kimberly Soares Vasconcelos",
+          "n": 4,
           "v": 79.0,
-          "ticket_medio": 39.5,
-          "horas_trab": 0.9
+          "ticket_medio": 19.75,
+          "horas_trab": 1.8
         },
         {
           "nome": "Prof desligado #518669",
@@ -9642,11 +9628,11 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Kimberly Soares Vasconcelos",
-          "n": 4,
+          "nome": "Andy Alexia Lera Colanere",
+          "n": 2,
           "v": 79.0,
-          "ticket_medio": 19.75,
-          "horas_trab": 1.8
+          "ticket_medio": 39.5,
+          "horas_trab": 0.9
         },
         {
           "nome": "Claudia Cabral Pereira",
@@ -9971,16 +9957,16 @@
       ],
       "semana_anterior": {
         "periodo_ini": "2026-08-31",
-        "periodo_fim": "2026-09-03",
-        "janela_dias": 4,
+        "periodo_fim": "2026-09-04",
+        "janela_dias": 5,
         "sem_completa_fim": "2026-09-06",
-        "caixa": 3800.0,
-        "atend_fin": 62,
-        "n_trans": 44,
-        "ticket_trans": 86.36,
-        "ticket_medio": 95.0,
-        "cliente_dia": 40,
-        "dias_op": 4
+        "caixa": 5415.0,
+        "atend_fin": 88,
+        "n_trans": 60,
+        "ticket_trans": 90.25,
+        "ticket_medio": 96.7,
+        "cliente_dia": 56,
+        "dias_op": 5
       },
       "cadeiras_utilizacao": {
         "cabelo": {
@@ -10059,108 +10045,108 @@
     },
     "diario": {
       "kpis": {
-        "caixa": 785.0,
-        "receita_serv": 515.0,
-        "atend_fin": 11,
-        "atend_canc": 1,
-        "atend_total": 12,
-        "n_trans": 7,
-        "ticket_trans": 112.14,
-        "cliente_dia": 5,
-        "ticket_medio": 157.0,
-        "taxa_canc": 8.3,
-        "dias_op": 1,
-        "clientes_unicos": 5,
+        "caixa": 0.0,
+        "receita_serv": 0.0,
+        "atend_fin": 0,
+        "atend_canc": 0,
+        "atend_total": 0,
+        "n_trans": 0,
+        "ticket_trans": 0.0,
+        "cliente_dia": 0,
+        "ticket_medio": 0.0,
+        "taxa_canc": 0.0,
+        "dias_op": 0,
+        "clientes_unicos": 0,
         "em_atendimento": 0,
-        "n_prof_ativos": 6,
-        "rs_hora_salao": 65.42,
-        "horas_operacao_periodo": 12.0,
-        "utilizacao_agregada_pct": 3.0,
-        "caixa_delta_pct": -50.8,
-        "atend_delta_pct": -64.5,
-        "cliente_dia_delta_pct": -72.2,
-        "caixa_delta_perdia_pct": -50.8,
-        "atend_delta_perdia_pct": -64.5,
-        "cliente_dia_delta_perdia_pct": -72.2,
+        "n_prof_ativos": 0,
+        "rs_hora_salao": 0.0,
+        "horas_operacao_periodo": 0.0,
+        "utilizacao_agregada_pct": 0.0,
+        "caixa_delta_pct": null,
+        "atend_delta_pct": null,
+        "cliente_dia_delta_pct": null,
+        "caixa_delta_perdia_pct": null,
+        "atend_delta_perdia_pct": null,
+        "cliente_dia_delta_perdia_pct": null,
         "dias_com_movimento": {
-          "atual": 1,
+          "atual": 0,
           "anterior": 1
         },
-        "ticket_delta_pct": 77.0,
-        "caixa_delta_bruto_pct": -50.8,
+        "ticket_delta_pct": null,
+        "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
-          "data": "2026-09-03",
-          "hora_max": 22.0,
-          "caixa": 1597.0,
-          "atend_fin": 31,
-          "cliente_dia": 18,
-          "ticket_medio": 88.72,
+          "data": "2026-09-04",
+          "hora_max": 2.88,
+          "caixa": 0.0,
+          "atend_fin": 0,
+          "cliente_dia": 0,
+          "ticket_medio": 0.0,
           "dias_op": 1
         },
         "base_comparacao": {
           "composicao_atual": [
-            "Qui"
+            "Sex"
           ],
           "composicao_anterior": [
-            "Qui"
+            "Sex"
           ],
-          "peso_semana_atual_pct": 11.9,
-          "peso_semana_anterior_pct": 11.9,
+          "peso_semana_atual_pct": 17.6,
+          "peso_semana_anterior_pct": 17.6,
           "razao_peso": 1.0,
           "comparavel": true,
-          "caixa_delta_ajustado_pct": -50.8,
+          "caixa_delta_ajustado_pct": null,
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "22:00",
-          "hora_atual_num": 22.0,
-          "pct_esperado_agora": 100.0,
-          "meta_dia": 1329.72,
-          "meta_esperada_agora": 1329.72,
-          "realizado_agora": 785.0,
-          "pace_delta": -544.72,
-          "pace_ratio_pct": 59.0,
-          "projecao_dia": 785.0,
+          "hora_atual_str": "02:53",
+          "hora_atual_num": 2.88,
+          "pct_esperado_agora": 0.0,
+          "meta_dia": 1967.62,
+          "meta_esperada_agora": 0.0,
+          "realizado_agora": 0.0,
+          "pace_delta": 0.0,
+          "pace_ratio_pct": 100.0,
+          "projecao_dia": 0.0,
           "opera_hoje": true
         },
         "ticket_meta": 0.0,
-        "ticket_meta_periodo": 265.94,
+        "ticket_meta_periodo": 0.0,
         "ticket_atingimento_pct": 0.0,
         "ticket_gap_por_atend": 0.0,
-        "visitas_projetadas": 5,
+        "visitas_projetadas": 0,
         "visitas_restantes": 0,
-        "ticket_meta_status": "encerrado_deficit",
-        "ticket_meta_deficit_caixa": 544.72,
+        "ticket_meta_status": "fechado",
+        "ticket_meta_deficit_caixa": 1967.62,
         "ticket_meta_supera_caixa": 0.0,
-        "dia_semana": "Qui",
-        "data": "2026-09-10"
+        "dia_semana": "Sex",
+        "data": "2026-09-11"
       },
       "meta": {
-        "meta": 1329.72,
-        "realizado": 785.0,
-        "pct": 59.0,
-        "falta": 544.72,
+        "meta": 1967.62,
+        "realizado": 0.0,
+        "pct": 0.0,
+        "falta": 1967.62,
         "dias_realizados": 1,
         "dias_total": 1,
         "dias_restantes": 0,
         "necessario_dia": 0.0,
-        "ritmo_dia": 785.0,
-        "projecao": 785.0,
-        "projecao_pct": 59.0,
-        "meta_ate_hoje": 1329.72,
-        "pct_ate_hoje": 59.0,
-        "saldo_ate_hoje": -544.72
+        "ritmo_dia": 0.0,
+        "projecao": 0.0,
+        "projecao_pct": 0.0,
+        "meta_ate_hoje": 1967.62,
+        "pct_ate_hoje": 0.0,
+        "saldo_ate_hoje": -1967.62
       },
       "categorias": {
         "pacotes": {
-          "v": 270.0,
-          "n": 1,
-          "pct": 34.4
+          "v": 0.0,
+          "n": 0,
+          "pct": 0.0
         },
         "servicos": {
-          "v": 515.0,
-          "n": 11,
-          "pct": 65.6
+          "v": 0.0,
+          "n": 0,
+          "pct": 0.0
         },
         "produtos": {
           "v": 0.0,
@@ -10173,40 +10159,13 @@
           "pct": 0.0
         },
         "servicos_gerais": {
-          "v": 515.0,
-          "n": 11,
-          "pct": 65.6
+          "v": 0.0,
+          "n": 0,
+          "pct": 0.0
         }
       },
-      "categoria_native": [
-        {
-          "nome": "Escova",
-          "n": 4,
-          "v": 257.0,
-          "pct_receita": 32.7
-        },
-        {
-          "nome": "Unhas",
-          "n": 3,
-          "v": 119.0,
-          "pct_receita": 15.2
-        },
-        {
-          "nome": "Tratamento",
-          "n": 3,
-          "v": 79.0,
-          "pct_receita": 10.1
-        },
-        {
-          "nome": "Maquiagem",
-          "n": 1,
-          "v": 60.0,
-          "pct_receita": 7.6
-        }
-      ],
-      "pacotes_por_categoria": {
-        "Unhas": 270.0
-      },
+      "categoria_native": [],
+      "pacotes_por_categoria": {},
       "pacotes_sem_categoria_v": 0.0,
       "hora_abs": [
         {
@@ -10226,8 +10185,8 @@
         },
         {
           "h": 11,
-          "n": 1,
-          "v": 99.0
+          "n": 0,
+          "v": 0.0
         },
         {
           "h": 12,
@@ -10236,8 +10195,8 @@
         },
         {
           "h": 13,
-          "n": 1,
-          "v": 119.0
+          "n": 0,
+          "v": 0.0
         },
         {
           "h": 14,
@@ -10251,18 +10210,18 @@
         },
         {
           "h": 16,
-          "n": 1,
-          "v": 60.0
+          "n": 0,
+          "v": 0.0
         },
         {
           "h": 17,
-          "n": 1,
-          "v": 158.0
+          "n": 0,
+          "v": 0.0
         },
         {
           "h": 18,
-          "n": 1,
-          "v": 79.0
+          "n": 0,
+          "v": 0.0
         },
         {
           "h": 19,
@@ -10271,276 +10230,34 @@
         },
         {
           "h": 20,
-          "n": 2,
-          "v": 270.0
-        }
-      ],
-      "ranking_prof": [
-        {
-          "nome": "Katyane Augusta Muniz",
-          "n": 2,
-          "v": 158.0,
-          "ticket_medio": 79.0,
-          "horas_trab": 0.9
-        },
-        {
-          "nome": "Eunice Santos Nascimento",
-          "n": 1,
-          "v": 119.0,
-          "ticket_medio": 119.0,
-          "horas_trab": 0.5
-        },
-        {
-          "nome": "Regina Matheus",
-          "n": 4,
-          "v": 99.0,
-          "ticket_medio": 24.75,
-          "horas_trab": 2.0
-        },
-        {
-          "nome": "Prof desligado #518669",
           "n": 0,
-          "v": 79.0,
-          "ticket_medio": 79.0,
-          "horas_trab": 0.0
-        },
-        {
-          "nome": "Erika Thais Pereira Melim",
-          "n": 1,
-          "v": 60.0,
-          "ticket_medio": 60.0,
-          "horas_trab": 0.5
-        },
-        {
-          "nome": "Raphaela Da Silva Farias",
-          "n": 2,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.0
-        },
-        {
-          "nome": "Claudia Cabral Pereira",
-          "n": 1,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 0.8
+          "v": 0.0
         }
       ],
-      "ranking_prof_total_n": 7,
-      "ranking_serv": [
-        {
-          "nome": "FAST ESCOVA - LISA",
-          "n": 3,
-          "v": 158.0,
-          "min": 135
-        },
-        {
-          "nome": "PLÁSTICA DOS PÉS VIP",
-          "n": 1,
-          "v": 119.0,
-          "min": 30
-        },
-        {
-          "nome": "FAST ESCOVA - MODELADA",
-          "n": 1,
-          "v": 99.0,
-          "min": 45
-        },
-        {
-          "nome": "FAST HIDRATAÇÃO - FAST MASK",
-          "n": 2,
-          "v": 79.0,
-          "min": 20
-        },
-        {
-          "nome": "DESIGN SOBRANCELHAS",
-          "n": 1,
-          "v": 60.0,
-          "min": 30
-        },
-        {
-          "nome": "PÉS",
-          "n": 1,
-          "v": 0.0,
-          "min": 30
-        },
-        {
-          "nome": "MÃOS",
-          "n": 1,
-          "v": 0.0,
-          "min": 30
-        },
-        {
-          "nome": "OZONIOTERAPIA",
-          "n": 1,
-          "v": 0.0,
-          "min": 20
-        }
-      ],
-      "rentabilidade_hora": [
-        {
-          "nome": "PLÁSTICA DOS PÉS VIP",
-          "n": 1,
-          "v": 119.0,
-          "min_medio": 30,
-          "ticket": 119.0,
-          "rs_hora": 238.0,
-          "horas_total": 0.5,
-          "pct_faturamento": 23.1,
-          "confianca": "baixa",
-          "tipo": "cadeira"
-        },
-        {
-          "nome": "FAST ESCOVA - MODELADA",
-          "n": 1,
-          "v": 99.0,
-          "min_medio": 45,
-          "ticket": 99.0,
-          "rs_hora": 132.0,
-          "horas_total": 0.8,
-          "pct_faturamento": 19.2,
-          "confianca": "baixa",
-          "tipo": "cadeira"
-        },
-        {
-          "nome": "DESIGN SOBRANCELHAS",
-          "n": 1,
-          "v": 60.0,
-          "min_medio": 30,
-          "ticket": 60.0,
-          "rs_hora": 120.0,
-          "horas_total": 0.5,
-          "pct_faturamento": 11.7,
-          "confianca": "baixa",
-          "tipo": "cadeira"
-        },
-        {
-          "nome": "FAST ESCOVA - LISA",
-          "n": 3,
-          "v": 158.0,
-          "min_medio": 45,
-          "ticket": 52.67,
-          "rs_hora": 70.22,
-          "horas_total": 2.2,
-          "pct_faturamento": 30.7,
-          "confianca": "media",
-          "tipo": "cadeira"
-        },
-        {
-          "nome": "PÉS",
-          "n": 1,
-          "v": 0.0,
-          "min_medio": 30,
-          "ticket": 0.0,
-          "rs_hora": 0.0,
-          "horas_total": 0.5,
-          "pct_faturamento": 0.0,
-          "confianca": "baixa",
-          "tipo": "cadeira"
-        },
-        {
-          "nome": "MÃOS",
-          "n": 1,
-          "v": 0.0,
-          "min_medio": 30,
-          "ticket": 0.0,
-          "rs_hora": 0.0,
-          "horas_total": 0.5,
-          "pct_faturamento": 0.0,
-          "confianca": "baixa",
-          "tipo": "cadeira"
-        },
-        {
-          "nome": "OZONIOTERAPIA",
-          "n": 1,
-          "v": 0.0,
-          "min_medio": 20,
-          "ticket": 0.0,
-          "rs_hora": 0.0,
-          "horas_total": 0.3,
-          "pct_faturamento": 0.0,
-          "confianca": "baixa",
-          "tipo": "cadeira"
-        },
-        {
-          "nome": "FAST HIDRATAÇÃO - FAST MASK",
-          "n": 2,
-          "v": 79.0,
-          "min_medio": 10,
-          "ticket": 39.5,
-          "rs_hora": 237.0,
-          "horas_total": 0.3,
-          "pct_faturamento": 15.3,
-          "confianca": "baixa",
-          "tipo": "addon"
-        }
-      ],
-      "meios_pagamento": [
-        {
-          "nome": "Visa",
-          "n": 2,
-          "v": 369.0,
-          "pct": 47.0
-        },
-        {
-          "nome": "Mastercard",
-          "n": 2,
-          "v": 179.0,
-          "pct": 22.8
-        },
-        {
-          "nome": "Maestro/Redeshop",
-          "n": 1,
-          "v": 158.0,
-          "pct": 20.1
-        },
-        {
-          "nome": "PIX",
-          "n": 1,
-          "v": 79.0,
-          "pct": 10.1
-        }
-      ],
-      "clientes_top": [
-        {
-          "nome": "Nathalia Daniele Bomtempo Garcia",
-          "n": 5
-        },
-        {
-          "nome": "Zenaide Mathias Vidal De Oliveira ",
-          "n": 2
-        },
-        {
-          "nome": "Rafaella Izzo",
-          "n": 2
-        },
-        {
-          "nome": "Giovanna Maia ",
-          "n": 1
-        },
-        {
-          "nome": "Telma Soeares Da Silva ",
-          "n": 1
-        }
-      ],
+      "ranking_prof": [],
+      "ranking_prof_total_n": 0,
+      "ranking_serv": [],
+      "rentabilidade_hora": [],
+      "meios_pagamento": [],
+      "clientes_top": [],
       "cadeiras_utilizacao": {
         "cabelo": {
           "n_cadeiras": 5,
-          "capacidade_horas": 60.0,
-          "horas_ocupadas": 3.3,
-          "utilizacao_pct": 5.6
+          "capacidade_horas": 0.0,
+          "horas_ocupadas": 0.0,
+          "utilizacao_pct": 0.0
         },
         "maquiagem": {
           "n_cadeiras": 3,
-          "capacidade_horas": 36.0,
-          "horas_ocupadas": 0.5,
-          "utilizacao_pct": 1.4
+          "capacidade_horas": 0.0,
+          "horas_ocupadas": 0.0,
+          "utilizacao_pct": 0.0
         },
         "unhas": {
           "n_cadeiras": 8,
-          "capacidade_horas": 96.0,
-          "horas_ocupadas": 1.8,
-          "utilizacao_pct": 1.9
+          "capacidade_horas": 0.0,
+          "horas_ocupadas": 0.0,
+          "utilizacao_pct": 0.0
         }
       },
       "densidade_hora": [
@@ -10554,11 +10271,11 @@
         },
         {
           "h": 10,
-          "media_simultaneos": 0.58
+          "media_simultaneos": 0.0
         },
         {
           "h": 11,
-          "media_simultaneos": 1.92
+          "media_simultaneos": 0.0
         },
         {
           "h": 12,
@@ -10578,15 +10295,15 @@
         },
         {
           "h": 16,
-          "media_simultaneos": 1.18
+          "media_simultaneos": 0.0
         },
         {
           "h": 17,
-          "media_simultaneos": 0.32
+          "media_simultaneos": 0.0
         },
         {
           "h": 18,
-          "media_simultaneos": 0.67
+          "media_simultaneos": 0.0
         },
         {
           "h": 19,
@@ -10594,7 +10311,7 @@
         },
         {
           "h": 20,
-          "media_simultaneos": 1.0
+          "media_simultaneos": 0.0
         }
       ]
     }
@@ -10602,25 +10319,13 @@
   "insights": {
     "diario": [
       {
-        "tipo": "atencao",
-        "titulo": "2 profissional(is) sem atendimento hoje",
-        "texto": "Raphaela, Claudia ainda em zero de receita. Se não está em folga, é capacidade ociosa perdida.",
-        "acao": "Realocar walk-ins da fila para elas. Se agenda continuar vazia, avaliar reduzir dia de trabalho na próxima semana."
-      },
-      {
         "tipo": "info",
-        "titulo": "Fechamento do dia",
-        "texto": "Caixa R$ 785,00 · 5 visitas · ticket R$ 157,00 · meta 59% (R$ 544,72 faltou).",
-        "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
+        "titulo": "Picos previstos ainda hoje",
+        "texto": "Base semanal aponta 18h (2.0 clientes/hora), 20h (1.7 clientes/hora) como as próximas horas de fluxo.",
+        "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
       }
     ],
     "semanal": [
-      {
-        "tipo": "oportunidade",
-        "titulo": "Ritmo/dia +20% vs semana passada",
-        "texto": "Esta semana: R$ 1.144,05/dia · semana anterior (08-31-09-03): R$ 950,00/dia.",
-        "acao": "Aumento — investigar o que gerou pra replicar (equipe, campanha, dia da semana)."
-      },
       {
         "tipo": "atencao",
         "titulo": "Semana abaixo da meta",
@@ -10675,14 +10380,14 @@
       },
       {
         "tipo": "critico",
-        "titulo": "49 clientes que sumiram (LTV R$ 10.973,00)",
-        "texto": "Vieram 3+ vezes e não voltam há 14+ dias. Top: Gabrielle, Thalita, Sandra (e mais 46).",
-        "acao": "Ver aba Clientes → 🛟 Clientes que sumiram. WhatsApp pessoal citando último serviço + voucher salva 30-40% do LTV — potencial resgate R$ 3.840,55."
+        "titulo": "52 clientes que sumiram (LTV R$ 12.487,00)",
+        "texto": "Vieram 3+ vezes e não voltam há 14+ dias. Top: Brenda, Gabrielle, Thalita (e mais 49).",
+        "acao": "Ver aba Clientes → 🛟 Clientes que sumiram. WhatsApp pessoal citando último serviço + voucher salva 30-40% do LTV — potencial resgate R$ 4.370,45."
       },
       {
         "tipo": "oportunidade",
         "titulo": "12 aniversariante(s) nos próximos 7 dias",
-        "texto": "Top: Alyne (10/09), Jessica (10/09), Simone (11/09). LTV combinado R$ 1.122,00.",
+        "texto": "Top: Simone (11/09), Patricia (12/09), Camill341524A (12/09). LTV combinado R$ 1.397,00.",
         "acao": "Mensagem personalizada de aniversário com voucher/cortesia — momento perfeito de reativação e fidelização."
       },
       {
