@@ -124,12 +124,26 @@ Os campos entre colchetes são preenchidos **por convidado**. O código
 
 ---
 
-## 7. Mensagens de WhatsApp por lista
+## 7. Os quatro convites de WhatsApp (um por dia)
 
-Todas pedem a mesma coisa — responder **1** ou **2**. Resposta de uma tecla é o que
+Artes em 1080×1350 (serve para WhatsApp e Stories), em `docs/convites/`:
+
+| Dia | Arte | Vai para |
+|---|---|---|
+| Qui 24 | `convite-24-qui.png` | Listas A, B, C, D |
+| Sex 25 | `convite-25-sex.png` | Lista E |
+| Sáb 26 | `convite-26-sab.png` | Lista F |
+| Dom 27 | `convite-27-dom.png` | Lista G |
+
+Manda a imagem e o texto abaixo dela, na mesma mensagem. A arte é igual para todo
+mundo daquele dia — quem personaliza é o texto (nome, horário, código).
+Todas pedem a mesma coisa: responder **1** ou **2**. Resposta de uma tecla é o que
 faz a confirmação realmente acontecer.
 
-### Listas A e B · institucional e imprensa
+Para regerar as artes (se mudar horário ou texto): edite `docs/convites/gerar_convites.py`
+e rode `python3 docs/convites/gerar_convites.py` — precisa do Chromium do Playwright.
+
+### Qui 24 · listas A, B, C e D
 ```
 [Nome], o Fast SPA Limão abre dia 25.
 
@@ -143,7 +157,7 @@ Responda 1 para confirmar ou 2 se não conseguir vir.
 Rodrigo Garcia · Fast Limão
 ```
 
-### Lista C · influenciadoras
+### Qui 24 · variação para a lista C (influenciadoras)
 ```
 Oi [Nome]! Aqui é o Fast SPA Limão 🧖‍♀️
 
@@ -156,7 +170,7 @@ Av. Dep. Emílio Carlos, 358 · Limão
 Responda 1 para confirmar ou 2 se preferir vir no sábado 26.
 ```
 
-### Lista E · VIPs da Escova
+### Sex 25 · lista E (VIPs da Escova)
 ```
 [Nome], tem novidade no prédio da Fast Escova 💛
 
@@ -168,18 +182,29 @@ Separamos um horário no seu nome: [HORA], sessão de 20 min, sem custo.
 Responda 1 para confirmar esse horário ou 2 para escolher outro.
 ```
 
-### Listas F e G · comunidade
+### Sáb 26 · lista F (ativas + acompanhante)
 ```
-[Nome], o Fast SPA Limão está de portas abertas 🧖‍♀️
+[Nome], sábado 26/09 o Fast SPA Limão é seu e de uma amiga 🧖‍♀️
 
-Sábado 26/09, das 9h às 19h, você e uma amiga têm uma experiência de 20 min por
-nossa conta. É só chegar no horário [HORA].
+Experiência de 20 minutos para vocês duas, por nossa conta. Seu horário: [HORA].
 
 Av. Dep. Emílio Carlos, 358 · Limão
 (no mesmo prédio da Fast Escova)
 
-Responda 1 com o nome da amiga ou 2 se preferir domingo 27, das 10h às 17h,
-por ordem de chegada.
+Responda 1 com o nome da amiga ou 2 se preferir domingo.
+```
+
+### Dom 27 · lista G (resgate e bairro)
+```
+[Nome], domingo 27/09 o Fast SPA Limão abre para o bairro, das 10h às 17h.
+
+Sem hora marcada: é chegar, pegar sua senha e experimentar 15 minutos do que a
+casa faz de melhor.
+
+Av. Dep. Emílio Carlos, 358 · Limão
+(no mesmo prédio da Fast Escova)
+
+Responda 1 se vier — guardo uma senha para você.
 ```
 
 ---
