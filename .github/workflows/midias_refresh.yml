@@ -40,10 +40,23 @@ jobs:
       - name: Install deps
         run: pip install requests
 
-      - name: Refresh midias (Escova + SPA)
+      - name: Refresh midias Meta (Escova + SPA)
         env:
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
         run: python scripts/refresh_midias.py
+
+      - name: Refresh Google Business Profile
+        # Pula silencioso se SUPERMETRICS_API_KEY nao estiver configurado.
+        # Unidades sem google_business_location_id no config tambem sao puladas.
+        env:
+          SUPERMETRICS_API_KEY: ${{ secrets.SUPERMETRICS_API_KEY }}
+          SUPERMETRICS_TEAM_ID: ${{ secrets.SUPERMETRICS_TEAM_ID }}
+        run: |
+          if [ -z "$SUPERMETRICS_API_KEY" ]; then
+            echo "SUPERMETRICS_API_KEY nao configurado — pulando refresh GBP."
+            exit 0
+          fi
+          python scripts/refresh_google.py
 
       - name: Commit e push
         run: |
