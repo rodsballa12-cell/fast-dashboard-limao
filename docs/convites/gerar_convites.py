@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Gera os 4 convites (1080x1350) da inauguração do Fast SPA Limão.
 
-Segue o padrão da Tabela de Serviços oficial (arte_5.pdf):
-  verde-petróleo #005A65 · pêssego #F6E3D2 · linha creme #FEF4E9
-  oliva #8BA229 · turquesa #00A6A4 · carvão #555350
+Paleta e marca da arte oficial (arte_5.pdf):
+  verde-petróleo #005A65 · turquesa #00A6A4 · pêssego #F6E3D2
+  creme #FEF4E9 · oliva #8BA229 · verde claro #C9DC94
   títulos em Playfair Display · textos em Montserrat
-A marca e os ornamentos foram recortados da própria arte (pasta marca/).
+Composição de convite: tarja da marca, moldura dupla, data em destaque,
+campo para o nome e o horário, e a assinatura da rede no rodapé.
+Os ornamentos de pétala são desenhados em CSS, na cor da paleta.
 
 Uso: python3 gerar_convites.py   (precisa do Chromium do Playwright)
 """
@@ -18,67 +20,47 @@ CHROME = "/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_sh
 CARDS = [
     dict(
         arq="convite-24-qui",
-        barra="Quinta · 24 de setembro", horas="18h — 22h",
-        titulo="A noite em que as<br>portas se abrem",
-        linha="Um grupo pequeno, antes de a casa abrir para o bairro.",
-        itens=[
-            ("CORTE DE FITA — 19h30",
-             "O momento em que o Fast SPA Limão abre oficialmente as portas."),
-            ("TOUR PELA CASA",
-             "Conheça as salas de terapia, a área de relaxamento e a equipe."),
-            ("COQUETEL DE BOAS-VINDAS",
-             "Brinde com a gente e leve um mimo de inauguração."),
-        ],
-        destaque="CONVITE PESSOAL", destaque_dir="confirme até 21/09",
-        destaque_bg="#005A65", destaque_fg="#FDF6EC",
+        kicker="Noite de inauguração",
+        abre="Temos o prazer de convidar você para",
+        dow="quinta-feira", num="24", mes="setembro de 2026", horas="das 18h às 22h",
+        titulo="A noite em que as portas se abrem",
+        sub="Corte de fita às 19h30, tour pela casa e coquetel de boas-vindas.",
+        cortesia="Convite pessoal e intransferível",
+        cortesia_dir="confirme até 21/09",
+        campo="Convite de", campo2="chegada sugerida",
     ),
     dict(
         arq="convite-25-sex",
-        barra="Sexta · 25 de setembro", horas="10h — 20h · hora marcada",
-        titulo="Sexta é o dia<br>das clientes de casa",
-        linha="O SPA abre primeiro para quem já é da Fast.",
-        itens=[
-            ("RENOVE-SE EM 45' — sessão de 20min",
-             "Massagem personalizada: você escolhe relaxante, drenagem ou modeladora."),
-            ("DRENAGEM LINFÁTICA FACIAL — 15min",
-             "Desincha o rosto e devolve viço e leveza em poucos minutos."),
-            ("HORA MARCADA NO SEU NOME",
-             "Você chega no seu horário e não pega fila."),
-        ],
-        destaque="CORTESIA DE INAUGURAÇÃO", destaque_dir="valor R$ 149,00",
-        destaque_bg="#C9DC94", destaque_fg="#3C4F14",
+        kicker="Abertura oficial",
+        abre="Você está convidada para",
+        dow="sexta-feira", num="25", mes="setembro de 2026", horas="das 10h às 20h · hora marcada",
+        titulo="O dia das clientes de casa",
+        sub="O SPA abre primeiro para quem já é da Fast, antes do bairro.",
+        cortesia="Renove-se em 45' · sessão de 20 min",
+        cortesia_dir="cortesia · valor R$ 149",
+        campo="Convite de", campo2="seu horário",
     ),
     dict(
         arq="convite-26-sab",
-        barra="Sábado · 26 de setembro", horas="9h — 19h · hora marcada",
-        titulo="Venha<br>e traga uma amiga",
-        linha="Duas cortesias no mesmo horário, lado a lado.",
-        itens=[
-            ("VOCÊ E UMA AMIGA",
-             "As duas experimentam juntas, no mesmo horário, em salas vizinhas."),
-            ("QUICK MASSAGE — 20min",
-             "Solta pescoço, ombros e trapézio — o clássico de quem passa o dia sentada."),
-            ("MÚSICA E MINI-BAR",
-             "A casa aberta o dia inteiro, das 9h às 19h."),
-        ],
-        destaque="DUAS CORTESIAS", destaque_dir="valor R$ 118,00",
-        destaque_bg="#C9DC94", destaque_fg="#3C4F14",
+        kicker="Dia da comunidade",
+        abre="Você e uma amiga estão convidadas para",
+        dow="sábado", num="26", mes="setembro de 2026", horas="das 9h às 19h · hora marcada",
+        titulo="O dia de trazer quem você gosta",
+        sub="Duas cortesias no mesmo horário, em salas vizinhas.",
+        cortesia="Quick Massage · 20 min para as duas",
+        cortesia_dir="cortesia · valor R$ 118",
+        campo="Convite de", campo2="seu horário",
     ),
     dict(
         arq="convite-27-dom",
-        barra="Domingo · 27 de setembro", horas="10h — 17h · por ordem de chegada",
-        titulo="Domingo<br>o SPA é do bairro",
-        linha="Sem hora marcada: é chegar e conhecer.",
-        itens=[
-            ("SEM AGENDAMENTO",
-             "Chegue, pegue sua senha na entrada e aguarde pouco."),
-            ("REVITALIZAÇÃO DAS MÃOS — 10min",
-             "Hidrata intensamente e suaviza as linhas finas causadas pela rotina."),
-            ("VOUCHER PARA VOLTAR",
-             "Você sai com um voucher válido na semana seguinte."),
-        ],
-        destaque="ENTRADA LIVRE", destaque_dir="valor R$ 59,00",
-        destaque_bg="#C9DC94", destaque_fg="#3C4F14",
+        kicker="Portas abertas",
+        abre="Você está convidada para",
+        dow="domingo", num="27", mes="setembro de 2026", horas="das 10h às 17h · por ordem de chegada",
+        titulo="O domingo em que o SPA é do bairro",
+        sub="Sem hora marcada: é chegar, pegar sua senha e conhecer.",
+        cortesia="Revitalização das Mãos · 10 min",
+        cortesia_dir="cortesia · valor R$ 59",
+        campo="Convite de", campo2="",
     ),
 ]
 
@@ -89,85 +71,125 @@ html,body{{width:1080px;height:1350px;overflow:hidden}}
 body{{background:#F6E3D2;font-family:'Montserrat',sans-serif;color:#123C44;
   -webkit-font-smoothing:antialiased}}
 
-/* ---------- cabeçalho ---------- */
-.head{{height:208px;background:#005A65;position:relative;display:flex;
-  align-items:center;justify-content:flex-end;padding:0 54px 0 0;overflow:hidden}}
-.head .comma{{position:absolute;left:-26px;top:-34px;height:262px}}
-.head .titulo{{font-family:'Playfair Display',serif;font-style:italic;font-weight:400;
-  font-size:70px;color:#F2E7DB;line-height:1}}
-.head .barra{{width:2px;height:88px;background:rgba(242,231,219,.55);margin:0 34px}}
-.head .logo{{height:74px}}
+/* tarja da marca */
+.marca{{height:146px;background:#005A65;display:flex;align-items:center;justify-content:center}}
+.marca img{{height:70px}}
 
-/* ---------- corpo ---------- */
-.corpo{{padding:44px 54px 0;display:flex;flex-direction:column;height:calc(1350px - 208px - 158px)}}
+/* moldura */
+.folha{{position:relative;height:calc(1350px - 146px - 120px);padding:34px}}
+.moldura{{position:absolute;inset:26px;border:1.6px solid rgba(0,90,101,.45)}}
+.moldura::after{{content:"";position:absolute;inset:9px;border:1px solid rgba(0,90,101,.22)}}
+.canto{{position:absolute;width:30px;height:30px;background:#00A6A4;opacity:.5;
+  border-radius:50% 0 50% 0}}
+.c1{{left:46px;top:46px;transform:rotate(0deg)}}
+.c2{{right:46px;top:46px;transform:rotate(90deg)}}
+.c3{{right:46px;bottom:46px;transform:rotate(180deg)}}
+.c4{{left:46px;bottom:46px;transform:rotate(270deg)}}
 
-.faixa{{background:#8BA229;border-radius:9px;padding:17px 26px;display:flex;
-  align-items:baseline;justify-content:space-between;gap:20px}}
-.faixa b{{font-family:'Playfair Display',serif;font-weight:600;font-size:37px;color:#FDF6EC}}
-.faixa span{{font-size:23px;font-weight:600;color:#FDF6EC;letter-spacing:.01em}}
+.dentro{{position:relative;height:100%;display:flex;flex-direction:column;
+  align-items:center;text-align:center;padding:46px 80px 40px}}
 
-h1{{font-family:'Playfair Display',serif;font-weight:700;font-size:56px;line-height:1.14;
-  color:#0A4C55;margin-top:32px}}
-.linha{{font-style:italic;font-size:25px;color:#0E7A80;margin-top:12px}}
+.kicker{{font-size:19px;font-weight:600;letter-spacing:.30em;text-transform:uppercase;
+  color:#8BA229}}
+.abre{{font-family:'Playfair Display',serif;font-style:italic;font-size:34px;
+  color:#0E7A80;margin-top:26px;line-height:1.3}}
 
-.itens{{margin-top:30px;display:flex;flex-direction:column;gap:20px}}
-.item .nome{{background:#FEF4E9;border-radius:7px;padding:13px 20px;font-size:25px;
-  font-weight:500;color:#123C44;letter-spacing:.005em}}
-.item .desc{{font-style:italic;font-size:21.5px;line-height:1.45;color:#0E7A80;
-  padding:8px 20px 0}}
+/* data */
+.data{{margin-top:18px;display:flex;flex-direction:column;align-items:center}}
+.data .dow{{font-size:22px;font-weight:600;letter-spacing:.34em;text-transform:uppercase;
+  color:#005A65}}
+.data .nrow{{display:flex;align-items:center;gap:26px;margin:6px 0 18px}}
+.data .rule{{width:118px;height:1.4px;background:rgba(0,90,101,.4)}}
+.data .num{{font-family:'Playfair Display',serif;font-weight:700;font-size:182px;
+  line-height:1;color:#005A65;letter-spacing:-.02em}}
+.data .mes{{font-size:21px;font-weight:500;letter-spacing:.26em;text-transform:uppercase;
+  color:#005A65}}
+.data .horas{{margin-top:16px;font-size:24px;font-weight:600;color:#0E7A80}}
 
-.destaque{{margin-top:26px;background:{destaque_bg};border-radius:7px;padding:16px 22px;
-  display:flex;align-items:center;justify-content:space-between;gap:18px}}
-.destaque b{{font-size:25px;font-weight:700;color:{destaque_fg};letter-spacing:.06em}}
-.destaque span{{font-style:italic;font-size:23px;color:{destaque_fg};opacity:.92}}
+/* divisor com pétalas */
+.div{{display:flex;align-items:center;gap:12px;margin-top:30px}}
+.div .ln{{width:150px;height:1.2px;background:rgba(0,90,101,.32)}}
+.div .pt{{width:16px;height:16px;background:#00A6A4;border-radius:50% 0 50% 0}}
+.div .pt.d{{background:#005A65}}
 
-.local{{margin-top:auto;padding-bottom:26px;text-align:center}}
-.local .end{{font-size:23px;font-weight:500;color:#123C44;line-height:1.5}}
-.local .end em{{font-style:italic;font-weight:400;color:#0E7A80}}
-.local .zap{{margin-top:12px;font-size:26px;font-weight:700;color:#0A4C55}}
+h1{{font-family:'Playfair Display',serif;font-weight:700;font-size:52px;line-height:1.16;
+  color:#0A4C55;margin-top:28px;max-width:820px}}
+.sub{{font-style:italic;font-size:24px;line-height:1.5;color:#0E7A80;margin-top:14px;
+  max-width:740px}}
 
-/* ---------- rodapé ---------- */
-.pe{{height:158px;background:#00A6A4;display:flex;align-items:center;
-  justify-content:space-between;padding:0 54px;gap:26px}}
-.pe .ig{{font-size:22px;font-weight:500;color:#FFFFFF;white-space:nowrap}}
-.pe .faixa-orn{{height:46px;flex:none}}
-.pe .tag{{font-family:'Playfair Display',serif;font-size:34px;color:#FFFFFF;white-space:nowrap}}
+.cortesia{{margin-top:30px;background:#FEF4E9;border:1px solid rgba(0,90,101,.16);
+  border-radius:8px;padding:16px 28px;display:flex;align-items:baseline;gap:18px}}
+.cortesia b{{font-size:24px;font-weight:600;color:#123C44}}
+.cortesia span{{font-style:italic;font-size:21px;color:#8BA229;font-weight:500}}
+
+.campos{{margin-top:auto;width:100%;display:flex;gap:34px;justify-content:center;
+  align-items:flex-end}}
+.campo{{display:flex;flex-direction:column;align-items:flex-start;gap:9px}}
+.campo i{{font-style:normal;font-size:16px;font-weight:600;letter-spacing:.20em;
+  text-transform:uppercase;color:#0E7A80}}
+.campo u{{display:block;height:1.4px;background:rgba(0,90,101,.42);text-decoration:none}}
+.campo.nome u{{width:420px}}
+.campo.hora u{{width:190px}}
+
+.local{{margin-top:34px;font-size:21px;font-weight:500;line-height:1.55;color:#123C44}}
+.local em{{font-style:italic;font-weight:400;color:#0E7A80}}
+.local .zap{{display:block;margin-top:14px;font-size:23px;font-weight:700;color:#005A65}}
+
+/* rodapé */
+.pe{{height:120px;background:#00A6A4;display:flex;align-items:center;
+  justify-content:center;gap:30px}}
+.pe .tag{{font-family:'Playfair Display',serif;font-size:32px;color:#FFFFFF}}
 .pe .tag i{{font-style:italic;font-weight:600}}
+.pe .ig{{font-size:20px;font-weight:500;color:rgba(255,255,255,.9)}}
+.pe .sep{{width:12px;height:12px;background:#005A65;border-radius:50% 0 50% 0}}
 </style></head><body>
 
-<div class="head">
-  <img class="comma" src="marca/ornamento_comma.png" alt="">
-  <span class="titulo">Convite</span>
-  <span class="barra"></span>
-  <img class="logo" src="marca/logo_fastspa.png" alt="fast spa">
-</div>
+<div class="marca"><img src="marca/logo_fastspa.png" alt="fast spa"></div>
 
-<div class="corpo">
-  <div class="faixa"><b>{barra}</b><span>{horas}</span></div>
-  <h1>{titulo}</h1>
-  <p class="linha">{linha}</p>
-  <div class="itens">{itens_html}</div>
-  <div class="destaque"><b>{destaque}</b><span>{destaque_dir}</span></div>
-  <div class="local">
-    <p class="end">Av. Dep. Emílio Carlos, 358 · Limão · São Paulo<br>
-      <em>no mesmo prédio da Fast Escova Limão</em></p>
-    <p class="zap">Confirme pelo WhatsApp (11) 99024-3927</p>
+<div class="folha">
+  <div class="moldura"></div>
+  <span class="canto c1"></span><span class="canto c2"></span>
+  <span class="canto c3"></span><span class="canto c4"></span>
+
+  <div class="dentro">
+    <div class="kicker">{kicker}</div>
+    <p class="abre">{abre}</p>
+
+    <div class="data">
+      <span class="dow">{dow}</span>
+      <span class="nrow"><i class="rule"></i><span class="num">{num}</span><i class="rule"></i></span>
+      <span class="mes">{mes}</span>
+      <span class="horas">{horas}</span>
+    </div>
+
+    <div class="div"><i class="ln"></i><i class="pt"></i><i class="pt d"></i><i class="pt"></i><i class="ln"></i></div>
+
+    <h1>{titulo}</h1>
+    <p class="sub">{sub}</p>
+
+    <div class="cortesia"><b>{cortesia}</b><span>{cortesia_dir}</span></div>
+
+    <div class="campos">{campos_html}</div>
+
+    <p class="local">Av. Dep. Emílio Carlos, 358 · Limão · São Paulo<br>
+      <em>no mesmo prédio da Fast Escova Limão</em>
+      <span class="zap">Confirme pelo WhatsApp (11) 99024-3927</span></p>
   </div>
 </div>
 
 <div class="pe">
   <span class="ig">@fastspa.limao</span>
-  <img class="faixa-orn" src="marca/ornamento_faixa.png" alt="">
+  <i class="sep"></i>
   <span class="tag">Este lugar <i>é pra você</i>!</span>
 </div>
 
 </body></html>"""
 
 for c in CARDS:
-    itens_html = "".join(
-        '<div class="item"><div class="nome">%s</div><div class="desc">%s</div></div>' % (n, d)
-        for n, d in c["itens"])
-    html = TPL.format(fonts=FONTS, itens_html=itens_html, **c)
+    campos = '<div class="campo nome"><i>%s</i><u></u></div>' % c["campo"]
+    if c["campo2"]:
+        campos += '<div class="campo hora"><i>%s</i><u></u></div>' % c["campo2"]
+    html = TPL.format(fonts=FONTS, campos_html=campos, **c)
     p = BASE / (c["arq"] + ".html")
     p.write_text(html, encoding="utf-8")
     out = BASE / (c["arq"] + ".png")
