@@ -1517,30 +1517,61 @@ function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_
     <td style="text-align:right">${brl0(comissaoTotal)}</td>
   </tr>` : '';
   const pctSobreCaixa = caixa > 0 ? (comissaoTotal/caixa*100) : 0;
+  // Ajuste entre TOTAL SERVIÇOS (soma categorias) e caixa (faturamento total).
+  // Diferença = produtos + pacotes vendidos - serviços consumidos via pacote pré-pago.
+  const catAjuste = (caixa||0) - receitaServ;
+  const catAjusteShare = caixa > 0 ? (Math.abs(catAjuste)/caixa*100) : 0;
+  const catAjusteRow = (caixa > 0 && Math.abs(catAjuste) > 0.5) ? `<tr style="background:var(--surface-2);color:var(--ink-2);font-style:italic">
+    <td colspan="4">${catAjuste > 0 ? '+' : '−'} Produtos + pacotes vendidos <span style="font-size:11px;color:var(--ink-3);font-style:normal">(entram no caixa/Trinks tela · não são serviços, não geram comissão pra prof)</span></td>
+    <td style="text-align:right">${catAjuste > 0 ? '+' : '−'}${brl0(Math.abs(catAjuste))}</td>
+    <td style="text-align:right">${catAjusteShare.toFixed(0)}%</td>
+    <td style="text-align:right">—</td>
+  </tr>` : '';
+  const catFatRow = caixa > 0 ? `<tr style="background:var(--accent-soft,rgba(245,184,0,.15));color:var(--ink);font-weight:800;border-top:2px solid var(--accent)">
+    <td colspan="4">TOTAL FATURAMENTO ${periodo_label.toUpperCase()} <span style="font-size:11px;color:var(--ink-3);font-weight:400">(bate com Trinks tela Resultado + Stone)</span></td>
+    <td style="text-align:right">${brl0(caixa)}</td>
+    <td style="text-align:right">100%</td>
+    <td style="text-align:right">—</td>
+  </tr>` : '';
   const catBlock = catBreak.length ? `
     <details style="margin-top:12px"><summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);padding:8px 12px;background:var(--surface-2);border-radius:6px;font-weight:600">🧮 Categorias que compõem a taxa efetiva (${taxaEfetiva.toFixed(1)}%)</summary>
       <div class="cap" style="margin-top:8px">Taxa oficial Trinks BackOffice por categoria (<code>data/comissoes.json</code>). Ponderada pelo mix real do período. Sobre faturamento total (${brl0(caixa)}) = ${pctSobreCaixa.toFixed(1)}%.</div>
       <div style="overflow-x:auto"><table class="simple">
         <thead><tr><th>Categoria</th><th style="text-align:right">Atend</th><th style="text-align:right">Taxa</th><th style="text-align:right">Ticket médio</th><th style="text-align:right">Receita</th><th style="text-align:right">% serviços</th><th style="text-align:right">Comissão</th></tr></thead>
-        <tbody>${catRows}${catTotalRow}</tbody>
+        <tbody>${catRows}${catTotalRow}${catAjusteRow}${catFatRow}</tbody>
       </table></div>
     </details>` : '';
 
   const badgeTaxa = cfg && taxaEfetiva > 0
     ? ` <span class="hi">(taxa efetiva ${taxaEfetiva.toFixed(1)}% · comissão R$ ${totalComEquipe.toLocaleString('pt-BR',{maximumFractionDigits:0})})</span>` : '';
 
-  // Reconciliação com faturamento: pacotes + produtos + serviços sem prof executor
-  const naoAtribuido = Math.max((caixa||0) - totalReceitaEquipe, 0);
-  const naoAtribShare = caixa > 0 ? (naoAtribuido/caixa*100) : 0;
-  const naoAtribRow = (caixa > 0 && naoAtribuido > 0.5) ? `<tr style="background:var(--surface-2);color:var(--ink-2);font-style:italic">
-    <td>Não atribuível a prof <span style="font-size:11px;color:var(--ink-3);font-style:normal">(pacotes + produtos + serviços sem prof executor no Trinks — fora da base de comissão)</span></td>
-    <td style="text-align:right">—</td>
-    <td style="text-align:right">—</td>
-    <td style="text-align:right">—</td>
-    <td style="text-align:right">${brl0(naoAtribuido)}</td>
-    <td style="text-align:right">${naoAtribShare.toFixed(0)}%</td>
-    <td style="text-align:right">—</td>
-  </tr>` : '';
+  // Reconciliação com faturamento: dois casos possíveis
+  //   A) totalReceitaEquipe < caixa → produtos/pacotes VENDIDOS mas nao executados (extra caixa)
+  //   B) totalReceitaEquipe > caixa → pacotes CONSUMIDOS no periodo (venda ja aconteceu antes; painel valoriza pra pagar comissao)
+  // Cada caso vira uma linha explicativa distinta.
+  const gap = (totalReceitaEquipe||0) - (caixa||0);
+  const gapAbs = Math.abs(gap);
+  const gapShare = caixa > 0 ? (gapAbs/caixa*100) : 0;
+  let naoAtribRow = '';
+  if(caixa > 0 && gap < -0.5){
+    // A · caixa > equipe: produtos/pacotes vendidos sem prof executor
+    naoAtribRow = `<tr style="background:var(--surface-2);color:var(--ink-2);font-style:italic">
+      <td>+ Vendas sem prof <span style="font-size:11px;color:var(--ink-3);font-style:normal">(produtos + pacotes vendidos no período · não geram comissão pra prof)</span></td>
+      <td style="text-align:right">—</td><td style="text-align:right">—</td><td style="text-align:right">—</td>
+      <td style="text-align:right">${brl0(gapAbs)}</td>
+      <td style="text-align:right">${gapShare.toFixed(0)}%</td>
+      <td style="text-align:right">—</td>
+    </tr>`;
+  } else if(caixa > 0 && gap > 0.5){
+    // B · equipe > caixa: serviços consumidos via pacote pré-pago (pagto foi antes do período)
+    naoAtribRow = `<tr style="background:var(--surface-2);color:var(--ink-2);font-style:italic">
+      <td>− Serv. via pacote pré-pago <span style="font-size:11px;color:var(--ink-3);font-style:normal">(cliente comprou pacote antes; sessão consumida agora · valor no catálogo entra na comissão mas NÃO no caixa do período)</span></td>
+      <td style="text-align:right">—</td><td style="text-align:right">—</td><td style="text-align:right">—</td>
+      <td style="text-align:right">−${brl0(gapAbs)}</td>
+      <td style="text-align:right">−${gapShare.toFixed(0)}%</td>
+      <td style="text-align:right">—</td>
+    </tr>`;
+  }
   const totalFatRow = caixa > 0 ? `<tr style="background:var(--accent-soft,rgba(245,184,0,.15));color:var(--ink);font-weight:800;border-top:2px solid var(--accent)">
     <td>TOTAL FATURAMENTO ${periodo_label.toUpperCase()}</td>
     <td style="text-align:right">—</td>
