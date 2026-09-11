@@ -1704,6 +1704,7 @@ def main():
         if am["kpis"]["atend_fin"] > 0 or am["kpis"]["n_trans"] > 0:
             meses[f"{hoje.year}-{m:02d}"] = {
                 "caixa": am["kpis"]["caixa"], "receita_serv": am["kpis"]["receita_serv"],
+                "faturamento_apurado": am["kpis"].get("faturamento_apurado", am["kpis"]["caixa"]),
                 "atend_fin": am["kpis"]["atend_fin"], "clientes_unicos": am["kpis"]["clientes_unicos"],
                 "n_trans": am["kpis"]["n_trans"], "ticket_trans": am["kpis"]["ticket_trans"],
                 "taxa_canc": am["kpis"]["taxa_canc"], "categorias": am["categorias"],
