@@ -402,16 +402,35 @@ def analisar(agend, transac, ini: date, fim: date):
     # o Trinks BackOffice atribui comissão ao executor pelo preço unitário
     # do catálogo. Sem esse lookup, prof que só atende via pacote (MIRIAN
     # por exemplo) sumia do ranking.
-    servicos_cat = {}
+    servicos_cat = {}   # id_servico → preco catalogo
+    servicos_catg = {}  # id_servico → categoria (nome)
     try:
         _sc = json.loads(SERV_CACHE.read_text(encoding="utf-8"))
         for s in (_sc.get("payload") or []):
             if s.get("id"):
                 servicos_cat[s["id"]] = float(s.get("preco") or 0)
+                servicos_catg[s["id"]] = s.get("categoria") or ""
     except Exception as e:
         print(f"[analisar] aviso: catalogo serviços indisponível ({e}); consumo via pacote nao contara")
 
+    # Regras de comissao POR CATEGORIA (fonte data/comissoes.json — exportado
+    # do Trinks BackOffice servicosDoEstabelecimento.csv). Usado pra calcular
+    # comissao EXATA por prof aplicando a taxa oficial de cada categoria
+    # sobre o mix real do prof (nao taxa media).
+    cfg_com = {"por_categoria": {}, "regra_padrao_pct": 0.30}
+    try:
+        _cfg = json.loads((REPO_ROOT / "data" / "comissoes.json").read_text(encoding="utf-8"))
+        cfg_com["por_categoria"] = {k.lower().strip(): v for k, v in (_cfg.get("por_categoria") or {}).items()}
+        cfg_com["regra_padrao_pct"] = _cfg.get("regra_padrao_pct", 0.30)
+    except Exception as e:
+        print(f"[analisar] aviso: comissoes.json indisponível ({e}); comissao usara 30% flat")
+
+    def _taxa_cat(nome_cat):
+        return cfg_com["por_categoria"].get((nome_cat or "").lower().strip(), cfg_com["regra_padrao_pct"])
+
     exec_via_pacote_v = defaultdict(float)  # rastreia quanto veio de pacote
+    exec_por_cat = defaultdict(lambda: defaultdict(float))  # {nome_exec: {cat: v}}
+    exec_comissao = defaultdict(float)  # comissao calculada por prof (taxa cat × v)
     for tx in tr:
         for s in (tx.get("servicos") or []):
             exec_id = s.get("idProfissionalQueRealizouServico")
@@ -429,12 +448,19 @@ def analisar(agend, transac, ini: date, fim: date):
                 if v > 0:
                     via_pacote = True
                     exec_via_pacote_v[nome_exec] += v
+            # Categoria: preferir a que vem na transacao, fallback pro catalogo
+            cat_nome = s.get("categoria") or servicos_catg.get(s.get("id"), "")
             exec_agg[nome_exec]["n"] += 1
             exec_agg[nome_exec]["v"] += v
+            exec_por_cat[nome_exec][cat_nome or "sem"] += v
+            exec_comissao[nome_exec] += v * _taxa_cat(cat_nome)
             exec_por_serv_receita[(nome_exec, s.get("nome") or "sem")] += v
     ranking_prof_executor = sorted(
         [{"nome": k, "n_serv": v["n"], "v": brl_round(v["v"]),
           "v_via_pacote": brl_round(exec_via_pacote_v.get(k, 0)),
+          "comissao": brl_round(exec_comissao.get(k, 0)),
+          "taxa_efetiva": round(exec_comissao.get(k, 0) / max(v["v"], 1), 4),
+          "por_cat": {cat: brl_round(vv) for cat, vv in exec_por_cat.get(k, {}).items()},
           "ticket_medio_serv": brl_round(v["v"] / max(v["n"], 1))}
          for k, v in exec_agg.items()],
         key=lambda x: -x["v"]

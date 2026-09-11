@@ -1421,6 +1421,11 @@ function mergeRankingProf(rp_agend, rp_exec){
       ticket_medio: e.ticket_medio_serv || (n ? v/n : 0),
       horas_trab: a.horas_trab || 0,    // enriquecido do agend
       _unidade: e._unidade || a._unidade,
+      // Campos pra comissão EXATA por prof (taxa oficial de cada cat × mix do prof)
+      comissao: e.comissao || 0,
+      taxa_efetiva: e.taxa_efetiva || 0,
+      v_via_pacote: e.v_via_pacote || 0,
+      por_cat: e.por_cat || {},
     };
   }).sort((a,b) => (b.v||0) - (a.v||0));
 }
@@ -1452,11 +1457,16 @@ function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_
     taxaEfetiva = receitaServ > 0 ? (comissaoTotal/receitaServ*100) : 0;
   }
 
-  // Tabela principal: prof + comissão estimada
+  // Tabela principal: prof + comissão EXATA por prof (taxa oficial de cada
+  // categoria × mix real do prof, calculado no backend). Se prof não tiver
+  // p.comissao (dashboard antigo pre-fix), fallback pra taxa média.
   const totalReceitaEquipe = rp.reduce((s,p)=>s+(p.v||0), 0) || 1;
   const rowsProf = rp.slice(0, 12).map(p => {
     const rec = p.v || 0;
-    const com = taxaEfetiva > 0 ? rec * (taxaEfetiva/100) : 0;
+    const com = (p.comissao != null && p.comissao > 0)
+      ? p.comissao
+      : (taxaEfetiva > 0 ? rec * (taxaEfetiva/100) : 0);
+    const taxaProf = rec > 0 ? (com/rec*100) : 0;
     const shareEq = rec/totalReceitaEquipe*100;
     return `<tr>
       <td>${nomeComIconeUnidade(p)}</td>
@@ -1465,12 +1475,12 @@ function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_
       <td style="text-align:right">${brl(p.ticket_medio || (p.n ? rec/p.n : 0))}</td>
       <td style="text-align:right">${brl0(rec)}</td>
       <td style="text-align:right">${shareEq.toFixed(0)}%</td>
-      <td style="text-align:right;color:#a855f7;font-weight:700">${cfg ? brl0(com) : '—'}</td>
+      <td style="text-align:right;color:#a855f7;font-weight:700" title="Taxa efetiva prof: ${taxaProf.toFixed(1)}%">${cfg ? brl0(com) : '—'}</td>
     </tr>`;
   }).join('');
   const somaAtend = rp.reduce((a,p)=>a+(p.n||0),0);
   const somaHoras = rp.reduce((a,p)=>a+(p.horas_trab||0),0);
-  const totalComEquipe = totalReceitaEquipe * (taxaEfetiva/100);
+  const totalComEquipe = rp.reduce((s,p)=>s + ((p.comissao != null && p.comissao > 0) ? p.comissao : (p.v||0) * (taxaEfetiva/100)), 0);
   const totalRow = `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700">
     <td>TOTAL EQUIPE (${rp.length})</td>
     <td style="text-align:right">${somaAtend}</td>
