@@ -171,6 +171,15 @@ jobs:
           # apesar do dashboard ter dados novos.
           # Fix: adicionar cada arquivo individualmente (o `|| true` só cobre o
           # próprio git add, não os outros).
+          # transacoes_ano_cache.json faltava nesta lista enquanto
+          # agendamentos_ano_cache.json estava presente, embora github_refresh.py
+          # trate os dois pela mesma estrategia (re-paginar o ano aos domingos,
+          # ler do cache nos outros dias). Como o runner faz checkout limpo, o
+          # cache de transacoes regravado no domingo morria com o runner: em
+          # toda a historia do repo esse arquivo tem UM commit, e da maquina
+          # local. Efeito: todo domingo o Actions pagava as requisicoes do ano
+          # inteiro e descartava o resultado, e o painel servia transacoes
+          # congeladas em 04/09 contra agendamentos de 06/09.
           for f in data/dashboard_data.json \
                    data/clientes_detalhes.json \
                    data/profissionais_cache.json \
@@ -178,6 +187,7 @@ jobs:
                    data/servicos_cache.json \
                    data/agend_detail_cache.json \
                    data/agendamentos_ano_cache.json \
+                   data/transacoes_ano_cache.json \
                    data/quota_status.json \
                    data/spa/dashboard_data.json \
                    data/spa/financeiro.json \
