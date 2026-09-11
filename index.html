@@ -489,7 +489,6 @@
       <div id="per-ticket-meta"></div>
       <div id="per-categorias"></div>
       <div id="per-heatmap"></div>
-      <div id="per-comparacao"></div>
       <!-- 2. TRAJETÓRIA -->
       <div id="per-meses"></div>
       <div id="per-dia"></div>
@@ -2351,7 +2350,7 @@ function renderInsights(container_id, titulo_aba, insights){
 // ============= RENDER POR ABA =============
 // CONSOLIDAÇÃO A · limpa todos os cards do Painel unificado antes de re-render
 function clearPerContainers(){
-  ['per-pace','per-kpis','per-ancora','per-meta','per-heatmap','per-comparacao',
+  ['per-pace','per-kpis','per-ancora','per-meta','per-heatmap',
    'per-meses','per-dia','per-dow','per-sala-wrap',
    'per-categorias','per-ticket-meta','per-rentabilidade',
    'per-categoria-native','per-desvio-tabela',
@@ -2503,7 +2502,8 @@ function renderSemanal(data){
   renderAvisoBase('per-kpis', k);
   renderMetaProgress('per-meta','Meta Semanal',s.meta,'Soma das metas diárias dos dias da semana (cada dia ponderado pelo peso histórico do DOW)');
   renderTicketMeta('per-ticket-meta', 'semana', k);
-  renderComparacaoSemana('per-comparacao', k, s.semana_anterior);
+  // Removido renderComparacaoSemana — duplicava info que ja aparece nos KPIs
+  // do topo (Faturamento com delta_pct, Visitas com delta_pct, Ticket delta).
   renderUtilizacao('per-utilizacao', 'semana', k, s);
   {
     const mf = data.metas_franqueadora || {};
