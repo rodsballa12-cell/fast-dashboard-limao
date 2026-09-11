@@ -366,17 +366,34 @@ def analisar(agend, transac, ini: date, fim: date):
     ranking_prof_total_n = len(ranking_prof_full)
 
     # === PROFISSIONAL EXECUTOR (idProfissionalQueRealizouServico) ===
-    # Vem da TRANSAÇÃO (não do agendamento). Compara com o prof da comanda pra detectar
-    # divergências: comanda no nome de A, executado por B → verificar se é troca legítima
-    # de escala ou anomalia de setup. Também dá o ranking REAL de execução por serviço.
+    # Vem da TRANSAÇÃO (não do agendamento). Base pra reconciliar com Trinks
+    # BackOffice · Relatório de Comissões (que usa Data de Pagamento) e com o
+    # extrato Stone. Comissão é paga sobre pagamento efetivo, não agendamento.
     exec_agg = defaultdict(lambda: {"n": 0, "v": 0.0})
     exec_por_serv_receita = defaultdict(float)  # {(id_exec, nome_serv): valor}
-    # Map id_prof → nome. Primeiro do agend (rápido); IDs órfãos ficam como "ID XXX"
-    prof_id_nome = getattr(analisar, "_prof_id_nome_cache", None) or {}
+    # Map id_prof → nome. Prioridade:
+    #   1) cache global profissionais_cache.json.payload.prof_map (contém TODAS
+    #      as profs · ativas e desligadas, com IDs primário e secundário)
+    #   2) agend Finalizados do período (fallback rápido)
+    #   3) "Prof desligado #ID" (última linha — evita expor ID cru)
+    # Bug anterior: só usava fonte (2), então quando uma prof executava serviço
+    # sem ter agend Finalizado no período (ex: comanda passou pra outra), sumia
+    # do ranking OU virava "Prof desligado". Agora garante nome sempre.
+    prof_id_nome = {}
+    try:
+        _cache_prof = json.loads(PROF_CACHE.read_text(encoding="utf-8"))
+        _prof_map = (_cache_prof.get("payload") or {}).get("prof_map") or {}
+        # prof_map tem chaves string; API devolve int. Aceita ambos.
+        for k, v in _prof_map.items():
+            prof_id_nome[int(k)] = v
+            prof_id_nome[str(k)] = v
+    except Exception as e:
+        print(f"[analisar] aviso: prof_map global indisponível ({e}); usando fallback dos Finalizados")
     for a in fin:
         pid = (a.get("profissional") or {}).get("id")
         pnome = (a.get("profissional") or {}).get("nome") or ""
-        if pid: prof_id_nome[pid] = pnome.strip().title()
+        if pid and pid not in prof_id_nome:
+            prof_id_nome[pid] = pnome.strip().title()
     for tx in tr:
         for s in (tx.get("servicos") or []):
             exec_id = s.get("idProfissionalQueRealizouServico")

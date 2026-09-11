@@ -1399,6 +1399,32 @@ function renderProfExecutor(container_id, exec_ranking){
 // efetiva ponderada pelo mix de categorias do período. Categorias que compõem a
 // taxa vão em <details> pra manter o card focado no que decide (o que cada prof
 // produziu e vai receber).
+// Merge ranking por profissional: base = EXECUTOR (data de pagamento — reconcilia
+// com Trinks BackOffice Relatório de Comissões + extrato Stone). Enriquece com
+// horas_trab e n de agend quando prof aparece nas duas fontes. Se executor for
+// vazio (ex: dado antigo antes do fix de prof_map), fallback pro ranking_prof.
+function mergeRankingProf(rp_agend, rp_exec){
+  const exec = (rp_exec || []).slice();
+  const agend = (rp_agend || []).slice();
+  if(exec.length === 0) return agend;
+  const agendByName = {};
+  const norm = s => (s||'').toString().trim().toLowerCase();
+  for(const a of agend) agendByName[norm(a.nome)] = a;
+  return exec.map(e => {
+    const a = agendByName[norm(e.nome)] || {};
+    const v = e.v || 0;
+    const n = e.n_serv || 0;
+    return {
+      nome: e.nome,
+      v: v,                              // receita por PAGAMENTO (base comissão)
+      n: n,                              // n serviços executados
+      ticket_medio: e.ticket_medio_serv || (n ? v/n : 0),
+      horas_trab: a.horas_trab || 0,    // enriquecido do agend
+      _unidade: e._unidade || a._unidade,
+    };
+  }).sort((a,b) => (b.v||0) - (a.v||0));
+}
+
 function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_prof_total_n, categoria_native, caixa){
   const el = document.getElementById(container_id);
   if(!el) return;
@@ -1517,7 +1543,7 @@ function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_
   </tr>` : '';
   el.innerHTML = `<div class="card">
     <h2>👥 Profissionais + Comissões · ${periodo_label}${badgeTaxa}${totalBadge}</h2>
-    <div class="cap">Ranking por receita de serviços atribuída ao prof executor. Comissão estimada = receita_prof × taxa efetiva do período. ${cfg ? '' : '<em>Aguardando <code>data/comissoes.json</code> pra calcular comissão.</em>'}</div>
+    <div class="cap">Base = <strong>Data de Pagamento</strong> (mesma regra do Trinks BackOffice → Relatório de Comissões · reconcilia com extrato Stone). Ranking por receita de serviços atribuída ao prof que executou. Comissão estimada = receita_prof × taxa efetiva do período. ${cfg ? '' : '<em>Aguardando <code>data/comissoes.json</code> pra calcular comissão.</em>'}</div>
     <div style="overflow-x:auto;margin-top:10px"><table class="simple">
       <thead><tr><th>Profissional</th><th style="text-align:right">Atend</th><th style="text-align:right">Horas</th><th style="text-align:right">Ticket médio</th><th style="text-align:right">Receita serv</th><th style="text-align:right">% equipe</th><th style="text-align:right">Comissão</th></tr></thead>
       <tbody>${rowsProf}${totalRow}${naoAtribRow}${totalFatRow}</tbody>
@@ -2381,7 +2407,7 @@ function renderAnual(data){
   // Categorias nativas Trinks agora vivem dentro do card "Detalhamento por categoria"
   renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
   // UNIFICADO · Profissionais + Comissões · Ano usa seu próprio ranking_prof anual.
-  renderProfComissoes('per-prof', 'ano', a.ranking_prof || [], a.ranking_prof_total_n || 0, a.categoria_native, k.caixa || 0);
+  renderProfComissoes('per-prof', 'ano', mergeRankingProf(a.ranking_prof, a.ranking_prof_executor), a.ranking_prof_total_n || 0, a.categoria_native, k.caixa || 0);
   renderInsights('per-insights', 'Ano 2026', (data.insights||{}).anual);
 }
 
@@ -2451,7 +2477,7 @@ function renderMensal(data){
   renderBarsDia('per-dia','📈 Trajetória do mês · dia a dia','Onde bombou, onde travou — vê quais dias-alavanca faltam pra bater meta',m.por_dia_mes,'');
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · mês <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · usa pra dimensionar equipe e horário de campanhas',m.hora_media,true,'');
   // UNIFICADO · Profissionais + Comissões num único card
-  renderProfComissoes('per-prof', 'mês', m.ranking_prof, m.ranking_prof_total_n, m.categoria_native, k.caixa || 0);
+  renderProfComissoes('per-prof', 'mês', mergeRankingProf(m.ranking_prof, m.ranking_prof_executor), m.ranking_prof_total_n, m.categoria_native, k.caixa || 0);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro (card "Quando o dinheiro entra")
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes (aba canônica)
   renderInsights('per-insights', 'Mês corrente', (data.insights||{}).mensal);
@@ -2482,7 +2508,7 @@ function renderSemanal(data){
   // Cruzamento Google × Faturamento por DOW: movido pra aba Mídia (renderMidiasGoogleDow)
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · semana <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · define escala e horário de campanhas',s.hora_media,true,'');
   // UNIFICADO · Profissionais + Comissões num único card
-  renderProfComissoes('per-prof', 'semana', s.ranking_prof, s.ranking_prof_total_n, s.categoria_native, k.caixa || 0);
+  renderProfComissoes('per-prof', 'semana', mergeRankingProf(s.ranking_prof, s.ranking_prof_executor), s.ranking_prof_total_n, s.categoria_native, k.caixa || 0);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
   renderInsights('per-insights', 'Semana corrente', (data.insights||{}).semanal);
@@ -2532,7 +2558,7 @@ function renderDiario(data){
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
   // UNIFICADO · Profissionais + Comissões num único card (Diário mantém a "SALA AGORA" acima como visão em tempo real)
-  renderProfComissoes('per-prof', 'hoje', d.ranking_prof, d.ranking_prof_total_n, d.categoria_native, k.caixa || 0);
+  renderProfComissoes('per-prof', 'hoje', mergeRankingProf(d.ranking_prof, d.ranking_prof_executor), d.ranking_prof_total_n, d.categoria_native, k.caixa || 0);
   renderInsights('per-insights', 'Hoje', (data.insights||{}).diario);
 }
 
