@@ -1,20 +1,26 @@
-[discover] testando 26 endpoints · janela 2026-09-01..2026-09-11
+[discover-v2] testando 20 chamadas (throttled 2.5s)
 
-  ? 429 · /relatorio/comissoes?dataInicio=2026-09-01&dataFim=2026-09-11
-  ? 429 · /comissoes?dataInicio=2026-09-01&dataFim=2026-09-11
-  ? 429 · /pagamentos?dataInicio=2026-09-01&dataFim=2026-09-11
-  ? 429 · /pagamentos/comissoes?dataInicio=2026-09-01&dataFim=2026-09-11
-  ? 429 · /recebiveis?dataInicio=2026-09-01&dataFim=2026-09-11
-  ? 429 · /comandas?dataInicio=2026-09-01&dataFim=2026-09-11
-  ? 429 · /comandas/pagamentos?dataInicio=2026-09-01&dataFim=2026-09-11
-  ? 429 · /atendimentos?dataInicio=2026-09-01&dataFim=2026-09-11
-  ? 429 · /servicos-executados?dataInicio=2026-09-01&dataFim=2026-09-11
-  ? 429 · /servicos/executados?dataInicio=2026-09-01&dataFim=2026-09-11
-  ? 429 · /lancamentos?dataInicio=2026-09-01&dataFim=2026-09-11
-  ? 429 · /lancamentos-financeiros?dataInicio=2026-09-01&dataFim=2026-09-11
-  ? 429 · /comissoes?dataPagamentoInicio=2026-09-01&dataPagamentoFim=2026-09-11
-  ? 429 · /pagamentos?dataPagamentoInicio=2026-09-01&dataPagamentoFim=2026-09-11
   ✓ 200 · /profissionais/producao?dataInicio=2026-09-01&dataFim=2026-09-11
-    keys: ['data', 'page', 'pageSize', 'totalPages', 'totalRecords'] · total_items: 0
+    keys=['data', 'page', 'pageSize', 'totalPages', 'totalRecords'] · total=0 · items=0
+  ✓ 200 · /profissionais/producao?dataInicio=2026-09-01&dataFim=2026-09-11&pageSize=100
+    keys=['data', 'page', 'pageSize', 'totalPages', 'totalRecords'] · total=0 · items=0
+  ✓ 200 · /profissionais/producao?dataInicio=2026-09-01&dataFim=2026-09-11&tipo=PAGAMENTO
+    keys=['data', 'page', 'pageSize', 'totalPages', 'totalRecords'] · total=0 · items=0
+  ✓ 200 · /profissionais/producao?dataInicio=2026-09-01&dataFim=2026-09-11&tipoData=pagamento
+    keys=['data', 'page', 'pageSize', 'totalPages', 'totalRecords'] · total=0 · items=0
+  ✓ 200 · /profissionais/producao?dataInicio=2026-09-01&dataFim=2026-09-11&tipoData=PAGAMENTO
+    keys=['data', 'page', 'pageSize', 'totalPages', 'totalRecords'] · total=0 · items=0
+  ✓ 200 · /profissionais/producao?dataPagamentoInicio=2026-09-01&dataPagamentoFim=2026-09-11
+    keys=['data', 'page', 'pageSize', 'totalPages', 'totalRecords'] · total=0 · items=0
+  ✓ 200 · /profissionais/producao?dataPagamentoInicial=2026-09-01&dataPagamentoFinal=2026-09-11
+    keys=['data', 'page', 'pageSize', 'totalPages', 'totalRecords'] · total=0 · items=0
+  ✓ 200 · /profissionais/producao?pageSize=100
+    keys=['data', 'page', 'pageSize', 'totalPages', 'totalRecords'] · total=0 · items=0
+  ✓ 200 · /profissionais/producao?
+    keys=['data', 'page', 'pageSize', 'totalPages', 'totalRecords'] · total=0 · items=0
+  ✓ 200 · /profissionais/producoes?dataInicio=2026-09-01&dataFim=2026-09-11
+    keys=['data', 'page', 'pageSize', 'totalPages', 'totalRecords'] · total=0 · items=0
+  ✓ 200 · /profissionais/producao?dataInicio=2026-09-01&dataFim=2026-09-11&estabelecimentoId=276461
+    keys=['data', 'page', 'pageSize', 'totalPages', 'totalRecords'] · total=0 · items=0
 
-[discover] 0 endpoints devolveram dado util
+[discover-v2] fim
