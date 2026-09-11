@@ -140,8 +140,14 @@ mundo daquele dia — quem personaliza é o texto (nome, horário, código).
 Todas pedem a mesma coisa: responder **1** ou **2**. Resposta de uma tecla é o que
 faz a confirmação realmente acontecer.
 
-Para regerar as artes (se mudar horário ou texto): edite `docs/convites/gerar_convites.py`
-e rode `python3 docs/convites/gerar_convites.py` — precisa do Chromium do Playwright.
+**Identidade:** amarelo FAST `#FFD100`, turquesa SPA `#24B3A6`, preto `#141414` —
+os mesmos tons de `data/config.json` e do painel. A marca usada é a do painel
+(`LOGOS_UNIDADE` em `index.html`), que é uma aproximação: **quando o arquivo oficial
+do logo chegar, trocar a constante `MARCA` em `gerar_convites.py` por um `<img>`.**
+
+Para regerar as artes (se mudar horário, texto ou logo): edite
+`docs/convites/gerar_convites.py` e rode `python3 docs/convites/gerar_convites.py`
+— precisa do Chromium do Playwright.
 
 ### Qui 24 · listas A, B, C e D
 ```
