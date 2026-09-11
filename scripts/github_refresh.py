@@ -645,18 +645,15 @@ def analisar(agend, transac, ini: date, fim: date):
     )
     hora_abs = [{"h": h, "n": hora_c.get(h, 0), "v": brl_round(hora_v.get(h, 0))} for h in range(8, 21)]
 
-    # Faturamento APURADO — metodologia Trinks BackOffice (base pra comissao).
-    # Soma dos servicos executados por prof (com preco unitario do catalogo
-    # quando servico veio via pacote consumido — preco=0 na transacao). Bate
-    # com o valor que o Trinks apura pra pagar comissao (~99% de match; o
-    # 1% restante vem de rateio de pacote que so o Trinks calcula internamente).
-    # Frontend usa esse campo como "faturamento" · caixa fica como cash-flow.
-    faturamento_apurado = sum(v["v"] for v in exec_agg.values())
-
+    # faturamento_apurado agora e ALIAS de caixa (mesma metrica). Preservado
+    # como campo pra compat com HTML antigo cacheado que ainda referencia
+    # k.faturamento_apurado — sempre entrega o mesmo valor que k.caixa, sem
+    # divergencia. A base pra comissao segue no ranking_prof_executor.v
+    # (soma dos servicos executados por prof) — calculada separado.
     return {
         "kpis": {
             "caixa": brl_round(caixa),
-            "faturamento_apurado": brl_round(faturamento_apurado),
+            "faturamento_apurado": brl_round(caixa),
             "receita_serv": brl_round(receita_serv),
             "atend_fin": len(fin),
             "atend_canc": len(canc),
