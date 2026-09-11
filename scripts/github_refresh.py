@@ -1308,6 +1308,7 @@ def main():
         "janela_dias": dias_semana_atu + 1,
         "sem_completa_fim": dom_ant_full.isoformat(),
         "caixa": a_sem_ant["kpis"]["caixa"], "atend_fin": a_sem_ant["kpis"]["atend_fin"],
+        "faturamento_apurado": a_sem_ant["kpis"].get("faturamento_apurado", a_sem_ant["kpis"]["caixa"]),
         "n_trans": a_sem_ant["kpis"]["n_trans"], "ticket_trans": a_sem_ant["kpis"]["ticket_trans"],
         "ticket_medio": a_sem_ant["kpis"]["ticket_medio"],
         "cliente_dia": a_sem_ant["kpis"]["cliente_dia"],
@@ -1330,6 +1331,7 @@ def main():
         "periodo_fim": fim_janela_ant.isoformat(),
         "janela_dias": hoje.day,
         "caixa": a_mes_ant["kpis"]["caixa"], "atend_fin": a_mes_ant["kpis"]["atend_fin"],
+        "faturamento_apurado": a_mes_ant["kpis"].get("faturamento_apurado", a_mes_ant["kpis"]["caixa"]),
         "cliente_dia": a_mes_ant["kpis"]["cliente_dia"], "ticket_medio": a_mes_ant["kpis"]["ticket_medio"],
         "dias_op": a_mes_ant["kpis"]["dias_op"],
     }
@@ -1356,6 +1358,7 @@ def main():
         "data": hoje_ant.isoformat(),
         "hora_max": round(hora_num, 2),
         "caixa": a_dia_ant["kpis"]["caixa"], "atend_fin": a_dia_ant["kpis"]["atend_fin"],
+        "faturamento_apurado": a_dia_ant["kpis"].get("faturamento_apurado", a_dia_ant["kpis"]["caixa"]),
         "cliente_dia": a_dia_ant["kpis"]["cliente_dia"], "ticket_medio": a_dia_ant["kpis"]["ticket_medio"],
         "dias_op": a_dia_ant["kpis"]["dias_op"] or 1,  # se hora atual muito cedo, evita div/0
     }
@@ -1392,18 +1395,22 @@ def main():
         k = aba["kpis"]
         dias_atu = k.get("dias_op", 1)
         dias_ant = ant.get("dias_op", 1)
-        k["caixa_delta_pct"] = _delta_pct(k.get("caixa", 0), ant.get("caixa", 0))
+        # Delta usa faturamento_apurado (base pra card Faturamento) pra
+        # nao divergir do valor mostrado no topo do card.
+        _fa_atu = k.get("faturamento_apurado") or k.get("caixa", 0)
+        _fa_ant = ant.get("faturamento_apurado") or ant.get("caixa", 0)
+        k["caixa_delta_pct"] = _delta_pct(_fa_atu, _fa_ant)
         k["atend_delta_pct"] = _delta_pct(k.get("atend_fin", 0), ant.get("atend_fin", 0))
         k["cliente_dia_delta_pct"] = _delta_pct(k.get("cliente_dia", 0), ant.get("cliente_dia", 0))
         # Secundários: a mesma comparação por dia com movimento, para quando a
         # pergunta for "nos dias em que abriu, rendeu mais ou menos?"
-        k["caixa_delta_perdia_pct"] = _delta_pct_perdia(k.get("caixa", 0), ant.get("caixa", 0), dias_atu, dias_ant)
+        k["caixa_delta_perdia_pct"] = _delta_pct_perdia(_fa_atu, _fa_ant, dias_atu, dias_ant)
         k["atend_delta_perdia_pct"] = _delta_pct_perdia(k.get("atend_fin", 0), ant.get("atend_fin", 0), dias_atu, dias_ant)
         k["cliente_dia_delta_perdia_pct"] = _delta_pct_perdia(k.get("cliente_dia", 0), ant.get("cliente_dia", 0), dias_atu, dias_ant)
         k["dias_com_movimento"] = {"atual": dias_atu, "anterior": dias_ant}
         k["ticket_delta_pct"] = _delta_pct(k.get("ticket_medio", 0), ant.get("ticket_medio", 0))
         # Delta bruto também exposto pra UI mostrar quando as duas janelas SÃO comparáveis
-        k["caixa_delta_bruto_pct"] = _delta_pct(k.get("caixa", 0), ant.get("caixa", 0))
+        k["caixa_delta_bruto_pct"] = _delta_pct(_fa_atu, _fa_ant)
         k["periodo_ant_ref"] = ant
 
     # === Churn early warning: clientes ≥3 visitas nos primeiros 30 dias e sumidos há 14+ dias ===
@@ -1790,8 +1797,10 @@ def main():
         razao = (p_ant / p_atu) if p_atu else None
 
         ajustado = None
-        if p_atu and p_ant and ant.get("caixa"):
-            ajustado = round(((k.get("caixa", 0) / p_atu) / (ant["caixa"] / p_ant) - 1) * 100, 1)
+        _k_atu = k.get("faturamento_apurado") or k.get("caixa", 0)
+        _k_ant = ant.get("faturamento_apurado") or ant.get("caixa", 0)
+        if p_atu and p_ant and _k_ant:
+            ajustado = round(((_k_atu / p_atu) / (_k_ant / p_ant) - 1) * 100, 1)
 
         na_base = {iso: info for iso, info in dias_atipicos.items()
                    if ini_ant <= date.fromisoformat(iso) <= fim_ant}
@@ -1945,7 +1954,9 @@ def main():
     # Aqui interpolamos pra hora atual pra dar leitura em tempo real.
     agora = datetime.now(BRT)
     hora_atual = agora.hour + agora.minute / 60.0
-    caixa_hoje = a_diario["kpis"].get("caixa", 0)
+    # Pace intraday agora usa faturamento_apurado (bate com card Faturamento
+    # e com Realizado da Meta). Antes usava caixa e virava divergencia.
+    caixa_hoje = a_diario["kpis"].get("faturamento_apurado") or a_diario["kpis"].get("caixa", 0)
     # pct esperado até agora, interpolando linearmente entre horas cheias
     pct_esperado_agora = 0.0
     if opera_no_dia(hoje) and meta_dia_valor > 0 and curva_horaria:
