@@ -4052,6 +4052,56 @@ function finPct(v){ return ((v||0)*100).toFixed(1).replace('.',',')+'%'; }
 
 function renderFinanceiro(){
   if(!FIN){ document.getElementById('fin-content').innerHTML='<div class="card"><div class="cap">Dados financeiros ainda não carregados.</div></div>'; return; }
+  // Pré-abertura (SPA sem Excel preenchido ainda) — mostra hero honesto em vez
+  // de zeros que parecem "meta 0% atingida" (informação enganosa).
+  if(FIN._pre_abertura){
+    const info = unidadeInfo(UNIDADE_ATIVA);
+    const dInaug = FIN._data_inauguracao || info.data_inauguracao || '';
+    const dTxt = dInaug ? dInaug.split('-').reverse().join('/') : '?';
+    const hoje = new Date();
+    const dAlvo = dInaug ? new Date(dInaug + 'T00:00:00-03:00') : null;
+    const dDias = dAlvo ? Math.max(0, Math.ceil((dAlvo - hoje)/86400000)) : null;
+    const metaMes = (FIN.kpis && FIN.kpis.meta_mes) || 60000;
+    const cor = info.cor_accent || '#24B3A6';
+    const ico = ICO_UNIDADE_MINI[UNIDADE_ATIVA] || '';
+    document.getElementById('fin-content').innerHTML = `
+      <div class="card" style="border-left:4px solid ${cor}">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div style="font-size:24px">${ico}</div>
+          <div>
+            <div style="font-size:18px;font-weight:700">Financeiro ${info.tipo || 'SPA'} · pré-abertura</div>
+            <div class="cap">inauguração ${dTxt}${dDias!=null?` · D-${dDias}`:''}</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px">
+          <div style="padding:14px;background:var(--surface-2);border-radius:10px">
+            <div class="cap" style="margin-bottom:4px">Meta franqueadora mensal</div>
+            <div style="font-size:22px;font-weight:700">${brl0(metaMes)}</div>
+            <div class="cap" style="font-size:11px;margin-top:2px">definida pela franqueadora · valor por unidade</div>
+          </div>
+          <div style="padding:14px;background:var(--surface-2);border-radius:10px">
+            <div class="cap" style="margin-bottom:4px">Receita realizada</div>
+            <div style="font-size:22px;font-weight:700;color:var(--ink-2)">R$ 0</div>
+            <div class="cap" style="font-size:11px;margin-top:2px">loja não abriu · sem transação Trinks</div>
+          </div>
+          <div style="padding:14px;background:var(--surface-2);border-radius:10px">
+            <div class="cap" style="margin-bottom:4px">Custos fixos rateados</div>
+            <div style="font-size:22px;font-weight:700;color:var(--ink-2)">pendente</div>
+            <div class="cap" style="font-size:11px;margin-top:2px">Excel SPA (bloco DRE FAST SPA) ainda vazio</div>
+          </div>
+        </div>
+        <div style="padding:14px;background:${cor}12;border-left:3px solid ${cor};border-radius:6px;margin-bottom:14px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:6px">🎯 Direcionamento</div>
+          <div style="font-size:13px;line-height:1.55;color:var(--ink-2)">
+            ${FIN._fonte_receita || 'Preencher bloco <strong>DRE FAST SPA</strong> no Painel Excel (linhas 25-40) com projeções de custo por mês (aluguel/pessoal/mídia/CMV/etc). Rodar então <code>scripts/gerar_financeiro.py</code> — o SPA financeiro passa a mostrar cenário próprio automaticamente.'}
+          </div>
+        </div>
+        <div style="padding:12px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2);line-height:1.5">
+          <strong>Depois da abertura:</strong> receita real virá do Trinks (mesmo pipeline da Escova, quando <code>trinks_estabelecimento_id</code> SPA subir) e cruzará com custos do Excel · aí este card vira DRE completa igual à Escova (receita/mês, EBITDA, margem, break-even, cenários).
+        </div>
+      </div>`;
+    return;
+  }
   // DRE detalhada = ÚLTIMO MÊS FECHADO no Excel (retrospectivo).
   // Card SETEMBRO EM CURSO = Trinks live + Excel projetado.
   // O Excel tem 60 meses (mai/26 a abr/31). Cada mês vive em FIN.meses[YYYY-MM].
