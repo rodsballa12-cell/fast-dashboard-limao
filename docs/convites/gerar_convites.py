@@ -36,8 +36,8 @@ CARDS = [
         dow="sexta-feira", num="25", mes="setembro de 2026", horas="das 10h às 20h · hora marcada",
         titulo="O dia das clientes de casa",
         sub="O SPA abre primeiro para quem já é da Fast, antes do bairro.",
-        cortesia="Garrafa personalizada Fast SPA",
-        cortesia_dir="para quem fechar um combo",
+        cortesia="Welcome drink e tour guiado",
+        cortesia_dir="por nossa conta",
         campo="Convite de", campo2="seu horário",
     ),
     dict(
@@ -47,8 +47,8 @@ CARDS = [
         dow="sábado", num="26", mes="setembro de 2026", horas="das 9h às 19h · hora marcada",
         titulo="O dia de trazer quem você gosta",
         sub="Venha conhecer a casa com quem você chamaria para um café.",
-        cortesia="Garrafa personalizada Fast SPA",
-        cortesia_dir="uma para cada combo fechado",
+        cortesia="Welcome drink para vocês duas",
+        cortesia_dir="por nossa conta",
         campo="Convite de", campo2="seu horário",
     ),
     dict(
@@ -58,8 +58,8 @@ CARDS = [
         dow="domingo", num="27", mes="setembro de 2026", horas="das 10h às 17h · por ordem de chegada",
         titulo="O domingo em que o SPA é do bairro",
         sub="Sem hora marcada: é chegar, pegar sua senha e conhecer a casa.",
-        cortesia="Garrafa personalizada Fast SPA",
-        cortesia_dir="para quem fechar um combo",
+        cortesia="Café da casa e tour guiado",
+        cortesia_dir="é só chegar",
         campo="Convite de", campo2="",
     ),
 ]
