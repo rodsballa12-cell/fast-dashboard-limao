@@ -3641,10 +3641,17 @@ function atualizarHeaderUnidade(){
   // e um --brand-tint sutil pra usos ambientais (borda-esquerda de cards, etc).
   // Consolidado: bronze/dourado — cor "premium executiva" que conecta o warm
   // do amarelo Escova com o cool do teal SPA (roxo não fazia essa ponte).
+  // Detecta tema efetivo (auto por horário via data-theme, ou fallback OS).
+  // Consolidado inverte B&W: preto no claro / branco no escuro pra manter
+  // legibilidade — se ficasse preto no dark theme, sumiria no fundo.
+  const temaAtual = document.documentElement.getAttribute('data-theme')
+    || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const consolidadoClaro = { accent:'#0A0A0A', accent2:'#000000', accentSoft:'rgba(10,10,12,.06)', tint:'rgba(10,10,12,.04)' };
+  const consolidadoEscuro = { accent:'#F4F4F7', accent2:'#FFFFFF', accentSoft:'rgba(244,244,247,.10)', tint:'rgba(244,244,247,.06)' };
   const paletas = {
     escova:      { accent:'#F5B800', accent2:'#B88A00', accentSoft:'rgba(245,184,0,.15)',  tint:'rgba(245,184,0,.08)' },
     spa:         { accent:'#24B3A6', accent2:'#1A8578', accentSoft:'rgba(36,179,166,.15)', tint:'rgba(36,179,166,.08)' },
-    consolidado: { accent:'#0A0A0A', accent2:'#000000', accentSoft:'rgba(10,10,12,.06)', tint:'rgba(10,10,12,.04)' },
+    consolidado: temaAtual === 'dark' ? consolidadoEscuro : consolidadoClaro,
   };
   const p = paletas[UNIDADE_ATIVA] || paletas.escova;
   const root = document.documentElement;
@@ -6514,6 +6521,28 @@ document.getElementById('btn-reload').addEventListener('click', refreshInteligen
 document.querySelectorAll('.unid-btn').forEach(btn => {
   btn.addEventListener('click', () => switchUnidade(btn.dataset.unidade));
 });
+// Auto-tema por horário de São Paulo:
+//   06h-18h BRT → light
+//   18h-06h BRT → dark
+// Reavaliado a cada minuto pra pegar a virada 18h/06h sem refresh.
+// Consolidado usa esse tema pra decidir se accent fica preto ou branco
+// (função atualizarHeaderUnidade lê data-theme).
+function aplicarTemaPorHora(){
+  const h = parseInt(new Intl.DateTimeFormat('pt-BR', {timeZone:'America/Sao_Paulo', hour:'2-digit', hour12:false}).format(new Date()), 10);
+  const tema = (h >= 6 && h < 18) ? 'light' : 'dark';
+  const atual = document.documentElement.getAttribute('data-theme');
+  if(atual === tema) return;
+  document.documentElement.setAttribute('data-theme', tema);
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.remove());
+  const tag = document.createElement('meta');
+  tag.name = 'theme-color';
+  tag.content = tema === 'dark' ? '#0B0B0F' : '#FAFAFA';
+  document.head.appendChild(tag);
+  try{ atualizarHeaderUnidade(); }catch(e){}
+}
+aplicarTemaPorHora();
+setInterval(aplicarTemaPorHora, 60000);
+
 // Estado inicial visual (loadConfig também chama, mas cobre o caso do config demorar)
 try{ atualizarHeaderUnidade(); }catch(e){}
 
