@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-11T19:13:41-03:00",
+  "gerado_em": "2026-09-11T20:12:03-03:00",
   "hoje": "2026-09-11",
   "meta_mensal_valor": 0,
   "dias_op_mes": 0,
@@ -567,6 +567,14 @@
         "sinal": "ok"
       },
       {
+        "servico": "FAST DIFUSOR",
+        "tabela": 0.0,
+        "praticado": 0.0,
+        "diff": 0.0,
+        "pct": 0.0,
+        "sinal": "ok"
+      },
+      {
         "servico": "FAST ESCOVA - LISA",
         "tabela": 0.0,
         "praticado": 0.0,
@@ -664,14 +672,6 @@
       },
       {
         "servico": "PÉS",
-        "tabela": 0.0,
-        "praticado": 0.0,
-        "diff": 0.0,
-        "pct": 0.0,
-        "sinal": "ok"
-      },
-      {
-        "servico": "PÉS E MÃOS",
         "tabela": 0.0,
         "praticado": 0.0,
         "diff": 0.0,
@@ -836,8 +836,8 @@
         "cartao": {
           "stone_recebido": 5964.64,
           "stone_n": 7,
-          "trinks_vendido": 4341.15,
-          "trinks_n": 30,
+          "trinks_vendido": 5371.45,
+          "trinks_n": 35,
           "a_receber_d30": 0.0
         },
         "dinheiro": {
@@ -899,9 +899,9 @@
         "cartao": {
           "stone_recebido": 8008.99,
           "stone_n": 18,
-          "trinks_vendido": 11081.45,
-          "trinks_n": 87,
-          "a_receber_d30": 2684.61
+          "trinks_vendido": 12111.75,
+          "trinks_n": 92,
+          "a_receber_d30": 3678.85
         },
         "dinheiro": {
           "total": 494.0,
@@ -946,7 +946,7 @@
         },
         "resumo": {
           "recebido_total": 10637.12,
-          "a_receber": 2684.61
+          "a_receber": 3678.85
         },
         "periodo_ini": "2026-09-01",
         "periodo_fim": "2026-09-30"
@@ -1003,9 +1003,9 @@
         "cartao": {
           "stone_recebido": 21507.32,
           "stone_n": 58,
-          "trinks_vendido": 46818.55,
-          "trinks_n": 388,
-          "a_receber_d30": 23672.58
+          "trinks_vendido": 47848.85,
+          "trinks_n": 393,
+          "a_receber_d30": 24666.82
         },
         "dinheiro": {
           "total": 2235.0,
@@ -1145,7 +1145,7 @@
         },
         "resumo": {
           "recebido_total": 35693.11,
-          "a_receber": 23672.58
+          "a_receber": 24666.82
         },
         "periodo_ini": "2026-01-01",
         "periodo_fim": "2026-12-31"
@@ -1637,6 +1637,36 @@
       "vendas_trinks_apos_n": 0,
       "vendas_trinks_apos_v": 0.0,
       "vendas_apos_lista": [
+        {
+          "data": "2026-09-11T19:51",
+          "valor": 0.0,
+          "meio": "Visa",
+          "cliente": "Katya V C Ribeiro Talarico "
+        },
+        {
+          "data": "2026-09-11T19:50",
+          "valor": 0.0,
+          "meio": "Visa",
+          "cliente": "MARIA HELENA MORAES DOMINGUES"
+        },
+        {
+          "data": "2026-09-11T19:44",
+          "valor": 0.0,
+          "meio": "Mastercard",
+          "cliente": "Marcelo Melin Dona"
+        },
+        {
+          "data": "2026-09-11T19:38",
+          "valor": 0.0,
+          "meio": "Visa Electron",
+          "cliente": "ADRIELIA DIAS"
+        },
+        {
+          "data": "2026-09-11T19:29",
+          "valor": 0.0,
+          "meio": "Maestro/Redeshop",
+          "cliente": "Carolina de Souza Santos "
+        },
         {
           "data": "2026-09-11T18:41",
           "valor": 0.0,
@@ -7051,7 +7081,7 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "19:13",
+          "hora_atual_str": "20:12",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -7068,7 +7098,7 @@
         "ticket_gap_por_atend": 0.0,
         "visitas_projetadas": 0,
         "visitas_restantes": 0,
-        "ticket_meta_status": "encerrado_deficit",
+        "ticket_meta_status": "encerrado_batido",
         "ticket_meta_deficit_caixa": 0.0,
         "ticket_meta_supera_caixa": 0.0,
         "dia_semana": "Sex",
@@ -7275,29 +7305,41 @@
   "insights": {
     "diario": [
       {
+        "tipo": "oportunidade",
+        "titulo": "Meta do dia batida",
+        "texto": "Caixa R$ 2.914,30 já superou a meta diária de R$ 2.132,98 (137%).",
+        "acao": "Toda venda daqui pra frente é margem pura. Oferecer produto adicional pra levar ticket médio pra cima."
+      },
+      {
         "tipo": "atencao",
         "titulo": "1 profissional(is) sem atendimento hoje",
         "texto": "Andy ainda em zero de receita. Se não está em folga, é capacidade ociosa perdida.",
         "acao": "Realocar walk-ins da fila para elas. Se agenda continuar vazia, avaliar reduzir dia de trabalho na próxima semana."
+      },
+      {
+        "tipo": "info",
+        "titulo": "Fechamento do dia",
+        "texto": "Caixa R$ 2.914,30 · 18 visitas · ticket R$ 161,91 · meta batida ✅.",
+        "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
       }
     ],
     "semanal": [
       {
         "tipo": "oportunidade",
-        "titulo": "Ritmo/dia +23% vs semana passada",
-        "texto": "Esta semana: R$ 1.329,04/dia · semana anterior (08-31-09-04): R$ 1.083,00/dia.",
+        "titulo": "Ritmo/dia +47% vs semana passada",
+        "texto": "Esta semana: R$ 1.586,61/dia · semana anterior (08-31-09-04): R$ 1.083,00/dia.",
         "acao": "Aumento — investigar o que gerou pra replicar (equipe, campanha, dia da semana)."
       },
       {
-        "tipo": "atencao",
-        "titulo": "Semana abaixo da meta",
-        "texto": "Projeção R$ 9.303,26 (81%). Gap de R$ 744,18/dia para os 3 dias restantes.",
-        "acao": "Ativar campanha WhatsApp pras top 20 clientes AGORA — retorno médio 3-4 walk-ins no fim de semana."
+        "tipo": "info",
+        "titulo": "Semana perto da meta",
+        "texto": "Projeção R$ 11.106,29 (96%). Precisa R$ 1.729,98/dia nos 3 dias restantes vs atual R$ 1.586,61/dia.",
+        "acao": "Faltam R$ 5.189,93. Um sábado bom já fecha a semana."
       },
       {
         "tipo": "oportunidade",
-        "titulo": "Sex rende 2.4× Qui",
-        "texto": "Sex: R$ 1.884,00/dia · Qui: R$ 785,00/dia.",
+        "titulo": "Sex rende 3.7× Qui",
+        "texto": "Sex: R$ 2.914,30/dia · Qui: R$ 785,00/dia.",
         "acao": "Reforçar equipe no Sex. No Qui, testar promoção ou reduzir 1 profissional pra cortar custo."
       }
     ],
@@ -7305,7 +7347,7 @@
       {
         "tipo": "critico",
         "titulo": "Mês projeta ABAIXO de 80% da meta",
-        "texto": "Projeção R$ 43.048,35 (72%). Ritmo R$ 1.434,95/dia vs necessário R$ 2.282,53/dia. Gap: R$ 847,58/dia.",
+        "texto": "Projeção R$ 46.139,25 (77%). Ritmo R$ 1.537,97/dia vs necessário R$ 2.231,01/dia. Gap: R$ 693,04/dia.",
         "acao": "Restam 20 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
       },
       {
@@ -7317,13 +7359,13 @@
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos = 1.6% do caixa (R$ 235,45). Se chegasse a 8%, seriam +R$ 912,51/mês.",
+        "texto": "Produtos = 2.7% do caixa (R$ 413,45). Se chegasse a 8%, seriam +R$ 816,93/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 6%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 115,52.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 122,84.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -7336,7 +7378,7 @@
       },
       {
         "tipo": "info",
-        "titulo": "Top 10 clientes = R$ 11.509,00 (19% do ano)",
+        "titulo": "Top 10 clientes = R$ 11.509,00 (18% do ano)",
         "texto": "Média por cliente top: R$ 1.150,90. Adquirir 1 novo cliente equivalente dá muito mais trabalho do que reter esses 10.",
         "acao": "Programa VIP: agenda prioritária + serviço-cortesia trimestral + surpresa de aniversário. Custo baixo, impacto alto."
       },
@@ -7354,14 +7396,14 @@
       },
       {
         "tipo": "oportunidade",
-        "titulo": "215 clientes recorrentes com espaço para cross-sell",
+        "titulo": "218 clientes recorrentes com espaço para cross-sell",
         "texto": "Nunca experimentaram serviços populares (ex: FAST ESCOVA - LISA, MÃOS, PÉS E MÃOS). Se 20% aceitar, aumenta ticket médio significativamente.",
         "acao": "Ver aba Anual > Cross-sell. Priorizar top 10 por LTV — recepção pode oferecer no fechamento."
       },
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 110,05. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 111,69. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
