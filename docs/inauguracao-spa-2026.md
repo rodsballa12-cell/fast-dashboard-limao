@@ -33,23 +33,24 @@ painel: https://claude.ai/code/artifact/d3d9ad76-e084-4218-9567-6514d4b0d4bb
 | Dia | Formato | Público | Convites | Presença est. |
 |---|---|---|---|---|
 | **Qui 24/09** · 18h–22h | Coquetel, corte de fita 19h30, tour, 2 estações de demonstração (10 min) — **único dia com cortesia** | Franqueadora, sócios, fornecedores, imprensa e perfis do bairro, 10 influenciadoras, comércio vizinho, equipe e família | 70 | ~50 |
-| **Sex 25/09** · 10h–20h | Hora marcada, tour, conversa com a equipe, welcome drink e **brinde** | Top 20% da base da Escova + 10 lugares da franqueadora | 60 | ~33 |
-| **Sáb 26/09** · 9h–19h | Blocos de 30 min, música, mini-bar, **brinde para cada uma**, mecânica "traga uma amiga" | Clientes ativas da Escova (visita ≤60d) + 1 acompanhante cada | 80 (40+40) | ~44 |
-| **Dom 27/09** · 10h–17h | Sem hora marcada, senha por ordem de chegada, tour curto e **brinde** | Base inativa (60–180d), lista do Instagram, vizinhança, quem passou na porta | 90 | ~50 |
+| **Sex 25/09** · 10h–20h | Hora marcada, tour, conversa com a equipe, welcome drink e oferta de combo | Top 20% da base da Escova + 10 lugares da franqueadora | 60 | ~30 |
+| **Sáb 26/09** · 9h–19h | Blocos de 30 min, música, mini-bar, oferta de combo, mecânica "traga uma amiga" | Clientes ativas da Escova (visita ≤60d) + 1 acompanhante cada | 80 (40+40) | ~40 |
+| **Dom 27/09** · 10h–17h | Sem hora marcada, senha por ordem de chegada, tour curto e oferta de combo | Base inativa (60–180d), lista do Instagram, vizinhança, quem passou na porta | 90 | ~45 |
 
-**Total: 300 convites nominais → ~177 presenças.**
+**Total: 300 convites nominais → ~165 presenças.**
 A quinta usa **70%** de comparecimento (convite institucional, com cortesia).
-Sexta, sábado e domingo usam **55%**: convite com brinde puxa menos gente do que
-convite com serviço gratuito. É a conta realista, não a otimista — se quiser as
-~210 presenças do plano original, aumente os convites em cerca de 25% nesses três dias.
+Sexta, sábado e domingo usam **50%**: nesses dias a convidada não ganha nada só por
+comparecer — a garrafa está atrelada à compra de um combo. É a conta realista, não a
+otimista. Para subir, ou aumenta o volume de convites (~25% a mais) ou entra um
+mimo pequeno de chegada (uma água saborizada, uma amostra) que não custe margem.
 
 ### Por que cada dia é assim
 
 - **Quinta** — quem vem por relação, não por serviço. Não ocupa cadeira e gera conteúdo
   para os três dias seguintes.
 - **Sexta** — é o dia que vira receita recorrente. Sem cortesia, a venda acontece na
-  conversa: tour, equipe apresentando os protocolos e uma condição de inauguração
-  na mão. É também o dia da foto oficial: não pode estar vazio.
+  conversa: tour, equipe apresentando os protocolos e o combo com a garrafa como
+  fechamento. É também o dia da foto oficial: não pode estar vazio.
 - **Sábado** — dia de maior fluxo natural. A acompanhante é lead novo com prova social
   embutida (chega já ouvindo elogio de quem confia na casa).
 - **Domingo** — não canibaliza a agenda da Escova e absorve volume sem risco de frustrar VIP.
@@ -74,25 +75,35 @@ convite com serviço gratuito. É a conta realista, não a otimista — se quise
 
 ---
 
-## 4. As duas contas de capacidade
+## 4. As duas contas que importam
 
-Com cortesia só na quinta, a restrição muda de dia para dia: **na quinta o gargalo é a
-cadeira; de sexta a domingo é o estoque de brindes.**
+Com cortesia só na quinta e a garrafa atrelada ao combo, a restrição muda de dia para
+dia: **na quinta o gargalo é a cadeira; de sexta a domingo o número que importa é
+quantos combos a equipe fecha.**
 
 ```
 QUI 24 · experiencias = estacoes × (horas × 60 ÷ duracao) × 0,8
-SEX a DOM · brindes   = presenca_esperada × 1,15
+SEX a DOM · garrafas  = presencas × taxa_de_conversao_em_combo
 ```
 
 **Quinta (premissa: 4 estações, sessões de 10 min):**
 4 × (4h × 60 ÷ 10) × 0,8 = **76 experiências possíveis** para ~50 presentes.
 Cabe todo mundo com folga. O `0,8` é a folga de troca, atraso e limpeza.
 
-**Sexta a domingo:** 33 + 44 + 50 = 127 presenças esperadas → **150 brindes**.
-Se a quinta também levar brinde, some ~60: **210 no total**.
+**Garrafas:** 165 presenças × 15% de conversão ≈ **25 combos**.
+Mande fazer **40 garrafas** — a margem cobre um sábado acima da média, e a sobra
+continua valendo: como a garrafa está presa à compra, não vira encalhe, vira
+gatilho de venda no mês seguinte.
 
-> ⚠️ Brinde que acaba no meio do sábado transforma convite em frustração.
-> Compre por cima — sobra vira mimo de aniversário no mês seguinte.
+**Onde a garrafa fica:** à vista, na recepção, com o preço do combo escrito ao lado.
+Brinde que ninguém vê não vende combo.
+
+### Combos da tabela oficial
+
+| Combo | O que inclui | Valor |
+|---|---|---|
+| **Fast Spa Detox** | Limpeza de pele Super VIP + Máscara de LED + Fast Spa Detox + Drenagem Linfática Facial (15min) | R$ 457,00 |
+| **Fast Spa Casual** | Limpeza de pele Super VIP + Máscara de LED + Fast Spa Casual + Quick Massage | R$ 437,00 |
 
 ---
 
@@ -105,7 +116,7 @@ Se a quinta também levar brinde, some ~60: **210 no total**.
 | Sexta com <30 confirmações até 21/09 | Puxe 15 nomes do topo da lista F para a sexta e reponha o sábado com a lista G. Sexta vazia é o pior cenário. |
 | Domingo com fila na porta | Senha numerada + cadastro no WhatsApp na entrada. Quem não for atendido sai com **voucher datado** para a semana seguinte. |
 | Sobra de capacidade em qualquer dia | Libere no Stories com 3h de antecedência: "10 lugares abertos hoje até 17h". Lugar vazio não volta. |
-| **Sem cortesia, o que converte** | De sexta a domingo a convidada não experimenta o serviço — a conversão depende da oferta feita dentro da casa. Tenha uma **condição de inauguração** pronta e escrita (pacote ou valor de primeira sessão) para quem agendar na hora. Sem ela, a convidada sai só com o brinde. |
+| **A oferta que converte** | De sexta a domingo a convidada não experimenta o serviço: quem converte é a equipe. Combo Fast Spa Detox (R$ 457) e Combo Fast Spa Casual (R$ 437), com a **garrafa personalizada** como fechamento. Todo mundo do time precisa saber os dois preços de cor e **mostrar a garrafa antes de falar o valor**. |
 
 ---
 
@@ -168,10 +179,9 @@ Assinatura de rodapé: *Este lugar é pra você!* — a mesma da tabela.
 > Para peça grande ou impressa, pedir o **logo vetorial** (AI/SVG/EPS) à franqueadora:
 > o recorte atual é raster e só aguenta bem até o tamanho usado aqui.
 
-**Cortesia x brinde:** só a **quinta 24/09** tem experiência-cortesia. De sexta a
-domingo a peça anuncia **brinde de inauguração** — nenhuma arte promete serviço
-gratuito nesses dias. Definir qual é o brinde e me mandar: com o nome do item
-("kit de amenities", "máscara facial", "voucher de R$ X") a taxa de resposta sobe.
+**Cortesia x garrafa:** só a **quinta 24/09** tem experiência-cortesia. De sexta a
+domingo as peças anunciam a **garrafa personalizada Fast SPA para quem fechar um
+combo** — nenhuma arte promete serviço gratuito nem brinde por comparecer.
 
 Para regerar as artes (se mudar horário, texto ou logo): edite
 `docs/convites/gerar_convites.py` e rode `python3 docs/convites/gerar_convites.py`
@@ -212,7 +222,9 @@ Abrimos o Fast SPA Limão e sexta, 25/09, é o dia reservado para as clientes de
 — antes de abrir para o bairro.
 
 Separei um horário no seu nome: [HORA], para você conhecer a casa, falar com a
-equipe e tomar um café com a gente. Tem um brinde de inauguração te esperando.
+equipe e tomar um café com a gente.
+
+Quem fechar um combo na inauguração leva a garrafa personalizada do Fast SPA.
 
 Responda 1 para confirmar esse horário ou 2 para escolher outro.
 ```
@@ -221,8 +233,9 @@ Responda 1 para confirmar esse horário ou 2 para escolher outro.
 ```
 [Nome], sábado 26/09 o Fast SPA Limão abre para você e uma amiga 🧖‍♀️
 
-Venham conhecer a casa nova no seu horário: [HORA]. Tem música, mini-bar e um
-brinde de inauguração para cada uma.
+Venham conhecer a casa nova no seu horário: [HORA]. Tem música, mini-bar e
+condição de inauguração nos combos — quem fechar leva a garrafa personalizada
+do Fast SPA.
 
 Av. Dep. Emílio Carlos, 358 · Limão
 (no mesmo prédio da Fast Escova)
@@ -234,8 +247,8 @@ Responda 1 com o nome da amiga ou 2 se preferir domingo.
 ```
 [Nome], domingo 27/09 o Fast SPA Limão abre para o bairro, das 10h às 17h.
 
-Sem hora marcada: é chegar, pegar sua senha, conhecer a casa e sair com um
-brinde de inauguração.
+Sem hora marcada: é chegar, pegar sua senha e conhecer a casa. Quem aproveitar a
+condição de inauguração nos combos leva a garrafa personalizada do Fast SPA.
 
 Av. Dep. Emílio Carlos, 358 · Limão
 (no mesmo prédio da Fast Escova)
