@@ -1999,7 +1999,7 @@ def main():
 
     # META ANO: com histórico de meses fechados (2027+), usa peso_mes_ano pra ponderar
     # o restante do ano. Sem histórico: mantém extrapolação META_MENSAL × meses_rest.
-    real_pre_atual = sum(m["caixa"] for k, m in meses.items() if k < f"{hoje.year}-{hoje.month:02d}")
+    real_pre_atual = sum(m.get("faturamento_apurado") or m["caixa"] for k, m in meses.items() if k < f"{hoje.year}-{hoje.month:02d}")
     meses_rest = 12 - hoje.month + 1  # inclui mês atual
     if fonte_mes_ano.startswith("histórico"):
         # META_ANUAL_TOTAL = META_MENSAL × 12 (equivalente ao target anual). Distribui pelo peso_mes.
