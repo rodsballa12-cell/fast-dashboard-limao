@@ -1,0 +1,41 @@
+name: Discover Trinks Endpoints (one-shot)
+
+# Roda scripts/discover_endpoints.py com TRINKS_API_KEY do secret pra
+# descobrir endpoints ocultos que podem devolver o dado do relatorio
+# de comissoes (MIRIAN + Claudia sumidas dos endpoints publicos).
+# Manual only — nao roda em cron.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install requests
+
+      - name: Discover
+        env:
+          TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
+          TRINKS_ESTABELECIMENTO_ID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID }}
+        run: python scripts/discover_endpoints.py 2>&1 | tee discovery.log
+
+      - name: Commit dos achados
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for f in discovery.log discovery_*.json; do
+            git add "$f" 2>/dev/null || true
+          done
+          if git diff --cached --quiet; then
+            echo "Nada novo pra commitar"
+            exit 0
+          fi
+          git commit -m "discover: endpoints Trinks · $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
