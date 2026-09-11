@@ -43,12 +43,12 @@ if not (KEY and EID):
     print("ERRO: TRINKS_API_KEY e TRINKS_ESTABELECIMENTO_ID obrigatorios")
     sys.exit(1)
 
+# Headers corretos (bate com scripts/trinks_common.py)
 HEADERS = {
+    "X-Api-Key": KEY,
     "estabelecimentoId": EID,
-    "Content-Type": "application/json",
+    "Accept": "application/json",
 }
-# Trinks aceita X-API-KEY ou access-token; tenta ambos
-HEADERS["access-token"] = KEY
 
 # Setembro 1-11 pra bater com o report que Rodrigo tirou print
 INI = "2026-09-01"
