@@ -762,7 +762,7 @@ function renderTicketMeta(container_id, periodo_label, kpis){
     cor='dn'; cor_bar='#ef4444';
     header_val = `DÉFICIT · −${brl0(deficit)}`;
     // qual ticket teria batido meta com as visitas que houve?
-    const ticket_ideal = visitas>0 ? ((kpis.faturamento_apurado||kpis.caixa) + deficit) / visitas : 0;
+    const ticket_ideal = visitas>0 ? (kpis.caixa + deficit) / visitas : 0;
     sub = `Período encerrado abaixo da meta. Ticket médio efetivo: ${brl(real)}/visita em ${visitas} visitas.`;
     acao = `<strong class="warn">Meta de faturamento perdida por ${brl0(deficit)}.</strong> Ticket foi ${brl(real)}/vis — pra ter batido, precisava ${brl(ticket_ideal)}/vis nas mesmas ${visitas} visitas, ou puxar mais volume mantendo ticket. Diagnóstico pro próximo período: mix (${serv_por_visita} serv/vis) ou atração (visitas insuficientes).`;
   } else {
@@ -1553,7 +1553,7 @@ function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_
   </tr>` : '';
   el.innerHTML = `<div class="card">
     <h2>👥 Profissionais + Comissões · ${periodo_label}${badgeTaxa}${totalBadge}</h2>
-    <div class="cap">Base = <strong>Data de Pagamento</strong> (mesma regra do Trinks BackOffice → Relatório de Comissões · reconcilia com extrato Stone). Ranking por receita de serviços atribuída ao prof que executou. Comissão estimada = receita_prof × taxa efetiva do período. ${cfg ? '' : '<em>Aguardando <code>data/comissoes.json</code> pra calcular comissão.</em>'}</div>
+    <div class="cap">Base = <strong>Data de Pagamento</strong> (Trinks BackOffice → Relatório de Comissões). É a SOMA dos serviços executados por prof no período — pode ser <em>menor</em> que o Faturamento do topo (que inclui produtos e pacotes vendidos, base Trinks tela Resultado / Stone). Comissão estimada = receita_prof × taxa oficial da categoria (data/comissoes.json). ${cfg ? '' : '<em>Aguardando <code>data/comissoes.json</code> pra calcular comissão.</em>'}</div>
     <div style="overflow-x:auto;margin-top:10px"><table class="simple">
       <thead><tr><th>Profissional</th><th style="text-align:right">Atend</th><th style="text-align:right">Horas</th><th style="text-align:right">Ticket médio</th><th style="text-align:right">Receita serv</th><th style="text-align:right">% equipe</th><th style="text-align:right">Comissão</th></tr></thead>
       <tbody>${rowsProf}${totalRow}${naoAtribRow}${totalFatRow}</tbody>
@@ -1677,8 +1677,7 @@ function renderComissoes(container_id, comissoes, prof_meta, data){
     const comissaoAnual = catRows.reduce((a,x)=>a+x.comissao, 0);
     const taxaEfetivaPct = receitaAnual > 0 ? (comissaoAnual/receitaAnual*100) : 0;
     // Aplica taxa efetiva ponderada no mês corrente
-    const _km = (data && data.abas && data.abas.mensal && data.abas.mensal.kpis) || {};
-    const receitaMes = _km.faturamento_apurado || _km.caixa || 0;
+    const receitaMes = ((data && data.abas && data.abas.mensal && data.abas.mensal.kpis && data.abas.mensal.kpis.caixa) || 0);
     const comissaoMesEstim = receitaMes * (taxaEfetivaPct/100);
     const comissaoMesPremissa = receitaMes * 0.32;
     const deltaVsPremissa = comissaoMesEstim - comissaoMesPremissa;
@@ -1846,7 +1845,7 @@ function renderAncora(container_id, categoria_native, kpis){
   const top3 = categoria_native.slice(0,3);
   const ancora = top3[0];
   if(!ancora || ancora.pct_receita < 20){ if(el) el.innerHTML = ''; return; }
-  const caixa_ano = (kpis||{}).faturamento_apurado || (kpis||{}).caixa || 0;
+  const caixa_ano = (kpis||{}).caixa || 0;
   const bars = top3.map((c, i) => {
     const w = c.pct_receita;
     const cor = i === 0 ? 'var(--accent)' : (i === 1 ? 'var(--good)' : 'var(--ink-3)');
@@ -2242,12 +2241,11 @@ function renderChurn(container_id, churn){
 // ============= COMPARAÇÃO SEMANA × SEMANA ANTERIOR =============
 function renderComparacaoSemana(container_id, atual, anterior){
   const el = document.getElementById(container_id);
-  const _fa = k => k.faturamento_apurado || k.caixa || 0;
-  if(!el || !anterior || !_fa(anterior)) return;
-  const media_atu = atual.dias_op > 0 ? _fa(atual)/atual.dias_op : 0;
-  const media_ant = anterior.dias_op > 0 ? _fa(anterior)/anterior.dias_op : 0;
-  const delta_caixa = _fa(atual) - _fa(anterior);
-  const delta_pct = _fa(anterior) > 0 ? (_fa(atual)/_fa(anterior) - 1)*100 : 0;
+  if(!el || !anterior || !anterior.caixa) return;
+  const media_atu = atual.dias_op > 0 ? atual.caixa/atual.dias_op : 0;
+  const media_ant = anterior.dias_op > 0 ? anterior.caixa/anterior.dias_op : 0;
+  const delta_caixa = atual.caixa - anterior.caixa;
+  const delta_pct = anterior.caixa > 0 ? (atual.caixa/anterior.caixa - 1)*100 : 0;
   const delta_media_pct = media_ant > 0 ? (media_atu/media_ant - 1)*100 : 0;
   const sinal_c = delta_caixa >= 0 ? '+' : '';
   const cor_c = delta_caixa >= 0 ? 'up' : 'dn';
@@ -2255,7 +2253,7 @@ function renderComparacaoSemana(container_id, atual, anterior){
     <h2>📈 Semana × Semana anterior</h2>
     <div class="cap">Comparação com ${anterior.periodo_ini.slice(-5).replace('-','/')} — ${anterior.periodo_fim.slice(-5).replace('-','/')}</div>
     <div class="categ-grid" style="grid-template-columns:repeat(4,1fr)">
-      ${tile('','Faturamento esta semana', brl0(_fa(atual)), `<span class="${cor_c}">${sinal_c}${brl0(delta_caixa)}</span> vs anterior`)}
+      ${tile('','Faturamento esta semana', brl0(atual.caixa), `<span class="${cor_c}">${sinal_c}${brl0(delta_caixa)}</span> vs anterior`)}
       ${tile('c2','Média/dia atual', brl0(media_atu), `<span class="${cor_c}">${sinal_c}${delta_media_pct.toFixed(0)}%</span> vs anterior (${brl0(media_ant)}/dia)`)}
       ${tile('c3','Atendimentos', atual.atend_fin+'', `${anterior.atend_fin} sem passada · <span class="${atual.atend_fin>=anterior.atend_fin?'up':'dn'}">${atual.atend_fin-anterior.atend_fin>=0?'+':''}${atual.atend_fin-anterior.atend_fin}</span>`)}
       ${tile('','Ticket / visita', brl(atual.ticket_medio||0), `${brl(anterior.ticket_medio||0)} sem passada`)}
@@ -2373,7 +2371,7 @@ function renderAnual(data){
   const k=a.kpis;
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.anual;
   renderKPIs('per-kpis',[
-    {label:'Faturamento · 2026',value:brl0(k.faturamento_apurado||k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
+    {label:'Faturamento · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`padrão Trinks`},
     {label:'Clientes únicos',value:k.clientes_unicos+'',foot:`${((k.cliente_dia||0)/Math.max(k.clientes_unicos,1)).toFixed(1)} visitas/cliente médio`}
@@ -2385,7 +2383,7 @@ function renderAnual(data){
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
     const esc = (a.meta.meta||0) / mm;
-    renderCategoriasMeta('per-categorias','2026',a.categorias,a.meta.meta||0,k.faturamento_apurado||k.caixa,a.meta.projecao||0, mf, esc, a.categoria_native, a.categoria_native, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.descontos);
+    renderCategoriasMeta('per-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc, a.categoria_native, a.categoria_native, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.descontos);
   }
 
   // Trajetória mensal · enxuta (4 colunas: Mês, Caixa, Atend, Ticket) + linha de subtotal.
@@ -2394,10 +2392,10 @@ function renderAnual(data){
   const mrows=meses.map(([ym,m])=>{
     const [y,mm] = ym.split('-');
     const nomeMes = nomesMes[parseInt(mm)-1] + '/' + y.slice(2);
-    return [nomeMes, brl0(m.faturamento_apurado||m.caixa), m.atend_fin, brl(m.ticket_trans)];
+    return [nomeMes, brl0(m.caixa), m.atend_fin, brl(m.ticket_trans)];
   });
-  // Subtotal · ticket = fatur / n_trans (mesmo denominador do ticket_trans de cada mês).
-  const sub_caixa = meses.reduce((s,[,m])=>s+(m.faturamento_apurado||m.caixa||0), 0);
+  // Subtotal · ticket = caixa / n_trans (mesmo denominador do ticket_trans de cada mês).
+  const sub_caixa = meses.reduce((s,[,m])=>s+(m.caixa||0), 0);
   const sub_atend = meses.reduce((s,[,m])=>s+(m.atend_fin||0), 0);
   const sub_trans = meses.reduce((s,[,m])=>s+(m.n_trans||0), 0);
   const sub_ticket = sub_trans > 0 ? sub_caixa / sub_trans : 0;
@@ -2417,7 +2415,7 @@ function renderAnual(data){
   // Categorias nativas Trinks agora vivem dentro do card "Detalhamento por categoria"
   renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
   // UNIFICADO · Profissionais + Comissões · Ano usa seu próprio ranking_prof anual.
-  renderProfComissoes('per-prof', 'ano', mergeRankingProf(a.ranking_prof, a.ranking_prof_executor), a.ranking_prof_total_n || 0, a.categoria_native, k.faturamento_apurado || k.caixa || 0);
+  renderProfComissoes('per-prof', 'ano', mergeRankingProf(a.ranking_prof, a.ranking_prof_executor), a.ranking_prof_total_n || 0, a.categoria_native, k.caixa || 0);
   renderInsights('per-insights', 'Ano 2026', (data.insights||{}).anual);
 }
 
@@ -2464,7 +2462,7 @@ function renderMensal(data){
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.mensal;
   if(k.em_atendimento>0){document.getElementById('chip-live').style.display='';document.getElementById('chip-live').innerHTML=`<span class="dot"></span> ${k.em_atendimento} em atendim.`;document.getElementById('chip-live').className='chip live';}
   renderKPIs('per-kpis',[
-    {label:'Faturamento · mês',value:brl0(k.faturamento_apurado||k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
+    {label:'Faturamento · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`(caixa÷visitas · padrão Trinks)`, delta_pct:k.ticket_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
@@ -2487,7 +2485,7 @@ function renderMensal(data){
   renderBarsDia('per-dia','📈 Trajetória do mês · dia a dia','Onde bombou, onde travou — vê quais dias-alavanca faltam pra bater meta',m.por_dia_mes,'');
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · mês <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · usa pra dimensionar equipe e horário de campanhas',m.hora_media,true,'');
   // UNIFICADO · Profissionais + Comissões num único card
-  renderProfComissoes('per-prof', 'mês', mergeRankingProf(m.ranking_prof, m.ranking_prof_executor), m.ranking_prof_total_n, m.categoria_native, k.faturamento_apurado || k.caixa || 0);
+  renderProfComissoes('per-prof', 'mês', mergeRankingProf(m.ranking_prof, m.ranking_prof_executor), m.ranking_prof_total_n, m.categoria_native, k.caixa || 0);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro (card "Quando o dinheiro entra")
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes (aba canônica)
   renderInsights('per-insights', 'Mês corrente', (data.insights||{}).mensal);
@@ -2497,7 +2495,7 @@ function renderSemanal(data){
   const s=data.abas.semanal, k=s.kpis;
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.semanal;
   renderKPIs('per-kpis',[
-    {label:'Faturamento · semana',value:brl0(k.faturamento_apurado||k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
+    {label:'Faturamento · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Dias operados',value:k.dias_op+'',foot:`de ${s.meta.dias_total} da semana`}
@@ -2518,7 +2516,7 @@ function renderSemanal(data){
   // Cruzamento Google × Faturamento por DOW: movido pra aba Mídia (renderMidiasGoogleDow)
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · semana <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · define escala e horário de campanhas',s.hora_media,true,'');
   // UNIFICADO · Profissionais + Comissões num único card
-  renderProfComissoes('per-prof', 'semana', mergeRankingProf(s.ranking_prof, s.ranking_prof_executor), s.ranking_prof_total_n, s.categoria_native, k.faturamento_apurado || k.caixa || 0);
+  renderProfComissoes('per-prof', 'semana', mergeRankingProf(s.ranking_prof, s.ranking_prof_executor), s.ranking_prof_total_n, s.categoria_native, k.caixa || 0);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
   renderInsights('per-insights', 'Semana corrente', (data.insights||{}).semanal);
@@ -2528,7 +2526,7 @@ function renderDiario(data){
   const d=data.abas.diario, k=d.kpis;
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.diario;
   renderKPIs('per-kpis',[
-    {label:'Faturamento · hoje',value:brl0(k.faturamento_apurado||k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
+    {label:'Faturamento · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · +${k.em_atendimento} em curso`, delta_pct:k.cliente_dia_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Ticket / visita',value:(k.cliente_dia||0)>0?brl(k.ticket_medio||0):'—',foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
@@ -2568,7 +2566,7 @@ function renderDiario(data){
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
   // UNIFICADO · Profissionais + Comissões num único card (Diário mantém a "SALA AGORA" acima como visão em tempo real)
-  renderProfComissoes('per-prof', 'hoje', mergeRankingProf(d.ranking_prof, d.ranking_prof_executor), d.ranking_prof_total_n, d.categoria_native, k.faturamento_apurado || k.caixa || 0);
+  renderProfComissoes('per-prof', 'hoje', mergeRankingProf(d.ranking_prof, d.ranking_prof_executor), d.ranking_prof_total_n, d.categoria_native, k.caixa || 0);
   renderInsights('per-insights', 'Hoje', (data.insights||{}).diario);
 }
 
@@ -2730,7 +2728,7 @@ function mostrarCardHistorico(per, id){
       <button onclick="window._perOffset=0;atualizarNavPeriodo();" style="background:var(--surface-2);color:var(--ink);border:1px solid var(--ink-3);padding:6px 12px;font-size:11px;border-radius:6px;cursor:pointer">↻ Voltar ao atual</button>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;font-size:12px">
-      <div><div style="color:var(--ink-3);font-size:10.5px">Faturamento</div><div style="font-weight:700;font-size:18px">${brl0(k.faturamento_apurado||k.caixa||0)}</div></div>
+      <div><div style="color:var(--ink-3);font-size:10.5px">Faturamento</div><div style="font-weight:700;font-size:18px">${brl0(k.caixa||0)}</div></div>
       <div><div style="color:var(--ink-3);font-size:10.5px">Atendimentos</div><div style="font-weight:700;font-size:18px">${k.atend_fin||0}</div><div style="color:var(--ink-3);font-size:10px">${k.atend_canc||0} cancelados</div></div>
       <div><div style="color:var(--ink-3);font-size:10.5px">Clientes únicos</div><div style="font-weight:700;font-size:18px">${k.clientes_unicos||0}</div></div>
       <div><div style="color:var(--ink-3);font-size:10.5px">Ticket médio</div><div style="font-weight:700;font-size:18px">${brl(k.ticket_medio||0)}</div></div>
@@ -4055,9 +4053,7 @@ let FIN = null, TRINKS = null;
 // (Simples, e as premissas de comissão e insumos) recalcula junto.
 function receitaViva(){
   const c = TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.kpis;
-  if(!c) return null;
-  const f = c.faturamento_apurado || c.caixa;
-  return typeof f === 'number' && f > 0 ? f : null;
+  return c && typeof c.caixa === 'number' && c.caixa > 0 ? c.caixa : null;
 }
 function comReceita(R, rec){
   if(!rec || Math.abs(rec - R.receita_real) < 0.5) return R;
@@ -4234,7 +4230,7 @@ function renderFinanceiro(){
   // === CARD "MÊS EM CURSO" — Trinks live + Excel projetado/realizado ===
   const kmes = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.kpis) || {};
   const kanoAbas = (TRINKS && TRINKS.abas && TRINKS.abas.anual && TRINKS.abas.anual.meses) || {};
-  const rec_atual = kmes.faturamento_apurado || kmes.caixa || 0;
+  const rec_atual = kmes.caixa || 0;
   const dias_op_atual = kmes.dias_op || 0;
   const dias_op_mes = TRINKS && TRINKS.dias_op_mes ? TRINKS.dias_op_mes : 26;
   const proj_ritmo = dias_op_atual > 0 ? (rec_atual / dias_op_atual) * dias_op_mes : 0;
@@ -4284,8 +4280,7 @@ function renderFinanceiro(){
   const mesAntISO = `${anoAnt}-${String(mesAntIdx+1).padStart(2,'0')}`;
   const mesAntNome = mesNomes[mesAntIdx];
   const mesAntExcel = mesesMap[mesAntISO];
-  const _kaAnt = kanoAbas[mesAntISO] || {};
-  const rec_ant = (mesAntExcel && mesAntExcel.receita_bruta) || _kaAnt.faturamento_apurado || _kaAnt.caixa || rec;
+  const rec_ant = (mesAntExcel && mesAntExcel.receita_bruta) || (kanoAbas[mesAntISO] || {}).caixa || rec;
   const dias_ant = (kanoAbas[mesAntISO] || {}).dias_op || 27;
   const delta_ritmo = ((rec_atual/Math.max(dias_op_atual,1))/(rec_ant/Math.max(dias_ant,1))*100 - 100).toFixed(0);
 
@@ -4345,7 +4340,7 @@ function renderFinanceiro(){
   const anoAtualHero = new Date().getFullYear();
   const tAnoM = (TRINKS && TRINKS.abas && TRINKS.abas.anual && TRINKS.abas.anual.meta) || {};
   const tAnoK = (TRINKS && TRINKS.abas && TRINKS.abas.anual && TRINKS.abas.anual.kpis) || {};
-  const anoRec  = tAnoK.faturamento_apurado || tAnoK.caixa || 0;  // realizado apurado ano (Trinks)
+  const anoRec  = tAnoK.caixa || 0;                 // realizado real ano (Trinks)
   const anoMeta = tAnoM.meta || 0;                  // meta anual franqueadora
   const anoProj = tAnoM.projecao || anoRec;         // projeção ritmo atual ano
   const anoProjPct = anoMeta > 0 ? (anoProj/anoMeta*100) : 0;
@@ -4501,8 +4496,7 @@ function renderFinanceiro(){
   // Regra Rodrigo: Excel = projeção; Trinks = realizado. A cada 15 dias
   // Rodrigo troca a projeção do Excel por realizado parcial na aba DRE.
   const REC_PROJ = R.receita_real;                              // Excel mês inteiro
-  const _kmR = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.kpis) || {};
-  const REC_REAL = _kmR.faturamento_apurado || _kmR.caixa || 0;
+  const REC_REAL = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.kpis && TRINKS.abas.mensal.kpis.caixa) || 0;
   const DIAS_OP  = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.kpis && TRINKS.abas.mensal.kpis.dias_op) || 0;
   const DIAS_MES = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.meta && TRINKS.abas.mensal.meta.dias_total) || 30;
   const RATIO_REC = REC_PROJ > 0 ? REC_REAL / REC_PROJ : 0;      // custos VARIÁVEIS escalam com receita

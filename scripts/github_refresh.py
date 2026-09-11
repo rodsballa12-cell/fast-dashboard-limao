@@ -1395,22 +1395,18 @@ def main():
         k = aba["kpis"]
         dias_atu = k.get("dias_op", 1)
         dias_ant = ant.get("dias_op", 1)
-        # Delta usa faturamento_apurado (base pra card Faturamento) pra
-        # nao divergir do valor mostrado no topo do card.
-        _fa_atu = k.get("faturamento_apurado") or k.get("caixa", 0)
-        _fa_ant = ant.get("faturamento_apurado") or ant.get("caixa", 0)
-        k["caixa_delta_pct"] = _delta_pct(_fa_atu, _fa_ant)
+        k["caixa_delta_pct"] = _delta_pct(k.get("caixa", 0), ant.get("caixa", 0))
         k["atend_delta_pct"] = _delta_pct(k.get("atend_fin", 0), ant.get("atend_fin", 0))
         k["cliente_dia_delta_pct"] = _delta_pct(k.get("cliente_dia", 0), ant.get("cliente_dia", 0))
         # Secundários: a mesma comparação por dia com movimento, para quando a
         # pergunta for "nos dias em que abriu, rendeu mais ou menos?"
-        k["caixa_delta_perdia_pct"] = _delta_pct_perdia(_fa_atu, _fa_ant, dias_atu, dias_ant)
+        k["caixa_delta_perdia_pct"] = _delta_pct_perdia(k.get("caixa", 0), ant.get("caixa", 0), dias_atu, dias_ant)
         k["atend_delta_perdia_pct"] = _delta_pct_perdia(k.get("atend_fin", 0), ant.get("atend_fin", 0), dias_atu, dias_ant)
         k["cliente_dia_delta_perdia_pct"] = _delta_pct_perdia(k.get("cliente_dia", 0), ant.get("cliente_dia", 0), dias_atu, dias_ant)
         k["dias_com_movimento"] = {"atual": dias_atu, "anterior": dias_ant}
         k["ticket_delta_pct"] = _delta_pct(k.get("ticket_medio", 0), ant.get("ticket_medio", 0))
         # Delta bruto também exposto pra UI mostrar quando as duas janelas SÃO comparáveis
-        k["caixa_delta_bruto_pct"] = _delta_pct(_fa_atu, _fa_ant)
+        k["caixa_delta_bruto_pct"] = _delta_pct(k.get("caixa", 0), ant.get("caixa", 0))
         k["periodo_ant_ref"] = ant
 
     # === Churn early warning: clientes ≥3 visitas nos primeiros 30 dias e sumidos há 14+ dias ===
@@ -1797,10 +1793,8 @@ def main():
         razao = (p_ant / p_atu) if p_atu else None
 
         ajustado = None
-        _k_atu = k.get("faturamento_apurado") or k.get("caixa", 0)
-        _k_ant = ant.get("faturamento_apurado") or ant.get("caixa", 0)
-        if p_atu and p_ant and _k_ant:
-            ajustado = round(((_k_atu / p_atu) / (_k_ant / p_ant) - 1) * 100, 1)
+        if p_atu and p_ant and ant.get("caixa"):
+            ajustado = round(((k.get("caixa", 0) / p_atu) / (ant["caixa"] / p_ant) - 1) * 100, 1)
 
         na_base = {iso: info for iso, info in dias_atipicos.items()
                    if ini_ant <= date.fromisoformat(iso) <= fim_ant}
@@ -1942,11 +1936,11 @@ def main():
     # metas
     # Dias operacionais do mês real (respeita início do domingo)
     dias_op_mes_real = dias_operacionais_no_mes(hoje.year, hoje.month)
-    meta_mensal = calc_meta(a_mensal["kpis"].get("faturamento_apurado") or a_mensal["kpis"]["caixa"], META_MENSAL, a_mensal["kpis"]["dias_op"], dias_op_mes_real)
+    meta_mensal = calc_meta(a_mensal["kpis"]["caixa"], META_MENSAL, a_mensal["kpis"]["dias_op"], dias_op_mes_real)
 
     # Meta do DIA: valor específico da data (respeita dow + peso da semana-do-mês).
     meta_dia_valor = meta_por_data.get(hoje, 0.0) if opera_no_dia(hoje) else 0.0
-    meta_dia = calc_meta(a_diario["kpis"].get("faturamento_apurado") or a_diario["kpis"]["caixa"], meta_dia_valor, 1, 1)
+    meta_dia = calc_meta(a_diario["kpis"]["caixa"], meta_dia_valor, 1, 1)
 
     # === PACE INTRADAY: combina curva horária + hora atual ===
     # "Às 15h você já deveria ter feito X% da meta do dia".
@@ -1954,9 +1948,7 @@ def main():
     # Aqui interpolamos pra hora atual pra dar leitura em tempo real.
     agora = datetime.now(BRT)
     hora_atual = agora.hour + agora.minute / 60.0
-    # Pace intraday agora usa faturamento_apurado (bate com card Faturamento
-    # e com Realizado da Meta). Antes usava caixa e virava divergencia.
-    caixa_hoje = a_diario["kpis"].get("faturamento_apurado") or a_diario["kpis"].get("caixa", 0)
+    caixa_hoje = a_diario["kpis"].get("caixa", 0)
     # pct esperado até agora, interpolando linearmente entre horas cheias
     pct_esperado_agora = 0.0
     if opera_no_dia(hoje) and meta_dia_valor > 0 and curva_horaria:
@@ -2005,12 +1997,12 @@ def main():
             meta_sem_valor += meta_por_data.get(d, 0.0)
     if meta_sem_valor == 0:
         meta_sem_valor = round(META_MENSAL / max(dias_op_mes_real, 1) * dias_op_sem_real, 2)
-    meta_sem = calc_meta(a_semanal["kpis"].get("faturamento_apurado") or a_semanal["kpis"]["caixa"], round(meta_sem_valor, 2),
+    meta_sem = calc_meta(a_semanal["kpis"]["caixa"], round(meta_sem_valor, 2),
                          a_semanal["kpis"]["dias_op"], dias_op_sem_real)
 
     # META ANO: com histórico de meses fechados (2027+), usa peso_mes_ano pra ponderar
     # o restante do ano. Sem histórico: mantém extrapolação META_MENSAL × meses_rest.
-    real_pre_atual = sum(m.get("faturamento_apurado") or m["caixa"] for k, m in meses.items() if k < f"{hoje.year}-{hoje.month:02d}")
+    real_pre_atual = sum(m["caixa"] for k, m in meses.items() if k < f"{hoje.year}-{hoje.month:02d}")
     meses_rest = 12 - hoje.month + 1  # inclui mês atual
     if fonte_mes_ano.startswith("histórico"):
         # META_ANUAL_TOTAL = META_MENSAL × 12 (equivalente ao target anual). Distribui pelo peso_mes.
@@ -2033,7 +2025,7 @@ def main():
     fim_ano_dt = date(2026, 12, 31)
     dias_op_total = _dias_op(data_abertura, fim_ano_dt)
     dias_op_realizados = _dias_op(data_abertura, min(hoje, fim_ano_dt))
-    meta_ano = calc_meta(a_anual["kpis"].get("faturamento_apurado") or a_anual["kpis"]["caixa"], meta_ano_valor, dias_op_realizados, dias_op_total) if meta_ano_valor > 0 else {}
+    meta_ano = calc_meta(a_anual["kpis"]["caixa"], meta_ano_valor, dias_op_realizados, dias_op_total) if meta_ano_valor > 0 else {}
 
     # === Ticket meta OPERACIONAL: derivado da meta de caixa e das visitas projetadas ===
     # Racional: se o ritmo de visitas atual continuar até o fim do período, quanto precisa
