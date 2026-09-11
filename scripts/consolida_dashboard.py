@@ -167,7 +167,7 @@ def main():
     if not os.path.exists(ESC):
         raise SystemExit("Escova payload não existe.")
     if not os.path.exists(SPA):
-        raise SystemExit("SPA payload não existe (rode scripts/mock_spa.py primeiro).")
+        raise SystemExit("SPA payload não existe (rode scripts/build_spa_dashboard.py primeiro).")
 
     with open(ESC) as f: escova = json.load(f)
     with open(SPA) as f: spa = json.load(f)
