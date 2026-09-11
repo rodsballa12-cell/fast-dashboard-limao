@@ -2371,7 +2371,7 @@ function renderAnual(data){
   const k=a.kpis;
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.anual;
   renderKPIs('per-kpis',[
-    {label:'Faturamento · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
+    {label:'Faturamento · 2026',value:brl0(k.faturamento_apurado||k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`padrão Trinks`},
     {label:'Clientes únicos',value:k.clientes_unicos+'',foot:`${((k.cliente_dia||0)/Math.max(k.clientes_unicos,1)).toFixed(1)} visitas/cliente médio`}
@@ -2417,7 +2417,7 @@ function renderAnual(data){
   // Categorias nativas Trinks agora vivem dentro do card "Detalhamento por categoria"
   renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
   // UNIFICADO · Profissionais + Comissões · Ano usa seu próprio ranking_prof anual.
-  renderProfComissoes('per-prof', 'ano', mergeRankingProf(a.ranking_prof, a.ranking_prof_executor), a.ranking_prof_total_n || 0, a.categoria_native, k.caixa || 0);
+  renderProfComissoes('per-prof', 'ano', mergeRankingProf(a.ranking_prof, a.ranking_prof_executor), a.ranking_prof_total_n || 0, a.categoria_native, k.faturamento_apurado || k.caixa || 0);
   renderInsights('per-insights', 'Ano 2026', (data.insights||{}).anual);
 }
 
@@ -2464,7 +2464,7 @@ function renderMensal(data){
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.mensal;
   if(k.em_atendimento>0){document.getElementById('chip-live').style.display='';document.getElementById('chip-live').innerHTML=`<span class="dot"></span> ${k.em_atendimento} em atendim.`;document.getElementById('chip-live').className='chip live';}
   renderKPIs('per-kpis',[
-    {label:'Faturamento · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
+    {label:'Faturamento · mês',value:brl0(k.faturamento_apurado||k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`(caixa÷visitas · padrão Trinks)`, delta_pct:k.ticket_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
@@ -2487,7 +2487,7 @@ function renderMensal(data){
   renderBarsDia('per-dia','📈 Trajetória do mês · dia a dia','Onde bombou, onde travou — vê quais dias-alavanca faltam pra bater meta',m.por_dia_mes,'');
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · mês <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · usa pra dimensionar equipe e horário de campanhas',m.hora_media,true,'');
   // UNIFICADO · Profissionais + Comissões num único card
-  renderProfComissoes('per-prof', 'mês', mergeRankingProf(m.ranking_prof, m.ranking_prof_executor), m.ranking_prof_total_n, m.categoria_native, k.caixa || 0);
+  renderProfComissoes('per-prof', 'mês', mergeRankingProf(m.ranking_prof, m.ranking_prof_executor), m.ranking_prof_total_n, m.categoria_native, k.faturamento_apurado || k.caixa || 0);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro (card "Quando o dinheiro entra")
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes (aba canônica)
   renderInsights('per-insights', 'Mês corrente', (data.insights||{}).mensal);
@@ -2497,7 +2497,7 @@ function renderSemanal(data){
   const s=data.abas.semanal, k=s.kpis;
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.semanal;
   renderKPIs('per-kpis',[
-    {label:'Faturamento · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
+    {label:'Faturamento · semana',value:brl0(k.faturamento_apurado||k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Dias operados',value:k.dias_op+'',foot:`de ${s.meta.dias_total} da semana`}
@@ -2518,7 +2518,7 @@ function renderSemanal(data){
   // Cruzamento Google × Faturamento por DOW: movido pra aba Mídia (renderMidiasGoogleDow)
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · semana <span class="hi">('+k.dias_op+'d op.)</span>','Curva média · define escala e horário de campanhas',s.hora_media,true,'');
   // UNIFICADO · Profissionais + Comissões num único card
-  renderProfComissoes('per-prof', 'semana', mergeRankingProf(s.ranking_prof, s.ranking_prof_executor), s.ranking_prof_total_n, s.categoria_native, k.caixa || 0);
+  renderProfComissoes('per-prof', 'semana', mergeRankingProf(s.ranking_prof, s.ranking_prof_executor), s.ranking_prof_total_n, s.categoria_native, k.faturamento_apurado || k.caixa || 0);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
   renderInsights('per-insights', 'Semana corrente', (data.insights||{}).semanal);
@@ -2528,7 +2528,7 @@ function renderDiario(data){
   const d=data.abas.diario, k=d.kpis;
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.diario;
   renderKPIs('per-kpis',[
-    {label:'Faturamento · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
+    {label:'Faturamento · hoje',value:brl0(k.faturamento_apurado||k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · +${k.em_atendimento} em curso`, delta_pct:k.cliente_dia_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Ticket / visita',value:(k.cliente_dia||0)>0?brl(k.ticket_medio||0):'—',foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
@@ -2568,7 +2568,7 @@ function renderDiario(data){
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
   // UNIFICADO · Profissionais + Comissões num único card (Diário mantém a "SALA AGORA" acima como visão em tempo real)
-  renderProfComissoes('per-prof', 'hoje', mergeRankingProf(d.ranking_prof, d.ranking_prof_executor), d.ranking_prof_total_n, d.categoria_native, k.caixa || 0);
+  renderProfComissoes('per-prof', 'hoje', mergeRankingProf(d.ranking_prof, d.ranking_prof_executor), d.ranking_prof_total_n, d.categoria_native, k.faturamento_apurado || k.caixa || 0);
   renderInsights('per-insights', 'Hoje', (data.insights||{}).diario);
 }
 
