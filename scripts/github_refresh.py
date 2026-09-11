@@ -394,6 +394,24 @@ def analisar(agend, transac, ini: date, fim: date):
         pnome = (a.get("profissional") or {}).get("nome") or ""
         if pid and pid not in prof_id_nome:
             prof_id_nome[pid] = pnome.strip().title()
+
+    # Catálogo de serviços (id → preco). Usado quando serviço vem com preco=0
+    # nas transações — cenário TÍPICO de consumo via PACOTE pré-pago:
+    # cliente pagou o pacote em maio, consome mão+pé em setembro, o
+    # `servicos[].preco` da transação vem 0 (já foi cobrado no pacote), mas
+    # o Trinks BackOffice atribui comissão ao executor pelo preço unitário
+    # do catálogo. Sem esse lookup, prof que só atende via pacote (MIRIAN
+    # por exemplo) sumia do ranking.
+    servicos_cat = {}
+    try:
+        _sc = json.loads(SERV_CACHE.read_text(encoding="utf-8"))
+        for s in (_sc.get("payload") or []):
+            if s.get("id"):
+                servicos_cat[s["id"]] = float(s.get("preco") or 0)
+    except Exception as e:
+        print(f"[analisar] aviso: catalogo serviços indisponível ({e}); consumo via pacote nao contara")
+
+    exec_via_pacote_v = defaultdict(float)  # rastreia quanto veio de pacote
     for tx in tr:
         for s in (tx.get("servicos") or []):
             exec_id = s.get("idProfissionalQueRealizouServico")
@@ -404,11 +422,19 @@ def analisar(agend, transac, ini: date, fim: date):
                 # Marcador claro em vez de "ID 723073" cru.
                 nome_exec = f"Prof desligado #{exec_id}"
             v = float(s.get("preco") or 0)
+            via_pacote = False
+            if v == 0:
+                # Fallback catálogo: serviço consumido via pacote pré-pago.
+                v = servicos_cat.get(s.get("id"), 0)
+                if v > 0:
+                    via_pacote = True
+                    exec_via_pacote_v[nome_exec] += v
             exec_agg[nome_exec]["n"] += 1
             exec_agg[nome_exec]["v"] += v
             exec_por_serv_receita[(nome_exec, s.get("nome") or "sem")] += v
     ranking_prof_executor = sorted(
         [{"nome": k, "n_serv": v["n"], "v": brl_round(v["v"]),
+          "v_via_pacote": brl_round(exec_via_pacote_v.get(k, 0)),
           "ticket_medio_serv": brl_round(v["v"] / max(v["n"], 1))}
          for k, v in exec_agg.items()],
         key=lambda x: -x["v"]
