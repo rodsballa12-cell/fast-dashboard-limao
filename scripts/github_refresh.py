@@ -247,6 +247,23 @@ def analisar(agend, transac, ini: date, fim: date):
     pacotes_por_categoria = defaultdict(float)
     hora_c = defaultdict(int); hora_v = defaultdict(float)
 
+    # Catálogo servicos (id → preco / categoria). Usado pra valorizar serviços
+    # consumidos via pacote pré-pago (preco=0 na transação — o pagamento ja
+    # aconteceu quando o pacote foi vendido, mas o serviço EXECUTADO merece
+    # ser contado no faturamento por categoria + no ranking prof executor).
+    # Sem esse fallback, prof que só atende via pacote (MIRIAN) e as
+    # categorias delas ficam invisíveis no ranking.
+    servicos_cat_preco = {}   # id → preco catalogo
+    servicos_catg = {}        # id → categoria (nome)
+    try:
+        _sc = json.loads(SERV_CACHE.read_text(encoding="utf-8"))
+        for _s in (_sc.get("payload") or []):
+            if _s.get("id"):
+                servicos_cat_preco[_s["id"]] = float(_s.get("preco") or 0)
+                servicos_catg[_s["id"]] = _s.get("categoria") or ""
+    except Exception as e:
+        print(f"[analisar] aviso: catalogo serviços indisponível ({e}); consumo via pacote nao contara")
+
     for t in tr:
         for fp in (t.get("formasPagamentos") or []):
             v = float(fp.get("valor") or 0)
@@ -287,17 +304,22 @@ def analisar(agend, transac, ini: date, fim: date):
         for s in (t.get("servicos") or []):
             preco_s = float(s.get("preco") or 0)
             nome_s = s.get("nome") or ""
+            # Fallback catalogo: servico consumido via pacote (preco=0). Usa
+            # preco unitario do catalogo pra valorizar tanto serv_v quanto
+            # categoria_native. Bate com Trinks Relatorio de Comissoes.
+            if preco_s == 0:
+                preco_s = servicos_cat_preco.get(s.get("id"), 0)
             serv_v += preco_s
             serv_n += 1
             if is_fast_retoque(nome_s):
                 fast_retoque_v += preco_s
                 fast_retoque_n += 1
-            # Categoria nativa Trinks (quando presente)
-            cat = s.get("categoria") or ""
+            # Categoria nativa Trinks: preferir a que vem na transacao, fallback catalogo
+            cat = s.get("categoria") or servicos_catg.get(s.get("id"), "")
             if isinstance(cat, dict): cat = cat.get("nome") or ""
             cat = (cat or "sem categoria").strip().title()
             categoria_native[cat]["n"] += 1
-            categoria_native[cat]["v"] += float(s.get("preco") or 0)
+            categoria_native[cat]["v"] += preco_s
         descontos += float(t.get("descontos") or 0)
         trocos += float(t.get("troco") or 0)
         dt = parse_trinks_dt(t["dataHora"])
@@ -395,23 +417,9 @@ def analisar(agend, transac, ini: date, fim: date):
         if pid and pid not in prof_id_nome:
             prof_id_nome[pid] = pnome.strip().title()
 
-    # Catálogo de serviços (id → preco). Usado quando serviço vem com preco=0
-    # nas transações — cenário TÍPICO de consumo via PACOTE pré-pago:
-    # cliente pagou o pacote em maio, consome mão+pé em setembro, o
-    # `servicos[].preco` da transação vem 0 (já foi cobrado no pacote), mas
-    # o Trinks BackOffice atribui comissão ao executor pelo preço unitário
-    # do catálogo. Sem esse lookup, prof que só atende via pacote (MIRIAN
-    # por exemplo) sumia do ranking.
-    servicos_cat = {}   # id_servico → preco catalogo
-    servicos_catg = {}  # id_servico → categoria (nome)
-    try:
-        _sc = json.loads(SERV_CACHE.read_text(encoding="utf-8"))
-        for s in (_sc.get("payload") or []):
-            if s.get("id"):
-                servicos_cat[s["id"]] = float(s.get("preco") or 0)
-                servicos_catg[s["id"]] = s.get("categoria") or ""
-    except Exception as e:
-        print(f"[analisar] aviso: catalogo serviços indisponível ({e}); consumo via pacote nao contara")
+    # Catálogo servicos ja carregado la em cima (servicos_cat_preco / servicos_catg).
+    # Reutilizado aqui pro ranking executor.
+    servicos_cat = servicos_cat_preco
 
     # Regras de comissao POR CATEGORIA (fonte data/comissoes.json — exportado
     # do Trinks BackOffice servicosDoEstabelecimento.csv). Usado pra calcular
