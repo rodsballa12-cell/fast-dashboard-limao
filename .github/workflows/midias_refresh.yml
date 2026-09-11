@@ -1,0 +1,78 @@
+name: Refresh Midias Sociais (diario)
+
+# Atualiza data/midias_sociais.json (Escova) e data/spa/midias_sociais.json
+# (SPA) pulando a Meta Graph API v20.0 com o token META_ACCESS_TOKEN.
+#
+# HORARIO: 10h UTC = 07h BRT (UTC-3 fixo, sem DST desde 2019).
+# 07h BRT = manha bem cedo — Meta ja consolidou D-1 e o commit resultante
+# fica antes do horario comercial abrir. Um fire por dia basta: os
+# numeros mudam pouco em minutos, e overlap e barrado pelo concurrency
+# group abaixo.
+#
+# CAMPOS CURADOS PRESERVADOS: direcionamentos_estrategicos, recomendacoes,
+# insights_narrativa, alertas_topo, kpi_estrela, benchmarks,
+# google_business, google_ads, hubspot, whatsapp_cloud_api,
+# funil_conversao. Esses continuam sendo escritos manualmente via
+# Supermetrics MCP quando o gerente Marketing atualizar.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 10 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-midias
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Refresh midias (Escova + SPA)
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+        run: python scripts/refresh_midias.py
+
+      - name: Commit e push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          for f in data/midias_sociais.json data/spa/midias_sociais.json; do
+            git add "$f" 2>/dev/null || true
+          done
+
+          if git diff --cached --quiet; then
+            echo "Sem mudancas nos arquivos de midias"
+            exit 0
+          fi
+
+          # Resumo curto pro commit: quais arquivos mudaram + quaisquer
+          # numeros-chave que dao pra extrair (gasto 7d + followers IG).
+          resumo=""
+          for f in data/midias_sociais.json data/spa/midias_sociais.json; do
+            if git diff --cached --quiet -- "$f"; then
+              continue
+            fi
+            u=$(basename "$(dirname "$f")")
+            [ "$u" = "data" ] && u="escova"
+            gasto=$(python -c "import json; d=json.load(open('$f')); print(d.get('meta_ads',{}).get('por_periodo',{}).get('7d',{}).get('gasto','?'))" 2>/dev/null || echo "?")
+            seg=$(python -c "import json; d=json.load(open('$f')); print(d.get('instagram',{}).get('followers','?'))" 2>/dev/null || echo "?")
+            resumo="${resumo} · ${u}: R\$${gasto} 7d / IG ${seg} seguidores"
+          done
+
+          data_brt=$(TZ=America/Sao_Paulo date +'%d/%m %H:%M')
+          git commit -m "refresh midias: ${data_brt} BRT${resumo}"
+          git push
