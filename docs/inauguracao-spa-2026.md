@@ -140,10 +140,29 @@ mundo daquele dia — quem personaliza é o texto (nome, horário, código).
 Todas pedem a mesma coisa: responder **1** ou **2**. Resposta de uma tecla é o que
 faz a confirmação realmente acontecer.
 
-**Identidade:** amarelo FAST `#FFD100`, turquesa SPA `#24B3A6`, preto `#141414` —
-os mesmos tons de `data/config.json` e do painel. A marca usada é a do painel
-(`LOGOS_UNIDADE` em `index.html`), que é uma aproximação: **quando o arquivo oficial
-do logo chegar, trocar a constante `MARCA` em `gerar_convites.py` por um `<img>`.**
+**Identidade:** segue o padrão da **Tabela de Serviços oficial** (`arte_5.pdf`):
+
+| Elemento | Cor |
+|---|---|
+| Verde-petróleo (cabeçalho, títulos) | `#005A65` |
+| Turquesa (rodapé, barras) | `#00A6A4` |
+| Pêssego (fundo) | `#F6E3D2` |
+| Creme (linhas de serviço) | `#FEF4E9` |
+| Oliva (barra do dia) | `#8BA229` |
+| Verde claro (destaque/cortesia) | `#C9DC94` |
+| Carvão | `#555350` |
+
+Tipografia: **Playfair Display** nos títulos, **Montserrat** nos textos.
+Logo e ornamentos foram recortados da própria arte, em 300 dpi, e vivem em
+`docs/convites/marca/` (`logo_fastspa.png`, `ornamento_comma.png`, `ornamento_faixa.png`).
+Assinatura de rodapé: *Este lugar é pra você!* — a mesma da tabela.
+
+> Para peça grande ou impressa, pedir o **logo vetorial** (AI/SVG/EPS) à franqueadora:
+> o recorte atual é raster e só aguenta bem até o tamanho usado aqui.
+
+Os serviços citados nos convites saíram da tabela oficial (Renove-se em 45' R$ 149,
+Drenagem Linfática Facial R$ 59, Revitalização das Mãos R$ 59, Quick Massage).
+**Confirmar com a operação quais entram como cortesia em cada dia.**
 
 Para regerar as artes (se mudar horário, texto ou logo): edite
 `docs/convites/gerar_convites.py` e rode `python3 docs/convites/gerar_convites.py`
