@@ -25,8 +25,8 @@ CARDS = [
         dow="quinta-feira", num="24", mes="setembro de 2026", horas="das 18h às 22h",
         titulo="A noite em que as portas se abrem",
         sub="Corte de fita às 19h30, tour pela casa e coquetel de boas-vindas.",
-        cortesia="Convite pessoal e intransferível",
-        cortesia_dir="confirme até 21/09",
+        cortesia="Experiência-cortesia de inauguração",
+        cortesia_dir="por nossa conta, no dia",
         campo="Convite de", campo2="chegada sugerida",
     ),
     dict(
@@ -36,8 +36,8 @@ CARDS = [
         dow="sexta-feira", num="25", mes="setembro de 2026", horas="das 10h às 20h · hora marcada",
         titulo="O dia das clientes de casa",
         sub="O SPA abre primeiro para quem já é da Fast, antes do bairro.",
-        cortesia="Renove-se em 45' · sessão de 20 min",
-        cortesia_dir="cortesia · valor R$ 149",
+        cortesia="Brinde de inauguração",
+        cortesia_dir="para quem confirmar presença",
         campo="Convite de", campo2="seu horário",
     ),
     dict(
@@ -46,9 +46,9 @@ CARDS = [
         abre="Você e uma amiga estão convidadas para",
         dow="sábado", num="26", mes="setembro de 2026", horas="das 9h às 19h · hora marcada",
         titulo="O dia de trazer quem você gosta",
-        sub="Duas cortesias no mesmo horário, em salas vizinhas.",
-        cortesia="Quick Massage · 20 min para as duas",
-        cortesia_dir="cortesia · valor R$ 118",
+        sub="Venha conhecer a casa com quem você chamaria para um café.",
+        cortesia="Brinde de inauguração",
+        cortesia_dir="para você e para sua amiga",
         campo="Convite de", campo2="seu horário",
     ),
     dict(
@@ -57,9 +57,9 @@ CARDS = [
         abre="Você está convidada para",
         dow="domingo", num="27", mes="setembro de 2026", horas="das 10h às 17h · por ordem de chegada",
         titulo="O domingo em que o SPA é do bairro",
-        sub="Sem hora marcada: é chegar, pegar sua senha e conhecer.",
-        cortesia="Revitalização das Mãos · 10 min",
-        cortesia_dir="cortesia · valor R$ 59",
+        sub="Sem hora marcada: é chegar, pegar sua senha e conhecer a casa.",
+        cortesia="Brinde de inauguração",
+        cortesia_dir="enquanto durar o estoque",
         campo="Convite de", campo2="",
     ),
 ]
@@ -173,7 +173,7 @@ h1{{font-family:'Playfair Display',serif;font-weight:700;font-size:52px;line-hei
 
     <p class="local">Av. Dep. Emílio Carlos, 358 · Limão · São Paulo<br>
       <em>no mesmo prédio da Fast Escova Limão</em>
-      <span class="zap">Confirme pelo WhatsApp (11) 99024-3927</span></p>
+      <span class="zap">Confirme até 21/09 pelo WhatsApp (11) 99024-3927</span></p>
   </div>
 </div>
 
