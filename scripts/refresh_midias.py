@@ -1353,6 +1353,8 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
         # activity totals (comentarios/likes/shares clique) somados
         activity = ins.get("post_activity_by_action_type") or {}
         activity_total = sum(v for v in activity.values() if isinstance(v, (int, float))) if isinstance(activity, dict) else 0
+        reactions = ins["post_reactions_by_type_total"] if isinstance(ins["post_reactions_by_type_total"], dict) else {}
+        reactions_total = sum(v for v in reactions.values() if isinstance(v, (int, float)))
         saida.append({
             "id": pid,
             "data": (p.get("created_time") or "")[:10],
@@ -1361,11 +1363,15 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
             "reach": ins["post_impressions_unique"] if isinstance(ins["post_impressions_unique"], int) else 0,
             "atividade_total": int(activity_total),
             "atividade_por_tipo": activity if isinstance(activity, dict) else {},
-            "reactions": ins["post_reactions_by_type_total"] if isinstance(ins["post_reactions_by_type_total"], dict) else {},
+            "reactions": reactions,
+            "reactions_total": int(reactions_total),
+            "engajamento_total": int(activity_total) + int(reactions_total),
             "url": p.get("permalink_url"),
             "texto_curto": msg[:100],
         })
-    saida.sort(key=lambda x: x["reach"], reverse=True)
+    # ordena por engajamento (mais robusto que reach — Meta bloqueia reach em
+    # paginas <100 fas). Fallback pra reach se paginha maior.
+    saida.sort(key=lambda x: (x.get("engajamento_total", 0), x.get("reach", 0)), reverse=True)
     return saida
 
 
@@ -1731,6 +1737,17 @@ def _merge_unidade(base: dict[str, Any], ids: dict[str, Any], token: str, hoje: 
             reactions = _fb_reactions_from_posts(posts_det)
             if reactions is not None:
                 fb["reactions_by_type_30d"] = reactions
+
+            # Nota privacidade Meta: paginas <100 fas nao recebem
+            # post_impressions/post_impressions_unique por privacy threshold
+            seguidores = fb.get("seguidores") or fb.get("followers") or 0
+            if seguidores < 100:
+                fb["_nota_pagina_pequena"] = (
+                    f"Meta bloqueia reach/impressions individuais por privacidade "
+                    f"(pagina tem {seguidores} seguidores, threshold <100). "
+                    f"Metricas visiveis: reactions/atividade/comentarios. "
+                    f"Reach agregado disponivel em organico_30d.page_visits."
+                )
 
     # ---------- Janelas + fonte + gerado_em ----------
     base["janelas"] = _janelas_texto(hoje)
