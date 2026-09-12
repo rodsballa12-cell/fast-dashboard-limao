@@ -1248,14 +1248,15 @@ def main():
         em = c.get("email") or det.get("email")
         if em: email_map[cid] = em
 
-    # === PROFS HISTÓRICAS (deletadas do BackOffice) ===
-    # /v1/profissionais lista só ativas/inativas. Profs completamente removidas
-    # do BackOffice não aparecem no listing, seu ID persiste em transacoes.
-    # Duas estrategias de resolucao antes de cair em "Ex-prof":
-    #   (1) /v1/profissionais/{id} direto (raro funcionar pra removida, mas de graça)
-    #   (2) buscar em agendamentos historicos onde o profissional.id bate — o
-    #       nome vem embutido em cada agend. Mais confiavel: se um dia teve
-    #       agendamento, o nome persiste.
+    # === PROFS HISTÓRICAS (removidas do BackOffice) ===
+    # /v1/profissionais lista só ativas/inativas. Profs completamente
+    # removidas do BackOffice não aparecem no listing E o endpoint
+    # /v1/profissionais/{id} devolve {"data":[],"totalRecords":0} (200 vazio,
+    # nao 404). Elas viravam "Prof desligado #ID" no ranking de comissoes.
+    #
+    # Estrategia unica: arquivo manual data/prof_overrides.json mapeia
+    # IDs orfãos → nomes reais. Rodrigo/Kely preenchem quando quiserem.
+    # Enquanto null, cai no fallback "Prof desligado #ID".
     ids_orfaos = set()
     for tx in transac:
         for s in (tx.get("servicos") or []):
@@ -1263,55 +1264,38 @@ def main():
             if exec_id and exec_id not in prof_map_global:
                 ids_orfaos.add(exec_id)
     if ids_orfaos:
-        print(f"[fetch] profs orfaos (nao no listing): {len(ids_orfaos)} IDs")
+        # Aplica overrides manuais
+        override_path = REPO_ROOT / "data" / "prof_overrides.json"
+        overrides = {}
+        if override_path.exists():
+            try:
+                _ovr = json.loads(override_path.read_text(encoding="utf-8"))
+                for k, v in (_ovr.get("profs") or {}).items():
+                    if v and str(v).strip():
+                        overrides[int(k)] = str(v).strip().title()
+            except Exception as e:
+                print(f"  [warn] prof_overrides.json invalido: {e}")
 
-        # Estrategia 2 FIRST: rastreia todos os agend do ano — profs que já
-        # tiveram algum agend têm o nome no payload mesmo depois de removidas.
-        # agend aqui e a lista completa do ANO ja carregada em memoria.
-        from_agend = 0
-        for a in agend:
-            p = a.get("profissional") or {}
-            pid = p.get("id")
-            pnome = (p.get("nome") or "").strip().title()
-            if pid in ids_orfaos and pnome:
-                prof_map_global[pid] = pnome
+        n_resolvidos = 0
+        pendentes = []
+        for pid in sorted(ids_orfaos):
+            nome = overrides.get(pid)
+            if nome:
+                prof_map_global[pid] = nome
                 prof_meta_global[pid] = {
-                    "nome": pnome, "apelido": "", "funcao": "",
-                    "status": "historico", "possui_agenda": False,
+                    "nome": nome, "apelido": "", "funcao": "",
+                    "status": "historico_override", "possui_agenda": False,
                     "id_profissional": pid, "genero": "",
                 }
-                from_agend += 1
-        if from_agend:
-            print(f"  {from_agend}/{len(ids_orfaos)} resolvidos via agend historico")
-        ainda_orfaos = {i for i in ids_orfaos if i not in prof_map_global}
+                n_resolvidos += 1
+            else:
+                pendentes.append(pid)
 
-        # Estrategia 1: lookup direto (best effort — quase sempre 404)
-        # Loga o status HTTP real da PRIMEIRA tentativa pra diagnostico.
-        n_direto = 0
-        if ainda_orfaos:
-            print(f"  {len(ainda_orfaos)} restantes · lookup direto /v1/profissionais/{{id}}...")
-            for i, pid in enumerate(sorted(ainda_orfaos)):
-                try:
-                    r = t.s.get(BASE_URL + f"/v1/profissionais/{pid}", headers=t.headers, timeout=20)
-                    if i == 0:
-                        print(f"    diag: GET /v1/profissionais/{pid} → HTTP {r.status_code} · body: {(r.text or '')[:200]!r}")
-                    if r.status_code == 200:
-                        js = r.json()
-                        p = js.get("data") if isinstance(js, dict) and isinstance(js.get("data"), dict) else js
-                        nome = (p.get("nome") or "").strip().title() if isinstance(p, dict) else ""
-                        if nome:
-                            prof_map_global[pid] = nome
-                            prof_meta_global[pid] = {
-                                "nome": nome, "apelido": "", "funcao": "",
-                                "status": "historico", "possui_agenda": False,
-                                "id_profissional": pid, "genero": "",
-                            }
-                            n_direto += 1
-                except Exception:
-                    pass
-            print(f"    {n_direto}/{len(ainda_orfaos)} resolvidos via lookup direto")
+        print(f"[fetch] profs orfaos: {len(ids_orfaos)} IDs · {n_resolvidos} via override, {len(pendentes)} pendentes")
+        if pendentes:
+            print(f"  IDs pendentes (preencher em data/prof_overrides.json): {pendentes}")
 
-        if from_agend or n_direto:
+        if n_resolvidos:
             _save_cache(PROF_CACHE, {"prof_map": prof_map_global, "prof_meta": prof_meta_global})
             analisar._prof_id_nome_cache = prof_map_global
 
