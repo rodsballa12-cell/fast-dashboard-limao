@@ -1,32 +1,33 @@
-"""Refresh diario do Google Business Profile via Supermetrics REST API.
+"""Refresh diario do Google Business Profile via Google API oficial.
 
-Complementa scripts/refresh_midias.py (Meta) atualizando somente o bloco
-`google_business` de data/midias_sociais.json e data/spa/midias_sociais.json.
+Antes usava Supermetrics REST (Enterprise API) mas a licenca CNCT
+"Supermetrics for Claude" NAO inclui Google My Business como data source
+(precisaria add-on US$ 37/mes). Rota gratuita: Google Business Profile
+Performance API + My Business Business Information API — ambas oficiais
+do Google, gratis com quotas generosas.
 
-Por que Supermetrics em vez da Google API direta:
-- Rodrigo assina Supermetrics; a auth ja esta feita (rods_balla12@hotmail.com
-  tem GMB conectado).
-- Google Business Profile Performance API exige OAuth 2.0 (client_id/secret/
-  refresh_token) — mais coisa pra configurar e manter.
-- Supermetrics uniformiza o formato — mesma linha de codigo cobre outras
-  fontes no futuro (LinkedIn, TikTok, etc).
+Auth: OAuth 2.0 refresh_token flow (a conta que assina o Business Profile
+faz consent uma vez, gera refresh_token que persiste e permite renovar
+access_tokens indefinidamente).
 
 Env obrigatorio:
-  SUPERMETRICS_API_KEY  — pego em https://hub.supermetrics.com/token-management
+  GBP_OAUTH_CLIENT_ID       — Client ID OAuth 2.0 Desktop app (Google Cloud Console)
+  GBP_OAUTH_CLIENT_SECRET   — Client secret do mesmo Desktop app
+  GBP_OAUTH_REFRESH_TOKEN   — Refresh token gerado localmente uma vez
 
-Env opcional:
-  SUPERMETRICS_TEAM_ID  — default 1192722 (team Rodrigo)
-
-O script MERGE campos calculaveis (kpis_30d, rating, serie_diaria_30d,
-conta_id, nome) e preserva o resto (mensagem, endereco curado, categorias,
-etc — igual ao padrao de refresh_midias.py).
+Setup (uma vez por conta):
+  1. Google Cloud Console > New Project > "Business Profile Performance API" + "My Business Business Information API" > Enable
+  2. OAuth consent screen > External > publish app > adiciona seu email como Test user
+  3. Credentials > Create OAuth client ID > Desktop app > download client_secret.json
+  4. Rodar localmente scripts/gbp_oauth_init.py (ele cospe o refresh_token)
+  5. Adicionar 3 secrets no repo: GBP_OAUTH_CLIENT_ID/CLIENT_SECRET/REFRESH_TOKEN
 
 CLI:
   python scripts/refresh_google.py                # ambas unidades
   python scripts/refresh_google.py --unidade escova
   python scripts/refresh_google.py --dry-run
 
-Falha graciosa: unidade sem `google_business_location_id` no config pula
+Falha graciosa: unidade sem google_business_location_id no config pula
 silenciosamente (SPA ainda nao criou o GBP — brief entregue ao Marketing).
 """
 
@@ -50,97 +51,175 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG = os.path.join(ROOT, "data", "config.json")
 BRT = timezone(timedelta(hours=-3))
 
-SM_ENDPOINT = "https://api.supermetrics.com/enterprise/v2/query/data/json"
-DEFAULT_TEAM_ID = "1192722"
+GOOGLE_OAUTH_TOKEN_URL = "https://oauth2.googleapis.com/token"
+GBP_PERFORMANCE_BASE = "https://businessprofileperformance.googleapis.com/v1"
+GBP_MYBUSINESS_BASE = "https://mybusinessbusinessinformation.googleapis.com/v1"
+GBP_ACCOUNT_MGMT_BASE = "https://mybusinessaccountmanagement.googleapis.com/v1"
+REQ_TIMEOUT = 60
 
-CAMPOS_PERF = [
-    "date", "views_total", "views_maps", "views_search",
-    "actions_total", "actions_website", "actions_phone",
-    "actions_driving_directions", "actions_messages",
+# Metricas oficiais Google Business Profile Performance API v1
+# https://developers.google.com/my-business/reference/performance/rest/v1/locations/getDailyMetricsTimeSeries
+METRICS_PERFORMANCE = [
+    "BUSINESS_IMPRESSIONS_DESKTOP_MAPS",
+    "BUSINESS_IMPRESSIONS_DESKTOP_SEARCH",
+    "BUSINESS_IMPRESSIONS_MOBILE_MAPS",
+    "BUSINESS_IMPRESSIONS_MOBILE_SEARCH",
+    "BUSINESS_CONVERSATIONS",
+    "BUSINESS_DIRECTION_REQUESTS",
+    "CALL_CLICKS",
+    "WEBSITE_CLICKS",
+    "BUSINESS_BOOKINGS",
+    "BUSINESS_FOOD_ORDERS",
+    "BUSINESS_FOOD_MENU_CLICKS",
 ]
-CAMPOS_REVIEWS = ["total_review_count", "total_review_star_rating"]
 
 
 # ---------------------------------------------------------------------------
-# Supermetrics query
+# OAuth
 # ---------------------------------------------------------------------------
 
-def _sm_query(payload: dict, api_key: str, team_id: str) -> dict:
-    """POST no Enterprise API. Retorna dict `data` de sucesso ou {} em erro."""
-    body = {
-        "team_id": team_id,
-        **payload,
-    }
-    for tentativa in range(3):
+def _get_access_token(client_id: str, client_secret: str, refresh_token: str) -> str | None:
+    """Troca refresh_token por access_token curto prazo (~1h)."""
+    try:
+        r = requests.post(
+            GOOGLE_OAUTH_TOKEN_URL,
+            data={
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "refresh_token": refresh_token,
+                "grant_type": "refresh_token",
+            },
+            timeout=REQ_TIMEOUT,
+        )
+        if r.status_code >= 400:
+            print(f"  [warn] OAuth refresh falhou HTTP {r.status_code}: {r.text[:200]}")
+            return None
+        return r.json().get("access_token")
+    except requests.RequestException as e:
+        print(f"  [warn] OAuth exception: {e}")
+        return None
+
+
+# ---------------------------------------------------------------------------
+# Google Business Profile API calls
+# ---------------------------------------------------------------------------
+
+def _iso(d: date) -> str:
+    return d.strftime("%Y-%m-%d")
+
+
+def _fetch_performance(location_id: str, access_token: str, hoje: date) -> list[dict]:
+    """Serie diaria 30d de metricas de performance (views, actions, calls, etc)."""
+    # location_id vem no formato "accounts/XXX_YYY" (do Supermetrics). Google
+    # espera "locations/YYY" — extrai a parte apos "_" ou "/".
+    if "_" in location_id:
+        loc_num = location_id.split("_")[-1]
+    elif "/" in location_id:
+        loc_num = location_id.split("/")[-1]
+    else:
+        loc_num = location_id
+
+    fim = hoje - timedelta(days=1)  # Google exclui hoje
+    ini = fim - timedelta(days=29)
+
+    # Google API pede uma metric por chamada — vamos batch em paralelo depois
+    por_dia: dict[str, dict[str, int]] = {}
+    for metric in METRICS_PERFORMANCE:
         try:
-            r = requests.post(
-                SM_ENDPOINT,
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
+            r = requests.get(
+                f"{GBP_PERFORMANCE_BASE}/locations/{loc_num}:getDailyMetricsTimeSeries",
+                params={
+                    "dailyMetric": metric,
+                    "dailyRange.startDate.year": ini.year,
+                    "dailyRange.startDate.month": ini.month,
+                    "dailyRange.startDate.day": ini.day,
+                    "dailyRange.endDate.year": fim.year,
+                    "dailyRange.endDate.month": fim.month,
+                    "dailyRange.endDate.day": fim.day,
                 },
-                json=body,
-                timeout=180,  # Supermetrics as vezes demora ao puxar 30 dias
+                headers={"Authorization": f"Bearer {access_token}"},
+                timeout=REQ_TIMEOUT,
             )
             if r.status_code >= 400:
-                print(f"  [warn] Supermetrics HTTP {r.status_code}: {r.text[:300]}")
-                if r.status_code in (401, 403):
-                    raise RuntimeError("auth falhou · verifique SUPERMETRICS_API_KEY")
-                if r.status_code < 500:
-                    return {}
+                print(f"  [warn] GBP {metric} HTTP {r.status_code}: {r.text[:200]}")
                 continue
-            js = r.json()
-            if not js.get("success"):
-                print(f"  [warn] Supermetrics erro: {js.get('error')}")
-                return {}
-            return js.get("data", {})
+            data = r.json()
+            series = (data.get("timeSeries") or {}).get("datedValues") or []
+            for pt in series:
+                d = pt.get("date", {})
+                dstr = f"{d.get('year'):04d}-{d.get('month'):02d}-{d.get('day'):02d}"
+                val = int(pt.get("value") or 0)
+                slot = por_dia.setdefault(dstr, {})
+                slot[metric] = val
         except requests.RequestException as e:
-            print(f"  [warn] Supermetrics excecao: {e}")
-    return {}
+            print(f"  [warn] GBP {metric} exception: {e}")
+
+    # Consolidar em nossa estrutura
+    saida = []
+    for dstr in sorted(por_dia):
+        m = por_dia[dstr]
+        maps = (m.get("BUSINESS_IMPRESSIONS_DESKTOP_MAPS", 0)
+                + m.get("BUSINESS_IMPRESSIONS_MOBILE_MAPS", 0))
+        search = (m.get("BUSINESS_IMPRESSIONS_DESKTOP_SEARCH", 0)
+                  + m.get("BUSINESS_IMPRESSIONS_MOBILE_SEARCH", 0))
+        actions_website = m.get("WEBSITE_CLICKS", 0)
+        actions_phone = m.get("CALL_CLICKS", 0)
+        actions_directions = m.get("BUSINESS_DIRECTION_REQUESTS", 0)
+        actions_messages = m.get("BUSINESS_CONVERSATIONS", 0)
+        actions_total = actions_website + actions_phone + actions_directions + actions_messages
+        saida.append({
+            "data": dstr,
+            "views_total": maps + search,
+            "views_maps": maps,
+            "views_search": search,
+            "actions_total": actions_total,
+            "actions_website": actions_website,
+            "actions_phone": actions_phone,
+            "actions_directions": actions_directions,
+        })
+    return saida
 
 
-def _fetch_performance(loc_id: str, api_key: str, team_id: str) -> list[dict]:
-    """Serie diaria 30d + KPIs agregados.
+def _fetch_reviews(location_id: str, access_token: str) -> dict:
+    """Pega rating agregado + total de reviews.
 
-    GMB nao aceita 'report_type' como setting (has_report_type_selection=false).
-    O Supermetrics infere o report_type dos fields escolhidos.
+    Nao existe endpoint dedicado a esse total no v1 novo — usamos o endpoint
+    de reviews (v4 legacy ainda ativo pra listar reviews individuais). Se
+    quisermos so o agregado: My Business Business Information API tem
+    'metadata.hasVoiceOfMerchant' mas nao total de reviews. Solucao: chamar
+    /reviews (v4 legacy) e agregar.
+
+    Se v4 legacy nao estiver disponivel ou o account_id nao for descoberto,
+    devolve dict vazio (dados curados anteriores permanecem).
     """
-    data = _sm_query({
-        "ds_id": "GMB",
-        "ds_accounts": [loc_id],
-        "fields": CAMPOS_PERF,
-        "date_range_type": "last_30_days",
-    }, api_key, team_id)
-    if not data or not data.get("data"):
-        return []
-    rows = data["data"][1:]  # pula header
-    return [{
-        "data": r[0],
-        "views_total": int(r[1] or 0),
-        "views_maps": int(r[2] or 0),
-        "views_search": int(r[3] or 0),
-        "actions_total": int(r[4] or 0),
-        "actions_website": int(r[5] or 0),
-        "actions_phone": int(r[6] or 0),
-        "actions_directions": int(r[7] or 0),  # driving_directions -> directions
-    } for r in rows]
-
-
-def _fetch_reviews(loc_id: str, api_key: str, team_id: str) -> dict:
-    """Total reviews + estrelas media (valores lifetime)."""
-    data = _sm_query({
-        "ds_id": "GMB",
-        "ds_accounts": [loc_id],
-        "fields": CAMPOS_REVIEWS,
-        "date_range_type": "last_30_days",
-    }, api_key, team_id)
-    if not data or not data.get("data") or len(data["data"]) < 2:
+    # v4 legacy endpoint: https://mybusiness.googleapis.com/v4/{accounts/X/locations/Y}/reviews
+    # Precisa do formato completo accounts/XXX/locations/YYY.
+    if "/" in location_id and location_id.startswith("accounts/"):
+        full_path = location_id  # ja no formato accounts/X/locations/Y
+    elif "_" in location_id:
+        parts = location_id.split("_")
+        full_path = f"accounts/{parts[0]}/locations/{parts[1]}"
+    else:
         return {}
-    total, media = data["data"][1]
-    return {
-        "reviews_total": int(total or 0),
-        "estrelas_media": round(float(media or 0), 1),
-    }
+
+    try:
+        r = requests.get(
+            f"https://mybusiness.googleapis.com/v4/{full_path}/reviews",
+            headers={"Authorization": f"Bearer {access_token}"},
+            params={"pageSize": 50},
+            timeout=REQ_TIMEOUT,
+        )
+        if r.status_code >= 400:
+            print(f"  [warn] GBP reviews HTTP {r.status_code}: {r.text[:200]}")
+            return {}
+        data = r.json()
+        return {
+            "reviews_total": int(data.get("totalReviewCount") or 0),
+            "estrelas_media": round(float(data.get("averageRating") or 0), 1),
+        }
+    except requests.RequestException as e:
+        print(f"  [warn] GBP reviews exception: {e}")
+        return {}
 
 
 # ---------------------------------------------------------------------------
@@ -148,7 +227,8 @@ def _fetch_reviews(loc_id: str, api_key: str, team_id: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def _agregar_kpis(serie: list[dict]) -> dict:
-    if not serie: return {}
+    if not serie:
+        return {}
     def s(k): return sum(x[k] for x in serie)
     views = s("views_total")
     acoes = s("actions_total")
@@ -160,7 +240,7 @@ def _agregar_kpis(serie: list[dict]) -> dict:
         "actions_phone": s("actions_phone"),
         "actions_directions": s("actions_directions"),
         "actions_website": s("actions_website"),
-        "taxa_conversao_pct": round(acoes/max(views,1)*100, 2),
+        "taxa_conversao_pct": round(acoes / max(views, 1) * 100, 2),
     }
 
 
@@ -187,7 +267,7 @@ def _merge(base: dict, serie: list[dict], reviews: dict, loc_id: str,
         gb["conta_id"] = loc_id
         if loc_nome:
             gb["nome"] = loc_nome
-        gb["_fonte_refresh"] = "Supermetrics REST API · refresh diario automatico"
+        gb["_fonte_refresh"] = "Google Business Profile Performance API oficial (grátis) · cron diario 07h BRT"
 
     return base, resumo
 
@@ -197,18 +277,23 @@ def _merge(base: dict, serie: list[dict], reviews: dict, loc_id: str,
 # ---------------------------------------------------------------------------
 
 UNIDADES = {
-    "escova": {"prefix": "", "cfg_path": ("unidades", "escova", "midia_ids")},
-    "spa":    {"prefix": "spa/", "cfg_path": ("unidades", "spa", "midia_ids")},
+    "escova": {"path": os.path.join(ROOT, "data", "midias_sociais.json"),
+               "cfg_path": ("unidades", "escova", "midia_ids")},
+    "spa":    {"path": os.path.join(ROOT, "data", "spa", "midias_sociais.json"),
+               "cfg_path": ("unidades", "spa", "midia_ids")},
 }
 
 
 def _load_cfg() -> dict:
-    with open(CONFIG) as f: return json.load(f)
+    with open(CONFIG) as f:
+        return json.load(f)
 
 
 def _load_base(path: str) -> dict:
-    if not os.path.exists(path): return {}
-    with open(path) as f: return json.load(f)
+    if not os.path.exists(path):
+        return {}
+    with open(path) as f:
+        return json.load(f)
 
 
 def _write(path: str, data: dict) -> None:
@@ -218,29 +303,36 @@ def _write(path: str, data: dict) -> None:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Refresh GBP via Supermetrics")
+    ap = argparse.ArgumentParser(description="Refresh GBP via Google Business Profile API oficial")
     ap.add_argument("--unidade", choices=list(UNIDADES), help="Rodar so uma")
     ap.add_argument("--dry-run", action="store_true", help="Nao grava")
     args = ap.parse_args()
 
-    api_key = os.environ.get("SUPERMETRICS_API_KEY")
-    if not api_key:
-        print("ERRO: SUPERMETRICS_API_KEY nao definido")
+    client_id = os.environ.get("GBP_OAUTH_CLIENT_ID")
+    client_secret = os.environ.get("GBP_OAUTH_CLIENT_SECRET")
+    refresh_token = os.environ.get("GBP_OAUTH_REFRESH_TOKEN")
+    missing = [k for k, v in [
+        ("GBP_OAUTH_CLIENT_ID", client_id),
+        ("GBP_OAUTH_CLIENT_SECRET", client_secret),
+        ("GBP_OAUTH_REFRESH_TOKEN", refresh_token),
+    ] if not v]
+    if missing:
+        print(f"ERRO: variaveis de ambiente faltando: {', '.join(missing)}")
+        print("Setup: veja o docstring deste script pra passos OAuth 2.0.")
         return 1
-    team_id = os.environ.get("SUPERMETRICS_TEAM_ID", DEFAULT_TEAM_ID)
+
+    access_token = _get_access_token(client_id, client_secret, refresh_token)
+    if not access_token:
+        print("ERRO: nao consegui obter access_token via refresh_token OAuth.")
+        return 1
 
     cfg = _load_cfg()
     unidades_run = [args.unidade] if args.unidade else list(UNIDADES)
+    hoje = datetime.now(BRT).date()
 
     total_atualizadas = 0
     for u in unidades_run:
         info = UNIDADES[u]
-        path = os.path.join(ROOT, "data", info["prefix"], "midias_sociais.json").replace("/./", "/")
-        if info["prefix"]:
-            path = os.path.join(ROOT, "data", info["prefix"].rstrip("/"), "midias_sociais.json")
-        else:
-            path = os.path.join(ROOT, "data", "midias_sociais.json")
-
         node = cfg
         for k in info["cfg_path"]:
             node = node.get(k, {}) if isinstance(node, dict) else {}
@@ -248,22 +340,22 @@ def main() -> int:
         loc_id = node.get("google_business_location_id")
         loc_nome = node.get("google_business_nome")
 
-        print(f"\n[{u}] {path}")
+        print(f"\n[{u}] {info['path']}")
         if not loc_id:
-            print(f"  ↳ google_business_location_id nao configurado no config.json — pulando")
+            print(f"  ↳ google_business_location_id nao configurado — pulando")
             continue
 
-        base = _load_base(path)
+        base = _load_base(info["path"])
         if not base:
             print(f"  ↳ arquivo base nao existe — pulando")
             continue
 
         print(f"  location: {loc_id}")
-        serie = _fetch_performance(loc_id, api_key, team_id)
-        reviews = _fetch_reviews(loc_id, api_key, team_id)
+        serie = _fetch_performance(loc_id, access_token, hoje)
+        reviews = _fetch_reviews(loc_id, access_token)
 
         if not serie and not reviews:
-            print(f"  ↳ Supermetrics nao devolveu dados — arquivo preservado")
+            print(f"  ↳ Google API nao devolveu dados — arquivo preservado")
             continue
 
         updated, resumo = _merge(base, serie, reviews, loc_id, loc_nome)
@@ -273,7 +365,7 @@ def main() -> int:
         if args.dry_run:
             print(f"  [dry-run] nao grava")
         else:
-            _write(path, updated)
+            _write(info["path"], updated)
             print(f"  ✓ gravado")
         total_atualizadas += 1
 
