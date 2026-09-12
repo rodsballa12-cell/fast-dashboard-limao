@@ -45,13 +45,20 @@ jobs:
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
         run: python scripts/refresh_midias.py
 
-      # Google Business Profile REMOVIDO:
-      #  1. Rota Supermetrics ($37/mes) descartada.
-      #  2. Rota Google Business Profile API oficial: Google nega
-      #     candidatura pra single-location owners (so aprova agencias
-      #     10+ locations ou plataformas SaaS).
-      #  3. Rota manual: user optou por nao fazer.
-      # Painel esconde o card GBP em ambas unidades.
+      - name: Refresh Google Business Profile
+        # Rota Supermetrics REST API (plano Connect + GMB add-on).
+        # Google Business Profile API oficial nega candidatura pra single-
+        # location owners, entao Supermetrics e a rota programatica viavel.
+        # Pula silencioso se SUPERMETRICS_API_KEY nao estiver configurado.
+        env:
+          SUPERMETRICS_API_KEY: ${{ secrets.SUPERMETRICS_API_KEY }}
+          SUPERMETRICS_TEAM_ID: ${{ secrets.SUPERMETRICS_TEAM_ID }}
+        run: |
+          if [ -z "$SUPERMETRICS_API_KEY" ]; then
+            echo "SUPERMETRICS_API_KEY nao configurado — pulando refresh GBP."
+            exit 0
+          fi
+          python scripts/refresh_google.py
 
       - name: Commit e push
         run: |
