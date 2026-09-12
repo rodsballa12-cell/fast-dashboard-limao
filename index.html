@@ -5007,7 +5007,7 @@ function renderMidias(){
   const igSeg = (MID.instagram && MID.instagram.followers) || 0;
   const gmb30 = MID.google_business && MID.google_business.kpis_30d;
   const gmbAcoes = gmb30 ? ((gmb30.actions_phone||0) + (gmb30.actions_directions||0)) : 0;
-  const gmbRating = MID.google_business ? MID.google_business.rating.estrelas_media : null;
+  const gmbRating = MID.google_business?.rating?.estrelas_media || null;
 
   let direcMidia;
   if(!gastoMes){
@@ -5118,7 +5118,7 @@ function renderMidias(){
       ${chip('Instagram', true, `@${MID.instagram.handle} · ${MID.instagram.followers.toLocaleString('pt-BR')} seguidores`, '#22c55e')}
       ${chip('Facebook', !!(MID.facebook_page&&MID.facebook_page.conectado), MID.facebook_page?MID.facebook_page.nome:'Aguardando auth', MID.facebook_page&&MID.facebook_page.conectado?'#22c55e':'#f59e0b')}
       ${chip('Google Ads', !!MID.google_ads.conectado, MID.google_ads.mensagem||'', MID.google_ads.conectado?'#22c55e':'#f59e0b')}
-      ${chip('Google Meu Negócio', !!(MID.google_business&&MID.google_business.conectado), MID.google_business?'⭐ '+MID.google_business.rating.estrelas_media+' · '+MID.google_business.rating.reviews_total+' reviews':'Aguardando auth', MID.google_business&&MID.google_business.conectado?'#22c55e':'#f59e0b')}
+      ${chip('Google Meu Negócio', !!(MID.google_business&&MID.google_business.conectado), MID.google_business?.rating ? '⭐ '+MID.google_business.rating.estrelas_media+' · '+MID.google_business.rating.reviews_total+' reviews' : (MID.google_business?.conectado ? 'Conectado, sem reviews ainda' : 'Aguardando auth'), MID.google_business&&MID.google_business.conectado?'#22c55e':'#f59e0b')}
       ${chip('HubSpot', true, `Portal ${MID.hubspot.portal_id} · ${MID.hubspot.contatos} contatos`, '#22c55e')}
       ${chip('WhatsApp API', !!MID.whatsapp_cloud_api.conectado, MID.whatsapp_cloud_api.mensagem||'', MID.whatsapp_cloud_api.conectado?'#22c55e':'#ef4444')}
       <span style="margin-left:auto;font-size:10px">Gerado ${gerado} · ${MID.fonte}</span>
