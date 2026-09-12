@@ -80,7 +80,7 @@ def _sm_query(payload: dict, api_key: str, team_id: str) -> dict:
                     "Content-Type": "application/json",
                 },
                 json=body,
-                timeout=90,
+                timeout=180,  # Supermetrics as vezes demora ao puxar 30 dias
             )
             if r.status_code >= 400:
                 print(f"  [warn] Supermetrics HTTP {r.status_code}: {r.text[:300]}")
@@ -100,13 +100,16 @@ def _sm_query(payload: dict, api_key: str, team_id: str) -> dict:
 
 
 def _fetch_performance(loc_id: str, api_key: str, team_id: str) -> list[dict]:
-    """Serie diaria 30d + KPIs agregados."""
+    """Serie diaria 30d + KPIs agregados.
+
+    GMB nao aceita 'report_type' como setting (has_report_type_selection=false).
+    O Supermetrics infere o report_type dos fields escolhidos.
+    """
     data = _sm_query({
         "ds_id": "GMB",
         "ds_accounts": [loc_id],
         "fields": CAMPOS_PERF,
         "date_range_type": "last_30_days",
-        "settings": {"report_type": "Performance"},
     }, api_key, team_id)
     if not data or not data.get("data"):
         return []
@@ -130,7 +133,6 @@ def _fetch_reviews(loc_id: str, api_key: str, team_id: str) -> dict:
         "ds_accounts": [loc_id],
         "fields": CAMPOS_REVIEWS,
         "date_range_type": "last_30_days",
-        "settings": {"report_type": "ReviewsTotals"},
     }, api_key, team_id)
     if not data or not data.get("data") or len(data["data"]) < 2:
         return {}
