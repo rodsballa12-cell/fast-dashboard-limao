@@ -5026,6 +5026,11 @@ function renderMidias(){
 
   document.getElementById('midias-status').innerHTML = `<div class="card">
     <h2>📣 Mídia · ano ${new Date().getFullYear()} <span style="font-weight:400;font-size:12px;color:var(--ink-3)">(acumulado desde a abertura)</span></h2>
+    <div style="font-size:10.5px;color:var(--ink-3);margin-top:2px;padding:4px 8px;background:var(--surface-2);border-radius:4px;display:inline-block">
+      🔍 Unidade renderizada: <strong>${(MID._debug_unidade||'?').toUpperCase()}</strong> · fonte: <code>${(MID._debug_url||'').split('/').slice(-2).join('/')}</code>
+      ${MID._debug_scaffolding ? '<span style="color:#f59e0b;font-weight:700">⚠️ SCAFFOLDING (dados Escova, SPA sem arquivo próprio)</span>' : ''}
+      · IG: <code>@${MID.instagram?.handle||'?'}</code> · Meta: <code>${MID.meta_ads?.ad_account_id||'?'}</code>
+    </div>
     <div class="cap">Do maior número (quanto investe e quantos clientes traz) pras ações imediatas nos cards abaixo.</div>
 
     <!-- HERO · ROAS como métrica estrela + gasto/conversas/CPA -->
@@ -6674,7 +6679,15 @@ async function loadMidias(){
   if(UNIDADE_SEM_DADOS) return;  // placeholder mode
   try{
     const r = await fetchUnidade('midias_sociais.json');
-    if(r.ok){ MID = await r.json(); renderMidias(); }
+    if(r.ok){
+      MID = await r.json();
+      // Debug: registra qual JSON foi carregado (visivel na tag do HERO)
+      MID._debug_url = r.url;
+      MID._debug_unidade = UNIDADE_ATIVA;
+      MID._debug_scaffolding = UNIDADE_SCAFFOLDING;
+      console.log('[loadMidias]', {url: r.url, unidade: UNIDADE_ATIVA, scaffolding: UNIDADE_SCAFFOLDING, handle: MID.instagram?.handle, ad_account: MID.meta_ads?.ad_account_id});
+      renderMidias();
+    }
   }catch(e){ console.warn('midias_sociais.json indisponível', e); }
 }
 
