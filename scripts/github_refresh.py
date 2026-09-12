@@ -1248,6 +1248,46 @@ def main():
         em = c.get("email") or det.get("email")
         if em: email_map[cid] = em
 
+    # === PROFS HISTÓRICAS (deletadas do BackOffice) ===
+    # /v1/profissionais lista só ativas/inativas. Profs completamente removidas
+    # do BackOffice não aparecem, mas seus IDs persistem em transacoes
+    # historicas e viravam "Prof desligado #ID" no ranking de comissoes.
+    # Tenta /v1/profissionais/{id} direto — o endpoint costuma devolver o
+    # cadastro mesmo pra profs removidas do listing.
+    ids_orfaos = set()
+    for tx in transac:
+        for s in (tx.get("servicos") or []):
+            exec_id = s.get("idProfissionalQueRealizouServico")
+            if exec_id and exec_id not in prof_map_global:
+                ids_orfaos.add(exec_id)
+    if ids_orfaos:
+        print(f"[fetch] profs orfaos (nao no listing): {len(ids_orfaos)} IDs · lookup direto...")
+        n_resolvidos = 0
+        for pid in sorted(ids_orfaos):
+            try:
+                resp = t.get(f"/v1/profissionais/{pid}")
+                if isinstance(resp, dict):
+                    p = resp.get("data") if isinstance(resp.get("data"), dict) else resp
+                    nome = (p.get("nome") or "").strip().title() if isinstance(p, dict) else ""
+                    if nome:
+                        prof_map_global[pid] = nome
+                        prof_meta_global[pid] = {
+                            "nome": nome,
+                            "apelido": (p.get("apelido") or "").strip() if isinstance(p, dict) else "",
+                            "funcao": "",
+                            "status": "historico",  # marcador · nao aparece no listing
+                            "possui_agenda": False,
+                            "id_profissional": p.get("idProfissional") if isinstance(p, dict) else None,
+                            "genero": "",
+                        }
+                        n_resolvidos += 1
+            except Exception:
+                pass  # 404 = deletado de vez · silencia
+        print(f"  {n_resolvidos}/{len(ids_orfaos)} resolvidos via lookup direto")
+        if n_resolvidos:
+            _save_cache(PROF_CACHE, {"prof_map": prof_map_global, "prof_meta": prof_meta_global})
+            analisar._prof_id_nome_cache = prof_map_global
+
     # Análises por período
     a_anual = analisar(agend, transac, ini_ano, fim_ano)
     a_mensal = analisar(agend, transac, ini_mes, fim_mes)
