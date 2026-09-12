@@ -563,30 +563,90 @@
     </div>
 
     <div class="panel" id="tab-midias">
-      <div class="audit" id="midias-audit"><div>📣</div><div><strong>Gestão de mídias sociais.</strong> Meta Ads + Instagram + Google Ads (quando conectar) + WhatsApp + HubSpot CRM. Dados atualizados pelo Gerente Marketing FAST via <code>/marketing-fast</code>.</div></div>
+      <div class="audit" id="midias-audit"><div>📣</div><div><strong>Gestão de mídias sociais.</strong> Meta Ads + Instagram + Facebook + Google Meu Negócio + WhatsApp Cloud + CRM. Cron 07h BRT diario via GitHub Actions puxa dados via Meta Graph API + Supermetrics (GMB).</div></div>
       <div id="midias-alertas"></div>
+
+      <!-- HERO · resumo executivo (ano) -->
       <div id="midias-status"></div>
-      <div class="tabs" role="tablist" style="margin:14px 0 10px 0;gap:6px;position:sticky;top:0;background:var(--bg);z-index:20;padding:6px 0;border-bottom:1px solid var(--surface-2)">
-        <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="hoje" style="padding:8px 14px;font-size:12.5px">🔴 Hoje</button>
-        <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="7d" style="padding:8px 14px;font-size:12.5px">📅 Semana</button>
-        <button class="tab-btn midias-per-btn" role="tab" aria-selected="true"  data-per="mtd" style="padding:8px 14px;font-size:12.5px">🎯 Mês</button>
-        <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="90d" style="padding:8px 14px;font-size:12.5px">📊 90 dias</button>
-        <span id="midias-atualizado" style="margin-left:auto;font-size:11px;color:var(--ink-3);align-self:center"></span>
+
+      <!-- FILTRO DE PERÍODO + NAVEGAÇÃO POR ATOS (sticky) -->
+      <div style="position:sticky;top:0;background:var(--bg);z-index:20;padding:6px 0;border-bottom:1px solid var(--surface-2);margin:14px 0 10px 0">
+        <div class="tabs" role="tablist" style="gap:6px;margin-bottom:6px">
+          <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="hoje" style="padding:8px 14px;font-size:12.5px">🔴 Hoje</button>
+          <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="7d" style="padding:8px 14px;font-size:12.5px">📅 Semana</button>
+          <button class="tab-btn midias-per-btn" role="tab" aria-selected="true"  data-per="mtd" style="padding:8px 14px;font-size:12.5px">🎯 Mês</button>
+          <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="90d" style="padding:8px 14px;font-size:12.5px">📊 90 dias</button>
+          <span id="midias-atualizado" style="margin-left:auto;font-size:11px;color:var(--ink-3);align-self:center"></span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11px">
+          <span style="color:var(--ink-3);align-self:center">Ir para:</span>
+          <a href="#ato-panorama" style="padding:3px 10px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);text-decoration:none;border:1px solid var(--border)">① Panorama</a>
+          <a href="#ato-descoberta" style="padding:3px 10px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);text-decoration:none;border:1px solid var(--border)">② Descoberta</a>
+          <a href="#ato-engajamento" style="padding:3px 10px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);text-decoration:none;border:1px solid var(--border)">③ Engajamento</a>
+          <a href="#ato-conversao" style="padding:3px 10px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);text-decoration:none;border:1px solid var(--border)">④ Conversão</a>
+          <a href="#ato-acoes" style="padding:3px 10px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);text-decoration:none;border:1px solid var(--border)">⑤ Ações</a>
+        </div>
       </div>
-      <div id="midias-kpis"></div>
-      <div id="midias-geo"></div>
-      <div id="midias-demo"></div>
-      <div id="midias-instagram"></div>
-      <div id="midias-crossings"></div>
-      <div id="midias-canal-aquisicao"></div>
-      <div id="midias-google-dow"></div>
-      <div id="midias-direcionamentos"></div>
-      <div id="midias-campanhas"></div>
-      <div id="midias-trend"></div>
-      <div id="midias-placement"></div>
-      <div id="midias-funil"></div>
-      <div id="midias-recomendacoes"></div>
-      <div id="midias-insights"></div>
+
+      <!-- ═══ ① PANORAMA DO PERÍODO ═══ -->
+      <div id="ato-panorama" style="scroll-margin-top:120px">
+        <div style="margin:22px 0 10px 0;padding:14px 18px;background:linear-gradient(90deg,rgba(59,130,246,.12),transparent);border-left:4px solid #3b82f6;border-radius:6px">
+          <div style="font-size:10.5px;color:#3b82f6;font-weight:800;text-transform:uppercase;letter-spacing:.08em">Ato 1 de 5</div>
+          <div style="font-size:18px;font-weight:800;color:var(--ink);margin-top:2px">Panorama · como está o período selecionado</div>
+          <div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">Nota da janela + KPIs Meta Ads (gasto, conversas, CPA, alcance, frequência).</div>
+        </div>
+        <div id="midias-kpis"></div>
+      </div>
+
+      <!-- ═══ ② DESCOBERTA — quem vê a marca ═══ -->
+      <div id="ato-descoberta" style="scroll-margin-top:120px">
+        <div style="margin:28px 0 10px 0;padding:14px 18px;background:linear-gradient(90deg,rgba(225,48,108,.12),transparent);border-left:4px solid #E1306C;border-radius:6px">
+          <div style="font-size:10.5px;color:#E1306C;font-weight:800;text-transform:uppercase;letter-spacing:.08em">Ato 2 de 5</div>
+          <div style="font-size:18px;font-weight:800;color:var(--ink);margin-top:2px">Descoberta · quem vê a marca</div>
+          <div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">Todos os canais que fazem a Fast aparecer pra novos clientes: Instagram e Facebook orgânico, Google Meu Negócio, e onde os anúncios Meta são exibidos (demografia + geografia + placement).</div>
+        </div>
+        <div id="midias-instagram"></div>
+        <div id="midias-demo"></div>
+        <div id="midias-geo"></div>
+        <div id="midias-placement"></div>
+        <div id="midias-google-dow"></div>
+      </div>
+
+      <!-- ═══ ③ ENGAJAMENTO — o que faz clicar ═══ -->
+      <div id="ato-engajamento" style="scroll-margin-top:120px">
+        <div style="margin:28px 0 10px 0;padding:14px 18px;background:linear-gradient(90deg,rgba(168,85,247,.12),transparent);border-left:4px solid #a855f7;border-radius:6px">
+          <div style="font-size:10.5px;color:#a855f7;font-weight:800;text-transform:uppercase;letter-spacing:.08em">Ato 3 de 5</div>
+          <div style="font-size:18px;font-weight:800;color:var(--ink);margin-top:2px">Engajamento · o que faz clicar</div>
+          <div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">Ranking de campanhas, ad sets e anúncios que estão performando. Alocação por objetivo. Evolução diária de gasto e conversas.</div>
+        </div>
+        <div id="midias-campanhas"></div>
+        <div id="midias-trend"></div>
+      </div>
+
+      <!-- ═══ ④ CONVERSÃO — quem vira contato/cliente ═══ -->
+      <div id="ato-conversao" style="scroll-margin-top:120px">
+        <div style="margin:28px 0 10px 0;padding:14px 18px;background:linear-gradient(90deg,rgba(34,197,94,.12),transparent);border-left:4px solid #22c55e;border-radius:6px">
+          <div style="font-size:10.5px;color:#22c55e;font-weight:800;text-transform:uppercase;letter-spacing:.08em">Ato 4 de 5</div>
+          <div style="font-size:18px;font-weight:800;color:var(--ink);margin-top:2px">Conversão · quem vira contato e cliente real</div>
+          <div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">Cruzamento com Trinks: CAC real, de onde vêm os novos clientes, contribuição de cada canal orgânico, funil de conversão completo (impressão → WhatsApp → visita → cliente).</div>
+        </div>
+        <div id="midias-canal-aquisicao"></div>
+        <div id="midias-crossings"></div>
+        <div id="midias-funil"></div>
+      </div>
+
+      <!-- ═══ ⑤ AÇÕES RECOMENDADAS ═══ -->
+      <div id="ato-acoes" style="scroll-margin-top:120px">
+        <div style="margin:28px 0 10px 0;padding:14px 18px;background:linear-gradient(90deg,rgba(245,158,11,.12),transparent);border-left:4px solid #f59e0b;border-radius:6px">
+          <div style="font-size:10.5px;color:#f59e0b;font-weight:800;text-transform:uppercase;letter-spacing:.08em">Ato 5 de 5</div>
+          <div style="font-size:18px;font-weight:800;color:var(--ink);margin-top:2px">Ações · o que fazer agora</div>
+          <div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">Direcionamentos estratégicos curados + recomendações oficiais Meta (via API) + leitura da semana com priorização.</div>
+        </div>
+        <div id="midias-direcionamentos"></div>
+        <div id="midias-recomendacoes"></div>
+        <div id="midias-insights"></div>
+      </div>
+
       <div style="text-align:right;margin-top:14px;display:flex;gap:8px;justify-content:flex-end">
         <button id="midias-export-btn" style="background:var(--surface-2);color:var(--ink);border:1px solid var(--ink-3);padding:8px 14px;font-size:12px;border-radius:6px;cursor:pointer">⬇️ Exportar CSV</button>
         <button id="midias-print-btn" style="background:var(--surface-2);color:var(--ink);border:1px solid var(--ink-3);padding:8px 14px;font-size:12px;border-radius:6px;cursor:pointer">🖨️ Imprimir/PDF</button>
