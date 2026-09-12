@@ -317,6 +317,437 @@ def _fetch_serie_diaria(act_id: str, token: str, hoje: date) -> list[dict[str, A
 
 
 # ---------------------------------------------------------------------------
+# Meta Ads — breakdowns (campanhas, adsets, ads, demografia, placement,
+# geografia, por objetivo) por janela
+# ---------------------------------------------------------------------------
+
+def _fetch_insights_breakdown(
+    act_id: str,
+    token: str,
+    since: date,
+    until: date,
+    level: str,
+    extra_fields: str = "",
+    breakdowns: str = "",
+    limit: int = 100,
+) -> list[dict[str, Any]]:
+    """Chamada generica /act_ID/insights com level/breakdowns configuraveis.
+
+    level in {account,campaign,adset,ad}. `extra_fields` sao os fields alem
+    do INSIGHT_FIELDS base + name-fields do nivel (campaign_name/adset_name/etc).
+    breakdowns = "age,gender" ou "publisher_platform,platform_position" ou "region".
+    Falha graciosa: devolve [] se der erro.
+    """
+    fields = INSIGHT_FIELDS
+    if extra_fields:
+        fields += "," + extra_fields
+    params: dict[str, Any] = {
+        "fields": fields,
+        "time_range": json.dumps({"since": _iso(since), "until": _iso(until)}),
+        "level": level,
+        "limit": limit,
+    }
+    if breakdowns:
+        params["breakdowns"] = breakdowns
+    try:
+        return _graph_get_all(f"/{act_id}/insights", params, token, max_pages=5)
+    except Exception as e:
+        print(f"  [WARN] Insights level={level} breakdowns={breakdowns or '-'} {since}..{until} falhou: {e}", file=sys.stderr)
+        return []
+
+
+def _row_metrics(r: dict[str, Any]) -> dict[str, Any]:
+    """Extrai metricas comuns de uma linha /insights."""
+    gasto = float(r.get("spend") or 0)
+    impr = int(float(r.get("impressions") or 0))
+    cliques = int(float(r.get("clicks") or 0))
+    reach = int(float(r.get("reach") or 0))
+    freq = float(r.get("frequency") or 0)
+    cpm = float(r.get("cpm") or 0)
+    ctr = float(r.get("ctr") or 0)
+    actions = r.get("actions") or []
+    cost_per_action = r.get("cost_per_action_type") or []
+    conversas = int(_actions_val(actions, MSG_ACTION))
+    link_clicks = int(_actions_val(actions, "link_click"))
+    cpa_msg = _actions_val(cost_per_action, MSG_ACTION) or None
+    cpc = round(gasto / cliques, 2) if cliques else 0.0
+    return {
+        "gasto": round(gasto, 2),
+        "impressoes": impr,
+        "cliques": cliques,
+        "reach": reach,
+        "frequency": round(freq, 2),
+        "cpm": round(cpm, 2),
+        "cpc": cpc,
+        "ctr_pct": round(ctr, 2),
+        "conversas_msg": conversas,
+        "link_clicks": link_clicks,
+        "cpa_msg": round(cpa_msg, 2) if cpa_msg else None,
+    }
+
+
+def _fetch_campanhas(act_id: str, token: str, since: date, until: date) -> list[dict[str, Any]]:
+    rows = _fetch_insights_breakdown(
+        act_id, token, since, until,
+        level="campaign",
+        extra_fields="campaign_name,objective",
+    )
+    total_gasto = sum(float(r.get("spend") or 0) for r in rows) or 0.0
+    saida = []
+    for r in rows:
+        m = _row_metrics(r)
+        saida.append({
+            "nome": r.get("campaign_name") or "-",
+            "objetivo": r.get("objective") or "-",
+            "status": "ACTIVE" if m["gasto"] > 0 else "PAUSED",
+            **m,
+        })
+    saida.sort(key=lambda x: x["gasto"], reverse=True)
+    return saida[:15]
+
+
+def _fetch_adsets(act_id: str, token: str, since: date, until: date) -> list[dict[str, Any]]:
+    rows = _fetch_insights_breakdown(
+        act_id, token, since, until,
+        level="adset",
+        extra_fields="adset_name,campaign_name",
+    )
+    saida = []
+    for r in rows:
+        m = _row_metrics(r)
+        saida.append({
+            "adset": r.get("adset_name") or "-",
+            "campanha": r.get("campaign_name") or "-",
+            "gasto": m["gasto"],
+            "impressoes": m["impressoes"],
+            "cliques": m["cliques"],
+            "reach": m["reach"],
+            "frequency": m["frequency"],
+            "ctr_pct": m["ctr_pct"],
+            "conversas_msg": m["conversas_msg"],
+            "cpa_msg": m["cpa_msg"],
+            "insight": None,
+        })
+    saida.sort(key=lambda x: x["gasto"], reverse=True)
+    return saida[:20]
+
+
+def _fetch_anuncios(act_id: str, token: str, since: date, until: date) -> list[dict[str, Any]]:
+    rows = _fetch_insights_breakdown(
+        act_id, token, since, until,
+        level="ad",
+        extra_fields="ad_name,campaign_name",
+    )
+    saida = []
+    for r in rows:
+        m = _row_metrics(r)
+        saida.append({
+            "ad": r.get("ad_name") or "-",
+            "campanha": r.get("campaign_name") or "-",
+            "gasto": m["gasto"],
+            "impressoes": m["impressoes"],
+            "cliques": m["cliques"],
+            "reach": m["reach"],
+            "frequency": m["frequency"],
+            "ctr_pct": m["ctr_pct"],
+            "cpm": m["cpm"],
+            "conversas_msg": m["conversas_msg"],
+            "cpa_msg": m["cpa_msg"],
+            "status": "ACTIVE" if m["gasto"] > 0 else "PAUSED",
+            "copy_curto": None,
+            "thumb": None,
+        })
+    saida.sort(key=lambda x: x["gasto"], reverse=True)
+    return saida[:25]
+
+
+def _fetch_demografia(act_id: str, token: str, since: date, until: date) -> list[dict[str, Any]]:
+    rows = _fetch_insights_breakdown(
+        act_id, token, since, until,
+        level="account",
+        breakdowns="age,gender",
+    )
+    total = sum(float(r.get("spend") or 0) for r in rows) or 1.0
+    saida = []
+    for r in rows:
+        m = _row_metrics(r)
+        share = round(m["gasto"] / total * 100, 2) if total else 0.0
+        saida.append({
+            "faixa": r.get("age") or "-",
+            "genero": r.get("gender") or "-",
+            "gasto": m["gasto"],
+            "impressoes": m["impressoes"],
+            "cliques": m["cliques"],
+            "reach": m["reach"],
+            "frequency": m["frequency"],
+            "ctr_pct": m["ctr_pct"],
+            "conversas_msg": m["conversas_msg"],
+            "cpa_msg": m["cpa_msg"],
+            "share_pct": share,
+            "status": "ACTIVE" if m["gasto"] > 0 else "PAUSED",
+        })
+    saida.sort(key=lambda x: x["gasto"], reverse=True)
+    return saida
+
+
+def _fetch_placement(act_id: str, token: str, since: date, until: date) -> list[dict[str, Any]]:
+    rows = _fetch_insights_breakdown(
+        act_id, token, since, until,
+        level="account",
+        breakdowns="publisher_platform,platform_position",
+    )
+    total = sum(float(r.get("spend") or 0) for r in rows) or 1.0
+    saida = []
+    for r in rows:
+        m = _row_metrics(r)
+        share = round(m["gasto"] / total * 100, 2) if total else 0.0
+        saida.append({
+            "plataforma": r.get("publisher_platform") or "-",
+            "posicao": r.get("platform_position") or "-",
+            "gasto": m["gasto"],
+            "impressoes": m["impressoes"],
+            "cliques": m["cliques"],
+            "reach": m["reach"],
+            "frequency": m["frequency"],
+            "ctr_pct": m["ctr_pct"],
+            "cpm": m["cpm"],
+            "conversas_msg": m["conversas_msg"],
+            "cpa_msg": m["cpa_msg"],
+            "share_pct": share,
+            "status": "ACTIVE" if m["gasto"] > 0 else "PAUSED",
+        })
+    saida.sort(key=lambda x: x["gasto"], reverse=True)
+    return saida
+
+
+def _fetch_geografia(act_id: str, token: str, since: date, until: date) -> list[dict[str, Any]]:
+    rows = _fetch_insights_breakdown(
+        act_id, token, since, until,
+        level="account",
+        breakdowns="region",
+    )
+    total = sum(float(r.get("spend") or 0) for r in rows) or 1.0
+    saida = []
+    for r in rows:
+        m = _row_metrics(r)
+        share = round(m["gasto"] / total * 100, 2) if total else 0.0
+        saida.append({
+            "regiao": r.get("region") or "-",
+            "gasto": m["gasto"],
+            "impressoes": m["impressoes"],
+            "cliques": m["cliques"],
+            "reach": m["reach"],
+            "ctr_pct": m["ctr_pct"],
+            "cpm": m["cpm"],
+            "conversas_msg": m["conversas_msg"],
+            "share_pct": share,
+            "alerta": None,
+        })
+    saida.sort(key=lambda x: x["gasto"], reverse=True)
+    return saida[:20]
+
+
+def _por_objetivo(campanhas: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Agrupa campanhas por objetivo."""
+    grupos: dict[str, dict[str, Any]] = {}
+    total_gasto = sum(c["gasto"] for c in campanhas) or 1.0
+    for c in campanhas:
+        obj = c.get("objetivo") or "-"
+        g = grupos.setdefault(obj, {
+            "objetivo": obj,
+            "gasto": 0.0, "impressoes": 0, "cliques": 0, "reach": 0,
+            "conversas_msg": 0, "frequency": 0.0, "ctr_pct": 0.0,
+            "cpm": 0.0, "cpa_msg": None, "insight": None,
+        })
+        g["gasto"] += c.get("gasto", 0)
+        g["impressoes"] += c.get("impressoes", 0)
+        g["cliques"] += c.get("cliques", 0)
+        g["reach"] += c.get("reach", 0)
+        g["conversas_msg"] += c.get("conversas_msg", 0)
+    saida = []
+    for obj, g in grupos.items():
+        g["gasto"] = round(g["gasto"], 2)
+        g["ctr_pct"] = round((g["cliques"] / g["impressoes"] * 100), 2) if g["impressoes"] else 0.0
+        g["cpm"] = round((g["gasto"] / g["impressoes"] * 1000), 2) if g["impressoes"] else 0.0
+        g["cpa_msg"] = round(g["gasto"] / g["conversas_msg"], 2) if g["conversas_msg"] else None
+        g["share_gasto_pct"] = round(g["gasto"] / total_gasto * 100, 2) if total_gasto else 0.0
+        saida.append(g)
+    saida.sort(key=lambda x: x["gasto"], reverse=True)
+    return saida
+
+
+def _fetch_breakdowns_janela(act_id: str, token: str, since: date, until: date, incluir_pesados: bool = True) -> dict[str, Any]:
+    """Puxa todos os breakdowns para UMA janela.
+
+    incluir_pesados=False pula demografia/placement/geografia (usado na janela
+    'hoje' pra evitar 5x mais chamadas por refresh).
+    """
+    campanhas = _fetch_campanhas(act_id, token, since, until)
+    adsets = _fetch_adsets(act_id, token, since, until)
+    por_obj = _por_objetivo(campanhas)
+    saida: dict[str, Any] = {
+        "top_campanhas": campanhas,
+        "ad_sets": adsets,
+        "por_objetivo": por_obj,
+    }
+    if incluir_pesados:
+        saida["demografia"] = _fetch_demografia(act_id, token, since, until)
+        saida["placement"] = _fetch_placement(act_id, token, since, until)
+    return saida
+
+
+# ---------------------------------------------------------------------------
+# Facebook Page — organico 30d
+# ---------------------------------------------------------------------------
+
+def _fetch_fb_organico_30d(page_id: str, page_token: str, hoje: date) -> dict[str, Any] | None:
+    """Puxa page_post_engagements + page_views + video_views organicos+pagos nos ultimos 30d.
+
+    Precisa de Page Access Token. Se algum metric falhar so aquele fica 0.
+    """
+    inicio, fim = _janela("last_30d", hoje)
+    since_ts = int(datetime.combine(inicio, datetime.min.time(), tzinfo=BRT).timestamp())
+    until_ts = int(datetime.combine(fim, datetime.max.time(), tzinfo=BRT).timestamp())
+    metrics = "page_post_engagements,page_views_total,page_video_views_organic,page_video_views_paid,page_video_views"
+    try:
+        resp = _graph_get(
+            f"/{page_id}/insights",
+            {"metric": metrics, "period": "day", "since": since_ts, "until": until_ts},
+            page_token,
+        )
+    except Exception as e:
+        print(f"  [WARN] FB organico 30d falhou: {e}", file=sys.stderr)
+        return None
+    saida = {
+        "page_post_engagements": 0,
+        "page_visits": 0,
+        "video_views_organicos": 0,
+        "video_views_pagos": 0,
+        "total_video_views": 0,
+        "insight": None,
+    }
+    for m in resp.get("data", []):
+        name = m.get("name")
+        total = 0
+        for v in m.get("values", []) or []:
+            val = v.get("value")
+            if isinstance(val, (int, float)):
+                total += int(val)
+        if name == "page_post_engagements":
+            saida["page_post_engagements"] = total
+        elif name == "page_views_total":
+            saida["page_visits"] = total
+        elif name == "page_video_views_organic":
+            saida["video_views_organicos"] = total
+        elif name == "page_video_views_paid":
+            saida["video_views_pagos"] = total
+        elif name == "page_video_views":
+            saida["total_video_views"] = total
+    return saida
+
+
+# ---------------------------------------------------------------------------
+# Deltas + benchmarks
+# ---------------------------------------------------------------------------
+
+def _delta_pct(atual: float, anterior: float) -> float | None:
+    if anterior in (0, None):
+        return None
+    return round((atual - anterior) / anterior * 100, 2)
+
+
+def _calcular_deltas(periodos: dict[str, dict[str, Any]], act_id: str, token: str, hoje: date, now_iso: str) -> dict[str, Any]:
+    """Compara 7d atual vs 7d anteriores + MTD vs mes anterior mesmo dia."""
+    saida: dict[str, Any] = {}
+
+    # 7d vs 7d anteriores
+    inicio7, fim7 = _janela("last_7d", hoje)
+    inicio7_ant = inicio7 - timedelta(days=7)
+    fim7_ant = fim7 - timedelta(days=7)
+    try:
+        resp = _graph_get(
+            f"/{act_id}/insights",
+            {
+                "fields": INSIGHT_FIELDS,
+                "time_range": json.dumps({"since": _iso(inicio7_ant), "until": _iso(fim7_ant)}),
+                "level": "account",
+            },
+            token,
+        )
+        rows = resp.get("data") or []
+        ant = _row_metrics(rows[0]) if rows else _row_metrics({})
+        atual = periodos.get("7d") or {}
+        saida["7d"] = {
+            "_base": f"{_iso(inicio7_ant)} a {_iso(fim7_ant)}",
+            "gasto_pct": _delta_pct(atual.get("gasto", 0), ant["gasto"]),
+            "impressoes_pct": _delta_pct(atual.get("impressoes", 0), ant["impressoes"]),
+            "cliques_pct": _delta_pct(atual.get("cliques", 0), ant["cliques"]),
+            "conversas_msg_pct": _delta_pct(atual.get("conversas_msg", 0), ant["conversas_msg"]),
+            "cpa_msg_pct": _delta_pct(atual.get("cpa_msg") or 0, ant["cpa_msg"] or 0),
+            "reach_pct": _delta_pct(atual.get("reach", 0), ant["reach"]),
+        }
+    except Exception as e:
+        print(f"  [WARN] Delta 7d anterior falhou: {e}", file=sys.stderr)
+
+    # MTD vs mesmo periodo mes anterior (dia 1 -> dia atual do mes anterior)
+    inicio_mes = hoje.replace(day=1)
+    if inicio_mes.month == 1:
+        inicio_mes_ant = inicio_mes.replace(year=inicio_mes.year - 1, month=12)
+    else:
+        inicio_mes_ant = inicio_mes.replace(month=inicio_mes.month - 1)
+    try:
+        fim_mes_ant = inicio_mes_ant.replace(day=hoje.day)
+    except ValueError:
+        # dia atual nao existe no mes anterior (ex: 31 em fev) — usa ultimo dia
+        proximo = (inicio_mes_ant.replace(day=28) + timedelta(days=4)).replace(day=1)
+        fim_mes_ant = proximo - timedelta(days=1)
+    try:
+        resp = _graph_get(
+            f"/{act_id}/insights",
+            {
+                "fields": INSIGHT_FIELDS,
+                "time_range": json.dumps({"since": _iso(inicio_mes_ant), "until": _iso(fim_mes_ant)}),
+                "level": "account",
+            },
+            token,
+        )
+        rows = resp.get("data") or []
+        ant = _row_metrics(rows[0]) if rows else _row_metrics({})
+        atual = periodos.get("mtd") or {}
+        saida["mtd"] = {
+            "_base": f"{_iso(inicio_mes_ant)} a {_iso(fim_mes_ant)}",
+            "gasto_pct": _delta_pct(atual.get("gasto", 0), ant["gasto"]),
+            "impressoes_pct": _delta_pct(atual.get("impressoes", 0), ant["impressoes"]),
+            "cliques_pct": _delta_pct(atual.get("cliques", 0), ant["cliques"]),
+            "conversas_msg_pct": _delta_pct(atual.get("conversas_msg", 0), ant["conversas_msg"]),
+            "cpa_msg_pct": _delta_pct(atual.get("cpa_msg") or 0, ant["cpa_msg"] or 0),
+            "reach_pct": _delta_pct(atual.get("reach", 0), ant["reach"]),
+        }
+    except Exception as e:
+        print(f"  [WARN] Delta MTD anterior falhou: {e}", file=sys.stderr)
+
+    return saida
+
+
+def _atualizar_benchmarks(base_bench: dict[str, Any], periodos: dict[str, dict[str, Any]]) -> None:
+    """Popula *_atual_30d e cpa_msg_mtd_setembro a partir dos periodos."""
+    p30 = periodos.get("30d") or {}
+    pm = periodos.get("mtd") or {}
+    base_bench["cpa_msg_atual_30d"] = p30.get("cpa_msg")
+    base_bench["cpm_atual_30d"] = p30.get("cpm", 0.0)
+    base_bench["ctr_atual_30d"] = p30.get("ctr_pct", 0.0)
+    base_bench["frequency_atual_30d"] = p30.get("frequency", 0.0)
+    freq = p30.get("frequency", 0.0) or 0.0
+    if freq >= 4:
+        base_bench["frequency_alerta"] = "critico"
+    elif freq >= 2.5:
+        base_bench["frequency_alerta"] = "atencao"
+    else:
+        base_bench["frequency_alerta"] = "ok"
+    base_bench["cpa_msg_mtd_setembro"] = pm.get("cpa_msg")
+
+
+# ---------------------------------------------------------------------------
 # Instagram
 # ---------------------------------------------------------------------------
 
@@ -611,6 +1042,71 @@ def _merge_unidade(base: dict[str, Any], ids: dict[str, Any], token: str, hoje: 
         if ids.get("meta_ad_account_nome"):
             meta_ads["ad_account_nome"] = ids["meta_ad_account_nome"]
 
+        # Breakdowns 30d — top-level sections
+        print(f"  [Meta Ads] {act_id} — breakdowns 30d (campanhas/adsets/anuncios/demografia/placement/geografia)")
+        ini30, fim30 = _janela("last_30d", hoje)
+        campanhas30 = _fetch_campanhas(act_id, token, ini30, fim30)
+        adsets30 = _fetch_adsets(act_id, token, ini30, fim30)
+        anuncios30 = _fetch_anuncios(act_id, token, ini30, fim30)
+        demografia30 = _fetch_demografia(act_id, token, ini30, fim30)
+        placement30 = _fetch_placement(act_id, token, ini30, fim30)
+        geografia30 = _fetch_geografia(act_id, token, ini30, fim30)
+        por_obj30 = _por_objetivo(campanhas30)
+
+        meta_ads["top_campanhas_30d"] = campanhas30
+        meta_ads["ad_sets_30d"] = adsets30
+        meta_ads["anuncios_30d"] = anuncios30
+        meta_ads["por_objetivo_30d"] = por_obj30
+        meta_ads["demografia_30d"] = demografia30
+        meta_ads["placement_30d"] = placement30
+        meta_ads["geografia_30d"] = geografia30
+
+        # Breakdowns por janela (hoje/7d/mtd/90d) — reusa 30d na chave 30d
+        print(f"  [Meta Ads] {act_id} — breakdowns por janela (hoje/7d/mtd/90d)")
+        breakdowns: dict[str, Any] = meta_ads.setdefault("breakdowns", {})
+        breakdowns["_nota"] = "Breakdowns por janela agregados via /act/insights com level=campaign/adset + breakdowns age,gender / publisher_platform / region."
+        # hoje = leve
+        h_ini, h_fim = _janela("today", hoje)
+        breakdowns["hoje"] = _fetch_breakdowns_janela(act_id, token, h_ini, h_fim, incluir_pesados=False)
+        # 7d = completo
+        s7, f7 = _janela("last_7d", hoje)
+        breakdowns["7d"] = _fetch_breakdowns_janela(act_id, token, s7, f7, incluir_pesados=True)
+        # mtd = completo
+        sm, fm = _janela("this_month", hoje)
+        breakdowns["mtd"] = _fetch_breakdowns_janela(act_id, token, sm, fm, incluir_pesados=True)
+        # 90d = completo
+        s90, f90 = _janela("last_90d", hoje)
+        breakdowns["90d"] = _fetch_breakdowns_janela(act_id, token, s90, f90, incluir_pesados=True)
+
+        # Deltas + benchmarks (derivados)
+        print(f"  [Meta Ads] {act_id} — deltas 7d/MTD vs periodo anterior + benchmarks")
+        deltas = _calcular_deltas(pp, act_id, token, hoje, now_iso)
+        if deltas:
+            base_deltas = base.setdefault("deltas_vs_periodo_anterior", {})
+            base_deltas.update(deltas)
+        base_bench = base.setdefault("benchmarks", {})
+        _atualizar_benchmarks(base_bench, pp)
+
+        # verba_setembro (ritmos derivados de MTD + budget diario ativo)
+        vs = meta_ads.setdefault("verba_setembro", {})
+        mtd = pp.get("mtd") or {}
+        m30 = pp.get("30d") or {}
+        dia = hoje.day
+        gasto_mtd = mtd.get("gasto", 0) or 0
+        vs["ritmo_real_mtd_dia"] = round(gasto_mtd / dia, 2) if dia else 0.0
+        # projeta mes com base no ritmo MTD atual
+        # dias no mes:
+        if hoje.month == 12:
+            prox = hoje.replace(year=hoje.year + 1, month=1, day=1)
+        else:
+            prox = hoje.replace(month=hoje.month + 1, day=1)
+        dias_mes = (prox - hoje.replace(day=1)).days
+        vs["projecao_no_ritmo_atual"] = round(vs["ritmo_real_mtd_dia"] * dias_mes, 2)
+        vs["projecao_mes_30d"] = round(m30.get("gasto", 0), 2)
+        vs["ad_sets_ativos"] = sum(1 for a in adsets30 if a["gasto"] > 0)
+        vs["verificado_em"] = now_iso
+        vs["nota_verificacao"] = "Ritmo e projecao calculados automaticamente a partir de /act/insights (MTD + last_30d)."
+
     # ---------- Instagram ----------
     ig_id = ids.get("ig_user_id")
     if ig_id:
@@ -674,7 +1170,7 @@ def _merge_unidade(base: dict[str, Any], ids: dict[str, Any], token: str, hoje: 
     # ---------- Facebook Page ----------
     page_id = ids.get("facebook_page_id")
     if page_id:
-        print(f"  [Facebook] page_id {page_id} — followers + posts 30d")
+        print(f"  [Facebook] page_id {page_id} — followers + posts 30d + organico 30d")
         fb = base.setdefault("facebook_page", {})
         info = _fetch_fb_page(page_id, token, hoje)
         if info.get("nome"):
@@ -688,6 +1184,13 @@ def _merge_unidade(base: dict[str, Any], ids: dict[str, Any], token: str, hoje: 
             fb["posts_30d"] = info["posts_30d"]
         fb["page_id"] = page_id
         fb["conectado"] = True
+
+        # organico_30d — precisa de Page Access Token
+        page_token = _get_page_access_token(page_id, token)
+        if page_token:
+            org = _fetch_fb_organico_30d(page_id, page_token, hoje)
+            if org is not None:
+                fb["organico_30d"] = org
 
     # ---------- Janelas + fonte + gerado_em ----------
     base["janelas"] = _janelas_texto(hoje)
