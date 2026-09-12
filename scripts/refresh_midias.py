@@ -1088,7 +1088,10 @@ def _merge_unidade(base: dict[str, Any], ids: dict[str, Any], token: str, hoje: 
         _atualizar_benchmarks(base_bench, pp)
 
         # verba_setembro (ritmos derivados de MTD + budget diario ativo)
-        vs = meta_ads.setdefault("verba_setembro", {})
+        if not isinstance(meta_ads.get("verba_setembro"), dict):
+            # SPA base tinha verba_setembro=0 (int) — troca por dict
+            meta_ads["verba_setembro"] = {}
+        vs = meta_ads["verba_setembro"]
         mtd = pp.get("mtd") or {}
         m30 = pp.get("30d") or {}
         dia = hoje.day
