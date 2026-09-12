@@ -66,22 +66,22 @@ CAMPOS_REVIEWS = ["total_review_count", "total_review_star_rating"]
 # ---------------------------------------------------------------------------
 
 def _sm_query(payload: dict, api_key: str, team_id: str) -> dict:
-    """POST no Enterprise API. Retorna dict `data` de sucesso ou {} em erro."""
-    body = {
-        "team_id": team_id,
-        **payload,
-    }
+    """GET no Query Manager endpoint (formato do Supermetrics Hub).
+
+    O Query Manager gera URL com ?json={...,"api_key":"api_xxx"} — este e o
+    formato que funciona pras API Keys geradas pelo Hub. Bearer POST exige
+    tokens de app OAuth (nao usados aqui).
+
+    Retorna dict `data` (com sub-chave 'data' contendo linhas) ou {} em erro.
+    """
+    import urllib.parse
+    # api_key vai DENTRO do json, nao em header
+    query_json = {**payload, "team_id": team_id, "api_key": api_key}
+    url = f"{SM_ENDPOINT}?json={urllib.parse.quote(json.dumps(query_json))}"
+
     for tentativa in range(3):
         try:
-            r = requests.post(
-                SM_ENDPOINT,
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                },
-                json=body,
-                timeout=180,  # Supermetrics as vezes demora ao puxar 30 dias
-            )
+            r = requests.get(url, timeout=180)  # Supermetrics as vezes demora
             if r.status_code >= 400:
                 print(f"  [warn] Supermetrics HTTP {r.status_code}: {r.text[:300]}")
                 if r.status_code in (401, 403):
@@ -90,10 +90,15 @@ def _sm_query(payload: dict, api_key: str, team_id: str) -> dict:
                     return {}
                 continue
             js = r.json()
-            if not js.get("success"):
-                print(f"  [warn] Supermetrics erro: {js.get('error')}")
+            # Enterprise API devolve dados direto (sem envelope success/data)
+            # Query Manager devolve {meta:..., data:[[header],[row1],...]}
+            if isinstance(js, dict) and "data" in js:
+                return js  # ja tem sub-chave data
+            if isinstance(js, dict) and js.get("success") is False:
+                print(f"  [warn] Supermetrics erro: {js.get('error') or js.get('meta',{}).get('error') or js}")
                 return {}
-            return js.get("data", {})
+            # fallback: tudo top-level
+            return {"data": js} if isinstance(js, list) else js
         except requests.RequestException as e:
             print(f"  [warn] Supermetrics excecao: {e}")
     return {}
