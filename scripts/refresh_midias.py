@@ -1034,13 +1034,19 @@ def _fetch_ig_media(ig_user_id: str, token: str, hoje: date) -> tuple[list[dict[
 
         mtype = (p.get("media_type") or "").upper()
         mprod = (p.get("media_product_type") or "").upper()
-        # metrica base sempre: reach + saved + shares
-        # reels/videos: adicionar plays + total_interactions
-        metrics = ["reach", "saved", "shares"]
+        # v22+ trocou nomes: 'plays' virou 'views', 'video_views' idem.
+        # Metricas validas hoje: impressions, reach, replies, saved, likes,
+        # comments, shares, total_interactions, follows, profile_visits,
+        # profile_activity, navigation, ig_reels_video_view_total_time,
+        # ig_reels_avg_watch_time, views, reels_skip_rate, reposts,
+        # facebook_views, crossposted_views, total_views, total_likes,
+        # total_comments, link_clicks.
+        metrics = ["reach", "saved", "shares", "total_interactions"]
         if mprod == "REELS" or mtype == "VIDEO":
-            metrics += ["plays", "total_interactions"]
+            metrics += ["views", "ig_reels_avg_watch_time"]
 
-        insights_dict = {"reach": 0, "saved": 0, "shares": 0, "plays": 0, "total_interactions": 0}
+        insights_dict = {"reach": 0, "saved": 0, "shares": 0, "total_interactions": 0,
+                         "views": 0, "ig_reels_avg_watch_time": 0}
         try:
             ins_resp = _graph_get(
                 f"/{p.get('id')}/insights",
@@ -1068,8 +1074,9 @@ def _fetch_ig_media(ig_user_id: str, token: str, hoje: date) -> tuple[list[dict[
             "comments": int(p.get("comments_count") or 0),
             "saved": insights_dict["saved"],
             "shares": insights_dict["shares"],
-            "plays": insights_dict["plays"],
+            "views": insights_dict["views"],
             "total_interactions": insights_dict["total_interactions"],
+            "avg_watch_time_ms": insights_dict["ig_reels_avg_watch_time"],
             "url": p.get("permalink"),
             "caption_curta": cap[:80],
         })
@@ -1079,42 +1086,52 @@ def _fetch_ig_media(ig_user_id: str, token: str, hoje: date) -> tuple[list[dict[
 
 
 def _fetch_ig_audience_demografia(ig_user_id: str, token: str) -> dict[str, Any] | None:
-    """Demografia dos SEGUIDORES (age+gender+city+country).
+    """Demografia dos SEGUIDORES — DESCONTINUADO em v22+.
 
-    Meta descontinuando 'audience_gender_age' pra contas pequenas; v20 ainda
-    aceita se followers >= 100. Fallback graceful.
+    Meta removeu audience_gender_age / audience_city / audience_country do
+    Graph API. Substituto oficial: reached_audience_demographics (breakdown
+    de quem foi ALCANCADO, nao de quem SEGUE) + follower_demographics
+    (breakdown dos seguidores) — ambos com metric_type=total_value.
     """
-    saida = {"age_gender": [], "cidades_top10": [], "paises_top5": []}
-    for metric, chave in [
-        ("audience_gender_age", "age_gender"),
-        ("audience_city", "cidades_top10"),
-        ("audience_country", "paises_top5"),
+    saida = {"age_gender": [], "cidades_top10": [], "paises_top5": [], "fonte": None}
+    # Novos endpoints v22+ (follower_demographics precisa breakdown)
+    for metric, chave, breakdown in [
+        ("follower_demographics", "age_gender", "age"),
+        ("follower_demographics", "cidades_top10", "city"),
+        ("follower_demographics", "paises_top5", "country"),
     ]:
         try:
             resp = _graph_get(
                 f"/{ig_user_id}/insights",
-                {"metric": metric, "period": "lifetime"},
+                {"metric": metric, "period": "lifetime", "metric_type": "total_value", "breakdown": breakdown},
                 token,
             )
             for m in resp.get("data", []) or []:
-                vals = m.get("values", []) or []
-                if not vals:
-                    continue
-                v = vals[0].get("value") or {}
-                if not isinstance(v, dict):
-                    continue
-                items = sorted(
-                    [(k, int(x)) for k, x in v.items() if isinstance(x, (int, float))],
-                    key=lambda kv: kv[1], reverse=True,
-                )
-                if chave == "age_gender":
-                    saida["age_gender"] = [{"faixa": k, "n": n} for k, n in items]
-                elif chave == "cidades_top10":
-                    saida["cidades_top10"] = [{"cidade": k, "n": n} for k, n in items[:10]]
-                elif chave == "paises_top5":
-                    saida["paises_top5"] = [{"pais": k, "n": n} for k, n in items[:5]]
+                tv = m.get("total_value") or {}
+                breakdowns = tv.get("breakdowns") or []
+                for b in breakdowns:
+                    for r in b.get("results", []) or []:
+                        dims = r.get("dimension_values") or []
+                        if not dims:
+                            continue
+                        n = r.get("value")
+                        try:
+                            n = int(n)
+                        except (TypeError, ValueError):
+                            continue
+                        if chave == "age_gender":
+                            saida["age_gender"].append({"faixa": dims[0], "n": n})
+                        elif chave == "cidades_top10":
+                            saida["cidades_top10"].append({"cidade": dims[0], "n": n})
+                        elif chave == "paises_top5":
+                            saida["paises_top5"].append({"pais": dims[0], "n": n})
+                saida["fonte"] = "follower_demographics (v22+)"
         except Exception as e:
-            print(f"  [INFO] IG audience {metric} indisponivel: {str(e)[:120]}", file=sys.stderr)
+            print(f"  [INFO] IG {metric}/{breakdown} indisponivel: {str(e)[:120]}", file=sys.stderr)
+    # ordena e limita
+    saida["age_gender"].sort(key=lambda x: x["n"], reverse=True)
+    saida["cidades_top10"] = sorted(saida["cidades_top10"], key=lambda x: x["n"], reverse=True)[:10]
+    saida["paises_top5"] = sorted(saida["paises_top5"], key=lambda x: x["n"], reverse=True)[:5]
     if not saida["age_gender"] and not saida["cidades_top10"] and not saida["paises_top5"]:
         return None
     return saida
@@ -1277,14 +1294,16 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
     saida = []
     for p in posts[:30]:
         pid = p.get("id")
-        ins = {"post_impressions": 0, "post_impressions_unique": 0, "post_impressions_organic": 0,
-               "post_impressions_organic_unique": 0, "post_engaged_users": 0,
-               "post_reactions_by_type_total": {}, "post_clicks": 0}
+        # v22+ removeu: post_impressions_organic, post_impressions_organic_unique,
+        # post_engaged_users, post_clicks. Sobreviventes: post_impressions,
+        # post_impressions_unique, post_reactions_by_type_total, post_activity_by_action_type.
+        ins = {"post_impressions": 0, "post_impressions_unique": 0,
+               "post_reactions_by_type_total": {}, "post_activity_by_action_type": {}}
         try:
             resp = _graph_get(
                 f"/{pid}/insights",
                 {
-                    "metric": "post_impressions,post_impressions_unique,post_impressions_organic,post_impressions_organic_unique,post_engaged_users,post_reactions_by_type_total,post_clicks",
+                    "metric": "post_impressions,post_impressions_unique,post_reactions_by_type_total,post_activity_by_action_type",
                     "period": "lifetime",
                 },
                 page_token,
@@ -1302,17 +1321,17 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
 
         msg = (p.get("message") or "").strip().replace("\n", " ")
         attach = (((p.get("attachments") or {}).get("data") or [{}])[0]).get("media_type", "-")
-        # reach: prefere organic_unique; fallback pra unique total; fallback pra impressions
-        reach = (ins["post_impressions_organic_unique"] or ins["post_impressions_unique"] or 0)
-        impr = (ins["post_impressions_organic"] or ins["post_impressions"] or 0)
+        # activity totals (comentarios/likes/shares clique) somados
+        activity = ins.get("post_activity_by_action_type") or {}
+        activity_total = sum(v for v in activity.values() if isinstance(v, (int, float))) if isinstance(activity, dict) else 0
         saida.append({
             "id": pid,
             "data": (p.get("created_time") or "")[:10],
             "tipo": attach,
-            "impressions": int(impr) if isinstance(impr, (int, float)) else 0,
-            "reach": int(reach) if isinstance(reach, (int, float)) else 0,
-            "engajados": ins["post_engaged_users"] if isinstance(ins["post_engaged_users"], int) else 0,
-            "clicks": ins["post_clicks"] if isinstance(ins["post_clicks"], int) else 0,
+            "impressions": ins["post_impressions"] if isinstance(ins["post_impressions"], int) else 0,
+            "reach": ins["post_impressions_unique"] if isinstance(ins["post_impressions_unique"], int) else 0,
+            "atividade_total": int(activity_total),
+            "atividade_por_tipo": activity if isinstance(activity, dict) else {},
             "reactions": ins["post_reactions_by_type_total"] if isinstance(ins["post_reactions_by_type_total"], dict) else {},
             "url": p.get("permalink_url"),
             "texto_curto": msg[:100],
