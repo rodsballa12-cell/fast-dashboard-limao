@@ -805,23 +805,32 @@ function renderTicketMeta(container_id, periodo_label, kpis){
   const serv_por_visita = visitas>0 ? (atend/visitas).toFixed(2) : '—';
   const upside_rest = gap>0 && vis_rest>0 ? gap * vis_rest : 0;
 
-  // Status → cor, ação, sub
-  let cor, cor_bar, acao, sub, header_val;
+  // Alvo mostrado na celula "Alvo" (persistente em todos os status).
+  //  em_curso → residual (ticket_meta): quanto precisa nas visitas restantes
+  //  encerrado_* → alvo do periodo inteiro (ticket_meta_periodo): que precisava
+  //    ter sido feito pra bater — o residual (ticket_meta) e 0 apos fechar.
+  //  fechado → sem alvo aplicavel
+  let cor, cor_bar, acao, sub, header_val, header_tag, alvo_display;
   if(status === 'fechado'){
     cor='dn'; cor_bar='#64748b';
-    header_val = '—';
+    header_val = '—'; header_tag = 'sem operação';
+    alvo_display = 0;
     sub = 'Loja fechada neste período (sem visitas). Sem alvo aplicável.';
     acao = `<strong>Sem operação no período.</strong> Nada a fazer aqui — ver aba anterior/próxima.`;
   } else if(status === 'encerrado_batido'){
     cor='up'; cor_bar='#22c55e';
-    header_val = `META BATIDA · +${brl0(supera)}`;
+    header_val = brl(alvo_periodo);
+    header_tag = `<span class="up">META BATIDA · +${brl0(supera)}</span>`;
+    alvo_display = alvo_periodo;
     sub = `Período encerrado com meta de faturamento superada. Ticket médio efetivo: ${brl(real)}/visita em ${visitas} visitas.`;
     acao = `<strong class="up">Meta de faturamento batida com folga de ${brl0(supera)}.</strong> Ticket de ${brl(real)}/visita foi suficiente com ${visitas} visitas. Padrão pra replicar no próximo período.`;
   } else if(status === 'encerrado_deficit'){
     cor='dn'; cor_bar='#ef4444';
-    header_val = `DÉFICIT · −${brl0(deficit)}`;
     // qual ticket teria batido meta com as visitas que houve?
-    const ticket_ideal = visitas>0 ? (kpis.caixa + deficit) / visitas : 0;
+    const ticket_ideal = visitas>0 ? (kpis.caixa + deficit) / visitas : alvo_periodo;
+    header_val = brl(ticket_ideal);
+    header_tag = `<span class="dn">DÉFICIT · −${brl0(deficit)}</span>`;
+    alvo_display = ticket_ideal;
     sub = `Período encerrado abaixo da meta. Ticket médio efetivo: ${brl(real)}/visita em ${visitas} visitas.`;
     acao = `<strong class="warn">Meta de faturamento perdida por ${brl0(deficit)}.</strong> Ticket foi ${brl(real)}/vis — pra ter batido, precisava ${brl(ticket_ideal)}/vis nas mesmas ${visitas} visitas, ou puxar mais volume mantendo ticket. Diagnóstico pro próximo período: mix (${serv_por_visita} serv/vis) ou atração (visitas insuficientes).`;
   } else {
@@ -829,6 +838,8 @@ function renderTicketMeta(container_id, periodo_label, kpis){
     cor = real>=alvo_rest?'up':(real>=alvo_rest*0.85?'warn':'dn');
     cor_bar = real>=alvo_rest?'#22c55e':(real>=alvo_rest*0.85?'#f59e0b':'#ef4444');
     header_val = brl(alvo_rest);
+    header_tag = '';
+    alvo_display = alvo_rest;
     sub = 'Alvo <strong>não é fixo</strong> — é calculado como <em>faturamento que falta ÷ visitas projetadas restantes</em>, no ritmo atual. Se atrair mais visitas, o alvo cai; se puxar menos, sobe. Base: 1 visita = 1 cliente em 1 dia (padrão Trinks).';
     if(real>=alvo_rest){
       acao = `<strong class="up">Ticket atual (${brl(real)}) já supera o necessário (${brl(alvo_rest)}) pra bater meta.</strong> Manter mix e volume até o fim do período. Verificar se dá pra puxar mais visitas sem perder ticket.`;
@@ -853,13 +864,16 @@ function renderTicketMeta(container_id, periodo_label, kpis){
                : status==='encerrado_batido' ? '+'+brl0(supera) : '—';
   const gapCor = status==='encerrado_batido' ? 'up' : (status==='fechado' ? '' : (gap>0 || deficit>0 ? 'warn' : 'up'));
 
+  // Header: alvo sempre com valor numerico (ou —), status vira tag separada
+  const alvoHeader = alvo_display>0 ? `<span style="color:var(--accent)">${brl(alvo_display)}</span> / visita` : '<span style="color:var(--muted)">sem alvo</span>';
+  const statusTag = header_tag ? ` · ${header_tag}` : '';
   const html = `
     <section class="meta-card">
-      <h2><span style="color:var(--accent)">🎫</span> Ticket ${periodo_label} · alvo <span style="color:var(--accent)">${header_val}</span> / visita</h2>
+      <h2><span style="color:var(--accent)">🎫</span> Ticket ${periodo_label} · alvo ${alvoHeader}${statusTag}</h2>
       ${barra}
       <div class="meta-row" style="margin-top:16px;">
         <div class="meta-cell"><div class="l">Atual</div><div class="v ${cor}">${real>0?brl(real):'—'}</div></div>
-        <div class="meta-cell"><div class="l">Alvo</div><div class="v accent">${alvo_rest>0?brl(alvo_rest):'—'}</div></div>
+        <div class="meta-cell"><div class="l">Alvo</div><div class="v accent">${alvo_display>0?brl(alvo_display):'—'}</div></div>
         <div class="meta-cell"><div class="l">${gapLabel}</div><div class="v ${gapCor}">${gapVal}</div></div>
         <div class="meta-cell"><div class="l">Visitas</div><div class="v">${visitas}${vis_rest>0?` <span style="font-size:11px;color:var(--ink-3)">+${vis_rest} projet.</span>`:''}</div></div>
       </div>
