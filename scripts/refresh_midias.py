@@ -617,14 +617,15 @@ def _merge_unidade(base: dict[str, Any], ids: dict[str, Any], token: str, hoje: 
         info = _fetch_fb_page(page_id, token, hoje)
         if info.get("nome"):
             _set_if_key(fb, "nome", info["nome"])
+        # FB Page core metrics: grava incondicionalmente (chaves criticas —
+        # se nao existirem na base, cria; se existirem, atualiza).
         if "seguidores" in info:
-            # SPA usa "seguidores", schema Escova nao tem esse campo hoje
-            _set_if_key(fb, "seguidores", info["seguidores"])
-            _set_if_key(fb, "followers", info["seguidores"])
+            fb["seguidores"] = info["seguidores"]
+            fb["followers"] = info["seguidores"]
         if "posts_30d" in info:
-            _set_if_key(fb, "posts_30d", info["posts_30d"])
-        _set_if_key(fb, "page_id", page_id)
-        _set_if_key(fb, "conectado", True)
+            fb["posts_30d"] = info["posts_30d"]
+        fb["page_id"] = page_id
+        fb["conectado"] = True
 
     # ---------- Janelas + fonte + gerado_em ----------
     base["janelas"] = _janelas_texto(hoje)
