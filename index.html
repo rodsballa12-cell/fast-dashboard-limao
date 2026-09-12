@@ -5020,6 +5020,10 @@ function renderMidias(){
     direcMidia = `<strong>Mídia rodando na meta.</strong> Continua acompanhando CPA e frequência (se passar de 3, público cansa). Boa hora de testar novo criativo pra não estagnar.`;
   }
 
+  // Helpers de format (movidos pra ANTES do HERO pra evitar ReferenceError —
+  // o HERO usa nfmt no bloco ROAS + Facebook)
+  const nfmt = n => (n||0).toLocaleString('pt-BR');
+
   document.getElementById('midias-status').innerHTML = `<div class="card">
     <h2>📣 Mídia · ano ${new Date().getFullYear()} <span style="font-weight:400;font-size:12px;color:var(--ink-3)">(acumulado desde a abertura)</span></h2>
     <div class="cap">Do maior número (quanto investe e quantos clientes traz) pras ações imediatas nos cards abaixo.</div>
@@ -5121,7 +5125,7 @@ function renderMidias(){
   const cpaColor = v => !v ? 'var(--muted)' : v <= bench.cpa_msg_meta*0.7 ? '#22c55e' : v <= bench.cpa_msg_meta ? '#3b82f6' : v <= bench.cpa_msg_meta*1.3 ? '#f59e0b' : '#ef4444';
   const freqColor = v => v < 2 ? '#22c55e' : v < 2.7 ? '#3b82f6' : v < 3 ? '#f59e0b' : '#ef4444';
 
-  const nfmt = n => (n||0).toLocaleString('pt-BR');
+  // nfmt já declarado antes do HERO (linha ~5023) — nao redeclara
   // A Meta às vezes devolve alcance como 'não calculável' (não dá para
   // deduplicar naquele agrupamento). Não é erro nosso e não pode derrubar a
   // tabela: vira travessão. Vale para reach, frequency e qualquer numérico.
