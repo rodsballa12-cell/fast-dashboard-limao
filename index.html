@@ -2455,8 +2455,20 @@ function renderMensal(data){
   const m=data.abas.mensal, k=m.kpis;
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.mensal;
   if(k.em_atendimento>0){document.getElementById('chip-live').style.display='';document.getElementById('chip-live').innerHTML=`<span class="dot"></span> ${k.em_atendimento} em atendim.`;document.getElementById('chip-live').className='chip live';}
+  // Comissão apurada MTD — soma direto do ranking prof executor (com fator
+  // de escala pra bater com caixa) usando taxa oficial de cada categoria
+  // (data/comissoes.json). Fonte única, mesma base do card Ranking Prof.
+  const _comMTD = (() => {
+    const rpeM = m.ranking_prof_executor || [];
+    if(!rpeM.length) return 0;
+    const somaRaw = rpeM.reduce((s,p)=>s+(p.v||0), 0) || 1;
+    const scale = k.caixa > 0 ? (k.caixa / somaRaw) : 1;
+    return rpeM.reduce((s,p)=>s + ((p.comissao||0) * scale), 0);
+  })();
+  const _comPct = k.caixa > 0 ? (_comMTD / k.caixa * 100) : 0;
   renderKPIs('per-kpis',[
     {label:'Faturamento · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
+    {label:'Comissão apurada · mês',value:brl0(_comMTD),foot:`${_comPct.toFixed(1)}% do faturamento · base ranking prof executor × taxa oficial da categoria`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`(caixa÷visitas · padrão Trinks)`, delta_pct:k.ticket_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
