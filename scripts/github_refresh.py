@@ -349,12 +349,27 @@ def analisar(agend, transac, ini: date, fim: date):
         prof_meta[nome]["n"] += 1
         prof_meta[nome]["min"] += int(a.get("duracaoEmMinutos") or 0)
 
-    # Mapa id → nome pra resolver prof executor das transações
-    _prof_id_nome_early = getattr(analisar, "_prof_id_nome_cache", None) or {}
+    # Mapa id → nome pra resolver prof executor das transações.
+    # Prioridade: (1) prof_map cache global (TODAS as profs, incluindo desligadas
+    # que ainda tenham histórico) → (2) fin do período → (3) "Prof desligado #ID"
+    # Antes o cache global era carregado só na segunda passada (LATE, linha ~402),
+    # tarde demais pro prof_v_exec deste bloco. Resultado: prof desligada que
+    # executou serviço no periodo mas nao tinha agendamento finalizado no
+    # periodo virava "Prof desligado #12345" no ranking_prof (agend).
+    _prof_id_nome_early = dict(getattr(analisar, "_prof_id_nome_cache", None) or {})
+    try:
+        _cache_prof_early = json.loads(PROF_CACHE.read_text(encoding="utf-8"))
+        _prof_map_early = (_cache_prof_early.get("payload") or {}).get("prof_map") or {}
+        for k, v in _prof_map_early.items():
+            _prof_id_nome_early[int(k)] = v
+            _prof_id_nome_early[str(k)] = v
+    except Exception:
+        pass  # se cache indisponível, cai pro fallback dos fin do período
     for a in fin:
         pid = (a.get("profissional") or {}).get("id")
         pnome = (a.get("profissional") or {}).get("nome") or ""
-        if pid: _prof_id_nome_early[pid] = pnome.strip().title()
+        if pid and not _prof_id_nome_early.get(pid):
+            _prof_id_nome_early[pid] = pnome.strip().title()
 
     prof_v_exec = defaultdict(float)
     for tx in tr:
