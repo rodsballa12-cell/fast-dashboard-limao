@@ -881,13 +881,19 @@ def _fetch_ig_profile(ig_user_id: str, token: str) -> dict[str, Any]:
 
 
 def _fetch_ig_insights_range(ig_user_id: str, token: str, since: date, until: date) -> dict[str, int]:
-    """Agrega reach + profile_views + follower_count no intervalo.
+    """Agrega metricas organicas do IG no intervalo.
 
-    Meta separou as APIs: reach + follower_count continuam period=day (metric_type
-    implicito time_series). profile_views precisa de metric_type=total_value desde
-    a v20 (retorna um unico total_value por metric no periodo).
+    Retorna: reach, profile_views, novos_seguidores, profile_activity (cliques
+    nos botoes de perfil: website/call/email/directions), website_clicks.
+
+    Meta v22+ separou APIs por metric_type: reach + follower_count continuam
+    period=day (time_series diario); profile_views + profile_activity +
+    website_clicks precisam metric_type=total_value.
     """
-    agg: dict[str, int] = {"reach": 0, "profile_views": 0, "novos_seguidores": 0}
+    agg: dict[str, int] = {
+        "reach": 0, "profile_views": 0, "novos_seguidores": 0,
+        "profile_activity": 0, "website_clicks": 0,
+    }
     since_ts = int(datetime.combine(since, datetime.min.time(), tzinfo=BRT).timestamp())
     until_ts = int(datetime.combine(until, datetime.max.time(), tzinfo=BRT).timestamp())
 
@@ -917,28 +923,30 @@ def _fetch_ig_insights_range(ig_user_id: str, token: str, since: date, until: da
     except Exception as e:
         print(f"  [WARN] IG reach/follower {since}..{until} falhou: {e}", file=sys.stderr)
 
-    # 2) profile_views (total_value no periodo)
-    try:
-        resp2 = _graph_get(
-            f"/{ig_user_id}/insights",
-            {
-                "metric": "profile_views",
-                "period": "day",
-                "metric_type": "total_value",
-                "since": since_ts,
-                "until": until_ts,
-            },
-            token,
-        )
-        for metric in resp2.get("data", []):
-            if metric.get("name") != "profile_views":
-                continue
-            tv = metric.get("total_value") or {}
-            v = tv.get("value")
-            if isinstance(v, (int, float)):
-                agg["profile_views"] = int(v)
-    except Exception as e:
-        print(f"  [WARN] IG profile_views {since}..{until} falhou: {e}", file=sys.stderr)
+    # 2) metricas com metric_type=total_value (profile_views, profile_activity, website_clicks)
+    # profile_activity precisa breakdown=action_type pra separar contact_call/email/site/direcao
+    for metric_name in ("profile_views", "profile_activity", "website_clicks"):
+        try:
+            resp2 = _graph_get(
+                f"/{ig_user_id}/insights",
+                {
+                    "metric": metric_name,
+                    "period": "day",
+                    "metric_type": "total_value",
+                    "since": since_ts,
+                    "until": until_ts,
+                },
+                token,
+            )
+            for metric in resp2.get("data", []):
+                if metric.get("name") != metric_name:
+                    continue
+                tv = metric.get("total_value") or {}
+                v = tv.get("value")
+                if isinstance(v, (int, float)):
+                    agg[metric_name] = int(v)
+        except Exception as e:
+            print(f"  [INFO] IG {metric_name} {since}..{until} indisponivel: {str(e)[:100]}", file=sys.stderr)
 
     return agg
 
@@ -1654,26 +1662,42 @@ def _merge_unidade(base: dict[str, Any], ids: dict[str, Any], token: str, hoje: 
         ins30 = _fetch_ig_insights_range(ig_id, token, inicio30, fim30)
         ins7 = _fetch_ig_insights_range(ig_id, token, inicio7, fim7)
 
-        # organico_30d: preserva notas/keys existentes
+        # organico_30d: ASSIGNMENT DIRETO (garante que TODOS os campos sao atualizados,
+        # nao so os que ja existiam — o _set_if_key congelava novos campos)
         if ins30:
-            org30 = ig.setdefault("organico_30d", {})
-            if isinstance(org30, dict):
-                _set_if_key(org30, "novos_seguidores", ins30["novos_seguidores"])
-                dias = 30
-                _set_if_key(org30, "novos_seguidores_dia_medio", round(ins30["novos_seguidores"] / dias, 2))
-                _set_if_key(org30, "profile_views", ins30["profile_views"])
-                _set_if_key(org30, "profile_views_dia_medio", round(ins30["profile_views"] / dias, 2))
-                # SPA usa "alcance_organico_30d" solto (int)
-            # SPA tem "alcance_organico_30d" no nivel do instagram
-            _set_if_key(ig, "alcance_organico_30d", ins30["reach"])
-            # SPA tem "posts_30d" no nivel do instagram (contagem)
+            org30 = ig.get("organico_30d")
+            if not isinstance(org30, dict):
+                org30 = {}
+                ig["organico_30d"] = org30
+            dias = 30
+            org30["novos_seguidores"] = ins30["novos_seguidores"]
+            org30["novos_seguidores_dia_medio"] = round(ins30["novos_seguidores"] / dias, 2)
+            org30["profile_views"] = ins30["profile_views"]
+            org30["profile_views_dia_medio"] = round(ins30["profile_views"] / dias, 2)
+            org30["reach"] = ins30["reach"]
+            org30["reach_dia_medio"] = round(ins30["reach"] / dias, 2)
+            org30["profile_activity"] = ins30.get("profile_activity", 0)
+            org30["website_clicks"] = ins30.get("website_clicks", 0)
+            # profile_reposts e profile_replies foram descontinuados em v22+:
+            # Meta nao expõe repost/reply agregado por conta, so por post individual.
+            # Deixa como None (transparente que nao vem mais da API).
+            org30["profile_reposts"] = None
+            org30["profile_replies"] = None
+            org30["nota_profile_views"] = "profile_views = visitas ao perfil no periodo (v22+ total_value). Reposts/replies foram descontinuados por conta (so por post — ver top_posts_30d)."
+            # campos top-level do IG usados por SPA schema
+            ig["alcance_organico_30d"] = ins30["reach"]
+            ig["followers_delta_30d"] = ins30["novos_seguidores"]
 
         if ins7:
-            org7 = ig.setdefault("organico_7d", {})
-            if isinstance(org7, dict):
-                _set_if_key(org7, "novos_seguidores", ins7["novos_seguidores"])
-                _set_if_key(org7, "profile_views", ins7["profile_views"])
-                _set_if_key(org7, "reach", ins7["reach"])
+            org7 = ig.get("organico_7d")
+            if not isinstance(org7, dict):
+                org7 = {}
+                ig["organico_7d"] = org7
+            org7["novos_seguidores"] = ins7["novos_seguidores"]
+            org7["profile_views"] = ins7["profile_views"]
+            org7["reach"] = ins7["reach"]
+            org7["profile_activity"] = ins7.get("profile_activity", 0)
+            org7["website_clicks"] = ins7.get("website_clicks", 0)
 
         # Serie diaria IG
         serie_ig = _fetch_ig_daily(ig_id, token, hoje)
