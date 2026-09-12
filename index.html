@@ -4964,43 +4964,10 @@ function renderMidiasCanalAquisicao(){
     '📢 Canal de aquisição · comoNosConheceu',
     'De onde os clientes vieram — onde investir marketing pra puxar mais como esses',
     a.seg_canal, 'canal cadastrado');
-  // Callout Google Meu Negócio (canal invisível no Trinks)
-  if(MID && MID.google_business && MID.google_business.conectado){
-    const gmb = MID.google_business;
-    const sc = a.seg_canal || {};
-    const semDado = (sc.sem_dado || {}).n || 0;
-    const cob = sc.cobertura_pct || 0;
-    const acoesGoogle = (gmb.kpis_30d.actions_phone||0) + (gmb.kpis_30d.actions_directions||0);
-    const rating = gmb.rating.estrelas_media;
-    const reviews = gmb.rating.reviews_total;
-    const topCanais = (sc.top || []).slice(0, 3).map(c=>c.nome).join(', ');
-    el.insertAdjacentHTML('beforeend', `<div class="card canal-google-callout" style="margin-top:12px;border-left:4px solid #4285F4;background:linear-gradient(135deg,rgba(66,133,244,.05),rgba(52,168,83,.03))">
-      <h2>🔗 Canal invisível: Google Meu Negócio</h2>
-      <div class="cap">O Trinks não tem "Google" no comoNosConheceu, então esse canal fica escondido apesar de gerar tráfego real.</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;font-size:12px">
-        <div style="background:var(--surface-2);border-radius:6px;padding:12px;border-left:3px solid #f59e0b">
-          <div style="color:#f59e0b;font-size:10.5px;font-weight:700;text-transform:uppercase">GAP</div>
-          <div style="font-weight:700;font-size:22px">${semDado} clientes</div>
-          <div style="color:var(--ink-3);font-size:10.5px">${(100-cob).toFixed(0)}% da base sem canal registrado</div>
-        </div>
-        <div style="background:var(--surface-2);border-radius:6px;padding:12px;border-left:3px solid #34A853">
-          <div style="color:#34A853;font-size:10.5px;font-weight:700;text-transform:uppercase">Google 30d (medido)</div>
-          <div style="font-weight:700;font-size:22px">${acoesGoogle} ações</div>
-          <div style="color:var(--ink-3);font-size:10.5px">${gmb.kpis_30d.actions_phone} ligaram · ${gmb.kpis_30d.actions_directions} pediram rota</div>
-        </div>
-        <div style="background:var(--surface-2);border-radius:6px;padding:12px;border-left:3px solid #FBBC04">
-          <div style="color:#FBBC04;font-size:10.5px;font-weight:700;text-transform:uppercase">Rating</div>
-          <div style="font-weight:700;font-size:22px;color:#FBBC04">⭐ ${rating}</div>
-          <div style="color:var(--ink-3);font-size:10.5px">${reviews} avaliações</div>
-        </div>
-      </div>
-      <div style="margin-top:12px;padding:12px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2);line-height:1.6">
-        <strong>💡 Leitura:</strong> Base declara ${topCanais} como top-3. O <strong>Google Meu Negócio nem aparece na lista</strong> — mas gerou ${acoesGoogle} ações/mês pra ${reviews} pessoas que avaliaram ⭐ ${rating}. Provável que boa parte dos <strong>${semDado} "sem dado"</strong> descobriu você pelo Google e a recepção não teve opção pra marcar.
-        <br><br>
-        <strong>Ação:</strong> pedir à recepção pra adicionar 2 opções no Trinks (<em>Configurações → comoNosConheceu</em>): "Google Maps" e "Google Search". Em 30d dá pra medir se Google é canal #1, #2 ou #3 — e ajustar mídia paga em cima disso.
-      </div>
-    </div>`);
-  }
+  // Callout "Canal invisível: Google Meu Negócio" ELIMINADO
+  // Info duplicava com o card GBP principal (Ato 2 Descoberta) e com o
+  // Comparativo Consolidado (Ato 4 Conversão). Ação recomendada de configurar
+  // Trinks foi movida pros direcionamentos estratégicos curados (Ato 5).
 }
 
 function renderMidias(){
@@ -5057,20 +5024,55 @@ function renderMidias(){
     <h2>📣 Mídia · ano ${new Date().getFullYear()} <span style="font-weight:400;font-size:12px;color:var(--ink-3)">(acumulado desde a abertura)</span></h2>
     <div class="cap">Do maior número (quanto investe e quantos clientes traz) pras ações imediatas nos cards abaixo.</div>
 
-    <!-- HERO -->
-    <div style="text-align:center;padding:22px 16px;background:var(--surface-2);border-radius:12px;margin-top:14px">
-      <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Ano ${new Date().getFullYear()} · Meta Ads</div>
-      <div style="font-size:44px;font-weight:800;color:var(--accent);line-height:1.05;margin:4px 0">${brl0(gastoMes)}</div>
-      <div style="font-size:13px;color:var(--ink-2)">investidos desde a abertura</div>
-      <div style="display:flex;justify-content:center;gap:32px;margin-top:16px;flex-wrap:wrap;font-size:12.5px">
-        <div><span style="font-size:22px;font-weight:800;color:var(--ink)">${convMes}</span> <span style="color:var(--ink-2)">conversas geradas</span></div>
-        <div style="color:var(--border)">|</div>
-        <div><span style="font-size:22px;font-weight:800;color:${cpaCor}">${cpaMes?brl(cpaMes):'—'}</span> <span style="color:var(--ink-2)">custo por conversa</span></div>
-      </div>
-      ${cpaMes ? `<div style="font-size:11.5px;color:var(--ink-3);margin-top:6px">${cpaCtx} · meta ${brl(cpaMeta)}</div>` : ''}
-    </div>
+    <!-- HERO · ROAS como métrica estrela + gasto/conversas/CPA -->
+    ${(() => {
+      const roasEst = (MID.funil_conversao && MID.funil_conversao.roas_estimado) || null;
+      const roasVal = roasEst ? roasEst.valor : null;
+      const roasCor = !roasVal ? 'var(--muted)' : roasVal >= 5 ? '#22c55e' : roasVal >= 3 ? '#3b82f6' : roasVal >= 2 ? '#f59e0b' : '#ef4444';
+      const roasCtx = !roasVal ? '' : roasVal >= 5 ? 'excelente' : roasVal >= 3 ? 'saudável' : roasVal >= 2 ? 'no limite' : 'abaixo do saudável';
+      const cenariosRoas = (MID.funil_conversao && MID.funil_conversao.cenarios_roas) || [];
+      const cenarioRec = cenariosRoas.find(c => c.recomendado) || cenariosRoas[0];
+      return `<div style="padding:22px 16px;background:var(--surface-2);border-radius:12px;margin-top:14px">
+        <div style="text-align:center">
+          <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">⭐ Métrica estrela · Retorno sobre investimento (ROAS)</div>
+          <div style="font-size:56px;font-weight:800;color:${roasCor};line-height:1.05;margin:4px 0">${roasVal?roasVal.toFixed(2).replace('.',',')+'x':'—'}</div>
+          <div style="font-size:13px;color:var(--ink-2)">${roasVal?`cada R$ 1 investido em Meta Ads voltou R$ ${roasVal.toFixed(2).replace('.',',')} em receita · ${roasCtx}`:'aguardando mês fechado com atribuição'}</div>
+          ${cenarioRec ? `<div style="font-size:11px;color:var(--ink-3);margin-top:4px;font-style:italic">Cenário medido: ${cenarioRec.cenario}</div>` : ''}
+        </div>
 
-    <!-- BLOCO CANAIS ATIVOS -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px;padding-top:16px;border-top:1px dashed var(--border)">
+          <div style="text-align:center">
+            <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700">💰 Investido no ano</div>
+            <div style="font-size:24px;font-weight:800;color:var(--accent);margin-top:4px">${brl0(gastoMes)}</div>
+            <div style="font-size:11px;color:var(--ink-3)">desde a abertura</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700">💬 Conversas geradas</div>
+            <div style="font-size:24px;font-weight:800;color:var(--ink);margin-top:4px">${nfmt(convMes)}</div>
+            <div style="font-size:11px;color:var(--ink-3);color:${cpaCor}">CPA ${cpaMes?brl(cpaMes):'—'} · ${cpaCtx}</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700">🎯 Meta CPA</div>
+            <div style="font-size:24px;font-weight:800;color:var(--ink);margin-top:4px">${brl(cpaMeta)}</div>
+            <div style="font-size:11px;color:var(--ink-3)">alerta se >${brl(cpaMeta*1.3)}</div>
+          </div>
+        </div>
+
+        ${cenariosRoas.length ? `<details style="margin-top:14px">
+          <summary style="cursor:pointer;font-size:11.5px;color:var(--ink-2);font-weight:600;padding:6px 0">📊 Ver ${cenariosRoas.length} cenários de ROAS (atribuição diferente)</summary>
+          <div style="display:grid;gap:6px;margin-top:8px">
+            ${cenariosRoas.map(c => `<div style="padding:8px 12px;background:var(--bg);border-radius:6px;font-size:11.5px;display:flex;justify-content:space-between;align-items:center;${c.recomendado?'border-left:3px solid #22c55e':''}">
+              <span>${c.cenario}</span>
+              <span><strong style="font-size:14px">${c.roas.toFixed(2).replace('.',',')}x</strong> <span style="color:var(--ink-3);margin-left:8px">R$ ${nfmt(c.receita_atribuida)} · ${c.novos_meta} novos</span></span>
+            </div>`).join('')}
+          </div>
+        </details>` : ''}
+
+        ${roasEst && roasEst.calculo ? `<div style="margin-top:10px;padding:8px 12px;background:var(--bg);border-radius:6px;font-size:10.5px;color:var(--ink-3);line-height:1.5"><strong>Como é calculado:</strong> ${roasEst.calculo}</div>` : ''}
+      </div>`;
+    })()}
+
+    <!-- BLOCO CANAIS ATIVOS · agora com Facebook -->
     <div style="margin-top:16px">
       <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Seus canais</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
@@ -5084,6 +5086,11 @@ function renderMidias(){
           <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${igSeg.toLocaleString('pt-BR')}</div>
           <div style="font-size:11px;color:var(--ink-2)">seguidores · @${MID.instagram.handle} · orgânico</div>
         </div>
+        ${MID.facebook_page && MID.facebook_page.conectado ? `<div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid #1877F2">
+          <div style="font-size:11px;color:#1877F2;font-weight:800;text-transform:uppercase">📘 Facebook Page · 30d</div>
+          <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${nfmt(MID.facebook_page.seguidores||MID.facebook_page.followers||0)}</div>
+          <div style="font-size:11px;color:var(--ink-2)">seguidores · ${((MID.facebook_page.organico_30d||{}).page_post_engagements||0).toLocaleString('pt-BR')} engaj. · ${MID.facebook_page.posts_30d||0} posts</div>
+        </div>` : ''}
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid #4285F4">
           <div style="font-size:11px;color:#4285F4;font-weight:800;text-transform:uppercase">📍 Google Negócio · 30d</div>
           <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${gmbAcoes}</div>
@@ -5634,8 +5641,8 @@ function renderMidias(){
     const paises = aud.paises_top5 || [];
     const tot = ages.reduce((a,x)=>a+(x.n||0),0) || 1;
     const audHTML = `<section class="card ig-aud-card" style="border-left:4px solid #833AB4;margin-top:12px">
-      <h2>👥 Instagram · Demografia dos Seguidores</h2>
-      <div class="cap">Perfil dos ${nfmt(ig.followers)} seguidores atuais · via <code>follower_demographics</code> (Meta Graph v22+). Base para segmentar próximas campanhas por afinidade real da conta.</div>
+      <h2>👥 Instagram · Demografia dos Seguidores <span style="font-size:11px;color:var(--ink-3);font-weight:400">(snapshot atual · lifetime)</span></h2>
+      <div class="cap">Perfil dos ${nfmt(ig.followers)} seguidores atuais · via <code>follower_demographics</code> (Meta Graph v22+). Snapshot do estado atual, não muda com filtro de período. Base pra segmentar próximas campanhas por afinidade real da conta.</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px">
         <div>
           <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:8px">Faixa etária (top ${ages.length})</div>
@@ -5656,8 +5663,8 @@ function renderMidias(){
   if(ig && ig.stories_insights && ig.stories_insights.ativas){
     const st = ig.stories_insights;
     const stHTML = `<section class="card ig-stories-card" style="border-left:4px solid #FD1D1D;margin-top:12px">
-      <h2>📸 Instagram Stories · ${st.ativas} ativas agora</h2>
-      <div class="cap">Snapshot das stories ativas (Meta expira em 24h). Views/reach agregados de todas as stories no ar.</div>
+      <h2>📸 Instagram Stories · ${st.ativas} ativas agora <span style="font-size:11px;color:var(--ink-3);font-weight:400">(snapshot 24h — Meta expira stories)</span></h2>
+      <div class="cap">Views/reach agregados das stories ativas neste momento. Não muda com filtro de período — Meta só entrega dados enquanto stories estão no ar (últimas 24h).</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
         <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">👁️ Views</div><div style="font-weight:700;font-size:22px">${nfmt(st.views||0)}</div></div>
         <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">👤 Reach único</div><div style="font-weight:700;font-size:22px">${nfmt(st.reach||0)}</div></div>
@@ -5686,14 +5693,21 @@ function renderMidias(){
     const reactTotal = fbReact ? Object.values(fbReact).reduce((a,x)=>a+x,0) : 0;
     const reactEmoji = {like:'👍',love:'❤️',haha:'😂',wow:'😮',sad:'😢',angry:'😠'};
     const maxNovosFb = fbSerie.length ? Math.max(...fbSerie.map(d=>d.novos_seguidores||0), 1) : 1;
+    // Fatiar serie por periodo selecionado (quando serie_diaria cobre pSel)
+    const fbJanela = fatia(fbSerie);
+    const fbProprio = fbJanela.length > 0;
+    const fbSerieUsada = fbProprio ? fbJanela : fbSerie;
+    const totNovosFbJan = fbSerieUsada.reduce((a,x)=>a+(x.novos_seguidores||0),0);
+    const totUnfollowsFbJan = fbSerieUsada.reduce((a,x)=>a+(x.unfollows||0),0);
+    const fbJanTxt = fbProprio ? pSel.label.toLowerCase() : 'últimos 30 dias';
     const fbHTML = `<section class="card fb-page-card" style="border-left:4px solid #1877F2;margin-top:12px">
-      <h2>📘 Facebook Page · ${MID.facebook_page.nome} · orgânico${seloJanela({proprio:false})}</h2>
-      <div class="cap">Métricas orgânicas da Página. Agregado 30d + série diária + top posts individuais + breakdown de reactions.</div>
+      <h2>📘 Facebook Page · ${MID.facebook_page.nome} · orgânico · ${fbJanTxt}${fbProprio?'':seloJanela({proprio:false})}</h2>
+      <div class="cap">Métricas orgânicas da Página. ${fbProprio?`${fbSerieUsada.length} dia(s) somados da série diária.`:'Agregados vêm da API só em janela 30d fixa.'} Top posts individuais + breakdown de reactions.</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Seguidores atuais</div><div style="font-weight:700;font-size:22px">${nfmt(fbSeg)}</div><div style="color:${totNovosFb>=totUnfollowsFb?'#22c55e':'#ef4444'};font-size:10.5px">+${totNovosFb} novos · -${totUnfollowsFb} unfollows · 30d</div></div>
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Visitas à Página 30d</div><div style="font-weight:700;font-size:22px">${nfmt(fbp.page_visits||0)}</div></div>
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Post engagements 30d</div><div style="font-weight:700;font-size:22px">${nfmt(fbp.page_post_engagements||0)}</div></div>
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Video views 30d</div><div style="font-weight:700;font-size:22px">${nfmt(fbp.total_video_views||0)}</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(fbp.video_views_organicos||0)} org · ${nfmt(fbp.video_views_pagos||0)} pago</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Seguidores atuais</div><div style="font-weight:700;font-size:22px">${nfmt(fbSeg)}</div><div style="color:${totNovosFbJan>=totUnfollowsFbJan?'#22c55e':'#ef4444'};font-size:10.5px">+${totNovosFbJan} novos · -${totUnfollowsFbJan} unfollows · ${fbJanTxt}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Visitas à Página <span style="color:var(--ink-3);font-size:10px">(30d fixo)</span></div><div style="font-weight:700;font-size:22px">${nfmt(fbp.page_visits||0)}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Post engagements <span style="color:var(--ink-3);font-size:10px">(30d fixo)</span></div><div style="font-weight:700;font-size:22px">${nfmt(fbp.page_post_engagements||0)}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Video views <span style="color:var(--ink-3);font-size:10px">(30d fixo)</span></div><div style="font-weight:700;font-size:22px">${nfmt(fbp.total_video_views||0)}</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(fbp.video_views_organicos||0)} org · ${nfmt(fbp.video_views_pagos||0)} pago</div></div>
       </div>
       ${fbSerie.length?`<div style="margin-top:16px">
         <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:6px">Novos seguidores/dia · últimos ${fbSerie.length} dias</div>
@@ -5757,7 +5771,7 @@ function renderMidias(){
       return `<span style="background:${cor};color:#fff;font-size:10px;padding:1px 5px;border-radius:8px">${label}</span>`;
     };
     const adsHTML = `<section class="card ads-extra-card" style="border-left:4px solid #1877F2;margin-top:12px">
-      <h2>📊 Meta Ads · Detalhamento avançado 30d</h2>
+      <h2>📊 Meta Ads · Detalhamento avançado <span style="font-size:12px;color:var(--ink-3);font-weight:400">(agregados 30 dias — API Meta só entrega breakdown fechado, não por janela)</span></h2>
       <div class="cap">Video insights · breakdown por device · perfil horário · geografia · qualidade dos anúncios · recomendações oficiais Meta · benchmarks vs metas.</div>
       ${(bn.cpa_msg_atual_30d || bn.cpm_atual_30d || bn.ctr_atual_30d) ? `<h3 style="margin-top:16px;font-size:13px">🎯 Benchmarks · atual 30d vs meta</h3>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px;font-size:12px">
@@ -6180,93 +6194,15 @@ function renderMidias(){
       }
     }
 
-    // 5. INSTAGRAM ORGÂNICO × TRINKS · contribuição em novos clientes
+    // 5. INSTAGRAM ORGÂNICO — dados sao usados apenas para calcular contribuicao
+    // no comparativo consolidado. Card individual foi eliminado pra evitar
+    // repeticao (Instagram completo ja tem card proprio em ato 2 Descoberta).
     const igData = MID.instagram || {};
     const igOrg30 = igData.organico_30d || {};
-    if(igOrg30.novos_seguidores && sn.length){
-      const gmbDatas = new Set((gmbSd||[]).map(x=>x.data));
-      // Novos Trinks nas mesmas datas do IG serie (30d)
-      const igDatas = new Set((igSd||[]).map(x=>x.data));
-      const janela = igDatas.size > 0 ? igDatas : gmbDatas;
-      const novos30d = sn.filter(x=>janela.has(x.data)).reduce((a,x)=>a+(x.novos||0),0);
-      // Estimativa conservadora: 5% dos novos seguidores viram cliente (média salão local)
-      const novoSegs = igOrg30.novos_seguidores;
-      const profileViews = igOrg30.profile_views || 0;
-      const conversaoSegToCli = 0.05;
-      const clientesEstim = Math.round(novoSegs * conversaoSegToCli);
-      const contribPct = novos30d > 0 ? Math.min(100, clientesEstim/novos30d*100) : 0;
-      // Seg_canal do Trinks tem "Instagram" — dado real
-      const segCanal = tAn.seg_canal || {};
-      const igReal = ((segCanal.top||[]).find(c=>c.nome === 'Instagram') || {});
-      html += `<section class="card" style="border-left:4px solid #E1306C;margin-top:12px">
-        <h2>📷 Instagram orgânico × Trinks · contribuição em novos clientes</h2>
-        <div class="cap">Cruzamento aba Mídias × Painel. Instagram como canal de aquisição orgânica (sem custo direto — o custo é o tempo de criação de conteúdo).</div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
-          <div style="background:var(--surface-2);border-radius:8px;padding:12px">
-            <div style="color:var(--ink-3);font-size:10.5px">NOVOS SEGUIDORES 30D</div>
-            <div style="font-weight:700;font-size:22px">${nfmt(novoSegs)}</div>
-            <div style="color:var(--ink-3);font-size:10.5px">${(igOrg30.novos_seguidores_dia_medio||0).toFixed(1)}/dia · ${nfmt(igData.followers)} total</div>
-          </div>
-          <div style="background:var(--surface-2);border-radius:8px;padding:12px">
-            <div style="color:var(--ink-3);font-size:10.5px">VIEWS DE CONTEÚDO 30D</div>
-            <div style="font-weight:700;font-size:22px">${nfmt(profileViews)}</div>
-            <div style="color:var(--ink-3);font-size:10.5px">reels + posts + stories</div>
-          </div>
-          <div style="background:rgba(225,48,108,.08);border-radius:8px;padding:12px;border-left:3px solid #E1306C">
-            <div style="color:#E1306C;font-size:10.5px;font-weight:700;text-transform:uppercase">Contribuição estimada</div>
-            <div style="font-weight:700;font-size:22px;color:#E1306C">~${clientesEstim} clientes</div>
-            <div style="color:var(--ink-3);font-size:10.5px">${contribPct.toFixed(0)}% dos ${novos30d} novos (5% seg→cli)</div>
-          </div>
-          <div style="background:var(--surface-2);border-radius:8px;padding:12px">
-            <div style="color:var(--ink-3);font-size:10.5px">MEDIDO NO TRINKS</div>
-            <div style="font-weight:700;font-size:22px">${igReal.n_clientes || 0}</div>
-            <div style="color:var(--ink-3);font-size:10.5px">clientes declarados "Instagram" · ${brl0m(igReal.receita||0)}</div>
-          </div>
-        </div>
-        <div style="margin-top:12px;padding:10px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2);line-height:1.5">
-          <strong>💡 Leitura:</strong> ${igReal.n_clientes > 0 ? `Instagram é o canal declarado #1 no comoNosConheceu (${igReal.n_clientes} clientes, ${brl0m(igReal.receita||0)} receita). Ticket médio Instagram: ${brl0m((igReal.ticket_medio_cliente)||0)}.` : ''} Estimativa upper: 5% dos ${novoSegs} novos seguidores/mês viram cliente físico = ~${clientesEstim} pessoas. Custo direto: <strong>R$ 0</strong>. Custo real: horas de criação de conteúdo (30 posts+ na janela).
-        </div>
-      </section>`;
-    }
 
-    // 6. FACEBOOK ORGÂNICO × TRINKS · quanto contribui
+    // 6. FACEBOOK ORGÂNICO — mesmo tratamento: dados no comparativo, sem card individual
     const fbData = MID.facebook_page || {};
     const fbOrg30 = fbData.organico_30d || {};
-    if(fbData.conectado && fbOrg30.page_visits){
-      const segCanal = tAn.seg_canal || {};
-      const fbReal = ((segCanal.top||[]).find(c=>c.nome === 'Facebook') || {n_clientes:0, receita:0});
-      const orgPct = fbOrg30.video_views_organicos && fbOrg30.total_video_views ? (fbOrg30.video_views_organicos/fbOrg30.total_video_views*100) : 0;
-      const orgColor = orgPct < 10 ? '#ef4444' : orgPct < 30 ? '#f59e0b' : '#22c55e';
-      html += `<section class="card" style="border-left:4px solid #1877F2;margin-top:12px">
-        <h2>📘 Facebook Page × Trinks · alcance orgânico e contribuição</h2>
-        <div class="cap">Cruzamento aba Mídias × Painel. Facebook orgânico como canal de aquisição — o que a Página traz sem impulsionamento.</div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
-          <div style="background:var(--surface-2);border-radius:8px;padding:12px">
-            <div style="color:var(--ink-3);font-size:10.5px">VISITAS À PÁGINA 30D</div>
-            <div style="font-weight:700;font-size:22px">${nfmt(fbOrg30.page_visits)}</div>
-            <div style="color:var(--ink-3);font-size:10.5px">${nfmt(fbOrg30.page_post_engagements)} engajamentos</div>
-          </div>
-          <div style="background:var(--surface-2);border-radius:8px;padding:12px">
-            <div style="color:var(--ink-3);font-size:10.5px">VIDEO VIEWS TOTAL</div>
-            <div style="font-weight:700;font-size:22px">${nfmt(fbOrg30.total_video_views)}</div>
-            <div style="color:var(--ink-3);font-size:10.5px">${nfmt(fbOrg30.video_views_pagos)} pagos · ${nfmt(fbOrg30.video_views_organicos)} org</div>
-          </div>
-          <div style="background:rgba(24,119,242,.08);border-radius:8px;padding:12px;border-left:3px solid ${orgColor}">
-            <div style="color:${orgColor};font-size:10.5px;font-weight:700;text-transform:uppercase">Fatia orgânica</div>
-            <div style="font-weight:700;font-size:22px;color:${orgColor}">${orgPct.toFixed(1)}%</div>
-            <div style="color:var(--ink-3);font-size:10.5px">${orgPct < 10 ? 'página sem alcance próprio' : orgPct < 30 ? 'alcance orgânico fraco' : 'orgânico OK'}</div>
-          </div>
-          <div style="background:var(--surface-2);border-radius:8px;padding:12px">
-            <div style="color:var(--ink-3);font-size:10.5px">MEDIDO NO TRINKS</div>
-            <div style="font-weight:700;font-size:22px">${fbReal.n_clientes}</div>
-            <div style="color:var(--ink-3);font-size:10.5px">clientes declarados "Facebook" · ${brl0m(fbReal.receita)}</div>
-          </div>
-        </div>
-        <div style="margin-top:12px;padding:10px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2);line-height:1.5">
-          <strong>💡 Leitura:</strong> ${fbOrg30.insight ? fbOrg30.insight : `Página gera ${fbOrg30.page_visits} visitas em 30d`}. No Trinks, só <strong>${fbReal.n_clientes} clientes</strong> declararam ter vindo pelo Facebook — <span style="color:#ef4444">é o canal mais fraco</span> de aquisição do salão. ${orgPct < 10 ? 'A Página vive de impulsionamento — sem verba paga, quase ninguém vê. Vale focar esforço em outros canais (IG, Google) que rendem mais por hora investida.' : ''}
-        </div>
-      </section>`;
-    }
 
     // 7. COMPARATIVO CONSOLIDADO — canais de aquisição
     // Só faz sentido se tem GMB + IG + Meta Ads no mês
@@ -6377,24 +6313,20 @@ function renderMidias(){
   if(focoGeo){
     const bairrosOrdenados = (focoGeo.bairros_no_raio_5km || []).slice().sort((a,b)=>b.mulheres_25_65_estimadas-a.mulheres_25_65_estimadas);
     const priColor = p => ({core:'#22c55e','alta':'#3b82f6','media':'#f59e0b','baixa (competitivo)':'#ef4444'})[p]||'var(--muted)';
-    // Info de alcance orgânico do Google Meu Negócio (se conectado)
-    const gmbAlcance = MID.google_business && MID.google_business.kpis_30d ? `
-      <div style="margin-top:14px;padding:12px;background:rgba(66,133,244,.06);border-left:3px solid #4285F4;border-radius:6px;font-size:12px;color:var(--ink-2);line-height:1.5">
-        <strong style="color:#4285F4">📍 Alcance orgânico complementar (Google Meu Negócio):</strong>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">
-          <div><strong>${nfmt(MID.google_business.kpis_30d.views_maps)}</strong> views Google Maps 30d<br><span style="color:var(--ink-3);font-size:10.5px">busca geolocalizada — quem procura salão perto</span></div>
-          <div><strong>${nfmt(MID.google_business.kpis_30d.views_search)}</strong> views Google Search 30d<br><span style="color:var(--ink-3);font-size:10.5px">busca por marca ou keyword</span></div>
-          <div><strong>${nfmt(MID.google_business.kpis_30d.actions_directions)}</strong> pediram rota<br><span style="color:var(--ink-3);font-size:10.5px">intenção alta de vinda — bairros próximos</span></div>
-        </div>
-      </div>` : '';
-    geoBox.innerHTML = `<section class="card" style="border-left:4px solid #10b981"><h2>🌍 Foco geográfico · Limão-SP</h2>
+    // GBP alcance movido pro card GBP proprio (Ato 2 Descoberta) —
+    // duplicava com o card 📍 Google Meu Negócio completo.
+    const gmbAlcance = '';
+    // Reach da janela selecionada (respeita filtro) — cai pra 30d se pSel não tem reach
+    const reachJanela = pSel.reach || focoGeo.totais_5km.reach_atual_30d || 0;
+    const penetJanela = focoGeo.totais_5km.publico_alvo_estimado ? (reachJanela / focoGeo.totais_5km.publico_alvo_estimado * 100) : 0;
+    geoBox.innerHTML = `<section class="card" style="border-left:4px solid #10b981"><h2>🌍 Foco geográfico · Limão-SP · ${pSel.label.toLowerCase()}</h2>
       <div class="cap">📍 ${focoGeo.endereco_loja} · raio atual: <strong>${focoGeo.raio_atual_km}km</strong> (Msg) · <strong>${focoGeo.raio_atual_ad_sets.vagas}km</strong> (Vagas)</div>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px">
         <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">População no raio 5km</div><div style="font-weight:700;font-size:20px">${nfmt(focoGeo.totais_5km.populacao)}</div><div style="color:var(--ink-3);font-size:10.5px">habitantes</div></div>
         <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Público-alvo estimado</div><div style="font-weight:700;font-size:20px">${nfmt(focoGeo.totais_5km.publico_alvo_estimado)}</div><div style="color:var(--ink-3);font-size:10.5px">mulheres 25-65 anos</div></div>
-        <div style="background:rgba(34,197,94,.08);border-radius:8px;padding:12px;border-left:3px solid #22c55e"><div style="color:#22c55e;font-size:10.5px;font-weight:700;text-transform:uppercase">Alcance 30d</div><div style="font-weight:700;font-size:20px">${nfmt(focoGeo.totais_5km.reach_atual_30d)}</div><div style="color:var(--ink-3);font-size:10.5px">pessoas únicas</div></div>
-        <div style="background:rgba(59,130,246,.08);border-radius:8px;padding:12px;border-left:3px solid #3b82f6"><div style="color:#3b82f6;font-size:10.5px;font-weight:700;text-transform:uppercase">Penetração</div><div style="font-weight:700;font-size:20px">${focoGeo.totais_5km.penetracao_pct.toFixed(1)}%</div><div style="color:var(--ink-3);font-size:10.5px">do público-alvo</div></div>
+        <div style="background:rgba(34,197,94,.08);border-radius:8px;padding:12px;border-left:3px solid #22c55e"><div style="color:#22c55e;font-size:10.5px;font-weight:700;text-transform:uppercase">Alcance ${pSel.label.toLowerCase()}</div><div style="font-weight:700;font-size:20px">${nfmt(reachJanela)}</div><div style="color:var(--ink-3);font-size:10.5px">pessoas únicas via Meta Ads</div></div>
+        <div style="background:rgba(59,130,246,.08);border-radius:8px;padding:12px;border-left:3px solid #3b82f6"><div style="color:#3b82f6;font-size:10.5px;font-weight:700;text-transform:uppercase">Penetração</div><div style="font-weight:700;font-size:20px">${penetJanela.toFixed(1)}%</div><div style="color:var(--ink-3);font-size:10.5px">do público-alvo</div></div>
       </div>
 
       <h2 style="margin-top:20px;font-size:15px">🏘️ Bairros cobertos no raio 5km</h2>
