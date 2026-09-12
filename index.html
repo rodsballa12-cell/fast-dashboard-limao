@@ -5520,24 +5520,93 @@ function renderMidias(){
         </div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink-3);margin-top:4px"><span>${fmtDate(serie[0].data)}</span><span>${fmtDate(serie[serie.length-1].data)}</span></div>
       </div>`:''}
-      ${posts.length?`<h2 style="margin-top:20px;font-size:15px">🏆 Top posts orgânicos · ${igJanTxt} (por alcance)</h2>
+      ${(() => {
+        // orgânico expandido: reach 30d, profile_activity, website_clicks, ultimo_post
+        const ext = org30.reach || ig.alcance_organico_30d || 0;
+        const pa = org30.profile_activity || 0;
+        const wc = org30.website_clicks || 0;
+        const ultimo = ig.ultimo_post || {};
+        const dias_sem = ultimo.dias_sem_postar;
+        return (ext || pa || wc || ultimo.data) ? `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;font-size:12px">
+          <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Reach orgânico 30d</div><div style="font-weight:700;font-size:22px">${nfmt(ext)}</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(Math.round(ext/30))}/dia médio</div></div>
+          <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Cliques em botões do perfil 30d</div><div style="font-weight:700;font-size:22px">${nfmt(pa)}</div><div style="color:var(--ink-3);font-size:10.5px">chamada · e-mail · rota</div></div>
+          <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Cliques no site (bio)</div><div style="font-weight:700;font-size:22px">${nfmt(wc)}</div><div style="color:var(--ink-3);font-size:10.5px">últimos 30d</div></div>
+          <div style="background:${dias_sem!=null && dias_sem>7?'rgba(239,68,68,.08)':'var(--surface-2)'};border-radius:8px;padding:12px${dias_sem!=null && dias_sem>7?';border-left:3px solid #ef4444':''}"><div style="color:${dias_sem!=null && dias_sem>7?'#ef4444':'var(--ink-3)'};font-size:10.5px">Último post</div><div style="font-weight:700;font-size:18px">${ultimo.data?fmtDate(ultimo.data):'—'}</div><div style="color:var(--ink-3);font-size:10.5px">${dias_sem!=null?`${dias_sem} dia(s) sem postar`:'—'}</div></div>
+        </div>` : '';
+      })()}
+      ${posts.length?`<h2 style="margin-top:20px;font-size:15px">🏆 Top posts orgânicos · ${igJanTxt} (ordenado por alcance)</h2>
       <div style="overflow-x:auto;margin-top:10px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
         <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
           <th style="text-align:left;padding:8px">Data</th>
           <th style="text-align:left;padding:8px">Tipo</th>
           <th style="text-align:left;padding:8px">Caption</th>
           <th style="text-align:right;padding:8px">Alcance</th>
+          <th style="text-align:right;padding:8px" title="Views (apenas reels/vídeos)">Views</th>
+          <th style="text-align:right;padding:8px">❤️ Likes</th>
+          <th style="text-align:right;padding:8px">💬 Coment.</th>
+          <th style="text-align:right;padding:8px" title="Compartilhamentos">↗️ Shares</th>
+          <th style="text-align:right;padding:8px" title="Salvos">💾 Saved</th>
+          <th style="text-align:right;padding:8px" title="Soma de likes+comments+saved+shares (Meta v22+)">Σ Interações</th>
           <th style="text-align:center;padding:8px">Link</th>
         </tr></thead>
         <tbody>${posts.map(p=>`<tr style="border-bottom:1px solid var(--surface-2)">
           <td style="padding:8px">${fmtDate(p.data)}</td>
           <td style="padding:8px"><span style="background:${p.tipo==='VIDEO'?'#a855f7':p.tipo==='CAROUSEL_ALBUM'?'#3b82f6':'#22c55e'};color:#fff;font-size:10px;padding:2px 6px;border-radius:8px">${p.tipo==='VIDEO'?'REEL':p.tipo==='CAROUSEL_ALBUM'?'CARROSSEL':'FEED'}</span></td>
-          <td style="padding:8px;font-size:11px">${p.caption_curta}</td>
-          <td style="text-align:right;padding:8px;font-weight:700">${nfmt(p.reach)}</td>
+          <td style="padding:8px;font-size:11px">${p.caption_curta||'—'}</td>
+          <td style="text-align:right;padding:8px;font-weight:700">${nfmt(p.reach||0)}</td>
+          <td style="text-align:right;padding:8px">${p.views?nfmt(p.views):'—'}</td>
+          <td style="text-align:right;padding:8px">${nfmt(p.likes||0)}</td>
+          <td style="text-align:right;padding:8px">${nfmt(p.comments||0)}</td>
+          <td style="text-align:right;padding:8px">${nfmt(p.shares||0)}</td>
+          <td style="text-align:right;padding:8px">${nfmt(p.saved||0)}</td>
+          <td style="text-align:right;padding:8px;font-weight:700;color:#E1306C">${nfmt(p.total_interactions||0)}</td>
           <td style="text-align:center;padding:8px"><a href="${p.url}" target="_blank" style="color:var(--accent);text-decoration:none">🔗</a></td>
         </tr>`).join('')}</tbody></table></div>`:''}
       </section>`;
   } else { igBox.innerHTML=''; }
+
+  // Instagram audience demografia (follower_demographics v22+)
+  document.querySelectorAll('.ig-aud-card').forEach(e => e.remove());
+  if(ig && ig.audience_demografia){
+    const aud = ig.audience_demografia;
+    const ages = aud.age_gender || [];
+    const cids = aud.cidades_top10 || [];
+    const paises = aud.paises_top5 || [];
+    const tot = ages.reduce((a,x)=>a+(x.n||0),0) || 1;
+    const audHTML = `<section class="card ig-aud-card" style="border-left:4px solid #833AB4;margin-top:12px">
+      <h2>👥 Instagram · Demografia dos Seguidores</h2>
+      <div class="cap">Perfil dos ${nfmt(ig.followers)} seguidores atuais · via <code>follower_demographics</code> (Meta Graph v22+). Base para segmentar próximas campanhas por afinidade real da conta.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px">
+        <div>
+          <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:8px">Faixa etária (top ${ages.length})</div>
+          ${ages.slice(0,8).map(a=>{const pct=(a.n/tot*100).toFixed(1);return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px"><span style="width:60px">${a.faixa}</span><div style="flex:1;background:var(--surface-2);height:16px;border-radius:8px;overflow:hidden"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#833AB4,#E1306C)"></div></div><span style="width:90px;text-align:right"><strong>${nfmt(a.n)}</strong> · ${pct}%</span></div>`}).join('')}
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:8px">Cidades (top ${cids.length})</div>
+          ${cids.slice(0,8).map(c=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--surface-2);font-size:12px"><span>${(c.cidade||'').split(',')[0]}</span><strong>${nfmt(c.n)}</strong></div>`).join('')}
+          ${paises.length?`<div style="margin-top:10px;font-size:11px;color:var(--ink-3)">Países top ${paises.length}: ${paises.map(p=>p.pais+' ('+nfmt(p.n)+')').join(' · ')}</div>`:''}
+        </div>
+      </div>
+    </section>`;
+    igBox.insertAdjacentHTML('afterend', audHTML);
+  }
+
+  // Instagram stories insights
+  document.querySelectorAll('.ig-stories-card').forEach(e => e.remove());
+  if(ig && ig.stories_insights && ig.stories_insights.ativas){
+    const st = ig.stories_insights;
+    const stHTML = `<section class="card ig-stories-card" style="border-left:4px solid #FD1D1D;margin-top:12px">
+      <h2>📸 Instagram Stories · ${st.ativas} ativas agora</h2>
+      <div class="cap">Snapshot das stories ativas (Meta expira em 24h). Views/reach agregados de todas as stories no ar.</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">👁️ Views</div><div style="font-weight:700;font-size:22px">${nfmt(st.views||0)}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">👤 Reach único</div><div style="font-weight:700;font-size:22px">${nfmt(st.reach||0)}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">💬 Replies (DMs)</div><div style="font-weight:700;font-size:22px">${nfmt(st.replies||0)}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">➡️ Navegação (fwd/back/exit)</div><div style="font-weight:700;font-size:16px">${nfmt(st.navigation_forward||0)}/${nfmt(st.navigation_back||0)}/${nfmt(st.navigation_exit||0)}</div></div>
+      </div>
+    </section>`;
+    igBox.insertAdjacentHTML('afterend', stHTML);
+  }
 
   // Facebook Page (org 30d).
   // Este bloco não tem container próprio no HTML: ele é injetado como irmão do
@@ -5547,18 +5616,128 @@ function renderMidias(){
   document.querySelectorAll('.fb-page-card').forEach(e => e.remove());
   if(MID.facebook_page && MID.facebook_page.conectado){
     const fbp = MID.facebook_page.organico_30d || {};
+    const fbPost = MID.facebook_page.posts_30d_detalhes || [];
+    const fbReact = MID.facebook_page.reactions_by_type_30d || null;
+    const fbSerie = MID.facebook_page.serie_diaria_30d || [];
+    const fbSeg = MID.facebook_page.seguidores || 0;
+    const fbNotaPP = MID.facebook_page._nota_pagina_pequena || null;
+    const totNovosFb = fbSerie.reduce((a,x)=>a+(x.novos_seguidores||0),0);
+    const totUnfollowsFb = fbSerie.reduce((a,x)=>a+(x.unfollows||0),0);
+    const reactTotal = fbReact ? Object.values(fbReact).reduce((a,x)=>a+x,0) : 0;
+    const reactEmoji = {like:'👍',love:'❤️',haha:'😂',wow:'😮',sad:'😢',angry:'😠'};
+    const maxNovosFb = fbSerie.length ? Math.max(...fbSerie.map(d=>d.novos_seguidores||0), 1) : 1;
     const fbHTML = `<section class="card fb-page-card" style="border-left:4px solid #1877F2;margin-top:12px">
       <h2>📘 Facebook Page · ${MID.facebook_page.nome} · orgânico${seloJanela({proprio:false})}</h2>
-      <div class="cap">Métricas orgânicas da Página, separadas das de anúncios. A API entrega só o agregado de 30 dias — não há série diária para recortar, então este bloco não acompanha a janela escolhida.</div>
+      <div class="cap">Métricas orgânicas da Página. Agregado 30d + série diária + top posts individuais + breakdown de reactions.</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Visitas à Página</div><div style="font-weight:700;font-size:22px">${nfmt(fbp.page_visits)}</div><div style="color:var(--ink-3);font-size:10.5px">últimos 30 dias</div></div>
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Post engagements</div><div style="font-weight:700;font-size:22px">${nfmt(fbp.page_post_engagements)}</div><div style="color:var(--ink-3);font-size:10.5px">curtidas+coment.+shares</div></div>
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Video views total</div><div style="font-weight:700;font-size:22px">${nfmt(fbp.total_video_views)}</div><div style="color:var(--ink-3);font-size:10.5px">org + pago</div></div>
-        <div style="background:rgba(239,68,68,.08);border-radius:8px;padding:12px;border-left:3px solid #ef4444"><div style="color:#ef4444;font-size:10.5px;font-weight:700;text-transform:uppercase">⚠️ Video views orgânicos</div><div style="font-weight:700;font-size:22px">${nfmt(fbp.video_views_organicos)}</div><div style="color:var(--ink-3);font-size:10.5px">só ${((fbp.video_views_organicos/(fbp.total_video_views||1))*100).toFixed(1)}% do total</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Seguidores atuais</div><div style="font-weight:700;font-size:22px">${nfmt(fbSeg)}</div><div style="color:${totNovosFb>=totUnfollowsFb?'#22c55e':'#ef4444'};font-size:10.5px">+${totNovosFb} novos · -${totUnfollowsFb} unfollows · 30d</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Visitas à Página 30d</div><div style="font-weight:700;font-size:22px">${nfmt(fbp.page_visits||0)}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Post engagements 30d</div><div style="font-weight:700;font-size:22px">${nfmt(fbp.page_post_engagements||0)}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Video views 30d</div><div style="font-weight:700;font-size:22px">${nfmt(fbp.total_video_views||0)}</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(fbp.video_views_organicos||0)} org · ${nfmt(fbp.video_views_pagos||0)} pago</div></div>
       </div>
+      ${fbSerie.length?`<div style="margin-top:16px">
+        <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:6px">Novos seguidores/dia · últimos ${fbSerie.length} dias</div>
+        <div style="display:grid;grid-template-columns:repeat(${fbSerie.length},1fr);gap:2px;align-items:end;height:60px">
+          ${fbSerie.map(d=>{const h=(d.novos_seguidores||0)/maxNovosFb*100;const cor=(d.novos_seguidores||0)>0?'#1877F2':'#6b7280';return `<div title="${fmtDate(d.data)}: +${d.novos_seguidores||0} novos · -${d.unfollows||0} unfollows" style="background:${cor};height:${Math.max(h,2)}%;border-radius:2px 2px 0 0;cursor:help"></div>`}).join('')}
+        </div>
+      </div>`:''}
+      ${fbReact?`<div style="margin-top:16px">
+        <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:6px">Reactions por tipo · 30d · Σ ${nfmt(reactTotal)}</div>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px">
+          ${Object.entries(fbReact).map(([k,v])=>`<div style="background:var(--surface-2);border-radius:6px;padding:8px;text-align:center"><div style="font-size:18px">${reactEmoji[k]||k}</div><div style="font-weight:700;font-size:14px">${nfmt(v)}</div><div style="color:var(--ink-3);font-size:9.5px">${reactTotal?((v/reactTotal*100).toFixed(0)+'%'):'—'}</div></div>`).join('')}
+        </div>
+      </div>`:''}
+      ${fbPost.length?`<h2 style="margin-top:20px;font-size:14px">🏆 Top posts orgânicos FB · 30d (ordenado por engajamento)</h2>
+      <div style="overflow-x:auto;margin-top:8px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
+        <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+          <th style="text-align:left;padding:6px">Data</th>
+          <th style="text-align:left;padding:6px">Tipo</th>
+          <th style="text-align:left;padding:6px">Texto</th>
+          <th style="text-align:right;padding:6px">Reach</th>
+          <th style="text-align:right;padding:6px">Impr.</th>
+          <th style="text-align:right;padding:6px">Reactions</th>
+          <th style="text-align:right;padding:6px">Atividade</th>
+          <th style="text-align:right;padding:6px">Σ Eng.</th>
+          <th style="text-align:center;padding:6px">Link</th>
+        </tr></thead>
+        <tbody>${fbPost.slice(0,10).map(p=>`<tr style="border-bottom:1px solid var(--surface-2)">
+          <td style="padding:6px">${fmtDate(p.data)}</td>
+          <td style="padding:6px"><span style="background:#1877F2;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px">${(p.tipo||'-').toUpperCase()}</span></td>
+          <td style="padding:6px;font-size:11px">${p.texto_curto||'—'}</td>
+          <td style="text-align:right;padding:6px">${nfmt(p.reach||0)}</td>
+          <td style="text-align:right;padding:6px">${nfmt(p.impressions||0)}</td>
+          <td style="text-align:right;padding:6px">${nfmt(p.reactions_total||0)}</td>
+          <td style="text-align:right;padding:6px">${nfmt(p.atividade_total||0)}</td>
+          <td style="text-align:right;padding:6px;font-weight:700;color:#1877F2">${nfmt(p.engajamento_total||0)}</td>
+          <td style="text-align:center;padding:6px">${p.url?`<a href="${p.url}" target="_blank" style="color:var(--accent);text-decoration:none">🔗</a>`:'—'}</td>
+        </tr>`).join('')}</tbody></table></div>`:''}
+      ${fbNotaPP?`<div style="margin-top:12px;padding:10px;background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;border-radius:6px;font-size:11.5px;color:var(--ink-2)"><strong>ℹ️ Nota Meta:</strong> ${fbNotaPP}</div>`:''}
       ${fbp.insight?`<div style="margin-top:12px;padding:10px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2)"><strong>💡 Insight:</strong> ${fbp.insight}</div>`:''}
     </section>`;
     igBox.insertAdjacentHTML('afterend', fbHTML);
+  }
+
+  // Meta Ads — video insights + device + hourly + geografia + recomendacoes oficiais
+  document.querySelectorAll('.ads-extra-card').forEach(e => e.remove());
+  if(MID.meta_ads && MID.meta_ads.ad_account_id){
+    const M2 = MID.meta_ads;
+    const vi = M2.video_insights_30d || {};
+    const dev = M2.device_30d || [];
+    const hr = M2.hourly_30d || [];
+    const geo = M2.geografia_30d || [];
+    const rec = (M2.recomendacoes_meta && M2.recomendacoes_meta.itens_api) || [];
+    const bn = MID.benchmarks || {};
+    const anun = M2.anuncios_30d || [];
+    const maxHr = hr.length ? Math.max(...hr.map(x=>x.gasto||0), 0.01) : 0.01;
+    const cpaCor = (real, meta) => real == null ? '#6b7280' : real <= meta ? '#22c55e' : real <= meta*1.2 ? '#f59e0b' : '#ef4444';
+    const anunRank = anun.filter(a => a.quality_ranking && a.quality_ranking !== 'UNKNOWN').slice(0,10);
+    const rankBadge = r => {
+      const cor = {ABOVE_AVERAGE:'#22c55e', AVERAGE:'#f59e0b', BELOW_AVERAGE_35:'#ef4444', BELOW_AVERAGE_20:'#ef4444', BELOW_AVERAGE_10:'#ef4444'}[r] || '#6b7280';
+      const label = r === 'ABOVE_AVERAGE' ? 'ACIMA' : r === 'AVERAGE' ? 'MÉDIA' : r ? 'ABAIXO' : '—';
+      return `<span style="background:${cor};color:#fff;font-size:10px;padding:1px 5px;border-radius:8px">${label}</span>`;
+    };
+    const adsHTML = `<section class="card ads-extra-card" style="border-left:4px solid #1877F2;margin-top:12px">
+      <h2>📊 Meta Ads · Detalhamento avançado 30d</h2>
+      <div class="cap">Video insights · breakdown por device · perfil horário · geografia · qualidade dos anúncios · recomendações oficiais Meta · benchmarks vs metas.</div>
+      ${(bn.cpa_msg_atual_30d || bn.cpm_atual_30d || bn.ctr_atual_30d) ? `<h3 style="margin-top:16px;font-size:13px">🎯 Benchmarks · atual 30d vs meta</h3>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px;font-size:12px">
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px;border-left:3px solid ${cpaCor(bn.cpa_msg_atual_30d, bn.cpa_msg_meta)}"><div style="color:var(--ink-3);font-size:10.5px">CPA por conversa</div><div style="font-weight:700;font-size:22px">R$ ${(bn.cpa_msg_atual_30d||0).toFixed(2).replace('.',',')}</div><div style="color:var(--ink-3);font-size:10.5px">meta R$ ${(bn.cpa_msg_meta||0).toFixed(2).replace('.',',')}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">CPM</div><div style="font-weight:700;font-size:22px">R$ ${(bn.cpm_atual_30d||0).toFixed(2).replace('.',',')}</div><div style="color:var(--ink-3);font-size:10.5px">meta R$ ${(bn.cpm_meta||0).toFixed(2).replace('.',',')}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">CTR</div><div style="font-weight:700;font-size:22px">${(bn.ctr_atual_30d||0).toFixed(2)}%</div><div style="color:var(--ink-3);font-size:10.5px">meta ${(bn.ctr_meta||0).toFixed(2)}%</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px;border-left:3px solid ${bn.frequency_alerta==='critico'?'#ef4444':bn.frequency_alerta==='atencao'?'#f59e0b':'#22c55e'}"><div style="color:var(--ink-3);font-size:10.5px">Frequency</div><div style="font-weight:700;font-size:22px">${(bn.frequency_atual_30d||0).toFixed(2)}x</div><div style="color:var(--ink-3);font-size:10.5px">${bn.frequency_alerta||'-'} · limiar 4.0</div></div>
+      </div>` : ''}
+      ${vi.plays ? `<h3 style="margin-top:16px;font-size:13px">🎬 Video insights · 30d (${vi.anuncios_com_video || 0} anúncios de vídeo)</h3>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px;font-size:12px">
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Video plays</div><div style="font-weight:700;font-size:22px">${nfmt(vi.plays)}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">ThruPlay (≥15s ou até fim)</div><div style="font-weight:700;font-size:22px">${nfmt(vi.thruplay_watched||0)}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Taxa passar do meio</div><div style="font-weight:700;font-size:22px">${(vi.taxa_meio_pct||0).toFixed(1)}%</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(vi.p50)} p50</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:12px;border-left:3px solid ${(vi.taxa_conclusao_pct||0)>=3?'#22c55e':(vi.taxa_conclusao_pct||0)>=1?'#f59e0b':'#ef4444'}"><div style="color:var(--ink-3);font-size:10.5px">Taxa de conclusão (p95)</div><div style="font-weight:700;font-size:22px">${(vi.taxa_conclusao_pct||0).toFixed(2)}%</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(vi.p95||0)} p95</div></div>
+      </div>` : ''}
+      ${dev.length?`<h3 style="margin-top:16px;font-size:13px">📱 Breakdown por device · 30d</h3>
+      <div style="display:grid;grid-template-columns:repeat(${Math.min(dev.length,4)},1fr);gap:10px;margin-top:8px;font-size:12px">
+        ${dev.slice(0,4).map(d=>`<div style="background:var(--surface-2);border-radius:8px;padding:10px"><div style="color:var(--ink-3);font-size:10.5px">${d.device}</div><div style="font-weight:700;font-size:18px">R$ ${(d.gasto||0).toFixed(2).replace('.',',')}</div><div style="color:var(--ink-3);font-size:10.5px">${d.share_pct||0}% · ${d.conversas_msg||0} conv · CPA R$ ${(d.cpa_msg||0).toFixed(2).replace('.',',')}</div></div>`).join('')}
+      </div>` : ''}
+      ${hr.length?`<h3 style="margin-top:16px;font-size:13px">🕐 Perfil horário · 30d (gasto por hora do advertiser timezone)</h3>
+      <div style="display:grid;grid-template-columns:repeat(24,1fr);gap:2px;align-items:end;height:80px;margin-top:8px">
+        ${hr.map(h=>{const H=(h.gasto/maxHr*100);const cor=(h.conversas_msg||0)>0?'#22c55e':(h.gasto>0?'#3b82f6':'#6b7280');return `<div title="${h.hora}: R$ ${(h.gasto||0).toFixed(2)} · ${h.conversas_msg||0} conv · CPA R$ ${(h.cpa_msg||0).toFixed(2)}" style="background:${cor};height:${Math.max(H,2)}%;border-radius:2px 2px 0 0;cursor:help"></div>`}).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink-3);margin-top:4px"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>23h</span></div>` : ''}
+      ${geo.length && (geo[0].gasto||0) > 0 ? `<h3 style="margin-top:16px;font-size:13px">📍 Geografia · 30d (top ${Math.min(geo.length,8)} regiões)</h3>
+      <div style="overflow-x:auto;margin-top:8px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
+        <thead><tr style="background:var(--surface-2);color:var(--ink-2)"><th style="text-align:left;padding:6px">Região</th><th style="text-align:right;padding:6px">Gasto</th><th style="text-align:right;padding:6px">Impressões</th><th style="text-align:right;padding:6px">Reach</th><th style="text-align:right;padding:6px">Conversas</th><th style="text-align:right;padding:6px">Share</th></tr></thead>
+        <tbody>${geo.slice(0,8).map(g=>`<tr style="border-bottom:1px solid var(--surface-2)"><td style="padding:6px">${g.regiao}</td><td style="text-align:right;padding:6px">R$ ${(g.gasto||0).toFixed(2).replace('.',',')}</td><td style="text-align:right;padding:6px">${nfmt(g.impressoes||0)}</td><td style="text-align:right;padding:6px">${nfmt(g.reach||0)}</td><td style="text-align:right;padding:6px">${g.conversas_msg||0}</td><td style="text-align:right;padding:6px">${g.share_pct||0}%</td></tr>`).join('')}</tbody></table></div>` : ''}
+      ${anunRank.length?`<h3 style="margin-top:16px;font-size:13px">⭐ Qualidade dos anúncios · rankings Meta 30d</h3>
+      <div style="overflow-x:auto;margin-top:8px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
+        <thead><tr style="background:var(--surface-2);color:var(--ink-2)"><th style="text-align:left;padding:6px">Anúncio</th><th style="text-align:center;padding:6px">Qualidade</th><th style="text-align:center;padding:6px">Engajamento</th><th style="text-align:center;padding:6px">Conversão</th><th style="text-align:right;padding:6px">Gasto</th><th style="text-align:right;padding:6px">Conversas</th></tr></thead>
+        <tbody>${anunRank.map(a=>`<tr style="border-bottom:1px solid var(--surface-2)"><td style="padding:6px;font-size:11px">${a.ad}</td><td style="text-align:center;padding:6px">${rankBadge(a.quality_ranking)}</td><td style="text-align:center;padding:6px">${rankBadge(a.engagement_rate_ranking)}</td><td style="text-align:center;padding:6px">${rankBadge(a.conversion_rate_ranking)}</td><td style="text-align:right;padding:6px">R$ ${(a.gasto||0).toFixed(2).replace('.',',')}</td><td style="text-align:right;padding:6px">${a.conversas_msg||0}</td></tr>`).join('')}</tbody></table></div>` : ''}
+      ${rec.length?`<h3 style="margin-top:16px;font-size:13px">💡 Recomendações oficiais Meta (${rec.length})</h3>
+      <div style="display:grid;gap:8px;margin-top:8px">
+        ${rec.slice(0,8).map(r=>`<div style="background:var(--surface-2);border-radius:6px;padding:10px;border-left:3px solid ${r.importancia==='HIGH'?'#ef4444':r.importancia==='MEDIUM'?'#f59e0b':'#3b82f6'}"><div style="font-weight:600;font-size:12px">${r.titulo}</div><div style="color:var(--ink-3);font-size:11px;margin-top:4px">${r.mensagem}</div><div style="color:var(--ink-3);font-size:10px;margin-top:4px">Prioridade: ${r.importancia||'-'} · ${r.data||''}</div></div>`).join('')}
+      </div>` : ''}
+    </section>`;
+    // Insere após fb-page-card se existir, senão após igBox
+    const fbEl = document.querySelector('.fb-page-card');
+    (fbEl || igBox).insertAdjacentHTML('afterend', adsHTML);
   }
 
   // Google Meu Negócio — remove card antigo antes de renderizar de novo
