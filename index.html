@@ -4477,13 +4477,13 @@ function renderFinanceiro(){
     </div>
   </div>`;
 
-  document.getElementById('fin-kpis').innerHTML = bloco_hero_fin + mesEmCursoCard + '<section class="kpi-grid fin5">'+[
-    kpiCard('k1','CAIXA EM CONTA', brl0(k.caixa_conta), `Conta corrente da PJ · posição ${baselineFmt}`, null),
-    kpiCard('k2','A RECEBER · STONE', brl0(k.a_receber_stone), `direto do CSV Stone · mesmo número da aba Stone`, null),
-    kpiCard('k3',`RESULTADO REALIZADO ${mpLbl}`, brl0(res_real_kpi), `custos prorateados: variáveis a ${(ratio_rec_kpi*100).toFixed(0)}% da receita, fixos a ${(ratio_dia_kpi*100).toFixed(0)}% dos dias`, null),
-    kpiCard('k4',`${mpLbl} × META (real)`, finPct(atg_real_kpi), brl0(rec_atual)+' de '+brl0(mesMetaOfi)+' · faltam '+brl0(Math.max(mesMetaOfi-rec_atual,0))+' pra meta', null),
-    kpiCard('k5 kpi-be',`FALTA PRA EQUILÍBRIO (${mpLbl})`, brl0(Math.max(beMes-rec_atual,0)), beBarReal, null),
-  ].join('')+'</section>';
+  // Financeiro consolidado num unico hero:
+  //   bloco_hero_fin ja contem os 3 cenarios (mes / ano real / ano projetado)
+  //   + situacao de caixa (caixa em conta + a receber Stone + ponto equilibrio)
+  //   + direcionamento + auditoria dos numeros.
+  // Removidos mesEmCursoCard e a kpi-grid fin5 — duplicavam faturado, meta,
+  // resultado, atingimento e caixa que ja aparecem no hero.
+  document.getElementById('fin-kpis').innerHTML = bloco_hero_fin;
 
   let h='';
 
