@@ -4683,8 +4683,15 @@ function renderFinanceiro(){
     <tr><td><strong>Faturamento para empatar</strong></td><td><strong>${brl0(c0.be)}</strong></td></tr>
     <tr><td><strong>Quanto falta por mês</strong></td><td><strong style="color:#ef4444">${brl0(c0.falta)}</strong></td></tr>
     </tbody></table>
-    <div class="fin-fonte" style="margin-top:12px">💡 A comissão é a alavanca: <strong>cada ponto percentual move o ponto de equilíbrio em ${brl0(E.custo_fixo_mes/(c0.mc*c0.mc)/100)}/mês</strong>.
-    ${(()=>{ const sobe=c1.be>c0.be; return `A ${finPct(c1.comissao)} sobrariam ${brl(c1.mc*100)} de cada R$ 100 e o equilíbrio ${sobe?'subiria':'cairia'} para <strong>${brl0(c1.be)}</strong> — <strong>${brl0(Math.abs(c1.be-c0.be))} ${sobe?'a mais':'a menos'} de faturamento, todo mês</strong>.`; })()}</div></div>`;
+    ${(()=>{
+      const sobe = c1.be > c0.be;
+      const deltaBE = Math.abs(c1.be - c0.be);
+      const deltaPP = Math.abs((c1.comissao - c0.comissao) * 100);  // pontos percentuais
+      // Usa o cálculo REAL entre c0 e c1 (não derivada linear) pra bater com
+      // o número final mostrado: sob a comissão em X pp → BE sobe R$ Y.
+      const porPP = deltaPP > 0 ? deltaBE / deltaPP : 0;
+      return `<div class="fin-fonte" style="margin-top:12px">💡 <strong>A comissão é a alavanca:</strong> subir ${finPct(deltaPP/100)} (de ${finPct(c0.comissao)} para ${finPct(c1.comissao)}) faz sobrar só ${brl(c1.mc*100)} de cada R$ 100 e o equilíbrio ${sobe?'sobe':'cai'} pra <strong>${brl0(c1.be)}</strong> — <strong>${brl0(deltaBE)} ${sobe?'a mais':'a menos'} de faturamento por mês</strong> (${brl0(porPP)} por ponto percentual, na média desse intervalo).</div>`;
+    })()}</div>`;
 
   // ---- quando o dinheiro entra (só se temos recebimento medido) ----
   if(C && C.linhas && C.linhas.length){
