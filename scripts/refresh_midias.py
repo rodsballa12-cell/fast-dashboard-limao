@@ -1237,11 +1237,15 @@ def _get_page_access_token(page_id: str, user_token: str) -> str | None:
 
 
 def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[dict[str, Any]]:
-    """Lista posts ultimos 30d com insights por post (reach/impressions/engagement/reactions)."""
+    """Lista posts ORGANICOS ultimos 30d com insights por post.
+
+    /page_id/posts inclui dark posts (unpublished ads) que retornam insights=0.
+    Usa /published_posts que devolve apenas posts publicados no feed.
+    """
     inicio, fim = _janela("last_30d", hoje)
     try:
         posts = _graph_get_all(
-            f"/{page_id}/posts",
+            f"/{page_id}/published_posts",
             {
                 "fields": "id,created_time,message,permalink_url,attachments{media_type}",
                 "since": _iso(inicio),
@@ -1252,16 +1256,37 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
             max_pages=4,
         )
     except Exception as e:
-        print(f"  [WARN] FB posts detalhes list falhou: {e}", file=sys.stderr)
-        return []
+        # fallback pra /posts se /published_posts nao existe pra essa permissao
+        print(f"  [INFO] /published_posts falhou ({str(e)[:100]}), tentando /posts", file=sys.stderr)
+        try:
+            posts = _graph_get_all(
+                f"/{page_id}/posts",
+                {
+                    "fields": "id,created_time,message,permalink_url,attachments{media_type}",
+                    "since": _iso(inicio),
+                    "until": _iso(fim),
+                    "limit": 50,
+                },
+                page_token,
+                max_pages=4,
+            )
+        except Exception as e2:
+            print(f"  [WARN] FB posts list falhou: {e2}", file=sys.stderr)
+            return []
+
     saida = []
     for p in posts[:30]:
         pid = p.get("id")
-        ins = {"post_impressions": 0, "post_impressions_unique": 0, "post_engaged_users": 0, "post_reactions_by_type_total": {}}
+        ins = {"post_impressions": 0, "post_impressions_unique": 0, "post_impressions_organic": 0,
+               "post_impressions_organic_unique": 0, "post_engaged_users": 0,
+               "post_reactions_by_type_total": {}, "post_clicks": 0}
         try:
             resp = _graph_get(
                 f"/{pid}/insights",
-                {"metric": "post_impressions,post_impressions_unique,post_engaged_users,post_reactions_by_type_total"},
+                {
+                    "metric": "post_impressions,post_impressions_unique,post_impressions_organic,post_impressions_organic_unique,post_engaged_users,post_reactions_by_type_total,post_clicks",
+                    "period": "lifetime",
+                },
                 page_token,
             )
             for m in resp.get("data", []) or []:
@@ -1270,18 +1295,24 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
                 if not vals:
                     continue
                 v = vals[0].get("value")
-                ins[name] = v if isinstance(v, dict) else int(v or 0)
-        except Exception:
-            pass
+                if name in ins:
+                    ins[name] = v if isinstance(v, dict) else int(v or 0)
+        except Exception as e:
+            print(f"  [INFO] FB post {pid} insights falhou: {str(e)[:100]}", file=sys.stderr)
+
         msg = (p.get("message") or "").strip().replace("\n", " ")
         attach = (((p.get("attachments") or {}).get("data") or [{}])[0]).get("media_type", "-")
+        # reach: prefere organic_unique; fallback pra unique total; fallback pra impressions
+        reach = (ins["post_impressions_organic_unique"] or ins["post_impressions_unique"] or 0)
+        impr = (ins["post_impressions_organic"] or ins["post_impressions"] or 0)
         saida.append({
             "id": pid,
             "data": (p.get("created_time") or "")[:10],
             "tipo": attach,
-            "impressions": ins["post_impressions"] if isinstance(ins["post_impressions"], int) else 0,
-            "reach": ins["post_impressions_unique"] if isinstance(ins["post_impressions_unique"], int) else 0,
+            "impressions": int(impr) if isinstance(impr, (int, float)) else 0,
+            "reach": int(reach) if isinstance(reach, (int, float)) else 0,
             "engajados": ins["post_engaged_users"] if isinstance(ins["post_engaged_users"], int) else 0,
+            "clicks": ins["post_clicks"] if isinstance(ins["post_clicks"], int) else 0,
             "reactions": ins["post_reactions_by_type_total"] if isinstance(ins["post_reactions_by_type_total"], dict) else {},
             "url": p.get("permalink_url"),
             "texto_curto": msg[:100],
