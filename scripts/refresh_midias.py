@@ -1292,20 +1292,26 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
             return []
 
     saida = []
+    # Meta v22+ rejeita o batch inteiro se QUALQUER metric for invalida.
+    # Chama uma por uma pra descobrir quais funcionam e nao perder tudo.
+    # Ordem: primeiro batch com todas; se 400, chama isolada por metric.
+    metric_names = [
+        "post_impressions",
+        "post_impressions_unique",
+        "post_reactions_by_type_total",
+        "post_activity_by_action_type",
+    ]
     for p in posts[:30]:
         pid = p.get("id")
-        # v22+ removeu: post_impressions_organic, post_impressions_organic_unique,
-        # post_engaged_users, post_clicks. Sobreviventes: post_impressions,
-        # post_impressions_unique, post_reactions_by_type_total, post_activity_by_action_type.
         ins = {"post_impressions": 0, "post_impressions_unique": 0,
                "post_reactions_by_type_total": {}, "post_activity_by_action_type": {}}
+
+        # 1) tentativa em batch
+        batch_ok = False
         try:
             resp = _graph_get(
                 f"/{pid}/insights",
-                {
-                    "metric": "post_impressions,post_impressions_unique,post_reactions_by_type_total,post_activity_by_action_type",
-                    "period": "lifetime",
-                },
+                {"metric": ",".join(metric_names), "period": "lifetime"},
                 page_token,
             )
             for m in resp.get("data", []) or []:
@@ -1316,8 +1322,31 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
                 v = vals[0].get("value")
                 if name in ins:
                     ins[name] = v if isinstance(v, dict) else int(v or 0)
-        except Exception as e:
-            print(f"  [INFO] FB post {pid} insights falhou: {str(e)[:100]}", file=sys.stderr)
+            batch_ok = True
+        except Exception:
+            pass
+
+        # 2) fallback: uma por vez (mais chamadas, mas nao perde nada)
+        if not batch_ok:
+            for metric in metric_names:
+                try:
+                    resp = _graph_get(
+                        f"/{pid}/insights",
+                        {"metric": metric, "period": "lifetime"},
+                        page_token,
+                    )
+                    for m in resp.get("data", []) or []:
+                        name = m.get("name")
+                        vals = m.get("values", []) or []
+                        if not vals:
+                            continue
+                        v = vals[0].get("value")
+                        if name in ins:
+                            ins[name] = v if isinstance(v, dict) else int(v or 0)
+                except Exception as e:
+                    # so loga se for a primeira metric (pra nao poluir com 4x/post)
+                    if metric == metric_names[0]:
+                        print(f"  [INFO] FB post {pid} metric={metric} falhou: {str(e)[:100]}", file=sys.stderr)
 
         msg = (p.get("message") or "").strip().replace("\n", " ")
         attach = (((p.get("attachments") or {}).get("data") or [{}])[0]).get("media_type", "-")
