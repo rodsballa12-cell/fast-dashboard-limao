@@ -1250,10 +1250,12 @@ def main():
 
     # === PROFS HISTÓRICAS (deletadas do BackOffice) ===
     # /v1/profissionais lista só ativas/inativas. Profs completamente removidas
-    # do BackOffice não aparecem, mas seus IDs persistem em transacoes
-    # historicas e viravam "Prof desligado #ID" no ranking de comissoes.
-    # Tenta /v1/profissionais/{id} direto — o endpoint costuma devolver o
-    # cadastro mesmo pra profs removidas do listing.
+    # do BackOffice não aparecem no listing, seu ID persiste em transacoes.
+    # Duas estrategias de resolucao antes de cair em "Ex-prof":
+    #   (1) /v1/profissionais/{id} direto (raro funcionar pra removida, mas de graça)
+    #   (2) buscar em agendamentos historicos onde o profissional.id bate — o
+    #       nome vem embutido em cada agend. Mais confiavel: se um dia teve
+    #       agendamento, o nome persiste.
     ids_orfaos = set()
     for tx in transac:
         for s in (tx.get("servicos") or []):
@@ -1261,30 +1263,55 @@ def main():
             if exec_id and exec_id not in prof_map_global:
                 ids_orfaos.add(exec_id)
     if ids_orfaos:
-        print(f"[fetch] profs orfaos (nao no listing): {len(ids_orfaos)} IDs · lookup direto...")
-        n_resolvidos = 0
-        for pid in sorted(ids_orfaos):
-            try:
-                resp = t.get(f"/v1/profissionais/{pid}")
-                if isinstance(resp, dict):
-                    p = resp.get("data") if isinstance(resp.get("data"), dict) else resp
-                    nome = (p.get("nome") or "").strip().title() if isinstance(p, dict) else ""
-                    if nome:
-                        prof_map_global[pid] = nome
-                        prof_meta_global[pid] = {
-                            "nome": nome,
-                            "apelido": (p.get("apelido") or "").strip() if isinstance(p, dict) else "",
-                            "funcao": "",
-                            "status": "historico",  # marcador · nao aparece no listing
-                            "possui_agenda": False,
-                            "id_profissional": p.get("idProfissional") if isinstance(p, dict) else None,
-                            "genero": "",
-                        }
-                        n_resolvidos += 1
-            except Exception:
-                pass  # 404 = deletado de vez · silencia
-        print(f"  {n_resolvidos}/{len(ids_orfaos)} resolvidos via lookup direto")
-        if n_resolvidos:
+        print(f"[fetch] profs orfaos (nao no listing): {len(ids_orfaos)} IDs")
+
+        # Estrategia 2 FIRST: rastreia todos os agend do ano — profs que já
+        # tiveram algum agend têm o nome no payload mesmo depois de removidas.
+        # agend aqui e a lista completa do ANO ja carregada em memoria.
+        from_agend = 0
+        for a in agend:
+            p = a.get("profissional") or {}
+            pid = p.get("id")
+            pnome = (p.get("nome") or "").strip().title()
+            if pid in ids_orfaos and pnome:
+                prof_map_global[pid] = pnome
+                prof_meta_global[pid] = {
+                    "nome": pnome, "apelido": "", "funcao": "",
+                    "status": "historico", "possui_agenda": False,
+                    "id_profissional": pid, "genero": "",
+                }
+                from_agend += 1
+        if from_agend:
+            print(f"  {from_agend}/{len(ids_orfaos)} resolvidos via agend historico")
+        ainda_orfaos = {i for i in ids_orfaos if i not in prof_map_global}
+
+        # Estrategia 1: lookup direto (best effort — quase sempre 404)
+        # Loga o status HTTP real da PRIMEIRA tentativa pra diagnostico.
+        n_direto = 0
+        if ainda_orfaos:
+            print(f"  {len(ainda_orfaos)} restantes · lookup direto /v1/profissionais/{{id}}...")
+            for i, pid in enumerate(sorted(ainda_orfaos)):
+                try:
+                    r = t.s.get(BASE_URL + f"/v1/profissionais/{pid}", headers=t.headers, timeout=20)
+                    if i == 0:
+                        print(f"    diag: GET /v1/profissionais/{pid} → HTTP {r.status_code} · body: {(r.text or '')[:200]!r}")
+                    if r.status_code == 200:
+                        js = r.json()
+                        p = js.get("data") if isinstance(js, dict) and isinstance(js.get("data"), dict) else js
+                        nome = (p.get("nome") or "").strip().title() if isinstance(p, dict) else ""
+                        if nome:
+                            prof_map_global[pid] = nome
+                            prof_meta_global[pid] = {
+                                "nome": nome, "apelido": "", "funcao": "",
+                                "status": "historico", "possui_agenda": False,
+                                "id_profissional": pid, "genero": "",
+                            }
+                            n_direto += 1
+                except Exception:
+                    pass
+            print(f"    {n_direto}/{len(ainda_orfaos)} resolvidos via lookup direto")
+
+        if from_agend or n_direto:
             _save_cache(PROF_CACHE, {"prof_map": prof_map_global, "prof_meta": prof_meta_global})
             analisar._prof_id_nome_cache = prof_map_global
 
