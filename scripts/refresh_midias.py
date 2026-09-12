@@ -433,14 +433,42 @@ def _fetch_adsets(act_id: str, token: str, since: date, until: date) -> list[dic
 
 
 def _fetch_anuncios(act_id: str, token: str, since: date, until: date) -> list[dict[str, Any]]:
+    """Ads com quality rankings + video insights."""
     rows = _fetch_insights_breakdown(
         act_id, token, since, until,
         level="ad",
-        extra_fields="ad_name,campaign_name",
+        extra_fields=(
+            "ad_name,campaign_name,quality_ranking,engagement_rate_ranking,"
+            "conversion_rate_ranking,video_thruplay_watched_actions,"
+            "video_avg_time_watched_actions,video_p25_watched_actions,"
+            "video_p50_watched_actions,video_p75_watched_actions,"
+            "video_p95_watched_actions,video_play_actions"
+        ),
     )
     saida = []
     for r in rows:
         m = _row_metrics(r)
+
+        def _first_action(field: str) -> int:
+            arr = r.get(field) or []
+            for a in arr:
+                v = a.get("value")
+                try:
+                    return int(float(v))
+                except (TypeError, ValueError):
+                    continue
+            return 0
+
+        def _first_action_float(field: str) -> float:
+            arr = r.get(field) or []
+            for a in arr:
+                v = a.get("value")
+                try:
+                    return round(float(v), 2)
+                except (TypeError, ValueError):
+                    continue
+            return 0.0
+
         saida.append({
             "ad": r.get("ad_name") or "-",
             "campanha": r.get("campaign_name") or "-",
@@ -456,9 +484,106 @@ def _fetch_anuncios(act_id: str, token: str, since: date, until: date) -> list[d
             "status": "ACTIVE" if m["gasto"] > 0 else "PAUSED",
             "copy_curto": None,
             "thumb": None,
+            "quality_ranking": r.get("quality_ranking"),
+            "engagement_rate_ranking": r.get("engagement_rate_ranking"),
+            "conversion_rate_ranking": r.get("conversion_rate_ranking"),
+            "video": {
+                "plays": _first_action("video_play_actions"),
+                "thruplay_watched": _first_action("video_thruplay_watched_actions"),
+                "avg_time_watched_s": _first_action_float("video_avg_time_watched_actions"),
+                "p25": _first_action("video_p25_watched_actions"),
+                "p50": _first_action("video_p50_watched_actions"),
+                "p75": _first_action("video_p75_watched_actions"),
+                "p95": _first_action("video_p95_watched_actions"),
+            },
         })
     saida.sort(key=lambda x: x["gasto"], reverse=True)
     return saida[:25]
+
+
+def _fetch_device_platform(act_id: str, token: str, since: date, until: date) -> list[dict[str, Any]]:
+    rows = _fetch_insights_breakdown(
+        act_id, token, since, until,
+        level="account",
+        breakdowns="device_platform",
+    )
+    total = sum(float(r.get("spend") or 0) for r in rows) or 1.0
+    saida = []
+    for r in rows:
+        m = _row_metrics(r)
+        share = round(m["gasto"] / total * 100, 2) if total else 0.0
+        saida.append({
+            "device": r.get("device_platform") or "-",
+            **m,
+            "share_pct": share,
+        })
+    saida.sort(key=lambda x: x["gasto"], reverse=True)
+    return saida
+
+
+def _fetch_hourly(act_id: str, token: str, since: date, until: date) -> list[dict[str, Any]]:
+    """Breakdown por hora do dia (agregado no periodo). Devolve 24 slots (0..23h)."""
+    rows = _fetch_insights_breakdown(
+        act_id, token, since, until,
+        level="account",
+        breakdowns="hourly_stats_aggregated_by_advertiser_time_zone",
+    )
+    por_hora: dict[str, dict[str, Any]] = {}
+    for r in rows:
+        hora = (r.get("hourly_stats_aggregated_by_advertiser_time_zone") or "-")[:5]  # ex "08:00"
+        m = _row_metrics(r)
+        slot = por_hora.setdefault(hora, {"hora": hora, "gasto": 0.0, "impressoes": 0, "cliques": 0,
+                                          "conversas_msg": 0, "reach": 0, "cpa_msg": None})
+        slot["gasto"] += m["gasto"]
+        slot["impressoes"] += m["impressoes"]
+        slot["cliques"] += m["cliques"]
+        slot["conversas_msg"] += m["conversas_msg"]
+        slot["reach"] += m["reach"]
+    for s in por_hora.values():
+        s["gasto"] = round(s["gasto"], 2)
+        s["cpa_msg"] = round(s["gasto"] / s["conversas_msg"], 2) if s["conversas_msg"] else None
+        s["ctr_pct"] = round((s["cliques"] / s["impressoes"] * 100), 2) if s["impressoes"] else 0.0
+    return sorted(por_hora.values(), key=lambda x: x["hora"])
+
+
+def _fetch_ads_recommendations(act_id: str, token: str) -> list[dict[str, Any]]:
+    """Recomendacoes oficiais Meta para a conta (Meta Ads Recommendations API)."""
+    try:
+        resp = _graph_get(
+            f"/{act_id}",
+            {"fields": "recommendations{title,message,importance,recommendation_data,creation_time}"},
+            token,
+        )
+    except Exception as e:
+        print(f"  [INFO] Ads recommendations indisponivel: {str(e)[:120]}", file=sys.stderr)
+        return []
+    rec = (resp.get("recommendations") or {}).get("data") or []
+    saida = []
+    for r in rec[:25]:
+        saida.append({
+            "titulo": r.get("title") or "-",
+            "mensagem": r.get("message") or "-",
+            "importancia": r.get("importance") or "-",
+            "data": (r.get("creation_time") or "")[:10],
+            "dados": r.get("recommendation_data"),
+        })
+    return saida
+
+
+def _agregar_video_insights(anuncios: list[dict[str, Any]]) -> dict[str, Any]:
+    """Soma video insights de todos os anuncios."""
+    agg = {"plays": 0, "thruplay_watched": 0, "p25": 0, "p50": 0, "p75": 0, "p95": 0}
+    n_com_video = 0
+    for a in anuncios:
+        v = a.get("video") or {}
+        if v.get("plays"):
+            n_com_video += 1
+        for k in agg:
+            agg[k] += int(v.get(k) or 0)
+    agg["taxa_conclusao_pct"] = round(agg["p95"] / agg["plays"] * 100, 2) if agg["plays"] else 0.0
+    agg["taxa_meio_pct"] = round(agg["p50"] / agg["plays"] * 100, 2) if agg["plays"] else 0.0
+    agg["anuncios_com_video"] = n_com_video
+    return agg
 
 
 def _fetch_demografia(act_id: str, token: str, since: date, until: date) -> list[dict[str, Any]]:
@@ -861,13 +986,16 @@ def _fetch_ig_daily(ig_user_id: str, token: str, hoje: date) -> list[dict[str, A
 
 
 def _fetch_ig_media(ig_user_id: str, token: str, hoje: date) -> tuple[list[dict[str, Any]], dict[str, Any] | None, int]:
-    """Devolve (top_posts_30d, ultimo_post, posts_na_janela)."""
+    """Devolve (top_posts_30d, ultimo_post, posts_na_janela).
+
+    Cada post: reach + like_count + comments_count + saved + shares + plays (reels).
+    """
     inicio, _fim = _janela("last_30d", hoje)
     try:
         resp = _graph_get(
             f"/{ig_user_id}/media",
             {
-                "fields": "id,media_type,permalink,caption,timestamp,insights.metric(reach)",
+                "fields": "id,media_type,media_product_type,permalink,caption,timestamp,like_count,comments_count",
                 "limit": 25,
             },
             token,
@@ -891,7 +1019,7 @@ def _fetch_ig_media(ig_user_id: str, token: str, hoje: date) -> tuple[list[dict[
     except Exception:
         ultimo = None
 
-    # posts na janela + top 10 by reach
+    # Para cada post na janela, puxa insights (reach + saved + shares + plays/reels)
     na_janela: list[dict[str, Any]] = []
     for p in posts:
         ts = (p.get("timestamp") or "")[:10]
@@ -903,25 +1031,142 @@ def _fetch_ig_media(ig_user_id: str, token: str, hoje: date) -> tuple[list[dict[
             continue
         if d_post < inicio:
             continue
-        # extrair reach de insights
-        reach = 0
-        insights = (p.get("insights") or {}).get("data") or []
-        for m in insights:
-            if m.get("name") == "reach":
+
+        mtype = (p.get("media_type") or "").upper()
+        mprod = (p.get("media_product_type") or "").upper()
+        # metrica base sempre: reach + saved + shares
+        # reels/videos: adicionar plays + total_interactions
+        metrics = ["reach", "saved", "shares"]
+        if mprod == "REELS" or mtype == "VIDEO":
+            metrics += ["plays", "total_interactions"]
+
+        insights_dict = {"reach": 0, "saved": 0, "shares": 0, "plays": 0, "total_interactions": 0}
+        try:
+            ins_resp = _graph_get(
+                f"/{p.get('id')}/insights",
+                {"metric": ",".join(metrics)},
+                token,
+            )
+            for m in ins_resp.get("data", []) or []:
+                name = m.get("name")
+                total = 0
                 for v in m.get("values", []) or []:
                     if isinstance(v.get("value"), (int, float)):
-                        reach = int(v["value"])
+                        total += int(v["value"])
+                if name in insights_dict:
+                    insights_dict[name] = total
+        except Exception as e:
+            print(f"  [WARN] IG insights post {p.get('id')} falhou: {e}", file=sys.stderr)
+
         cap = (p.get("caption") or "").strip().replace("\n", " ")
         na_janela.append({
             "data": ts,
             "tipo": p.get("media_type"),
-            "reach": reach,
+            "produto": p.get("media_product_type"),
+            "reach": insights_dict["reach"],
+            "likes": int(p.get("like_count") or 0),
+            "comments": int(p.get("comments_count") or 0),
+            "saved": insights_dict["saved"],
+            "shares": insights_dict["shares"],
+            "plays": insights_dict["plays"],
+            "total_interactions": insights_dict["total_interactions"],
             "url": p.get("permalink"),
             "caption_curta": cap[:80],
         })
 
     top10 = sorted(na_janela, key=lambda x: x["reach"], reverse=True)[:10]
     return top10, ultimo, len(na_janela)
+
+
+def _fetch_ig_audience_demografia(ig_user_id: str, token: str) -> dict[str, Any] | None:
+    """Demografia dos SEGUIDORES (age+gender+city+country).
+
+    Meta descontinuando 'audience_gender_age' pra contas pequenas; v20 ainda
+    aceita se followers >= 100. Fallback graceful.
+    """
+    saida = {"age_gender": [], "cidades_top10": [], "paises_top5": []}
+    for metric, chave in [
+        ("audience_gender_age", "age_gender"),
+        ("audience_city", "cidades_top10"),
+        ("audience_country", "paises_top5"),
+    ]:
+        try:
+            resp = _graph_get(
+                f"/{ig_user_id}/insights",
+                {"metric": metric, "period": "lifetime"},
+                token,
+            )
+            for m in resp.get("data", []) or []:
+                vals = m.get("values", []) or []
+                if not vals:
+                    continue
+                v = vals[0].get("value") or {}
+                if not isinstance(v, dict):
+                    continue
+                items = sorted(
+                    [(k, int(x)) for k, x in v.items() if isinstance(x, (int, float))],
+                    key=lambda kv: kv[1], reverse=True,
+                )
+                if chave == "age_gender":
+                    saida["age_gender"] = [{"faixa": k, "n": n} for k, n in items]
+                elif chave == "cidades_top10":
+                    saida["cidades_top10"] = [{"cidade": k, "n": n} for k, n in items[:10]]
+                elif chave == "paises_top5":
+                    saida["paises_top5"] = [{"pais": k, "n": n} for k, n in items[:5]]
+        except Exception as e:
+            print(f"  [INFO] IG audience {metric} indisponivel: {str(e)[:120]}", file=sys.stderr)
+    if not saida["age_gender"] and not saida["cidades_top10"] and not saida["paises_top5"]:
+        return None
+    return saida
+
+
+def _fetch_ig_stories(ig_user_id: str, token: str) -> dict[str, Any] | None:
+    """Stories ativas + insights agregados.
+
+    Stories somem em 24h — snapshot atual apenas.
+    """
+    try:
+        resp = _graph_get(
+            f"/{ig_user_id}/stories",
+            {"fields": "id,media_type,timestamp,permalink"},
+            token,
+        )
+    except Exception as e:
+        print(f"  [INFO] IG stories indisponivel: {str(e)[:120]}", file=sys.stderr)
+        return None
+    stories = resp.get("data", []) or []
+    if not stories:
+        return {"ativas": 0, "impressions": 0, "reach": 0, "replies": 0, "exits": 0, "taps_forward": 0, "taps_back": 0, "detalhes": []}
+
+    agg = {"impressions": 0, "reach": 0, "replies": 0, "exits": 0, "taps_forward": 0, "taps_back": 0}
+    detalhes = []
+    for s in stories[:20]:
+        s_id = s.get("id")
+        insights = {"impressions": 0, "reach": 0, "replies": 0, "exits": 0, "taps_forward": 0, "taps_back": 0}
+        try:
+            ins = _graph_get(
+                f"/{s_id}/insights",
+                {"metric": "impressions,reach,replies,exits,taps_forward,taps_back"},
+                token,
+            )
+            for m in ins.get("data", []) or []:
+                name = m.get("name")
+                if name in insights:
+                    vals = m.get("values", []) or []
+                    if vals and isinstance(vals[0].get("value"), (int, float)):
+                        insights[name] = int(vals[0]["value"])
+        except Exception:
+            pass
+        for k, v in insights.items():
+            agg[k] += v
+        detalhes.append({
+            "id": s_id,
+            "tipo": s.get("media_type"),
+            "data": (s.get("timestamp") or "")[:10],
+            "url": s.get("permalink"),
+            **insights,
+        })
+    return {"ativas": len(stories), **agg, "detalhes": detalhes}
 
 
 # ---------------------------------------------------------------------------
@@ -951,6 +1196,103 @@ def _get_page_access_token(page_id: str, user_token: str) -> str | None:
             if tok:
                 return tok
     return None
+
+
+def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[dict[str, Any]]:
+    """Lista posts ultimos 30d com insights por post (reach/impressions/engagement/reactions)."""
+    inicio, fim = _janela("last_30d", hoje)
+    try:
+        posts = _graph_get_all(
+            f"/{page_id}/posts",
+            {
+                "fields": "id,created_time,message,permalink_url,attachments{media_type}",
+                "since": _iso(inicio),
+                "until": _iso(fim),
+                "limit": 50,
+            },
+            page_token,
+            max_pages=4,
+        )
+    except Exception as e:
+        print(f"  [WARN] FB posts detalhes list falhou: {e}", file=sys.stderr)
+        return []
+    saida = []
+    for p in posts[:30]:
+        pid = p.get("id")
+        ins = {"post_impressions": 0, "post_impressions_unique": 0, "post_engaged_users": 0, "post_reactions_by_type_total": {}}
+        try:
+            resp = _graph_get(
+                f"/{pid}/insights",
+                {"metric": "post_impressions,post_impressions_unique,post_engaged_users,post_reactions_by_type_total"},
+                page_token,
+            )
+            for m in resp.get("data", []) or []:
+                name = m.get("name")
+                vals = m.get("values", []) or []
+                if not vals:
+                    continue
+                v = vals[0].get("value")
+                ins[name] = v if isinstance(v, dict) else int(v or 0)
+        except Exception:
+            pass
+        msg = (p.get("message") or "").strip().replace("\n", " ")
+        attach = (((p.get("attachments") or {}).get("data") or [{}])[0]).get("media_type", "-")
+        saida.append({
+            "id": pid,
+            "data": (p.get("created_time") or "")[:10],
+            "tipo": attach,
+            "impressions": ins["post_impressions"] if isinstance(ins["post_impressions"], int) else 0,
+            "reach": ins["post_impressions_unique"] if isinstance(ins["post_impressions_unique"], int) else 0,
+            "engajados": ins["post_engaged_users"] if isinstance(ins["post_engaged_users"], int) else 0,
+            "reactions": ins["post_reactions_by_type_total"] if isinstance(ins["post_reactions_by_type_total"], dict) else {},
+            "url": p.get("permalink_url"),
+            "texto_curto": msg[:100],
+        })
+    saida.sort(key=lambda x: x["reach"], reverse=True)
+    return saida
+
+
+def _fetch_fb_serie_diaria_seguidores(page_id: str, page_token: str, hoje: date) -> list[dict[str, Any]]:
+    """Serie diaria de page_fans + page_fan_adds + page_fan_removes nos ultimos 30d."""
+    inicio, fim = _janela("last_30d", hoje)
+    since_ts = int(datetime.combine(inicio, datetime.min.time(), tzinfo=BRT).timestamp())
+    until_ts = int(datetime.combine(fim, datetime.max.time(), tzinfo=BRT).timestamp())
+    try:
+        resp = _graph_get(
+            f"/{page_id}/insights",
+            {"metric": "page_fans,page_fan_adds,page_fan_removes", "period": "day",
+             "since": since_ts, "until": until_ts},
+            page_token,
+        )
+    except Exception as e:
+        print(f"  [WARN] FB serie diaria seguidores falhou: {e}", file=sys.stderr)
+        return []
+    por_dia: dict[str, dict[str, int]] = {}
+    for m in resp.get("data", []) or []:
+        name = m.get("name")
+        for val in m.get("values", []) or []:
+            end = (val.get("end_time") or "")[:10]
+            if not end:
+                continue
+            v = val.get("value")
+            if not isinstance(v, (int, float)):
+                continue
+            slot = por_dia.setdefault(end, {"page_fans": 0, "page_fan_adds": 0, "page_fan_removes": 0})
+            slot[name] = int(v)
+    return [{"data": d, **por_dia[d]} for d in sorted(por_dia)]
+
+
+def _fb_reactions_from_posts(posts_det: list[dict[str, Any]]) -> dict[str, int] | None:
+    """Agrega reactions por tipo dos posts ja puxados (evita chamada duplicada)."""
+    agg: dict[str, int] = {"like": 0, "love": 0, "haha": 0, "wow": 0, "sad": 0, "angry": 0}
+    for p in posts_det or []:
+        r = p.get("reactions") or {}
+        for tipo, n in r.items():
+            if tipo in agg and isinstance(n, (int, float)):
+                agg[tipo] += int(n)
+    if sum(agg.values()) == 0:
+        return None
+    return agg
 
 
 def _fetch_fb_page(page_id: str, token: str, hoje: date) -> dict[str, Any]:
@@ -1110,6 +1452,26 @@ def _merge_unidade(base: dict[str, Any], ids: dict[str, Any], token: str, hoje: 
         vs["verificado_em"] = now_iso
         vs["nota_verificacao"] = "Ritmo e projecao calculados automaticamente a partir de /act/insights (MTD + last_30d)."
 
+        # Device platform + hourly breakdowns 30d
+        print(f"  [Meta Ads] {act_id} — device + hourly breakdowns 30d")
+        meta_ads["device_30d"] = _fetch_device_platform(act_id, token, ini30, fim30)
+        meta_ads["hourly_30d"] = _fetch_hourly(act_id, token, ini30, fim30)
+
+        # Video insights agregado (a partir dos anuncios ja puxados)
+        meta_ads["video_insights_30d"] = _agregar_video_insights(anuncios30)
+
+        # Meta Ads recomendacoes oficiais (endpoint /act/recommendations)
+        print(f"  [Meta Ads] {act_id} — recomendacoes oficiais")
+        recs = _fetch_ads_recommendations(act_id, token)
+        rec_meta = meta_ads.setdefault("recomendacoes_meta", {})
+        if not isinstance(rec_meta, dict):
+            rec_meta = {}
+            meta_ads["recomendacoes_meta"] = rec_meta
+        rec_meta["fonte"] = "Meta Ads Recommendations API"
+        rec_meta["lido_em"] = now_iso
+        rec_meta["itens_api"] = recs
+        rec_meta["nota"] = f"{len(recs)} recomendacoes ativas da Meta para esta conta."
+
     # ---------- Instagram ----------
     ig_id = ids.get("ig_user_id")
     if ig_id:
@@ -1160,15 +1522,25 @@ def _merge_unidade(base: dict[str, Any], ids: dict[str, Any], token: str, hoje: 
         if serie_ig:
             _set_if_key(ig, "serie_diaria_30d", serie_ig)
 
-        # Media / top posts
+        # Media / top posts (agora com likes/comments/saved/shares/plays por post)
         top10, ultimo, na_janela = _fetch_ig_media(ig_id, token, hoje)
         if top10:
-            _set_if_key(ig, "top_posts_30d", top10)
+            ig["top_posts_30d"] = top10
         if ultimo:
-            _set_if_key(ig, "ultimo_post", ultimo)
+            ig["ultimo_post"] = ultimo
         _set_if_key(ig, "posts_na_janela", na_janela)
         # SPA schema: "posts_30d"
         _set_if_key(ig, "posts_30d", na_janela)
+
+        # Audience demografia (age+gender+cidade+pais dos SEGUIDORES)
+        print(f"  [Instagram] {ig_id} — audience demografia (seguidores) + stories")
+        aud = _fetch_ig_audience_demografia(ig_id, token)
+        if aud is not None:
+            ig["audience_demografia"] = aud
+        # Stories ativas + insights
+        stories = _fetch_ig_stories(ig_id, token)
+        if stories is not None:
+            ig["stories_insights"] = stories
 
     # ---------- Facebook Page ----------
     page_id = ids.get("facebook_page_id")
@@ -1188,12 +1560,25 @@ def _merge_unidade(base: dict[str, Any], ids: dict[str, Any], token: str, hoje: 
         fb["page_id"] = page_id
         fb["conectado"] = True
 
-        # organico_30d — precisa de Page Access Token
+        # organico_30d + posts detalhados + serie diaria seguidores + reactions
+        # (todos precisam de Page Access Token)
         page_token = _get_page_access_token(page_id, token)
         if page_token:
             org = _fetch_fb_organico_30d(page_id, page_token, hoje)
             if org is not None:
                 fb["organico_30d"] = org
+
+            print(f"  [Facebook] page_id {page_id} — posts detalhados 30d + serie diaria seguidores + reactions breakdown")
+            posts_det = _fetch_fb_posts_detalhes(page_id, page_token, hoje)
+            fb["posts_30d_detalhes"] = posts_det
+
+            serie = _fetch_fb_serie_diaria_seguidores(page_id, page_token, hoje)
+            if serie:
+                fb["serie_diaria_30d"] = serie
+
+            reactions = _fb_reactions_from_posts(posts_det)
+            if reactions is not None:
+                fb["reactions_by_type_30d"] = reactions
 
     # ---------- Janelas + fonte + gerado_em ----------
     base["janelas"] = _janelas_texto(hoje)
