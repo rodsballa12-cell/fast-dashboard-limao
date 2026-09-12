@@ -512,24 +512,45 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     b_deb = _bloco_antec(debito_pend, TAXA_MDR["debito"], PRAZO_DIAS["debito"])
     b_cre = _bloco_antec(credito_pend, TAXA_MDR["credito1x"], PRAZO_DIAS["credito1x"])
 
-    tot_liq_espera = b_deb["liq_espera"] + b_cre["liq_espera"]
+    tot_liq_espera_calc = b_deb["liq_espera"] + b_cre["liq_espera"]
     tot_custo = b_deb["custo_antecipacao"] + b_cre["custo_antecipacao"]
 
-    # Fila de liberação por semana — quando cada lote cai, se não antecipar
+    # NORMALIZAÇÃO: o extrato Stone (a_receber_total) é a fonte oficial do que
+    # vai efetivamente cair. O tot_liq_espera_calc parte de estimativa (MDR
+    # fixo × vendas Trinks) e diverge (venda antiga fora da janela, MDR
+    # negociado diferente, timing de captura). Escalamos débito e crédito
+    # proporcionalmente pra somar = a_receber_extrato, mantendo o breakdown
+    # útil (% crédito × débito, dias médios) mas fechando 1:1 com o dinheiro
+    # real que a Stone garante liberar.
+    if tot_liq_espera_calc > 0 and a_receber_total > 0:
+        scale = a_receber_total / tot_liq_espera_calc
+        for bloco in (b_deb, b_cre):
+            bloco["bruto"] = _r(bloco["bruto"] * scale)
+            bloco["liq_espera"] = _r(bloco["liq_espera"] * scale)
+            bloco["liq_antecipar"] = _r(bloco["liq_antecipar"] * scale)
+            bloco["custo_antecipacao"] = _r(bloco["custo_antecipacao"] * scale)
+        tot_custo = tot_custo * scale
+    tot_liq_espera = a_receber_total if a_receber_total > 0 else tot_liq_espera_calc
+
+    # Fila de liberação por semana — quando cada lote cai, se não antecipar.
+    # Escala tb pelo mesmo fator (soma bate com extrato Stone).
     fila = defaultdict(float)
     for x in debito_pend + credito_pend:
         fila[x["libera"].isoformat()] += x["valor"]
-    cronograma = [{"data": d, "bruto": _r(v)} for d, v in sorted(fila.items())]
+    _scale_cron = (a_receber_total / sum(fila.values())) if (a_receber_total > 0 and sum(fila.values()) > 0) else 1
+    cronograma = [{"data": d, "bruto": _r(v * _scale_cron)} for d, v in sorted(fila.items())]
 
+    tot_bruto = _r(b_deb["bruto"] + b_cre["bruto"])
+    tot_custo_r = _r(tot_custo)
     antecipacao = {
         "debito": b_deb,
         "credito": b_cre,
         "total": {
-            "bruto": _r(b_deb["bruto"] + b_cre["bruto"]),
+            "bruto": tot_bruto,
             "liq_espera": _r(tot_liq_espera),
-            "liq_antecipar": _r(tot_liq_espera - tot_custo),
-            "custo_antecipacao": _r(tot_custo),
-            "custo_pct": round(tot_custo / max(tot_liq_espera, 1) * 100, 2),
+            "liq_antecipar": _r(tot_liq_espera - tot_custo_r),
+            "custo_antecipacao": tot_custo_r,
+            "custo_pct": round(tot_custo_r / max(tot_liq_espera, 1) * 100, 2),
         },
         # Confronto com o "aguardando liberação" do card de reconciliação. Os dois
         # números medem a mesma fila por caminhos diferentes: este parte das vendas
