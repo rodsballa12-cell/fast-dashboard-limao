@@ -1,13 +1,36 @@
 {
-  "_obs": "Manual override para prof IDs que aparecem em transacoes historicas mas foram removidas do Trinks BackOffice (endpoint /v1/profissionais nao devolve mais o cadastro). Preencha o nome real e o script vai substituir 'Prof desligado #ID' no ranking de comissoes. Deixe null pra manter o placeholder.",
-  "_como_descobrir": "No Trinks BackOffice > Movimentacoes > Transacoes, filtre por servico/data e olhe qual profissional era o responsavel. Ou consulte financeiro > relatorio de comissoes antigo. Como ultimo recurso: pergunte ao Rodrigo/Kely — 7 IDs = 7 nomes que provavelmente ela lembra.",
+  "_obs": "Manual override para prof IDs que aparecem em transacoes historicas mas foram removidas do Trinks BackOffice (endpoint /v1/profissionais nao devolve mais o cadastro). Preencha o nome real (substitua null por 'Nome Sobrenome') e o script vai substituir 'Prof desligado #ID' no ranking de comissoes. Deixe null pra manter o placeholder.",
+  "_como_descobrir": "Cada entrada em _hints tem categoria principal + top servico + periodo ativo. Cruze com quem trabalhava na Escova em Limao no periodo indicado. Ex: '722618 · UNHAS · MÃOS · 23/07→12/08 (65 tx, R$ 4.221)' = a manicure que passou 3 semanas em julho/agosto.",
   "profs": {
-    "38018": null,
+    "38018":  null,
+    "53627":  null,
     "518669": null,
     "559055": null,
+    "565445": null,
+    "682276": null,
     "707880": null,
     "722618": null,
     "722936": null,
+    "722939": null,
+    "726056": null,
+    "728999": null,
+    "729910": null,
     "735928": null
+  },
+  "_hints": {
+    "722618": "UNHAS/MAQUIAGEM/ESCOVA · MÃOS · 23/07→12/08/2026 (65 tx · R$ 4.221 receita — MAIOR ORFÃO)",
+    "559055": "ESCOVA · FAST ESCOVA LISA · 23/07→06/08/2026 (17 tx · R$ 1.309)",
+    "722936": "UNHAS · MÃOS · 23/07→30/07/2026 (12 tx · R$ 642)",
+    "38018":  "ESCOVA · FAST ESCOVA LISA · 31/07→01/08/2026 (9 tx · R$ 535)",
+    "707880": "ESCOVA · FAST ESCOVA LISA · 11/08→17/08/2026 (8 tx · R$ 535)",
+    "726056": "UNHAS · MÃOS · 06/08→08/08/2026 (11 tx · R$ 494)",
+    "53627":  "UNHAS · MÃOS · 25/07→13/08/2026 (6 tx · R$ 271) — ID BAIXO, provavelmente prof antigo",
+    "682276": "ESCOVA · FAST ESCOVA LISA · 14/08→15/08/2026 (4 tx · R$ 237)",
+    "565445": "UNHAS · PÉS · 06/08/2026 (4 tx · R$ 233)",
+    "722939": "UNHAS · MÃOS · 23/07/2026 (4 tx · R$ 188)",
+    "728999": "UNHAS · MÃOS · 30/08/2026 (3 tx · R$ 129)",
+    "729910": "UNHAS · MÃOS · 20/08/2026 (1 tx · R$ 47)",
+    "735928": "SETEMBRO fresh · 7 tx · R$ 553 receita (hoje/semana atual) — ATIVO AGORA",
+    "518669": "SETEMBRO fresh · 1 tx · R$ 79 (semana atual)"
   }
 }
