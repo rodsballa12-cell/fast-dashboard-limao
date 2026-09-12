@@ -45,23 +45,13 @@ jobs:
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
         run: python scripts/refresh_midias.py
 
-      - name: Refresh Google Business Profile
-        # Rota Supermetrics REMOVIDA (licenca CNCT nao inclui GMB — precisaria
-        # add-on US$ 37/mes). A rota gratuita e via Google Business Profile
-        # Performance API oficial: precisa GBP_OAUTH_REFRESH_TOKEN + GBP_OAUTH_CLIENT_ID
-        # + GBP_OAUTH_CLIENT_SECRET nos secrets. Enquanto isso nao esta setup,
-        # o step pula silencioso e o bloco google_business dos JSONs fica
-        # com os ultimos dados curados via MCP.
-        env:
-          GBP_OAUTH_REFRESH_TOKEN: ${{ secrets.GBP_OAUTH_REFRESH_TOKEN }}
-          GBP_OAUTH_CLIENT_ID: ${{ secrets.GBP_OAUTH_CLIENT_ID }}
-          GBP_OAUTH_CLIENT_SECRET: ${{ secrets.GBP_OAUTH_CLIENT_SECRET }}
-        run: |
-          if [ -z "$GBP_OAUTH_REFRESH_TOKEN" ]; then
-            echo "GBP_OAUTH_REFRESH_TOKEN nao configurado — pulando refresh GBP (dados curados manuais permanecem)."
-            exit 0
-          fi
-          python scripts/refresh_google.py
+      # Google Business Profile REMOVIDO:
+      #  1. Rota Supermetrics ($37/mes) descartada.
+      #  2. Rota Google Business Profile API oficial: Google nega
+      #     candidatura pra single-location owners (so aprova agencias
+      #     10+ locations ou plataformas SaaS).
+      #  3. Rota manual: user optou por nao fazer.
+      # Painel esconde o card GBP em ambas unidades.
 
       - name: Commit e push
         run: |
