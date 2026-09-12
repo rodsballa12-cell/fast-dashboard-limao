@@ -1,0 +1,13 @@
+{
+  "_obs": "Manual override para prof IDs que aparecem em transacoes historicas mas foram removidas do Trinks BackOffice (endpoint /v1/profissionais nao devolve mais o cadastro). Preencha o nome real e o script vai substituir 'Prof desligado #ID' no ranking de comissoes. Deixe null pra manter o placeholder.",
+  "_como_descobrir": "No Trinks BackOffice > Movimentacoes > Transacoes, filtre por servico/data e olhe qual profissional era o responsavel. Ou consulte financeiro > relatorio de comissoes antigo. Como ultimo recurso: pergunte ao Rodrigo/Kely — 7 IDs = 7 nomes que provavelmente ela lembra.",
+  "profs": {
+    "38018": null,
+    "518669": null,
+    "559055": null,
+    "707880": null,
+    "722618": null,
+    "722936": null,
+    "735928": null
+  }
+}
