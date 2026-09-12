@@ -325,46 +325,80 @@ def _fetch_ig_profile(ig_user_id: str, token: str) -> dict[str, Any]:
 
 
 def _fetch_ig_insights_range(ig_user_id: str, token: str, since: date, until: date) -> dict[str, int]:
-    """Agrega reach + profile_views + follower_count no intervalo. metric_type=total_value."""
+    """Agrega reach + profile_views + follower_count no intervalo.
+
+    Meta separou as APIs: reach + follower_count continuam period=day (metric_type
+    implicito time_series). profile_views precisa de metric_type=total_value desde
+    a v20 (retorna um unico total_value por metric no periodo).
+    """
+    agg: dict[str, int] = {"reach": 0, "profile_views": 0, "novos_seguidores": 0}
+    since_ts = int(datetime.combine(since, datetime.min.time(), tzinfo=BRT).timestamp())
+    until_ts = int(datetime.combine(until, datetime.max.time(), tzinfo=BRT).timestamp())
+
+    # 1) reach + follower_count (time_series diario)
     try:
         resp = _graph_get(
             f"/{ig_user_id}/insights",
             {
-                "metric": "reach,profile_views,follower_count",
+                "metric": "reach,follower_count",
                 "period": "day",
-                "since": int(datetime.combine(since, datetime.min.time(), tzinfo=BRT).timestamp()),
-                "until": int(datetime.combine(until, datetime.max.time(), tzinfo=BRT).timestamp()),
+                "since": since_ts,
+                "until": until_ts,
             },
             token,
         )
+        for metric in resp.get("data", []):
+            name = metric.get("name")
+            total = 0
+            for val in metric.get("values", []) or []:
+                v = val.get("value")
+                if isinstance(v, (int, float)):
+                    total += int(v)
+            if name == "reach":
+                agg["reach"] = total
+            elif name == "follower_count":
+                agg["novos_seguidores"] = total
     except Exception as e:
-        print(f"  [WARN] IG insights {since}..{until} falhou: {e}", file=sys.stderr)
-        return {}
-    agg: dict[str, int] = {"reach": 0, "profile_views": 0, "novos_seguidores": 0}
-    for metric in resp.get("data", []):
-        name = metric.get("name")
-        total = 0
-        for val in metric.get("values", []) or []:
-            v = val.get("value")
+        print(f"  [WARN] IG reach/follower {since}..{until} falhou: {e}", file=sys.stderr)
+
+    # 2) profile_views (total_value no periodo)
+    try:
+        resp2 = _graph_get(
+            f"/{ig_user_id}/insights",
+            {
+                "metric": "profile_views",
+                "period": "day",
+                "metric_type": "total_value",
+                "since": since_ts,
+                "until": until_ts,
+            },
+            token,
+        )
+        for metric in resp2.get("data", []):
+            if metric.get("name") != "profile_views":
+                continue
+            tv = metric.get("total_value") or {}
+            v = tv.get("value")
             if isinstance(v, (int, float)):
-                total += int(v)
-        if name == "reach":
-            agg["reach"] = total
-        elif name == "profile_views":
-            agg["profile_views"] = total
-        elif name == "follower_count":
-            agg["novos_seguidores"] = total
+                agg["profile_views"] = int(v)
+    except Exception as e:
+        print(f"  [WARN] IG profile_views {since}..{until} falhou: {e}", file=sys.stderr)
+
     return agg
 
 
 def _fetch_ig_daily(ig_user_id: str, token: str, hoje: date) -> list[dict[str, Any]]:
-    """Serie diaria de reach + profile_views + follower_count nos ultimos 30d."""
+    """Serie diaria de reach + follower_count nos ultimos 30d.
+
+    profile_views nao entra na serie diaria: com metric_type=total_value o Meta
+    retorna um unico total pro periodo, sem breakdown por dia.
+    """
     inicio, fim = _janela("last_30d", hoje)
     try:
         resp = _graph_get(
             f"/{ig_user_id}/insights",
             {
-                "metric": "reach,profile_views,follower_count",
+                "metric": "reach,follower_count",
                 "period": "day",
                 "since": int(datetime.combine(inicio, datetime.min.time(), tzinfo=BRT).timestamp()),
                 "until": int(datetime.combine(fim, datetime.max.time(), tzinfo=BRT).timestamp()),
@@ -387,8 +421,6 @@ def _fetch_ig_daily(ig_user_id: str, token: str, hoje: date) -> list[dict[str, A
             slot = por_dia.setdefault(end, {"novos_seguidores": 0, "profile_views": 0, "reach": 0})
             if name == "reach":
                 slot["reach"] = int(v)
-            elif name == "profile_views":
-                slot["profile_views"] = int(v)
             elif name == "follower_count":
                 slot["novos_seguidores"] = int(v)
     return [
@@ -465,6 +497,31 @@ def _fetch_ig_media(ig_user_id: str, token: str, hoje: date) -> tuple[list[dict[
 # Facebook Page
 # ---------------------------------------------------------------------------
 
+def _get_page_access_token(page_id: str, user_token: str) -> str | None:
+    """Busca Page Access Token para uma pagina especifica.
+
+    A partir da nova experiencia de Paginas, listar posts exige token de pagina,
+    nao user token. /me/accounts devolve todas as paginas admin com respectivo
+    access_token; pegamos o da page_id procurada.
+    """
+    try:
+        resp = _graph_get_all(
+            "/me/accounts",
+            {"fields": "id,access_token", "limit": 100},
+            user_token,
+            max_pages=3,
+        )
+    except Exception as e:
+        print(f"  [WARN] /me/accounts falhou: {e}", file=sys.stderr)
+        return None
+    for p in resp:
+        if str(p.get("id")) == str(page_id):
+            tok = p.get("access_token")
+            if tok:
+                return tok
+    return None
+
+
 def _fetch_fb_page(page_id: str, token: str, hoje: date) -> dict[str, Any]:
     saida: dict[str, Any] = {}
     try:
@@ -474,7 +531,12 @@ def _fetch_fb_page(page_id: str, token: str, hoje: date) -> dict[str, Any]:
     except Exception as e:
         print(f"  [WARN] FB page info falhou: {e}", file=sys.stderr)
 
-    # posts 30d
+    # posts 30d — precisa de Page Access Token
+    page_token = _get_page_access_token(page_id, token)
+    if not page_token:
+        print(f"  [WARN] FB page {page_id}: sem Page Access Token disponivel (user nao admin da pagina?), pulando posts_30d", file=sys.stderr)
+        return saida
+
     inicio, fim = _janela("last_30d", hoje)
     try:
         posts = _graph_get_all(
@@ -485,7 +547,7 @@ def _fetch_fb_page(page_id: str, token: str, hoje: date) -> dict[str, Any]:
                 "until": _iso(fim),
                 "limit": 50,
             },
-            token,
+            page_token,
             max_pages=4,
         )
         saida["posts_30d"] = len(posts)
