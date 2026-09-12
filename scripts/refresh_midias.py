@@ -1138,23 +1138,61 @@ def _fetch_ig_stories(ig_user_id: str, token: str) -> dict[str, Any] | None:
     if not stories:
         return {"ativas": 0, "impressions": 0, "reach": 0, "replies": 0, "exits": 0, "taps_forward": 0, "taps_back": 0, "detalhes": []}
 
-    agg = {"impressions": 0, "reach": 0, "replies": 0, "exits": 0, "taps_forward": 0, "taps_back": 0}
+    agg = {"views": 0, "reach": 0, "replies": 0, "navigation_exit": 0, "navigation_forward": 0, "navigation_back": 0}
     detalhes = []
     for s in stories[:20]:
         s_id = s.get("id")
-        insights = {"impressions": 0, "reach": 0, "replies": 0, "exits": 0, "taps_forward": 0, "taps_back": 0}
+        insights = {"views": 0, "reach": 0, "replies": 0, "navigation_exit": 0, "navigation_forward": 0, "navigation_back": 0}
+        # v22+ trocou impressions->views e taps_*/exits -> navigation com breakdown story_navigation_action_type
         try:
             ins = _graph_get(
                 f"/{s_id}/insights",
-                {"metric": "impressions,reach,replies,exits,taps_forward,taps_back"},
+                {"metric": "views,reach,replies", "metric_type": "total_value"},
                 token,
             )
             for m in ins.get("data", []) or []:
                 name = m.get("name")
                 if name in insights:
-                    vals = m.get("values", []) or []
-                    if vals and isinstance(vals[0].get("value"), (int, float)):
-                        insights[name] = int(vals[0]["value"])
+                    tv = m.get("total_value") or {}
+                    v = tv.get("value")
+                    if isinstance(v, (int, float)):
+                        insights[name] = int(v)
+                    elif m.get("values"):
+                        vv = m["values"][0].get("value")
+                        if isinstance(vv, (int, float)):
+                            insights[name] = int(vv)
+        except Exception:
+            pass
+        # navigation com breakdown
+        try:
+            ins_nav = _graph_get(
+                f"/{s_id}/insights",
+                {"metric": "navigation", "metric_type": "total_value",
+                 "breakdown": "story_navigation_action_type"},
+                token,
+            )
+            for m in ins_nav.get("data", []) or []:
+                if m.get("name") != "navigation":
+                    continue
+                tv = m.get("total_value") or {}
+                breakdowns = tv.get("breakdowns") or []
+                for b in breakdowns:
+                    for r in b.get("results", []) or []:
+                        dims = r.get("dimension_values") or []
+                        if not dims:
+                            continue
+                        tipo = dims[0]  # "TAP_FORWARD"/"TAP_BACK"/"TAP_EXIT"/"SWIPE_FORWARD"
+                        v = r.get("value") or 0
+                        try:
+                            v = int(v)
+                        except (TypeError, ValueError):
+                            v = 0
+                        if tipo in ("TAP_FORWARD", "SWIPE_FORWARD"):
+                            insights["navigation_forward"] += v
+                        elif tipo == "TAP_BACK":
+                            insights["navigation_back"] += v
+                        elif tipo == "TAP_EXIT":
+                            insights["navigation_exit"] += v
         except Exception:
             pass
         for k, v in insights.items():
@@ -1253,33 +1291,54 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
 
 
 def _fetch_fb_serie_diaria_seguidores(page_id: str, page_token: str, hoje: date) -> list[dict[str, Any]]:
-    """Serie diaria de page_fans + page_fan_adds + page_fan_removes nos ultimos 30d."""
+    """Serie diaria de novos seguidores + unfollows nos ultimos 30d.
+
+    Meta descontinuou page_fans/page_fan_adds/page_fan_removes em v22+.
+    Substituto: page_daily_follows + page_daily_unfollows.
+    """
     inicio, fim = _janela("last_30d", hoje)
     since_ts = int(datetime.combine(inicio, datetime.min.time(), tzinfo=BRT).timestamp())
     until_ts = int(datetime.combine(fim, datetime.max.time(), tzinfo=BRT).timestamp())
-    try:
-        resp = _graph_get(
-            f"/{page_id}/insights",
-            {"metric": "page_fans,page_fan_adds,page_fan_removes", "period": "day",
-             "since": since_ts, "until": until_ts},
-            page_token,
-        )
-    except Exception as e:
-        print(f"  [WARN] FB serie diaria seguidores falhou: {e}", file=sys.stderr)
-        return []
-    por_dia: dict[str, dict[str, int]] = {}
-    for m in resp.get("data", []) or []:
-        name = m.get("name")
-        for val in m.get("values", []) or []:
-            end = (val.get("end_time") or "")[:10]
-            if not end:
+    # Tenta as metricas novas primeiro
+    for metric_set in [
+        "page_daily_follows,page_daily_unfollows",
+        "page_fan_adds,page_fan_removes",  # fallback pra APIs antigas
+    ]:
+        try:
+            resp = _graph_get(
+                f"/{page_id}/insights",
+                {"metric": metric_set, "period": "day", "since": since_ts, "until": until_ts},
+                page_token,
+            )
+            data = resp.get("data") or []
+            if not data:
                 continue
-            v = val.get("value")
-            if not isinstance(v, (int, float)):
-                continue
-            slot = por_dia.setdefault(end, {"page_fans": 0, "page_fan_adds": 0, "page_fan_removes": 0})
-            slot[name] = int(v)
-    return [{"data": d, **por_dia[d]} for d in sorted(por_dia)]
+            por_dia: dict[str, dict[str, int]] = {}
+            for m in data:
+                name = m.get("name")
+                if name == "page_daily_follows":
+                    name = "novos_seguidores"
+                elif name == "page_fan_adds":
+                    name = "novos_seguidores"
+                elif name == "page_daily_unfollows":
+                    name = "unfollows"
+                elif name == "page_fan_removes":
+                    name = "unfollows"
+                for val in m.get("values", []) or []:
+                    end = (val.get("end_time") or "")[:10]
+                    if not end:
+                        continue
+                    v = val.get("value")
+                    if not isinstance(v, (int, float)):
+                        continue
+                    slot = por_dia.setdefault(end, {"novos_seguidores": 0, "unfollows": 0})
+                    slot[name] = int(v)
+            if por_dia:
+                return [{"data": d, **por_dia[d]} for d in sorted(por_dia)]
+        except Exception as e:
+            print(f"  [INFO] FB serie diaria com metric_set={metric_set} indisponivel: {str(e)[:120]}", file=sys.stderr)
+            continue
+    return []
 
 
 def _fb_reactions_from_posts(posts_det: list[dict[str, Any]]) -> dict[str, int] | None:
@@ -1474,6 +1533,20 @@ def _merge_unidade(base: dict[str, Any], ids: dict[str, Any], token: str, hoje: 
 
     # ---------- Instagram ----------
     ig_id = ids.get("ig_user_id")
+    # Auto-descoberta: se ig_user_id nao esta no config mas facebook_page_id esta,
+    # busca via /page_id?fields=instagram_business_account (uma unica chamada barata).
+    if not ig_id and ids.get("facebook_page_id"):
+        try:
+            resp_ig = _graph_get(
+                f"/{ids['facebook_page_id']}",
+                {"fields": "instagram_business_account"},
+                token,
+            )
+            ig_id = (resp_ig.get("instagram_business_account") or {}).get("id")
+            if ig_id:
+                print(f"  [Instagram] auto-descoberto ig_user_id={ig_id} via /page_id?fields=instagram_business_account (adicione ao config pra evitar essa chamada)")
+        except Exception as e:
+            print(f"  [WARN] Auto-descoberta IG falhou: {e}", file=sys.stderr)
     if ig_id:
         print(f"  [Instagram] user_id {ig_id} — profile + insights 30d/7d + media 25")
         ig = base.setdefault("instagram", {})
