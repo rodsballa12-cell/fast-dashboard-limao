@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-13T17:30:16-03:00",
+  "gerado_em": "2026-09-13T17:36:47-03:00",
   "hoje": "2026-09-13",
   "meta_mensal_valor": 60000,
   "dias_op_mes": 30,
@@ -72,6 +72,25 @@
       "Sáb": 12.0,
       "Dom": 6.0
     },
+    "hora_abertura": 9,
+    "feriados_6h": [
+      "2026-01-01",
+      "2026-02-16",
+      "2026-02-17",
+      "2026-04-03",
+      "2026-04-21",
+      "2026-05-01",
+      "2026-06-04",
+      "2026-07-09",
+      "2026-09-07",
+      "2026-10-12",
+      "2026-11-02",
+      "2026-11-15",
+      "2026-11-20",
+      "2026-12-08",
+      "2026-12-25"
+    ],
+    "horario_domingo_feriado": "9h-15h",
     "curva_horaria": [
       {
         "h": 8,
@@ -2125,7 +2144,7 @@
           "cliente": "Thamyres Caldro Matos"
         }
       ],
-      "horas_desatualizado": 93.2
+      "horas_desatualizado": 93.3
     }
   },
   "auditoria_cancelados": {
@@ -3570,9 +3589,9 @@
           "clientes_unicos": 76,
           "em_atendimento": 0,
           "n_prof_ativos": 14,
-          "rs_hora_salao": 133.15,
-          "horas_operacao_periodo": 78.0,
-          "utilizacao_agregada_pct": 6.6
+          "rs_hora_salao": 144.24,
+          "horas_operacao_periodo": 72.0,
+          "utilizacao_agregada_pct": 7.1
         },
         "categorias": {
           "pacotes": {
@@ -6037,9 +6056,9 @@
         "clientes_unicos": 404,
         "em_atendimento": 2,
         "n_prof_ativos": 26,
-        "rs_hora_salao": 115.02,
-        "horas_operacao_periodo": 582.0,
-        "utilizacao_agregada_pct": 6.0,
+        "rs_hora_salao": 116.22,
+        "horas_operacao_periodo": 576.0,
+        "utilizacao_agregada_pct": 6.1,
         "ticket_meta": 169.55,
         "ticket_meta_periodo": 153.43,
         "ticket_atingimento_pct": 68.9,
@@ -6821,14 +6840,14 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Prof desligado #707880",
+          "nome": "Prof desligado #38018",
           "n": 0,
           "v": 535.0,
           "ticket_medio": 535.0,
           "horas_trab": 0.0
         },
         {
-          "nome": "Prof desligado #38018",
+          "nome": "Prof desligado #707880",
           "n": 0,
           "v": 535.0,
           "ticket_medio": 535.0,
@@ -6884,18 +6903,18 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Kimberly Soares Vasconcelos",
-          "n": 4,
-          "v": 79.0,
-          "ticket_medio": 19.75,
-          "horas_trab": 1.8
-        },
-        {
           "nome": "Prof desligado #518669",
           "n": 0,
           "v": 79.0,
           "ticket_medio": 79.0,
           "horas_trab": 0.0
+        },
+        {
+          "nome": "Kimberly Soares Vasconcelos",
+          "n": 4,
+          "v": 79.0,
+          "ticket_medio": 19.75,
+          "horas_trab": 1.8
         },
         {
           "nome": "Prof desligado #729910",
@@ -6912,53 +6931,11 @@
           "horas_trab": 9.2
         },
         {
-          "nome": "Vanessa Nascimento D Silva",
-          "n": 4,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 2.0
-        },
-        {
-          "nome": "Bianca Doria Araujo Santos",
-          "n": 8,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 4.9
-        },
-        {
-          "nome": "Charles Roger Alves",
-          "n": 13,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 7.4
-        },
-        {
-          "nome": "Aline Dos Santos Gonzaga",
-          "n": 4,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.6
-        },
-        {
-          "nome": "Eliana Sampaio Cerqueira",
+          "nome": "Claudia Cabral Pereira",
           "n": 1,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 0.5
-        },
-        {
-          "nome": "Niedja Rafaelle Leite Nunes",
-          "n": 4,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 2.4
-        },
-        {
-          "nome": "Sandra Margarete Da Silva",
-          "n": 6,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 3.5
+          "horas_trab": 0.8
         },
         {
           "nome": "Giovanna Guedes Da Silva",
@@ -6968,6 +6945,13 @@
           "horas_trab": 35.1
         },
         {
+          "nome": "Patricia Helena Ferreira",
+          "n": 12,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 6.3
+        },
+        {
           "nome": "Cacilda Guimarães",
           "n": 3,
           "v": 0.0,
@@ -6975,11 +6959,25 @@
           "horas_trab": 1.5
         },
         {
-          "nome": "Patricia Helena Ferreira",
-          "n": 12,
+          "nome": "Bianca Doria Araujo Santos",
+          "n": 8,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 6.3
+          "horas_trab": 4.9
+        },
+        {
+          "nome": "Vanessa Nascimento D Silva",
+          "n": 4,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 2.0
+        },
+        {
+          "nome": "Niedja Rafaelle Leite Nunes",
+          "n": 4,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 2.4
         },
         {
           "nome": "Lidiane Quiteria Da Silva",
@@ -6989,11 +6987,18 @@
           "horas_trab": 5.2
         },
         {
-          "nome": "Claudia Cabral Pereira",
+          "nome": "Charles Roger Alves",
+          "n": 13,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 7.4
+        },
+        {
+          "nome": "Eliana Sampaio Cerqueira",
           "n": 1,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 0.8
+          "horas_trab": 0.5
         },
         {
           "nome": "Julia Kathleen Souza Da Silva",
@@ -7001,6 +7006,20 @@
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 5.5
+        },
+        {
+          "nome": "Sandra Margarete Da Silva",
+          "n": 6,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 3.5
+        },
+        {
+          "nome": "Aline Dos Santos Gonzaga",
+          "n": 4,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 1.6
         }
       ],
       "ranking_prof_total_n": 40,
@@ -7537,19 +7556,19 @@
       "cadeiras_utilizacao": {
         "cabelo": {
           "n_cadeiras": 5,
-          "capacidade_horas": 2910.0,
+          "capacidade_horas": 2880.0,
           "horas_ocupadas": 296.9,
-          "utilizacao_pct": 10.2
+          "utilizacao_pct": 10.3
         },
         "maquiagem": {
           "n_cadeiras": 3,
-          "capacidade_horas": 1746.0,
+          "capacidade_horas": 1728.0,
           "horas_ocupadas": 40.3,
           "utilizacao_pct": 2.3
         },
         "unhas": {
           "n_cadeiras": 8,
-          "capacidade_horas": 4656.0,
+          "capacidade_horas": 4608.0,
           "horas_ocupadas": 221.8,
           "utilizacao_pct": 4.8
         }
@@ -9432,9 +9451,9 @@
         "clientes_unicos": 140,
         "em_atendimento": 0,
         "n_prof_ativos": 14,
-        "rs_hora_salao": 134.85,
-        "horas_operacao_periodo": 144.0,
-        "utilizacao_agregada_pct": 7.0,
+        "rs_hora_salao": 140.72,
+        "horas_operacao_periodo": 138.0,
+        "utilizacao_agregada_pct": 7.3,
         "caixa_delta_pct": 0.3,
         "atend_delta_pct": 12.1,
         "cliente_dia_delta_pct": 11.3,
@@ -10111,18 +10130,18 @@
           "horas_trab": 1.8
         },
         {
-          "nome": "Charles Roger Alves",
-          "n": 13,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 7.4
-        },
-        {
           "nome": "Claudia Cabral Pereira",
           "n": 1,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 0.8
+        },
+        {
+          "nome": "Charles Roger Alves",
+          "n": 13,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 7.4
         }
       ],
       "ranking_prof_total_n": 16,
@@ -10485,21 +10504,21 @@
       "cadeiras_utilizacao": {
         "cabelo": {
           "n_cadeiras": 5,
-          "capacidade_horas": 720.0,
+          "capacidade_horas": 690.0,
           "horas_ocupadas": 81.2,
-          "utilizacao_pct": 11.3
+          "utilizacao_pct": 11.8
         },
         "maquiagem": {
           "n_cadeiras": 3,
-          "capacidade_horas": 432.0,
+          "capacidade_horas": 414.0,
           "horas_ocupadas": 10.0,
-          "utilizacao_pct": 2.3
+          "utilizacao_pct": 2.4
         },
         "unhas": {
           "n_cadeiras": 8,
-          "capacidade_horas": 1152.0,
+          "capacidade_horas": 1104.0,
           "horas_ocupadas": 68.1,
-          "utilizacao_pct": 5.9
+          "utilizacao_pct": 6.2
         }
       },
       "densidade_hora": [
@@ -10574,9 +10593,9 @@
         "clientes_unicos": 76,
         "em_atendimento": 0,
         "n_prof_ativos": 14,
-        "rs_hora_salao": 133.15,
-        "horas_operacao_periodo": 78.0,
-        "utilizacao_agregada_pct": 6.6,
+        "rs_hora_salao": 144.24,
+        "horas_operacao_periodo": 72.0,
+        "utilizacao_agregada_pct": 7.1,
         "caixa_delta_pct": 8.7,
         "atend_delta_pct": -0.7,
         "cliente_dia_delta_pct": -8.1,
@@ -10949,18 +10968,18 @@
           "horas_trab": 1.8
         },
         {
-          "nome": "Charles Roger Alves",
-          "n": 13,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 7.4
-        },
-        {
           "nome": "Claudia Cabral Pereira",
           "n": 1,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 0.8
+        },
+        {
+          "nome": "Charles Roger Alves",
+          "n": 13,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 7.4
         }
       ],
       "ranking_prof_total_n": 16,
@@ -11569,21 +11588,21 @@
       "cadeiras_utilizacao": {
         "cabelo": {
           "n_cadeiras": 5,
-          "capacidade_horas": 390.0,
+          "capacidade_horas": 360.0,
           "horas_ocupadas": 43.1,
-          "utilizacao_pct": 11.1
+          "utilizacao_pct": 12.0
         },
         "maquiagem": {
           "n_cadeiras": 3,
-          "capacidade_horas": 234.0,
+          "capacidade_horas": 216.0,
           "horas_ocupadas": 3.5,
-          "utilizacao_pct": 1.5
+          "utilizacao_pct": 1.6
         },
         "unhas": {
           "n_cadeiras": 8,
-          "capacidade_horas": 624.0,
+          "capacidade_horas": 576.0,
           "horas_ocupadas": 33.5,
-          "utilizacao_pct": 5.4
+          "utilizacao_pct": 5.8
         }
       },
       "densidade_hora": [
@@ -11675,7 +11694,7 @@
         "caixa_delta_bruto_pct": -12.7,
         "periodo_ant_ref": {
           "data": "2026-09-06",
-          "hora_max": 17.5,
+          "hora_max": 17.6,
           "caixa": 866.0,
           "atend_fin": 11,
           "faturamento_apurado": 866.0,
@@ -11698,15 +11717,15 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "17:30",
-          "hora_atual_num": 17.5,
-          "pct_esperado_agora": 57.7,
+          "hora_atual_str": "17:36",
+          "hora_atual_num": 17.6,
+          "pct_esperado_agora": 58.8,
           "meta_dia": 912.57,
-          "meta_esperada_agora": 526.55,
+          "meta_esperada_agora": 536.77,
           "realizado_agora": 756.0,
-          "pace_delta": 229.45,
-          "pace_ratio_pct": 143.6,
-          "projecao_dia": 1310.23,
+          "pace_delta": 219.23,
+          "pace_ratio_pct": 140.8,
+          "projecao_dia": 1285.28,
           "opera_hoje": true
         },
         "ticket_meta": 0.0,
@@ -12274,7 +12293,7 @@
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 7%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 134,85.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 140,72.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -12312,7 +12331,7 @@
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 115,02. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 116,22. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
