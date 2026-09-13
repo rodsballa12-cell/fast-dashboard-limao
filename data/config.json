@@ -132,6 +132,7 @@
   },
   "horas_operacao_dia": 12,
   "horas_operacao_por_dow": {
+    "_desc": "Jornada padrao por dia da semana (0=seg .. 6=dom). Seg-Sab 12h (9h-21h), Dom 6h (9h-15h). Feriados listados em `feriados_6h` recebem tratamento de domingo (9h-15h).",
     "0": 12,
     "1": 12,
     "2": 12,
@@ -140,7 +141,28 @@
     "5": 12,
     "6": 6
   },
+  "hora_abertura": 9,
   "data_inicio_domingo": "2026-08-30",
+  "feriados_6h": {
+    "_desc": "Datas ISO em que a loja opera 9h-15h (6h) igual domingo — feriados nacionais/municipais em SP. Datas nao listadas caem no HORAS_POR_DOW padrao. Manter atualizado ano a ano.",
+    "datas": [
+      "2026-01-01",
+      "2026-02-16",
+      "2026-02-17",
+      "2026-04-03",
+      "2026-04-21",
+      "2026-05-01",
+      "2026-06-04",
+      "2026-07-09",
+      "2026-09-07",
+      "2026-10-12",
+      "2026-11-02",
+      "2026-11-15",
+      "2026-11-20",
+      "2026-12-08",
+      "2026-12-25"
+    ]
+  },
   "cadeira_por_servico_keywords": {
     "cabelo": [
       "ESCOVA",
