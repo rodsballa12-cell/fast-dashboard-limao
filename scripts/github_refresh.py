@@ -76,7 +76,22 @@ HORAS_POR_DOW = {i: float(_horas_dow_cfg.get(str(i), HORAS_OPERACAO_DIA if i < 6
 # Data em que a loja passou (ou passará) a operar aos domingos. Se None ou futuro, dom = fechado.
 _dom_ini_str = _cfg.get("data_inicio_domingo")
 DATA_INICIO_DOM = date.fromisoformat(_dom_ini_str) if _dom_ini_str else None
+# Feriados operam 9h-15h (6h · igual domingo). Datas ISO ausentes = dia normal.
+_feriados_cfg = (_cfg.get("feriados_6h") or {}).get("datas") or []
+FERIADOS_6H = {date.fromisoformat(s) for s in _feriados_cfg if isinstance(s, str)}
+HORAS_FERIADO = float((_cfg.get("feriados_6h") or {}).get("horas", 6))
 CADEIRA_KEYWORDS = _cfg.get("cadeira_por_servico_keywords") or {}
+
+
+def horas_no_dia(d: date) -> float:
+    """Jornada em horas para a data d. Feriados listados = HORAS_FERIADO (6h);
+    caso contrario, HORAS_POR_DOW[weekday]. Domingo antes de DATA_INICIO_DOM = 0."""
+    if d in FERIADOS_6H:
+        return HORAS_FERIADO
+    if d.weekday() == 6:
+        if DATA_INICIO_DOM is None or d < DATA_INICIO_DOM:
+            return 0.0
+    return HORAS_POR_DOW[d.weekday()]
 
 # === METAS DA FRANQUEADORA (fixas, por categoria) ===
 # Franqueadora define meta MENSAL por recepcionista pra 3 categorias específicas.
@@ -99,10 +114,8 @@ def is_fast_retoque(nome_servico: str) -> bool:
 
 
 def opera_no_dia(d: date) -> bool:
-    """True se a loja opera nesse dia (considera início do domingo)."""
-    if d.weekday() != 6:
-        return HORAS_POR_DOW[d.weekday()] > 0
-    return DATA_INICIO_DOM is not None and d >= DATA_INICIO_DOM and HORAS_POR_DOW[6] > 0
+    """True se a loja opera nesse dia (respeita inicio de domingo e feriados)."""
+    return horas_no_dia(d) > 0
 
 
 def dias_operacionais_no_mes(ano: int, mes: int) -> int:
@@ -525,7 +538,7 @@ def analisar(agend, transac, ini: date, fim: date):
     _cur = _ini_cap
     while _cur <= _fim_cap:
         if opera_no_dia(_cur):
-            capacidade_dia = HORAS_POR_DOW[_cur.weekday()]
+            capacidade_dia = horas_no_dia(_cur)
             # Se for HOJE e o dia ainda não fechou, pro-rateia pelas horas decorridas
             # desde a abertura. Antes: o Diário mostrava 3% ocupação às 10h porque o
             # denominador era 12h (jornada inteira) mas ainda só passou 1h.
@@ -2436,6 +2449,9 @@ def main():
             "meta_dia_por_dow": {DOW_NOMES[i]: meta_dia_por_dow[i] for i in range(7)},
             "n_dias_dow_mes": {DOW_NOMES[i]: n_dias_dow_mes[i] for i in range(7)},
             "horas_por_dow": {DOW_NOMES[i]: HORAS_POR_DOW[i] for i in range(7)},
+            "hora_abertura": int(_cfg.get("hora_abertura", 9)),
+            "feriados_6h": sorted(d.isoformat() for d in FERIADOS_6H),
+            "horario_domingo_feriado": f"9h-{9+int(HORAS_FERIADO)}h",
             "curva_horaria": curva_horaria,
             "amostra_dias_ano": len(dias_vistos),
             "data_inicio_domingo": _dom_ini_str,
