@@ -164,6 +164,16 @@ jobs:
           python scripts/build_spa_financeiro.py
           python scripts/consolida_dashboard.py
 
+      # Mapa de escala: densidade por dia da semana × hora, dos agendamentos
+      # brutos. Roda DEPOIS do refresh e ANTES do commit, pra entrar no mesmo
+      # dashboard_data.json. A densidade agregada que o payload ja traz mistura
+      # os dias e nao serve pra escala — ver scripts/densidade_dow.py.
+      - name: Mapa de escala (densidade por dia da semana)
+        continue-on-error: true
+        run: |
+          python scripts/densidade_dow.py --gravar --unidade escova || true
+          python scripts/densidade_dow.py --gravar --unidade spa    || true
+
       - name: Commit e push
         if: steps.recency.outputs.skip != 'true'
         run: |

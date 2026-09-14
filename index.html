@@ -504,6 +504,7 @@
       <!-- Profissionais + Comissões unificados num único card -->
       <div id="per-prof"></div>
       <div id="per-utilizacao"></div>
+      <div id="per-densidade-dow"></div>
       <div id="per-hora"></div>
       <!-- per-comissoes vazio (mantido pro clear e retrocompatibilidade) -->
       <div id="per-comissoes" style="display:none"></div>
@@ -1364,6 +1365,74 @@ function renderUtilizacao(container_id, periodo, kpis, aba){
     </div>
     ${cadeirasHTML}
     <div class="insight"><strong>Como ler:</strong> ${utilAgr < 25 ? 'Utilização baixa — há espaço pra crescer sem obra/reforma.' : (utilAgr >= 75 ? 'Alta — considerar mais cadeiras ou preço premium nos horários de pico.' : 'Saudável — espaço para crescer sem estresse.')} ${densInsight}</div>
+  </div>`;
+}
+
+// ============= DENSIDADE POR DIA DA SEMANA (mapa de escala) =============
+// Existe porque a densidade agregada engana: em 14/09/2026 ela dizia pico de
+// 1,67 simultâneos, mas sábado às 17h tinha 3,90 e terça 1,01. São dois
+// negócios no mesmo endereço, e escalar equipe pela média mata a manhã que
+// funciona — sábado às 9h já tem quase dois atendimentos rodando.
+function renderDensidadeDow(container_id, dd){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  if(!dd || !dd.dias || !dd.dias.length){ el.innerHTML = ''; return; }
+
+  const horas = dd.horas || [];
+  const maxV = Math.max(...dd.dias.flatMap(d => d.valores)) || 1;
+
+  // Intensidade proporcional ao pico geral — cor única, só a opacidade varia,
+  // pra que a leitura seja "quanto mais escuro, mais cheio" sem semântica falsa.
+  const cell = v => {
+    // Abaixo de 0,05 mostra ponto: "0.0" numa célula sugere medição, quando é
+    // ausência. Um ponto lê como vazio na hora.
+    if(v < 0.05) return `<td style="text-align:center;color:var(--ink-3);font-size:10px" title="${v.toFixed(2)} — praticamente vazio">·</td>`;
+    const op = Math.max(0.10, Math.min(1, v / maxV));
+    const claro = op > 0.55;
+    return `<td title="${v.toFixed(2)} simultâneos"
+      style="text-align:center;font-size:10.5px;padding:5px 2px;font-variant-numeric:tabular-nums;
+             background:rgba(37,99,235,${op.toFixed(2)});
+             color:${claro ? '#fff' : 'var(--ink)'};border-radius:3px">${v.toFixed(1)}</td>`;
+  };
+
+  const linhas = dd.dias.map(d => {
+    const marca = d.manha_9_11 < 0.25 ? '🔴' : (d.manha_9_11 < 0.8 ? '🟡' : '🟢');
+    return `<tr>
+      <td style="white-space:nowrap;font-size:11px;padding-right:8px"><strong>${d.nome}</strong>
+        <span style="color:var(--ink-3)">${d.n_datas}d</span></td>
+      ${d.valores.map(cell).join('')}
+      <td style="text-align:center;font-size:11px" title="média 9h-11h: ${d.manha_9_11.toFixed(2)}">${marca}</td>
+    </tr>`;
+  }).join('');
+
+  const ord = [...dd.dias].sort((a,b) => b.pico.v - a.pico.v);
+  const cheio = ord[0], vazio = ord[ord.length-1];
+  const posto20 = dd.dias.reduce((s,d) => s + (d.receita_pos_20h||0), 0);
+  const desertas = dd.dias.filter(d => d.manha_9_11 < 0.25).map(d => d.nome);
+
+  el.innerHTML = `<div class="card">
+    <h2>🗓️ Mapa de escala · atendimentos simultâneos por dia e hora</h2>
+    <div class="cap">Quantos atendimentos acontecem ao mesmo tempo, em média, em cada hora de cada dia da semana.
+      Calculado dos agendamentos reais (${dd.n_agendamentos} no período), não da média do painel —
+      <strong>a média mistura os dias e não serve pra montar escala</strong>.</div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;min-width:420px;border-collapse:separate;border-spacing:2px">
+        <thead><tr>
+          <th style="font-size:10px;color:var(--ink-3);text-align:left">dia</th>
+          ${horas.map(h => `<th style="font-size:10px;color:var(--ink-3);font-weight:500">${h}</th>`).join('')}
+          <th style="font-size:10px;color:var(--ink-3)" title="manhã 9h-11h">manhã</th>
+        </tr></thead>
+        <tbody>${linhas}</tbody>
+      </table>
+    </div>
+    <div class="insight" style="margin-top:12px">
+      <strong>Como usar:</strong> escale pela <strong>linha do dia</strong>, nunca pela média.
+      Mais cheio: <strong>${cheio.nome} ${cheio.pico.v.toFixed(1)}</strong> às ${cheio.pico.h}h ·
+      mais vazio: <strong>${vazio.nome} ${vazio.pico.v.toFixed(1)}</strong> às ${vazio.pico.h}h —
+      ${(cheio.pico.v / Math.max(vazio.pico.v, 0.01)).toFixed(1)}× de diferença no pico.
+      ${desertas.length ? `<br>🔴 <strong>Manhã deserta</strong> em ${desertas.join(', ')} — abrir mais tarde nesses dias custaria quase nada.` : ''}
+      ${posto20 > 0 ? `<br>⏰ Tudo que começou <strong>depois das 20h</strong> no período: <strong>${brl0(posto20)}</strong> — o valor da última hora de porta aberta.` : ''}
+    </div>
   </div>`;
 }
 
@@ -2552,6 +2621,7 @@ function renderMensal(data){
   renderHeatmapMeta('per-heatmap', data.sazonalidade, m.por_dia_mes, data.hoje);
   renderTicketMeta('per-ticket-meta', 'mês', k);
   renderUtilizacao('per-utilizacao', 'mês', k, m);
+  renderDensidadeDow('per-densidade-dow', data.densidade_dow);
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
