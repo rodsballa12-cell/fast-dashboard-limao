@@ -64,3 +64,46 @@ try:
         print(f"  body: {resp.text[:300]}")
 except Exception as e:
     print(f"  excecao: {e}")
+
+# === PROBE 2: parametros de filtro que podem esconder inativos/pendentes ===
+print("\n=== PROBES ADICIONAIS ===")
+for params in [{"pageSize": 200}, {"ativo": "false"}, {"ativo": "todos"},
+               {"todos": "true"}, {"incluir_inativos": "true"}]:
+    label = "&".join(f"{k}={v}" for k,v in params.items())
+    try:
+        resp = requests.get(BASE + "/estabelecimentos", headers=HEADERS,
+                            params=params, timeout=30)
+        js = resp.json() if resp.status_code == 200 else {}
+        n = js.get("totalRecords", "?")
+        ids = [str(x.get("id")) for x in (js.get("data") or [])]
+        print(f"  ?{label}: HTTP {resp.status_code} · {n} registros · ids={ids}")
+    except Exception as e:
+        print(f"  ?{label}: {e}")
+
+# === PROBE 3: acessar SPA por ID chutado ===
+# Se a mesma API key acessa a SPA, GET /v1/agendamentos com header
+# estabelecimentoId=<outro_id> retorna dado ou 401. Se retornar 200 com
+# dado ou vazio, a key funciona; se 401/403, precisa key propria.
+# Chutes: IDs proximos (Trinks costuma dar IDs sequenciais)
+print("\n=== TESTE ACESSO SPA POR HEADER ===")
+# Buscar IDs proximos a 276461 (Escova) — franquia geralmente sequencial
+candidatos = [276460, 276462, 276463, 276464, 276465, 276466, 276467, 276468,
+              280000, 285000, 290000, 300000, 350000, 400000]
+for cid in candidatos:
+    try:
+        # Tenta GET /v1/config (endpoint leve) com esse estabelecimentoId
+        resp = requests.get(BASE + "/estabelecimentos/" + str(cid),
+                            headers=HEADERS, timeout=15)
+        if resp.status_code == 200:
+            js = resp.json()
+            nome = ""
+            if isinstance(js, dict):
+                nome = js.get("nome") or (js.get("data") or {}).get("nome", "")
+            print(f"  ID {cid}: HTTP 200 · nome={nome!r}")
+        elif resp.status_code in (401, 403):
+            print(f"  ID {cid}: HTTP {resp.status_code} (denied)")
+        # 404 = ID nao existe · silencia
+    except Exception:
+        pass
+
+print("\n[fim] Se nada apareceu alem de 276461, a API key nao tem acesso a SPA.")
