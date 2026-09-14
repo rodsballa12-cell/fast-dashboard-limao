@@ -5668,31 +5668,9 @@ function renderMidias(){
       </section>`;
   } else { igBox.innerHTML=''; }
 
-  // Instagram audience demografia (follower_demographics v22+)
+  // Card IG follower_demographics removido — fundido no super-card #midias-demo
+  // ("👥 Público · quem segue × quem atingimos × quem compra").
   document.querySelectorAll('.ig-aud-card').forEach(e => e.remove());
-  if(ig && ig.audience_demografia){
-    const aud = ig.audience_demografia;
-    const ages = aud.age_gender || [];
-    const cids = aud.cidades_top10 || [];
-    const paises = aud.paises_top5 || [];
-    const tot = ages.reduce((a,x)=>a+(x.n||0),0) || 1;
-    const audHTML = `<section class="card ig-aud-card" style="border-left:4px solid #833AB4;margin-top:12px">
-      <h2>👥 Instagram · Demografia dos Seguidores <span style="font-size:11px;color:var(--ink-3);font-weight:400">(snapshot atual · lifetime)</span></h2>
-      <div class="cap">Perfil dos ${nfmt(ig.followers)} seguidores atuais · via <code>follower_demographics</code> (Meta Graph v22+). Snapshot do estado atual, não muda com filtro de período. Base pra segmentar próximas campanhas por afinidade real da conta.</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px">
-        <div>
-          <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:8px">Faixa etária (top ${ages.length})</div>
-          ${ages.slice(0,8).map(a=>{const pct=(a.n/tot*100).toFixed(1);return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px"><span style="width:60px">${a.faixa}</span><div style="flex:1;background:var(--surface-2);height:16px;border-radius:8px;overflow:hidden"><div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#833AB4,#E1306C)"></div></div><span style="width:90px;text-align:right"><strong>${nfmt(a.n)}</strong> · ${pct}%</span></div>`}).join('')}
-        </div>
-        <div>
-          <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:8px">Cidades (top ${cids.length})</div>
-          ${cids.slice(0,8).map(c=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--surface-2);font-size:12px"><span>${(c.cidade||'').split(',')[0]}</span><strong>${nfmt(c.n)}</strong></div>`).join('')}
-          ${paises.length?`<div style="margin-top:10px;font-size:11px;color:var(--ink-3)">Países top ${paises.length}: ${paises.map(p=>p.pais+' ('+nfmt(p.n)+')').join(' · ')}</div>`:''}
-        </div>
-      </div>
-    </section>`;
-    igBox.insertAdjacentHTML('afterend', audHTML);
-  }
 
   // Instagram stories insights
   document.querySelectorAll('.ig-stories-card').forEach(e => e.remove());
@@ -6103,59 +6081,8 @@ function renderMidias(){
       </section>`;
     }
 
-    // 3. META ADS DEMOGRAFIA × TRINKS SEG_GENERO
-    const demoAds = (MID.meta_ads.demografia_30d || []);
-    const segG = tAn.seg_genero || {};
-    if(demoAds.length && segG.top){
-      // Agrega ads por gênero
-      const genderAgg = {F:{gasto:0,conversas:0,imp:0}, M:{gasto:0,conversas:0,imp:0}};
-      demoAds.forEach(d=>{
-        const g = (d.genero||d.gender||'').toString().toUpperCase().charAt(0);
-        if(genderAgg[g]){
-          genderAgg[g].gasto += (d.gasto||0);
-          genderAgg[g].conversas += (d.conversas||d.conversas_msg||0);
-          genderAgg[g].imp += (d.impressoes||d.impressions||0);
-        }
-      });
-      // Trinks
-      const genderTrinks = {F:{n:0,r:0}, M:{n:0,r:0}};
-      segG.top.forEach(g=>{
-        const key = g.nome && g.nome.toUpperCase().startsWith('F') ? 'F' : (g.nome && g.nome.toUpperCase().startsWith('M') ? 'M' : null);
-        if(key){ genderTrinks[key].n = g.n_clientes||0; genderTrinks[key].r = g.receita||0; }
-      });
-      const totAdsG = genderAgg.F.gasto + genderAgg.M.gasto;
-      const totTriN = genderTrinks.F.n + genderTrinks.M.n;
-      if(totAdsG > 0 && totTriN > 0){
-        const linhas = [['F','#ec4899'],['M','#3b82f6']].map(([g,cor])=>{
-          const pctAds = genderAgg[g].gasto/totAdsG*100;
-          const pctTri = genderTrinks[g].n/totTriN*100;
-          const align = Math.abs(pctAds - pctTri) < 5 ? '✓ alinhado' : pctAds > pctTri ? '⚠️ verba > base' : '💡 base > verba';
-          const alignClr = Math.abs(pctAds - pctTri) < 5 ? '#22c55e' : pctAds > pctTri ? '#f59e0b' : '#3b82f6';
-          return `<tr style="border-bottom:1px solid var(--surface-2)">
-            <td style="padding:8px;color:${cor};font-weight:700">${g === 'F' ? 'Feminino' : 'Masculino'}</td>
-            <td style="text-align:right;padding:8px">${brl0m(genderAgg[g].gasto)}</td>
-            <td style="text-align:right;padding:8px">${pctAds.toFixed(0)}%</td>
-            <td style="text-align:right;padding:8px">${genderTrinks[g].n}</td>
-            <td style="text-align:right;padding:8px">${pctTri.toFixed(0)}%</td>
-            <td style="text-align:center;padding:8px;color:${alignClr};font-size:11px;font-weight:600">${align}</td>
-          </tr>`;
-        }).join('');
-        html += `<section class="card" style="border-left:4px solid #ec4899;margin-top:12px">
-          <h2>👥 Público ads × base Trinks · alinhamento de gênero</h2>
-          <div class="cap">Cruzamento aba Mídias × Painel(Clientes). Comparação entre onde vai a verba Meta (gasto por gênero, 30d) e quem realmente consome (base Trinks). Idealmente, verba segue base — não o oposto.</div>
-          <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
-          <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
-            <th style="text-align:left;padding:8px">Gênero</th>
-            <th style="text-align:right;padding:8px">Gasto ads 30d</th>
-            <th style="text-align:right;padding:8px">% da verba</th>
-            <th style="text-align:right;padding:8px">Clientes Trinks</th>
-            <th style="text-align:right;padding:8px">% da base</th>
-            <th style="text-align:center;padding:8px">Situação</th>
-          </tr></thead>
-          <tbody>${linhas}</tbody></table></div>
-        </section>`;
-      }
-    }
+    // 3. META ADS DEMOGRAFIA × TRINKS SEG_GENERO — removido, fundido no super-card
+    //    #midias-demo ("👥 Público · quem segue × quem atingimos × quem compra").
 
     // 4. INSTAGRAM / GMB DIÁRIO × TRINKS SERIE — brand tracking overlay simples
     const sn = tAn.serie_novos_dia || [];
@@ -6413,37 +6340,173 @@ function renderMidias(){
   } else { geoBox.innerHTML=''; }
 
   // Demografia
+  // SUPER-CARD PUBLICO UNIFICADO · quem segue (IG) × quem impactamos (Ads) × quem compra (Trinks)
+  // Substitui os 3 cards anteriores (IG follower_demografia, Ads demografia_30d, Cross gênero).
   const demoBox = document.getElementById('midias-demo');
-  const qDemo = quebra('demografia'), demo = qDemo.dados;
-  if(demo.length){
-    const stColor = s => ({escalar:'#22c55e', top:'#22c55e', manter:'#3b82f6', cortar:'#ef4444', otimizar:'#f59e0b'})[s]||'var(--muted)';
-    const stLabel = s => ({escalar:'📈 escalar',top:'⭐ top',manter:'✅ manter',cortar:'✂️ cortar',otimizar:'🔧 otimizar'})[s]||s;
-    demoBox.innerHTML = `<section class="card" style="border-left:4px solid #ec4899"><h2>👥 Demografia · ${janelaTxt(qDemo)}${seloJanela(qDemo)}</h2>
-      <div class="cap">Idade × gênero × performance. Base pra reajustar targeting.</div>
-      <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
+  const qDemo = quebra('demografia'), demoAds = qDemo.dados || [];
+  const igAud = (MID.instagram && MID.instagram.audience_demografia) || {};
+  const segG = (typeof TRINKS !== 'undefined' && TRINKS && TRINKS.abas && TRINKS.abas.anual && TRINKS.abas.anual.seg_genero) || null;
+
+  // Agrega Ads por genero e por faixa
+  const adsG = {F:{gasto:0,conv:0,imp:0,reach:0,ctr_sum:0,ctr_n:0}, M:{gasto:0,conv:0,imp:0,reach:0,ctr_sum:0,ctr_n:0}};
+  const adsFaixa = {};
+  demoAds.forEach(d=>{
+    const g = (d.genero||'').toString().toUpperCase().charAt(0);
+    if(adsG[g]){
+      adsG[g].gasto += (d.gasto||0);
+      adsG[g].conv += (d.conversas_msg||0);
+      adsG[g].imp += (d.impressoes||0);
+      adsG[g].reach += (d.reach||0);
+      if(d.ctr_pct){ adsG[g].ctr_sum += d.ctr_pct; adsG[g].ctr_n += 1; }
+    }
+    const f = d.faixa || '?';
+    if(!adsFaixa[f]) adsFaixa[f] = {gasto:0, conv:0, imp:0, reach:0};
+    adsFaixa[f].gasto += (d.gasto||0);
+    adsFaixa[f].conv += (d.conversas_msg||0);
+    adsFaixa[f].imp += (d.impressoes||0);
+    adsFaixa[f].reach += (d.reach||0);
+  });
+
+  // Agrega IG followers por gênero e por faixa
+  const igAges = igAud.age_gender || [];
+  const igG = {F:0, M:0};
+  const igFaixa = {};
+  igAges.forEach(a=>{
+    const g = (a.genero||a.gender||'').toString().toUpperCase().charAt(0);
+    if(igG[g] !== undefined) igG[g] += (a.n||0);
+    const f = a.faixa || '?';
+    igFaixa[f] = (igFaixa[f]||0) + (a.n||0);
+  });
+
+  // Agrega Trinks por gênero (nao tem idade)
+  const triG = {F:{n:0,r:0}, M:{n:0,r:0}, O:{n:0,r:0}};
+  if(segG && segG.top){
+    segG.top.forEach(g=>{
+      const key = (g.nome||'').toUpperCase().charAt(0);
+      if(triG[key]){ triG[key].n = g.n_clientes||0; triG[key].r = g.receita||0; }
+    });
+  }
+
+  const totAdsG = adsG.F.gasto + adsG.M.gasto;
+  const totIgG = igG.F + igG.M;
+  const totTriG = triG.F.n + triG.M.n + triG.O.n;
+  const hasAds = totAdsG > 0;
+  const hasIg = totIgG > 0;
+  const hasTri = totTriG > 0;
+
+  if(!hasAds && !hasIg && !hasTri){
+    demoBox.innerHTML = '';
+  } else {
+    // --- Genero: 3 colunas comparativas ---
+    const linhasG = [
+      ['F','Feminino','#ec4899','♀'],
+      ['M','Masculino','#3b82f6','♂'],
+    ].map(([k,nome,cor,ico])=>{
+      const pctIg = hasIg ? (igG[k]/totIgG*100) : null;
+      const pctAds = hasAds ? (adsG[k].gasto/totAdsG*100) : null;
+      const pctTri = hasTri ? ((triG[k].n)/totTriG*100) : null;
+      let sit = '—', sitCor = 'var(--muted)';
+      if(pctAds != null && pctTri != null){
+        const dif = pctAds - pctTri;
+        if(Math.abs(dif) < 5){ sit = '✓ alinhado'; sitCor = '#22c55e'; }
+        else if(dif > 0){ sit = '⚠️ verba > base'; sitCor = '#f59e0b'; }
+        else { sit = '💡 base > verba'; sitCor = '#3b82f6'; }
+      }
+      const cell = (pct, extra='') => pct==null?'<span style="color:var(--muted)">—</span>':`<strong>${pct.toFixed(0)}%</strong>${extra?'<div style="font-size:10px;color:var(--ink-3)">'+extra+'</div>':''}`;
+      return `<tr style="border-bottom:1px solid var(--surface-2)">
+        <td style="padding:10px 8px;color:${cor};font-weight:700">${ico} ${nome}</td>
+        <td style="text-align:right;padding:10px 8px">${cell(pctIg, hasIg?nfmt(igG[k])+' seg':'')}</td>
+        <td style="text-align:right;padding:10px 8px">${cell(pctAds, hasAds?brl0(adsG[k].gasto):'')}</td>
+        <td style="text-align:right;padding:10px 8px">${cell(pctTri, hasTri?triG[k].n+' cli':'')}</td>
+        <td style="text-align:center;padding:10px 8px;color:${sitCor};font-size:11px;font-weight:600">${sit}</td>
+      </tr>`;
+    }).join('');
+    // Outros (só se Trinks tiver)
+    let linhaO = '';
+    if(triG.O.n > 0){
+      const pctO = triG.O.n/totTriG*100;
+      linhaO = `<tr style="border-bottom:1px solid var(--surface-2);background:rgba(168,85,247,.04)">
+        <td style="padding:10px 8px;color:#a855f7;font-weight:700">◇ Outro (só Trinks)</td>
+        <td style="text-align:right;padding:10px 8px;color:var(--muted)">—</td>
+        <td style="text-align:right;padding:10px 8px;color:var(--muted)">—</td>
+        <td style="text-align:right;padding:10px 8px"><strong>${pctO.toFixed(0)}%</strong><div style="font-size:10px;color:var(--ink-3)">${triG.O.n} cli</div></td>
+        <td style="text-align:center;padding:10px 8px;font-size:11px;color:var(--ink-3)">sem paralelo em IG/Ads</td>
+      </tr>`;
+    }
+
+    // --- Faixa etaria: 2 colunas (IG + Ads) + performance ---
+    const faixas = Array.from(new Set([...Object.keys(igFaixa), ...Object.keys(adsFaixa)])).filter(f=>f && f!=='?');
+    // Ordena por convencao Meta: 13-17, 18-24, 25-34, 35-44, 45-54, 55-64, 65+
+    const ordem = ['13-17','18-24','25-34','35-44','45-54','55-64','65+'];
+    faixas.sort((a,b)=>{
+      const ia = ordem.indexOf(a), ib = ordem.indexOf(b);
+      return (ia<0?99:ia) - (ib<0?99:ib);
+    });
+    const totIgF = Object.values(igFaixa).reduce((s,v)=>s+v,0) || 1;
+    const totAdsF = Object.values(adsFaixa).reduce((s,v)=>s+v.gasto,0) || 1;
+    const linhasF = faixas.slice(0,7).map(f=>{
+      const igN = igFaixa[f]||0;
+      const ads = adsFaixa[f]||{gasto:0,conv:0,imp:0,reach:0};
+      const pctIg = igN/totIgF*100;
+      const pctAds = ads.gasto/totAdsF*100;
+      const cpa = ads.conv ? (ads.gasto/ads.conv) : null;
+      const ctr = ads.imp ? (ads.conv/ads.imp*100) : null;
+      const cpaCor = cpa==null?'var(--muted)':cpa<=15?'#22c55e':cpa<=25?'#3b82f6':cpa<=35?'#f59e0b':'#ef4444';
+      const dif = pctAds - pctIg;
+      let sit = '✓ alinhado', sitCor = '#22c55e';
+      if(Math.abs(dif) >= 10){ sit = dif>0?'⚠️ verba > seguidores':'💡 seguidores > verba'; sitCor = dif>0?'#f59e0b':'#3b82f6'; }
+      return `<tr style="border-bottom:1px solid var(--surface-2)">
+        <td style="padding:10px 8px;font-weight:700">${f}</td>
+        <td style="text-align:right;padding:10px 8px">${igN?`<strong>${pctIg.toFixed(0)}%</strong><div style='font-size:10px;color:var(--ink-3)'>${nfmt(igN)} seg</div>`:'<span style="color:var(--muted)">—</span>'}</td>
+        <td style="text-align:right;padding:10px 8px">${ads.gasto?`<strong>${pctAds.toFixed(0)}%</strong><div style='font-size:10px;color:var(--ink-3)'>${brl0(ads.gasto)}</div>`:'<span style="color:var(--muted)">—</span>'}</td>
+        <td style="text-align:right;padding:10px 8px;font-weight:700;color:${cpaCor}">${cpa?brl(cpa):'—'}</td>
+        <td style="text-align:right;padding:10px 8px;color:var(--ink-2)">${ads.conv||'—'}</td>
+        <td style="text-align:center;padding:10px 8px;color:${sitCor};font-size:11px;font-weight:600">${sit}</td>
+      </tr>`;
+    }).join('');
+
+    // --- Leitura executiva ---
+    let leitura = '';
+    if(hasAds && hasTri){
+      const difF = (adsG.F.gasto/totAdsG*100) - ((triG.F.n)/totTriG*100);
+      if(Math.abs(difF) < 5) leitura = `<strong>Verba vs base: alinhado.</strong> A verba Meta espelha o perfil de gênero real que consome.`;
+      else if(difF > 0) leitura = `<strong>Verba Meta ${difF.toFixed(0)}pp mais Feminina que a base Trinks.</strong> Reforce criativos direcionados a homens e ‘Outro’ pra capturar a fatia da base subatendida pelos ads.`;
+      else leitura = `<strong>Verba Meta ${Math.abs(difF).toFixed(0)}pp menos Feminina que a base Trinks.</strong> A base compradora é majoritariamente feminina e a verba não reflete isso — subir peso F no targeting.`;
+    } else if(hasAds){
+      leitura = 'Base Trinks sem gênero cadastrado ainda. Cruzamento verba × real fica desativado até <code>seg_genero</code> ter cobertura no Trinks.';
+    }
+
+    demoBox.innerHTML = `<section class="card" style="border-left:4px solid #ec4899">
+      <h2>👥 Público · quem segue (IG) × quem atingimos (Ads) × quem compra (Trinks)</h2>
+      <div class="cap">Três lentes lado a lado. IG orgânico é snapshot lifetime dos ${nfmt(igAud.followers||MID.instagram?.followers||0)} seguidores. Ads é a janela <strong>${janelaTxt(qDemo)}</strong>. Trinks é base anual acumulada. Coluna ‘Situação’ compara verba dos ads com base Trinks (idealmente verba segue base — não o oposto).</div>
+
+      <h3 style="margin:18px 0 6px;font-size:13px;color:var(--ink-2)">Gênero · comparativo 3 fontes</h3>
+      <div style="overflow-x:auto"><table style="width:100%;font-size:12px;border-collapse:collapse">
+      <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+        <th style="text-align:left;padding:8px">Gênero</th>
+        <th style="text-align:right;padding:8px">Segue (IG)</th>
+        <th style="text-align:right;padding:8px">Verba ads</th>
+        <th style="text-align:right;padding:8px">Compra (Trinks)</th>
+        <th style="text-align:center;padding:8px">Verba × Base</th>
+      </tr></thead>
+      <tbody>${linhasG}${linhaO}</tbody></table></div>
+
+      ${linhasF ? `<h3 style="margin:20px 0 6px;font-size:13px;color:var(--ink-2)">Faixa etária · IG × Ads × performance</h3>
+      <div class="cap" style="font-size:11px;margin-bottom:6px">Trinks ainda não capta idade — cruzamento com base real fica pendente até o cadastro completar essa coluna.</div>
+      <div style="overflow-x:auto"><table style="width:100%;font-size:12px;border-collapse:collapse">
       <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
         <th style="text-align:left;padding:8px">Faixa</th>
-        <th style="text-align:center;padding:8px">Gênero</th>
-        <th style="text-align:right;padding:8px">Gasto</th>
-        <th style="text-align:right;padding:8px">%</th>
-        <th style="text-align:right;padding:8px">Conversas</th>
-        <th style="text-align:right;padding:8px">CPA</th>
-        <th style="text-align:right;padding:8px">Alcance</th>
-        <th style="text-align:right;padding:8px">CTR</th>
-        <th style="text-align:center;padding:8px">Ação</th>
+        <th style="text-align:right;padding:8px">Segue (IG)</th>
+        <th style="text-align:right;padding:8px">Verba ads</th>
+        <th style="text-align:right;padding:8px">CPA MSG</th>
+        <th style="text-align:right;padding:8px">Conv</th>
+        <th style="text-align:center;padding:8px">Verba × Seguidores</th>
       </tr></thead>
-      <tbody>${demo.map(d=>`<tr style="border-bottom:1px solid var(--surface-2)">
-        <td style="padding:8px"><strong>${d.faixa}</strong></td>
-        <td style="text-align:center;padding:8px">${d.genero==='F'?'♀':d.genero==='M'?'♂':'?'}</td>
-        <td style="text-align:right;padding:8px">${brl(d.gasto)}</td>
-        <td style="text-align:right;padding:8px">${d.share_pct.toFixed(1)}%</td>
-        <td style="text-align:right;padding:8px">${d.conversas_msg!=null?nfmt(d.conversas_msg):'—'}</td>
-        <td style="text-align:right;padding:8px;font-weight:700;color:${cpaColor(d.cpa_msg)}">${d.cpa_msg?brl(d.cpa_msg):'—'}</td>
-        <td style="text-align:right;padding:8px">${nOpt(d.reach)}</td>
-        <td style="text-align:right;padding:8px;font-weight:700;color:${d.ctr_pct>=1.8?'#22c55e':d.ctr_pct>=1.2?'#3b82f6':'#ef4444'}">${d.ctr_pct.toFixed(2)}%</td>
-        <td style="text-align:center;padding:8px"><span style="color:${stColor(d.status)};font-weight:600;font-size:11px">${stLabel(d.status)}</span></td>
-      </tr>`).join('')}</tbody></table></div></section>`;
-  } else { demoBox.innerHTML=''; }
+      <tbody>${linhasF}</tbody></table></div>` : ''}
+
+      ${leitura ? `<div style="margin-top:14px;padding:10px 12px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2)">💡 ${leitura}</div>` : ''}
+    </section>`;
+  }
 
   // Placement
   const placeBox = document.getElementById('midias-placement');
