@@ -131,3 +131,30 @@ jobs:
             exit 1
           fi
           echo "Entrega normal nas unidades avaliadas."
+
+      # Auditoria de coerencia — os numeros batem entre si?
+      #
+      # Nenhum departamento acha este tipo de defeito sozinho: cada um olha o
+      # proprio card e cada card, isolado, esta certo. O erro mora na costura
+      # entre unidades, periodos e arquivos.
+      #
+      # Achado que motivou o passo (14/09/2026): a meta mensal do SPA estava em
+      # R$ 60.000 dentro de um payload marcado _pre_abertura, com todo o resto
+      # zerado - meta herdada da Escova que ninguem zerou. Invisivel enquanto o
+      # SPA esta em zero-state; a partir de 25/09 passaria a contaminar o
+      # consolidado em silencio.
+      #
+      # Roda depois do commit, como o alerta de entrega: conferencia nunca deve
+      # impedir o dado de ser salvo.
+      - name: Auditoria de coerencia (unidades · periodos · zero-state)
+        if: always()
+        run: |
+          set +e
+          python scripts/auditoria_coerencia.py
+          rc=$?
+          set -e
+          if [ "$rc" -eq 1 ]; then
+            echo "::error::Os numeros nao batem entre si. Veja o detalhe acima."
+            exit 1
+          fi
+          exit 0
