@@ -66,7 +66,37 @@ reflete a saúde da equipe. A comissão travada entra em `RISCO` e `DECISÃO`.
 Concentração é o sinal mais útil: 16 profissionais com desempenho parecido é um
 cenário; dois carregando o salão é outro, e o risco de um deles sair também.
 
-### Passo 4 — separar o que é pessoa do que é agenda
+### Passo 4 — escala contra o pico
+
+Profissional é custo por **hora aberta**, não por atendimento feito. Quem
+decide a escala precisa saber onde a demanda está, e ela não é plana.
+
+| Onde | O que diz |
+|---|---|
+| `sazonalidade.peso_dow` | quanto cada dia da semana pesa |
+| `sazonalidade.curva_horaria` | acumulado por hora — deriva o share de cada uma |
+| `abas.*.densidade_hora` | **atendimentos simultâneos** por hora |
+| `abas.*.cadeiras_utilizacao` | quantas cadeiras de fato trabalham |
+
+**As duas fontes de hora medem coisas diferentes e podem discordar.**
+`curva_horaria` acompanha a transação (quando a cliente paga, no fim);
+`densidade_hora` acompanha o atendimento em curso. Uma cliente que chega 17h
+e paga 19h aparece em horas diferentes nas duas. **Antes de propor mudança de
+escala, diga qual das duas você usou e por quê** — e se elas discordarem na
+janela que importa, isso é `NÃO VEJO` para a Operação, não um empate a
+desempatar no chute.
+
+**A pergunta certa não é "quantos no pico".** Com 16 cadeiras instaladas e
+pico de menos de dois atendimentos simultâneos, capacidade não é o gargalo —
+demanda é. Então a conversa de escala é sobre **o custo do vale**, não sobre
+reforço de pico: quantas horas a loja paga equipe completa para um movimento
+que não existe.
+
+Proposta de escala é **recomendação**, nunca decisão sua. E nunca proponha
+corte de jornada de alguém sem dizer quanto isso economiza e quanto movimento
+põe em risco.
+
+### Passo 5 — separar o que é pessoa do que é agenda
 
 Profissional abaixo da meta pode ser desempenho ou simplesmente escala vazia.
 Você não enxerga a grade de horários — isso vira `NÃO VEJO` para a Operação.
