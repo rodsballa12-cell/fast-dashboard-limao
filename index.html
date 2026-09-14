@@ -5765,18 +5765,17 @@ function renderMidias(){
     igBox.insertAdjacentHTML('afterend', fbHTML);
   }
 
-  // Meta Ads — video insights + device + hourly + geografia + recomendacoes oficiais
+  // Meta Ads — saude tecnica (benchmarks + video + ad quality + recomendacoes)
+  // Device/hourly/geografia foram movidos pro super-card "📍 Distribuição da
+  // veiculação" em #midias-placement pra concentrar as 4 dimensoes de veiculacao
+  // no mesmo lugar (placement × device × hora × geografia).
   document.querySelectorAll('.ads-extra-card').forEach(e => e.remove());
   if(MID.meta_ads && MID.meta_ads.ad_account_id){
     const M2 = MID.meta_ads;
     const vi = M2.video_insights_30d || {};
-    const dev = M2.device_30d || [];
-    const hr = M2.hourly_30d || [];
-    const geo = M2.geografia_30d || [];
     const rec = (M2.recomendacoes_meta && M2.recomendacoes_meta.itens_api) || [];
     const bn = MID.benchmarks || {};
     const anun = M2.anuncios_30d || [];
-    const maxHr = hr.length ? Math.max(...hr.map(x=>x.gasto||0), 0.01) : 0.01;
     const cpaCor = (real, meta) => real == null ? '#6b7280' : real <= meta ? '#22c55e' : real <= meta*1.2 ? '#f59e0b' : '#ef4444';
     const anunRank = anun.filter(a => a.quality_ranking && a.quality_ranking !== 'UNKNOWN').slice(0,10);
     const rankBadge = r => {
@@ -5784,9 +5783,11 @@ function renderMidias(){
       const label = r === 'ABOVE_AVERAGE' ? 'ACIMA' : r === 'AVERAGE' ? 'MÉDIA' : r ? 'ABAIXO' : '—';
       return `<span style="background:${cor};color:#fff;font-size:10px;padding:1px 5px;border-radius:8px">${label}</span>`;
     };
+    const temAlgo = (bn.cpa_msg_atual_30d || bn.cpm_atual_30d || bn.ctr_atual_30d) || vi.plays || anunRank.length || rec.length;
+    if(temAlgo){
     const adsHTML = `<section class="card ads-extra-card" style="border-left:4px solid #1877F2;margin-top:12px">
-      <h2>📊 Meta Ads · Detalhamento avançado <span style="font-size:12px;color:var(--ink-3);font-weight:400">(agregados 30 dias — API Meta só entrega breakdown fechado, não por janela)</span></h2>
-      <div class="cap">Video insights · breakdown por device · perfil horário · geografia · qualidade dos anúncios · recomendações oficiais Meta · benchmarks vs metas.</div>
+      <h2>📊 Meta Ads · Saúde técnica <span style="font-size:12px;color:var(--ink-3);font-weight:400">(benchmarks · vídeo · qualidade · recomendações Meta · 30d)</span></h2>
+      <div class="cap">Métricas de qualidade da conta e feedback oficial da Meta. Placement/device/hora/geografia foram movidos pro card "📍 Distribuição da veiculação".</div>
       ${(bn.cpa_msg_atual_30d || bn.cpm_atual_30d || bn.ctr_atual_30d) ? `<h3 style="margin-top:16px;font-size:13px">🎯 Benchmarks · atual 30d vs meta</h3>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px;font-size:12px">
         <div style="background:var(--surface-2);border-radius:8px;padding:12px;border-left:3px solid ${cpaCor(bn.cpa_msg_atual_30d, bn.cpa_msg_meta)}"><div style="color:var(--ink-3);font-size:10.5px">CPA por conversa</div><div style="font-weight:700;font-size:22px">R$ ${(bn.cpa_msg_atual_30d||0).toFixed(2).replace('.',',')}</div><div style="color:var(--ink-3);font-size:10.5px">meta R$ ${(bn.cpa_msg_meta||0).toFixed(2).replace('.',',')}</div></div>
@@ -5801,19 +5802,6 @@ function renderMidias(){
         <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Taxa passar do meio</div><div style="font-weight:700;font-size:22px">${(vi.taxa_meio_pct||0).toFixed(1)}%</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(vi.p50)} p50</div></div>
         <div style="background:var(--surface-2);border-radius:8px;padding:12px;border-left:3px solid ${(vi.taxa_conclusao_pct||0)>=3?'#22c55e':(vi.taxa_conclusao_pct||0)>=1?'#f59e0b':'#ef4444'}"><div style="color:var(--ink-3);font-size:10.5px">Taxa de conclusão (p95)</div><div style="font-weight:700;font-size:22px">${(vi.taxa_conclusao_pct||0).toFixed(2)}%</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(vi.p95||0)} p95</div></div>
       </div>` : ''}
-      ${dev.length?`<h3 style="margin-top:16px;font-size:13px">📱 Breakdown por device · 30d</h3>
-      <div style="display:grid;grid-template-columns:repeat(${Math.min(dev.length,4)},1fr);gap:10px;margin-top:8px;font-size:12px">
-        ${dev.slice(0,4).map(d=>`<div style="background:var(--surface-2);border-radius:8px;padding:10px"><div style="color:var(--ink-3);font-size:10.5px">${d.device}</div><div style="font-weight:700;font-size:18px">R$ ${(d.gasto||0).toFixed(2).replace('.',',')}</div><div style="color:var(--ink-3);font-size:10.5px">${d.share_pct||0}% · ${d.conversas_msg||0} conv · CPA R$ ${(d.cpa_msg||0).toFixed(2).replace('.',',')}</div></div>`).join('')}
-      </div>` : ''}
-      ${hr.length?`<h3 style="margin-top:16px;font-size:13px">🕐 Perfil horário · 30d (gasto por hora do advertiser timezone)</h3>
-      <div style="display:grid;grid-template-columns:repeat(24,1fr);gap:2px;align-items:end;height:80px;margin-top:8px">
-        ${hr.map(h=>{const H=(h.gasto/maxHr*100);const cor=(h.conversas_msg||0)>0?'#22c55e':(h.gasto>0?'#3b82f6':'#6b7280');return `<div title="${h.hora}: R$ ${(h.gasto||0).toFixed(2)} · ${h.conversas_msg||0} conv · CPA R$ ${(h.cpa_msg||0).toFixed(2)}" style="background:${cor};height:${Math.max(H,2)}%;border-radius:2px 2px 0 0;cursor:help"></div>`}).join('')}
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink-3);margin-top:4px"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>23h</span></div>` : ''}
-      ${geo.length && (geo[0].gasto||0) > 0 ? `<h3 style="margin-top:16px;font-size:13px">📍 Geografia · 30d (top ${Math.min(geo.length,8)} regiões)</h3>
-      <div style="overflow-x:auto;margin-top:8px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
-        <thead><tr style="background:var(--surface-2);color:var(--ink-2)"><th style="text-align:left;padding:6px">Região</th><th style="text-align:right;padding:6px">Gasto</th><th style="text-align:right;padding:6px">Impressões</th><th style="text-align:right;padding:6px">Reach</th><th style="text-align:right;padding:6px">Conversas</th><th style="text-align:right;padding:6px">Share</th></tr></thead>
-        <tbody>${geo.slice(0,8).map(g=>`<tr style="border-bottom:1px solid var(--surface-2)"><td style="padding:6px">${g.regiao}</td><td style="text-align:right;padding:6px">R$ ${(g.gasto||0).toFixed(2).replace('.',',')}</td><td style="text-align:right;padding:6px">${nfmt(g.impressoes||0)}</td><td style="text-align:right;padding:6px">${nfmt(g.reach||0)}</td><td style="text-align:right;padding:6px">${g.conversas_msg||0}</td><td style="text-align:right;padding:6px">${g.share_pct||0}%</td></tr>`).join('')}</tbody></table></div>` : ''}
       ${anunRank.length?`<h3 style="margin-top:16px;font-size:13px">⭐ Qualidade dos anúncios · rankings Meta 30d</h3>
       <div style="overflow-x:auto;margin-top:8px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
         <thead><tr style="background:var(--surface-2);color:var(--ink-2)"><th style="text-align:left;padding:6px">Anúncio</th><th style="text-align:center;padding:6px">Qualidade</th><th style="text-align:center;padding:6px">Engajamento</th><th style="text-align:center;padding:6px">Conversão</th><th style="text-align:right;padding:6px">Gasto</th><th style="text-align:right;padding:6px">Conversas</th></tr></thead>
@@ -5826,6 +5814,7 @@ function renderMidias(){
     // Insere após fb-page-card se existir, senão após igBox
     const fbEl = document.querySelector('.fb-page-card');
     (fbEl || igBox).insertAdjacentHTML('afterend', adsHTML);
+    }  // fim if(temAlgo)
   }
 
   // Google Meu Negócio — remove card antigo antes de renderizar de novo
@@ -6508,15 +6497,28 @@ function renderMidias(){
     </section>`;
   }
 
-  // Placement
+  // SUPER-CARD DISTRIBUICAO DA VEICULACAO · placement × device × hora × geografia
+  // Funde 4 dimensoes do MESMO evento (onde/quando o anuncio serve). Placement
+  // e o principal; device/hora/geografia sao snapshots 30d (breakdown Meta so
+  // vem fechado, nao por janela) — vem do bloco M.device_30d / hourly_30d /
+  // geografia_30d que antes moravam no ".ads-extra-card".
   const placeBox = document.getElementById('midias-placement');
-  const qPlace = quebra('placement'), place = qPlace.dados;
-  if(place.length){
+  const qPlace = quebra('placement'), place = qPlace.dados || [];
+  const distDev = (M && M.device_30d) || [];
+  const distHr = (M && M.hourly_30d) || [];
+  const distGeo = (M && M.geografia_30d) || [];
+  const temAlgo = place.length || distDev.length || distHr.length || distGeo.length;
+
+  if(!temAlgo){
+    placeBox.innerHTML = '';
+  } else {
     const stColor = s => ({escalar:'#22c55e',manter:'#3b82f6',otimizar:'#f59e0b',revisar:'#f59e0b',cortar:'#ef4444'})[s]||'var(--muted)';
     const stLabel = s => ({escalar:'📈 escalar',manter:'✅ manter',otimizar:'🔧 otimizar',revisar:'👀 revisar',cortar:'✂️ cortar'})[s]||s;
-    placeBox.innerHTML = `<section class="card"><h2>📱 Placement · onde os anúncios aparecem · ${janelaTxt(qPlace)}${seloJanela(qPlace)}</h2>
-      <div class="cap">Facebook vs Instagram × Feed vs Stories vs Reels. Guia da realocação.</div>
-      <div style="overflow-x:auto;margin-top:12px"><table style="width:100%;font-size:12px;border-collapse:collapse">
+
+    // Placement · plataforma × posicao (janela ativa)
+    const secPlace = place.length ? `
+      <h3 style="margin-top:14px;font-size:13px;color:var(--ink-2)">📱 Placement · plataforma × posição · ${janelaTxt(qPlace)}${seloJanela(qPlace)}</h3>
+      <div style="overflow-x:auto;margin-top:8px"><table style="width:100%;font-size:12px;border-collapse:collapse">
       <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
         <th style="text-align:left;padding:8px">Plataforma</th>
         <th style="text-align:left;padding:8px">Posição</th>
@@ -6536,8 +6538,71 @@ function renderMidias(){
         <td style="text-align:right;padding:8px;color:${p.cpm<=8?'#22c55e':p.cpm<=12?'#3b82f6':'#ef4444'}">${brl(p.cpm)}</td>
         <td style="text-align:right;padding:8px">${nOpt(p.reach)}</td>
         <td style="text-align:center;padding:8px"><span style="color:${stColor(p.status)};font-weight:600;font-size:11px">${stLabel(p.status)}</span></td>
-      </tr>`).join('')}</tbody></table></div></section>`;
-  } else { placeBox.innerHTML=''; }
+      </tr>`).join('')}</tbody></table></div>` : '';
+
+    // Device · 30d (breakdown Meta so vem fechado)
+    const secDev = distDev.length ? `
+      <h3 style="margin-top:20px;font-size:13px;color:var(--ink-2)">💻 Device · 30d</h3>
+      <div style="display:grid;grid-template-columns:repeat(${Math.min(distDev.length,4)},1fr);gap:10px;margin-top:8px;font-size:12px">
+        ${distDev.slice(0,4).map(d=>`<div style="background:var(--surface-2);border-radius:8px;padding:10px">
+          <div style="color:var(--ink-3);font-size:10.5px">${d.device}</div>
+          <div style="font-weight:700;font-size:18px">${brl(d.gasto||0)}</div>
+          <div style="color:var(--ink-3);font-size:10.5px">${d.share_pct||0}% · ${d.conversas_msg||0} conv · CPA ${d.cpa_msg?brl(d.cpa_msg):'—'}</div>
+        </div>`).join('')}
+      </div>` : '';
+
+    // Hora · 30d (heatmap 24h)
+    const maxHr = distHr.length ? Math.max(...distHr.map(x=>x.gasto||0), 0.01) : 0.01;
+    const melhorHr = distHr.length ? distHr.reduce((best,h)=>(h.conversas_msg||0)>(best.conversas_msg||0)?h:best, distHr[0]) : null;
+    const secHr = distHr.length ? `
+      <h3 style="margin-top:20px;font-size:13px;color:var(--ink-2)">🕐 Perfil horário · 30d ${melhorHr?`<span style="font-size:11px;color:var(--ink-3);font-weight:400">(pico: ${melhorHr.hora}h · ${melhorHr.conversas_msg||0} conv · CPA ${melhorHr.cpa_msg?brl(melhorHr.cpa_msg):'—'})</span>`:''}</h3>
+      <div style="display:grid;grid-template-columns:repeat(24,1fr);gap:2px;align-items:end;height:80px;margin-top:8px">
+        ${distHr.map(h=>{const H=(h.gasto/maxHr*100);const cor=(h.conversas_msg||0)>0?'#22c55e':(h.gasto>0?'#3b82f6':'#6b7280');return `<div title="${h.hora}h: ${brl(h.gasto||0)} · ${h.conversas_msg||0} conv · CPA ${h.cpa_msg?brl(h.cpa_msg):'—'}" style="background:${cor};height:${Math.max(H,2)}%;border-radius:2px 2px 0 0;cursor:help"></div>`}).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink-3);margin-top:4px"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>23h</span></div>
+      <div style="font-size:10.5px;color:var(--ink-3);margin-top:4px">Verde = horário com conversa · Azul = só gasto, sem conversa · Cinza = sem gasto.</div>` : '';
+
+    // Geografia · 30d (top 8 regioes)
+    const secGeo = (distGeo.length && (distGeo[0].gasto||0) > 0) ? `
+      <h3 style="margin-top:20px;font-size:13px;color:var(--ink-2)">📍 Geografia · 30d <span style="font-size:11px;color:var(--ink-3);font-weight:400">(top ${Math.min(distGeo.length,8)} regiões · veja "Foco geográfico" acima pra bairros no raio 5km)</span></h3>
+      <div style="overflow-x:auto;margin-top:8px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
+        <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
+          <th style="text-align:left;padding:6px">Região</th>
+          <th style="text-align:right;padding:6px">Gasto</th>
+          <th style="text-align:right;padding:6px">Impressões</th>
+          <th style="text-align:right;padding:6px">Reach</th>
+          <th style="text-align:right;padding:6px">Conversas</th>
+          <th style="text-align:right;padding:6px">Share</th>
+        </tr></thead>
+        <tbody>${distGeo.slice(0,8).map(g=>`<tr style="border-bottom:1px solid var(--surface-2)">
+          <td style="padding:6px">${g.regiao}</td>
+          <td style="text-align:right;padding:6px">${brl(g.gasto||0)}</td>
+          <td style="text-align:right;padding:6px">${nfmt(g.impressoes||0)}</td>
+          <td style="text-align:right;padding:6px">${nfmt(g.reach||0)}</td>
+          <td style="text-align:right;padding:6px">${g.conversas_msg||0}</td>
+          <td style="text-align:right;padding:6px">${g.share_pct||0}%</td>
+        </tr>`).join('')}</tbody></table></div>` : '';
+
+    // Leitura executiva: melhor combinacao placement + hora + device pra conversas
+    let leitura = '';
+    const topPlace = place.filter(p=>p.status==='escalar'||p.status==='manter').sort((a,b)=>(a.cpm||99)-(b.cpm||99))[0];
+    const topDev = distDev.length ? distDev.slice().sort((a,b)=>(a.cpa_msg||99)-(b.cpa_msg||99)).find(d=>d.cpa_msg) : null;
+    if(topPlace && melhorHr && topDev){
+      leitura = `Melhor combo: <strong>${topPlace.plataforma} ${topPlace.posicao}</strong> em <strong>${topDev.device}</strong>, pico em <strong>${melhorHr.hora}h</strong> (CPA ${melhorHr.cpa_msg?brl(melhorHr.cpa_msg):'—'}). Ajuste day-parting e device targeting das campanhas Escalar pra concentrar aqui.`;
+    } else if(topPlace){
+      leitura = `Placement recomendado pra escalar: <strong>${topPlace.plataforma} ${topPlace.posicao}</strong> (CPM ${brl(topPlace.cpm)} · CTR ${topPlace.ctr_pct.toFixed(2)}%).`;
+    }
+
+    placeBox.innerHTML = `<section class="card" style="border-left:4px solid #1877F2">
+      <h2>📍 Distribuição da veiculação · placement × device × hora × geografia</h2>
+      <div class="cap">Onde e quando os anúncios são servidos. Placement usa a janela selecionada; device/hora/geografia vêm fechados em 30d (a API Meta só entrega breakdown agregado por 30 dias, não por janela custom).</div>
+      ${secPlace}
+      ${secDev}
+      ${secHr}
+      ${secGeo}
+      ${leitura ? `<div style="margin-top:14px;padding:10px 12px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2)">💡 ${leitura}</div>` : ''}
+    </section>`;
+  }
 
   // ── Funil de conversão, recortado pela competência escolhida ───────────────
   // O funil era um bloco fixo de agosto fechado: trocar o período no topo mudava
