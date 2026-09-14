@@ -59,7 +59,7 @@ em que acorda, e uma entrega. Nenhuma depende de você lembrar de rodar.
 |---|---|
 | **Missão** | Meta Ads, Instagram, Facebook, Google Business, saúde de entrega |
 | **Conectores** | Meta Graph API v20.0 · Supermetrics MCP · Google Business Profile |
-| **Já roda** | `refresh_midias.py` via `midias_refresh.yml` (07h BRT) · `refresh_google.py` · `validar_midias.py` · `alerta_entrega.py` · `revisao_semanal.py` |
+| **Já roda** | `refresh_midias.py` via `midias_refresh.yml` (07h BRT) · `refresh_google.py` · `alerta_entrega.py` (ligado ao workflow em 14/09) · `revisao_semanal.py` |
 | **Entrega** | `data/midias_sociais.json` + versão SPA + consolidado · texto pronto pra agência (Beleza Boost) |
 | **Por que o alerta existe** | Entre 27 e 31/08/2026 a conta parou de entregar por 4 dias com todas as campanhas ativas. Ninguém percebeu. Descoberto por acaso 5 dias depois. Custo: ~R$ 480. `alerta_entrega.py` nasceu disso. |
 | **Ainda manual** | Os campos de julgamento — `direcionamentos_estrategicos`, `recomendacoes`, `benchmarks`, `kpi_estrela` — são escritos pelo gerente de Marketing. Isso está certo: **número é máquina, leitura é gente.** |
@@ -145,10 +145,19 @@ As máquinas já têm horário. As pessoas não. A cadência mínima:
 
 ### Camada 4 · Alerta — *quem te puxa pelo braço*
 
-Hoje toda a empresa é **puxada**: só descobre se abrir o painel. Foi assim que os
-R$ 480 de mídia queimaram por 4 dias. `alerta_entrega.py` já tem a lógica certa
-de detecção — falta o **canal**: para onde o grito vai. Sem canal de saída, o
-melhor detector do mundo fala sozinho.
+Hoje a empresa inteira é **puxada**: só descobre se você abrir o painel. Foi
+assim que os R$ 480 queimaram por quatro dias.
+
+**Resolvido em 14/09/2026.** Uma auditoria descobriu que `alerta_entrega.py`
+existia desde agosto e **nunca tinha sido chamado por lugar nenhum** — um
+detector escrito para não repetir o prejuízo, que jamais rodou. E olhava só a
+Escova, deixando o Spa sem vigilância a 11 dias da abertura. Agora roda ao fim
+do `midias_refresh.yml`, nas duas unidades, e falha o workflow de propósito
+quando detecta parada — o que faz o GitHub mandar e-mail. O canal existia o
+tempo todo; faltava alguém apertar o botão.
+
+**A lição vale mais que o conserto:** código de segurança que ninguém chama é
+segurança de mentira — e aparece como pronto no inventário.
 
 ---
 
