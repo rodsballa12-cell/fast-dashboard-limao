@@ -578,6 +578,12 @@
           <button class="tab-btn midias-per-btn" role="tab" aria-selected="false" data-per="90d" style="padding:8px 14px;font-size:12.5px">📊 90 dias</button>
           <span id="midias-atualizado" style="margin-left:auto;font-size:11px;color:var(--ink-3);align-self:center"></span>
         </div>
+        <div class="tabs" role="tablist" style="gap:6px;margin-bottom:6px;border-top:1px solid var(--surface-2);padding-top:6px">
+          <span style="color:var(--ink-3);align-self:center;font-size:11px;margin-right:6px">Vista:</span>
+          <button class="tab-btn midias-view-btn" role="tab" aria-selected="false" data-view="consolidado" style="padding:6px 12px;font-size:11.5px">🎯 Consolidado</button>
+          <button class="tab-btn midias-view-btn" role="tab" aria-selected="true"  data-view="escova" style="padding:6px 12px;font-size:11.5px">💇 Escova</button>
+          <button class="tab-btn midias-view-btn" role="tab" aria-selected="false" data-view="spa" style="padding:6px 12px;font-size:11.5px">🧖 Spa</button>
+        </div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11px">
           <span style="color:var(--ink-3);align-self:center">Ir para:</span>
           <a href="#ato-panorama" style="padding:3px 10px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);text-decoration:none;border:1px solid var(--border)">① Panorama</a>
@@ -2665,7 +2671,7 @@ function renderPeriodoAtivo(data){
 // ============= TABS =============
 function setupTabs(){
   // Abas top-level (Painel, Stone, Auditoria)
-  const topBtns = document.querySelectorAll('.tab-btn:not(.periodo-btn):not(.midias-per-btn):not(.stone-per-btn)');
+  const topBtns = document.querySelectorAll('.tab-btn:not(.periodo-btn):not(.midias-per-btn):not(.stone-per-btn):not(.midias-view-btn)');
   const topPanels = document.querySelectorAll('#content > .panel');
   topBtns.forEach(b => b.addEventListener('click', () => {
     topBtns.forEach(x => x.setAttribute('aria-selected','false'));
@@ -4987,8 +4993,19 @@ function renderMidiasCanalAquisicao(){
 function renderMidias(){
   if(!MID) return;
   const gerado = new Date(MID.gerado_em).toLocaleDateString('pt-BR') + ' ' + new Date(MID.gerado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  const M = MID.meta_ads;
+  const view = window._midiasView || 'escova';
+  // Meta Ads: Escova padrão / Spa / Consolidado
+  const M_escova = MID.meta_ads;
+  const M_spa = MID.meta_ads_spa;
+  const M_consolidado = MID.meta_ads_consolidado;
+  const M = (view === 'spa' && M_spa) ? M_spa : (view === 'consolidado' && M_consolidado) ? M_consolidado : M_escova;
   const bench = MID.benchmarks || {};
+
+  // Aviso quando view não é Escova (algumas seções são só Escova)
+  const midiaViewBadge = view === 'escova' ? '' :
+    `<div style="margin:10px 0;padding:10px 14px;background:rgba(168,85,247,.10);border-left:4px solid #a855f7;border-radius:6px;font-size:12px;color:var(--ink-2)">
+      📌 Vista <strong>${view === 'spa' ? '🧖 Spa' : '🎯 Consolidado (Escova + Spa)'}</strong> · KPIs de Meta Ads atualizados. Instagram, Facebook Page, funil e demais seções continuam mostrando Escova.
+    </div>`;
 
   // Alertas topo agora entram no #midias-insights no rodapé (padrão insight-card, sorteado por severidade). Container do topo fica vazio.
   const alertsBox = document.getElementById('midias-alertas');
@@ -5430,10 +5447,11 @@ function renderMidias(){
   })();
 
   const alertaPeriodo = pSel.alerta ? `<div style="margin-bottom:12px;padding:12px;background:rgba(239,68,68,.10);border-left:4px solid #ef4444;border-radius:6px;font-size:13px;color:#ef4444;font-weight:600">${pSel.alerta}</div>` : '';
-  document.getElementById('midias-kpis').innerHTML = `<section class="card">
+  const _viewLabel = view === 'spa' ? ' · 🧖 Spa' : view === 'consolidado' ? ' · 🎯 Consolidado' : ' · 💇 Escova';
+  document.getElementById('midias-kpis').innerHTML = `${midiaViewBadge}<section class="card">
     <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;margin-bottom:14px">
       <div>
-        <h2 style="margin:0">📊 KPIs Meta Ads · ${pSel.label}</h2>
+        <h2 style="margin:0">📊 KPIs Meta Ads · ${pSel.label}${_viewLabel}</h2>
         <div class="cap" style="margin-top:4px"><strong>KPI-estrela:</strong> ${MID.kpi_estrela.explicacao}</div>
       </div>
       <div style="display:flex;gap:10px;align-items:stretch">
@@ -6762,6 +6780,15 @@ document.querySelectorAll('.midias-per-btn').forEach(b => b.addEventListener('cl
   document.querySelectorAll('.midias-per-btn').forEach(x => x.setAttribute('aria-selected','false'));
   b.setAttribute('aria-selected','true');
   window._midiasPer = b.dataset.per;
+  if(MID) renderMidias();
+}));
+
+// Vista Consolidado / Escova / Spa
+window._midiasView = 'escova';
+document.querySelectorAll('.midias-view-btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.midias-view-btn').forEach(x => x.setAttribute('aria-selected','false'));
+  b.setAttribute('aria-selected','true');
+  window._midiasView = b.dataset.view;
   if(MID) renderMidias();
 }));
 
