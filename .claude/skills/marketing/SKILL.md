@@ -40,10 +40,10 @@ Foto de cliente só com autorização escrita.
 
 O painel tem **dois pipelines distintos** — confundi-los leva a alarmes falsos:
 
-| Pipeline | Script | Popula |
-|---|---|---|
-| Meta Graph API direta | `scripts/refresh_midias.py` | Meta Ads + IG + Facebook das duas unidades |
-| Supermetrics | `scripts/refresh_google.py` | Bloco `google_business` dentro do JSON |
+| Pipeline | Script | Credencial | Popula |
+|---|---|---|---|
+| **Meta Graph API direta** — `graph.facebook.com/v20.0` | `scripts/refresh_midias.py` | secret `META_ACCESS_TOKEN` | Meta Ads + IG + Facebook das duas unidades |
+| **Supermetrics** | `scripts/refresh_google.py` | `SUPERMETRICS_API_KEY` | bloco `google_business` dentro do JSON |
 
 **Supermetrics não é fonte de Meta nem de Instagram.** Se o Supermetrics falhar,
 os dados de Meta continuam chegando pelo pipeline direto. São caminhos
@@ -61,21 +61,6 @@ independentes — uma falha num não cega o outro.
 | Supermetrics `HS` — HubSpot (leitura) | contatos, histórico de cliente para o consultor WA — usa `hubspot_portal_id` do config |
 | Vault `63_Marketing_Digital/` | ICP detalhado, estratégia CRM+WA, calendário — **só acessível no PC** |
 | Vault `74_Combos_Capacidade_Receita.md` | combos e ticket detalhado — **só acessível no PC** |
-
-### Por onde o dado realmente chega — leia antes de declarar qualquer coisa quebrada
-
-| O que | Vem de onde |
-|---|---|
-| Meta Ads, Instagram, Facebook — **as duas unidades** | `scripts/refresh_midias.py` → `graph.facebook.com/v20.0` **direto**, com o secret `META_ACCESS_TOKEN` |
-| Google Business | `scripts/refresh_google.py` → **Supermetrics** |
-
-**O painel não usa Supermetrics para Meta.** Uma consulta ao Supermetrics que
-falha não significa que os dados de Meta estão cegos — são caminhos separados,
-com credenciais separadas.
-
-Antes de dizer que algo caiu, diga **qual dos caminhos** falhou e confira o
-frescor do JSON do repo. Em 14/09/2026 este cargo declarou o painel cego duas
-vezes por confundir os dois — e nas duas o painel estava fresco.
 
 O JSON do repo é a fonte primária para Meta e Instagram. Supermetrics só entra
 para HubSpot (consultor WA) e para queries ad-hoc em períodos fora da janela
@@ -97,6 +82,11 @@ antes de declarar 🔴:
 **Verifique o frescor do JSON antes de concluir.** Se `data/midias_sociais.json`
 foi atualizado há menos de 24h e os dados de Meta estão presentes, o pipeline
 está funcionando — mesmo que o Supermetrics esteja inacessível nesta sessão.
+
+Em 14/09/2026 este cargo declarou o painel cego **duas vezes no mesmo dia** por
+confundir os dois caminhos. Nas duas o painel estava fresco: a rotina tinha
+puxado dado novo da Meta horas antes, e o Supermetrics, quando testado de
+verdade, devolveu gasto dia a dia das duas contas sem cache.
 
 ### Passo 2 — a conta está entregando?
 

@@ -1,43 +1,61 @@
 # Um agente que não sabe por onde o dado chega reporta quebra onde não há
 
-**Destilado em:** 2026-09-14
-**Origem:** revisão do cargo /marketing após o conselho de 14/09
+**Destilado em:** 2026-09-14 · **Origem:** o conselho de 14/09 e a auditoria
+que o revisou. Consolida duas notas escritas em paralelo no mesmo dia — uma no
+PC, outra na nuvem — sobre o mesmo episódio.
 
 ## Regra
 
-Antes de declarar qualquer fonte de dados como quebrada ou indisponível,
-o agente deve identificar **qual caminho específico falhou** e verificar se
-existe um caminho alternativo que ainda entrega o dado.
+Antes de declarar qualquer fonte de dados quebrada, o agente precisa dizer
+**qual caminho específico falhou** e verificar se existe outro caminho que
+ainda entrega o dado.
 
-## Por que isso aconteceu
+## O que aconteceu
 
-O cargo /marketing descrevia Supermetrics como a fonte de dados ao vivo de
-Meta Ads e Instagram. Na prática, esses dados chegam via Meta Graph API direta
-(`scripts/refresh_midias.py`). O Supermetrics existe no projeto, mas cobre
-apenas o bloco Google Business (`scripts/refresh_google.py`).
+O `/marketing` tentou puxar Meta ao vivo pelo Supermetrics, levou um HTTP 400,
+e declarou no parecer que o painel estava cego. O Conselho acreditou e montou
+uma cadeia causal inteira em cima disso: *"token Meta e WhatsApp são o mesmo
+App, uma ação resolve os dois."*
 
-Como o cargo não conhecia a arquitetura real, interpretou uma falha isolada
-no Supermetrics como "dados de Meta indisponíveis" — alarme falso. O IG do
-Spa (202 seguidores) estava no painel sem o Supermetrics estar conectado,
-porque nunca dependeu dele.
+Nada disso era verdade. A verificação mostrou três credenciais distintas:
+
+| | Estado real |
+|---|---|
+| `META_ACCESS_TOKEN` no GitHub | **funcionando** — puxou dado novo no mesmo dia, 2.644 linhas alteradas |
+| Supermetrics | **autenticado** — uma consulta real devolveu gasto dia a dia das duas contas, sem cache |
+| App do WhatsApp | apagado — e sozinho |
+
+Duas das três estavam boas. O agente generalizou de uma falha para "tudo caiu".
+
+## A causa
+
+A ficha dizia "usa Supermetrics para dados ao vivo", mas **o painel não usa
+Supermetrics para Meta** — usa a Meta Graph API direta
+(`scripts/refresh_midias.py`). O Supermetrics cobre só o bloco Google Business
+(`scripts/refresh_google.py`).
+
+A prova mais limpa: o Instagram do Spa aparecia no painel com 202 seguidores
+**sem estar conectado no Supermetrics** — porque nunca dependeu dele.
 
 ## Como aplicar
 
-1. Antes de declarar 🔴 num conector, leia o JSON que o painel usa e veja
-   se ele está fresco. Se sim, o pipeline está funcionando independente do
-   que acontece com outros conectores.
+1. Antes de declarar 🔴 num conector, leia o JSON que o painel usa e veja se
+   está fresco. Se estiver, o pipeline funciona, independente do que acontece
+   com outros conectores.
+2. Ao aprender que um dado vem de um caminho específico, registre isso nas
+   **Chaves** do cargo — com a credencial de cada caminho.
+3. A pergunta certa não é *"o conector Y está funcionando?"* — é **"o dado que
+   preciso está presente e fresco onde vou lê-lo?"**
 
-2. Quando aprender que um dado vem de um caminho específico, registre isso
-   nas chaves do cargo — não assuma que "Supermetrics" ou "API X" é a única
-   fonte de tudo.
+## O padrão que se repete
 
-3. A pergunta certa não é "o conector Y está funcionando?" — é "o dado que
-   preciso está presente e fresco onde vou lê-lo?"
+Este erro aparece sempre que um cargo é documentado por como o sistema
+*deveria* funcionar, em vez de como *realmente* funciona. A documentação
+envelhece; o código muda. Toda vez que uma ficha for atualizada, confira se os
+caminhos descritos batem com os scripts reais.
 
-## Padrão que se repete
+## E o custo de errar para o outro lado
 
-Este erro aparece sempre que um agente é documentado com base em como
-*deveria* funcionar (intenção original) em vez de como *realmente* funciona
-(arquitetura atual). A documentação envelhece; o código muda. Toda vez que
-um cargo for atualizado, conferir se os caminhos descritos batem com os
-scripts reais.
+Um departamento gritando vermelho errado custa igual a um calado. Da primeira
+vez você perde dinheiro por não enxergar; da segunda, perde tempo consertando
+o que não quebrou — e começa a desconfiar dos alertas verdadeiros.
