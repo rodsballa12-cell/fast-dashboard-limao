@@ -146,6 +146,8 @@
     "6": 6
   },
   "hora_abertura": 9,
+  "hora_fim_entrada": 19.25,
+  "_hora_fim_entrada_desc": "Ultimo horario em que a loja aceita ENTRADA de cliente novo (19h15). Depois disso so termina quem ja esta dentro. Confirmado por Rodrigo em 14/09/2026. Importa em dois lugares: (1) capacidade de cadeira deve ser calculada sobre a janela produtiva 9h-19h15, nao sobre as 12h de porta aberta, senao a utilizacao sai subestimada; (2) leitura de ritmo depois das 19h15 nao tem mais como recuperar receita - o dia acabou para venda nova, mesmo com a loja aberta.",
   "data_inicio_domingo": "2026-08-30",
   "feriados_6h": {
     "_desc": "Datas ISO em que a loja opera 9h-15h (6h) igual domingo — feriados nacionais/municipais em SP. Datas nao listadas caem no HORAS_POR_DOW padrao. Manter atualizado ano a ano.",

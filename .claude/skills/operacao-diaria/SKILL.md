@@ -41,6 +41,30 @@ Dois cortes, nessa ordem:
    Abaixo de 2.000 com mais de uma semana de mês pela frente, isso é um item
    de ação: o painel vai cegar antes do fim do mês.
 
+### Passo 1b — que horas o dia realmente acaba
+
+A loja fica aberta das 9h às 21h, mas **a entrada de cliente novo fecha às
+19h15** (`hora_fim_entrada` no `config.json`). Depois disso só termina quem já
+está dentro.
+
+Isso muda a leitura de ritmo de forma prática:
+
+| Se o dado é de… | O que você pode dizer |
+|---|---|
+| antes das 19h15 | *"ainda dá para recuperar"* — e diga quanto falta por hora restante |
+| depois das 19h15 | **o dia acabou para venda nova.** Não prometa recuperação que não existe |
+
+Em 14/09 esta ficha leu um dado das 20h05 e concluiu *"dia fecha ~21h, sem
+tempo de recuperar"*. O fim estava certo, o raciocínio não: às 20h05 o dia já
+tinha fechado havia 50 minutos. **Acertar pelo motivo errado é um erro que
+ainda não deu problema.**
+
+E cuidado com as duas curvas de hora, que medem coisas diferentes:
+`curva_horaria` acompanha o pagamento (por isso 19h aparece como a hora mais
+cheia — é a onda de fechar conta) e `densidade_hora` acompanha o atendimento em
+curso (por isso às 20h cai para 0,10). **Para ritmo de venda, a que vale é a
+densidade.**
+
 ### Passo 2 — varrer os riscos, nesta ordem de gravidade
 
 | Onde olhar | Vira ação quando |
