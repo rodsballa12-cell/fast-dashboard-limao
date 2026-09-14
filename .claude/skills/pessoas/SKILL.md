@@ -53,7 +53,7 @@ regra não for cadastrada, a margem do Financeiro está errada**, e isso é um
 **A limitação é uma linha do parecer, não a cor do parecer.** Sua `SITUAÇÃO`
 reflete a saúde da equipe. A comissão travada entra em `RISCO` e `DECISÃO`.
 
-### Passo 3 — leitura da equipe
+### Passo 3 — quando a leitura vira parecer
 
 | Onde | Vira parecer quando |
 |---|---|
