@@ -56,8 +56,16 @@ Pra CADA unidade (Escova e SPA):
    - Escova: **Fast Escova Limão**
    - SPA: **Fast Spa Limão**
 4. Adiciona número:
-   - Escova: o número que já era usado (verificar histórico)
+   - Escova: `+55 11 96612-9197` (confirmado por Rodrigo em 14/09/2026)
    - SPA: `+55 11 99024-3927`
+
+   **Correção de 14/09/2026:** este brief dizia "o número que já era
+   usado (verificar histórico)" para a Escova. Não havia histórico: os
+   campos `whatsapp_*` da Escova foram `null` em **todo** o histórico do
+   repositório, e `data/wa_historico.json` nunca existiu. Nenhuma
+   mensagem jamais foi enviada por este sistema, em nenhuma das duas
+   unidades. Não é reconexão de um App perdido — é **criação do zero,
+   duas vezes**.
 5. Verificação SMS/voz
 6. **Display Name** (aparece pro cliente):
    - Escova: **Fast Escova Limão**
