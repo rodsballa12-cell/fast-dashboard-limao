@@ -18,7 +18,9 @@ não fez o trabalho.
 ### Passo 1 — convocar
 
 Leia cada ficha em `.claude/skills/<cargo>/SKILL.md` e execute a rotina dela
-sobre os dados reais. Seis cadeiras:
+sobre os dados reais. Todo parecer vem no formato de `.claude/skills/PROTOCOLO.md`
+— **leia o protocolo antes de convocar**, porque é ele que garante que os seis
+pareceres possam ser lidos lado a lado. Seis cadeiras:
 
 | Cadeira | Pergunta que ela responde |
 |---|---|
