@@ -65,7 +65,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          for f in data/midias_sociais.json data/spa/midias_sociais.json; do
+          for f in data/midias_sociais.json data/spa/midias_sociais.json data/consolidado/midias_sociais.json; do
             git add "$f" 2>/dev/null || true
           done
 

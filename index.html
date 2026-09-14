@@ -4989,11 +4989,9 @@ function renderMidias(){
   const gerado = new Date(MID.gerado_em).toLocaleDateString('pt-BR') + ' ' + new Date(MID.gerado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   // Vista vem do seletor de unidade do header (Escova / SPA / Consolidado)
   const view = (typeof UNIDADE_ATIVA !== 'undefined') ? UNIDADE_ATIVA : 'escova';
-  // Meta Ads: Escova padrão / Spa / Consolidado
-  const M_escova = MID.meta_ads;
-  const M_spa = MID.meta_ads_spa;
-  const M_consolidado = MID.meta_ads_consolidado;
-  const M = (view === 'spa' && M_spa) ? M_spa : (view === 'consolidado' && M_consolidado) ? M_consolidado : M_escova;
+  // MID ja vem da unidade ativa via fetchUnidade (data/[prefix]midias_sociais.json).
+  // Cron diario gera Escova, SPA e Consolidado (escova + spa) via refresh_midias.py.
+  const M = MID.meta_ads || {};
   const bench = MID.benchmarks || {};
 
   // Aviso quando view não é Escova (algumas seções são só Escova)

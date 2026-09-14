@@ -1791,6 +1791,90 @@ UNIDADES = {
     "escova": {"config_key": "escova", "path": os.path.join(ROOT, "data", "midias_sociais.json")},
     "spa":    {"config_key": "spa",    "path": os.path.join(ROOT, "data", "spa", "midias_sociais.json")},
 }
+CONSOLIDADO_PATH = os.path.join(ROOT, "data", "consolidado", "midias_sociais.json")
+
+
+def _build_consolidado(escova: dict[str, Any], spa: dict[str, Any]) -> dict[str, Any]:
+    """Soma numerica Escova+SPA para o Consolidado. Recalcula CPA/CPM/CTR
+    a partir dos totais somados (nunca media de razoes). Preserva campos
+    curados via _load_base para nao perder direcionamentos/recomendacoes."""
+    cons = _load_base(CONSOLIDADO_PATH)
+
+    def n(v):
+        try: return float(v or 0)
+        except: return 0.0
+
+    e_pp = (escova.get("meta_ads") or {}).get("por_periodo") or {}
+    s_pp = (spa.get("meta_ads") or {}).get("por_periodo") or {}
+    periodos = sorted(set(e_pp.keys()) | set(s_pp.keys()))
+    cons_pp = {}
+    for p in periodos:
+        e = e_pp.get(p) or {}
+        s = s_pp.get(p) or {}
+        gasto = n(e.get("gasto")) + n(s.get("gasto"))
+        conv = n(e.get("conversas_msg")) + n(s.get("conversas_msg"))
+        impr = n(e.get("impressoes")) + n(s.get("impressoes"))
+        clicks = n(e.get("cliques") or e.get("clicks")) + n(s.get("cliques") or s.get("clicks"))
+        reach = n(e.get("reach")) + n(s.get("reach"))
+        cons_pp[p] = {
+            "label": e.get("label") or s.get("label") or p,
+            "inicio": e.get("inicio") or s.get("inicio"),
+            "fim": e.get("fim") or s.get("fim"),
+            "gasto": round(gasto, 2),
+            "impressoes": int(impr),
+            "cliques": int(clicks),
+            "conversas_msg": int(conv),
+            "reach": int(reach),
+            "cpa_msg": round(gasto / conv, 2) if conv else None,
+            "cpm": round(gasto / impr * 1000, 2) if impr else None,
+            "ctr_pct": round(clicks / impr * 100, 2) if impr else None,
+            "atualizado_em": _now_brt_iso(),
+        }
+
+    # Instagram: soma followers + posts (posts_total agregado)
+    e_ig = escova.get("instagram") or {}
+    s_ig = spa.get("instagram") or {}
+    cons_ig = {
+        "handle": "consolidado",
+        "followers": int(n(e_ig.get("followers")) + n(s_ig.get("followers"))),
+        "posts_total": int(n(e_ig.get("posts_total")) + n(s_ig.get("posts_total"))),
+        "detalhes_por_unidade": {
+            "escova": {"handle": e_ig.get("handle"), "followers": e_ig.get("followers")},
+            "spa":    {"handle": s_ig.get("handle"), "followers": s_ig.get("followers")},
+        },
+    }
+
+    # Facebook Page: soma
+    e_fp = escova.get("facebook_page") or {}
+    s_fp = spa.get("facebook_page") or {}
+    cons_fp = {
+        "nome": "consolidado",
+        "seguidores": int(n(e_fp.get("seguidores") or e_fp.get("followers")) + n(s_fp.get("seguidores") or s_fp.get("followers"))),
+        "followers": int(n(e_fp.get("followers")) + n(s_fp.get("followers"))),
+        "posts_30d": int(n(e_fp.get("posts_30d")) + n(s_fp.get("posts_30d"))),
+    }
+
+    # Google Business: so Escova (SPA sem GBP conectado)
+    cons_gb = escova.get("google_business") or {}
+
+    cons.update({
+        "gerado_em": _now_brt_iso(),
+        "fonte": "consolidado (escova + spa)",
+        "meta_ads": {
+            "ad_account_id": "consolidado",
+            "ad_account_nome": "Escova + SPA",
+            "por_periodo": cons_pp,
+        },
+        "instagram": cons_ig,
+        "facebook_page": cons_fp,
+        "google_business": cons_gb,
+    })
+    return cons
+
+
+def _now_brt_iso() -> str:
+    from datetime import datetime, timezone, timedelta
+    return datetime.now(timezone(timedelta(hours=-3))).replace(microsecond=0).isoformat()
 
 
 def _load_base(path: str) -> dict[str, Any]:
@@ -1883,6 +1967,23 @@ def main() -> int:
         else:
             _write_base(meta["path"], depois)
             print(f"[{u}] gravado {meta['path']}")
+
+    # Consolidado = Escova + SPA (soma numerica). Roda depois das duas
+    # unidades pra garantir que le os arquivos ja gravados.
+    if not args.dry_run and (not args.unidade or args.unidade in ("escova", "spa")):
+        try:
+            e = _load_base(UNIDADES["escova"]["path"])
+            s = _load_base(UNIDADES["spa"]["path"])
+            if e and s:
+                cons = _build_consolidado(e, s)
+                os.makedirs(os.path.dirname(CONSOLIDADO_PATH), exist_ok=True)
+                _write_base(CONSOLIDADO_PATH, cons)
+                print(f"[consolidado] gravado {CONSOLIDADO_PATH}")
+            else:
+                print("[consolidado] pulando (escova ou spa sem base)", file=sys.stderr)
+        except Exception as e:
+            print(f"[consolidado] FALHA: {e}", file=sys.stderr)
+            rc = 1
 
     return rc
 
