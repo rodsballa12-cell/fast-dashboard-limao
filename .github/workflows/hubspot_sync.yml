@@ -1,15 +1,27 @@
 name: HubSpot — sync contatos (Trinks → CRM)
 
-# Envia clientes do Trinks pra HubSpot. Upsert por email (chave natural), com
-# fallback pra trinks_id quando não tem email. Roda 1x por dia depois do refresh
-# das 05:00 UTC (02h BRT), então CRM sempre tem a base fresca.
-# Sem HUBSPOT_TOKEN configurado nos Secrets, roda em dry-run e só loga.
+# DESATIVADO em 14/09/2026 por decisão do Rodrigo.
+#
+# O que ele fazia: enviar clientes do Trinks pra HubSpot, upsert por email com
+# fallback pra trinks_id. Rodava todo dia às 02h15 BRT.
+#
+# Por que foi desligado: `hubspot.contatos` marcava ZERO — a base nunca foi
+# importada. A rotina rodava diariamente sem trazer nada pro painel, e o que
+# o HubSpot ofereceria (funil de vendas, sequência de e-mail, automação de
+# negócio) não tem onde encostar num salão sem hora marcada, em que a venda
+# acontece na porta. O Trinks já entrega os 411 clientes com histórico, LTV,
+# churn e aniversário, e o painel já abre a conversa pelo botão 📱.
+#
+# Manter dois cadastros de cliente seria duplicar a fonte da verdade — o mesmo
+# defeito que a auditoria de coerência existe pra pegar.
+#
+# Mantido com workflow_dispatch: se um dia houver necessidade real de CRM,
+# reativar é recolocar o cron abaixo. Ver docs/decisoes/.
 
 on:
   workflow_dispatch: {}
-  schedule:
-    # 05:15 UTC = 02:15 BRT, ~10min depois do refresh noturno terminar
-    - cron: '15 5 * * *'
+  # schedule:
+  #   - cron: '15 5 * * *'   # 02h15 BRT — desativado em 14/09/2026
 
 permissions:
   contents: read
