@@ -1,25 +1,21 @@
-"""Gera data/spa/dashboard_data.json em zero-state honesto — estrutura da
-Escova preservada, mas TODAS as métricas zeradas e arrays de pessoa
-(rankings, clientes, aniversariantes, obs) vazios. Substitui mock_spa.py
-(que era clone escalado de Escova × 42%, enganava).
+"""Gera data/spa/dashboard_data.json.
 
-Loja SPA abre 25/09/2026 — enquanto Trinks estabelecimentoId não existe,
-não há trans/cliente/prof/receita reais. Zerar é o único jeito honesto
-de mostrar a estrutura sem inventar dado.
+DOIS MODOS:
+ 1. Trinks REAL: se TRINKS_API_KEY_SPA + TRINKS_ESTABELECIMENTO_ID_SPA existem
+    no ambiente, delega pro github_refresh.py --unidade spa (mesmo pipeline
+    da Escova, dados frescos, arquivos em data/spa/*).
+ 2. Zero-state (fallback): sem secrets, gera JSON estruturalmente igual ao
+    da Escova mas com todos os numericos zerados e arrays de pessoa vazios.
+    Usado pre-abertura ou enquanto integracao Trinks nao esta pronta.
 
-Preserva:
+Preserva no zero-state:
 - estrutura (todas as chaves)
-- arrays estruturais (por_dow 7 items, hora_abs 24 items, meses 12 items) com valores zerados
+- arrays estruturais (por_dow 7 items, hora_abs 24 items, meses 12 items)
 - unidade (produto/marca/tipo)
-- flag _mock=true pra frontend detectar e trocar cross-cards por placeholder
-
-Zera:
-- todos os numéricos
-- kpis, meta (mantendo meta.meta franqueadora quando conhecida)
-- todas as listas de pessoa/cliente/prof
+- flag _mock=true pra frontend detectar
 """
 
-import json, os, copy
+import json, os, copy, subprocess, sys
 from datetime import datetime, timezone, timedelta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -90,6 +86,17 @@ def zero_state(obj, key_path=""):
 
 
 def main():
+    # Modo 1: Trinks real via github_refresh --unidade spa
+    if os.environ.get("TRINKS_API_KEY_SPA") and os.environ.get("TRINKS_ESTABELECIMENTO_ID_SPA"):
+        print("[build_spa_dashboard] TRINKS_API_KEY_SPA presente · delegando pra github_refresh --unidade spa")
+        script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "github_refresh.py")
+        r = subprocess.run([sys.executable, script, "--unidade", "spa"], check=False)
+        if r.returncode == 0:
+            print(f"[build_spa_dashboard] pull real Trinks concluido · exit={r.returncode}")
+            return
+        print(f"[build_spa_dashboard] github_refresh falhou (exit={r.returncode}) · caindo pro zero-state")
+
+    # Modo 2: zero-state (sem secrets SPA ou refresh falhou)
     if not os.path.exists(SRC):
         raise SystemExit(f"Escova payload não existe em {SRC}")
     with open(CONFIG) as f:
