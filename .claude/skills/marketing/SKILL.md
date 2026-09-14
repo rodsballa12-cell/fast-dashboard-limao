@@ -49,6 +49,21 @@ Foto de cliente só com autorização escrita.
 | Vault `63_Marketing_Digital/` | ICP detalhado, estratégia CRM+WA, calendário — **só acessível no PC** |
 | Vault `74_Combos_Capacidade_Receita.md` | combos e ticket detalhado — **só acessível no PC** |
 
+### Por onde o dado realmente chega — leia antes de declarar qualquer coisa quebrada
+
+| O que | Vem de onde |
+|---|---|
+| Meta Ads, Instagram, Facebook — **as duas unidades** | `scripts/refresh_midias.py` → `graph.facebook.com/v20.0` **direto**, com o secret `META_ACCESS_TOKEN` |
+| Google Business | `scripts/refresh_google.py` → **Supermetrics** |
+
+**O painel não usa Supermetrics para Meta.** Uma consulta ao Supermetrics que
+falha não significa que os dados de Meta estão cegos — são caminhos separados,
+com credenciais separadas.
+
+Antes de dizer que algo caiu, diga **qual dos caminhos** falhou e confira o
+frescor do JSON do repo. Em 14/09/2026 este cargo declarou o painel cego duas
+vezes por confundir os dois — e nas duas o painel estava fresco.
+
 Quando o JSON do repo for suficiente, use-o. Supermetrics para verificação
 ao vivo ou quando o JSON não cobre o período pedido.
 

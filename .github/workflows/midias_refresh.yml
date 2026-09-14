@@ -91,3 +91,43 @@ jobs:
           data_brt=$(TZ=America/Sao_Paulo date +'%d/%m %H:%M')
           git commit -m "refresh midias: ${data_brt} BRT${resumo}"
           git push
+
+      # Detector de parada de entrega — Escova E SPA.
+      #
+      # Por que este passo existe: scripts/alerta_entrega.py foi escrito depois
+      # do episodio de 27-31/08/2026, quando a conta parou de entregar por 4
+      # dias com tudo ativo e ninguem viu (~R$ 480 queimados). O script ficou
+      # pronto e NUNCA foi ligado a lugar nenhum — checado em 14/09/2026, zero
+      # chamadas no repo inteiro. Um detector que nao roda e seguranca de
+      # mentira.
+      #
+      # Por que DEPOIS do commit: alerta vermelho nunca pode impedir o dado de
+      # ser salvo. Primeiro grava, depois avalia.
+      #
+      # Qual e o canal: sair != 0 faz o run falhar, e o GitHub manda e-mail de
+      # falha pro dono do repo. E o canal de alerta que ja existe, sem montar
+      # infraestrutura nova.
+      #
+      # Codigos do script: 1 = critico/alerta (falha de proposito) · 2 = nao
+      # deu pra avaliar (serie curta demais — normal no SPA antes de 25/09,
+      # entao so avisa, nao falha).
+      - name: Alerta de parada de entrega (Escova + SPA)
+        if: always()
+        run: |
+          falhou=0
+          for f in data/midias_sociais.json data/spa/midias_sociais.json; do
+            [ -f "$f" ] || continue
+            u=$(basename "$(dirname "$f")"); [ "$u" = "data" ] && u="escova"
+            echo "── $u"
+            set +e
+            python scripts/alerta_entrega.py "$f"
+            rc=$?
+            set -e
+            [ "$rc" -eq 1 ] && falhou=1
+            [ "$rc" -eq 2 ] && echo "   (sem serie suficiente pra avaliar — nao falha)"
+          done
+          if [ "$falhou" -eq 1 ]; then
+            echo "::error::Entrega parada detectada. Veja o detalhe acima."
+            exit 1
+          fi
+          echo "Entrega normal nas unidades avaliadas."
