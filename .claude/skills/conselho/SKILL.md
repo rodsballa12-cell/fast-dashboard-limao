@@ -1,6 +1,6 @@
 ---
 name: conselho
-description: Reunião de conselho da FAST Limão — convoca todos os departamentos, coleta um parecer de cada e cruza os pareceres para achar o que nenhum departamento enxerga sozinho. Use para "reunião", "conselho", "visão geral", "fechamento do mês", "o que eu decido essa semana", ou quando a pergunta atravessar mais de um departamento. É o único cargo que enxerga a empresa inteira.
+description: Fechamento do dia da FAST Limão — roda toda noite, convoca os seis departamentos, cruza os pareceres e atualiza o cenário nas quatro janelas: dia, semana, mês e ano. Use para "reunião", "conselho", "fecha o dia", "como estamos", "visão geral", "fechamento do mês", ou quando a pergunta atravessar mais de um departamento. É o único cargo que enxerga a empresa inteira.
 ---
 
 # Conselho · FAST Limão
@@ -68,7 +68,32 @@ marque a outra para verificação.
 **Silêncio suspeito** — alguém marcou 🟢 num assunto que outro marcou 🔴.
 Quase sempre significa que não estava olhando. Cite os dois pelo nome.
 
-### Passo 4 — decidir o que vai para o Rodrigo
+### Passo 4 — as quatro janelas
+
+O conselho fecha o dia, e fechar o dia é responder **em que ponto a empresa
+está em cada horizonte**. Um número só engana: um dia ruim dentro de um mês bom
+é ruído; um dia ruim que confirma quatro semanas de queda é outra coisa.
+
+| Janela | A pergunta | Onde |
+|---|---|---|
+| **Dia** | acabou melhor ou pior que o esperado para este dia da semana? | `abas.diario` contra `sazonalidade.meta_por_data` |
+| **Semana** | o ritmo entrega a semana, com os dias que faltam? | `abas.semanal` · `historico.semanas` |
+| **Mês** | projetando este ritmo, fecha acima ou abaixo da meta? | `abas.mensal` contra `meta_mensal` do `config.json` |
+| **Ano** | a curva está subindo, estável ou virando? | `abas.anual` · `historico.dias` (50 dias) |
+
+**Sempre compare com o mesmo dia da semana**, nunca com ontem. Sábado faz 37,6%
+do movimento e terça 6,2% — comparar terça com segunda inventa uma queda que
+não existe. Use `sazonalidade.peso_dow`.
+
+**Diga qual janela manda hoje.** Na maioria das noites é a semana: é onde ainda
+dá tempo de agir. Dia é ruído com frequência; ano quase nunca muda de uma noite
+para outra. Quando o mês estiver em risco, o mês manda.
+
+E marque explicitamente quando as janelas **discordam** — dia fraco com mês no
+azul, ou dia forte com semana caindo. Essa discordância costuma ser o achado
+mais útil da noite.
+
+### Passo 5 — decidir o que vai para o Rodrigo
 
 No máximo **três decisões**. Conselho que entrega dez itens não decidiu nada,
 empurrou a fila. Ordene por dinheiro em risco, não por urgência aparente.
@@ -88,7 +113,14 @@ departamentos para a ata ficar limpa.
 ## Entrega
 
 ```
-⚖️ CONSELHO FAST LIMÃO · <data>
+⚖️ CONSELHO FAST LIMÃO · <data> · fechamento do dia
+
+AS QUATRO JANELAS
+   Dia     <realizado> de <meta do dia> · <acima/abaixo> · vs <mesmo dia> passado
+   Semana  <acumulado> de <meta da semana> · projeta <fecha em>
+   Mês     <acumulado> de <meta> · projeta <fecha em> · <dias restantes>
+   Ano     <acumulado> · curva <subindo/estável/virando>
+   → manda hoje: <qual janela, e por quê>
 
 SITUAÇÃO DA MESA
 🥂 Escova <cor>   🧖 Spa <cor>   Consolidado <cor>

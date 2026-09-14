@@ -8,6 +8,10 @@ no Claude Code do PC. **Não gera custo adicional.**
 
 `Obsidian Vault / Cerebro_Claude / Briefings / AAAA-MM-DD-<cargo>.md`
 
+O da noite — `AAAA-MM-DD-conselho.md` — é o mais importante: é o fechamento do
+dia nas quatro janelas (dia, semana, mês, ano), com as decisões que sobraram
+para você.
+
 O vault sincroniza pelo OneDrive, então o briefing chega no celular sozinho.
 O repositório guarda o que a **empresa** sabe; o vault guarda o que o **dono**
 leu — por isso o briefing vai para lá.
@@ -28,12 +32,13 @@ schtasks /Create /F /TN "FAST\Relacionamento 09h" /SC DAILY /ST 09:00 `
 schtasks /Create /F /TN "FAST\Operacao 11h30" /SC DAILY /ST 11:30 `
   /TR "$ps -Agente operacao-diaria"
 
-# Marketing — sexta 11h30 · decide a verba antes do fim de semana
-schtasks /Create /F /TN "FAST\Marketing sexta" /SC WEEKLY /D FRI /ST 11:30 `
+# Marketing — 08h todo dia · o refresh de mídia sai às 07h
+schtasks /Create /F /TN "FAST\Marketing 08h" /SC DAILY /ST 08:00 `
   /TR "$ps -Agente marketing"
 
-# Conselho — dia 5 de cada mês, 09h · com o mês anterior fechado
-schtasks /Create /F /TN "FAST\Conselho mensal" /SC MONTHLY /D 5 /ST 09:00 `
+# CONSELHO — 22h30 todo dia · fecha o dia com os seis departamentos
+# Roda depois do último refresh do painel (22h07), então o dia já está inteiro.
+schtasks /Create /F /TN "FAST\Conselho 22h30" /SC DAILY /ST 22:30 `
   /TR "$ps -Agente conselho"
 ```
 
@@ -64,16 +69,21 @@ schtasks /Change /TN "FAST\Marketing sexta" /DISABLE   # pausa
 schtasks /Delete /TN "FAST\Marketing sexta" /F         # remove
 ```
 
-## Por que só quatro, e não um por cargo
+## Por que quatro tarefas cobrem os sete cargos
 
-`/financeiro` e `/pessoas` dependem de dado que entra à mão — DRE, extrato
-Stone, regra de comissão. Agendar um relatório sobre dado parado produz o mesmo
-número todo dia e ensina a ignorar o aviso. Eles entram na agenda quando a
-entrada deixar de ser manual.
+Os três da manhã e do meio-dia são os **acionáveis**: dá tempo de fazer algo
+com o que eles dizem.
 
-`/memoria` roda sozinho de outro jeito: a auditoria de coerência já executa
+O **Conselho das 22h30 convoca os seis departamentos** — inclusive `/financeiro`
+e `/pessoas`, que não têm tarefa própria. Eles não ganham briefing individual
+de propósito: dependem de dado que entra à mão (DRE, extrato Stone, regra de
+comissão), e relatório diário sobre dado parado mostra o mesmo número todo dia
+e ensina a ignorar o aviso. Dentro do conselho eles falam quando têm o que
+dizer, e declaram o atraso do dado quando não têm.
+
+`/memoria` roda sozinho por outro caminho: a auditoria de coerência executa
 todo dia às 07h no GitHub Actions e falha o workflow quando os números não
-batem.
+batem entre unidades, períodos e consolidado.
 
 ## O risco que isso carrega
 

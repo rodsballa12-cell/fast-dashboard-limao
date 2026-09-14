@@ -25,7 +25,24 @@ DST = os.path.join(DST_DIR, "financeiro.json")
 CONS_DIR = os.path.join(ROOT, "data", "consolidado")
 DST_CONS = os.path.join(CONS_DIR, "financeiro.json")
 BRT = timezone(timedelta(hours=-3))
-META_MES_SPA = 60000.00
+
+def _meta_mensal(unidade: str, padrao: float) -> float:
+    """Meta mensal vem do config.json — fonte única.
+
+    Até 14/09/2026 este número estava fixo em DOIS scripts
+    (gerar_financeiro.py e build_spa_financeiro.py), os dois com 60000. O SPA
+    herdou a meta da Escova e ninguém zerou; a auditoria de coerência pegou
+    quando o payload do SPA aparecia marcado _pre_abertura com meta cheia.
+    Duas fontes da verdade sempre divergem — agora é uma.
+    """
+    try:
+        with open(os.path.join(ROOT, "data", "config.json"), encoding="utf-8") as fh:
+            v = json.load(fh)["unidades"][unidade].get("meta_mensal")
+        return float(v) if v is not None else padrao
+    except Exception:
+        return padrao
+
+META_MES_SPA = _meta_mensal("spa", 15000.00)
 
 PRESERVAR = {
     "gerado_em", "baseline", "custos_ate", "mes_corrente_chave",
@@ -99,9 +116,16 @@ def main():
     escova_cons["loja"] = "FAST LIMÃO CONSOLIDADO"
     escova_cons["_consolidado"] = True
     escova_cons["_composicao"] = (
-        "Somente Fast Escova (SPA em pré-abertura · zero) · quando SPA rodar, "
-        "consolidado passa a somar as duas unidades automaticamente."
+        "Realizado: somente Fast Escova (SPA em pré-abertura · zero). "
+        "Meta: soma das duas unidades — meta existe antes de a loja abrir."
     )
+    # A META soma desde já, mesmo com o SPA zerado no realizado.
+    # Corrigido em 14/09/2026: o consolidado copiava a meta da Escova e
+    # ignorava a do SPA. Enquanto as duas eram 60000 o erro ficava invisível;
+    # com metas diferentes (60000 e 15000) a holding apareceria com 60000 de
+    # meta quando o alvo real é 75000 — e passaria a "bater meta" sem bater.
+    escova_cons["kpis"]["meta_mes"] = round(
+        float(escova["kpis"].get("meta_mes") or 0.0) + META_MES_SPA, 2)
     os.makedirs(CONS_DIR, exist_ok=True)
     with open(DST_CONS, "w", encoding="utf-8") as f:
         json.dump(escova_cons, f, ensure_ascii=False, indent=1)

@@ -25,8 +25,25 @@ OUT_ESCOVA = os.path.join(ROOT, "data", "financeiro.json")
 OUT_SPA = os.path.join(ROOT, "data", "spa", "financeiro.json")
 OUT_CONS = os.path.join(ROOT, "data", "consolidado", "financeiro.json")
 
-META_MES_ESCOVA = 60000.00
-META_MES_SPA = 60000.00  # ajustar se franqueadora definir outro
+
+def _meta_mensal(unidade: str, padrao: float) -> float:
+    """Meta mensal vem do config.json — fonte única.
+
+    Até 14/09/2026 este número estava fixo em DOIS scripts
+    (gerar_financeiro.py e build_spa_financeiro.py), os dois com 60000. O SPA
+    herdou a meta da Escova e ninguém zerou; a auditoria de coerência pegou
+    quando o payload do SPA aparecia marcado _pre_abertura com meta cheia.
+    Duas fontes da verdade sempre divergem — agora é uma.
+    """
+    try:
+        with open(os.path.join(ROOT, "data", "config.json"), encoding="utf-8") as fh:
+            v = json.load(fh)["unidades"][unidade].get("meta_mensal")
+        return float(v) if v is not None else padrao
+    except Exception:
+        return padrao
+
+META_MES_ESCOVA = _meta_mensal("escova", 60000.00)
+META_MES_SPA = _meta_mensal("spa", 15000.00)
 
 # Carrega config pra puxar salário da gerente (separa do pessoal_clt consolidado do Excel)
 def _load_cfg():

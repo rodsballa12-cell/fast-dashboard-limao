@@ -116,16 +116,25 @@ def conferir_periodos(achados, d, nome):
                     "um acumulado maior não pode ser menor que o menor"))
 
 
+# Numa loja que ainda não abriu, o REALIZADO tem que ser zero — mas a
+# EXPECTATIVA não. Meta existe antes de a loja abrir; é o alvo com que ela
+# nasce. Esta distinção foi acrescentada em 14/09/2026, quando a regra original
+# acusou como defeito uma meta de R$ 15.000 legitimamente definida para o SPA.
+EXPECTATIVA = re.compile(r"(^meta|_meta$|_meta_|^orcamento|^previsto)", re.I)
+
+
 def conferir_zero_state(achados, fin, dash, nome):
-    """Unidade que ainda não abriu não pode ter KPI diferente de zero."""
+    """Unidade que ainda não abriu não pode ter REALIZADO diferente de zero."""
     if not isinstance(fin, dict) or not fin.get("_pre_abertura"):
         return
     sujos = [(k, v) for k, v in (fin.get("kpis") or {}).items()
-             if isinstance(v, (int, float)) and abs(v) > TOL]
+             if isinstance(v, (int, float)) and abs(v) > TOL
+             and not EXPECTATIVA.search(k)]
     for k, v in sujos:
         achados.append(("erro",
             f"{nome} está marcada como pré-abertura ({fin.get('_data_inauguracao','?')}) "
-            f"mas o campo `{k}` vale {brl(v)} — número herdado que ninguém zerou. "
+            f"mas o campo `{k}` vale {brl(v)} — isso é realizado, não expectativa, "
+            f"e uma loja fechada não realiza nada. "
             "Enquanto tudo o mais é zero o erro não aparece; quando a unidade "
             "abrir com número real, ele passa a contaminar o consolidado."))
 
