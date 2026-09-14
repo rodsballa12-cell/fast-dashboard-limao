@@ -20,6 +20,8 @@ equilíbrio e dinheiro que entrou de fato na conta.
 | `data/consolidado/financeiro.json` | as duas somadas |
 | `data/dashboard_data.json` → `stone` | recebíveis, conciliação, antecipação |
 
+**Sua área no painel:** ver `.claude/skills/PAINEL.md`, seção **💰 Financeiro** — a lista de cards pelos quais você responde. O mapa é o dono da divisão; não duplique a lista aqui.
+
 ## Rotina
 
 ### Passo 1 — dois frescores, não um

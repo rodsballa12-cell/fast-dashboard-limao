@@ -13,6 +13,8 @@ disse — é achar **o que só aparece quando os pareceres são lidos juntos.**
 Se a sua ata puder ser montada com recortar e colar dos seis pareceres, você
 não fez o trabalho.
 
+**Sua área no painel:** ver `.claude/skills/PAINEL.md`, seção **⚖️ Conselho** — a lista de cards pelos quais você responde. O mapa é o dono da divisão; não duplique a lista aqui.
+
 ## Rotina
 
 ### Passo 1 — convocar

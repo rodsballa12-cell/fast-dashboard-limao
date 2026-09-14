@@ -21,6 +21,8 @@ por melhor que a mídia esteja.
 | → `metas_franqueadora` | metas de recepção definidas pela franqueadora |
 | `data/prof_overrides.json` | ajustes manuais de meta |
 
+**Sua área no painel:** ver `.claude/skills/PAINEL.md`, seção **👥 Pessoas** — a lista de cards pelos quais você responde. O mapa é o dono da divisão; não duplique a lista aqui.
+
 ## Rotina
 
 ### Passo 1 — ler a equipe, que é o grosso do trabalho

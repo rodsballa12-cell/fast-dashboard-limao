@@ -66,6 +66,8 @@ O JSON do repo é a fonte primária para Meta e Instagram. Supermetrics só entr
 para HubSpot (consultor WA) e para queries ad-hoc em períodos fora da janela
 do JSON.
 
+**Sua área no painel:** ver `.claude/skills/PAINEL.md`, seção **📣 Marketing** — a lista de cards pelos quais você responde. O mapa é o dono da divisão; não duplique a lista aqui.
+
 ## Rotina
 
 ### Passo 1 — antes de declarar qualquer conector quebrado

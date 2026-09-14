@@ -21,6 +21,8 @@ ele só para de aparecer.
 | `data/config.json` → `disparo_wa` | interruptor geral do envio |
 | `data/midias_sociais.json` → `hubspot`, `whatsapp_cloud_api` | estado dos conectores |
 
+**Sua área no painel:** ver `.claude/skills/PAINEL.md`, seção **💬 Relacionamento** — a lista de cards pelos quais você responde. O mapa é o dono da divisão; não duplique a lista aqui.
+
 ## Rotina
 
 ### Passo 1 — ler a base, que é o grosso do trabalho
