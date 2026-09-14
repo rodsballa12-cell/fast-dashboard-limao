@@ -59,7 +59,18 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/wa_fila.json data/wa_historico.json 2>/dev/null || true
+          # BUG corrigido em 14/09/2026: era um "git add A B" com os dois arquivos
+          # na mesma linha. Como data/wa_historico.json nunca existiu (nada foi
+          # enviado ainda), o git add falhava ATOMICAMENTE e nao adicionava nem
+          # o wa_fila.json, que tinha mudado. O erro ia pro /dev/null, o
+          # "git diff --cached --quiet" dava limpo e o passo imprimia "Nada
+          # mudou". Resultado: a fila era montada certinho todo dia, escrita no
+          # disco do runner e descartada sem nunca ser commitada — o arquivo no
+          # repo ficou congelado em 04/09 por 10 dias.
+          # Um arquivo por vez, como ja e feito no midias_refresh.yml.
+          for f in data/wa_fila.json data/wa_historico.json; do
+            git add "$f" 2>/dev/null || true
+          done
           if git diff --cached --quiet; then
             echo "Nada mudou"
           else
