@@ -1,0 +1,26 @@
+name: Trinks Discover Estabelecimentos (one-shot)
+
+# Roda manualmente pra listar todos estabelecimentoIds que a API key
+# consegue enxergar. Use pra descobrir o ID da SPA depois que Rodrigo
+# ganhou acesso Trinks aos dois negocios.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        run: pip install requests
+      - name: Discover estabelecimentos
+        env:
+          TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
+        run: python scripts/trinks_discover_units.py
