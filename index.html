@@ -4984,6 +4984,64 @@ function renderMidiasCanalAquisicao(){
   // Trinks foi movida pros direcionamentos estratégicos curados (Ato 5).
 }
 
+function renderMidiasPlanoAcao(container_id, insights){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  if(!insights || insights.length === 0){ el.innerHTML=''; return; }
+
+  const tiers = [
+    {key:'critico', label:'Urgente · fazer agora', ico:'🔴', cor:'#ef4444', desc:'Bloqueia crescimento ou queima verba — resolver antes de qualquer outra ação.'},
+    {key:'atencao', label:'Esta semana', ico:'🟡', cor:'#f59e0b', desc:'Ajustes que evitam degradação. Encaixar no ritual semanal.'},
+    {key:'oportunidade', label:'Testar / oportunidade', ico:'🟢', cor:'#22c55e', desc:'Melhorias e experimentos que rendem se sobrar bandwidth.'},
+  ];
+  const origemBadge = {
+    direcionamento: '<span style="background:rgba(168,85,247,.12);color:#a855f7;font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:8px;text-transform:uppercase">📌 Direcionamento</span>',
+    recomendacao:   '<span style="background:rgba(59,130,246,.12);color:#3b82f6;font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:8px;text-transform:uppercase">💬 Gerente</span>',
+    alerta:         '<span style="background:rgba(239,68,68,.12);color:#ef4444;font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:8px;text-transform:uppercase">⚠️ Alerta</span>',
+    backend:        '<span style="background:rgba(107,114,128,.15);color:var(--ink-2);font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:8px;text-transform:uppercase">📊 Backend</span>',
+  };
+  const grupos = {critico:[], atencao:[], oportunidade:[]};
+  insights.forEach(i => {
+    const t = (i.tipo === 'info') ? 'oportunidade' : i.tipo;
+    (grupos[t] || grupos.oportunidade).push(i);
+  });
+
+  const seccoes = tiers.map(tier => {
+    const itens = grupos[tier.key];
+    if(!itens.length) return '';
+    const cards = itens.map(i => {
+      const badge = origemBadge[i.origem] || '';
+      return `<div class="insight-card ${tier.key}" style="border-left:3px solid ${tier.cor}">
+        <div class="ic-head" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${badge}<span style="font-weight:700">${i.titulo}</span></div>
+        <div class="ic-body">${i.texto || ''}</div>
+        ${i.acao ? `<div class="ic-acao">${i.acao}</div>` : ''}
+      </div>`;
+    }).join('');
+    return `<div style="margin-top:16px">
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:${tier.cor}18;border-left:4px solid ${tier.cor};border-radius:6px">
+        <span style="font-size:16px">${tier.ico}</span>
+        <div>
+          <div style="font-weight:700;color:${tier.cor};font-size:13px">${tier.label} <span style="color:var(--ink-3);font-weight:400;font-size:11px">(${itens.length})</span></div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${tier.desc}</div>
+        </div>
+      </div>
+      <div style="display:grid;gap:8px;margin-top:8px">${cards}</div>
+    </div>`;
+  }).join('');
+
+  const totalUrg = grupos.critico.length;
+  const totalSem = grupos.atencao.length;
+  const totalTest = grupos.oportunidade.length;
+  el.innerHTML = `<div class="insights-box" style="margin-top:20px;border-left:4px solid var(--accent)">
+    <h3 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      🎯 Plano de ação · Mídia
+      <span style="font-size:11.5px;color:var(--ink-3);font-weight:400">${totalUrg} urgente${totalUrg!==1?'s':''} · ${totalSem} esta semana · ${totalTest} pra testar</span>
+    </h3>
+    <div class="cap" style="margin-top:6px">Consolidado: direcionamentos estratégicos + alertas do backend + recomendações do gerente. Priorizado por urgência real — não por ordem de origem.</div>
+    ${seccoes}
+  </div>`;
+}
+
 function renderMidias(){
   if(!MID) return;
   const gerado = new Date(MID.gerado_em).toLocaleDateString('pt-BR') + ' ' + new Date(MID.gerado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
@@ -5605,17 +5663,48 @@ function renderMidias(){
     const posts = igPostsJan.slice(0, 10);
     const igJanTxt = igProprio ? pSel.label.toLowerCase() : 'últimos 30 dias';
     const maxNovos = serie.length ? Math.max(...serie.map(d=>d.novos_seguidores)) : 0;
+    // SUPER-CARD ORGANICO · Instagram + Facebook comparativo
+    // FB tem muito menos dado (54 seg vs 1825) e antes ficava em card separado
+    // de peso visual igual. Agora vira coluna comparativa no header + detalhes
+    // colapsados no rodape.
+    const fbPage = MID.facebook_page && MID.facebook_page.conectado ? MID.facebook_page : null;
+    const fbOrg = fbPage ? (fbPage.organico_30d || {}) : {};
+    const fbSerie = fbPage ? (fbPage.serie_diaria_30d || []) : [];
+    const fbNovosJan = fbPage ? (fatia(fbSerie).length ? fatia(fbSerie) : fbSerie).reduce((a,x)=>a+(x.novos_seguidores||0),0) : 0;
+    const fbUnfollowsJan = fbPage ? (fatia(fbSerie).length ? fatia(fbSerie) : fbSerie).reduce((a,x)=>a+(x.unfollows||0),0) : 0;
+    const fbSeguidores = fbPage ? (fbPage.seguidores || 0) : 0;
+    const fbEngaj = fbPage ? (fbOrg.page_post_engagements || 0) : 0;
     igBox.innerHTML = `<section class="card" style="border-left:4px solid #E1306C">
-      <h2>📱 Instagram · @${ig.handle} · orgânico · ${igJanTxt}${igProprio?'':seloJanela({proprio:false})}</h2>
-      <div class="cap">Crescimento e engajamento da conta, sem boost. ${igProprio?`${igDias} dia(s) somados da série diária.`:''}
+      <h2>📱 Presença orgânica · IG @${ig.handle}${fbPage?` + FB ${fbPage.nome}`:''} · ${igJanTxt}${igProprio?'':seloJanela({proprio:false})}</h2>
+      <div class="cap">Crescimento e engajamento das contas orgânicas (sem boost). ${igProprio?`${igDias} dia(s) somados da série diária IG.`:''}
         ${igFalta?`<span style="color:#f59e0b">A API do Instagram só dá "novos seguidores" até ${fmtDate(igUlt)} (ela exclui o dia corrente), então faltam ${igFalta} dia(s) no fim desta janela.</span>`:''}
         ${igProprio && igDias < diasDe(pSel) - igFalta ? `<span style="color:#f59e0b">A série do Instagram guarda 30 dias; esta janela pede ${diasDe(pSel)} e o bloco soma os ${igDias} que existem.</span>` : ''}</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
+
+      ${fbPage ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+        <div style="background:rgba(225,48,108,.06);border-radius:10px;padding:12px;border-left:4px solid #E1306C">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:700;color:#E1306C;font-size:13px">📱 Instagram · @${ig.handle}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11.5px">
+            <div><div style="color:var(--ink-3);font-size:10.5px">Seguidores</div><div style="font-weight:700;font-size:18px">${nfmt(ig.followers)}</div></div>
+            <div><div style="color:var(--ink-3);font-size:10.5px">Novos · ${igJanTxt}</div><div style="font-weight:700;font-size:18px;color:#22c55e">+${nfmt(igNovos)}</div></div>
+            <div><div style="color:var(--ink-3);font-size:10.5px">Profile views</div><div style="font-weight:700;font-size:18px">${nfmt(igViews)}</div></div>
+            <div><div style="color:var(--ink-3);font-size:10.5px">Posts na janela</div><div style="font-weight:700;font-size:18px">${nfmt(igPostsJan.length)}</div></div>
+          </div>
+        </div>
+        <div style="background:rgba(24,119,242,.06);border-radius:10px;padding:12px;border-left:4px solid #1877F2">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:700;color:#1877F2;font-size:13px">📘 Facebook Page</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11.5px">
+            <div><div style="color:var(--ink-3);font-size:10.5px">Seguidores</div><div style="font-weight:700;font-size:18px">${nfmt(fbSeguidores)}</div></div>
+            <div><div style="color:var(--ink-3);font-size:10.5px">Novos · ${igJanTxt}</div><div style="font-weight:700;font-size:18px;color:${fbNovosJan>=fbUnfollowsJan?'#22c55e':'#ef4444'}">+${fbNovosJan} / -${fbUnfollowsJan}</div></div>
+            <div><div style="color:var(--ink-3);font-size:10.5px">Post engagements 30d</div><div style="font-weight:700;font-size:18px">${nfmt(fbEngaj)}</div></div>
+            <div><div style="color:var(--ink-3);font-size:10.5px">Posts 30d</div><div style="font-weight:700;font-size:18px">${nfmt(fbPage.posts_30d||0)}</div></div>
+          </div>
+        </div>
+      </div>` : `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
         <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Seguidores atuais</div><div style="font-weight:700;font-size:22px">${nfmt(ig.followers)}</div><div style="color:var(--ink-3);font-size:10.5px">${ig.posts_total} posts</div></div>
         <div style="background:rgba(225,48,108,.08);border-radius:8px;padding:12px;border-left:3px solid #E1306C"><div style="color:#E1306C;font-size:10.5px;font-weight:700;text-transform:uppercase">⭐ Novos seguidores · ${igJanTxt}</div><div style="font-weight:700;font-size:22px">${nfmt(igNovos)}</div><div style="color:var(--ink-3);font-size:10.5px">${(igNovos/igDias).toFixed(1).replace('.',',')}/dia médio</div></div>
         <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Profile views · ${igJanTxt}</div><div style="font-weight:700;font-size:22px">${nfmt(igViews)}</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(Math.round(igViews/igDias))}/dia médio</div></div>
         <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Posts publicados</div><div style="font-weight:700;font-size:22px">${nfmt(igPostsJan.length)}</div><div style="color:var(--ink-3);font-size:10.5px">na janela · ${ig.posts_total} no total do perfil</div></div>
-      </div>
+      </div>`}
       ${serie.length?`<div style="margin-top:16px">
         <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:6px">Novos seguidores/dia · ${igJanTxt}</div>
         <div style="display:grid;grid-template-columns:repeat(${serie.length},1fr);gap:2px;align-items:end;height:80px">
@@ -5692,77 +5781,66 @@ function renderMidias(){
   // Facebook Page (org 30d).
   // Este bloco não tem container próprio no HTML: ele é injetado como irmão do
   // igBox. insertAdjacentHTML ACRESCENTA, não substitui — então cada
-  // renderMidias() (troca de aba, botão Atualizar, reloadAllTabs) empilhava mais
-  // uma cópia da seção. Removemos a anterior antes de inserir a nova.
+  // FB Page: KPIs de topo ja renderizados no super-card acima (junto com IG).
+  // Detalhes especificos do FB (reactions, top posts, serie diaria FB) vao num
+  // <details> colapsavel injetado dentro do proprio card IG — evita 2 cards
+  // paralelos onde a plataforma pequena (54 seg) toma o mesmo espaco visual da
+  // grande (1825 seg).
   document.querySelectorAll('.fb-page-card').forEach(e => e.remove());
   if(MID.facebook_page && MID.facebook_page.conectado){
     const fbp = MID.facebook_page.organico_30d || {};
     const fbPost = MID.facebook_page.posts_30d_detalhes || [];
     const fbReact = MID.facebook_page.reactions_by_type_30d || null;
-    const fbSerie = MID.facebook_page.serie_diaria_30d || [];
-    const fbSeg = MID.facebook_page.seguidores || 0;
+    const fbSerieFull = MID.facebook_page.serie_diaria_30d || [];
     const fbNotaPP = MID.facebook_page._nota_pagina_pequena || null;
-    const totNovosFb = fbSerie.reduce((a,x)=>a+(x.novos_seguidores||0),0);
-    const totUnfollowsFb = fbSerie.reduce((a,x)=>a+(x.unfollows||0),0);
     const reactTotal = fbReact ? Object.values(fbReact).reduce((a,x)=>a+x,0) : 0;
     const reactEmoji = {like:'👍',love:'❤️',haha:'😂',wow:'😮',sad:'😢',angry:'😠'};
-    const maxNovosFb = fbSerie.length ? Math.max(...fbSerie.map(d=>d.novos_seguidores||0), 1) : 1;
-    // Fatiar serie por periodo selecionado (quando serie_diaria cobre pSel)
-    const fbJanela = fatia(fbSerie);
-    const fbProprio = fbJanela.length > 0;
-    const fbSerieUsada = fbProprio ? fbJanela : fbSerie;
-    const totNovosFbJan = fbSerieUsada.reduce((a,x)=>a+(x.novos_seguidores||0),0);
-    const totUnfollowsFbJan = fbSerieUsada.reduce((a,x)=>a+(x.unfollows||0),0);
-    const fbJanTxt = fbProprio ? pSel.label.toLowerCase() : 'últimos 30 dias';
-    const fbHTML = `<section class="card fb-page-card" style="border-left:4px solid #1877F2;margin-top:12px">
-      <h2>📘 Facebook Page · ${MID.facebook_page.nome} · orgânico · ${fbJanTxt}${fbProprio?'':seloJanela({proprio:false})}</h2>
-      <div class="cap">Métricas orgânicas da Página. ${fbProprio?`${fbSerieUsada.length} dia(s) somados da série diária.`:'Agregados vêm da API só em janela 30d fixa.'} Top posts individuais + breakdown de reactions.</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px;font-size:12px">
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Seguidores atuais</div><div style="font-weight:700;font-size:22px">${nfmt(fbSeg)}</div><div style="color:${totNovosFbJan>=totUnfollowsFbJan?'#22c55e':'#ef4444'};font-size:10.5px">+${totNovosFbJan} novos · -${totUnfollowsFbJan} unfollows · ${fbJanTxt}</div></div>
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Visitas à Página <span style="color:var(--ink-3);font-size:10px">(30d fixo)</span></div><div style="font-weight:700;font-size:22px">${nfmt(fbp.page_visits||0)}</div></div>
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Post engagements <span style="color:var(--ink-3);font-size:10px">(30d fixo)</span></div><div style="font-weight:700;font-size:22px">${nfmt(fbp.page_post_engagements||0)}</div></div>
-        <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Video views <span style="color:var(--ink-3);font-size:10px">(30d fixo)</span></div><div style="font-weight:700;font-size:22px">${nfmt(fbp.total_video_views||0)}</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(fbp.video_views_organicos||0)} org · ${nfmt(fbp.video_views_pagos||0)} pago</div></div>
+    const maxNovosFb = fbSerieFull.length ? Math.max(...fbSerieFull.map(d=>d.novos_seguidores||0), 1) : 1;
+    const fbDetalhesHTML = `<details class="fb-page-card" style="margin-top:18px;border-top:1px dashed var(--border);padding-top:12px">
+      <summary style="cursor:pointer;font-size:12px;color:#1877F2;font-weight:600">📘 Ver detalhes do Facebook Page · reactions · top posts · série diária</summary>
+      <div style="margin-top:12px">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:11.5px">
+        <div style="background:var(--surface-2);border-radius:8px;padding:10px"><div style="color:var(--ink-3);font-size:10.5px">Visitas à Página (30d)</div><div style="font-weight:700;font-size:18px">${nfmt(fbp.page_visits||0)}</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:10px"><div style="color:var(--ink-3);font-size:10.5px">Video views (30d)</div><div style="font-weight:700;font-size:18px">${nfmt(fbp.total_video_views||0)}</div><div style="color:var(--ink-3);font-size:10px">${nfmt(fbp.video_views_organicos||0)} org · ${nfmt(fbp.video_views_pagos||0)} pago</div></div>
+        <div style="background:var(--surface-2);border-radius:8px;padding:10px"><div style="color:var(--ink-3);font-size:10.5px">Δ 30d</div><div style="font-weight:700;font-size:18px">+${fbSerieFull.reduce((a,x)=>a+(x.novos_seguidores||0),0)} / -${fbSerieFull.reduce((a,x)=>a+(x.unfollows||0),0)}</div></div>
       </div>
-      ${fbSerie.length?`<div style="margin-top:16px">
-        <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:6px">Novos seguidores/dia · últimos ${fbSerie.length} dias</div>
-        <div style="display:grid;grid-template-columns:repeat(${fbSerie.length},1fr);gap:2px;align-items:end;height:60px">
-          ${fbSerie.map(d=>{const h=(d.novos_seguidores||0)/maxNovosFb*100;const cor=(d.novos_seguidores||0)>0?'#1877F2':'#6b7280';return `<div title="${fmtDate(d.data)}: +${d.novos_seguidores||0} novos · -${d.unfollows||0} unfollows" style="background:${cor};height:${Math.max(h,2)}%;border-radius:2px 2px 0 0;cursor:help"></div>`}).join('')}
+      ${fbSerieFull.length?`<div style="margin-top:14px">
+        <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:6px">Novos seguidores FB/dia · últimos ${fbSerieFull.length} dias</div>
+        <div style="display:grid;grid-template-columns:repeat(${fbSerieFull.length},1fr);gap:2px;align-items:end;height:50px">
+          ${fbSerieFull.map(d=>{const h=(d.novos_seguidores||0)/maxNovosFb*100;const cor=(d.novos_seguidores||0)>0?'#1877F2':'#6b7280';return `<div title="${fmtDate(d.data)}: +${d.novos_seguidores||0} novos · -${d.unfollows||0} unfollows" style="background:${cor};height:${Math.max(h,2)}%;border-radius:2px 2px 0 0;cursor:help"></div>`}).join('')}
         </div>
       </div>`:''}
-      ${fbReact?`<div style="margin-top:16px">
+      ${fbReact?`<div style="margin-top:14px">
         <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;font-weight:600;margin-bottom:6px">Reactions por tipo · 30d · Σ ${nfmt(reactTotal)}</div>
-        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px">
-          ${Object.entries(fbReact).map(([k,v])=>`<div style="background:var(--surface-2);border-radius:6px;padding:8px;text-align:center"><div style="font-size:18px">${reactEmoji[k]||k}</div><div style="font-weight:700;font-size:14px">${nfmt(v)}</div><div style="color:var(--ink-3);font-size:9.5px">${reactTotal?((v/reactTotal*100).toFixed(0)+'%'):'—'}</div></div>`).join('')}
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px">
+          ${Object.entries(fbReact).map(([k,v])=>`<div style="background:var(--surface-2);border-radius:6px;padding:6px;text-align:center"><div style="font-size:16px">${reactEmoji[k]||k}</div><div style="font-weight:700;font-size:13px">${nfmt(v)}</div><div style="color:var(--ink-3);font-size:9.5px">${reactTotal?((v/reactTotal*100).toFixed(0)+'%'):'—'}</div></div>`).join('')}
         </div>
       </div>`:''}
-      ${fbPost.length?`<h2 style="margin-top:20px;font-size:14px">🏆 Top posts orgânicos FB · 30d (ordenado por engajamento)</h2>
-      <div style="overflow-x:auto;margin-top:8px"><table style="width:100%;font-size:11.5px;border-collapse:collapse">
+      ${fbPost.length?`<h3 style="margin-top:16px;font-size:12px;color:var(--ink-2)">🏆 Top posts FB · 30d</h3>
+      <div style="overflow-x:auto;margin-top:6px"><table style="width:100%;font-size:11px;border-collapse:collapse">
         <thead><tr style="background:var(--surface-2);color:var(--ink-2)">
-          <th style="text-align:left;padding:6px">Data</th>
-          <th style="text-align:left;padding:6px">Tipo</th>
-          <th style="text-align:left;padding:6px">Texto</th>
-          <th style="text-align:right;padding:6px">Reach</th>
-          <th style="text-align:right;padding:6px">Impr.</th>
-          <th style="text-align:right;padding:6px">Reactions</th>
-          <th style="text-align:right;padding:6px">Atividade</th>
-          <th style="text-align:right;padding:6px">Σ Eng.</th>
-          <th style="text-align:center;padding:6px">Link</th>
+          <th style="text-align:left;padding:5px">Data</th>
+          <th style="text-align:left;padding:5px">Tipo</th>
+          <th style="text-align:left;padding:5px">Texto</th>
+          <th style="text-align:right;padding:5px">Reach</th>
+          <th style="text-align:right;padding:5px">Reactions</th>
+          <th style="text-align:right;padding:5px">Σ Eng.</th>
+          <th style="text-align:center;padding:5px">Link</th>
         </tr></thead>
-        <tbody>${fbPost.slice(0,10).map(p=>`<tr style="border-bottom:1px solid var(--surface-2)">
-          <td style="padding:6px">${fmtDate(p.data)}</td>
-          <td style="padding:6px"><span style="background:#1877F2;color:#fff;font-size:10px;padding:2px 6px;border-radius:8px">${(p.tipo||'-').toUpperCase()}</span></td>
-          <td style="padding:6px;font-size:11px">${p.texto_curto||'—'}</td>
-          <td style="text-align:right;padding:6px">${nfmt(p.reach||0)}</td>
-          <td style="text-align:right;padding:6px">${nfmt(p.impressions||0)}</td>
-          <td style="text-align:right;padding:6px">${nfmt(p.reactions_total||0)}</td>
-          <td style="text-align:right;padding:6px">${nfmt(p.atividade_total||0)}</td>
-          <td style="text-align:right;padding:6px;font-weight:700;color:#1877F2">${nfmt(p.engajamento_total||0)}</td>
-          <td style="text-align:center;padding:6px">${p.url?`<a href="${p.url}" target="_blank" style="color:var(--accent);text-decoration:none">🔗</a>`:'—'}</td>
+        <tbody>${fbPost.slice(0,8).map(p=>`<tr style="border-bottom:1px solid var(--surface-2)">
+          <td style="padding:5px">${fmtDate(p.data)}</td>
+          <td style="padding:5px"><span style="background:#1877F2;color:#fff;font-size:9px;padding:1px 5px;border-radius:6px">${(p.tipo||'-').toUpperCase()}</span></td>
+          <td style="padding:5px;font-size:10.5px">${p.texto_curto||'—'}</td>
+          <td style="text-align:right;padding:5px">${nfmt(p.reach||0)}</td>
+          <td style="text-align:right;padding:5px">${nfmt(p.reactions_total||0)}</td>
+          <td style="text-align:right;padding:5px;font-weight:700;color:#1877F2">${nfmt(p.engajamento_total||0)}</td>
+          <td style="text-align:center;padding:5px">${p.url?`<a href="${p.url}" target="_blank" style="color:var(--accent);text-decoration:none">🔗</a>`:'—'}</td>
         </tr>`).join('')}</tbody></table></div>`:''}
-      ${fbNotaPP?`<div style="margin-top:12px;padding:10px;background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;border-radius:6px;font-size:11.5px;color:var(--ink-2)"><strong>ℹ️ Nota Meta:</strong> ${fbNotaPP}</div>`:''}
-      ${fbp.insight?`<div style="margin-top:12px;padding:10px;background:var(--surface-2);border-radius:6px;font-size:12px;color:var(--ink-2)"><strong>💡 Insight:</strong> ${fbp.insight}</div>`:''}
-    </section>`;
-    igBox.insertAdjacentHTML('afterend', fbHTML);
+      ${fbNotaPP?`<div style="margin-top:10px;padding:8px;background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;border-radius:6px;font-size:11px;color:var(--ink-2)"><strong>ℹ️ Nota Meta:</strong> ${fbNotaPP}</div>`:''}
+      </div>
+    </details>`;
+    const sec = igBox.querySelector('section.card');
+    if(sec) sec.insertAdjacentHTML('beforeend', fbDetalhesHTML);
   }
 
   // Meta Ads — saude tecnica (benchmarks + video + ad quality + recomendacoes)
@@ -6772,45 +6850,47 @@ function renderMidias(){
     </section>`;
   }
 
-  // Recomendações e Direcionamentos viram insight-card padrão (mesmo layout das outras abas), ordenados por severidade e mostrados no rodapé em #midias-insights.
+  // PLANO DE ACAO UNIFICADO · Direcionamentos + Alertas + Recomendacoes + Backend
+  // Antes era chamado renderInsights (formato generico das outras abas). Agora
+  // usa renderMidiasPlanoAcao com 3 tiers visuais (Urgente/Semana/Testar) e
+  // badge de origem em cada item.
   const mdBold = t => t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
   const recBox = document.getElementById('midias-recomendacoes');
   if(recBox) recBox.innerHTML = '';
 
   const midiasInsights = [];
   const sevTipo = { crit:'critico', warn:'atencao', ok:'oportunidade' };
-  // Mapeia direcionamentos estratégicos (prioridade P1/P2/P3 → severidade)
   const priTipo = { P1:'critico', P2:'atencao', P3:'oportunidade' };
   (MID.direcionamentos_estrategicos || []).forEach(d => {
     midiasInsights.push({
       tipo: priTipo[d.prioridade] || 'info',
-      titulo: `${d.prioridade || ''} · ${d.titulo}`.trim().replace(/^·\s*/, ''),
+      origem: 'direcionamento',
+      titulo: d.titulo,
       texto: `<strong style="color:var(--ink-3);font-size:10.5px;text-transform:uppercase">Descoberta:</strong> ${d.descoberta}${d.impacto_estimado ? ` <span style="color:var(--ink-3)">· Impacto ${d.impacto_estimado}</span>` : ''}`,
       acao: d.acao,
     });
   });
-  // Alertas do topo da aba (MID.alertas_topo) — mesma estrutura sev/titulo/detalhe/icone
   (MID.alertas_topo || []).forEach(a => {
     midiasInsights.push({
       tipo: sevTipo[a.sev] || 'info',
+      origem: 'alerta',
       titulo: `${a.icone || ''} ${a.titulo}`.trim(),
       texto: a.detalhe,
     });
   });
-  // Recomendações do Gerente Marketing (sev crit/warn/ok → severidade)
   (MID.recomendacoes || []).forEach(d => {
     midiasInsights.push({
       tipo: sevTipo[d.sev] || 'info',
+      origem: 'recomendacao',
       titulo: d.titulo,
       texto: d.detalhe,
       acao: d.acao,
     });
   });
-  // Insights do backend Trinks pra aba Mídias
   const bkMidias = (typeof TRINKS !== 'undefined' && TRINKS && TRINKS.insights) ? (TRINKS.insights.midias || []) : [];
-  bkMidias.forEach(i => midiasInsights.push(i));
+  bkMidias.forEach(i => midiasInsights.push({ ...i, origem: i.origem || 'backend' }));
 
-  renderInsights('midias-insights', 'Mídias · gestor + backend', midiasInsights);
+  renderMidiasPlanoAcao('midias-insights', midiasInsights);
 
   // Canal de aquisição + callout GMB (movidos da aba Clientes)
   renderMidiasCanalAquisicao();
