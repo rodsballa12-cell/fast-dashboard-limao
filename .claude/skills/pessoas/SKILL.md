@@ -75,7 +75,8 @@ decide a escala precisa saber onde a demanda está, e ela não é plana.
 |---|---|
 | `sazonalidade.peso_dow` | quanto cada dia da semana pesa |
 | `sazonalidade.curva_horaria` | acumulado por hora — deriva o share de cada uma |
-| `abas.*.densidade_hora` | **atendimentos simultâneos** por hora |
+| `scripts/densidade_dow.py` | **a ferramenta certa**: simultâneos por dia da semana × hora |
+| `abas.*.densidade_hora` | simultâneos agregados — **mistura os dias, não serve para escala** |
 | `abas.*.cadeiras_utilizacao` | quantas cadeiras de fato trabalham |
 
 **As duas fontes de hora medem coisas diferentes e podem discordar.**
