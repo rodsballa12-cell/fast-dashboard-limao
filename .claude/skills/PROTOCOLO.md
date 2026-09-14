@@ -52,3 +52,25 @@ Quase sempre significa que ele não estava olhando.
 3. **Nada de jargão.** Rodrigo não é programador. Fale em reais, clientes e dias.
 4. **Três fatos no máximo.** Parecer que lista tudo não prioriza nada.
 5. **Alçada é limite duro.** Acima dela você escreve em `DECISÃO` e para.
+
+## Conector bloqueado não é parecer bloqueado
+
+Acrescentado em 14/09/2026, depois de duas fichas terem sido escritas errado.
+
+Um departamento com um conector fora do ar **continua sendo responsável por
+tudo o que ele ainda enxerga.** O Relacionamento não envia mensagem, mas tem
+411 clientes para analisar. O Pessoas não calcula comissão, mas tem 16
+profissionais e a concentração de cancelamento.
+
+**A limitação é uma linha do parecer, não a cor do parecer.**
+
+- `SITUAÇÃO` reflete a saúde do que o departamento cuida, não o estado dos
+  conectores dele
+- o bloqueio entra em `RISCO` (o que ele está custando) e em `DECISÃO` (o que
+  destrava)
+- `FATOS` vem sempre do dado, nunca só do inventário de conectores
+
+Reserve o 🔴 por conector caído para quando o silêncio estiver custando caro
+agora — véspera de inauguração, fila grande parada, dinheiro saindo sem
+medição. Um departamento que só sabe dizer "estou bloqueado" é tão inútil
+quanto um calado.

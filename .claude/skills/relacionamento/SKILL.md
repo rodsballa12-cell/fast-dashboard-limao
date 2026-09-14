@@ -23,25 +23,46 @@ ele só para de aparecer.
 
 ## Rotina
 
-### Passo 1 — a mensagem saiu ou só foi ensaiada?
+### Passo 1 — ler a base, que é o grosso do trabalho
 
-Esta é a primeira pergunta e hoje a resposta é ruim. Confira nesta ordem:
+Você tem **411 clientes detalhados** no repositório, com histórico. Isso não
+depende de WhatsApp nenhum, e é a maior parte do seu cargo:
+
+| Onde | O que dá pra responder |
+|---|---|
+| `data/clientes_detalhes.json` | quem sumiu, quem volta, há quanto tempo |
+| `data/dashboard_data.json` → aniversariantes | quem faz aniversário hoje |
+| `data/wa_fila.json` · `data/aniversarios_fila.json` | quem entraria na fila |
+| `hubspot.contatos` contra a base do Trinks | o CRM está sincronizado |
+
+Comece sempre por aqui. **Um departamento que só sabe dizer "estou bloqueado"
+é tão inútil quanto um calado.**
+
+### Passo 2 — depois, dizer se a mensagem saiu ou só foi ensaiada
+
+Confira nesta ordem:
 
 1. `whatsapp_cloud_api.conectado` — **hoje é falso.** O App Meta que controlava
    o número foi apagado.
 2. `disparo_wa.ativo` no `config.json` — o interruptor geral.
 
 Com qualquer um dos dois desligado, o sistema **monta a fila todo dia às 10h e
-não envia nada.** Nunca relate fila montada como cliente contactado. Enquanto
-durar, todo parecer seu abre em 🔴 com o número de mensagens que deixaram de sair.
+não envia nada.** Nunca relate fila montada como cliente contactado.
 
-### Passo 2 — o custo do silêncio, em reais
+**A limitação é uma linha do parecer, não a cor do parecer.** O bloqueio do
+envio não apaga o que você sabe da base. Sua `SITUAÇÃO` reflete a saúde da
+carteira — se a base está saudável e só o canal está mudo, isso é 🟡 com o
+bloqueio declarado, não 🔴 automático. Reserve o 🔴 para quando o silêncio
+estiver custando caro de verdade: véspera de inauguração, pico de
+aniversariantes, fila grande parada.
+
+### Passo 3 — o custo do silêncio, em reais
 
 Não basta dizer que está bloqueado. Quantifique: aniversariantes acumulados
 sem mensagem, clientes em janela de reativação que ninguém chamou. O bloqueio
 vira decisão quando tem cifrão do lado.
 
-### Passo 3 — as travas, quando voltar a funcionar
+### Passo 4 — as travas, quando voltar a funcionar
 
 `scripts/campanhas_wa.py` guarda interruptor geral, descadastro, intervalo
 mínimo por campanha, teto diário e janela das 9h às 20h. **Nunca proponha
@@ -49,10 +70,12 @@ afrouxar trava para compensar tempo parado.** Entre 24/08 e 04/09 o fluxo
 antigo pedia aprovação humana e 7 de 9 pedidos morreram sem resposta — a lição
 foi mover a trava para o código, não tirá-la.
 
-### Passo 4 — o CRM
+### Passo 5 — o CRM
 
-`hubspot.contatos` contra a base do Trinks. Diferença grande significa sync
-falhando calado, e isso é 🟡.
+`hubspot.contatos` contra a base do Trinks. Hoje o HubSpot marca **0 contatos**
+com a mensagem *"CRM ativo, aguardando import da base"* — isso é pendência
+conhecida, não falha silenciosa. Só vire 🟡 se a mensagem mudar ou se o número
+divergir sem explicação.
 
 ## Alçada
 
@@ -65,5 +88,9 @@ cliente para fora, escreve em arquivo de fila.
 
 ## Entrega
 
-Parecer no formato do `PROTOCOLO.md`. Enquanto o WhatsApp estiver bloqueado, a
-linha `DECISÃO` é sempre a mesma: recriar o App Meta destrava os dois negócios.
+Parecer no formato do `PROTOCOLO.md`, com os `FATOS` vindos da base — nunca
+só do estado dos conectores.
+
+Enquanto o WhatsApp estiver bloqueado, isso aparece em `RISCO` (quanto o
+silêncio custa) e em `DECISÃO` (recriar o App Meta destrava os dois negócios).
+**Não vira o parecer inteiro.**

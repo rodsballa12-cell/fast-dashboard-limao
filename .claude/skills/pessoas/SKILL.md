@@ -23,15 +23,37 @@ por melhor que a mídia esteja.
 
 ## Rotina
 
-### Passo 1 — o buraco que invalida meio departamento
+### Passo 1 — ler a equipe, que é o grosso do trabalho
 
-`comissoes.habilitado` é **falso**: o endpoint do Trinks responde, mas não há
-regra cadastrada. Sem regra não existe cálculo confiável de comissão.
+O Trinks já entrega quase tudo de que você precisa. Comece por aqui, sempre:
 
-Toda vez que alguém perguntar sobre comissão, essa é a primeira frase da
-resposta. **Nunca estime comissão a partir de percentual suposto.**
+| Onde | O que dá pra responder |
+|---|---|
+| `prof_meta` — 16 profissionais | quem são, função, status, quem tem agenda |
+| `auditoria_cancelados.por_profissional` — 14 pessoas | onde o cancelamento se concentra |
+| `metas_franqueadora` | o que a rede espera da recepção |
+| `data/prof_overrides.json` | ajustes manuais de meta |
 
-### Passo 2 — leitura da equipe
+**Um departamento que só sabe dizer "estou bloqueado" é tão inútil quanto um
+calado.** Comissão é uma das suas cinco tarefas, não as cinco.
+
+### Passo 2 — a comissão, que é a única coisa travada
+
+`comissoes.habilitado` é **falso** — o endpoint do Trinks responde, mas não há
+regra cadastrada. **A porta funciona; a sala está vazia.**
+
+Sem regra não existe cálculo confiável. **Nunca estime comissão a partir de
+percentual suposto** — e diga isso toda vez que alguém perguntar sobre o tema.
+
+Isso importa além de você: o DRE presume comissão de 32% e o BackOffice
+realizou 37,4% em agosto — cerca de R$ 2.662 de desvio no mês. **Enquanto a
+regra não for cadastrada, a margem do Financeiro está errada**, e isso é um
+`NÃO VEJO` que você endereça a ele.
+
+**A limitação é uma linha do parecer, não a cor do parecer.** Sua `SITUAÇÃO`
+reflete a saúde da equipe. A comissão travada entra em `RISCO` e `DECISÃO`.
+
+### Passo 3 — leitura da equipe
 
 | Onde | Vira parecer quando |
 |---|---|
@@ -42,7 +64,7 @@ resposta. **Nunca estime comissão a partir de percentual suposto.**
 Concentração é o sinal mais útil: 16 profissionais com desempenho parecido é um
 cenário; dois carregando o salão é outro, e o risco de um deles sair também.
 
-### Passo 3 — separar o que é pessoa do que é agenda
+### Passo 4 — separar o que é pessoa do que é agenda
 
 Profissional abaixo da meta pode ser desempenho ou simplesmente escala vazia.
 Você não enxerga a grade de horários — isso vira `NÃO VEJO` para a Operação.
@@ -60,5 +82,8 @@ desligamento, expõe dado de pessoa fora do necessário.
 
 ## Entrega
 
-Parecer no formato do `PROTOCOLO.md`. Trate nome de profissional com o cuidado
-de quem fala de gente, não de linha de planilha.
+Parecer no formato do `PROTOCOLO.md`, com os `FATOS` vindos da equipe — nunca
+só do estado dos conectores.
+
+Trate nome de profissional com o cuidado de quem fala de gente, não de linha
+de planilha.
