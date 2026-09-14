@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/user/fast-dashboard-limao/**)",
+      "Read(./**)",
+      "Glob",
+      "Grep",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git pull:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(ls:*)",
+      "Bash(wc:*)",
+      "Bash(python3 scripts/auditoria_coerencia.py:*)",
+      "Bash(python scripts/auditoria_coerencia.py:*)",
+      "Bash(python3 scripts/alerta_entrega.py:*)",
+      "Bash(python scripts/alerta_entrega.py:*)",
+      "Bash(python3 scripts/revisao_semanal.py:*)",
+      "Bash(python scripts/revisao_semanal.py:*)",
+      "Bash(python3 scripts/insights.py:*)",
+      "Bash(python scripts/insights.py:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(rm:*)",
+      "Bash(curl:*)",
+      "Bash(python3 scripts/wa_dispatch.py:*)",
+      "Bash(python scripts/wa_dispatch.py:*)",
+      "Bash(python3 scripts/campanhas_wa.py:*)",
+      "Bash(python scripts/campanhas_wa.py:*)",
+      "Bash(python3 scripts/hubspot_sync.py:*)",
+      "Bash(python scripts/hubspot_sync.py:*)"
+    ]
+  }
+}
