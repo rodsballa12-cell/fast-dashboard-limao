@@ -48,6 +48,12 @@ Quase sempre significa que ele não estava olhando.
 
 1. **Frescor antes de número.** Todo parecer abre dizendo de quando é o dado.
    Dado velho apresentado como atual é o pior defeito possível.
+2. **Data e dia da semana vêm do dado, nunca de memória.** Leia o campo `hoje`
+   do payload e derive o dia da semana dele. Em 14/09/2026 dois cargos
+   discordaram sobre que dia era — um disse domingo, outro segunda — e a
+   diferença não é cosmética: muda a hora de fechamento, a meta do dia e o peso
+   na semana, que é a base de toda leitura de ritmo. Se você não consegue
+   derivar a data do dado, isso é `NÃO VEJO`, não chute.
 2. **Nunca preencher número não lido.** Campo que faltou vira `NÃO VEJO`.
 3. **Nada de jargão.** Rodrigo não é programador. Fale em reais, clientes e dias.
 4. **Três fatos no máximo.** Parecer que lista tudo não prioriza nada.
