@@ -3,7 +3,13 @@ r"""Refresh completo do dashboard para GitHub Actions.
 Puxa dados frescos da API Trinks e grava data/dashboard_data.json.
 Não depende de xlsx pré-existentes — faz extract, calcula agregações e escreve JSON direto.
 
-Requer env vars: TRINKS_API_KEY, TRINKS_ESTABELECIMENTO_ID
+Multi-unidade: seleciona qual unidade rodar via env TRINKS_UNIT ou arg --unidade.
+Cada unidade tem seu par de credenciais (TRINKS_API_KEY_<UNIT>, TRINKS_ESTABELECIMENTO_ID_<UNIT>).
+Compat: se TRINKS_API_KEY (sem sufixo) existir e TRINKS_UNIT nao definido, roda ESCOVA (comportamento antigo).
+
+Requer:
+  Escova:  TRINKS_API_KEY (ou TRINKS_API_KEY_ESCOVA), TRINKS_ESTABELECIMENTO_ID (ou ..._ESCOVA)
+  SPA:     TRINKS_API_KEY_SPA, TRINKS_ESTABELECIMENTO_ID_SPA
 """
 from __future__ import annotations
 
@@ -24,15 +30,31 @@ META_MENSAL = 60000
 DIAS_OP_MES = 26
 DOW_NOMES = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
 
+# --- Multi-unidade: escolhida via arg CLI ou env TRINKS_UNIT (default escova) ---
+_argv = sys.argv[1:]
+UNIT = "escova"
+if "--unidade" in _argv:
+    UNIT = _argv[_argv.index("--unidade") + 1].lower()
+elif os.environ.get("TRINKS_UNIT"):
+    UNIT = os.environ["TRINKS_UNIT"].lower()
+UNIT_SUBDIR = "" if UNIT == "escova" else f"{UNIT}/"
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
-OUT_JSON = REPO_ROOT / "data" / "dashboard_data.json"
-STONE_CSV = REPO_ROOT / "data" / "stone_extrato.csv"
+# Dados por-unidade (Escova = raiz de data/, SPA = data/spa/, etc)
+DATA_UNIT = REPO_ROOT / "data" / UNIT_SUBDIR.rstrip("/") if UNIT_SUBDIR else REPO_ROOT / "data"
+DATA_UNIT.mkdir(parents=True, exist_ok=True)
+OUT_JSON = DATA_UNIT / "dashboard_data.json"
+CLIENTES_CACHE = DATA_UNIT / "clientes_detalhes.json"
+PROF_CACHE = DATA_UNIT / "profissionais_cache.json"
+CLIENTES_LISTA_CACHE = DATA_UNIT / "clientes_lista_cache.json"
+SERV_CACHE = DATA_UNIT / "servicos_cache.json"
+AGEND_DET_CACHE = DATA_UNIT / "agend_detail_cache.json"
+# Config e regras de comissao sao SHARED (mesma franqueadora)
 CONFIG_JSON = REPO_ROOT / "data" / "config.json"
-CLIENTES_CACHE = REPO_ROOT / "data" / "clientes_detalhes.json"
-PROF_CACHE = REPO_ROOT / "data" / "profissionais_cache.json"
-CLIENTES_LISTA_CACHE = REPO_ROOT / "data" / "clientes_lista_cache.json"
-SERV_CACHE = REPO_ROOT / "data" / "servicos_cache.json"
-AGEND_DET_CACHE = REPO_ROOT / "data" / "agend_detail_cache.json"
+# Stone extrato por-unidade (SPA tera terminal proprio) — cai gracioso se ausente
+STONE_CSV = DATA_UNIT / "stone_extrato.csv"
+if not STONE_CSV.exists():
+    STONE_CSV = REPO_ROOT / "data" / "stone_extrato.csv"
 
 # TTLs de cache (economia de API)
 TTL_PROF_HORAS = 24 * 7   # profs quase nunca mudam
@@ -141,8 +163,19 @@ class QuotaExhaustedError(RuntimeError):
 
 class Trinks:
     def __init__(self):
-        api_key = os.environ["TRINKS_API_KEY"]
-        eid = os.environ["TRINKS_ESTABELECIMENTO_ID"]
+        # Resolve credenciais por unidade. Escova aceita sufixo _ESCOVA ou legacy sem sufixo.
+        suf = UNIT.upper()
+        api_key = os.environ.get(f"TRINKS_API_KEY_{suf}")
+        eid = os.environ.get(f"TRINKS_ESTABELECIMENTO_ID_{suf}")
+        if UNIT == "escova":
+            api_key = api_key or os.environ.get("TRINKS_API_KEY")
+            eid = eid or os.environ.get("TRINKS_ESTABELECIMENTO_ID")
+        if not api_key or not eid:
+            raise SystemExit(
+                f"[github_refresh] unidade={UNIT}: faltam credenciais "
+                f"(TRINKS_API_KEY_{suf} + TRINKS_ESTABELECIMENTO_ID_{suf}). "
+                f"Setar como GH Secrets antes de rodar."
+            )
         # User-Agent: alguns WAFs bloqueiam requests sem UA (retornando 500 em vez de 403)
         self.headers = {
             "X-Api-Key": api_key,
@@ -950,6 +983,7 @@ def main():
     seg = hoje - timedelta(days=hoje.weekday())
     dom = seg + timedelta(days=6)
 
+    print(f"[github_refresh] unidade={UNIT} · out={OUT_JSON.relative_to(REPO_ROOT)}")
     print(f"[github_refresh] Períodos: ano={ini_ano}..{fim_ano} · mês={ini_mes}..{fim_mes} · sem={seg}..{dom} · hoje={hoje}")
     # (chamada única de /v1/consumo movida pro fim do run — economiza 1 req)
 
@@ -980,7 +1014,7 @@ def main():
     # dias, puxa só o MÊS CORRENTE fresh e mescla com o cache do ano.
     # Economia: 5-7 req/run × 6 dias/semana × 8 runs/dia = ~250 req/semana.
     # Se cache não existe (primeira execução), força pull do ano.
-    AGEND_ANO_CACHE = REPO_ROOT / "data" / "agendamentos_ano_cache.json"
+    AGEND_ANO_CACHE = DATA_UNIT / "agendamentos_ano_cache.json"
     eh_domingo = hoje.weekday() == 6
     cache_existe = AGEND_ANO_CACHE.exists()
     if eh_domingo or not cache_existe:
@@ -1014,7 +1048,7 @@ def main():
     print(f"[fetch] agendamentos merged: {len(agend)} total")
 
     # === TRANSAÇÕES · mesma estratégia dos agendamentos ===
-    TRANSAC_ANO_CACHE = REPO_ROOT / "data" / "transacoes_ano_cache.json"
+    TRANSAC_ANO_CACHE = DATA_UNIT / "transacoes_ano_cache.json"
     cache_tx_existe = TRANSAC_ANO_CACHE.exists()
     if eh_domingo or not cache_tx_existe:
         motivo = "domingo · refresh semanal" if eh_domingo else "cache miss"
@@ -1278,7 +1312,10 @@ def main():
                 ids_orfaos.add(exec_id)
     if ids_orfaos:
         # Aplica overrides manuais
-        override_path = REPO_ROOT / "data" / "prof_overrides.json"
+        # Overrides por-unidade primeiro; senao, fallback pra shared
+        override_path = DATA_UNIT / "prof_overrides.json"
+        if not override_path.exists():
+            override_path = REPO_ROOT / "data" / "prof_overrides.json"
         overrides = {}
         if override_path.exists():
             try:
@@ -2437,10 +2474,19 @@ def main():
 
     resumo_risco = Counter(x["risco"] for x in canc_com_valor)
 
+    _unidade_meta = (_cfg.get("unidades") or {}).get(UNIT, {}) or {}
     payload = {
         # BRT com offset explícito (-03:00) — JS new Date() interpreta correto
         "gerado_em": datetime.now(BRT).isoformat(timespec="seconds"),
         "hoje": hoje.isoformat(),
+        "_unidade_ativa": UNIT,
+        "unidade": {
+            "produto": _unidade_meta.get("produto"),
+            "marca": _unidade_meta.get("marca"),
+            "tipo": _unidade_meta.get("tipo"),
+            "filial": _unidade_meta.get("filial"),
+            "cidade": _unidade_meta.get("cidade"),
+        } if _unidade_meta else None,
         "meta_mensal_valor": META_MENSAL,
         "dias_op_mes": dias_op_mes_real,
         "dias_atipicos": dias_atipicos,
@@ -2605,7 +2651,7 @@ def main():
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
     OUT_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     # Limpa status de cota esgotada quando refresh volta a funcionar
-    status_path = REPO_ROOT / "data" / "quota_status.json"
+    status_path = DATA_UNIT / "quota_status.json"
     if status_path.exists():
         status_path.unlink()
         print("[quota] status esgotada removido (cota voltou a funcionar)")
@@ -2624,7 +2670,7 @@ if __name__ == "__main__":
         print(f"\n⚠️  COTA TRINKS ESGOTADA: {e}")
         print("   → Dashboard preservado com últimos dados válidos.")
         print(f"   → Refreshes vão retomar automaticamente quando cota resetar (dia 1º).")
-        status_path = REPO_ROOT / "data" / "quota_status.json"
+        status_path = DATA_UNIT / "quota_status.json"
         status_path.write_text(json.dumps({
             "cota_esgotada": True,
             "detectado_em": datetime.now(BRT).isoformat(timespec="seconds"),
