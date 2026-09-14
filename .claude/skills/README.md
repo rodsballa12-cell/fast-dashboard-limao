@@ -9,19 +9,43 @@ escreve. Um não substitui o outro — o robô é a matéria-prima do funcionár
 
 ## Contratados
 
-| Cargo | Comando | Alçada |
+| Cargo | Comando | Escreve? |
 |---|---|---|
-| Diretor de Operação | `/operacao-diaria` | lê e recomenda · não altera nada |
+| Diretor de Operação | `/operacao-diaria` | não |
+| Diretor Financeiro | `/financeiro` | não |
+| Gerente de Marketing | `/marketing` | não |
+| Gerente de Relacionamento | `/relacionamento` | não |
+| Gerente de Pessoas | `/pessoas` | não |
+| Guardião da Memória | `/memoria` | **sim** — só em `docs/decisoes/` |
+| Conselho | `/conselho` | não |
 
-## Vagas abertas
+Cinco departamentos apuram, a Memória registra, o Conselho cruza. **Só um
+cargo escreve**, e num único lugar.
 
-| Cargo | Depende de |
+## Como eles conversam
+
+Todos falam o mesmo formato, definido em `PROTOCOLO.md`. O campo que faz a
+conversa acontecer é o **`NÃO VEJO`**: cada departamento declara em voz alta o
+que está fora das próprias chaves, endereçado a quem tem a chave.
+
+O `/conselho` junta os seis pareceres, casa cada `NÃO VEJO` com o dono da
+resposta, e procura três coisas: **cadeia causal** (dois fatos que se
+explicam), **contradição** (dois departamentos discordando da mesma
+realidade) e **silêncio suspeito** (alguém marcou verde no que outro marcou
+vermelho).
+
+A conclusão que sai do cruzamento não estava em nenhum parecer isolado — esse
+é o motivo de existir um conselho em vez de seis relatórios.
+
+## Bloqueios que limitam cargos hoje
+
+| Cargo | Trabalha com uma mão só porque |
 |---|---|
-| Diretor Financeiro | entrada de Stone e DRE deixar de ser manual |
-| Gerente de Marketing | registrar aqui o `/marketing-fast`, que hoje só existe na máquina do Rodrigo |
-| Gerente de Relacionamento | App Meta recriado — sem ele nenhuma mensagem sai |
-| Analista de Inteligência | camada de memória (ver `docs/EMPRESA_DIGITAL.md`) |
-| Gerente de Pessoas | regras de comissão cadastradas no Trinks |
+| Operação | Spa ainda sem identificador do Trinks |
+| Financeiro | DRE e extrato Stone entram à mão — dado envelhece |
+| Relacionamento | App Meta apagado: monta fila e não envia |
+| Pessoas | comissão sem regra cadastrada no Trinks |
+| Marketing | o `/marketing-fast` da máquina do Rodrigo ainda não foi absorvido aqui |
 
 ## Onde cada cargo mora
 
