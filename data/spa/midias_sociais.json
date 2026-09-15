@@ -4048,7 +4048,8 @@
     "display_name": "Fast Spa Limão",
     "waba_id": null,
     "phone_number_id": null,
-    "mensagem": "Número +55 11 99024-3927 registrado no portfolio Fast Spa 2026 · WABA a ser criada pelo gerente Marketing (ver brief)."
+    "mensagem": "Descontinuado no Conselho 14/09 · Rodrigo sem acesso admin ao portfolio Meta pra recriar App apagado. Ver docs/decisoes/2026-09-14-conselho-nao-configurar-whatsapp-cloud.md",
+    "_atualizado_conselho": "2026-09-14"
   },
   "benchmarks": {
     "cpa_msg_meta": 25,
@@ -4115,5 +4116,64 @@
     "cpa_msg": null,
     "cac_real": null,
     "mensagem": "Funil ativa quando primeira campanha SPA rodar + Trinks SPA subir (estabelecimentoId pendente)."
-  }
+  },
+  "historico_conselhos": [
+    {
+      "data": "2026-09-14",
+      "hora": "22:30",
+      "tipo": "noturno",
+      "sincronizado_em": "2026-09-15",
+      "ata": "docs/atas/2026-09-14-conselho.md",
+      "mesa": {
+        "operacao": "critico",
+        "financeiro": "critico",
+        "marketing": "atencao",
+        "relacionamento": "atencao",
+        "pessoas": "atencao"
+      },
+      "decisoes": [
+        {
+          "n": 1,
+          "titulo": "Antecipar R$ 20.949,85 da Stone",
+          "em_jogo": "caixa do mês, ~R$ 19.469 abaixo do ponto de equilíbrio pela leitura mais fresca",
+          "executor": null,
+          "status": "recusada",
+          "motivo": "Reserva de fluxo de caixa na XP cobre custo fixo do mês sem sacar recebível Stone",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-09-14-conselho-nao-antecipar-stone.md"
+        },
+        {
+          "n": 2,
+          "titulo": "Reconectar App Meta / WhatsApp Cloud API",
+          "em_jogo": "58 clientes em risco sem canal automatizado + repetir apagão de agosto (~R$ 480)",
+          "executor": null,
+          "status": "recusada",
+          "motivo": "Rodrigo sem acesso admin ao portfolio Meta pra recriar App apagado",
+          "revisao_em": null,
+          "cobranca_de": "docs/decisoes/2026-09-14-conselho-ata-app-meta.md",
+          "docs_decisao": "docs/decisoes/2026-09-14-conselho-nao-configurar-whatsapp-cloud.md"
+        },
+        {
+          "n": 3,
+          "titulo": "Destino de Beatriz F. F. + Prof desligado #625049",
+          "em_jogo": "ranking de produção e cálculo de comissão contando gente que talvez nem esteja na escala",
+          "executor": "Rodrigo (fora do Conselho)",
+          "status": "reprogramada",
+          "motivo": "É problema do cadastro Trinks, não do painel — correção acontece na fonte",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-09-14-conselho-fantasmas-trinks.md"
+        }
+      ],
+      "cruzamentos_chave": [
+        "Operação R$ 6.913 mais pessimista que Financeiro (DRE 9 dias parado) — gap real vs PE é ~R$ 19.469",
+        "Beatriz F.F. + Prof #625049 vistos por Operação e Pessoas independentemente — dado corrompido no Trinks",
+        "Decisões da reunião matinal (App Meta + comissão real) ficaram paradas o dia todo — cobrança virou recusa"
+      ],
+      "sem_dono": [
+        "Manhã fraca seg-qua: falta público ou falta mídia direcionada?",
+        "31 de 58 serviços praticados abaixo da tabela: quanto já foi de margem?",
+        "Google Business zerado há 3 dias: busca caindo ou Supermetrics não contratado?"
+      ]
+    }
+  ]
 }
