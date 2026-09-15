@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Jost:wght@300;400;500;600&display=swap">
+  <style>
+    body { margin: 0; font-family: 'Jost', 'Century Gothic', 'Futura', system-ui, sans-serif; }
+    a { color: #10645F; } a:hover { color: #24B3A6; }
+  </style>
+</helmet>
+<div style="width: 1080px; height: 1920px; background: #F5E9DC; box-sizing: border-box; padding: 170px 96px 140px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;">
+  <div style="position: absolute; left: -200px; bottom: -220px; width: 760px; height: 760px; border-radius: 50%; background: #24B3A6; opacity: 0.15;"></div>
+  <div style="position: absolute; right: -120px; top: -120px; width: 420px; height: 420px; border-radius: 50%; background: #F5B800; opacity: 0.2;"></div>
+
+  <div style="position: relative; font-size: 27px; letter-spacing: 9px; color: #10645F; font-weight: 600;">FAST SPA LIMÃO</div>
+
+  <div style="position: relative;">
+    <div style="font-size: 44px; color: #4A3D31; letter-spacing: 3px;">FALTAM</div>
+    <div style="font-family: 'Prata', Georgia, serif; font-size: 400px; color: #10645F; line-height: 0.82; margin: 10px 0 0 -14px;">{{dias}}</div>
+    <div style="font-size: 62px; color: #2A211A; letter-spacing: 8px; margin-top: 4px;">DIAS</div>
+    <div style="margin-top: 52px; font-family: 'Prata', Georgia, serif; font-size: 52px; color: #10645F; line-height: 1.25;">Massagem sem hora marcada,<br>aqui do lado da sua escova.</div>
+  </div>
+
+  <div style="position: relative; display: flex; flex-direction: column; gap: 10px; border-top: 3px solid #10645F; padding-top: 32px;">
+    <span style="font-size: 36px; color: #2A211A; font-weight: 500;">Av. Dep. Emílio Carlos, 358 · Limão</span>
+    <span style="font-size: 32px; color: #4A3D31;">Segue @fastspa.limao e vem conhecer</span>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"dias":{"editor":"int","default":10,"min":0,"max":30},"$preview":{"width":1080,"height":1920}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { dias: this.props.dias ?? 10 };
+  }
+}
+</script>
+</body>
+</html>
