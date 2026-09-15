@@ -302,3 +302,53 @@ e a campanha vira opinião. Esta é a tarefa operacional número um antes de
 dependem da alçada registrada em `docs/decisoes/2026-09-14-alçada-campanha-marketing.md`:
 mensagem do Rodrigo, na mesma sessão, com "aprovado"/"criar campanha" + nome
 da campanha + valor diário.
+
+---
+
+## 9. Atualização 15/09 · o Spa não tem API da Trinks
+
+**Confirmado em 15/09/2026**, rodando `trinks_discover.yml` (runs
+34860767570 e 34911825308): a API key devolve `totalRecords: 1` — só o
+estabelecimento **276461 · SAO PAULO - SP - LIMAO FE** (Escova). O Spa não é
+visível por ela, e Rodrigo confirmou que **o Spa ainda não tem API
+provisionada**.
+
+### O que isso quebra além do preço
+
+O §7 deste plano media a campanha pelo campo `comoNosConheceu` da recepção do
+Spa. Esse campo mora na Trinks. Sem API, o painel não lê — e a campanha abre
+**sem placar automático**. Também ficam de fora: agendamento, faturamento e
+cadastro de cliente do Spa. O painel do Spa segue em `_mock: true`.
+
+### Fallback obrigatório · folha de recepção
+
+Uma planilha ou caderno na recepção do Spa, a partir de 25/09, uma linha por
+cliente atendida:
+
+| DATA | NOME | TELEFONE | VEIO DA ESCOVA? (S/N) | SERVIÇO | VALOR |
+|---|---|---|---|---|---|
+
+Resolve três coisas ao mesmo tempo:
+1. **Mede a campanha** — a coluna "veio da Escova" é o placar.
+2. **Alimenta o cadastro** quando a API for provisionada.
+3. **Cruza com a base** — o telefone bate com as 411 clientes já cadastradas
+   na Escova, permitindo medir de verdade quem migrou.
+
+Sem essa folha, a única leitura possível no fim de outubro é opinião.
+
+### O que continua bloqueado
+
+| Item | Depende de | Estado |
+|---|---|---|
+| Preço nas peças | tabela digitada por Rodrigo ou API | 🔴 aberto |
+| Peça 9 (oferta) | decisão da oferta + preço | 🔴 aberto |
+| Peça "CHEGOU COMBO" (já pronta) | preço do combo | 🔴 parada |
+| Placar automático | API Trinks do Spa | 🔴 sem previsão |
+| Medição da campanha | folha de recepção | 🟡 fazer até 24/09 |
+
+### O que NÃO depende de preço (pode andar hoje)
+
+Peças 1 (cartão PONTE), 2 (contagem), 3 (cabelo + corpo), 4 (cadeira e maca),
+5 (ABRIU), 6 (primeira cliente) e 7 (como funciona) — sete das nove. Nenhuma
+carrega número. A campanha não precisa esperar a tabela para começar a
+aquecer a base.
