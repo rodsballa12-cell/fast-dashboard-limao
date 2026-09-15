@@ -139,6 +139,32 @@ def conferir_zero_state(achados, fin, dash, nome):
             "abrir com número real, ele passa a contaminar o consolidado."))
 
 
+
+def conferir_bloco_derivado(achados, dash, nome):
+    """O mapa de escala tem que existir e ser da mesma execução do payload.
+
+    `densidade_dow` é gravado por um passo separado, depois do refresh. Em
+    14/09/2026 a chave sumiu do arquivo publicado: a tarefa agendada do PC
+    regenerou o payload do zero e não rodava esse passo. O card do painel
+    simplesmente não aparecia, e nada acusava — some silencioso é o pior tipo
+    de falha, porque parece decisão de layout.
+    """
+    if not isinstance(dash, dict):
+        return
+    dd = dash.get("densidade_dow")
+    if not dd:
+        achados.append(("erro",
+            f"{nome}: bloco `densidade_dow` ausente do payload — o card Mapa de "
+            "escala não vai renderizar. Rode scripts/densidade_dow.py --gravar."))
+        return
+    g_pay = (dash.get("gerado_em") or "")[:10]
+    g_dd = (dd.get("gerado_em") or "")[:10]
+    if g_pay and g_dd and g_pay != g_dd:
+        achados.append(("aviso",
+            f"{nome}: o mapa de escala é de {g_dd} e o payload de {g_pay} — "
+            "o passo de densidade não rodou no último refresh."))
+
+
 def conferir_frescor(achados, arquivos):
     """Consolidado e unidade têm que sair da MESMA execução, não do mesmo dia.
 
@@ -189,6 +215,8 @@ def main() -> int:
             conferir_periodos(achados, d, f"Operação {u}")
     for u in ("escova", "spa"):
         conferir_zero_state(achados, fin[u], dash[u], f"Unidade {u}")
+
+    conferir_bloco_derivado(achados, dash["escova"], "Escova")
 
     conferir_frescor(achados, {
         "data/dashboard_data.json": dash["escova"],

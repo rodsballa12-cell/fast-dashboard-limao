@@ -2548,6 +2548,7 @@ function renderAnual(data){
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade por serviço', '2026 · R$/hora ao lado do volume revela onde há upside real', a.rentabilidade_hora || []);
   renderBarsHora('per-hora','⏱ Fluxo típico do dia · 2026 <span class="hi">('+k.dias_op+' dias op.)</span>','Curva média · define escala e horário de campanhas',a.hora_media,true,'');
   renderUtilizacao('per-utilizacao', 'ano', k, a);
+  renderDensidadeDow('per-densidade-dow', data.densidade_dow);
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   // Categorias nativas Trinks agora vivem dentro do card "Detalhamento por categoria"
   renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
@@ -2656,6 +2657,7 @@ function renderSemanal(data){
   // Removido renderComparacaoSemana — duplicava info que ja aparece nos KPIs
   // do topo (Faturamento com delta_pct, Visitas com delta_pct, Ticket delta).
   renderUtilizacao('per-utilizacao', 'semana', k, s);
+  renderDensidadeDow('per-densidade-dow', data.densidade_dow);
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
@@ -2687,6 +2689,7 @@ function renderDiario(data){
   renderPaceIntraday('per-pace', k.pace_intraday, (data.sazonalidade||{}).curva_horaria);
   renderTicketMeta('per-ticket-meta', 'hoje', k);
   renderUtilizacao('per-utilizacao', 'hoje', k, d);
+  renderDensidadeDow('per-densidade-dow', data.densidade_dow);
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
