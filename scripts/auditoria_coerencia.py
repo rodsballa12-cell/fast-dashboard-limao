@@ -140,16 +140,26 @@ def conferir_zero_state(achados, fin, dash, nome):
 
 
 def conferir_frescor(achados, arquivos):
-    """Arquivos do mesmo pipeline não deveriam estar em dias diferentes."""
-    datas = {}
+    """Consolidado e unidade têm que sair da MESMA execução, não do mesmo dia.
+
+    Precisão de minuto, não de data. Em 14/09/2026 a versão que só comparava o
+    dia deixou passar um consolidado de 20h05 convivendo com uma Escova de
+    21h00: o painel da holding ficou uma hora atrás sem ninguém notar, porque
+    os números estavam perto. Causa: dois pipelines escrevem os mesmos
+    arquivos — o workflow do GitHub, que regenera unidade + consolidado, e a
+    tarefa agendada do PC, que regenera só a Escova e faz push.
+    """
+    marcas = {}
     for rel, d in arquivos.items():
         g = (d or {}).get("gerado_em")
-        if isinstance(g, str) and len(g) >= 10:
-            datas[rel] = g[:10]
-    if len(set(datas.values())) > 1:
-        achados.append(("aviso",
-            "arquivos do mesmo pipeline gerados em dias diferentes: "
-            + " · ".join(f"{Path(k).as_posix()}={v}" for k, v in datas.items())))
+        if isinstance(g, str) and len(g) >= 16:
+            marcas[rel] = g[:16]
+    if len(set(marcas.values())) > 1:
+        achados.append(("erro",
+            "consolidado e unidade vieram de execuções diferentes — "
+            + " · ".join(f"{Path(k).name}={v}" for k, v in marcas.items())
+            + ". O consolidado está descrevendo um momento que já passou; "
+            "rode scripts/consolida_dashboard.py."))
 
 
 def main() -> int:

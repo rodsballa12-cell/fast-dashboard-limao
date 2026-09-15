@@ -53,6 +53,55 @@ PRESERVAR = {
 }
 
 
+
+
+def _meta_anual_spa() -> float:
+    """Meta do ano = meta mensal × meses operados de fato até 31/12.
+
+    Estava fixa em 180000, que era 3 × 60000 quando a mensal valia 60000.
+    Ao baixar a mensal para 15000 em 14/09/2026 a anual não acompanhou e o
+    painel passou a mostrar meta anual de 180k com meta mensal de 15k —
+    doze meses de alvo numa loja que abre em setembro. Agora deriva, então
+    mudar a mensal no config.json ajusta as duas.
+
+    O mês de abertura entra proporcional aos dias que sobram dele.
+    """
+    import json as _json, os as _os
+    from calendar import monthrange
+    from datetime import date
+    try:
+        caminho = _os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                "data", "config.json")
+        with open(caminho, encoding="utf-8") as fh:
+            u = _json.load(fh)["unidades"]["spa"]
+        mensal = float(u.get("meta_mensal") or 15000.0)
+        ab = date.fromisoformat(u["data_inauguracao"])
+    except Exception:
+        return 45000.0
+    dias_no_mes = monthrange(ab.year, ab.month)[1]
+    meses = (dias_no_mes - ab.day + 1) / dias_no_mes + (12 - ab.month)
+    return round(mensal * meses, 2)
+
+
+def _meta_mensal_spa() -> float:
+    """Meta mensal do SPA — do config.json, fonte única.
+
+    Estava fixa em 60000 aqui enquanto o financeiro já lia 15000 do config:
+    metade do conserto de 14/09/2026 passou batido, e por um dia o painel do
+    SPA mostrou meta diferente do DRE do SPA. Duas fontes da verdade divergem
+    sempre — inclusive quando uma delas acabou de ser corrigida.
+    """
+    import json as _json, os as _os
+    try:
+        caminho = _os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                "data", "config.json")
+        with open(caminho, encoding="utf-8") as fh:
+            v = _json.load(fh)["unidades"]["spa"].get("meta_mensal")
+        return float(v) if v is not None else 15000.0
+    except Exception:
+        return 15000.0
+
+
 def zero_state(obj, key_path=""):
     """Walk recursivo: zera numéricos, limpa arrays de pessoa, preserva estrutura."""
     if obj is None or isinstance(obj, bool):
@@ -129,11 +178,9 @@ def main():
         if aba in payload.get("abas", {}):
             meta = payload["abas"][aba].get("meta", {})
             if aba == "mensal":
-                meta["meta"] = 60000
+                meta["meta"] = _meta_mensal_spa()
             elif aba == "anual":
-                # Meta franqueadora anual · 60k × meses do ano operados (post-abertura)
-                # Loja abre 25/09 · ~3 meses até 31/12 · 3 × 60k = 180k
-                meta["meta"] = 180000
+                meta["meta"] = _meta_anual_spa()
             # realizado/projecao/pct ficam 0
 
     os.makedirs(DST_DIR, exist_ok=True)
