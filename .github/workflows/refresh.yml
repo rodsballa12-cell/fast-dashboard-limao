@@ -194,6 +194,12 @@ jobs:
         run: |
           python scripts/densidade_dow.py --gravar --unidade escova || true
           python scripts/densidade_dow.py --gravar --unidade spa    || true
+          # O consolidado roda por ultimo e soma os brutos das duas unidades.
+          # Sem esta linha o bloco nunca chegava no payload da holding (a
+          # consolidacao acontece ANTES deste passo) e o card "Mapa de escala"
+          # abria vazio la. Passou 15/09 sem ninguem ver porque a auditoria so
+          # conferia a Escova.
+          python scripts/densidade_dow.py --gravar --unidade consolidado || true
 
       - name: Commit e push
         if: steps.recency.outputs.skip != 'true'

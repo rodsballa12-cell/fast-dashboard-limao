@@ -42,7 +42,25 @@ def brl(v: float) -> str:
     return f"R$ {v:,.0f}".replace(",", ".")
 
 
+UNIDADES_REAIS = ("escova", "spa")
+
+
 def carregar(unidade: str):
+    # O consolidado não tem cache próprio de agendamentos: ele é a soma das
+    # unidades. Sem este caso, o bloco simplesmente não existia no payload da
+    # holding e o card "Mapa de escala" abria vazio lá — silencioso, porque a
+    # auditoria só conferia a Escova. Somar os brutos (em vez de copiar o da
+    # Escova) já fica correto no dia em que o Spa começar a agendar.
+    if unidade == "consolidado":
+        juntos, achou = [], False
+        for u in UNIDADES_REAIS:
+            itens, _ = carregar(u)
+            if itens:
+                juntos.extend(itens)
+                achou = True
+        alvo = REPO / "data" / "consolidado" / "agendamentos_ano_cache.json"
+        return (juntos if achou else None), alvo
+
     sub = "" if unidade == "escova" else f"{unidade}/"
     p = REPO / "data" / sub / "agendamentos_ano_cache.json"
     if not p.exists():
@@ -85,7 +103,8 @@ def calcular(itens):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--unidade", default="escova")
+    ap.add_argument("--unidade", default="escova",
+                    choices=["escova", "spa", "consolidado"])
     ap.add_argument("--gravar", action="store_true",
                     help="grava o bloco densidade_dow no dashboard_data.json da unidade")
     args = ap.parse_args()
@@ -192,7 +211,11 @@ def gravar(unidade, ocup, receita, datas, n):
         "horas": list(range(H_INI, H_FIM + 1)),
         "dias": dias,
     }
-    alvo.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    # indent=2 é o que github_refresh, build_spa_dashboard e consolida_dashboard
+    # usam. Com indent=1 aqui, todo refresh reescrevia o arquivo inteiro com
+    # outra indentação e o diff de cada commit vinha com 20 mil linhas — o que
+    # torna impossível ver, pelo git, o que de fato mudou nos números.
+    alvo.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"✍️  densidade_dow gravado em {alvo.relative_to(REPO)}")
 
 

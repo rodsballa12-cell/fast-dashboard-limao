@@ -11649,5 +11649,209 @@
   "_fontes": [
     "escova",
     "spa"
-  ]
+  ],
+  "densidade_dow": {
+    "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
+    "gerado_em": "2026-09-15T13:09:00",
+    "n_agendamentos": 970,
+    "horas": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "dias": [
+      {
+        "dow": 0,
+        "nome": "Seg",
+        "n_datas": 6,
+        "valores": [
+          0.3,
+          0.03,
+          0.48,
+          0.71,
+          0.63,
+          0.45,
+          0.61,
+          0.66,
+          0.73,
+          0.63,
+          0.11,
+          0.08,
+          0.0
+        ],
+        "pico": {
+          "h": 17,
+          "v": 0.73
+        },
+        "manha_9_11": 0.27,
+        "receita_pos_20h": 47.0
+      },
+      {
+        "dow": 1,
+        "nome": "Ter",
+        "n_datas": 8,
+        "valores": [
+          0.08,
+          0.32,
+          0.33,
+          0.05,
+          0.34,
+          0.42,
+          0.32,
+          0.24,
+          1.01,
+          0.73,
+          0.1,
+          0.0,
+          0.0
+        ],
+        "pico": {
+          "h": 17,
+          "v": 1.01
+        },
+        "manha_9_11": 0.24,
+        "receita_pos_20h": 0.0
+      },
+      {
+        "dow": 2,
+        "nome": "Qua",
+        "n_datas": 7,
+        "valores": [
+          0.32,
+          0.43,
+          0.09,
+          0.72,
+          0.47,
+          0.89,
+          0.43,
+          0.72,
+          1.07,
+          1.1,
+          0.46,
+          0.09,
+          0.0
+        ],
+        "pico": {
+          "h": 18,
+          "v": 1.1
+        },
+        "manha_9_11": 0.28,
+        "receita_pos_20h": 0.0
+      },
+      {
+        "dow": 3,
+        "nome": "Qui",
+        "n_datas": 8,
+        "valores": [
+          0.39,
+          0.44,
+          0.74,
+          0.32,
+          0.66,
+          0.85,
+          1.6,
+          0.98,
+          1.1,
+          1.2,
+          0.79,
+          0.22,
+          0.06
+        ],
+        "pico": {
+          "h": 15,
+          "v": 1.6
+        },
+        "manha_9_11": 0.52,
+        "receita_pos_20h": 82.0
+      },
+      {
+        "dow": 4,
+        "nome": "Sex",
+        "n_datas": 8,
+        "valores": [
+          0.98,
+          0.59,
+          0.7,
+          1.07,
+          0.92,
+          0.73,
+          1.31,
+          2.41,
+          2.41,
+          1.74,
+          1.09,
+          0.17,
+          0.0
+        ],
+        "pico": {
+          "h": 16,
+          "v": 2.41
+        },
+        "manha_9_11": 0.76,
+        "receita_pos_20h": 79.0
+      },
+      {
+        "dow": 5,
+        "nome": "Sáb",
+        "n_datas": 8,
+        "valores": [
+          1.98,
+          2.19,
+          2.76,
+          3.0,
+          2.94,
+          2.44,
+          2.59,
+          3.68,
+          3.9,
+          2.22,
+          1.1,
+          0.34,
+          0.0
+        ],
+        "pico": {
+          "h": 17,
+          "v": 3.9
+        },
+        "manha_9_11": 2.31,
+        "receita_pos_20h": 141.5
+      },
+      {
+        "dow": 6,
+        "nome": "Dom",
+        "n_datas": 3,
+        "valores": [
+          0.52,
+          0.78,
+          1.1,
+          0.73,
+          1.03,
+          1.79,
+          0.24,
+          0.25,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "pico": {
+          "h": 14,
+          "v": 1.79
+        },
+        "manha_9_11": 0.8,
+        "receita_pos_20h": 0.0
+      }
+    ]
+  }
 }

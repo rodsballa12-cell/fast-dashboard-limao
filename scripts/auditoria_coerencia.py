@@ -142,7 +142,7 @@ def conferir_zero_state(achados, fin, dash, nome):
 
 
 
-def conferir_bloco_derivado(achados, dash, nome):
+def conferir_bloco_derivado(achados, dash, nome, sem_agendamentos_ok=False):
     """O mapa de escala tem que existir e ser da mesma execução do payload.
 
     `densidade_dow` é gravado por um passo separado, depois do refresh. Em
@@ -155,6 +155,8 @@ def conferir_bloco_derivado(achados, dash, nome):
         return
     dd = dash.get("densidade_dow")
     if not dd:
+        if sem_agendamentos_ok:
+            return  # unidade em pré-abertura: não há agendamento para medir
         achados.append(("erro",
             f"{nome}: bloco `densidade_dow` ausente do payload — o card Mapa de "
             "escala não vai renderizar. Rode scripts/densidade_dow.py --gravar."))
@@ -293,7 +295,13 @@ def main() -> int:
     for u in ("escova", "spa"):
         conferir_zero_state(achados, fin[u], dash[u], f"Unidade {u}")
 
+    # Os TRÊS payloads, não só a Escova. Em 15/09/2026 a auditoria passou verde
+    # enquanto o card "Mapa de escala" estava vazio no painel da holding: a
+    # consolidação roda antes do passo de densidade, então o bloco nunca chegava
+    # lá. Conferir só a unidade que sempre tem o dado é não conferir nada.
     conferir_bloco_derivado(achados, dash["escova"], "Escova")
+    conferir_bloco_derivado(achados, dash["consolidado"], "Consolidado")
+    conferir_bloco_derivado(achados, dash["spa"], "Spa", sem_agendamentos_ok=True)
 
     conferir_frescor(achados, {
         "data/dashboard_data.json": dash["escova"],
