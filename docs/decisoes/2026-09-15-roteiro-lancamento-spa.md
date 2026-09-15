@@ -3,6 +3,13 @@
 **Fast Spa Limão abre sexta 25/09/2026, das 8h às 20h.**
 Campanha 100% WhatsApp, em duas frentes. Sem artes.
 
+> ⚠️ **Este documento tem correções pendentes.** Ver
+> `2026-09-15-revisao-critica.md`: a base é menos recorrente do que aqui se
+> assume (314 clientes vieram uma vez, não 168), sábado tem 30 pessoas e não
+> 48, a margem por pacote é R$ 239 e não R$ 342, e a Ledterapia já é vendida
+> na Escova por R$ 69.
+
+
 ---
 
 ## Correções aplicadas em 15/09 (peça oficial da franqueadora)
@@ -161,7 +168,7 @@ sistema**, então a margem do lado da escova não fecha.
 >
 > E no sábado 26, das 9h às 12h, o Spa atende só quem é do grupo.
 >
-> Fala na recepção ou chama aqui 👉 wa.me/5511966129197
+> Fala na recepção ou chama aqui 👉 wa.me/5511990243927
 
 ### Mensagem 3 · quinta 24/09
 
@@ -198,7 +205,7 @@ Uma mensagem individual, a partir de sexta 25/09.
 > Na inauguração: **Pacote Renove-se, 10 sessões por R$ 1.490**, e quem
 > fecha ganha 3 sessões extras e **1 escova bônus aqui com a gente**.
 >
-> Tá tudo aqui 👉 https://www.instagram.com/p/DdRohUjJc5Q/
+> Tá tudo aqui 👉 [LINK DO POST OFICIAL — conferir: o link anterior apontava para a pré-venda cancelada]
 >
 > Qualquer dúvida é só me responder. 💛
 
