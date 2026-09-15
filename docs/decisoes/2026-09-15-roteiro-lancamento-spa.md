@@ -1,8 +1,19 @@
 # Roteiro · lançamento Fast Spa Limão
 
-**Abre 25/09/2026.** Sem cartela, sem pré-venda.
-**O que a cliente da Escova ganha:** primeira Ledterapia Capilar de 7 min,
-por nossa conta. Vale R$ 79.
+**Abre 25/09/2026.**
+
+**Duas ofertas para o grupo VIP:**
+1. **Ledterapia Capilar de 7 min por nossa conta** na primeira visita — vale R$ 79.
+2. **Pacote de 5 massagens de 45 min por R$ 490** — R$ 98 cada, avulsa R$ 149.
+   Uso de segunda a quarta, até 31/12. Uma das 5 pode ser presenteada.
+
+Sem cartão físico, sem numeração, sem "restam X vagas". Venda direta na
+recepção, controle em planilha.
+
+⚠️ **Teto operacional, não de marketing:** cada pacote são 5 sessões a
+entregar. Com uma massoterapeuta em tempo integral de segunda a quarta cabem
+~390 sessões até 31/12 — ou seja, **até 60 pacotes**. Parar de vender antes
+disso se a equipe não fechar. Este número não vai para peça nenhuma.
 
 ---
 
@@ -64,15 +75,20 @@ por nossa conta. Vale R$ 79.
 **2 · quinta 18/09, 10h**
 > Dia 25 abre o Fast Spa Limão — mesmo prédio, sem hora marcada.
 >
-> Pra vocês do grupo: a primeira Ledterapia Capilar é por nossa conta.
-> 7 minutos, valem R$ 79, vocês não pagam.
+> Pra vocês do grupo, duas coisas:
 >
-> É só dizer na recepção que é do grupo.
-> Massagem e tratamento a partir de R$ 59.
+> A primeira Ledterapia Capilar é por nossa conta. 7 minutos, vale R$ 79.
+>
+> E o pacote de 5 massagens de 45 min por R$ 490 — R$ 98 cada, avulsa é
+> R$ 149. Usa de segunda a quarta até dezembro, e uma das 5 você pode dar
+> de presente.
+>
+> Quem quiser o pacote fala na recepção ou chama aqui 👉 wa.me/5511966129197
 
 **3 · quarta 24/09**
 > Amanhã abre.
-> Sua primeira Ledterapia é por nossa conta — é só dizer que você é do grupo.
+> Ledterapia por nossa conta na primeira visita.
+> Pacote de 5 massagens por R$ 490 — fala na recepção.
 
 **4 · quinta 25/09**
 > Abriu.
@@ -91,11 +107,16 @@ Quatro mensagens na semana. Não mande uma quinta.
 > Pra cliente de casa, a primeira Ledterapia Capilar é por nossa conta.
 > 7 minutinhos, vale R$ 79.
 >
+> E se você gostar, tem o pacote: 5 massagens de 45 min por R$ 490 — sai
+> R$ 98 cada, avulsa é R$ 149. Usa de segunda a quarta.
+>
 > Leva o cartão e é só mostrar lá em cima."
 
 - Cartão **na mão**, nunca no balcão.
 - **"Por nossa conta"**, nunca "de graça".
+- **Pacote**, nunca "combo" nem "cartela".
 - Preço de entrada, se perguntarem: **R$ 59** (drenagem facial, 15 min).
+- Nunca prometer uso de pacote no sábado. É segunda a quarta, sem exceção.
 
 ---
 
@@ -126,6 +147,7 @@ Canvas: https://claude.ai/artifact/1rTU8Tfw9CQhuHt5b9tsUJ
 | Clientes da Escova que subiram | 39 |
 | Ledterapias entregues | 60 |
 | Ledterapia que virou serviço pago | 30% |
+| Pacotes vendidos | 25 (R$ 12.250 de caixa) |
 | Seguidores @fastspa.limao | 204 → 800 |
 
 🔴 Tudo isso sai da **folha de recepção**. O Spa não tem API da Trinks.
@@ -148,6 +170,8 @@ Sem a folha preenchida desde o dia 1, não há placar.
 |---|---|
 | Renovar o `META_ACCESS_TOKEN` | 17/09 |
 | Validade da Ledterapia grátis | 17/09 |
+| Confirmar equipe do Spa (define o teto de pacotes) | 17/09 |
+| Planilha de controle dos pacotes na recepção | 18/09 |
 | "Cliente da Escova" no cadastro do Spa | 24/09 |
 | Folha de recepção montada | 24/09 |
 | Hex oficiais dos logos (a paleta ainda é a do painel) | quando puder |
