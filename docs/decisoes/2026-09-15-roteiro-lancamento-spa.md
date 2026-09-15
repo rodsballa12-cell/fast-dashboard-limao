@@ -260,6 +260,30 @@ exclusivo delas foi para todo mundo, acabou o exclusivo.
 
 ---
 
+## As 6 peças
+
+| Peça | Formato | Quando |
+|---|---|---|
+| WA-1 teaser | 1080×1080 | quinta 17/09 |
+| WA-2 a oferta | 1080×1080 | sexta 18/09, 10h |
+| WA-3 véspera | 1080×1080 | quinta 24/09 |
+| WA-4 abriu | 1080×1080 | sexta 25/09 |
+| Cartão de balcão · frente | 90×50mm · 200un | a partir de 18/09 |
+| Cartão de balcão · verso | 90×50mm | idem |
+
+**Paleta tirada da peça oficial da franqueadora:** branco, teal `#17818C` e
+`#29AEB9`, carvão `#2B3133`. O amarelo da Escova entra só como fio de origem
+e vai sumindo ao longo da série — barra cheia no teaser, faixa na oferta,
+some na véspera, volta só no rodapé do abriu. A migração da cliente está na
+cor.
+
+**Não há peça de Instagram.** O Instagram recebe a peça oficial da
+franqueadora, que já está pronta e circulando.
+
+Canvas editável: https://claude.ai/artifact/1rTU8Tfw9CQhuHt5b9tsUJ
+
+---
+
 ## Placar · 31/10
 
 | Métrica | Meta | Onde |
