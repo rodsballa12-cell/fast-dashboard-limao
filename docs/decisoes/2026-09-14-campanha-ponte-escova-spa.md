@@ -547,3 +547,186 @@ Observação de redação: *"CHEGOU PACOTE"* soa pior que *"CHEGOU COMBO"* —
 para o caso, **"CHEGARAM OS PACOTES"**. A linha de apoio
 *"Mais de um cuidado. Uma passada só."* continua funcionando e passa a ser a
 definição de pacote — vale mantê-la em todas.
+
+---
+
+## 12. Estratégia de migração · "As 50 Primeiras"
+
+**Escrita em 15/09/2026, a pedido de Rodrigo.** Substitui a abordagem
+genérica dos §4–5 por uma arquitetura fechada, com produto, preço, segmento,
+calendário e teto de capacidade.
+
+### 12.1 · O princípio: vender no sábado, entregar na terça
+
+A leitura que organiza tudo está em dois números que parecem brigar:
+
+- A Escova concentra **76,4%** do movimento em quinta, sexta e sábado —
+  sábado sozinho é **40,8%**, com média de **49 clientes por sábado**.
+- O desconto do Spa (Plano Smart, –10%) vale **de segunda a quarta**.
+
+Quem lê rápido conclui que um não serve ao outro — foi o que este documento
+disse no §10.3, e estava incompleto. A leitura certa é outra:
+
+> **A Escova está lotada no sábado e vazia na terça. O Spa vai estar vazio na
+> terça. É o mesmo problema, invertido.**
+
+Pedir para a cliente fazer um serviço de Spa **no sábado** não cria receita
+nova — compete com a hora mais cheia da própria Escova e ocupa a profissional
+que já está no limite. Fazer a cliente **voltar na terça** é receita
+incremental pura, num dia que hoje não existe para nenhuma das duas unidades.
+
+Daí a arquitetura: **o sábado é o balcão de vendas. A terça é a entrega.**
+A campanha não move a visita — ela cria uma segunda visita.
+
+### 12.2 · Três produtos, em escada
+
+**Degrau 1 · PASSE FUNDADORA — grátis, para as 404**
+
+Ledterapia Capilar, 7 minutos, R$ 79 de valor, **grátis na primeira subida**
+para quem é cliente da Escova, até 31/10.
+
+Por que este e não outro: é cabelo (o motivo pelo qual ela já está no
+prédio), são 7 minutos (cabe entre lavar e escovar) e é aparelho — **não
+consome hora de massoterapeuta**, que é o recurso escasso na abertura.
+Custo marginal perto de zero; função: fazer a cliente atravessar a porta uma
+vez. Ninguém compra um serviço de R$ 149 num lugar em que nunca entrou.
+
+**Degrau 2 · CARTELA FUNDADORA — a pré-venda do grupo VIP**
+
+| | |
+|---|---|
+| O que é | 5 terapias de 45min (Renove-se em 45', Neuro Relax, Pernas e Pés ou Reflexologia — a escolha é da cliente, sessão a sessão) |
+| Valor de tabela | 5 × R$ 149 = **R$ 745** |
+| Preço fundadora | **R$ 490** — R$ 98 por sessão |
+| Uso | segunda a quarta, até 31/12/2026 |
+| Quantidade | **50 cartelas, numeradas de 1 a 50** |
+| Onde | **só no grupo VIP**, 5 dias antes de qualquer outro canal |
+
+R$ 98 por sessão é melhor que tudo o que existe na tabela hoje — o pacote
+10+1 sai a R$ 135/sessão e o Plano Smart a R$ 122. É isso que faz dela uma
+condição de fundadora, e não mais um desconto.
+
+**A restrição de segunda a quarta não é uma concessão — é o produto.** É ela
+que enche o dia vazio e que justifica o preço.
+
+**Degrau 3 · O vínculo permanente**
+
+A fundadora faz **Ledterapia Capilar grátis em toda escova que fizer**,
+durante 2026.
+
+Este é o degrau que transforma campanha em estrutura. Custa 7 minutos de
+aparelho. Em troca, **toda visita à Escova passa a ter um toque no Spa** —
+semana após semana, sem mídia, sem disparo, sem lembrete. A cliente não
+precisa se lembrar do Spa: ela passa por ele toda vez que cuida do cabelo.
+
+*(Prazo fechado em 2026 de propósito. Compromisso vitalício em lançamento de
+loja é dívida que ninguém mede na hora de assumir.)*
+
+### 12.3 · A base não é uma lista — são três
+
+| Segmento | Qtd | O que é | Abordagem |
+|---|---|---|---|
+| **Embaixadoras** | **27** | 5+ visitas; a maior tem 44 visitas e R$ 2.155 gastos | Convite **nominal**, feito pela profissional que atende ela. Cartelas nº 1 a 27 reservadas. Não é venda — é "quero você na abertura". |
+| **Fiéis** | **209** | 2 a 4 visitas; já têm hábito | Público-alvo da Cartela. É aqui que as 50 vagas se vendem. |
+| **Adormecidas** | **168** | vieram uma vez e não voltaram | O Spa é a **desculpa de reativação** que a Escova não tinha. Não convide para voltar à escova — convide para conhecer o Spa com o Passe grátis. |
+
+As 168 adormecidas são o ativo mais subestimado da operação. Uma tentativa de
+reativação pela Escova já falhou por definição — elas não voltaram. Um
+produto novo, no mesmo endereço, é o único argumento honestamente diferente
+que existe.
+
+### 12.4 · Por que o grupo VIP é o canal certo — e o único
+
+Hoje, três canais estão bloqueados ao mesmo tempo: o token da Meta está
+inválido (sem anúncio, sem medição), a WABA não existe em nenhuma das duas
+unidades (sem disparo para os 411 telefones) e o Spa não tem API da Trinks
+(sem placar automático).
+
+**O grupo VIP não depende de nenhum dos três.** É o único canal direto,
+permissionado e funcionando hoje. Isso não é um detalhe operacional — é o
+motivo de a estratégia inteira ser construída sobre ele.
+
+E ele resolve, de quebra, o problema de medição: **a cartela é numerada.**
+Cada número vendido é um registro rastreável de quem veio da Escova, sem
+depender de API nenhuma. O placar vem junto com o produto.
+
+### 12.5 · O que torna o lançamento VIP especial (além do preço)
+
+Desconto qualquer concorrente copia em uma tarde. O que não se copia:
+
+1. **Número.** "Fundadora nº 7 de 50" — dito na entrega, impresso na cartela.
+2. **Precedência.** O grupo VIP compra **5 dias antes** de o Instagram saber
+   que existe. A informação é o prêmio, não só o preço.
+3. **As três primeiras horas.** No sábado 27/09, das 9h às 12h, o Spa atende
+   **só fundadoras**. O dia de maior movimento da Escova no ano, com a porta
+   do lado aberta só para quem entrou primeiro.
+4. **A parede.** Os 50 nomes numa placa na recepção do Spa. Custa uma placa.
+   Dura anos.
+5. **O preço travado.** Fundadora mantém condição Plano Smart em 2026, mesmo
+   depois de a cartela acabar.
+
+### 12.6 · Calendário — 12 dias
+
+| Data | Canal | Movimento |
+|---|---|---|
+| **17/09 qui** | Grupo VIP | Teaser: "sexta eu abro 50 vagas de uma coisa que ainda não existe no Limão" |
+| **18/09 sex** | Grupo VIP | **Abre a Cartela Fundadora.** 50 vagas. Só ali. |
+| **18/09 sex** | Balcão | Profissionais convidam **nominalmente** as 27 embaixadoras |
+| **19/09 sáb** | Balcão 15h–18h | **A maior janela de venda do período** — ~49 clientes na cadeira |
+| **22/09 seg** | Grupo VIP | "Restam X de 50" (escassez real, número verdadeiro) |
+| **24/09 qua** | IG Escova | Público geral descobre o Spa. Cartela **não** é oferecida aqui. |
+| **25/09 sex** | Abertura | Fundadoras entram primeiro |
+| **26/09 sáb** | Spa 9h–12h | **Exclusivo fundadoras** · 12h em diante, aberto |
+| **A partir de 29/09 seg** | Spa | Começa a entrega das cartelas — o dia vazio deixa de ser vazio |
+
+### 12.7 · Os números
+
+**Receita da pré-venda (caixa antes de abrir):**
+
+| Cenário | Cartelas | Caixa |
+|---|---|---|
+| Conservador | 25 de 50 | R$ 12.250 |
+| Alvo | 40 de 50 | R$ 19.600 |
+| Esgotado | 50 de 50 | **R$ 24.500** |
+
+Vender 50 cartelas exige converter ~10% das 404 — ou ~25% de dois sábados de
+balcão (98 clientes) somados ao grupo VIP. É ambicioso e é atingível.
+
+⚠️ **Caixa não é receita do mês.** Entra antes de abrir e se converte em
+serviço ao longo de três meses. Para fluxo de caixa de lançamento vale ouro;
+para a meta de R$ 15.000/mês, entra diluído.
+
+**O teto é a capacidade, não a demanda:**
+
+50 cartelas × 5 sessões = **250 sessões de 45min** a entregar até 31/12.
+Uma massoterapeuta em tempo integral, de segunda a quarta, entrega ~32
+sessões/semana. Em ~13 semanas: ~430 sessões. **250 cabe, com folga de 40%.**
+
+Se a contratação atrasar ou for meio período, **o teto cai junto** — 25
+cartelas, não 50. Vender capacidade que não existe é a forma mais rápida de
+transformar cliente fiel em cliente irritada.
+
+### 12.8 · Três riscos, ditos antes
+
+1. **Margem por sessão não validada.** R$ 98 por sessão de 45min precisa ser
+   conferido contra a comissão da massoterapeuta. Se a comissão for 40%,
+   sobram R$ 59 brutos por sessão. **Este é o único número desta estratégia
+   que eu não consigo verificar** — a regra de comissão não está cadastrada
+   no sistema. Rodrigo valida antes de a cartela ir ao ar.
+2. **Canibalização do sábado.** Se a fundadora passar a usar o sábado no Spa
+   em vez da escova, trocamos receita de lugar. A trava de segunda a quarta
+   existe exatamente para impedir isso — **não abra exceção**, nem na semana
+   de abertura.
+3. **Promessa maior que a equipe.** Ver §12.7. O teto de vendas tem que ser
+   recalculado no dia em que a equipe do Spa estiver fechada, não antes.
+
+### 12.9 · O que trava hoje
+
+| Precisa | De quem | Até |
+|---|---|---|
+| Validar margem de R$ 98/sessão | Rodrigo | 17/09 |
+| Confirmar equipe do Spa (define o teto) | Rodrigo | 17/09 |
+| Aprovar preço R$ 490 e a trava seg–qua | Rodrigo | 17/09 |
+| Tamanho do grupo VIP (não sei quantas são) | Rodrigo | 16/09 |
+| Imprimir 50 cartelas numeradas | Marketing | 18/09 |
+| Folha de recepção (§9) | Operação | 24/09 |
