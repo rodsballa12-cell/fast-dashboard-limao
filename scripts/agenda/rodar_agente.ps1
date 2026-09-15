@@ -46,12 +46,22 @@ if (-not $claude) {
   }
 }
 if (-not $claude) {
-  "# ERRO - $Agente - $data $hora`n`nNao encontrei o comando 'claude'. Rode 'where claude' no terminal e me diga o caminho." |
-    Set-Content -Path $arquivo -Encoding UTF8
+  [System.IO.File]::WriteAllText($arquivo,
+    "# ERRO - $Agente - $data $hora`n`nNao encontrei o comando 'claude'. Rode 'where claude' no terminal e me diga o caminho.",
+    (New-Object System.Text.UTF8Encoding($false)))
   exit 1
 }
 
-$saida = & $claude -p "/$Agente" 2>&1 | Out-String
+# O PowerShell 5.1 decodifica a saida de programa externo usando
+# [Console]::OutputEncoding, que por padrao e a codepage OEM (850 no Brasil).
+# O claude devolve UTF-8, entao sem esta linha todo acento e emoji chegam como
+# lixo: "ESCOVA ·" virou "ESCOVA ┬À" no briefing de 15/09/2026 as 09h09.
+# Mesmo problema do BOM de ontem, do outro lado do cano - la era leitura de
+# arquivo, aqui e leitura de saida de processo.
+$encAnterior = [Console]::OutputEncoding
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+try   { $saida = & $claude -p "/$Agente" 2>&1 | Out-String }
+finally { [Console]::OutputEncoding = $encAnterior }
 
 $cabecalho = @"
 ---
@@ -66,7 +76,11 @@ gerado_por: tarefa agendada
 $avisoGit
 "@
 
-($cabecalho + $saida) | Set-Content -Path $arquivo -Encoding UTF8
+# UTF-8 SEM BOM aqui, ao contrario do proprio .ps1: um BOM antes do '---'
+# quebra o frontmatter YAML que o Obsidian le. Set-Content -Encoding UTF8 no
+# PS 5.1 sempre poe BOM, por isso vai pelo .NET.
+$semBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText($arquivo, ($cabecalho + $saida), $semBom)
 Write-Output "Gravado em $arquivo"
 
 # --- Copia pro repositorio ------------------------------------------------
