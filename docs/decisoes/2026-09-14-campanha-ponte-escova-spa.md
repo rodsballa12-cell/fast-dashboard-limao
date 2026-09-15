@@ -730,3 +730,187 @@ transformar cliente fiel em cliente irritada.
 | Tamanho do grupo VIP (não sei quantas são) | Rodrigo | 16/09 |
 | Imprimir 50 cartelas numeradas | Marketing | 18/09 |
 | Folha de recepção (§9) | Operação | 24/09 |
+
+---
+
+## 13. Cartela Fundadora · mecânica detalhada
+
+**Dados novos de Rodrigo, 15/09/2026:** comissão da massoterapeuta **30%**,
+equipe **ainda em contratação**, grupo VIP da Escova com **67 integrantes**.
+
+### 13.1 · A margem fecha
+
+| | Cartela fundadora | Tabela cheia |
+|---|---|---|
+| Preço por sessão de 45min | R$ 98,00 | R$ 149,00 |
+| Comissão 30% | R$ 29,40 | R$ 44,70 |
+| **Contribuição por sessão** | **R$ 68,60** | R$ 104,30 |
+
+Sacrifício: **R$ 35,70 por sessão** contra o preço cheio. Em troca vem caixa
+antecipado, ocupação de um dia que hoje não existe e cinco visitas
+garantidas de uma cliente que ainda não conhece o Spa.
+
+Por cartela: R$ 490 de caixa, R$ 147 de comissão, **R$ 343 de contribuição**.
+
+⚠️ **O que ainda não dá para afirmar:** se R$ 68,60 por sessão cobre o custo
+fixo do Spa. O `data/spa/financeiro.json` está zerado — aluguel, energia e
+rateio da unidade ainda não existem no sistema. A margem de contribuição está
+correta; o lucro, não dá para calcular. Rodrigo é quem sabe se R$ 68,60 numa
+hora de sala paga a hora da sala.
+
+### 13.2 · 67 pessoas não compram 50 cartelas
+
+Vender 50 cartelas para um grupo de 67 exigiria **75% de conversão** — não
+acontece em nenhum canal, por melhor que seja a oferta.
+
+Conversões realistas sobre 67:
+
+| Conversão | Cartelas | Caixa |
+|---|---|---|
+| 15% (morno) | 10 | R$ 4.900 |
+| 25% (bom) | 17 | R$ 8.330 |
+| **37% (esgota o lote)** | **25** | **R$ 12.250** |
+| 50% (excepcional) | 34 | R$ 16.660 |
+
+**Decisão: o lote 1 são 25 cartelas, não 50.** Três motivos convergem:
+
+1. **A escassez fica verdadeira.** 25 vagas para 67 pessoas é disputa real.
+   50 vagas para 67 pessoas é uma vaga sobrando — e escassez que não morde
+   não vende.
+2. **A equipe não está fechada.** O §12.7 já dizia: teto cai junto com a
+   contratação. Ela não fechou.
+3. **Cabe folgado.** 25 cartelas = 125 sessões = **32% da capacidade** de uma
+   profissional de segunda a quarta até 31/12. Sobra espaço para cliente de
+   preço cheio no mesmo dia — que é o objetivo.
+
+**O nome "As 50 Primeiras" continua de pé**, porque são 50 fundadoras no
+total, em dois lotes:
+
+| Lote | Qtd | Canal | Quando | Condição |
+|---|---|---|---|---|
+| **1** | 25 | **só grupo VIP** | 18 a 24/09 | nenhuma — vai agora |
+| **2** | 25 | balcão + IG Escova | a partir de 29/09 | **só se a equipe estiver fechada E o lote 1 esgotar** |
+
+O lote 2 esgotando o lote 1 vira notícia sozinho: *"as 25 primeiras acabaram
+em 3 dias"* é a melhor peça de marketing que essa campanha pode ter, e ela é
+gratuita.
+
+### 13.3 · As regras da cartela
+
+| Regra | Definição | Por quê |
+|---|---|---|
+| **O que dá direito** | 5 terapias de 45min | escolha sessão a sessão entre Renove-se em 45', Neuro Relax, Pernas e Pés Cansados e Reflexologia Podal |
+| **Preço** | R$ 490 à vista (PIX) · até 3× de R$ 163,33 no cartão | parcelar levanta conversão; a taxa da Stone come parte — conferir no DRE |
+| **Validade** | até **31/12/2026** | prazo curto força uso, uso cria hábito |
+| **Uso** | **segunda, terça e quarta** | é o produto, não a concessão |
+| **Hora marcada** | não — segue o DNA FAST | seg–qua o Spa está vazio, walk-in funciona |
+| **Uma sessão presenteável** | 1 das 5 pode ser dada a outra pessoa | transforma cada fundadora em canal de captação |
+| **Controle** | cartela física numerada, carimbada a cada uso + planilha na recepção | não existe API da Trinks no Spa (§9) |
+| **Intransferível no restante** | as outras 4 são da titular | evita revenda |
+
+A sessão presenteável é a peça mais subestimada dessa mecânica. Cada uma das
+25 fundadoras pode trazer uma pessoa nova que nunca ouviu falar do Spa —
+**até 25 clientes de aquisição a custo zero de mídia**, trazidas por quem já
+confia na marca. Compare com R$ 6,90 por conversa no Meta.
+
+### 13.4 · A entrega durante a semana
+
+125 sessões distribuídas de 29/09 a 31/12, em 13 semanas de segunda a quarta:
+
+| | |
+|---|---|
+| Sessões por semana | ~10 |
+| Por dia (seg, ter, qua) | ~3 |
+| Capacidade de uma profissional | ~10/dia |
+| **Ocupação gerada pela cartela** | **~32%** |
+
+Sobram ~7 vagas por dia para cliente de preço cheio. **A cartela não lota o
+dia — ela dá um piso a um dia que hoje é zero**, e cria movimento que atrai
+passante. Loja vazia não vende; loja com três clientes dentro vende.
+
+**Ritmo esperado por fundadora:** 5 sessões em 13 semanas ≈ uma a cada 2 ou 3
+semanas. É exatamente a frequência que cria hábito sem saturar.
+
+### 13.5 · A sequência do grupo VIP
+
+Quatro mensagens, nada mais. Grupo VIP que vira canal de anúncio diário
+perde gente — e essas 67 são o ativo mais bem cuidado da operação.
+
+**Mensagem 1 · quinta 17/09, manhã — só curiosidade, sem oferta**
+
+> Meninas, sexta eu vou abrir aqui no grupo uma coisa que só vai existir
+> para vocês 67.
+>
+> São 25 vagas. Quando acabar, acabou — e o Instagram só fica sabendo
+> semana que vem.
+>
+> Amanhã, 10h. 💛
+
+**Mensagem 2 · sexta 18/09, 10h — a oferta**
+
+> Dia 25 abre o **Fast Spa Limão** — no mesmo prédio da sua escova, mesmo
+> endereço, sem hora marcada. Massagem, tratamento facial, corporal.
+>
+> E vocês vão entrar antes de todo mundo.
+>
+> **CARTELA FUNDADORA · 25 vagas**
+> 5 terapias de 45 minutos — você escolhe qual a cada visita:
+> Renove-se em 45' · Neuro Relax · Pernas e Pés Cansados · Reflexologia Podal
+>
+> Na tabela: R$ 745
+> **Fundadora: R$ 490** — R$ 98 a sessão, à vista ou em 3×
+>
+> O que só a fundadora tem:
+> 🔢 sua cartela numerada de 1 a 25
+> 🚪 o Spa só para vocês no sábado 26/09, das 9h às 12h
+> 🎁 uma das 5 sessões você pode presentear quem quiser
+> ✨ Ledterapia Capilar grátis em toda escova que fizer em 2026
+> 🏛 seu nome na parede da recepção do Spa
+>
+> Uso de segunda a quarta, até 31/12.
+>
+> Quem quiser, responde **EU QUERO** aqui. Vou numerando na ordem.
+
+**Mensagem 3 · segunda 22/09 — escassez verdadeira**
+
+> Restam **[N] de 25**.
+>
+> [nomes das já numeradas, se autorizarem]
+>
+> Quinta abre o Spa. Quem entrar agora usa a primeira sessão na semana
+> que vem.
+
+**Mensagem 4 · quinta 25/09 — abertura**
+
+> Abriu. 💛
+>
+> Fundadoras: sábado 9h às 12h o Spa é de vocês.
+> Quem ainda não pegou cartela — restam [N] e o balcão começa a vender
+> segunda.
+
+**Regra para quem toca o grupo:** responder cada "EU QUERO" com o número
+("você é a nº 9 💛"). O número é o produto tanto quanto a massagem.
+
+### 13.6 · O que a recepção precisa saber decorado
+
+1. **"Cartela é o quê?"** — 5 massagens de 45 min por R$ 490, usa de segunda
+   a quarta até o fim do ano, você escolhe qual massagem a cada vez.
+2. **"Posso usar sábado?"** — Não. A cartela é de segunda a quarta. No sábado
+   o preço é o de tabela. *(Não abrir exceção: ver §12.8, risco 2.)*
+3. **"E se eu não usar tudo?"** — Vale até 31/12. Depois disso não vale.
+4. **"Posso dar de presente?"** — Uma das cinco, sim. As outras quatro são
+   suas.
+5. **"Quanto custa avulso?"** — R$ 149 a de 45 min.
+6. **Se for cliente da Escova sem cartela** — Ledterapia Capilar de 7 min,
+   grátis na primeira vez. *(Passe Fundadora, §12.2.)*
+
+### 13.7 · O que falta para o lote 1 sair na quinta
+
+| Precisa | Quem | Até |
+|---|---|---|
+| Aprovar R$ 490, trava seg–qua e lote de 25 | Rodrigo | 16/09 |
+| Confirmar se R$ 68,60/sessão cobre o fixo do Spa | Rodrigo | 16/09 |
+| Definir as 4 terapias elegíveis (proposta no §13.3) | Rodrigo | 16/09 |
+| Imprimir 25 cartelas numeradas | Marketing | 17/09 |
+| Planilha de controle na recepção | Operação | 18/09 |
+| Quem responde o grupo VIP e numera | Rodrigo define | 17/09 |
