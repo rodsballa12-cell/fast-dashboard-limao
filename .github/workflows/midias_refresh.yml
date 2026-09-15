@@ -126,9 +126,43 @@ jobs:
             resumo="${resumo} · ${u}: R\$${gasto} 7d / IG ${seg} seguidores"
           done
 
+          # --- push resiliente -------------------------------------------
+          # O job passa minutos puxando API, e nesse intervalo o main pode
+          # andar. Em 15/09 andou dois commits durante um refresh de midia:
+          # o push foi rejeitado, o run falhou, e 6 minutos de chamada a Meta
+          # foram jogados fora — o painel seguiu o dia com dado da vespera.
+          # Nos dias normais nunca aparecia, porque o cron roda de madrugada,
+          # quando ninguem esta empurrando.
+          #
+          # Por que reset --mixed e nao rebase: estes JSON sao REGENERADOS
+          # inteiros a cada run, nao sao um delta sobre o remoto. Rebase
+          # tentaria casar linha a linha arquivos de dezenas de milhares de
+          # linhas e conflitaria. O --mixed devolve o index ao main novo,
+          # mantem os arquivos frescos no disco e recommita SO os que este job
+          # gerou — o que o main mudou em outros arquivos fica de pe.
+          empurrar() {
+            local msg="$1" arqs="$2" i
+            for i in 1 2 3; do
+              if git push; then return 0; fi
+              echo "push rejeitado (tentativa $i) — o main andou; recommitando sobre ele"
+              git fetch origin main || return 1
+              git reset --mixed origin/main
+              git add $arqs 2>/dev/null || true
+              if git diff --cached --quiet; then
+                echo "nada a commitar — o main ja tem dado equivalente"
+                return 0
+              fi
+              git commit -m "$msg"
+            done
+            echo "::error::push rejeitado 3 vezes seguidas. O dado desta execucao se perdeu."
+            return 1
+          }
+
+          arqs=$(git diff --cached --name-only | tr '\n' ' ')
           data_brt=$(TZ=America/Sao_Paulo date +'%d/%m %H:%M')
-          git commit -m "refresh midias: ${data_brt} BRT${resumo}"
-          git push
+          msg="refresh midias: ${data_brt} BRT${resumo}"
+          git commit -m "$msg"
+          empurrar "$msg" "$arqs"
 
       # Detector de parada de entrega — Escova E SPA.
       #
