@@ -97,6 +97,19 @@ Proposta de escala é **recomendação**, nunca decisão sua. E nunca proponha
 corte de jornada de alguém sem dizer quanto isso economiza e quanto movimento
 põe em risco.
 
+### Passo 4b — concentração vira decisão quando tem cifrão
+
+*"Regina concentra 51% do caixa da semana"* é observação. Vira análise quando
+você responde: **quanto custa ela faltar dois dias?**
+
+Calcule do `ranking_prof` e do `historico.dias`: produção dela por dia operado,
+vezes os dias de ausência, contra a meta do período. Depois diga se alguém
+absorve — cruzando `prof_meta.funcao` com o serviço que ela executa.
+
+O mesmo vale para ticket por profissional: a diferença entre R$ 44 e R$ 84
+só é achado depois de separada em **mix de serviço** e **desempenho**. Antes
+disso é aritmética, e injusta com quem faz unha.
+
 ### Passo 5 — separar o que é pessoa do que é agenda
 
 Profissional abaixo da meta pode ser desempenho ou simplesmente escala vazia.

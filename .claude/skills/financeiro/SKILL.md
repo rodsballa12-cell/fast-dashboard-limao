@@ -87,6 +87,21 @@ explicitamente quando não conseguir avaliar algum:
 prazo normal de cartão e só R$ 1,6 mil eram órfãos de verdade. **Sempre abra o
 número antes de chamar de risco.**
 
+### Passo 4b — decompor a margem, não reportá-la
+
+Margem que caiu sem explicação é meia análise. São quatro componentes, e cada
+um tem dono diferente:
+
+| Componente | Onde | De quem é |
+|---|---|---|
+| preço praticado | `catalogo_servicos.desvio_tabela` | Operação |
+| mix de serviço | `abas.*.categoria_native` | Operação |
+| comissão | `premissas.comissao` contra o realizado | Pessoas |
+| custo fixo diluído | `equilibrio.custo_fixo_mes` ÷ receita | seu |
+
+Diga **qual deles** moveu, e quanto em reais. Sem isso, a recomendação vira
+"vender mais", que não é recomendação.
+
 ### Passo 5 — procurar a causa fora de casa
 
 Margem cai por três motivos, e **dois deles não são seus**: preço praticado

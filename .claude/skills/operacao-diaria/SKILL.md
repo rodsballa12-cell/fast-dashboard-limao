@@ -65,6 +65,20 @@ cheia — é a onda de fechar conta) e `densidade_hora` acompanha o atendimento 
 curso (por isso às 20h cai para 0,10). **Para ritmo de venda, a que vale é a
 densidade.**
 
+### Passo 1c — decompor antes de relatar
+
+Nunca entregue a variação sem dizer **o que dentro dela se moveu**.
+
+| Se mudou | Pergunte | Onde |
+|---|---|---|
+| caixa | foi volume ou ticket? | `kpis.atend_fin` × `kpis.ticket_medio` |
+| volume | mais clientes ou mais serviços por cliente? | `clientes_unicos` contra `atend_fin` |
+| ticket | mix de serviço ou desconto? | `categoria_native` · `catalogo_servicos.desvio_tabela` |
+
+Use `historico.dias` para pegar **o mesmo dia da semana** das últimas semanas —
+é a única régua honesta para um dia. A média da semana mistura sábado com terça
+e não descreve nenhum dos dois.
+
 ### Passo 2 — varrer os riscos, nesta ordem de gravidade
 
 | Onde olhar | Vira ação quando |

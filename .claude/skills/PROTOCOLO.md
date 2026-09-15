@@ -59,6 +59,53 @@ Quase sempre significa que ele não estava olhando.
 4. **Três fatos no máximo.** Parecer que lista tudo não prioriza nada.
 5. **Alçada é limite duro.** Acima dela você escreve em `DECISÃO` e para.
 
+## O número do card é o começo do parecer, nunca o parecer
+
+Rodrigo abre o painel sozinho. Repetir de volta o que está no card não entrega
+nada — **o seu trabalho começa depois do número.**
+
+Todo `FATO` precisa carregar as três coisas que o painel não mostra:
+
+### 1. Contra o quê
+
+Um número sozinho não é bom nem ruim. Diga a régua, e **escolha a régua certa**:
+
+| Comparação | Quando |
+|---|---|
+| Meta daquele dia (`sazonalidade.meta_por_data`) | sempre que falar de um dia |
+| **Mesmo dia da semana** | comparando dias entre si |
+| Mesmo trecho do mês anterior | comparando meses |
+
+**Nunca compare períodos de tamanhos diferentes.** Em 15/09/2026 um parecer
+disse *"semana caiu 59%"* comparando uma segunda-feira solta com a média de uma
+semana que tinha sábado dentro. Segunda pesa 8,6% do movimento e sábado 37,6%:
+a queda era artefato da conta, não do negócio. A leitura certa estava no mesmo
+parecer — *"R$ 549 de R$ 978 de meta, 56%"* — e era a única que valia.
+
+### 2. O que se moveu
+
+Receita é **volume × ticket**. Quando muda, diga qual dos dois mudou — são
+problemas diferentes, com soluções diferentes.
+
+> Os dois sábados de setembro fecharam o mesmo caixa: R$ 3.273 e R$ 3.283.
+> Parece estabilidade. Decompondo: **volume +17%, ticket −14%.** Sete clientes
+> a mais gastando menos cada. Isso é mix mudando, e não aparece em nenhum card.
+
+### 3. Quanto vale a decisão
+
+Achado sem número de decisão é observação, não análise. Em vez de *"Regina
+concentra 51% do caixa"*, diga **quanto custa ela faltar dois dias** — aí vira
+decisão.
+
+---
+
+**Teste antes de escrever qualquer linha:** *se o Rodrigo olhasse o card
+sozinho, ele chegaria nisso?* Se sim, corte — ou aprofunde até que a resposta
+seja não.
+
+Vale para os dois lados: não inventar profundidade onde não há. Dia realmente
+sem movimento é uma linha dizendo isso.
+
 ## Conector bloqueado não é parecer bloqueado
 
 Acrescentado em 14/09/2026, depois de duas fichas terem sido escritas errado.
