@@ -490,3 +490,60 @@ atende **quinta, sexta e sábado, das 15h às 18h**. É quando 3 de cada 4
 clientes da base passam pela loja. E a inauguração cai numa **sexta (25/09)**,
 com o **sábado 27/09** logo em seguida — o dia de maior movimento da Escova no
 ano inteiro. O Spa precisa estar com equipe completa nesse sábado.
+
+---
+
+## 11. Atualização 15/09 · "pacote" substitui "combo"
+
+**Decidido por Rodrigo em 15/09/2026.** A regra de vocabulário do cargo
+`/marketing` dizia o oposto — *"combo" (não "pacote")*. Foi invertida em
+`.claude/skills/marketing/SKILL.md` para não voltar atrás sozinha nas
+próximas sessões.
+
+### A colisão que isso cria, e como resolver
+
+A tabela do Spa já usa as duas palavras, para **dois produtos diferentes**:
+
+| Na tabela | O que é | Exemplo |
+|---|---|---|
+| "Combos" | vários cuidados **numa visita só** | Combo Fast Spa Detox · R$ 457 |
+| "Tabela de Pacotes" | **10 sessões** do mesmo cuidado | Fast Spa Casual · R$ 1.790 |
+
+Trocando "combo" por "pacote" nas peças, duas coisas muito diferentes passam
+a se chamar igual: um produto de R$ 457 numa tarde e um de R$ 1.790 em dois
+meses. A cliente pede "o pacote" no balcão e a recepção não sabe qual.
+
+**Solução proposta — três palavras, três coisas:**
+
+| Palavra | Significa | Onde já existe |
+|---|---|---|
+| **Pacote** | vários cuidados numa visita | substitui "combo" |
+| **Plano** | várias sessões ao longo do tempo | **Plano Smart** já está na tabela |
+| **Adicional** | 10–15 min acoplados, R$ 59 | já está na tabela |
+
+"Plano" não é palavra nova — a própria tabela do Spa já batiza assim o
+desconto de segunda a quarta. Só precisa valer para a linha inteira de
+compre-10-leve-1, que hoje se chama "pacote".
+
+**Se Rodrigo aprovar**, a tabela impressa precisa trocar o título "Tabela de
+Pacotes" por "Planos" antes de 25/09. Se não aprovar, as peças usam "pacote"
+e a recepção precisa de um script para desambiguar na hora.
+
+### Peças afetadas
+
+As cinco peças paradas no Canva dizem "COMBO". Todas precisam de ajuste de
+texto antes de publicar:
+
+| Peça | Texto atual | Vira |
+|---|---|---|
+| Story - CHEGOU COMBO | "CHEGOU COMBO · FAST ESCOVA LIMÃO" | "CHEGOU PACOTE..." |
+| Story - CHEGOU COMBO NA FAST LIMÃO | "CHEGOU COMBO NA FAST LIMÃO · EM BREVE" | idem |
+| Edgy Story | "COMBO CHEGANDO NA FAST LIMÃO" | "PACOTE CHEGANDO..." |
+| Elegant Teaser | "EM BREVE · Combo · CHEGOU NA FAST LIMÃO" | "EM BREVE · Pacote..." |
+| Luxurious Glow | "EM BREVE, Combo" | "EM BREVE, Pacote" |
+
+Observação de redação: *"CHEGOU PACOTE"* soa pior que *"CHEGOU COMBO"* —
+"pacote" pede artigo. A correção natural é **"CHEGOU O PACOTE"** ou, melhor
+para o caso, **"CHEGARAM OS PACOTES"**. A linha de apoio
+*"Mais de um cuidado. Uma passada só."* continua funcionando e passa a ser a
+definição de pacote — vale mantê-la em todas.

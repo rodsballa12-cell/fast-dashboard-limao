@@ -23,12 +23,13 @@ Personas de referência: Camila (34, escova semanal), Débora (48, spa mensal),
 Nina (26, eventos pontuais).
 
 **Metas comerciais:**
-- Ticket médio atual R$ 71 → alvo com combos R$ 93
+- Ticket médio atual R$ 71 → alvo com pacotes R$ 93
 - Captação: 90–130 clientes novas/mês
 - Ticket-meta por serviço: Escova R$ 80 · Spa R$ 280
 
 **Tom de voz:** feminino, empoderador, direto. CTA claro em todo post.
-Vocabulário FAST: "chegada" (não "recebimento"), "combo" (não "pacote"),
+Vocabulário FAST: "chegada" (não "recebimento"), "pacote" (não "combo" —
+invertido por Rodrigo em 15/09/2026; a regra anterior dizia o oposto),
 "profissional" (não "cabeleireira" isolado), "cuidar" (não "servir").
 Nunca: "milagre", "recupera", "escova barata", nomes de concorrentes,
 promessas de resultado físico ("cabelo perfeito").
