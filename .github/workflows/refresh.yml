@@ -34,12 +34,33 @@ name: Refresh Dashboard Data
 on:
   workflow_dispatch:
   schedule:
-    # 5 slots/dia cobrindo horário comercial · 2 fires defasados por slot
-    # (redundância pro GH pular às vezes) · early-exit resolve a duplicação.
-    # Slots em BRT: 11h · 14h · 17h · 20h · 22h
-    # Meta: ~5 execuções REAIS/dia (vs ~8 antes) → economia ~40%
-    - cron: '7 14,17,20,23,1 * * *'
-    - cron: '37 14,17,20,23,1 * * *'
+    # PIPELINE ÚNICO desde 15/09/2026. Antes existiam DOIS caminhos escrevendo
+    # os mesmos arquivos: este workflow (unidade + consolidado + densidade) e a
+    # tarefa agendada do PC do Rodrigo, que regenerava só a Escova e dava push.
+    # Quando o PC rodava por último o consolidado ficava para trás — em 14/09
+    # o painel da holding passou uma hora descrevendo um momento que já tinha
+    # passado, e ninguém notou porque os números ficam perto.
+    # Conferido antes de desligar o do PC: os dois produziam payload idêntico,
+    # 110 chaves e mesmo tamanho. Não se perdeu nada além de duplicação.
+    #
+    # 7 slots/dia, alinhados ao que cada um alimenta · 2 fires defasados por
+    # slot (o GitHub pula fires em horário de pico) · o early-exit abaixo
+    # resolve a duplicação em menos de 10s, sem tocar na API.
+    #
+    #   BRT  UTC   serve a
+    #   09h  12h   baseline da manhã
+    #   11h  14h   o briefing /operacao-diaria das 11h30
+    #   14h  17h   meio do dia
+    #   16h  19h   início do pico (16h-18h é onde a densidade sobe)
+    #   18h  21h   pico
+    #   20h  23h   depois do corte de entrada das 19h15 — receita do dia fechada
+    #   22h  01h   o /conselho das 22h30
+    #
+    # Custo medido: ~27 req por execução real. 7 × 27 = ~190/dia = ~5.700/mês,
+    # contra cota de 10.000. Sobra folga, e ainda assim é MENOS que os ~259/dia
+    # que os dois pipelines juntos gastavam.
+    - cron: '7 12,14,17,19,21,23,1 * * *'
+    - cron: '37 12,14,17,19,21,23,1 * * *'
 
 permissions:
   contents: write
