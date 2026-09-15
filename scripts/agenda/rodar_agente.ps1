@@ -1,3 +1,11 @@
+﻿# ATENCAO AO SALVAR: este arquivo precisa de BOM UTF-8.
+# O Windows PowerShell 5.1 - o unico instalado na maquina do Rodrigo - le
+# arquivo sem BOM usando a codepage do sistema, e isso quebra acento e
+# travessao. Em 15/09/2026 o instalar_tarefas.ps1 foi gravado sem BOM de um
+# Linux e nao rodou; este aqui rodaria, mas escreveria o cabecalho de todo
+# briefing com caractere corrompido. Editor que salva "UTF-8 sem BOM" reintroduz
+# o problema em silencio.
+#
 # Roda um cargo da empresa digital sem ninguem na frente do computador e
 # grava o resultado no Obsidian, que sincroniza pro celular via OneDrive.
 #
