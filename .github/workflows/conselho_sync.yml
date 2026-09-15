@@ -1,0 +1,93 @@
+name: Conselho Sync (auto)
+
+# Dispara sempre que um briefing de Conselho é commitado em Briefings/.
+# Lê o markdown, extrai as 3 decisões e aplica no dashboard (Escova + SPA
+# + Consolidado) marcando cada decisão como "aprovada" (modo auto escolhido
+# pelo Rodrigo em 15/09/2026). Grava ata + decisões individuais em docs/.
+#
+# Se o Rodrigo mudar de ideia, rodar /sincronizar manualmente sobrescreve
+# os status.
+#
+# Também aceita workflow_dispatch pra rodar sob demanda.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Briefings/*-conselho.md'
+  workflow_dispatch:
+    inputs:
+      briefing:
+        description: 'Path do briefing (relativo ao repo). Vazio = pega o mais recente.'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: conselho-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Evita loop: se o próprio commit deste job disparar o workflow, pula.
+          # Detectamos pelo prefixo "conselho ... sincroniza dashboard (auto)"
+          fetch-depth: 2
+
+      - name: Pular se o commit já é do próprio sync
+        id: guard
+        run: |
+          msg=$(git log -1 --pretty=%s)
+          if echo "$msg" | grep -qE '^conselho .* sincroniza dashboard \(auto\)'; then
+            echo "É commit do próprio sync — abortando pra não fazer loop."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-python@v5
+        if: steps.guard.outputs.skip != 'true'
+        with:
+          python-version: '3.12'
+
+      - name: Rodar sync
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          if [ -n "${{ github.event.inputs.briefing }}" ]; then
+            python scripts/sync_conselho.py "${{ github.event.inputs.briefing }}"
+          else
+            python scripts/sync_conselho.py --auto-latest
+          fi
+
+      - name: Commit + push
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Data do briefing mais recente pra usar no commit
+          latest=$(ls -t Briefings/*-conselho.md 2>/dev/null | head -1)
+          if [ -z "$latest" ]; then
+            echo "Sem briefing pra sincronizar."
+            exit 0
+          fi
+          data=$(basename "$latest" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}')
+
+          git add data/midias_sociais.json data/spa/midias_sociais.json data/consolidado/midias_sociais.json docs/atas docs/decisoes 2>/dev/null || true
+
+          if git diff --cached --quiet; then
+            echo "Sem mudanças — briefing já estava sincronizado (idempotente)."
+            exit 0
+          fi
+
+          git commit -m "conselho ${data}: sincroniza dashboard (auto)
+
+Aplicado pelo workflow conselho_sync.yml a partir de Briefings/${data}-conselho.md.
+Todas as decisões viraram recomendação status=aprovada.
+Se algum status estiver errado, rodar /sincronizar manualmente pra sobrescrever."
+          git push

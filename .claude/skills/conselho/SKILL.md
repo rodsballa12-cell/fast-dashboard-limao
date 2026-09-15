@@ -169,3 +169,29 @@ SITUAÇÃO DA MESA
 Depois que o Rodrigo decidir, chame a **Memória** para registrar em
 `docs/decisoes/` com data de revisão. Decisão que não vira nota é decisão que
 vai ser retomada do zero daqui a dois meses.
+
+## Passo 6 — salvar o briefing no repo (dispara sync automática)
+
+O briefing sempre vai pro vault do Obsidian
+(`Cerebro_Claude/Briefings/AAAA-MM-DD-conselho.md`).
+
+**Adicional obrigatório:** também gravar cópia idêntica em
+`Briefings/AAAA-MM-DD-conselho.md` do repo `fast-dashboard-limao` e
+commitar/pushar. Sempre UTF-8.
+
+Por quê: o workflow `conselho_sync.yml` fica escutando pushes em
+`Briefings/**-conselho.md` na main. Assim que o briefing chega no repo, ele
+roda `scripts/sync_conselho.py` que aplica as decisões no dashboard
+(historico_conselhos[], recomendacoes[], docs/atas/, docs/decisoes/) sem
+mais interação. Se o Rodrigo depois mudar de ideia sobre alguma decisão,
+ele roda `/sincronizar` manualmente pra sobrescrever.
+
+Regra: o commit no repo é feito **depois** do Rodrigo já ter visto o
+briefing e batido martelo, nunca antes. Commit padrão:
+
+```
+conselho AAAA-MM-DD HH:MM · briefing gerado
+```
+
+Se não conseguir commitar (repo sem acesso, conflito), avisar e continuar —
+o vault do Obsidian é a fonte primária, o repo é reflexo.
