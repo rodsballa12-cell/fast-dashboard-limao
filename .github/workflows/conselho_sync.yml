@@ -1,24 +1,21 @@
 name: Conselho Sync (auto)
 
-# Dispara sempre que um briefing de Conselho é commitado em Briefings/.
-# Lê o markdown, extrai as 3 decisões e aplica no dashboard (Escova + SPA
-# + Consolidado) marcando cada decisão como "aprovada" (modo auto escolhido
-# pelo Rodrigo em 15/09/2026). Grava ata + decisões individuais em docs/.
-#
-# Se o Rodrigo mudar de ideia, rodar /sincronizar manualmente sobrescreve
-# os status.
-#
-# Também aceita workflow_dispatch pra rodar sob demanda.
+# Dispara sempre que um briefing de Conselho eh commitado em Briefings/.
+# Le o markdown, extrai as 3 decisoes e aplica no dashboard (Escova + SPA
+# + Consolidado) marcando cada decisao como "aprovada". Grava ata +
+# decisoes individuais em docs/. Se o Rodrigo mudar de ideia, rodar
+# /sincronizar manualmente sobrescreve os status.
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
-      - 'Briefings/*-conselho.md'
+      - 'Briefings/**-conselho.md'
   workflow_dispatch:
     inputs:
       briefing:
-        description: 'Path do briefing (relativo ao repo). Vazio = pega o mais recente.'
+        description: 'Path do briefing relativo ao repo (vazio = pega o mais recente)'
         required: false
         default: ''
 
@@ -33,61 +30,71 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          # Evita loop: se o próprio commit deste job disparar o workflow, pula.
-          # Detectamos pelo prefixo "conselho ... sincroniza dashboard (auto)"
           fetch-depth: 2
 
-      - name: Pular se o commit já é do próprio sync
+      - name: Skip if this is our own sync commit
         id: guard
+        shell: bash
         run: |
-          msg=$(git log -1 --pretty=%s)
-          if echo "$msg" | grep -qE '^conselho .* sincroniza dashboard \(auto\)'; then
-            echo "É commit do próprio sync — abortando pra não fazer loop."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
+          msg="$(git log -1 --pretty=%s)"
+          case "$msg" in
+            "conselho "*"sincroniza dashboard (auto)")
+              echo "Commit e do proprio sync. Pulando pra nao fazer loop."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
 
-      - uses: actions/setup-python@v5
+      - name: Setup Python
         if: steps.guard.outputs.skip != 'true'
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
       - name: Rodar sync
         if: steps.guard.outputs.skip != 'true'
+        shell: bash
+        env:
+          BRIEFING_INPUT: ${{ github.event.inputs.briefing }}
         run: |
-          if [ -n "${{ github.event.inputs.briefing }}" ]; then
-            python scripts/sync_conselho.py "${{ github.event.inputs.briefing }}"
+          if [ -n "$BRIEFING_INPUT" ]; then
+            python scripts/sync_conselho.py "$BRIEFING_INPUT"
           else
             python scripts/sync_conselho.py --auto-latest
           fi
 
-      - name: Commit + push
+      - name: Commit e push
         if: steps.guard.outputs.skip != 'true'
+        shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Data do briefing mais recente pra usar no commit
-          latest=$(ls -t Briefings/*-conselho.md 2>/dev/null | head -1)
+          latest="$(ls -t Briefings/*-conselho.md 2>/dev/null | head -1)"
           if [ -z "$latest" ]; then
             echo "Sem briefing pra sincronizar."
             exit 0
           fi
-          data=$(basename "$latest" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}')
+          data="$(basename "$latest" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}')"
 
           git add data/midias_sociais.json data/spa/midias_sociais.json data/consolidado/midias_sociais.json docs/atas docs/decisoes 2>/dev/null || true
 
           if git diff --cached --quiet; then
-            echo "Sem mudanças — briefing já estava sincronizado (idempotente)."
+            echo "Sem mudancas - briefing ja estava sincronizado (idempotente)."
             exit 0
           fi
 
-          git commit -m "conselho ${data}: sincroniza dashboard (auto)
+          {
+            printf 'conselho %s: sincroniza dashboard (auto)\n\n' "$data"
+            printf 'Aplicado pelo workflow conselho_sync.yml a partir de Briefings/%s-conselho.md.\n' "$data"
+            printf 'Todas as decisoes viraram recomendacao status=aprovada.\n'
+            printf 'Se algum status estiver errado, rodar /sincronizar manualmente pra sobrescrever.\n'
+          } > /tmp/commit-msg.txt
 
-Aplicado pelo workflow conselho_sync.yml a partir de Briefings/${data}-conselho.md.
-Todas as decisões viraram recomendação status=aprovada.
-Se algum status estiver errado, rodar /sincronizar manualmente pra sobrescrever."
+          git commit -F /tmp/commit-msg.txt
           git push
