@@ -72,21 +72,31 @@ schtasks /Change /TN "FAST\Marketing sexta" /DISABLE   # pausa
 schtasks /Delete /TN "FAST\Marketing sexta" /F         # remove
 ```
 
-## Por que quatro tarefas cobrem os sete cargos
+## As sete tarefas
 
-Os três da manhã e do meio-dia são os **acionáveis**: dá tempo de fazer algo
-com o que eles dizem.
+| Hora | Cargo | Por que esse horário |
+|---|---|---|
+| 07h30 | `/memoria` | lê a auditoria de coerência que roda às 07h no GitHub |
+| 08h00 | `/marketing` | o refresh de mídia sai às 07h |
+| 08h30 | `/financeiro` | caixa e margem antes de o dia começar a gastar |
+| 09h00 | `/relacionamento` | chamar quem sumiu antes do movimento começar |
+| 09h30 | `/pessoas` | equipe e escala antes do turno da tarde |
+| 11h30 | `/operacao-diaria` | o painel atualiza às 11h — ainda dá tempo de salvar o dia |
+| 22h30 | `/conselho` | fecha o dia nas quatro janelas, com os seis departamentos |
 
-O **Conselho das 22h30 convoca os seis departamentos** — inclusive `/financeiro`
-e `/pessoas`, que não têm tarefa própria. Eles não ganham briefing individual
-de propósito: dependem de dado que entra à mão (DRE, extrato Stone, regra de
-comissão), e relatório diário sobre dado parado mostra o mesmo número todo dia
-e ensina a ignorar o aviso. Dentro do conselho eles falam quando têm o que
-dizer, e declaram o atraso do dado quando não têm.
+Um cargo, uma tarefa. O Conselho continua convocando todo mundo à noite — o
+briefing individual da manhã é para agir, a reunião da noite é para decidir.
 
-`/memoria` roda sozinho por outro caminho: a auditoria de coerência executa
-todo dia às 07h no GitHub Actions e falha o workflow quando os números não
-batem entre unidades, períodos e consolidado.
+### A trava contra ruído
+
+`/financeiro`, `/pessoas` e `/memoria` dependem de dado que entra à mão e fica
+parado por dias. Os três têm instrução explícita na ficha: **dia sem novidade,
+uma linha e pronto.**
+
+Isso importa mais do que parece. Entre 24/08 e 04/09 um fluxo criava uma tarefa
+de aprovação por dia: 9 criadas, **7 nunca respondidas**. Não falhou por estar
+errado — falhou por ser repetitivo. Briefing que repete o mesmo número toda
+manhã treina quem lê a não abrir.
 
 ## O risco que isso carrega
 

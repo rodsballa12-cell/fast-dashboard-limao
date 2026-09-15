@@ -1,5 +1,5 @@
 ﻿<#
-  Registra as quatro tarefas agendadas dos cargos no Agendador do Windows.
+  Registra as sete tarefas agendadas dos cargos no Agendador do Windows — uma por cargo.
 
   Use Register-ScheduledTask em vez de schtasks porque só ele expõe
   StartWhenAvailable: se o computador estiver desligado na hora, a tarefa roda
@@ -33,10 +33,16 @@ if (-not (Test-Path $runner)) { Falhar "Não achei $runner. Confira o caminho do
 
 # As tarefas: nome, agente, hora, e por que esse horário.
 $tarefas = @(
+  @{ Nome="FAST\Memoria 07h30";      Agente="memoria";          Hora="07:30"
+     Porque="lê o resultado da auditoria de coerência que roda às 07h no GitHub" }
   @{ Nome="FAST\Marketing 08h";      Agente="marketing";        Hora="08:00"
      Porque="o refresh de mídia sai às 07h" }
+  @{ Nome="FAST\Financeiro 08h30";   Agente="financeiro";       Hora="08:30"
+     Porque="caixa e margem antes do dia começar a gastar" }
   @{ Nome="FAST\Relacionamento 09h"; Agente="relacionamento";   Hora="09:00"
      Porque="chamar quem sumiu antes do movimento começar" }
+  @{ Nome="FAST\Pessoas 09h30";      Agente="pessoas";          Hora="09:30"
+     Porque="equipe e escala antes do turno da tarde, que é onde o movimento está" }
   @{ Nome="FAST\Operacao 11h30";     Agente="operacao-diaria";  Hora="11:30"
      Porque="o painel atualiza às 11h — ainda dá tempo de salvar o dia" }
   @{ Nome="FAST\Conselho 22h30";     Agente="conselho";         Hora="22:30"
@@ -61,7 +67,7 @@ if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
   Aviso "O comando 'claude' não está no PATH desta sessão. O runner tenta caminhos conhecidos, mas se os briefings saírem com erro, rode 'where claude' e me diga o caminho."
 }
 
-Write-Host "`nRegistrando as quatro tarefas...`n"
+Write-Host "`nRegistrando as sete tarefas — uma por cargo...`n"
 
 foreach ($t in $tarefas) {
   $acao = New-ScheduledTaskAction -Execute "powershell.exe" `
