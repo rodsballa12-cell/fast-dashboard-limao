@@ -123,8 +123,17 @@ def _insights_semanal(aba, mes_por_dow=None):
     ant = aba.get("semana_anterior") or {}
 
     # 0. Semana × semana anterior (comparação tática)
-    if ant.get("caixa", 0) > 0 and k.get("dias_op", 0) > 0 and ant.get("dias_op", 0) > 0:
-        media_atu = k.get("caixa", 0) / k["dias_op"]
+    #
+    # SÓ A PARTIR DO 4º DIA. Média/dia entre semanas de tamanhos diferentes não
+    # compara nada: os dias do FAST têm pesos que vão de 6,2% (terça) a 37,6%
+    # (sábado). Em 15/09/2026 este bloco anunciou "ritmo -59% vs semana passada"
+    # comparando uma segunda-feira solta com a média de uma semana inteira que
+    # tinha sábado dentro — a queda era artefato da conta, não do negócio.
+    # Antes do 4º dia a régua certa é a meta acumulada até hoje (meta_ate_hoje),
+    # que já vem ponderada por dia da semana; é o bloco 0b logo abaixo.
+    dias_atu = k.get("dias_op", 0)
+    if ant.get("caixa", 0) > 0 and dias_atu >= 4 and ant.get("dias_op", 0) >= 4:
+        media_atu = k.get("caixa", 0) / dias_atu
         media_ant = ant["caixa"] / ant["dias_op"]
         delta_pct = (media_atu / media_ant - 1) * 100 if media_ant > 0 else 0
         if abs(delta_pct) >= 10:
@@ -134,8 +143,27 @@ def _insights_semanal(aba, mes_por_dow=None):
                 f"Esta semana: {_fmt(media_atu)}/dia · semana anterior ({ant.get('periodo_ini','')[-5:]}-{ant.get('periodo_fim','')[-5:]}): {_fmt(media_ant)}/dia.",
                 "Aumento — investigar o que gerou pra replicar (equipe, campanha, dia da semana)." if delta_pct > 0 else "Queda — checar se algo mudou (feriado, doença, chuva). Ativar top clientes."))
 
+    # 0b. Começo de semana: contra a meta acumulada, que já é ponderada por dia
+    # da semana. É a única leitura honesta antes do sábado entrar na conta.
+    if dias_atu and dias_atu < 4 and m.get("meta_ate_hoje"):
+        pct_ate = m.get("pct_ate_hoje", 0)
+        saldo = m.get("saldo_ate_hoje", 0)
+        corridos = f"nos {dias_atu} dias já corridos" if dias_atu > 1 else "no primeiro dia da semana"
+        if pct_ate < 85:
+            ins.append(_mk("atencao", f"Semana começou em {pct_ate:.0f}% da meta acumulada",
+                f"{_fmt(k.get('caixa', 0))} contra {_fmt(m['meta_ate_hoje'])} de meta {corridos} ({_fmt(saldo)}).",
+                "Ainda dá pra virar: o peso da semana está no fim dela (sexta 19%, sábado 38%). Garantir escala e agenda do fim de semana."))
+        elif pct_ate >= 110:
+            ins.append(_mk("oportunidade", f"Semana começou em {pct_ate:.0f}% da meta acumulada",
+                f"{_fmt(k.get('caixa', 0))} contra {_fmt(m['meta_ate_hoje'])} de meta {corridos} (+{_fmt(saldo)}).",
+                "Começo forte — o grosso da semana ainda vem (sexta e sábado são 57%). Não relaxar na escala."))
+
     # 1. Meta semanal → projeção
-    if m.get("meta") and m.get("dias_realizados", 0) > 0:
+    # Mesma trava do bloco 0: a projeção é ritmo_dia x 7, linear, e antes do 4º dia
+    # ela extrapola a semana inteira a partir dos dias mais leves. Uma segunda-feira
+    # sozinha projetava 34% da semana quando a leitura correta (meta acumulada) dizia
+    # a mesma coisa sem fingir que sabia como sexta e sábado vão terminar.
+    if m.get("meta") and m.get("dias_realizados", 0) > 0 and dias_atu >= 4:
         pct = m.get("pct", 0)
         proj = m.get("projecao", 0)
         proj_pct = m.get("projecao_pct", 0)
@@ -444,6 +472,22 @@ def _insights_stone(stone):
         ins.append(_mk("critico", f"{len(orf_trinks)} PIX registrado no Trinks mas SEM confirmação Stone",
             f"Total {_fmt(total)}. O sistema marca como recebido, mas o dinheiro NÃO caiu na conta.",
             "Verificar comprovante com o cliente hoje. Se não confirmar, corrigir Trinks pra não inflar caixa fantasma."))
+
+    # 1b. Extrato atrasado — a causa mais comum do alerta acima aparecer inflado.
+    # O que está fora da cobertura do extrato não é pagamento que não caiu: é
+    # pagamento que ninguém ainda conferiu. O pedido certo é exportar o extrato,
+    # não ligar pros clientes.
+    fora = nc.get("orfaos_fora_extrato") or []
+    ate = nc.get("extrato_cobre_ate")
+    if fora and ate:
+        try:
+            dias = (date.today() - date.fromisoformat(ate)).days
+        except Exception:
+            dias = None
+        atraso = f" ({dias} dias atrás)" if dias else ""
+        ins.append(_mk("atencao", f"Extrato Stone parado em {ate[-5:]}{atraso}",
+            f"{len(fora)} PIX de {_fmt(sum(o.get('valor', 0) for o in fora))} são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
+            "Exportar o extrato Stone atualizado e colocar em data/stone_extrato.csv. Antes disso, não vale ligar pra cliente nenhuma."))
 
     # 2. PIX Stone sem venda no Trinks — dinheiro entrou mas não foi lançado
     orf_stone = nc.get("orfaos_stone") or []

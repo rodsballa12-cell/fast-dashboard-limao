@@ -106,6 +106,31 @@ seja não.
 Vale para os dois lados: não inventar profundidade onde não há. Dia realmente
 sem movimento é uma linha dizendo isso.
 
+## Alarme do painel é hipótese, não fato
+
+Acrescentado em 15/09/2026, depois de um briefing ter mandado o Rodrigo ligar para
+quinze clientes sem motivo.
+
+O card abriu 🔴 *"15 PIX no Trinks sem confirmação no Stone — R$ 1.599 — conferir
+comprovante com cada cliente hoje"*. **Catorze dos quinze eram posteriores a 09/09,
+o último dia que o extrato Stone cobre.** Não eram pagamentos que não caíram: eram
+pagamentos que ninguém tinha olhado ainda. O órfão real era de R$ 35.
+
+No mesmo dia, "R$ 22.747 em risco não conciliado" eram R$ 21.148 de recebível de
+cartão em D+30 — prazo normal — somados na mesma linha que o risco de verdade.
+
+**Antes de repetir um alarme, confira as duas coisas que o alarme não diz:**
+
+1. **Até quando vai a fonte que gerou o alerta.** Divergência depois do fim do
+   período coberto não é divergência: é dado que falta. O pedido certo vira
+   "exportar o extrato", não "ligar para o cliente".
+2. **O que exatamente foi somado.** Um total que junta risco com prazo normal
+   infla o número em vinte vezes e ninguém percebe, porque parece preciso.
+
+Alarme falso custa mais caro que silêncio: ele ensina a ignorar a cor vermelha.
+Quando um alerta do painel não sobrevive à conferência, o parecer diz isso — e o
+defeito vira tarefa de código, não linha de briefing repetida amanhã.
+
 ## Conector bloqueado não é parecer bloqueado
 
 Acrescentado em 14/09/2026, depois de duas fichas terem sido escritas errado.

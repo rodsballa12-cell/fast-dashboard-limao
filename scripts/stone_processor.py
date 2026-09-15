@@ -340,18 +340,39 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         else:
             orf_t_pendentes.append(orf)
 
+    # === FORA DA COBERTURA DO EXTRATO ===
+    # Um PIX registrado no Trinks depois do último lançamento do extrato Stone
+    # NÃO é um pagamento que não caiu: é um pagamento que o extrato ainda não
+    # alcança. Tratar os dois como a mesma coisa transforma extrato atrasado em
+    # alarme falso — em 15/09/2026 o briefing das 09h abriu com "15 PIX sem
+    # confirmação, R$ 1.599, conferir com cada cliente hoje", e 14 deles
+    # (R$ 1.564) eram simplesmente posteriores a 09/09, o último dia do extrato.
+    # Sobrava um órfão real de R$ 35.
+    fim_cobertura = fim.isoformat() if fim else None
+    if fim_cobertura:
+        orf_t_fora = [o for o in orf_t_pendentes if (o.get("data") or "") > fim_cobertura]
+        orf_t_pendentes = [o for o in orf_t_pendentes if (o.get("data") or "") <= fim_cobertura]
+    else:
+        orf_t_fora = []
+
     valor_orf_stone = sum(o["valor"] for o in orf_s_all)
     valor_orf_trinks = sum(o["valor"] for o in orf_t_pendentes)  # só pendentes contam como risco
     total_risco = valor_orf_stone + valor_orf_trinks + a_receber_total
 
     nao_conciliado = {
         "total_valor_risco": _r(total_risco),
+        "extrato_cobre_ate": fim_cobertura,
         "orfaos_stone_n": len(orf_s_all),
         "orfaos_stone_v": _r(valor_orf_stone),
         "orfaos_stone": orf_s_all[:50],
         "orfaos_trinks_n": len(orf_t_pendentes),
         "orfaos_trinks_v": _r(valor_orf_trinks),
         "orfaos_trinks": orf_t_pendentes[:50],
+        # Pendentes de extrato, não de pagamento. Some sozinho quando o Rodrigo
+        # exporta um extrato novo; enquanto isso mede o atraso da exportação.
+        "orfaos_fora_extrato_n": len(orf_t_fora),
+        "orfaos_fora_extrato_v": _r(sum(o["valor"] for o in orf_t_fora)),
+        "orfaos_fora_extrato": orf_t_fora[:50],
         "orfaos_trinks_reconciliados_n": len(orf_t_reconciliados),
         "orfaos_trinks_reconciliados_v": _r(sum(o["valor"] for o in orf_t_reconciliados)),
         "orfaos_trinks_reconciliados": orf_t_reconciliados[:50],
