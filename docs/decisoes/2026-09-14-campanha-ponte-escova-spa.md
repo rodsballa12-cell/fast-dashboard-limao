@@ -1071,3 +1071,29 @@ A profissional, no momento do pagamento, com a cliente ainda sentada:
 | Treinar as profissionais no script do §14.5 | Rodrigo | 17/09 |
 | Definir quem numera e onde anota | Rodrigo | 17/09 |
 | Imprimir 25 cartelas numeradas | Marketing | 17/09 |
+
+---
+
+## 15. Cancelada · a Cartela Fundadora
+
+**Rodrigo, 15/09/2026:** a pré-venda das 25 cartelas está cancelada. Os §12
+e §13 ficam como registro do que foi proposto e por quê, **não como plano
+em vigor**.
+
+**O que se perde:** o caixa antecipado (R$ 12.250 no cenário de lote
+esgotado), o piso de ocupação de segunda a quarta, as cinco visitas
+garantidas por cliente e a sessão presenteável — que era o único mecanismo
+de aquisição a custo zero da campanha.
+
+**O que permanece, e sustenta a ponte sozinho:**
+
+1. **Ledterapia Capilar, 7 min, por nossa conta** para cliente da Escova —
+   custo de aparelho, não de profissional.
+2. **A entrada de R$ 59** (drenagem facial de 15 min), abaixo do ticket
+   médio da Escova de R$ 62,24.
+3. **O balcão** como canal de conversão — ~124 clientes na janela de 18 a
+   24/09, quase metade delas no sábado 20/09.
+4. **O sábado 26/09 das 9h às 12h** exclusivo, agora por ser do grupo VIP e
+   não por ter comprado.
+
+O roteiro em vigor é `2026-09-15-roteiro-lancamento-spa.md`.
