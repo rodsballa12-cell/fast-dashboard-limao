@@ -68,3 +68,32 @@ $avisoGit
 
 ($cabecalho + $saida) | Set-Content -Path $arquivo -Encoding UTF8
 Write-Output "Gravado em $arquivo"
+
+# --- Copia pro repositorio ------------------------------------------------
+# O briefing no vault so existe nesta maquina. Uma copia em docs/atas/ da a
+# ele tres coisas que o vault nao da: historico versionado, leitura por
+# qualquer sessao (inclusive as que rodam na nuvem) e consulta pela Memoria.
+#
+# Escopo estreito de proposito: so docs/atas/, so um markdown que este script
+# acabou de gerar. Nao toca em mais nada do repositorio.
+$atasDir = Join-Path $Projeto "docs\atas"
+if (-not (Test-Path $atasDir)) { New-Item -ItemType Directory -Path $atasDir -Force | Out-Null }
+$ata = Join-Path $atasDir "$data-$Agente.md"
+Copy-Item -Path $arquivo -Destination $ata -Force
+
+try {
+  git -C $Projeto pull --rebase --quiet 2>&1 | Out-Null
+  git -C $Projeto add -- "docs/atas/$data-$Agente.md"
+  # Sem mudanca no conteudo, nao gera commit vazio.
+  git -C $Projeto diff --cached --quiet
+  if ($LASTEXITCODE -ne 0) {
+    git -C $Projeto -c user.name="FAST Agenda" -c user.email="noreply@anthropic.com" `
+      commit --quiet -m "ata: $Agente $data $hora"
+    git -C $Projeto push --quiet 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) { Write-Output "Publicado em docs/atas/$data-$Agente.md" }
+    else { Write-Output "AVISO: commit feito, push falhou. A ata sobe no proximo briefing." }
+  }
+} catch {
+  # Falha aqui nunca pode derrubar o briefing: ele ja esta salvo no vault.
+  Write-Output "AVISO: nao consegui publicar no repositorio ($($_.Exception.Message)). A ata esta no vault."
+}
