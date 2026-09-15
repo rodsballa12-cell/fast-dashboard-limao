@@ -52,7 +52,7 @@ brinde — que custam pouco e não desvalorizam nada.
 
 1. **Pacote de 5 massagens por R$ 489** — não existe em lugar nenhum
 2. **Sabem antes** — a oferta chega na sexta 18/09, uma semana antes de abrir
-3. **Primeira Ledterapia Capilar por nossa conta** — 7 min, vale R$ 79
+3. **Primeira Ledterapia Capilar por nossa conta** — 7 min, vale R$ 69
 4. **Sábado 26/09, das 9h às 12h**, o Spa atende só quem é do grupo
 
 O item 4 quase não custa: **26/09 é sábado**, o dia em que ~48 clientes já
@@ -73,7 +73,7 @@ passam pela Escova. O Spa abre a manhã só para elas.
 | Pagamento | à vista ou **3× de R$ 163** (fecha exato) |
 | Uso | segunda a quarta, até **31/12/2026** |
 | Presente | **uma das 5 sessões** pode ser dada a outra pessoa |
-| Brinde | primeira **Ledterapia Capilar** por nossa conta (vale R$ 79) |
+| Brinde | primeira **Ledterapia Capilar** por nossa conta (vale R$ 69) |
 
 **R$ 489 e não R$ 490:** divide exato por três. R$ 490 daria 3× de
 R$ 163,33 — número quebrado em peça e em conversa de balcão.
@@ -164,7 +164,7 @@ sistema**, então a margem do lado da escova não fecha.
 > À vista ou em 3× de R$ 163. Usa de segunda a quarta, até dezembro.
 > **Uma das 5 você pode dar de presente pra quem quiser.**
 >
-> E a primeira Ledterapia Capilar é por nossa conta — 7 minutos, vale R$ 79.
+> E a primeira Ledterapia Capilar é por nossa conta — 7 minutos, vale R$ 69.
 >
 > E no sábado 26, das 9h às 12h, o Spa atende só quem é do grupo.
 >
@@ -251,7 +251,7 @@ exclusivo delas foi para todo mundo, acabou o exclusivo.
 > fecha ganha 3 sessões extras e uma escova bônus aqui com a gente.
 >
 > E pra cliente de casa, a primeira Ledterapia Capilar é por nossa conta —
-> 7 minutinhos, vale R$ 79."
+> 7 minutinhos, vale R$ 69."
 
 **Se ela é do grupo VIP, acrescente:**
 
