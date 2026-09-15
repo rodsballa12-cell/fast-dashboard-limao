@@ -1,4 +1,4 @@
-<#
+﻿<#
   Registra as quatro tarefas agendadas dos cargos no Agendador do Windows.
 
   Use Register-ScheduledTask em vez de schtasks porque só ele expõe
