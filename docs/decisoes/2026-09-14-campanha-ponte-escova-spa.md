@@ -914,3 +914,160 @@ perde gente — e essas 67 são o ativo mais bem cuidado da operação.
 | Imprimir 25 cartelas numeradas | Marketing | 17/09 |
 | Planilha de controle na recepção | Operação | 18/09 |
 | Quem responde o grupo VIP e numera | Rodrigo define | 17/09 |
+
+---
+
+## 14. Correção · o grupo VIP é só de aviso
+
+**Rodrigo, 15/09/2026:** as 67 integrantes **não podem responder no grupo**.
+É lista de transmissão / grupo com resposta bloqueada.
+
+Isso invalida o mecanismo do §13.5, que mandava responder "EU QUERO" no
+grupo. A copy daquela seção **não deve ser usada como está**.
+
+### 14.1 · A arquitetura corrigida: três funções, três lugares
+
+| Função | Onde acontece | Por quê |
+|---|---|---|
+| **Anunciar** | grupo VIP (transmissão) | 67 pessoas, canal direto, zero custo |
+| **Fechar** | **balcão da Escova** | a cliente já está sentada, com a profissional na frente |
+| **Recolher** | link de WhatsApp direto | para quem não passa na loja antes de 24/09 |
+
+**O balcão passa a ser o canal principal de venda, e isso é uma boa notícia.**
+Medindo as últimas 4 semanas, a janela de 18 a 24/09 tem:
+
+| Dia | Atendimentos esperados |
+|---|---|
+| qui 18/09 | ~14 |
+| sex 19/09 | ~30 |
+| **sáb 20/09** | **~48** |
+| seg 22/09 | ~7 |
+| ter 23/09 | ~9 |
+| qua 24/09 | ~15 |
+| **Total** | **~124 clientes na cadeira** |
+
+**25 cartelas em 124 atendimentos = 20% de conversão.** É uma meta de balcão
+realista — muito mais do que pedir 37% de conversão de um grupo que nem
+responder pode. E metade dessas 124 são clientes recorrentes, que já
+conhecem a casa.
+
+**Sábado 20/09 é o dia.** Quase metade da janela inteira num único dia, com
+pico entre 15h e 18h.
+
+### 14.2 · O link que substitui o "EU QUERO"
+
+Para quem vê o aviso e não vem à loja, o CTA vira um link de WhatsApp com
+texto já escrito — a cliente toca e só aperta enviar:
+
+```
+https://wa.me/5511966129197?text=Quero%20minha%20Cartela%20Fundadora
+```
+
+(número da Escova, `+55 11 96612-9197`, conforme
+`data/config.json → unidades.escova.midia_ids.whatsapp_display_number`)
+
+🔴 **Verificar antes de publicar:** esse número precisa ter WhatsApp ativo e
+alguém respondendo. O `data/spa/BRIEF_MARKETING.md` registra que a WABA nunca
+existiu e que **nenhuma mensagem jamais saiu por este sistema**. Conversa 1:1
+no app comum funciona sem WABA — mas se o link cair num número que ninguém
+atende, o lote morre na sexta-feira de manhã. **Testar mandando uma mensagem
+para si mesmo antes das 10h de 18/09.**
+
+### 14.3 · Por que a restrição ajuda
+
+Três ganhos que o grupo aberto não daria:
+
+1. **A loja controla o placar.** Ninguém disputa publicamente, ninguém
+   reclama de ordem. "Restam 11" é o que a loja disser — e é verdade,
+   porque a loja é quem numera.
+2. **Venda vira conversa, não leilão.** No privado ou no balcão dá para
+   explicar, contornar objeção e oferecer o parcelamento. No grupo, seria
+   uma corrida.
+3. **O grupo continua limpo.** 67 pessoas que aceitaram receber avisos não
+   viram 67 pessoas conversando sobre preço. O ativo se preserva.
+
+### 14.4 · Copy corrigida do grupo VIP
+
+**Mensagem 1 · quinta 17/09, manhã**
+
+> Meninas, amanhã às 10h eu abro aqui uma coisa que só existe para vocês 67.
+>
+> São 25 vagas. Quando acabar, acabou — e o Instagram só fica sabendo semana
+> que vem. 💛
+
+**Mensagem 2 · sexta 18/09, 10h**
+
+> Dia 25 abre o **Fast Spa Limão** — mesmo prédio da sua escova, mesmo
+> endereço, sem hora marcada.
+>
+> E vocês entram antes de todo mundo.
+>
+> **CARTELA FUNDADORA · 25 vagas**
+> 5 terapias de 45 minutos — você escolhe qual a cada visita:
+> Renove-se em 45' · Neuro Relax · Pernas e Pés Cansados · Reflexologia Podal
+>
+> Na tabela: R$ 745
+> **Fundadora: R$ 490** — R$ 98 a sessão, à vista ou em 3×
+>
+> Só a fundadora tem:
+> 🔢 cartela numerada de 1 a 25
+> 🚪 o Spa só para vocês no sábado 26/09, das 9h às 12h
+> 🎁 uma das 5 sessões você presenteia quem quiser
+> ✨ Ledterapia Capilar grátis em toda escova que fizer em 2026
+> 🏛 seu nome na parede da recepção
+>
+> Uso de segunda a quarta, até 31/12.
+>
+> **Como pegar a sua:**
+> 👉 Vem na loja e fala com a gente — quinta, sexta ou sábado
+> 👉 Ou toca aqui: wa.me/5511966129197
+>
+> A ordem dos números é a ordem de quem chegar. 💛
+
+**Mensagem 3 · segunda 22/09**
+
+> **Restam [N] de 25.**
+>
+> As fundadoras já numeradas vão receber a cartela na mão no dia da abertura.
+>
+> Quinta o Spa abre. Quem entrar agora usa a primeira sessão já na semana
+> seguinte.
+>
+> 👉 wa.me/5511966129197
+
+**Mensagem 4 · quinta 25/09**
+
+> Abriu. 💛
+>
+> **Fundadoras:** sábado, 9h às 12h, o Spa é de vocês.
+> Restam [N] cartelas — segunda o balcão começa a oferecer para todo mundo.
+
+### 14.5 · O script de balcão (onde a venda acontece de verdade)
+
+A profissional, no momento do pagamento, com a cliente ainda sentada:
+
+> "[Nome], você viu o que abriu aqui do lado?
+>
+> Dia 25 abre o Fast Spa — massagem, no mesmo prédio, sem hora marcada.
+>
+> A gente separou 25 cartelas para as clientes de casa, antes de anunciar
+> para o bairro. São 5 massagens de 45 minutos por R$ 490 — dá R$ 98 cada,
+> e avulsa é R$ 149. Usa de segunda a quarta, até o fim do ano.
+>
+> Uma das cinco você pode dar de presente pra quem quiser.
+>
+> Quer que eu já reserve a sua? Sobraram [N]."
+
+**Três regras para quem vende:**
+1. Dizer o **número que resta**, sempre. É o que fecha.
+2. Nunca prometer uso no sábado. *(§12.8, risco 2.)*
+3. Se a cliente hesitar no preço: oferecer o **3× de R$ 163**, não desconto.
+
+### 14.6 · O que muda no checklist
+
+| Precisa | Quem | Até |
+|---|---|---|
+| 🔴 **Testar o WhatsApp da loja** (link wa.me responde?) | Rodrigo | 17/09 |
+| Treinar as profissionais no script do §14.5 | Rodrigo | 17/09 |
+| Definir quem numera e onde anota | Rodrigo | 17/09 |
+| Imprimir 25 cartelas numeradas | Marketing | 17/09 |
