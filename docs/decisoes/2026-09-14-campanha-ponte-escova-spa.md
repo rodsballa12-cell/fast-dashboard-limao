@@ -352,3 +352,141 @@ Peças 1 (cartão PONTE), 2 (contagem), 3 (cabelo + corpo), 4 (cadeira e maca),
 5 (ABRIU), 6 (primeira cliente) e 7 (como funciona) — sete das nove. Nenhuma
 carrega número. A campanha não precisa esperar a tabela para começar a
 aquecer a base.
+
+---
+
+## 10. Atualização 15/09 · a tabela do Spa chegou
+
+Recebida por print (3 páginas). Transcrita abaixo — esta passa a ser a
+referência de preço até a API da Trinks existir.
+
+### Terapia Corporal
+| Serviço | Duração | Preço |
+|---|---|---|
+| Pós-operatório | 1h30 | R$ 229 |
+| Fast Spa Detox 🆕 | 1h20 | R$ 199 |
+| Fast Spa Casual | 1h | R$ 179 |
+| Liberação Miofascial | 45min | R$ 179 |
+| Renove-se em 45' | 45min | R$ 149 |
+| Neuro Relax 🆕 | 45min | R$ 149 |
+| Pernas e Pés Cansados | 45min | R$ 149 |
+| Reflexologia Podal | 45min | R$ 149 |
+
+### Outras linhas
+| Serviço | Duração | Preço |
+|---|---|---|
+| Fast Aconchego (gestante, a partir do 3º mês) 🆕 | 1h | R$ 199 |
+| Fast Spa Kids (6–12 anos) | 45min | R$ 129 |
+| Banho de Lua | 1h | R$ 249 |
+| Revitalização Corporal | 30min | R$ 109 |
+| Pescoço & Colo | 30min | R$ 89 |
+| Mãos | 20min | R$ 69 |
+| **Ledterapia Capilar** | **7min** | **R$ 79** |
+| Pós-operatório Facial | 45min | R$ 139 |
+| Drenagem Linfática Facial | 15min | R$ 59 |
+| Limpeza de Pele Super VIP + Spa dos Lábios | 1h15 | R$ 199 |
+| Limpeza de Pele Casual | 1h | R$ 159 |
+| Revitalização Facial | 30min | R$ 79 |
+| Peeling Glow Revitalizante | 15min | R$ 129 |
+| Hiper-hidratação Facial | 15min | R$ 79 |
+
+### Combos e adicionais
+- **Combo Fast Spa Detox** — R$ 457 · **Combo Fast Spa Casual** — R$ 437
+- **Adicionais** (só acoplados a outro serviço), 10–15min, **todos R$ 59**:
+  pedras quentes, ventosaterapia, liberação miofascial, manta térmica,
+  máscara de LED, relaxante na cabeça, relaxante facial, mãos e antebraço,
+  revitalização dos pés, revitalização das mãos
+- **Pacotes** compre 10 leve +1 (de R$ 990 a R$ 2.290) e **Plano Smart**
+  (–10%, uso de segunda a quarta)
+
+---
+
+### 10.1 · Correção de uma conta que eu dei errada
+
+No §1 deste plano projetei R$ 11.000 vindos da base, usando o ticket-alvo de
+R$ 280 que está na configuração do cargo. **Esse ticket não existe na
+tabela.** O serviço avulso mais caro é R$ 249; a faixa real das terapias é
+R$ 149–199. Só os combos (R$ 437 e R$ 457) passam de R$ 280.
+
+Refazendo com preço real, 39 clientes da base (15% das 261 ativas):
+
+| Cenário | Conta | Receita |
+|---|---|---|
+| Conservador | 39 × R$ 149 | R$ 5.811 |
+| Com attach de adicional em 40% | + 16 × R$ 59 | **R$ 6.755** |
+| Otimista (metade pega 1h+) | 39 × R$ 179 + attach | R$ 7.900 |
+
+**A base carrega ~45% da meta de R$ 15.000, não 70%.** O resto tem que vir de
+mídia paga e passante. Isso não enfraquece a campanha — ela continua sendo a
+receita mais barata do mês —, mas desfaz a ideia de que a base sozinha
+resolve setembro/outubro.
+
+### 10.2 · O produto-ponte estava escondido na tabela
+
+**LEDTERAPIA CAPILAR · 7 minutos · R$ 79.**
+
+É o melhor produto de entrada do Spa para a cliente da Escova, por três
+razões que nenhum outro serviço junta:
+
+1. **É cabelo.** A cliente está no prédio exatamente por isso. Não exige
+   mudar de assunto — "seu cabelo cai? sobe 7 minutos".
+2. **São 7 minutos.** Cabe no intervalo entre lavar e escovar. Não compete
+   com a agenda dela, não exige voltar outro dia.
+3. **Não consome hora de massoterapeuta** — é aparelho. Numa loja que abre
+   sem equipe rodada, isso importa.
+
+**Recomendação de oferta-ponte (substitui a do §6a):** a experimentação
+gratuita deixa de ser "15 min de massagem" e passa a ser **a Ledterapia
+Capilar de 7 minutos, grátis na primeira visita para cliente da Escova, até
+31/10**. Custa 7 minutos de aparelho, não uma hora de profissional.
+
+**E o segundo argumento de venda está no preço:**
+Drenagem Linfática Facial, 15min, **R$ 59** — menos que o ticket médio da
+Escova (R$ 62,24). A frase de balcão se escreve sozinha: *"custa menos que
+sua escova e leva 15 minutos"*.
+
+### 10.3 · Quatro problemas que a tabela revelou
+
+**1. "Combo" agora significa duas coisas.** Na Escova, as peças paradas no
+Canva anunciam "CHEGOU COMBO" querendo dizer *mais de um cuidado numa
+passada*. Na tabela do Spa, "Combo" é um produto fechado de R$ 437/457
+(limpeza de pele + LED + terapia + drenagem). Publicar as duas coisas na
+mesma semana faz a cliente pedir na recepção um combo que não existe pelo
+preço que ela imaginou. **Decidir uma das duas antes de publicar.**
+
+**2. O Plano Smart não serve para a cliente da Escova.** Ele vale de segunda
+a quarta. A Escova concentra **76,4% dos atendimentos em quinta, sexta e
+sábado** — sábado sozinho é 40,8%. A cliente da base vem no fim de semana; o
+desconto está no começo. Não ancore a campanha PONTE no Plano Smart — ele é
+produto para outro público (empresa, bairro, aposentada), não para quem sai
+da cadeira da Escova.
+
+**3. "Quick Massage" é vendida sem ter preço.** Aparece dentro do Combo Fast
+Spa Casual e no pacote de R$ 990, mas não tem linha própria na tabela. A
+recepção não vai saber cotar quando perguntarem avulso.
+
+**4. "MÃOS" existe nas duas unidades com significados diferentes.** Na Escova
+é manicure; no Spa é hidratação de 20min por R$ 69. Mesma palavra, dois
+serviços, um prédio.
+
+### 10.4 · A janela da campanha, medida
+
+Distribuição real dos 967 atendimentos finalizados da Escova:
+
+| Dia | Atendimentos | % |
+|---|---|---|
+| Sábado | 395 | 40,8% |
+| Sexta | 200 | 20,7% |
+| Quinta | 144 | 14,9% |
+| Quarta | 81 | 8,4% |
+| Segunda | 62 | 6,4% |
+| Terça | 54 | 5,6% |
+| Domingo | 31 | 3,2% |
+
+Pico de horário: **16h–18h** (338 atendimentos na faixa).
+
+**Consequência operacional:** o cartão PONTE tem que estar na mão de quem
+atende **quinta, sexta e sábado, das 15h às 18h**. É quando 3 de cada 4
+clientes da base passam pela loja. E a inauguração cai numa **sexta (25/09)**,
+com o **sábado 27/09** logo em seguida — o dia de maior movimento da Escova no
+ano inteiro. O Spa precisa estar com equipe completa nesse sábado.
