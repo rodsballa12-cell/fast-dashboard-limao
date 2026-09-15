@@ -10,7 +10,7 @@ Campanha 100% WhatsApp, em duas frentes. Sem artes.
 | O que eu tinha | O que é | Impacto |
 |---|---|---|
 | Calendário deslocado em 1 dia | **25/09 é sexta**, 26/09 é sábado | o "maior sábado de balcão" era 20/09; **é 19/09** |
-| Endereço 358 | a peça diz **362** | 🔴 conferir antes de qualquer mensagem |
+| Endereço na peça: 362 | **é 358** (confirmado por Rodrigo em 15/09) | a peça oficial está errada — avisar quem a produziu |
 | Pacote de 5 por R$ 490 (proposta minha) | **Pacote Renove-se: 10 sessões por R$ 1.490** | a oferta oficial substitui a minha |
 | Paleta creme e verde-escuro | **ciano/teal + branco + cinza** | a paleta que usei não era da marca |
 
@@ -43,12 +43,67 @@ brinde — que custam pouco e não desvalorizam nada.
 
 ## O que o grupo VIP tem de diferente
 
-1. **Sabem antes** — a oferta chega na sexta 18/09, uma semana antes da loja abrir
-2. **Primeira Ledterapia Capilar por nossa conta** — 7 min, vale R$ 79
-3. **Sábado 26/09, das 9h às 12h**, o Spa atende só quem é do grupo
+1. **Um pacote que não existe em lugar nenhum** — ver abaixo
+2. **Sabem antes** — a oferta chega na sexta 18/09, uma semana antes de abrir
+3. **Primeira Ledterapia Capilar por nossa conta** — 7 min, vale R$ 79
+4. **Sábado 26/09, das 9h às 12h**, o Spa atende só quem é do grupo
 
-O item 3 é o mais forte e quase não custa: **26/09 é sábado**, o dia em que
-~48 clientes já passam pela Escova. O Spa abre a manhã só para elas.
+O item 4 quase não custa: **26/09 é sábado**, o dia em que ~48 clientes já
+passam pela Escova. O Spa abre a manhã só para elas.
+
+---
+
+## PACOTE ESCOVA + SPA · exclusivo do grupo
+
+| | |
+|---|---|
+| **4 escovas** na Fast Escova | R$ 79 cada · R$ 316 |
+| **4 massagens de 45 min** no Fast Spa | R$ 149 cada · R$ 596 |
+| Valor de tabela | **R$ 912** |
+| **Preço do grupo** | **R$ 790** |
+| Validade | até 31/12/2026 · sem restrição de dia |
+| Brinde | a primeira Ledterapia por nossa conta |
+
+### Por que este pacote não fura o lançamento
+
+A regra que eu quebrei na proposta anterior: **nunca dar à melhor cliente um
+preço por sessão menor que o do anúncio oficial.**
+
+| | Pacote oficial | Pacote do grupo |
+|---|---|---|
+| Massagem por sessão | R$ 115 | **R$ 129** |
+| Desconto | 23% | 13% |
+| Entrada | R$ 1.490 | **R$ 790** |
+
+**A massagem sai mais cara aqui, não mais barata.** O que é melhor é a
+entrada: R$ 790 contra R$ 1.490. Quem não ia gastar mil e quinhentos numa
+loja que ainda não conhece, gasta setecentos e noventa em algo que já usa
+metade.
+
+E o diferencial real não é desconto — **é ser o único pacote que junta as
+duas lojas.** Não existe na tabela da franqueadora, então não há comparação
+possível: é outro produto, não uma versão mais barata do mesmo.
+
+### O que ele faz pelo negócio
+
+- **Prende 4 voltas em cada loja** — 8 visitas compradas de uma vez
+- **Entrada 47% mais barata** que o pacote oficial, para quem nunca entrou no Spa
+- **Não canibaliza** o Renove-se: quem quer volume compra o de 13 sessões
+- Cada pacote são **4 sessões** a entregar — 20 pacotes = 80 sessões, folgado
+
+### ⚠️ O que preciso que você confirme
+
+A **comissão da Escova** não está cadastrada no sistema, então só consigo
+fechar metade da conta:
+
+| | Alocado | Comissão | Contribuição |
+|---|---|---|---|
+| 4 massagens | R$ 516 (R$ 129/un) | 30% = R$ 155 | **R$ 361** |
+| 4 escovas | R$ 274 (R$ 68/un) | **?** | **?** |
+
+R$ 68 por escova contra R$ 79 de tabela. Se a comissão da profissional
+incidir sobre os R$ 79 e não sobre os R$ 68, a margem da escova some. **Confirme
+antes de a mensagem sair na sexta.**
 
 ---
 
@@ -72,12 +127,16 @@ O item 3 é o mais forte e quase não custa: **26/09 é sábado**, o dia em que
 > R$ 1.490**. Quem fecha ganha mais 1 sessão Renove-se, mais 2 sessões à
 > sua escolha e **1 escova bônus aqui na Fast Escova**.
 >
-> Pra vocês do grupo, duas coisas a mais:
+> Mas vocês do grupo têm uma coisa que não vai existir em lugar nenhum:
 >
-> A primeira Ledterapia Capilar é por nossa conta — 7 minutos, vale R$ 79.
+> **PACOTE ESCOVA + SPA — R$ 790**
+> 4 escovas aqui + 4 massagens de 45 min lá em cima.
+> Separado, sai R$ 912.
 >
-> E no sábado 26, das 9h às 12h, o Spa atende **só quem é do grupo**.
-> Portas fechadas para o resto do bairro.
+> Vale até dezembro, qualquer dia da semana, e a primeira Ledterapia
+> Capilar é por nossa conta.
+>
+> E no sábado 26, das 9h às 12h, o Spa atende só quem é do grupo.
 >
 > Fala na recepção ou chama aqui 👉 wa.me/5511966129197
 
@@ -85,8 +144,10 @@ O item 3 é o mais forte e quase não custa: **26/09 é sábado**, o dia em que
 
 > Amanhã abre. Sexta, das 8h às 20h.
 >
-> Lembrando o que é de vocês: Ledterapia por nossa conta na primeira visita,
-> e o sábado das 9h às 12h só para o grupo.
+> O Pacote Escova + Spa por R$ 790 é só de vocês: 4 escovas aqui, 4
+> massagens lá em cima.
+>
+> E o sábado das 9h às 12h, só para o grupo.
 >
 > É só falar na recepção que você é do grupo.
 
@@ -96,7 +157,7 @@ O item 3 é o mais forte e quase não custa: **26/09 é sábado**, o dia em que
 >
 > Amanhã, sábado, das 9h às 12h o Spa é só de vocês.
 >
-> Av. Dep. Emílio Carlos, [CONFERIR Nº] — mesmo prédio, sem hora marcada.
+> Av. Dep. Emílio Carlos, 358 — mesmo prédio, sem hora marcada.
 
 **Quatro mensagens. Não mande uma quinta.**
 
@@ -162,6 +223,11 @@ exclusivo delas foi para todo mundo, acabou o exclusivo.
 > E pra cliente de casa, a primeira Ledterapia Capilar é por nossa conta —
 > 7 minutinhos, vale R$ 79."
 
+**Se ela é do grupo VIP, acrescente:**
+
+> "E tem o Pacote Escova + Spa, que é só do grupo: 4 escovas aqui mais 4
+> massagens lá em cima por R$ 790. Separado dá R$ 912."
+
 - **"Por nossa conta"**, nunca "de graça"
 - **Pacote**, nunca "combo" nem "cartela"
 - Preço de entrada, se perguntarem: **R$ 59** (drenagem facial, 15 min)
@@ -175,6 +241,7 @@ exclusivo delas foi para todo mundo, acabou o exclusivo.
 |---|---|---|
 | Clientes da Escova que subiram | 39 | folha de recepção |
 | Pacotes Renove-se vendidos | 8 · R$ 11.920 | Trinks / planilha |
+| **Pacotes Escova + Spa (grupo)** | **12 · R$ 9.480** | planilha da recepção |
 | Ledterapias entregues | 60 | folha de recepção |
 | Escovas bônus resgatadas | 8 | caixa da Escova |
 | Conversão da frente 2 | 5% de 344 = 17 | folha de recepção |
@@ -188,7 +255,8 @@ dia 1, nada disso tem placar.**
 
 | O quê | Até |
 |---|---|
-| 🔴 **Conferir o endereço: 358 ou 362?** O `config.json` diz 358, a peça diz 362 | 16/09 |
+| Avisar a franqueadora que a peça saiu com 362 (o certo é 358) | 16/09 |
+| 🔴 **Confirmar a comissão da Escova** sobre o pacote de R$ 790 | 17/09 |
 | Renovar o `META_ACCESS_TOKEN` | 17/09 |
 | Confirmar se a Ledterapia grátis pode ser oferecida | 17/09 |
 | Decidir como sai a frente 2: individual, transmissão ou status | 18/09 |
