@@ -18,28 +18,31 @@ leu — por isso o briefing vai para lá.
 
 ## Registrar as tarefas
 
-Abra o PowerShell **como administrador** e cole os quatro blocos. Cada um cria
-uma tarefa; rodar de novo com `/F` substitui a anterior.
+**Um comando.** PowerShell **como administrador**:
 
 ```powershell
-$ps = "powershell -NoProfile -ExecutionPolicy Bypass -File C:\Users\rods_\dev\fast-dashboard-limao\scripts\agenda\rodar_agente.ps1"
+powershell -ExecutionPolicy Bypass -File "C:\Users\rods_\dev\fast-dashboard-limao\scripts\agenda\instalar_tarefas.ps1"
+```
 
-# Relacionamento — 09h todo dia · quem chamar antes do movimento começar
-schtasks /Create /F /TN "FAST\Relacionamento 09h" /SC DAILY /ST 09:00 `
-  /TR "$ps -Agente relacionamento"
+Ou, mais simples ainda, peça ao Claude Code aberto no projeto:
 
-# Operação — 11h30 todo dia · logo após o primeiro retrato do dia (11h07)
-schtasks /Create /F /TN "FAST\Operacao 11h30" /SC DAILY /ST 11:30 `
-  /TR "$ps -Agente operacao-diaria"
+```
+registre as 4 tarefas agendadas rodando scripts/agenda/instalar_tarefas.ps1
+```
 
-# Marketing — 08h todo dia · o refresh de mídia sai às 07h
-schtasks /Create /F /TN "FAST\Marketing 08h" /SC DAILY /ST 08:00 `
-  /TR "$ps -Agente marketing"
+O instalador confere antes de mexer: se você não estiver como administrador,
+ele para e avisa; se o caminho do projeto estiver errado, também. É idempotente
+— rodar de novo substitui em vez de duplicar.
 
-# CONSELHO — 22h30 todo dia · fecha o dia com os seis departamentos
-# Roda depois do último refresh do painel (22h07), então o dia já está inteiro.
-schtasks /Create /F /TN "FAST\Conselho 22h30" /SC DAILY /ST 22:30 `
-  /TR "$ps -Agente conselho"
+Ele usa `Register-ScheduledTask` em vez de `schtasks` por um motivo prático:
+só esse caminho expõe **`StartWhenAvailable`**. Com ele, se o computador
+estiver desligado na hora, a tarefa roda assim que ligar — em vez de pular o
+dia inteiro em silêncio, que é o tipo de falha que ninguém percebe.
+
+Para desfazer tudo:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "...\instalar_tarefas.ps1" -Remover
 ```
 
 ## Conferir e testar
