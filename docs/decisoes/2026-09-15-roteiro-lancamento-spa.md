@@ -181,3 +181,60 @@ Passe Fundadora oferecido em toda cliente que paga.
 **Cores:** Escova `#F5B800` · Spa `#24B3A6` · fundo creme da tabela do Spa
 **Nunca:** "milagre", "recupera", "escova barata", promessa de resultado
 físico, foto de cliente sem autorização escrita
+
+---
+
+## Campanha do grupo VIP · 4 peças, 4 mensagens
+
+**Refeita em 15/09 a pedido de Rodrigo:** direta, para WhatsApp, sem
+Instagram. O Instagram já tem duas campanhas consumindo verba — esta não
+usa mídia paga nenhuma.
+
+### A ideia visual
+
+O teal do Spa **sobe** sobre o amarelo da Escova a cada peça:
+
+| Peça | Amarelo | Teal |
+|---|---|---|
+| 1 · teaser | quase tudo | faixa no rodapé |
+| 2 · a oferta | o topo | a metade de baixo |
+| 3 · restam | uma tarja | quase tudo |
+| 4 · abriu | um fio | tudo |
+
+Na peça 2 a frase atravessa a divisa: **"Da escova"** em cima, no
+amarelo; **"pro Spa."** embaixo, no teal. A migração da cliente está na
+cor, não no texto.
+
+Formato quadrado 1080×1080 — não corta na prévia do WhatsApp.
+
+### As mensagens
+
+**1 · quinta 17/09, manhã**
+> Amanhã, 10h, abro 25 vagas de uma coisa que é só de vocês.
+> Não vai pro Instagram essa semana.
+
+**2 · sexta 18/09, 10h**
+> Dia 25 abre o Fast Spa, no mesmo prédio da sua escova.
+>
+> Separei 25 cartelas pras clientes de casa:
+> 5 massagens de 45 min por R$ 490.
+> Avulsa é R$ 149 — na cartela sai R$ 98.
+>
+> Usa de segunda a quarta, até dezembro.
+> Uma das 5 você dá de presente pra quem quiser.
+>
+> Pega a sua na loja ou chama aqui 👉 wa.me/5511966129197
+
+**3 · segunda 22/09**
+> Restam [N] de 25.
+> Quinta o Spa abre. Quem pegar agora já usa na semana seguinte.
+> wa.me/5511966129197
+
+**4 · quinta 25/09**
+> Abriu.
+> Fundadoras: sábado, 9h às 12h, o Spa é só de vocês.
+> Restam [N] — segunda vai pro balcão.
+
+Cortados da versão anterior: a lista de cinco benefícios, os emojis de
+marcador e "seu nome na parede". Isso é conversa de cartaz. No grupo,
+quem não entende em três segundos não lê.
