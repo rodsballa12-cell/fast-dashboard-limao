@@ -179,9 +179,9 @@ compete com isso.
 
 ### Fase 3 · D+4 a D+30 (29/09 a 25/10) — "vira hábito"
 
-- **Combo Escova + Spa** vira produto de prateleira, com preço fechado.
+- **Pacote Escova + Spa** vira produto de prateleira, com preço fechado.
 - **Segmentação da base**: as 236 recorrentes recebem convite diferente das
-  168 de visita única. Quem já volta toda semana é candidata a combo
+  168 de visita única. Quem já volta toda semana é candidata a pacote
   recorrente; quem veio uma vez é candidata a reativação com o Spa de isca.
 - **Meta Ads** (depois do token): público personalizado com os 411 telefones
   da base + lookalike 1% desse público. É o público mais qualificado que a
@@ -195,7 +195,7 @@ compete com isso.
 ## 5. Peças a criar (9) — copy pronta
 
 Todas em tom FAST: feminino, direto, CTA no fim. Vocabulário: "chegada",
-"combo", "profissional", "cuidar". Proibido: "milagre", "recupera", "escova
+"pacote", "profissional", "cuidar". Proibido: "milagre", "recupera", "escova
 barata", nome de concorrente, promessa de resultado físico.
 
 **1 · CARTÃO DE BALCÃO (frente/verso, impresso)** — *a peça mais importante*
@@ -251,7 +251,7 @@ barata", nome de concorrente, promessa de resultado físico.
 | Formato | Como funciona | Custo real | Risco |
 |---|---|---|---|
 | **Experimentação** (recomendado) | 15 min de massagem grátis para cliente da Escova, na primeira visita, até 31/10 | tempo ocioso da agenda nova, não margem | ocupa agenda que poderia ser paga — pequeno nas 2 primeiras semanas |
-| **Combo** | Escova + massagem por preço fechado | margem do combo | precisa de preço e de acerto com o massoterapeuta |
+| **Pacote** | Escova + massagem por preço fechado | margem do pacote | precisa de preço e de acerto com o massoterapeuta |
 | **Valor** | R$ X de desconto na primeira visita | desconto direto | ancora o Spa no preço, não no cuidado |
 
 A experimentação é a mais forte para a abertura: preenche agenda vazia, cria
