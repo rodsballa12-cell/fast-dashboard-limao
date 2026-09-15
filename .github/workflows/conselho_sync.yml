@@ -85,9 +85,19 @@ jobs:
             exit 0
           fi
 
-          git commit -m "conselho ${data}: sincroniza dashboard (auto)
-
-Aplicado pelo workflow conselho_sync.yml a partir de Briefings/${data}-conselho.md.
-Todas as decisões viraram recomendação status=aprovada.
-Se algum status estiver errado, rodar /sincronizar manualmente pra sobrescrever."
+          # A mensagem vai por printf, uma linha por argumento, e NADA neste
+          # bloco pode começar na coluna 0. O YAML encerra um escalar "run: |"
+          # na primeira linha que volta à margem, e era isso que o corpo da
+          # mensagem de commit fazia: o workflow inteiro virava YAML inválido —
+          # startup_failure, zero jobs, nada no log além de "falha". Foi o que
+          # matou o primeiro run, 15/09 10h01. Heredoc não resolve: o
+          # terminador também teria que ficar na coluna 0.
+          printf '%s\n' \
+            "conselho ${data}: sincroniza dashboard (auto)" \
+            "" \
+            "Aplicado pelo workflow conselho_sync.yml a partir de Briefings/${data}-conselho.md." \
+            "Todas as decisões viraram recomendação status=aprovada." \
+            "Se algum status estiver errado, rodar /sincronizar manualmente pra sobrescrever." \
+            > "$RUNNER_TEMP/conselho_msg.txt"
+          git commit -F "$RUNNER_TEMP/conselho_msg.txt"
           git push

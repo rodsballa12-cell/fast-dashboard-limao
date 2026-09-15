@@ -81,9 +81,29 @@ antes de declarar 🔴:
 | `google_business` com erro/vazio | Supermetrics (`refresh_google.py`) | Meta e IG continuam chegando normalmente |
 | Supermetrics retorna erro em query ad-hoc | Supermetrics (sessão/token MCP) | Dados do JSON do repo são independentes |
 
-**Verifique o frescor do JSON antes de concluir.** Se `data/midias_sociais.json`
-foi atualizado há menos de 24h e os dados de Meta estão presentes, o pipeline
-está funcionando — mesmo que o Supermetrics esteja inacessível nesta sessão.
+**Verifique o frescor do JSON antes de concluir — e diga a idade em voz alta.**
+
+São duas perguntas diferentes, e confundi-las já custou um dia inteiro:
+
+| Pergunta | Régua | O que significa |
+|---|---|---|
+| O pipeline quebrou? | `gerado_em` < 24h + Meta presente | Não. Não declare 🔴 nem culpe o Supermetrics. |
+| O dado é de hoje? | `gerado_em` do dia corrente | Se não for, **todo número deste parecer é da véspera.** |
+
+A segunda régua não existia até 15/09/2026, e por isso o briefing das 08h passou
+quatro dias seguidos lendo dado da véspera sem dizer. O cron de mídia saiu às
+10h18, 11h01 e 13h06 nos dias 12, 13 e 14 — sempre **depois** das 08h — e em 15/09
+não saiu. Em nenhum desses dias nada estava "quebrado": estava velho, que é pior,
+porque número velho tem a mesma cara de número certo.
+
+**Obrigatório no cabeçalho do parecer:** `dado de DD/MM HHhMM`. Se não for de hoje,
+a linha seguinte é um ⚠️ dizendo de quantas horas é o atraso e que as comparações
+de "hoje" e "7d" estão deslocadas em um dia. Não escreva o parecer sem isso.
+
+Se o dado for da véspera e já passou das 11h05 (fim da janela dos seis fires do
+`midias_refresh.yml`), isso é 🔴 de infraestrutura: peça ao Rodrigo para disparar
+o workflow à mão — Actions → *Refresh Midias Sociais (diario)* → Run workflow — e
+diga que o parecer de hoje saiu sobre dado de ontem.
 
 Em 14/09/2026 este cargo declarou o painel cego **duas vezes no mesmo dia** por
 confundir os dois caminhos. Nas duas o painel estava fresco: a rotina tinha

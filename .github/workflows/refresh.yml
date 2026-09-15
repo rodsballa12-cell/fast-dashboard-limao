@@ -244,3 +244,39 @@ jobs:
             git commit -m "refresh: dashboard $(TZ=America/Sao_Paulo date +'%d/%m %H:%M') BRT"
             git push
           fi
+
+      # VIGIA DO PIPELINE DE MIDIA
+      #
+      # Em 15/09/2026 o cron do midias_refresh.yml nao disparou e ninguem soube
+      # ate o Rodrigo perguntar, quatro horas depois. Os dois detectores de
+      # midia — alerta_entrega e a auditoria de coerencia — moravam DENTRO
+      # daquele workflow: quando ele nao roda, nada percebe que ele nao rodou.
+      #
+      # Este workflow e o mais confiavel do repo (7 slots x 2 fires, e entregou
+      # ate no dia em que o de midia sumiu), entao vira o vigia do outro.
+      #
+      # POR QUE SO ENTRE 11h E 13h BRT: o script so acusa erro depois das 11h05,
+      # quando os seis fires de midia ja tiveram a chance. Se alarmasse em todos
+      # os slots, um dia ruim renderia seis e-mails identicos — e alarme repetido
+      # ensina a ignorar alarme (foi o que matou o fluxo de aniversarios em
+      # 04/09: 7 de 9 issues sem resposta). Fora dessa faixa o achado ainda
+      # aparece no log do run, mas nao derruba.
+      #
+      # Roda por ultimo, depois do push: conferencia nunca impede o dado de ser
+      # salvo.
+      - name: Vigia — o refresh de midia entregou hoje?
+        if: always()
+        run: |
+          set +e
+          python scripts/auditoria_coerencia.py --so-midia
+          rc=$?
+          set -e
+          hora=$(TZ=America/Sao_Paulo date +%-H)
+          if [ "$rc" -ne 0 ] && [ "$hora" -ge 11 ] && [ "$hora" -le 13 ]; then
+            echo "::error::Dado de midia parado. Dispare o midias_refresh.yml a mao."
+            exit 1
+          fi
+          if [ "$rc" -ne 0 ]; then
+            echo "::warning::Dado de midia parado (fora da faixa de alarme ${hora}h — nao derruba o run)."
+          fi
+          exit 0

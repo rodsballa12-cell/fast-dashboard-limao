@@ -18,6 +18,7 @@ O QUE CONFERE
   2. Períodos  — diário ≤ semanal ≤ mensal ≤ anual (acumulados)
   3. Zero-state — unidade em pré-abertura não pode ter KPI diferente de zero
   4. Frescor   — arquivos que deveriam ser do mesmo momento
+  5. Mídia     — o payload de mídia é de hoje? (o cron das 07h entregou?)
 
 CAMPO SOMÁVEL vs DERIVADO
   Somar percentual, ticket médio ou taxa é erro de aritmética, não conferência.
@@ -30,6 +31,7 @@ SAÍDA
 """
 from __future__ import annotations
 import json, re, sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -188,8 +190,83 @@ def conferir_frescor(achados, arquivos):
             "rode scripts/consolida_dashboard.py."))
 
 
+# Fuso fixo de Brasília: UTC-3 desde 2019, sem horário de verão.
+BRT = timezone(timedelta(hours=-3))
+# Depois desta hora, dado de mídia da véspera não é mais "janela ainda aberta":
+# os seis fires do midias_refresh.yml vão de 06h05 a 11h05 BRT.
+HORA_LIMITE_MIDIA = 11
+
+
+def conferir_midia_fresca(achados, agora=None):
+    """O payload de mídia é de hoje? Se não, o refresh das 07h não entregou.
+
+    Por que existe: em 15/09/2026 o cron do midias_refresh.yml simplesmente não
+    disparou, e ninguém soube. Os dois detectores de mídia — alerta_entrega e
+    esta auditoria — moravam DENTRO desse mesmo workflow. Detector que só roda
+    quando o pipeline roda não detecta pipeline parado; é o ponto cego óbvio
+    depois que alguém aponta.
+
+    Pior: nos três dias anteriores o cron saiu com 3h, 4h e 6h de atraso, e
+    nesses dias o briefing de marketing das 08h leu dado da véspera achando que
+    era do dia. O sintoma nunca foi "erro"; foi número certo do dia errado.
+
+    Antes das 11h05 dado da véspera ainda é aviso, não erro: os seis fires do
+    dia vão de 06h05 a 11h05 e a janela continua aberta. Depois disso, todos
+    tiveram a chance e a ausência é falha.
+    """
+    agora = agora or datetime.now(BRT)
+    hoje = agora.date()
+
+    for rel, unidade in (("data/midias_sociais.json", "Escova"),
+                         ("data/spa/midias_sociais.json", "SPA")):
+        d = carregar(rel)
+        if not d:
+            continue
+        g = (d.get("gerado_em") or "")[:10]
+        try:
+            gerado = datetime.strptime(g, "%Y-%m-%d").date()
+        except ValueError:
+            achados.append(("indef",
+                f"Mídia {unidade}: sem gerado_em legível — não dá pra avaliar frescor."))
+            continue
+
+        atraso = (hoje - gerado).days
+        if atraso <= 0:
+            continue
+        quando = f"{gerado:%d/%m}"
+        if atraso >= 2:
+            achados.append(("erro",
+                f"Mídia {unidade}: dado é de {quando} — {atraso} dias parado. "
+                "O refresh não roda há mais de um dia; confira o midias_refresh.yml "
+                "e o META_ACCESS_TOKEN."))
+        elif agora.hour >= HORA_LIMITE_MIDIA:
+            achados.append(("erro",
+                f"Mídia {unidade}: dado ainda é de {quando} às {agora:%Hh%M} — os "
+                "seis fires de hoje (06h05 a 11h05) já passaram e nenhum entregou. "
+                "Dispare o midias_refresh.yml à mão."))
+        else:
+            achados.append(("aviso",
+                f"Mídia {unidade}: dado ainda é de {quando}, mas são {agora:%Hh%M} "
+                f"e a janela de fires vai até {HORA_LIMITE_MIDIA}h05 — ainda pode "
+                "chegar. Quem for ler número de mídia agora, leia como da véspera."))
+
+
 def main() -> int:
     achados: list[tuple[str, str]] = []
+
+    # Modo enxuto: só a checagem de mídia. Serve para o refresh.yml, que roda
+    # 7 slots por dia e é o pipeline mais confiável do repo — ele vira o
+    # vigia do pipeline de mídia, sem arrastar junto as outras conferências
+    # (que podem falhar por motivos próprios e virariam ruído diário).
+    if "--so-midia" in sys.argv:
+        conferir_midia_fresca(achados)
+        erros = [m for t_, m in achados if t_ == "erro"]
+        for t_, m in achados:
+            marca = {"erro": "🛑", "aviso": "⚠️ ", "indef": "❔"}.get(t_, "•")
+            print(f"{marca} {m}")
+        if not achados:
+            print("✅ Dado de mídia é de hoje nas duas unidades.")
+        return 1 if erros else 0
 
     dash = {u: carregar(p) for u, p in {
         "escova": "data/dashboard_data.json",
@@ -221,6 +298,8 @@ def main() -> int:
     conferir_frescor(achados, {
         "data/dashboard_data.json": dash["escova"],
         "data/consolidado/dashboard_data.json": dash["consolidado"]})
+
+    conferir_midia_fresca(achados)
 
     erros = [m for t, m in achados if t == "erro"]
     avisos = [m for t, m in achados if t == "aviso"]
