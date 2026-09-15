@@ -211,7 +211,11 @@ def gravar(unidade, ocup, receita, datas, n):
         "horas": list(range(H_INI, H_FIM + 1)),
         "dias": dias,
     }
-    alvo.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    # indent=2 é o que github_refresh, build_spa_dashboard e consolida_dashboard
+    # usam. Com indent=1 aqui, todo refresh reescrevia o arquivo inteiro com
+    # outra indentação e o diff de cada commit vinha com 20 mil linhas — o que
+    # torna impossível ver, pelo git, o que de fato mudou nos números.
+    alvo.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"✍️  densidade_dow gravado em {alvo.relative_to(REPO)}")
 
 
