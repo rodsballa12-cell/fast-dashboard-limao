@@ -79,6 +79,21 @@ antes de declarar 🔴:
 |---|---|---|
 | `meta_ads` ou `instagram` com erro/vazio | Meta Graph API direta (`refresh_midias.py`) | Supermetrics não está envolvido — não é a causa |
 | `google_business` com erro/vazio | Supermetrics (`refresh_google.py`) | Meta e IG continuam chegando normalmente |
+
+**Google Business da Escova está conectado e automático** — verificado em
+15/09/2026 consultando o próprio Supermetrics: fonte `GMB` autenticada, a
+location `113115220736067782914_...` devolve 30 dias de série sem cache, e o
+passo do workflow grava sozinho desde 14/09. Não repita a pendência de add-on
+que o campo `mensagem` afirmava: era texto curado obsoleto, e foi corrigido
+para ser escrito pelo próprio script.
+
+**Leia `google_business.janela_efetiva` antes de citar qualquer número do
+Google.** A Performance API reporta com ~3 dias de atraso, então os dias mais
+recentes da série vêm zerados e marcados com `_sem_dado_ainda`. Os totais estão
+certos para a janela que cobrem; o que quebra é dividir por 30 (média sai 71/dia
+quando o real é 79) e comparar contra uma janela de 30 dias cheios. **Queda nos
+últimos dias da série do Google é atraso de reporte, não perda de alcance** — não
+abra alerta em cima disso.
 | Supermetrics retorna erro em query ad-hoc | Supermetrics (sessão/token MCP) | Dados do JSON do repo são independentes |
 
 **Verifique o frescor do JSON antes de concluir — e diga a idade em voz alta.**
