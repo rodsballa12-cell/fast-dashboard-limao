@@ -1,18 +1,11 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
+<!doctype html><html><head><meta charset="utf-8">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prata&family=Jost:wght@300;400;500;600&display=swap">
   <style>
     body { margin: 0; font-family: 'Jost', 'Century Gothic', 'Futura', system-ui, sans-serif; }
     a { color: #10645F; } a:hover { color: #24B3A6; }
   </style>
-</helmet>
+<style>html,body{margin:0;background:#fff}</style></head><body>
+
 <div style="width: 340px; height: 189px; background: #F5E9DC; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden;">
 
   <div style="background: #10645F; padding: 9px 20px; display: flex; justify-content: space-between; align-items: center;">
@@ -21,7 +14,7 @@
 
   <div style="padding: 14px 20px 0; display: flex; align-items: baseline; gap: 7px;">
     <span style="font-size: 13px; color: #6B5A4A; letter-spacing: 0.4px;">nº</span>
-    <span style="font-family: 'Prata', Georgia, serif; font-size: 30px; color: #10645F; line-height: 1;">{{numero}}</span>
+    <span style="font-family: 'Prata', Georgia, serif; font-size: 30px; color: #10645F; line-height: 1;">7</span>
     <span style="font-size: 12px; color: #6B5A4A;">de 25</span>
     <span style="margin-left: auto; font-size: 13px; color: #6B5A4A;">5 terapias de 45 min</span>
   </div>
@@ -41,13 +34,4 @@
     <span style="font-size: 12px; color: #10645F; font-weight: 500;">@fastspa.limao</span>
   </div>
 </div>
-</x-dc>
-<script data-dc-script data-props='{"numero":{"editor":"int","default":1,"min":1,"max":25},"$preview":{"width":340,"height":189}}'>
-class Component extends DCLogic {
-  renderVals() {
-    return { numero: this.props.numero ?? 1 };
-  }
-}
-</script>
-</body>
-</html>
+</body></html>
