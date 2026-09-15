@@ -70,6 +70,17 @@ que os dois pipelines juntos gastavam**, com mais cobertura.
 Consolidado nunca mais defasado em relação à unidade, e o auditor de coerência
 deixando de acusar diferença de frescor.
 
+## Executado
+
+**15/09/2026** — tarefa `Trinks_Publish_Pages` desativada no Agendador do PC
+(`schtasks /Change /TN "Trinks_Publish_Pages" /DISABLE`), status confirmado
+como Desabilitado em todas as instâncias. Desativada, não apagada: reverter é
+trocar `/DISABLE` por `/ENABLE`.
+
+A partir daqui existe **um dono só** do refresh. Se o painel ficar velho, há um
+lugar para olhar — https://github.com/rodsballa12-cell/fast-dashboard-limao/actions —
+e não dois.
+
 ## Revisar em
 
 2026-10-15 — conferir se sete slots bastam e se a cota ficou onde se projetou.
