@@ -43,7 +43,7 @@ brinde — que custam pouco e não desvalorizam nada.
 
 ## O que o grupo VIP tem de diferente
 
-1. **Um pacote que não existe em lugar nenhum** — ver abaixo
+1. **Pacote de 5 massagens por R$ 489** — não existe em lugar nenhum
 2. **Sabem antes** — a oferta chega na sexta 18/09, uma semana antes de abrir
 3. **Primeira Ledterapia Capilar por nossa conta** — 7 min, vale R$ 79
 4. **Sábado 26/09, das 9h às 12h**, o Spa atende só quem é do grupo
@@ -53,57 +53,79 @@ passam pela Escova. O Spa abre a manhã só para elas.
 
 ---
 
-## PACOTE ESCOVA + SPA · exclusivo do grupo
+## PACOTE DO GRUPO · R$ 489
+
+**Restaurado em 15/09 a pedido de Rodrigo.** É o plano montado originalmente.
 
 | | |
 |---|---|
-| **4 escovas** na Fast Escova | R$ 79 cada · R$ 316 |
-| **4 massagens de 45 min** no Fast Spa | R$ 149 cada · R$ 596 |
-| Valor de tabela | **R$ 912** |
-| **Preço do grupo** | **R$ 790** |
-| Validade | até 31/12/2026 · sem restrição de dia |
-| Brinde | a primeira Ledterapia por nossa conta |
+| **5 terapias de 45 min** | você escolhe qual a cada visita |
+| Elegíveis | Renove-se em 45' · Neuro Relax · Pernas e Pés Cansados · Reflexologia Podal |
+| Valor de tabela | 5 × R$ 149 = **R$ 745** |
+| **Preço do grupo** | **R$ 489** — R$ 97,80 a sessão |
+| Pagamento | à vista ou **3× de R$ 163** (fecha exato) |
+| Uso | segunda a quarta, até **31/12/2026** |
+| Presente | **uma das 5 sessões** pode ser dada a outra pessoa |
+| Brinde | primeira **Ledterapia Capilar** por nossa conta (vale R$ 79) |
 
-### Por que este pacote não fura o lançamento
+**R$ 489 e não R$ 490:** divide exato por três. R$ 490 daria 3× de
+R$ 163,33 — número quebrado em peça e em conversa de balcão.
 
-A regra que eu quebrei na proposta anterior: **nunca dar à melhor cliente um
-preço por sessão menor que o do anúncio oficial.**
+### A trava de segunda a quarta é o produto, não a concessão
 
-| | Pacote oficial | Pacote do grupo |
+É ela que enche o dia que hoje não existe. A Escova concentra **76,4% do
+movimento em quinta, sexta e sábado** — a terça do Spa nasceria vazia.
+**Não abra exceção**, nem na semana de abertura.
+
+### A sessão presenteável é aquisição de graça
+
+Cada pacote vendido pode trazer **uma pessoa nova** que nunca ouviu falar do
+Spa, trazida por quem já confia na marca. Vinte pacotes = até 20 clientes
+novas sem um centavo de mídia. Uma conversa paga no Meta custa R$ 6,90.
+
+### Os números
+
+| Pacotes | Caixa | Sessões a entregar |
 |---|---|---|
-| Massagem por sessão | R$ 115 | **R$ 129** |
-| Desconto | 23% | 13% |
-| Entrada | R$ 1.490 | **R$ 790** |
+| 10 | R$ 4.890 | 50 |
+| 20 | R$ 9.780 | 100 |
+| 25 | R$ 12.225 | 125 |
 
-**A massagem sai mais cara aqui, não mais barata.** O que é melhor é a
-entrada: R$ 790 contra R$ 1.490. Quem não ia gastar mil e quinhentos numa
-loja que ainda não conhece, gasta setecentos e noventa em algo que já usa
-metade.
+**Margem:** comissão de 30% = R$ 146,70 → **contribuição de R$ 342,30 por
+pacote**, ou R$ 68,46 por sessão.
 
-E o diferencial real não é desconto — **é ser o único pacote que junta as
-duas lojas.** Não existe na tabela da franqueadora, então não há comparação
-possível: é outro produto, não uma versão mais barata do mesmo.
+**Teto operacional — não vai para mensagem nenhuma:** uma massoterapeuta em
+tempo integral, de segunda a quarta, entrega ~390 sessões até 31/12. Cabem
+até **60 pacotes**. Se a equipe não fechar, o teto cai junto.
 
-### O que ele faz pelo negócio
+### ⚠️ O que fica dito uma vez e não se repete
 
-- **Prende 4 voltas em cada loja** — 8 visitas compradas de uma vez
-- **Entrada 47% mais barata** que o pacote oficial, para quem nunca entrou no Spa
-- **Não canibaliza** o Renove-se: quem quer volume compra o de 13 sessões
-- Cada pacote são **4 sessões** a entregar — 20 pacotes = 80 sessões, folgado
+R$ 97,80 por sessão é **R$ 16,82 mais barato** que o pacote oficial de 13
+sessões (R$ 114,62). Eu levantei isso e o Rodrigo decidiu manter — a decisão
+está tomada, fica registrada aqui e o assunto está encerrado.
 
-### ⚠️ O que preciso que você confirme
+**A consequência a administrar:** se uma cliente do grupo comparar com o
+anúncio público, ela vê um preço melhor no privado. Duas formas de segurar,
+qualquer uma resolve:
 
-A **comissão da Escova** não está cadastrada no sistema, então só consigo
-fechar metade da conta:
+1. **Não publicar o preço por sessão** nas peças do grupo — falar em
+   "R$ 489 pelas 5", nunca em "R$ 97,80 cada"
+2. Posicionar como **pacote de entrada**: 5 sessões para conhecer, contra 13
+   para quem já decidiu
 
-| | Alocado | Comissão | Contribuição |
-|---|---|---|---|
-| 4 massagens | R$ 516 (R$ 129/un) | 30% = R$ 155 | **R$ 361** |
-| 4 escovas | R$ 274 (R$ 68/un) | **?** | **?** |
+---
 
-R$ 68 por escova contra R$ 79 de tabela. Se a comissão da profissional
-incidir sobre os R$ 79 e não sobre os R$ 68, a margem da escova some. **Confirme
-antes de a mensagem sair na sexta.**
+## Alternativa registrada, não escolhida · Pacote Escova + Spa
+
+Montado em 15/09 e **substituído pelo de R$ 489**. Fica aqui para não se
+perder:
+
+4 escovas (R$ 316) + 4 massagens de 45 min (R$ 596) = tabela R$ 912, preço
+do grupo **R$ 790**. Massagem a R$ 129 — mais cara que a oficial, então não
+furava o lançamento; a vantagem era a entrada menor (R$ 790 contra R$ 1.490)
+e o fato de ser o único produto que junta as duas lojas. Barrado por uma
+pendência que segue aberta: **a comissão da Escova não está cadastrada no
+sistema**, então a margem do lado da escova não fecha.
 
 ---
 
@@ -129,12 +151,13 @@ antes de a mensagem sair na sexta.**
 >
 > Mas vocês do grupo têm uma coisa que não vai existir em lugar nenhum:
 >
-> **PACOTE ESCOVA + SPA — R$ 790**
-> 4 escovas aqui + 4 massagens de 45 min lá em cima.
-> Separado, sai R$ 912.
+> **5 massagens de 45 min por R$ 489.** Separado, sai R$ 745.
+> Você escolhe qual massagem a cada visita.
 >
-> Vale até dezembro, qualquer dia da semana, e a primeira Ledterapia
-> Capilar é por nossa conta.
+> À vista ou em 3× de R$ 163. Usa de segunda a quarta, até dezembro.
+> **Uma das 5 você pode dar de presente pra quem quiser.**
+>
+> E a primeira Ledterapia Capilar é por nossa conta — 7 minutos, vale R$ 79.
 >
 > E no sábado 26, das 9h às 12h, o Spa atende só quem é do grupo.
 >
@@ -144,8 +167,8 @@ antes de a mensagem sair na sexta.**
 
 > Amanhã abre. Sexta, das 8h às 20h.
 >
-> O Pacote Escova + Spa por R$ 790 é só de vocês: 4 escovas aqui, 4
-> massagens lá em cima.
+> O pacote de 5 massagens por R$ 489 é só de vocês — e uma das 5 você
+> pode presentear.
 >
 > E o sábado das 9h às 12h, só para o grupo.
 >
@@ -225,13 +248,15 @@ exclusivo delas foi para todo mundo, acabou o exclusivo.
 
 **Se ela é do grupo VIP, acrescente:**
 
-> "E tem o Pacote Escova + Spa, que é só do grupo: 4 escovas aqui mais 4
-> massagens lá em cima por R$ 790. Separado dá R$ 912."
+> "E tem o pacote do grupo: 5 massagens de 45 min por R$ 489, ou 3× de
+> R$ 163. Separado dá R$ 745. Uma das 5 você pode dar de presente."
 
 - **"Por nossa conta"**, nunca "de graça"
 - **Pacote**, nunca "combo" nem "cartela"
 - Preço de entrada, se perguntarem: **R$ 59** (drenagem facial, 15 min)
 - Nunca inventar preço fora da tabela oficial
+- Nunca prometer uso do pacote no sábado — é segunda a quarta, sem exceção
+- Falar "R$ 489 pelas 5", nunca "R$ 97,80 cada"
 
 ---
 
@@ -241,7 +266,8 @@ exclusivo delas foi para todo mundo, acabou o exclusivo.
 |---|---|---|
 | Clientes da Escova que subiram | 39 | folha de recepção |
 | Pacotes Renove-se vendidos | 8 · R$ 11.920 | Trinks / planilha |
-| **Pacotes Escova + Spa (grupo)** | **12 · R$ 9.480** | planilha da recepção |
+| **Pacotes de R$ 489 (grupo)** | **20 · R$ 9.780** | planilha da recepção |
+| Sessões presenteadas que viraram cliente | 8 de 20 | folha de recepção |
 | Ledterapias entregues | 60 | folha de recepção |
 | Escovas bônus resgatadas | 8 | caixa da Escova |
 | Conversão da frente 2 | 5% de 344 = 17 | folha de recepção |
@@ -256,7 +282,8 @@ dia 1, nada disso tem placar.**
 | O quê | Até |
 |---|---|
 | Avisar a franqueadora que a peça saiu com 362 (o certo é 358) | 16/09 |
-| 🔴 **Confirmar a comissão da Escova** sobre o pacote de R$ 790 | 17/09 |
+| Confirmar equipe do Spa — define o teto de pacotes | 17/09 |
+| Planilha de controle dos pacotes na recepção | 18/09 |
 | Renovar o `META_ACCESS_TOKEN` | 17/09 |
 | Confirmar se a Ledterapia grátis pode ser oferecida | 17/09 |
 | Decidir como sai a frente 2: individual, transmissão ou status | 18/09 |
