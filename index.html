@@ -5370,10 +5370,24 @@ function renderMidias(){
   // === HERO leigo-friendly · Mídia · ano acumulado ===
   // Usa janela 90d (cobre julho→set, todo o período operado desde a abertura).
   // Quando existir 'ano' no por_periodo do backend, trocar aqui.
+  // O backend passou a gerar por_periodo.ano (01/jan ate hoje). O fallback
+  // para 90d continua por seguranca, mas agora o card DIZ qual janela usou:
+  // ate 15/09/2026 ele prometia "ano (acumulado desde a abertura)" e lia uma
+  // janela rolante de 90 dias, que coincidia por acaso e deixaria de coincidir
+  // sozinha em outubro.
+  const heroUsaAno = !!(M.por_periodo && M.por_periodo.ano);
   const heroP = (M.por_periodo && (M.por_periodo.ano || M.por_periodo['90d'] || M.por_periodo.mtd)) || {};
+  const heroJanela = heroP.inicio && heroP.fim
+    ? `${fmtDate(heroP.inicio)} a ${fmtDate(heroP.fim)}`
+    : (heroUsaAno ? 'ano corrente' : 'últimos 90 dias');
   const gastoMes = heroP.gasto || 0;
   const convMes = heroP.conversas_msg || 0;
   const cpaMes = heroP.cpa_msg || 0;
+  // (c) MTD ao lado da janela longa: precisa existir no card um numero que se
+  // mexa TODO DIA. A janela longa anda ~1% ao dia — o CPA ficou identico em
+  // quatro refreshes seguidos e o painel parecia congelado.
+  const mtdP = (M.por_periodo && M.por_periodo.mtd) || {};
+  const cpaMtd = mtdP.cpa_msg || 0;
   const cpaMeta = (bench.cpa_msg_meta || 25);
   const cpaCor = cpaMes && cpaMes <= cpaMeta*0.85 ? 'var(--good)' : (cpaMes && cpaMes <= cpaMeta*1.15 ? 'var(--warn)' : 'var(--crit)');
   const cpaCtx = cpaMes ? (cpaMes <= cpaMeta*0.85 ? 'ótimo, muito abaixo da meta' : cpaMes <= cpaMeta*1.15 ? 'na meta' : `caro, ${((cpaMes/cpaMeta-1)*100).toFixed(0)}% acima da meta`) : '—';
@@ -5410,6 +5424,12 @@ function renderMidias(){
     ${(() => {
       const roasEst = (MID.funil_conversao && MID.funil_conversao.roas_estimado) || null;
       const roasVal = roasEst ? roasEst.valor : null;
+      // funil_conversao esta na lista de CAMPOS CURADOS PRESERVADOS do
+      // midias_refresh.yml: o cron diario passa por cima sem tocar. Ou seja, o
+      // numero em MAIOR destaque do card e o unico que o refresh nunca atualiza.
+      // Em 15/09/2026 ele marcava 4,72 baseado em AGOSTO fechado, enquanto o
+      // rodape do mesmo card dizia "Gerado 15/09 11:43". Nada na tela avisava.
+      const roasBase = (MID.funil_conversao && MID.funil_conversao.periodo) || null;
       const roasCor = !roasVal ? 'var(--muted)' : roasVal >= 5 ? '#22c55e' : roasVal >= 3 ? '#3b82f6' : roasVal >= 2 ? '#f59e0b' : '#ef4444';
       const roasCtx = !roasVal ? '' : roasVal >= 5 ? 'excelente' : roasVal >= 3 ? 'saudável' : roasVal >= 2 ? 'no limite' : 'abaixo do saudável';
       const cenariosRoas = (MID.funil_conversao && MID.funil_conversao.cenarios_roas) || [];
@@ -5419,6 +5439,7 @@ function renderMidias(){
           <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">⭐ Métrica estrela · Retorno sobre investimento (ROAS)</div>
           <div style="font-size:56px;font-weight:800;color:${roasCor};line-height:1.05;margin:4px 0">${roasVal?roasVal.toFixed(2).replace('.',',')+'x':'—'}</div>
           <div style="font-size:13px;color:var(--ink-2)">${roasVal?`cada R$ 1 investido em Meta Ads voltou R$ ${roasVal.toFixed(2).replace('.',',')} em receita · ${roasCtx}`:'aguardando mês fechado com atribuição'}</div>
+          ${roasVal ? `<div style="font-size:11px;margin-top:8px;padding:5px 10px;background:var(--bg);border-radius:999px;display:inline-block;color:var(--ink-3)" title="funil_conversao é campo curado: o refresh diário preserva e não recalcula. Só muda quando o gerente de Marketing atualiza à mão.">📌 base: <strong>${roasBase || 'período não declarado'}</strong> · curado à mão, <strong>não</strong> atualiza no refresh diário</div>` : ''}
           ${cenarioRec ? `<div style="font-size:11px;color:var(--ink-3);margin-top:4px;font-style:italic">Cenário medido: ${cenarioRec.cenario}</div>` : ''}
         </div>
 
@@ -5426,7 +5447,7 @@ function renderMidias(){
           <div style="text-align:center">
             <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700">💰 Investido no ano</div>
             <div style="font-size:24px;font-weight:800;color:var(--accent);margin-top:4px">${brl0(gastoMes)}</div>
-            <div style="font-size:11px;color:var(--ink-3)">desde a abertura</div>
+            <div style="font-size:11px;color:var(--ink-3)" title="A janela é declarada porque o rótulo já mentiu: o card dizia 'desde a abertura' e lia uma janela rolante de 90 dias.">${heroJanela}${heroUsaAno?'':' · janela rolante'}</div>
           </div>
           <div style="text-align:center">
             <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700">💬 Conversas geradas</div>
@@ -5434,9 +5455,9 @@ function renderMidias(){
             <div style="font-size:11px;color:var(--ink-3);color:${cpaCor}">CPA ${cpaMes?brl(cpaMes):'—'} · ${cpaCtx}</div>
           </div>
           <div style="text-align:center">
-            <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700">🎯 Meta CPA</div>
-            <div style="font-size:24px;font-weight:800;color:var(--ink);margin-top:4px">${brl(cpaMeta)}</div>
-            <div style="font-size:11px;color:var(--ink-3)">alerta se >${brl(cpaMeta*1.3)}</div>
+            <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700">📅 CPA do mês (MTD)</div>
+            <div style="font-size:24px;font-weight:800;color:${cpaMtd?(cpaMtd<=cpaMeta*0.85?'var(--good)':cpaMtd<=cpaMeta*1.15?'var(--warn)':'var(--crit)'):'var(--ink)'};margin-top:4px" title="Janela curta, que reage todo dia — ao contrário do acumulado do ano, que anda ~1% por dia e parece parado.">${cpaMtd?brl(cpaMtd):'—'}</div>
+            <div style="font-size:11px;color:var(--ink-3)">${mtdP.inicio?`${fmtDate(mtdP.inicio)} a ${fmtDate(mtdP.fim)}`:'mês corrente'} · meta ${brl(cpaMeta)}${cpaMtd&&cpaMes?` · ano ${brl(cpaMes)}`:''}</div>
           </div>
         </div>
 
@@ -6006,14 +6027,19 @@ function renderMidias(){
       ${(() => {
         // orgânico expandido: reach 30d, profile_activity, website_clicks, ultimo_post
         const ext = org30.reach || ig.alcance_organico_30d || 0;
-        const pa = org30.profile_activity || 0;
-        const wc = org30.website_clicks || 0;
+        // null != 0. A Meta recusa metricas depreciadas e o refresh grava null;
+        // pintar isso como "0" ja fez o painel afirmar "ninguem clicou nos
+        // botoes do perfil em 30 dias" quando o certo era "nao foi medido".
+        const pa = org30.profile_activity;
+        const wc = org30.website_clicks;
+        const naoMedido = (MID._nao_medido || {}).metricas || [];
+        const semMedida = m => naoMedido.some(x => x.endsWith(':' + m));
         const ultimo = ig.ultimo_post || {};
         const dias_sem = ultimo.dias_sem_postar;
-        return (ext || pa || wc || ultimo.data) ? `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;font-size:12px">
+        return (ext || pa || wc || ultimo.data || naoMedido.length) ? `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;font-size:12px">
           <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Reach orgânico 30d</div><div style="font-weight:700;font-size:22px">${nfmt(ext)}</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(Math.round(ext/30))}/dia médio</div></div>
-          <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Cliques em botões do perfil 30d</div><div style="font-weight:700;font-size:22px">${nfmt(pa)}</div><div style="color:var(--ink-3);font-size:10.5px">chamada · e-mail · rota</div></div>
-          <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Cliques no site (bio)</div><div style="font-weight:700;font-size:22px">${nfmt(wc)}</div><div style="color:var(--ink-3);font-size:10.5px">últimos 30d</div></div>
+          <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Cliques em botões do perfil 30d</div><div style="font-weight:700;font-size:22px"${pa==null?' title="A Meta não mede mais esta métrica nesta versão da API — não é zero, é ausência de medição."':''}>${nOpt(pa)}</div><div style="color:var(--ink-3);font-size:10.5px">${pa==null?(semMedida('profile_activity')?'API recusou a métrica':'sem medição'):'chamada · e-mail · rota'}</div></div>
+          <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Cliques no site (bio)</div><div style="font-weight:700;font-size:22px"${wc==null?' title="Não medido nesta execução — não confundir com zero clique."':''}>${nOpt(wc)}</div><div style="color:var(--ink-3);font-size:10.5px">${wc==null?(semMedida('website_clicks')?'API recusou a métrica':'sem medição'):'últimos 30d'}</div></div>
           <div style="background:${dias_sem!=null && dias_sem>7?'rgba(239,68,68,.08)':'var(--surface-2)'};border-radius:8px;padding:12px${dias_sem!=null && dias_sem>7?';border-left:3px solid #ef4444':''}"><div style="color:${dias_sem!=null && dias_sem>7?'#ef4444':'var(--ink-3)'};font-size:10.5px">Último post</div><div style="font-weight:700;font-size:18px">${ultimo.data?fmtDate(ultimo.data):'—'}</div><div style="color:var(--ink-3);font-size:10.5px">${dias_sem!=null?`${dias_sem} dia(s) sem postar`:'—'}</div></div>
         </div>` : '';
       })()}
@@ -6078,6 +6104,17 @@ function renderMidias(){
   // paralelos onde a plataforma pequena (54 seg) toma o mesmo espaco visual da
   // grande (1825 seg).
   document.querySelectorAll('.fb-page-card').forEach(e => e.remove());
+  // Aviso de metrica recusada. Mesmo padrao dos vizinhos: remove a versao
+  // anterior antes de injetar, senao cada re-render empilha um card novo.
+  document.querySelectorAll('.metrica-recusada-card').forEach(e => e.remove());
+  if(igBox && MID._nao_medido && (MID._nao_medido.metricas||[]).length){
+    const nm = MID._nao_medido;
+    igBox.insertAdjacentHTML('afterend', `<div class="metrica-recusada-card" style="margin:14px 0;padding:10px 12px;background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;border-radius:6px;font-size:11.5px;color:var(--ink-2)">
+      <strong>⚠️ ${nm.metricas.length} métrica(s) recusada(s) pela API neste refresh</strong> — aparecem como “—”, não como zero.
+      <div style="margin-top:6px;font-size:10.5px;color:var(--ink-3)">${nm.metricas.map(m=>`<code>${m}</code>`).join(' · ')}</div>
+      <div style="margin-top:6px;font-size:10.5px;color:var(--ink-3)">${nm.nota||''}</div>
+    </div>`);
+  }
   if(MID.facebook_page && MID.facebook_page.conectado){
     const fbp = MID.facebook_page.organico_30d || {};
     const fbPost = MID.facebook_page.posts_30d_detalhes || [];
@@ -6122,7 +6159,7 @@ function renderMidias(){
           <td style="padding:5px">${fmtDate(p.data)}</td>
           <td style="padding:5px"><span style="background:#1877F2;color:#fff;font-size:9px;padding:1px 5px;border-radius:6px">${(p.tipo||'-').toUpperCase()}</span></td>
           <td style="padding:5px;font-size:10.5px">${p.texto_curto||'—'}</td>
-          <td style="text-align:right;padding:5px">${nfmt(p.reach||0)}</td>
+          <td style="text-align:right;padding:5px"${(p.views==null&&p.reach==null)?' title="post_impressions foi depreciado pela Meta em 15/06/2026. Sem alcance medido para este post — não é zero."':''}>${nOpt(p.views != null ? p.views : p.reach)}</td>
           <td style="text-align:right;padding:5px">${nfmt(p.reactions_total||0)}</td>
           <td style="text-align:right;padding:5px;font-weight:700;color:#1877F2">${nfmt(p.engajamento_total||0)}</td>
           <td style="text-align:center;padding:5px">${p.url?`<a href="${p.url}" target="_blank" style="color:var(--accent);text-decoration:none">🔗</a>`:'—'}</td>

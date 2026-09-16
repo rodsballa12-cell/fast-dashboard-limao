@@ -3,11 +3,25 @@ name: Refresh Midias Sociais (diario)
 # Atualiza data/midias_sociais.json (Escova) e data/spa/midias_sociais.json
 # (SPA) pulando a Meta Graph API v20.0 com o token META_ACCESS_TOKEN.
 #
-# HORARIO: 10h UTC = 07h BRT (UTC-3 fixo, sem DST desde 2019).
+# HORARIO: alvo 07h BRT (10h UTC). BRT e UTC-3 fixo, sem DST desde 2019.
 # 07h BRT = manha bem cedo — Meta ja consolidou D-1 e o commit resultante
-# fica antes do horario comercial abrir. Um fire por dia basta: os
-# numeros mudam pouco em minutos, e overlap e barrado pelo concurrency
-# group abaixo.
+# fica antes do horario comercial abrir.
+#
+# POR QUE SEIS FIRES E NAO UM (corrigido em 15/09/2026):
+# "Um fire por dia basta" estava errado. O GitHub entrega cron de repo
+# gratuito com atraso grande e crescente em horario de pico, e sem rede
+# embaixo o dia inteiro fica sem dado de midia:
+#   12/09  alvo 07h → saiu 10h18  (+3h18)
+#   13/09  alvo 07h → saiu 11h01  (+4h01)
+#   14/09  alvo 07h → saiu 13h06  (+6h06)
+#   15/09  alvo 07h → NAO SAIU ate 10h03, quando o Rodrigo perguntou
+# Nos tres dias em que saiu, ja tinha saido DEPOIS do briefing de
+# marketing das 08h — que leu dado da vespera achando que era do dia.
+#
+# Agora sao seis fires (06h05 a 11h05 BRT). O primeiro que o GitHub
+# entregar faz o trabalho; os outros cinco morrem no early-exit abaixo em
+# poucos segundos, sem tocar na Meta Graph API. Mesmo desenho que o
+# refresh.yml ja usava desde 01/09 — faltava copiar pra ca.
 #
 # CAMPOS CURADOS PRESERVADOS: direcionamentos_estrategicos, recomendacoes,
 # insights_narrativa, alertas_topo, kpi_estrela, benchmarks,
@@ -18,7 +32,8 @@ name: Refresh Midias Sociais (diario)
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 10 * * *'
+    # 06h05, 07h05, 08h05, 09h05, 10h05 e 11h05 BRT. Um so roda de verdade.
+    - cron: '5 9,10,11,12,13,14 * * *'
 
 permissions:
   contents: write
@@ -37,15 +52,37 @@ jobs:
         with:
           python-version: '3.12'
 
+      # Early-exit: se o payload de midia ja e de hoje, o fire de hoje ja
+      # aconteceu e este e um dos irmaos. Sai em segundos, sem tocar na Meta.
+      # Vale so para fires de cron — workflow_dispatch sempre roda, porque
+      # quando alguem dispara a mao e justamente para forcar dado novo.
+      - name: Ja rodou hoje?
+        id: recencia
+        if: github.event_name == 'schedule'
+        run: |
+          hoje=$(TZ=America/Sao_Paulo date +%F)
+          g=$(sed -nE 's/.*"gerado_em": *"([^"]{10}).*/\1/p' data/midias_sociais.json | head -1)
+          echo "payload de midia: ${g:-vazio} · hoje: $hoje"
+          if [ "$g" = "$hoje" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "⏭  Midia ja foi atualizada hoje — nada a fazer."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "▶  Dado de midia ainda e de $g — rodando."
+          fi
+
       - name: Install deps
+        if: steps.recencia.outputs.skip != 'true'
         run: pip install requests
 
       - name: Refresh midias Meta (Escova + SPA)
+        if: steps.recencia.outputs.skip != 'true'
         env:
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
         run: python scripts/refresh_midias.py
 
       - name: Refresh Google Business Profile
+        if: steps.recencia.outputs.skip != 'true'
         # Rota Supermetrics REST API (plano Connect + GMB add-on).
         # Google Business Profile API oficial nega candidatura pra single-
         # location owners, entao Supermetrics e a rota programatica viavel.
@@ -61,6 +98,7 @@ jobs:
           python scripts/refresh_google.py
 
       - name: Commit e push
+        if: steps.recencia.outputs.skip != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -88,9 +126,43 @@ jobs:
             resumo="${resumo} · ${u}: R\$${gasto} 7d / IG ${seg} seguidores"
           done
 
+          # --- push resiliente -------------------------------------------
+          # O job passa minutos puxando API, e nesse intervalo o main pode
+          # andar. Em 15/09 andou dois commits durante um refresh de midia:
+          # o push foi rejeitado, o run falhou, e 6 minutos de chamada a Meta
+          # foram jogados fora — o painel seguiu o dia com dado da vespera.
+          # Nos dias normais nunca aparecia, porque o cron roda de madrugada,
+          # quando ninguem esta empurrando.
+          #
+          # Por que reset --mixed e nao rebase: estes JSON sao REGENERADOS
+          # inteiros a cada run, nao sao um delta sobre o remoto. Rebase
+          # tentaria casar linha a linha arquivos de dezenas de milhares de
+          # linhas e conflitaria. O --mixed devolve o index ao main novo,
+          # mantem os arquivos frescos no disco e recommita SO os que este job
+          # gerou — o que o main mudou em outros arquivos fica de pe.
+          empurrar() {
+            local msg="$1" arqs="$2" i
+            for i in 1 2 3; do
+              if git push; then return 0; fi
+              echo "push rejeitado (tentativa $i) — o main andou; recommitando sobre ele"
+              git fetch origin main || return 1
+              git reset --mixed origin/main
+              git add $arqs 2>/dev/null || true
+              if git diff --cached --quiet; then
+                echo "nada a commitar — o main ja tem dado equivalente"
+                return 0
+              fi
+              git commit -m "$msg"
+            done
+            echo "::error::push rejeitado 3 vezes seguidas. O dado desta execucao se perdeu."
+            return 1
+          }
+
+          arqs=$(git diff --cached --name-only | tr '\n' ' ')
           data_brt=$(TZ=America/Sao_Paulo date +'%d/%m %H:%M')
-          git commit -m "refresh midias: ${data_brt} BRT${resumo}"
-          git push
+          msg="refresh midias: ${data_brt} BRT${resumo}"
+          git commit -m "$msg"
+          empurrar "$msg" "$arqs"
 
       # Detector de parada de entrega — Escova E SPA.
       #
@@ -112,7 +184,7 @@ jobs:
       # deu pra avaliar (serie curta demais — normal no SPA antes de 25/09,
       # entao so avisa, nao falha).
       - name: Alerta de parada de entrega (Escova + SPA)
-        if: always()
+        if: always() && steps.recencia.outputs.skip != 'true'
         run: |
           falhou=0
           for f in data/midias_sociais.json data/spa/midias_sociais.json; do
@@ -147,7 +219,7 @@ jobs:
       # Roda depois do commit, como o alerta de entrega: conferencia nunca deve
       # impedir o dado de ser salvo.
       - name: Auditoria de coerencia (unidades · periodos · zero-state)
-        if: always()
+        if: always() && steps.recencia.outputs.skip != 'true'
         run: |
           set +e
           python scripts/auditoria_coerencia.py

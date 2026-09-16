@@ -79,16 +79,74 @@ antes de declarar 🔴:
 |---|---|---|
 | `meta_ads` ou `instagram` com erro/vazio | Meta Graph API direta (`refresh_midias.py`) | Supermetrics não está envolvido — não é a causa |
 | `google_business` com erro/vazio | Supermetrics (`refresh_google.py`) | Meta e IG continuam chegando normalmente |
+
+**Google Business da Escova está conectado e automático** — verificado em
+15/09/2026 consultando o próprio Supermetrics: fonte `GMB` autenticada, a
+location `113115220736067782914_...` devolve 30 dias de série sem cache, e o
+passo do workflow grava sozinho desde 14/09. Não repita a pendência de add-on
+que o campo `mensagem` afirmava: era texto curado obsoleto, e foi corrigido
+para ser escrito pelo próprio script.
+
+**Leia `google_business.janela_efetiva` antes de citar qualquer número do
+Google.** A Performance API reporta com ~3 dias de atraso, então os dias mais
+recentes da série vêm zerados e marcados com `_sem_dado_ainda`. Os totais estão
+certos para a janela que cobrem; o que quebra é dividir por 30 (média sai 71/dia
+quando o real é 79) e comparar contra uma janela de 30 dias cheios. **Queda nos
+últimos dias da série do Google é atraso de reporte, não perda de alcance** — não
+abra alerta em cima disso.
 | Supermetrics retorna erro em query ad-hoc | Supermetrics (sessão/token MCP) | Dados do JSON do repo são independentes |
 
-**Verifique o frescor do JSON antes de concluir.** Se `data/midias_sociais.json`
-foi atualizado há menos de 24h e os dados de Meta estão presentes, o pipeline
-está funcionando — mesmo que o Supermetrics esteja inacessível nesta sessão.
+**Verifique o frescor do JSON antes de concluir — e diga a idade em voz alta.**
+
+São duas perguntas diferentes, e confundi-las já custou um dia inteiro:
+
+| Pergunta | Régua | O que significa |
+|---|---|---|
+| O pipeline quebrou? | `gerado_em` < 24h + Meta presente | Não. Não declare 🔴 nem culpe o Supermetrics. |
+| O dado é de hoje? | `gerado_em` do dia corrente | Se não for, **todo número deste parecer é da véspera.** |
+
+A segunda régua não existia até 15/09/2026, e por isso o briefing das 08h passou
+quatro dias seguidos lendo dado da véspera sem dizer. O cron de mídia saiu às
+10h18, 11h01 e 13h06 nos dias 12, 13 e 14 — sempre **depois** das 08h — e em 15/09
+não saiu. Em nenhum desses dias nada estava "quebrado": estava velho, que é pior,
+porque número velho tem a mesma cara de número certo.
+
+**Obrigatório no cabeçalho do parecer:** `dado de DD/MM HHhMM`. Se não for de hoje,
+a linha seguinte é um ⚠️ dizendo de quantas horas é o atraso e que as comparações
+de "hoje" e "7d" estão deslocadas em um dia. Não escreva o parecer sem isso.
+
+Se o dado for da véspera e já passou das 11h05 (fim da janela dos seis fires do
+`midias_refresh.yml`), isso é 🔴 de infraestrutura: peça ao Rodrigo para disparar
+o workflow à mão — Actions → *Refresh Midias Sociais (diario)* → Run workflow — e
+diga que o parecer de hoje saiu sobre dado de ontem.
 
 Em 14/09/2026 este cargo declarou o painel cego **duas vezes no mesmo dia** por
 confundir os dois caminhos. Nas duas o painel estava fresco: a rotina tinha
 puxado dado novo da Meta horas antes, e o Supermetrics, quando testado de
 verdade, devolveu gasto dia a dia das duas contas sem cache.
+
+### Passo 1b — o que NÃO foi medido neste refresh
+
+**Leia `_nao_medido` antes de citar qualquer número.** O bloco existe quando a
+Graph API recusou alguma métrica; lista quais, quantas vezes, e a resposta
+literal da API (que costuma dizer quais nomes ainda valem).
+
+Campo recusado vale **`null`**, nunca `0`. No painel aparece como “—”.
+
+Isso foi descoberto em 15/09/2026 numa auditoria: `post_impressions` e
+`post_impressions_unique` morreram na depreciação do Facebook de 15/06/2026, e
+`profile_activity` saiu da lista aceita do Instagram. **40 falhas por execução,
+todo dia, nas duas unidades, e o run terminava verde** — porque a falha era
+classificada `[INFO]` e o valor default era `0`.
+
+Enquanto isso o painel afirmava *"0 cliques nos botões do perfil em 30 dias"* e
+*"0 de alcance em 9 posts"*. Números falsos sobre o negócio, com cara de número
+verdadeiro.
+
+**A regra:** nunca escreva um parecer dizendo que uma métrica está em zero sem
+antes conferir se ela está em `_nao_medido`. Ausência de medição e resultado
+zero exigem ações opostas — uma é consertar o pipeline, a outra é consertar a
+operação.
 
 ### Passo 2 — a conta está entregando?
 

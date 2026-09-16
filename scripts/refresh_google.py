@@ -18,8 +18,28 @@ Env opcional:
   SUPERMETRICS_TEAM_ID  — default 1192722 (team Rodrigo)
 
 O script MERGE campos calculaveis (kpis_30d, rating, serie_diaria_30d,
-conta_id, nome) e preserva o resto (mensagem, endereco curado, categorias,
+conta_id, nome, mensagem) e preserva o resto (endereco curado, categorias,
 etc — igual ao padrao de refresh_midias.py).
+
+`mensagem` DEIXOU de ser campo curado em 15/09/2026. Ela dizia "Aguardando
+primeiro refresh Supermetrics REST — dados apareceriao no proximo cron 07h BRT
+apos GMB add-on ser adicionado ao plano" enquanto o script, no mesmo arquivo,
+gravava 30 dias de dado real todo dia. Texto escrito a mao nao envelhece junto
+com o numero ao lado; quem leu o bloco — inclusive um agente — repetiu a
+pendencia que nao existia mais. Agora quem escreve a mensagem e o codigo que
+sabe o que acabou de acontecer.
+
+DEFASAGEM DO GOOGLE: a Performance API do GBP reporta com ~3 dias de atraso.
+Os dias mais recentes voltam zerados.
+
+O que isso NAO faz: nao erra os totais. Somar tres zeros nao muda soma — os
+2.133 views de 30d estao certos para os 27 dias que cobrem.
+
+O que faz: erra todo o resto. Media diaria sai 71,1/dia quando o real e 79,0
+(11% de erro), qualquer comparacao contra uma janela de 30 dias cheios compara
+27 contra 30, e no grafico os tres zeros finais desenham um precipicio que
+parece colapso de alcance. O script separa a cauda, agrega sobre os dias com
+dado, marca os dias sem reporte e registra a janela efetiva.
 
 CLI:
   python scripts/refresh_google.py                # ambas unidades
@@ -59,6 +79,12 @@ CAMPOS_PERF = [
     "actions_driving_directions", "actions_messages",
 ]
 CAMPOS_REVIEWS = ["total_review_count", "total_review_star_rating"]
+
+# Ate quantos dias finais zerados sao explicaveis pela defasagem normal do
+# Google (~3 dias). Alem disso nao e atraso de reporte: e o perfil que parou
+# de receber visita, ou a conexao que quebrou — e aparece como alerta, nao e
+# silenciosamente descontado da janela.
+MAX_DIAS_DEFASAGEM = 5
 
 
 # ---------------------------------------------------------------------------
@@ -152,6 +178,27 @@ def _fetch_reviews(loc_id: str, api_key: str, team_id: str) -> dict:
 # Merge no arquivo
 # ---------------------------------------------------------------------------
 
+def _separar_defasagem(serie: list[dict]) -> tuple[list[dict], int]:
+    """Separa a cauda de dias ainda nao reportados pelo Google.
+
+    Um dia com dado real nunca vem zerado em TUDO: no historico da Escova o
+    minimo de views num dia aberto e 27. Zero em views e acoes ao mesmo tempo,
+    nos dias mais recentes, e ausencia de reporte — nao ausencia de movimento.
+
+    So a cauda conta. Zero no meio da serie fica onde esta: pode ser real, e
+    descontar dia do meio mudaria o denominador sem o leitor saber.
+    """
+    n = 0
+    for x in reversed(serie):
+        if x.get("views_total", 0) == 0 and x.get("actions_total", 0) == 0:
+            n += 1
+        else:
+            break
+    if n > MAX_DIAS_DEFASAGEM or n == len(serie):
+        return serie, 0          # nao e defasagem normal — nao desconta nada
+    return (serie[:len(serie) - n] if n else serie), n
+
+
 def _agregar_kpis(serie: list[dict]) -> dict:
     if not serie: return {}
     def s(k): return sum(x[k] for x in serie)
@@ -175,11 +222,29 @@ def _merge(base: dict, serie: list[dict], reviews: dict, loc_id: str,
     gb = base.setdefault("google_business", {})
     resumo = {}
 
+    defasados = 0
     if serie:
+        com_dado, defasados = _separar_defasagem(serie)
+        # A serie inteira continua no arquivo — o zero e o dado bruto honesto.
+        # Mas cada dia sem reporte vai marcado, pra que o grafico nao desenhe
+        # um precipicio e ninguem leia queda onde ha so atraso.
+        for x in serie[len(com_dado):]:
+            x["_sem_dado_ainda"] = True
         gb["serie_diaria_30d"] = serie
-        gb["kpis_30d"] = _agregar_kpis(serie)
+        gb["kpis_30d"] = _agregar_kpis(com_dado)
+        gb["janela_efetiva"] = {
+            "dias_com_dado": len(com_dado),
+            "de": com_dado[0]["data"] if com_dado else None,
+            "ate": com_dado[-1]["data"] if com_dado else None,
+            "dias_aguardando_google": defasados,
+            "nota": ("KPIs somam apenas os dias ja reportados — os totais estao "
+                     "certos para a janela que cobrem. Use dias_com_dado como "
+                     "denominador de qualquer media, e nao compare esta janela com "
+                     "uma de 30 dias cheios sem normalizar: seriam 27 contra 30."),
+        }
         resumo["views_30d"] = gb["kpis_30d"]["views_total"]
         resumo["acoes_30d"] = gb["kpis_30d"]["actions_total"]
+        resumo["dias"] = len(com_dado)
 
     if reviews:
         gb["rating"] = reviews
@@ -193,6 +258,19 @@ def _merge(base: dict, serie: list[dict], reviews: dict, loc_id: str,
         if loc_nome:
             gb["nome"] = loc_nome
         gb["_fonte_refresh"] = "Supermetrics REST API · refresh diario automatico"
+        # Escrita pelo codigo, nunca a mao: ver o cabecalho deste arquivo.
+        janela = gb.get("janela_efetiva") or {}
+        if janela.get("dias_com_dado"):
+            gb["mensagem"] = (
+                f"Conectado ao Google Business Profile via Supermetrics (GMB), "
+                f"refresh automatico diario. KPIs somam {janela['dias_com_dado']} "
+                f"dias com dado ({janela['de']} a {janela['ate']})"
+                + (f"; os {defasados} dias seguintes ainda nao foram reportados "
+                   "pelo Google (defasagem normal de ~3 dias) e valem 0 na serie."
+                   if defasados else "."))
+        else:
+            gb["mensagem"] = ("Conectado ao Google Business Profile via Supermetrics "
+                              "(GMB), mas a ultima consulta nao trouxe serie diaria.")
 
     return base, resumo
 

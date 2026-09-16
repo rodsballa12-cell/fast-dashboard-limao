@@ -36,7 +36,7 @@ $tarefas = @(
   @{ Nome="FAST\Memoria 07h30";      Agente="memoria";          Hora="07:30"
      Porque="lê o resultado da auditoria de coerência que roda às 07h no GitHub" }
   @{ Nome="FAST\Marketing 08h";      Agente="marketing";        Hora="08:00"
-     Porque="o refresh de mídia sai às 07h" }
+     Porque="o refresh de mídia tem seis fires entre 06h05 e 11h05; o cargo confere o gerado_em e diz a idade do dado" }
   @{ Nome="FAST\Financeiro 08h30";   Agente="financeiro";       Hora="08:30"
      Porque="caixa e margem antes do dia começar a gastar" }
   @{ Nome="FAST\Relacionamento 09h"; Agente="relacionamento";   Hora="09:00"

@@ -237,16 +237,87 @@ jobs:
           done
           # Se quota_status foi limpo (arquivo removido), stage a remoção
           git add -u data/quota_status.json 2>/dev/null || true
+          # --- push resiliente -------------------------------------------
+          # O job passa minutos puxando API, e nesse intervalo o main pode
+          # andar. Em 15/09 andou dois commits durante um refresh de midia:
+          # o push foi rejeitado, o run falhou, e 6 minutos de chamada a Meta
+          # foram jogados fora — o painel seguiu o dia com dado da vespera.
+          # Nos dias normais nunca aparecia, porque o cron roda de madrugada,
+          # quando ninguem esta empurrando.
+          #
+          # Por que reset --mixed e nao rebase: estes JSON sao REGENERADOS
+          # inteiros a cada run, nao sao um delta sobre o remoto. Rebase
+          # tentaria casar linha a linha arquivos de dezenas de milhares de
+          # linhas e conflitaria. O --mixed devolve o index ao main novo,
+          # mantem os arquivos frescos no disco e recommita SO os que este job
+          # gerou — o que o main mudou em outros arquivos fica de pe.
+          empurrar() {
+            local msg="$1" arqs="$2" i
+            for i in 1 2 3; do
+              if git push; then return 0; fi
+              echo "push rejeitado (tentativa $i) — o main andou; recommitando sobre ele"
+              git fetch origin main || return 1
+              git reset --mixed origin/main
+              git add $arqs 2>/dev/null || true
+              if git diff --cached --quiet; then
+                echo "nada a commitar — o main ja tem dado equivalente"
+                return 0
+              fi
+              git commit -m "$msg"
+            done
+            echo "::error::push rejeitado 3 vezes seguidas. O dado desta execucao se perdeu."
+            return 1
+          }
+
           if git diff --cached --quiet; then
             echo "Sem mudanças nos dados"
-          elif git diff --cached --quiet -- data/dashboard_data.json; then
-            # Nada mudou no dashboard: o script saiu pela porta da cota esgotada
-            # e só reescreveu quota_status.json. Rotular isso de "refresh" faz o
-            # git log parecer saudável enquanto o painel está congelado.
-            congelado=$(sed -nE 's/.*"gerado_em": *"([^"]+)".*/\1/p' data/dashboard_data.json | head -1)
-            git commit -m "chore: cota Trinks esgotada · dashboard congelado em ${congelado:-desconhecido}"
-            git push
           else
-            git commit -m "refresh: dashboard $(TZ=America/Sao_Paulo date +'%d/%m %H:%M') BRT"
-            git push
+            arqs=$(git diff --cached --name-only | tr '\n' ' ')
+            if git diff --cached --quiet -- data/dashboard_data.json; then
+              # Nada mudou no dashboard: o script saiu pela porta da cota esgotada
+              # e só reescreveu quota_status.json. Rotular isso de "refresh" faz o
+              # git log parecer saudável enquanto o painel está congelado.
+              congelado=$(sed -nE 's/.*"gerado_em": *"([^"]+)".*/\1/p' data/dashboard_data.json | head -1)
+              msg="chore: cota Trinks esgotada · dashboard congelado em ${congelado:-desconhecido}"
+            else
+              msg="refresh: dashboard $(TZ=America/Sao_Paulo date +'%d/%m %H:%M') BRT"
+            fi
+            git commit -m "$msg"
+            empurrar "$msg" "$arqs"
           fi
+
+      # VIGIA DO PIPELINE DE MIDIA
+      #
+      # Em 15/09/2026 o cron do midias_refresh.yml nao disparou e ninguem soube
+      # ate o Rodrigo perguntar, quatro horas depois. Os dois detectores de
+      # midia — alerta_entrega e a auditoria de coerencia — moravam DENTRO
+      # daquele workflow: quando ele nao roda, nada percebe que ele nao rodou.
+      #
+      # Este workflow e o mais confiavel do repo (7 slots x 2 fires, e entregou
+      # ate no dia em que o de midia sumiu), entao vira o vigia do outro.
+      #
+      # POR QUE SO ENTRE 11h E 13h BRT: o script so acusa erro depois das 11h05,
+      # quando os seis fires de midia ja tiveram a chance. Se alarmasse em todos
+      # os slots, um dia ruim renderia seis e-mails identicos — e alarme repetido
+      # ensina a ignorar alarme (foi o que matou o fluxo de aniversarios em
+      # 04/09: 7 de 9 issues sem resposta). Fora dessa faixa o achado ainda
+      # aparece no log do run, mas nao derruba.
+      #
+      # Roda por ultimo, depois do push: conferencia nunca impede o dado de ser
+      # salvo.
+      - name: Vigia — o refresh de midia entregou hoje?
+        if: always()
+        run: |
+          set +e
+          python scripts/auditoria_coerencia.py --so-midia
+          rc=$?
+          set -e
+          hora=$(TZ=America/Sao_Paulo date +%-H)
+          if [ "$rc" -ne 0 ] && [ "$hora" -ge 11 ] && [ "$hora" -le 13 ]; then
+            echo "::error::Dado de midia parado. Dispare o midias_refresh.yml a mao."
+            exit 1
+          fi
+          if [ "$rc" -ne 0 ]; then
+            echo "::warning::Dado de midia parado (fora da faixa de alarme ${hora}h — nao derruba o run)."
+          fi
+          exit 0
