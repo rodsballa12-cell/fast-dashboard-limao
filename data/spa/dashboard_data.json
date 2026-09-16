@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-16T09:46:37-03:00",
+  "gerado_em": "2026-09-16T13:44:48-03:00",
   "hoje": "2026-09-16",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -12,6 +12,12 @@
   "meta_mensal_valor": 0,
   "dias_op_mes": 0,
   "dias_atipicos": {
+    "2026-09-16": {
+      "ratio": 0.0,
+      "tipo": "baixo",
+      "mediana_dow": 0.0,
+      "caixa": 0.0
+    },
     "2026-09-15": {
       "ratio": 0.0,
       "tipo": "alto",
@@ -922,9 +928,9 @@
         "cartao": {
           "stone_recebido": 0.0,
           "stone_n": 0,
-          "trinks_vendido": 967.0,
-          "trinks_n": 8,
-          "a_receber_d30": 933.15
+          "trinks_vendido": 1159.0,
+          "trinks_n": 10,
+          "a_receber_d30": 1118.43
         },
         "dinheiro": {
           "total": 83.0,
@@ -939,7 +945,7 @@
         },
         "resumo": {
           "recebido_total": 83.0,
-          "a_receber": 933.15
+          "a_receber": 1118.43
         },
         "periodo_ini": "2026-09-14",
         "periodo_fim": "2026-09-20"
@@ -1061,9 +1067,9 @@
         "cartao": {
           "stone_recebido": 8008.99,
           "stone_n": 18,
-          "trinks_vendido": 15961.75,
-          "trinks_n": 124,
-          "a_receber_d30": 7394.1
+          "trinks_vendido": 16153.75,
+          "trinks_n": 126,
+          "a_receber_d30": 7579.38
         },
         "dinheiro": {
           "total": 810.0,
@@ -1123,7 +1129,7 @@
         },
         "resumo": {
           "recebido_total": 10953.12,
-          "a_receber": 7394.1
+          "a_receber": 7579.38
         },
         "periodo_ini": "2026-09-01",
         "periodo_fim": "2026-09-30"
@@ -1250,9 +1256,9 @@
         "cartao": {
           "stone_recebido": 21507.32,
           "stone_n": 58,
-          "trinks_vendido": 51698.85,
-          "trinks_n": 425,
-          "a_receber_d30": 28382.07
+          "trinks_vendido": 51890.85,
+          "trinks_n": 427,
+          "a_receber_d30": 28567.35
         },
         "dinheiro": {
           "total": 2551.0,
@@ -1407,7 +1413,7 @@
         },
         "resumo": {
           "recebido_total": 36009.11,
-          "a_receber": 28382.07
+          "a_receber": 28567.35
         },
         "periodo_ini": "2026-01-01",
         "periodo_fim": "2026-12-31"
@@ -1798,6 +1804,10 @@
         {
           "data": "2026-10-15",
           "bruto": 0.0
+        },
+        {
+          "data": "2026-10-16",
+          "bruto": 0.0
         }
       ],
       "taxa_antecipacao_mensal_pct": 0.0,
@@ -1899,6 +1909,18 @@
       "vendas_trinks_apos_n": 0,
       "vendas_trinks_apos_v": 0.0,
       "vendas_apos_lista": [
+        {
+          "data": "2026-09-16T12:57",
+          "valor": 0.0,
+          "meio": "Visa",
+          "cliente": "Camila Maradei"
+        },
+        {
+          "data": "2026-09-16T10:36",
+          "valor": 0.0,
+          "meio": "Mastercard",
+          "cliente": "Guilherme Fuoco"
+        },
         {
           "data": "2026-09-15T21:12",
           "valor": 0.0,
@@ -2186,18 +2208,6 @@
           "valor": 0.0,
           "meio": "Visa",
           "cliente": "MARIA HELENA MORAES DOMINGUES"
-        },
-        {
-          "data": "2026-09-11T19:44",
-          "valor": 0.0,
-          "meio": "Mastercard",
-          "cliente": "Marcelo Melin Dona"
-        },
-        {
-          "data": "2026-09-11T19:38",
-          "valor": 0.0,
-          "meio": "Visa Electron",
-          "cliente": "ADRIELIA DIAS"
         }
       ],
       "horas_desatualizado": 0.0
@@ -3754,6 +3764,55 @@
       }
     },
     "dias": {
+      "2026-09-16": {
+        "kpis": {
+          "caixa": 0.0,
+          "faturamento_apurado": 0.0,
+          "receita_serv": 0.0,
+          "atend_fin": 0,
+          "atend_canc": 0,
+          "atend_total": 0,
+          "n_trans": 0,
+          "ticket_trans": 0.0,
+          "cliente_dia": 0,
+          "ticket_medio": 0.0,
+          "taxa_canc": 0.0,
+          "dias_op": 0,
+          "clientes_unicos": 0,
+          "em_atendimento": 0,
+          "n_prof_ativos": 0,
+          "rs_hora_salao": 0.0,
+          "horas_operacao_periodo": 0.0,
+          "utilizacao_agregada_pct": 0.0
+        },
+        "categorias": {
+          "pacotes": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "produtos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "fast_retoque": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos_gerais": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          }
+        }
+      },
       "2026-09-15": {
         "kpis": {
           "caixa": 0.0,
@@ -6970,6 +7029,13 @@
           "atend": 0,
           "receita": 0.0,
           "receita_ltv": 0.0
+        },
+        {
+          "data": "2026-09-16",
+          "novos": 0,
+          "atend": 0,
+          "receita": 0.0,
+          "receita_ltv": 0.0
         }
       ],
       "cross_sell": {
@@ -7213,6 +7279,11 @@
       },
       "rentabilidade_hora": [],
       "por_dia_mes": [
+        {
+          "d": 0,
+          "n": 0,
+          "v": 0.0
+        },
         {
           "d": 0,
           "n": 0,
@@ -7833,7 +7904,7 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "09:46",
+          "hora_atual_str": "13:44",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -7850,7 +7921,7 @@
         "ticket_gap_por_atend": 0.0,
         "visitas_projetadas": 0,
         "visitas_restantes": 0,
-        "ticket_meta_status": "fechado",
+        "ticket_meta_status": "encerrado_deficit",
         "ticket_meta_deficit_caixa": 0.0,
         "ticket_meta_supera_caixa": 0.0,
         "dia_semana": "Qua",
@@ -8054,7 +8125,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-16T09:46:37-03:00",
+    "gerado_em": "2026-09-16T13:44:48-03:00",
     "hoje": "2026-09-16",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -8226,24 +8297,30 @@
       {
         "tipo": "info",
         "titulo": "Picos previstos ainda hoje",
-        "texto": "Base semanal aponta 13h (1.0 clientes/hora), 16h (1.0 clientes/hora) como as próximas horas de fluxo.",
+        "texto": "Base semanal aponta 16h (0.7 clientes/hora), 17h (0.7 clientes/hora) como as próximas horas de fluxo.",
         "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
       }
     ],
     "semanal": [
       {
         "tipo": "atencao",
-        "titulo": "Semana começou em 56% da meta acumulada",
-        "texto": "R$ 1.800,00 contra R$ 3.244,65 de meta nos 2 dias já corridos (R$ -1.444,65).",
+        "titulo": "Semana começou em 41% da meta acumulada",
+        "texto": "R$ 1.992,00 contra R$ 4.874,17 de meta nos 3 dias já corridos (R$ -2.882,17).",
         "acao": "Ainda dá pra virar: o peso da semana está no fim dela (sexta 19%, sábado 38%). Garantir escala e agenda do fim de semana."
+      },
+      {
+        "tipo": "oportunidade",
+        "titulo": "Ter rende 6.5× Qua",
+        "texto": "Ter: R$ 1.251,00/dia · Qua: R$ 192,00/dia.",
+        "acao": "Reforçar equipe no Ter. No Qua, testar promoção ou reduzir 1 profissional pra cortar custo."
       }
     ],
     "mensal": [
       {
         "tipo": "critico",
         "titulo": "Mês projeta ABAIXO de 80% da meta",
-        "texto": "Projeção R$ 45.468,75 (76%). Ritmo R$ 1.515,62/dia vs necessário R$ 2.423,83/dia. Gap: R$ 908,21/dia.",
-        "acao": "Restam 16 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
+        "texto": "Projeção R$ 42.821,50 (71%). Ritmo R$ 1.427,38/dia vs necessário R$ 2.572,62/dia. Gap: R$ 1.145,24/dia.",
+        "acao": "Restam 15 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
       },
       {
         "tipo": "atencao",
@@ -8254,13 +8331,13 @@
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos = 1.9% do caixa (R$ 413,45). Se chegasse a 8%, seriam +R$ 1.284,05/mês.",
+        "texto": "Produtos = 1.9% do caixa (R$ 413,45). Se chegasse a 8%, seriam +R$ 1.299,41/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 7%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 130,36.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 128,41.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -8298,7 +8375,7 @@
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 114,42. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 113,99. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
@@ -8317,8 +8394,8 @@
       },
       {
         "tipo": "info",
-        "titulo": "R$ 7.394,10 a receber em cartão (D+30)",
-        "texto": "Antecipar tudo hoje custaria R$ 122,74 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 83,91 (CDI). Custo real da antecipação: R$ 38,84.",
+        "titulo": "R$ 7.579,38 a receber em cartão (D+30)",
+        "texto": "Antecipar tudo hoje custaria R$ 125,82 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 86,01 (CDI). Custo real da antecipação: R$ 39,81.",
         "acao": "Só antecipa se tem uso melhor pro dinheiro que render >14,5% a.a. Caso contrário, é mais barato esperar D+30."
       },
       {
