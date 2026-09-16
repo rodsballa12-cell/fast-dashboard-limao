@@ -18,9 +18,15 @@ escreve. Um não substitui o outro — o robô é a matéria-prima do funcionár
 | Gerente de Pessoas | `/pessoas` | não |
 | Guardião da Memória | `/memoria` | **sim** — só em `docs/decisoes/` |
 | Conselho | `/conselho` | não |
+| Publicador | `/publicar` | não no repositório — **publica o Artifact** |
 
 Cinco departamentos apuram, a Memória registra, o Conselho cruza. **Só um
-cargo escreve**, e num único lugar.
+cargo escreve no repositório**, e num único lugar.
+
+O `/publicar` é o único que sai do repositório: leva o painel para o Artifact
+que o Rodrigo abre no celular, sempre no mesmo endereço. Roda sozinho no fim do
+Conselho das 22h30 — o dia fechou e o número é o final. O GitHub Actions não
+consegue fazer isso: a ferramenta de Artifact só existe dentro de uma sessão.
 
 ## Como eles conversam
 

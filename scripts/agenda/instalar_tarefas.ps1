@@ -45,7 +45,7 @@ $tarefas = @(
      Porque="equipe e escala antes do turno da tarde, que é onde o movimento está" }
   @{ Nome="FAST\Operacao 11h30";     Agente="operacao-diaria";  Hora="11:30"
      Porque="o painel atualiza às 11h — ainda dá tempo de salvar o dia" }
-  @{ Nome="FAST\Conselho 22h30";     Agente="conselho";         Hora="22:30"
+  @{ Nome="FAST\Conselho 22h30";     Agente="conselho";         Hora="22:30"; Publicar=$true
      Porque="fecha o dia depois do último refresh, das 22h" }
 )
 
@@ -71,7 +71,9 @@ Write-Host "`nRegistrando as sete tarefas — uma por cargo...`n"
 
 foreach ($t in $tarefas) {
   $acao = New-ScheduledTaskAction -Execute "powershell.exe" `
-    -Argument "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$runner`" -Agente $($t.Agente) -Projeto `"$Projeto`""
+    -Argument ("-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$runner`" " +
+               "-Agente $($t.Agente) -Projeto `"$Projeto`"" +
+               $(if ($t.Publicar) { " -Publicar" } else { "" }))
   $gatilho = New-ScheduledTaskTrigger -Daily -At $t.Hora
   # StartWhenAvailable: recupera a execução se o PC estava desligado.
   # DontStopIfGoingOnBatches / AllowStartIfOnBatteries: notebook não deve pular.

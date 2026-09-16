@@ -17,6 +17,7 @@
 
 param(
   [Parameter(Mandatory=$true)][string]$Agente,
+  [switch]$Publicar,   # roda o cargo /publicar depois da ata (so o Conselho usa)
   [string]$Projeto = "C:\Users\rods_\dev\fast-dashboard-limao",
   [string]$Destino = "C:\Users\rods_\OneDrive\Documentos\Obsidian Vault\Cerebro_Claude\Briefings"
 )
@@ -187,6 +188,35 @@ if ((Git-Passo "pull antes de publicar" @("pull","--rebase")) -and
                                       "commit","-m","ata: $Agente $data $hora")) {
     if (Git-Passo "push da ata" @("push")) { Registrar "Publicado em $rel" }
     else { Registrar "Commit feito, push falhou. A ata sobe no proximo briefing." }
+  }
+}
+
+# --- Leva o painel pro celular ----------------------------------------------
+# So o Conselho passa -Publicar. Publicar a cada refresh seriam sete vezes por
+# dia para mudar centavos, e sete notificacoes no celular do Rodrigo; as 22h30
+# o dia ja fechou e o numero e o final.
+#
+# Chamada SEPARADA do claude, de proposito: se a publicacao falhar, o briefing
+# ja esta salvo no vault e commitado. Um nao derruba o outro.
+#
+# O GitHub Actions nao consegue fazer isto: a ferramenta de Artifact so existe
+# dentro de uma sessao do Claude. Por isso mora aqui, na maquina que roda a
+# agenda, e nao no workflow.
+if ($Publicar) {
+  Registrar "Publicando o painel no artefato..."
+  $encAnt2 = [Console]::OutputEncoding
+  $eaAnt2  = $ErrorActionPreference
+  [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+  $ErrorActionPreference = "Continue"
+  try   { $pub = & $claude -p "/publicar" 2>&1 | Out-String }
+  finally {
+    [Console]::OutputEncoding = $encAnt2
+    $ErrorActionPreference = $eaAnt2
+  }
+  if ([string]::IsNullOrWhiteSpace($pub)) {
+    Registrar "FALHOU: /publicar nao devolveu nada (codigo $LASTEXITCODE)."
+  } else {
+    Registrar ("/publicar: " + ($pub.Trim() -split "`r?`n" | Select-Object -Last 1))
   }
 }
 
