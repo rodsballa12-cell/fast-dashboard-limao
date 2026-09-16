@@ -14,6 +14,8 @@ depois do git pull.
 Regras:
 - Só grava quando o extrato é mais novo ou o saldo mudou. Senão, não abre o Excel.
 - Nunca grava com a planilha aberta (arquivo de trava ~$). Tenta na próxima rodada.
+- Desliga o salvamento automático do OneDrive ao abrir, para um erro não deixar
+  gravação pela metade.
 - Grava pelo Excel (COM), nunca pelo openpyxl: salvar pelo openpyxl apaga o
   valor calculado de TODAS as fórmulas, e o gerar_financeiro.py lê esses valores.
 - Acha a linha pelo rótulo, não pelo endereço: o rodapé anda quando o razão cresce.
@@ -47,6 +49,10 @@ $xl = New-Object -ComObject Excel.Application
 $xl.Visible = $false; $xl.DisplayAlerts = $false; $xl.AskToUpdateLinks = $false
 try {
   $wb = $xl.Workbooks.Open($env:FAST_XLSX, 0, $false)
+  # A planilha está no OneDrive: o Excel liga o salvamento automático e cada
+  # célula escrita vai para o disco na hora. Sem desligar, um erro no meio deixa
+  # gravação pela metade e o Close sem salvar não desfaz nada (visto em 16/09).
+  try { $wb.AutoSaveOn = $false } catch { }
   $ws = $wb.Worksheets.Item($env:FAST_ABA)
   $r = [int]$env:FAST_LINHA
   if (-not ($ws.Cells.Item($r, 2).Text).StartsWith('Stone')) { throw "linha $r nao e a da Reserva Stone" }
