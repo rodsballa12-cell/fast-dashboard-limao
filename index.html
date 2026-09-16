@@ -4153,11 +4153,31 @@ async function refreshInteligente(){
   let token = localStorage.getItem('gh_token');
   if(token){ token = sanitizeToken(token); if(token.length < 20) token = null; }
 
-  // Sem token: só recarrega os dados publicados. Não pede token — cron a
-  // cada 15min mantém tudo fresco. Se quiser reativar sync forçado,
-  // rodar no console: setGhToken('ghp_...')
+  // Sem token: recarrega dados publicados + toast informativo com timestamp
+  // e opcao de configurar token pra sync ao vivo.
   if(!token){
-    reloadAllTabs(true);
+    const antesGer = (TRINKS && TRINKS.gerado_em) || null;
+    btn.disabled = true;
+    btn.textContent = '🔄 Verificando…';
+    try {
+      await reloadAllTabs(false);  // sem toast automatico, faz o proprio
+      const depoisGer = (TRINKS && TRINKS.gerado_em) || null;
+      if(antesGer && depoisGer && depoisGer === antesGer){
+        const dt = new Date(depoisGer);
+        const ageMin = Math.floor((Date.now()-dt.getTime())/60000);
+        const h = Math.floor(ageMin/60), m = ageMin%60;
+        const idade = h ? `${h}h${String(m).padStart(2,'0')}m` : `${m} min`;
+        toast(`ℹ️ <strong>Ainda sem dados novos</strong><br><small>Último snapshot: ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} BRT (há ${idade}). Cron atualiza a cada ~2h — pro sync <em>ao vivo</em> com Trinks agora, use <code>setGhToken('ghp_…')</code> no console.</small>`);
+      } else if(depoisGer){
+        const dt = new Date(depoisGer);
+        toast(`✅ <strong>Dados novos carregados</strong><br><small>Snapshot ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} BRT</small>`);
+      }
+    } catch(e){
+      toast(`❌ Falha ao recarregar: ${e.message}`, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🔄 Atualizar dados';
+    }
     return;
   }
 
@@ -7000,7 +7020,10 @@ async function loadMidias(){
 }
 
 // Exportar CSV das principais métricas Mídias
-document.getElementById('midias-export-btn').addEventListener('click', () => {
+// (guardas defensivas — se algum elemento sumir do DOM, nao derruba o
+// resto dos bindings que vem depois, especialmente o btn-reload).
+const _midiasExportBtn = document.getElementById('midias-export-btn');
+_midiasExportBtn && _midiasExportBtn.addEventListener('click', () => {
   if(!MID) return alert('Dados de mídias ainda não carregados.');
   const M = MID.meta_ads;
   const ig = MID.instagram;
@@ -7041,7 +7064,8 @@ document.getElementById('midias-export-btn').addEventListener('click', () => {
 });
 
 // Print/PDF
-document.getElementById('midias-print-btn').addEventListener('click', () => {
+const _midiasPrintBtn = document.getElementById('midias-print-btn');
+_midiasPrintBtn && _midiasPrintBtn.addEventListener('click', () => {
   // Ativa apenas a aba Mídias antes de imprimir
   const midias = document.getElementById('tab-midias');
   if(midias && !midias.classList.contains('active')){
@@ -7059,7 +7083,16 @@ document.querySelectorAll('.midias-per-btn').forEach(b => b.addEventListener('cl
   if(MID) renderMidias();
 }));
 
-document.getElementById('btn-reload').addEventListener('click', refreshInteligente);
+// Bind resiliente: cada listener isolado num try/catch pra que uma falha
+// (ex: elemento removido do DOM) nao derrube os proximos bindings — foi
+// exatamente o motivo do "botao Atualizar nao funciona" reportado 16/09.
+(function bindReload(){
+  try {
+    const b = document.getElementById('btn-reload');
+    if(b) b.addEventListener('click', refreshInteligente);
+    else console.warn('[bindReload] btn-reload nao encontrado no DOM');
+  } catch(e){ console.error('[bindReload] falhou:', e); }
+})();
 
 // Seletor de unidade (multi-unidade)
 document.querySelectorAll('.unid-btn').forEach(btn => {
