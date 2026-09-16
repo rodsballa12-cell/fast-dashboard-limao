@@ -123,7 +123,23 @@ jobs:
 
           data_brt=$(TZ=America/Sao_Paulo date +'%d/%m %H:%M')
           git commit -m "refresh midias: ${data_brt} BRT${resumo}"
-          git push
+
+          # PUSH COM REBASE E RETENTATIVA
+          # Duas rotinas empurram para a main — o refresh do dashboard e o de
+          # midia — e elas se cruzam. Em 16/09/2026 o refresh de midia puxou
+          # dado bom das DUAS unidades, commitou, e o `git push` puro foi
+          # recusado com "fetch first" porque o outro workflow tinha empurrado
+          # nos sete minutos da execucao. O trabalho inteiro foi perdido e a
+          # rotina apareceu como falha vermelha, escondendo que o token novo
+          # tinha funcionado.
+          for tentativa in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "push recusado (tentativa ${tentativa}) — trazendo a main e tentando de novo"
+            git pull --rebase --autostash origin main || true
+            sleep $((tentativa * 5))
+          done
+          echo "::error::Nao consegui empurrar depois de 3 tentativas."
+          exit 1
 
       # Detector de parada de entrega — Escova E SPA.
       #

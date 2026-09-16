@@ -245,8 +245,23 @@ jobs:
             # git log parecer saudável enquanto o painel está congelado.
             congelado=$(sed -nE 's/.*"gerado_em": *"([^"]+)".*/\1/p' data/dashboard_data.json | head -1)
             git commit -m "chore: cota Trinks esgotada · dashboard congelado em ${congelado:-desconhecido}"
-            git push
           else
             git commit -m "refresh: dashboard $(TZ=America/Sao_Paulo date +'%d/%m %H:%M') BRT"
-            git push
           fi
+
+          # PUSH COM REBASE E RETENTATIVA
+          # Duas rotinas empurram para a main — o refresh do dashboard e o de
+          # midia — e elas se cruzam. Em 16/09/2026 o refresh de midia puxou
+          # dado bom das DUAS unidades, commitou, e o `git push` puro foi
+          # recusado com "fetch first" porque o outro workflow tinha empurrado
+          # nos sete minutos da execucao. O trabalho inteiro foi perdido e a
+          # rotina apareceu como falha vermelha, escondendo que o token novo
+          # tinha funcionado.
+          for tentativa in 1 2 3; do
+            if git push; then exit 0; fi
+            echo "push recusado (tentativa ${tentativa}) — trazendo a main e tentando de novo"
+            git pull --rebase --autostash origin main || true
+            sleep $((tentativa * 5))
+          done
+          echo "::error::Nao consegui empurrar depois de 3 tentativas."
+          exit 1
