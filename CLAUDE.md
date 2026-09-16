@@ -100,3 +100,14 @@ parecer.** Se o Rodrigo chegaria sozinho naquela linha olhando o painel, corte.
 
 `docs/atas/` guarda os briefings, para as sessões da nuvem lerem o que a do PC
 produziu.
+
+`docs/conhecimento/` guarda os nove meses de construção do negócio, vindos do
+Obsidian. **Não é lido automaticamente** — o acesso é por busca, sob demanda:
+
+```bash
+grep -ril "<assunto>" docs/conhecimento/
+```
+
+Carregar a pasta inteira seria gastar quase uma sessão só nisso. E atenção ao
+frontmatter de cada arquivo: `status: histórico` significa que aquilo já foi
+revertido, e recomendar de volta é o erro mais fácil de cometer ali.
