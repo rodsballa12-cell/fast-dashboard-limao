@@ -3,11 +3,23 @@ name: Refresh Midias Sociais (diario)
 # Atualiza data/midias_sociais.json (Escova) e data/spa/midias_sociais.json
 # (SPA) pulando a Meta Graph API v20.0 com o token META_ACCESS_TOKEN.
 #
-# HORARIO: 10h UTC = 07h BRT (UTC-3 fixo, sem DST desde 2019).
-# 07h BRT = manha bem cedo — Meta ja consolidou D-1 e o commit resultante
-# fica antes do horario comercial abrir. Um fire por dia basta: os
-# numeros mudam pouco em minutos, e overlap e barrado pelo concurrency
-# group abaixo.
+# HORARIO: 10h, 12h e 14h UTC = 07h, 09h e 11h BRT (UTC-3 fixo, sem DST).
+# 07h BRT e o alvo: a Meta ja consolidou D-1 e o commit fica antes do
+# horario comercial abrir.
+#
+# POR QUE TRES FIRES PARA UM REFRESH SO (16/09/2026)
+# O cron do GitHub Actions nao e relogio: ele atrasa horas e as vezes pula.
+# Medido neste repositorio, com o fire agendado para 10h UTC:
+#   14/09 -> rodou 16h06 UTC (6h06 de atraso)
+#   15/09 -> rodou 14h35 UTC (4h35 de atraso)
+#   16/09 -> nao rodou ate 11h56 UTC
+# Com UM fire por dia, um atraso desses significa painel de midia parado o
+# dia inteiro — foi o que o Rodrigo viu em 16/09, com dado de 21h atras.
+# Tres fires dao tres chances; o early-exit abaixo faz os dois ultimos
+# terminarem em segundos sem tocar na API da Meta.
+#
+# Mesmo remedio que o refresh.yml ja usava. A licao esta em
+# docs/aprendizados/cron-do-github-nao-e-relogio.md.
 #
 # CAMPOS CURADOS PRESERVADOS: direcionamentos_estrategicos, recomendacoes,
 # insights_narrativa, alertas_topo, kpi_estrela, benchmarks,
@@ -18,7 +30,7 @@ name: Refresh Midias Sociais (diario)
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 10 * * *'
+    - cron: '0 10,12,14 * * *'
 
 permissions:
   contents: write
@@ -40,12 +52,32 @@ jobs:
       - name: Install deps
         run: pip install requests
 
+      # Ja rodou hoje? Entao este e um dos fires extras — sai em segundos.
+      # A comparacao e por DATA em BRT, nao por horas de idade: o trabalho e
+      # "uma atualizacao por dia", e uma regra de horas erraria na virada.
+      - name: Ja atualizou hoje?
+        id: recencia
+        run: |
+          hoje=$(TZ=America/Sao_Paulo date +%Y-%m-%d)
+          ger=$(sed -nE 's/.*"gerado_em": *"([^"]+)".*/\1/p' data/midias_sociais.json | head -1)
+          dia_ger=${ger:0:10}
+          echo "hoje (BRT): $hoje · dado de: ${dia_ger:-nenhum}"
+          if [ "$dia_ger" = "$hoje" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "⏭  Midia ja atualizada hoje — outro fire cobriu."
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "▶️  Rodando refresh de midia."
+          fi
+
       - name: Refresh midias Meta (Escova + SPA)
+        if: steps.recencia.outputs.skip != 'true'
         env:
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
         run: python scripts/refresh_midias.py
 
       - name: Refresh Google Business Profile
+        if: steps.recencia.outputs.skip != 'true'
         # Rota Supermetrics REST API (plano Connect + GMB add-on).
         # Google Business Profile API oficial nega candidatura pra single-
         # location owners, entao Supermetrics e a rota programatica viavel.
@@ -61,6 +93,7 @@ jobs:
           python scripts/refresh_google.py
 
       - name: Commit e push
+        if: steps.recencia.outputs.skip != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
