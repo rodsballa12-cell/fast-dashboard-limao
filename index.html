@@ -488,6 +488,7 @@
       <div id="per-meta"></div>
       <div id="per-ticket-meta"></div>
       <div id="per-categorias"></div>
+      <div id="per-balcao"></div>
       <div id="per-heatmap"></div>
       <!-- 2. TRAJETÓRIA -->
       <div id="per-meses"></div>
@@ -1432,6 +1433,126 @@ function renderDensidadeDow(container_id, dd){
       ${(cheio.pico.v / Math.max(vazio.pico.v, 0.01)).toFixed(1)}× de diferença no pico.
       ${desertas.length ? `<br>🔴 <strong>Manhã deserta</strong> em ${desertas.join(', ')} — abrir mais tarde nesses dias custaria quase nada.` : ''}
       ${posto20 > 0 ? `<br>⏰ Tudo que começou <strong>depois das 20h</strong> no período: <strong>${brl0(posto20)}</strong> — o valor da última hora de porta aberta.` : ''}
+    </div>
+  </div>`;
+}
+
+// ============= BALCÃO · a meta da recepção em unidades =============
+// Por que este card existe, 16/09/2026: a meta da franqueadora já estava no
+// painel (card "Categorias"), em reais e por mês — "Produtos: meta R$ 3.600,
+// realizado R$ 413, 25%". Ninguém consegue agir nisso. Uma recepcionista age
+// em "faltam 21 produtos, 1,4 por dia".
+//
+// O buraco de setembro é inteiro daqui: serviços gerais em 105% da meta,
+// pacote 39%, retoque 38%, produto 25%. São R$ 16.600/mês, mais que o gap do
+// mês. E são as três categorias que a RECEPÇÃO vende, não a cadeira.
+//
+// Preço médio vem do ANO, não do período: o mês pode ter zero venda de uma
+// categoria (e aí não há preço) e três vendas atípicas não podem virar régua.
+function renderBalcao(container_id, cats, catsAno, kpisPeriodo, kpisAno, metasFranq, escala, diasRestantes){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  const franq = metasFranq || {};
+  const catmes = franq.categorias_mensal || {};
+  const nrec = franq.recepcionistas || 1;
+  const esc = escala || 1;
+  const A = catsAno || {}, C = cats || {};
+  if(!catmes.pacotes && !catmes.fast_retoque && !catmes.produtos){ el.innerHTML=''; return; }
+
+  const defs = [
+    {k:'pacotes',      nome:'Pacotes',      emoji:'🎁'},
+    {k:'fast_retoque', nome:'Fast Retoque', emoji:'✂️'},
+    {k:'produtos',     nome:'Produtos',     emoji:'🧴'},
+  ];
+  let metaUnPeriodo = 0, feitoUn = 0, metaUnMes = 0;
+  const linhas = defs.map(r => {
+    const ano = A[r.k] || {v:0,n:0};
+    const preco = ano.n > 0 ? ano.v / ano.n : 0;          // praticado, base ano
+    const metaMesUn = preco > 0 ? (catmes[r.k]||0) / preco : 0;
+    const metaUn = metaMesUn * esc;
+    const feito = (C[r.k]||{}).n || 0;
+    const faltam = Math.max(0, metaUn - feito);
+    metaUnPeriodo += metaUn; feitoUn += feito; metaUnMes += metaMesUn;
+    const p = metaUn > 0 ? feito/metaUn*100 : 0;
+    const cor = p >= 100 ? 'up' : (p >= 70 ? 'warn' : 'dn');
+    return `<tr>
+      <td style="white-space:nowrap">${r.emoji} <strong>${r.nome}</strong></td>
+      <td style="text-align:right;color:var(--ink-3)">${brl0(preco)}</td>
+      <td style="text-align:right">${metaUn.toFixed(metaUn<10?1:0)}</td>
+      <td style="text-align:right"><strong>${feito}</strong></td>
+      <td style="text-align:right" class="${cor}">${pct(p)}</td>
+      <td style="text-align:right;font-weight:600">${faltam < 1 ? '—' : faltam.toFixed(faltam<10?1:0)}</td>
+      <td style="text-align:right;color:var(--ink-2)">${faltam < 1 ? '—' : (faltam/nrec).toFixed(faltam/nrec<10?1:0)}</td>
+    </tr>`;
+  }).join('');
+
+  // Attach: uma venda de balcão a cada N clientes atendidos. É a única régua
+  // que não depende do tamanho do período — serve pra terça e pra sábado igual.
+  const atendPer = (kpisPeriodo||{}).atend_fin || 0;
+  const ka = kpisAno || {};
+  const atendMes = (ka.dias_op > 0) ? (ka.atend_fin / ka.dias_op) * 30 : 0;  // ritmo do ano, projetado a 30 dias
+  const attachAtual = atendPer > 0 ? feitoUn / atendPer : 0;
+  const attachAlvo  = atendMes > 0 ? metaUnMes / atendMes : 0;
+  const umAcada  = attachAtual > 0 ? 1/attachAtual : 0;
+  const umAcadaA = attachAlvo  > 0 ? 1/attachAlvo  : 0;
+
+  // Na aba Hoje a meta vira fração — "0,5 pacote hoje" é aritmeticamente correto
+  // e operacionalmente inútil. Aí a leitura que serve é outra: com o movimento
+  // que este dia teve, quantas vendas eram esperadas?
+  if(metaUnPeriodo < 3){
+    const esperado = atendPer * attachAlvo;
+    const okDia = feitoUn >= esperado;
+    el.innerHTML = `<div class="card">
+      <h2>🧾 Balcão · o que a recepção vendeu</h2>
+      <div class="cap">Pacote, retoque e produto — as três categorias da recepção.
+        Meta oficial da franqueadora × ${nrec} recepcionista${nrec>1?'s':''}.</div>
+      <div class="insight">
+        <strong>${feitoUn} venda${feitoUn===1?'':'s'} de balcão</strong> para
+        <strong>${atendPer} cliente${atendPer===1?'':'s'}</strong> atendido${atendPer===1?'':'s'}.
+        Com esse movimento, o modelo pedia <strong class="${okDia?'up':'dn'}">${esperado.toFixed(1)}</strong>.
+        ${defs.map(r => { const n=(C[r.k]||{}).n||0;
+          return `<br>${r.emoji} ${r.nome}: <strong>${n}</strong>`; }).join('')}
+        <br><span style="color:var(--ink-3)">A meta do mês em unidades está na aba Mês.</span>
+      </div>
+    </div>`;
+    return;
+  }
+
+  const porDia = (diasRestantes && diasRestantes > 0)
+    ? Math.max(0, metaUnPeriodo - feitoUn) / diasRestantes / nrec : 0;
+
+  el.innerHTML = `<div class="card">
+    <h2>🧾 Balcão · a meta da recepção, em vendas</h2>
+    <div class="cap">As três categorias que a <strong>recepção</strong> vende — as mesmas do card de
+      categorias, traduzidas de reais por mês para <strong>vendas que faltam</strong>.
+      Meta oficial da franqueadora × <strong>${nrec} recepcionista${nrec>1?'s':''}</strong>.
+      Preço médio é o praticado no ano, não no período.</div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;min-width:480px">
+        <thead><tr>
+          <th style="text-align:left">categoria</th>
+          <th style="text-align:right" title="preço médio praticado no ano">preço</th>
+          <th style="text-align:right">meta (un)</th>
+          <th style="text-align:right">vendidas</th>
+          <th style="text-align:right">%</th>
+          <th style="text-align:right">faltam</th>
+          <th style="text-align:right" title="dividido pelas ${nrec} recepcionistas">por rec.</th>
+        </tr></thead>
+        <tbody>${linhas}</tbody>
+      </table>
+    </div>
+    <div class="insight" style="margin-top:12px">
+      <strong>A régua que cabe no dia:</strong>
+      hoje sai <strong>1 venda de balcão a cada ${umAcada ? umAcada.toFixed(1) : '—'} clientes</strong>
+      atendidos${atendPer ? ` (${feitoUn} em ${atendPer})` : ''}.
+      O modelo da franqueadora pede <strong>1 a cada ${umAcadaA ? umAcadaA.toFixed(1) : '—'}</strong>.
+      ${umAcada && umAcadaA ? `<br>Num sábado de 28 clientes isso são <strong>${(28*attachAlvo).toFixed(0)} vendas</strong>;
+      numa terça de 9 clientes, <strong>${(9*attachAlvo).toFixed(0)}</strong>.` : ''}
+      ${porDia > 0 ? `<br><strong>O que isso pede por dia:</strong>
+      ${(metaUnPeriodo - feitoUn).toFixed(0)} vendas em ${diasRestantes} dias =
+      <strong>${porDia.toFixed(1)} por recepcionista por dia</strong>.` : ''}
+      <br><span style="color:var(--ink-3)">Pacote e retoque ocupam cadeira; produto não.
+      O retoque é o serviço mais rentável por hora do salão.</span>
     </div>
   </div>`;
 }
@@ -2490,7 +2611,7 @@ function renderInsights(container_id, titulo_aba, insights){
 function clearPerContainers(){
   ['per-pace','per-kpis','per-ancora','per-meta','per-heatmap',
    'per-meses','per-dia','per-dow','per-sala-wrap',
-   'per-categorias','per-ticket-meta','per-rentabilidade',
+   'per-categorias','per-balcao','per-ticket-meta','per-rentabilidade',
    'per-categoria-native','per-desvio-tabela',
    'per-prof','per-utilizacao','per-hora','per-comissoes','per-insights'
   ].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = ''; });
@@ -2521,6 +2642,7 @@ function renderAnual(data){
     const mm = mf.meta_mensal_total || 60000;
     const esc = (a.meta.meta||0) / mm;
     renderCategoriasMeta('per-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc, a.categoria_native, a.categoria_native, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.descontos);
+    renderBalcao('per-balcao', a.categorias, a.categorias, k, k, mf, esc);
   }
 
   // Trajetória mensal · enxuta (4 colunas: Mês, Caixa, Atend, Ticket) + linha de subtotal.
@@ -2627,6 +2749,7 @@ function renderMensal(data){
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
     renderCategoriasMeta('per-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm, m.categoria_native, (data.abas.anual||{}).categoria_native, m.pacotes_por_categoria, m.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, m.descontos);
+    renderBalcao('per-balcao', m.categorias, (data.abas.anual||{}).categorias, m.kpis, (data.abas.anual||{}).kpis, mf, m.meta.meta/mm, m.meta.dias_restantes);
   }
 
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
@@ -2662,6 +2785,7 @@ function renderSemanal(data){
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
     renderCategoriasMeta('per-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm, s.categoria_native, (data.abas.anual||{}).categoria_native, s.pacotes_por_categoria, s.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, s.descontos);
+    renderBalcao('per-balcao', s.categorias, (data.abas.anual||{}).categorias, s.kpis, (data.abas.anual||{}).kpis, mf, s.meta.meta/mm, s.meta.dias_restantes);
   }
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
@@ -2694,6 +2818,7 @@ function renderDiario(data){
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
     renderCategoriasMeta('per-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao, mf, d.meta.meta/mm, d.categoria_native, (data.abas.anual||{}).categoria_native, d.pacotes_por_categoria, d.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, d.descontos);
+    renderBalcao('per-balcao', d.categorias, (data.abas.anual||{}).categorias, d.kpis, (data.abas.anual||{}).kpis, mf, d.meta.meta/mm);
   }
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora HOJE', 'sinal em tempo real do mix — dá pra empurrar serviço mais rentável no restante do dia', d.rentabilidade_hora || []);
 
@@ -4153,11 +4278,31 @@ async function refreshInteligente(){
   let token = localStorage.getItem('gh_token');
   if(token){ token = sanitizeToken(token); if(token.length < 20) token = null; }
 
-  // Sem token: só recarrega os dados publicados. Não pede token — cron a
-  // cada 15min mantém tudo fresco. Se quiser reativar sync forçado,
-  // rodar no console: setGhToken('ghp_...')
+  // Sem token: recarrega dados publicados + toast informativo com timestamp
+  // e opcao de configurar token pra sync ao vivo.
   if(!token){
-    reloadAllTabs(true);
+    const antesGer = (TRINKS && TRINKS.gerado_em) || null;
+    btn.disabled = true;
+    btn.textContent = '🔄 Verificando…';
+    try {
+      await reloadAllTabs(false);  // sem toast automatico, faz o proprio
+      const depoisGer = (TRINKS && TRINKS.gerado_em) || null;
+      if(antesGer && depoisGer && depoisGer === antesGer){
+        const dt = new Date(depoisGer);
+        const ageMin = Math.floor((Date.now()-dt.getTime())/60000);
+        const h = Math.floor(ageMin/60), m = ageMin%60;
+        const idade = h ? `${h}h${String(m).padStart(2,'0')}m` : `${m} min`;
+        toast(`ℹ️ <strong>Ainda sem dados novos</strong><br><small>Último snapshot: ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} BRT (há ${idade}). Cron atualiza a cada ~2h — pro sync <em>ao vivo</em> com Trinks agora, use <code>setGhToken('ghp_…')</code> no console.</small>`);
+      } else if(depoisGer){
+        const dt = new Date(depoisGer);
+        toast(`✅ <strong>Dados novos carregados</strong><br><small>Snapshot ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} BRT</small>`);
+      }
+    } catch(e){
+      toast(`❌ Falha ao recarregar: ${e.message}`, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🔄 Atualizar dados';
+    }
     return;
   }
 
@@ -7016,7 +7161,10 @@ async function loadMidias(){
 }
 
 // Exportar CSV das principais métricas Mídias
-document.getElementById('midias-export-btn').addEventListener('click', () => {
+// (guardas defensivas — se algum elemento sumir do DOM, nao derruba o
+// resto dos bindings que vem depois, especialmente o btn-reload).
+const _midiasExportBtn = document.getElementById('midias-export-btn');
+_midiasExportBtn && _midiasExportBtn.addEventListener('click', () => {
   if(!MID) return alert('Dados de mídias ainda não carregados.');
   const M = MID.meta_ads;
   const ig = MID.instagram;
@@ -7057,7 +7205,8 @@ document.getElementById('midias-export-btn').addEventListener('click', () => {
 });
 
 // Print/PDF
-document.getElementById('midias-print-btn').addEventListener('click', () => {
+const _midiasPrintBtn = document.getElementById('midias-print-btn');
+_midiasPrintBtn && _midiasPrintBtn.addEventListener('click', () => {
   // Ativa apenas a aba Mídias antes de imprimir
   const midias = document.getElementById('tab-midias');
   if(midias && !midias.classList.contains('active')){
@@ -7075,7 +7224,16 @@ document.querySelectorAll('.midias-per-btn').forEach(b => b.addEventListener('cl
   if(MID) renderMidias();
 }));
 
-document.getElementById('btn-reload').addEventListener('click', refreshInteligente);
+// Bind resiliente: cada listener isolado num try/catch pra que uma falha
+// (ex: elemento removido do DOM) nao derrube os proximos bindings — foi
+// exatamente o motivo do "botao Atualizar nao funciona" reportado 16/09.
+(function bindReload(){
+  try {
+    const b = document.getElementById('btn-reload');
+    if(b) b.addEventListener('click', refreshInteligente);
+    else console.warn('[bindReload] btn-reload nao encontrado no DOM');
+  } catch(e){ console.error('[bindReload] falhou:', e); }
+})();
 
 // Seletor de unidade (multi-unidade)
 document.querySelectorAll('.unid-btn').forEach(btn => {

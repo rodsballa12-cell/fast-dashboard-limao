@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-15T03:05:35-03:00",
+  "gerado_em": "2026-09-15T21:32:51-03:00",
   "hoje": "2026-09-15",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -12,13 +12,13 @@
   "meta_mensal_valor": 0,
   "dias_op_mes": 0,
   "dias_atipicos": {
-    "2026-09-08": {
+    "2026-09-15": {
       "ratio": 0.0,
       "tipo": "alto",
       "mediana_dow": 0.0,
       "caixa": 0.0
     },
-    "2026-09-01": {
+    "2026-09-08": {
       "ratio": 0.0,
       "tipo": "alto",
       "mediana_dow": 0.0,
@@ -506,6 +506,14 @@
         "sinal": "desconto"
       },
       {
+        "servico": "FAST PONTAS",
+        "tabela": 0.0,
+        "praticado": 0.0,
+        "diff": 0.0,
+        "pct": 0.0,
+        "sinal": "desconto"
+      },
+      {
         "servico": "OZONIOTERAPIA",
         "tabela": 0.0,
         "praticado": 0.0,
@@ -696,14 +704,6 @@
         "diff": 0.0,
         "pct": 0.0,
         "sinal": "ok"
-      },
-      {
-        "servico": "PÉS",
-        "tabela": 0.0,
-        "praticado": 0.0,
-        "diff": 0.0,
-        "pct": 0.0,
-        "sinal": "ok"
       }
     ],
     "n_com_desvio": 0
@@ -716,12 +716,47 @@
     "taxa_pix_pct": 0.0,
     "nao_conciliado": {
       "total_valor_risco": 0.0,
+      "extrato_cobre_ate": "2026-09-09",
       "orfaos_stone_n": 0,
       "orfaos_stone_v": 0.0,
       "orfaos_stone": [],
       "orfaos_trinks_n": 0,
       "orfaos_trinks_v": 0.0,
       "orfaos_trinks": [
+        {
+          "data": "2026-09-05",
+          "valor": 0.0,
+          "cliente": "Lucas de Pinho Garcia"
+        }
+      ],
+      "orfaos_fora_extrato_n": 0,
+      "orfaos_fora_extrato_v": 0.0,
+      "orfaos_fora_extrato": [
+        {
+          "data": "2026-09-15",
+          "valor": 0.0,
+          "cliente": "Conceição dos Santos Silva"
+        },
+        {
+          "data": "2026-09-15",
+          "valor": 0.0,
+          "cliente": "Maria Eduarda De Aguiar Cardoso"
+        },
+        {
+          "data": "2026-09-15",
+          "valor": 0.0,
+          "cliente": "Jusilene Matos "
+        },
+        {
+          "data": "2026-09-15",
+          "valor": 0.0,
+          "cliente": "Laura Armani Santini"
+        },
+        {
+          "data": "2026-09-15",
+          "valor": 0.0,
+          "cliente": "Sandra Camargo"
+        },
         {
           "data": "2026-09-14",
           "valor": 0.0,
@@ -791,11 +826,6 @@
           "data": "2026-09-10",
           "valor": 0.0,
           "cliente": "Giovanna Maia "
-        },
-        {
-          "data": "2026-09-05",
-          "valor": 0.0,
-          "cliente": "Lucas de Pinho Garcia"
         }
       ],
       "orfaos_trinks_reconciliados_n": 0,
@@ -823,7 +853,33 @@
           "trinks_n": 0,
           "matches_n": 0,
           "orfaos_stone": [],
-          "orfaos_trinks": [],
+          "orfaos_trinks": [
+            {
+              "data": "2026-09-15",
+              "valor": 0.0,
+              "cliente": "Conceição dos Santos Silva"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 0.0,
+              "cliente": "Maria Eduarda De Aguiar Cardoso"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 0.0,
+              "cliente": "Jusilene Matos "
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 0.0,
+              "cliente": "Laura Armani Santini"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 0.0,
+              "cliente": "Sandra Camargo"
+            }
+          ],
           "diff": 0.0
         },
         "cartao": {
@@ -851,25 +907,50 @@
           "stone_liquido": 0.0,
           "stone_tarifa": 0.0,
           "stone_n": 0,
-          "trinks_valor": 146.0,
-          "trinks_n": 1,
+          "trinks_valor": 750.0,
+          "trinks_n": 6,
           "matches_n": 0,
           "orfaos_stone": [],
           "orfaos_trinks": [
+            {
+              "data": "2026-09-15",
+              "valor": 213.0,
+              "cliente": "Conceição dos Santos Silva"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 47.0,
+              "cliente": "Maria Eduarda De Aguiar Cardoso"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 79.0,
+              "cliente": "Jusilene Matos "
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 186.0,
+              "cliente": "Laura Armani Santini"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 79.0,
+              "cliente": "Sandra Camargo"
+            },
             {
               "data": "2026-09-14",
               "valor": 146.0,
               "cliente": "MONICA MARINE"
             }
           ],
-          "diff": -146.0
+          "diff": -750.0
         },
         "cartao": {
           "stone_recebido": 0.0,
           "stone_n": 0,
-          "trinks_vendido": 320.0,
-          "trinks_n": 3,
-          "a_receber_d30": 308.8
+          "trinks_vendido": 967.0,
+          "trinks_n": 8,
+          "a_receber_d30": 933.15
         },
         "dinheiro": {
           "total": 83.0,
@@ -884,7 +965,7 @@
         },
         "resumo": {
           "recebido_total": 83.0,
-          "a_receber": 308.8
+          "a_receber": 933.15
         },
         "periodo_ini": "2026-09-14",
         "periodo_fim": "2026-09-20"
@@ -895,11 +976,36 @@
           "stone_liquido": 2134.13,
           "stone_tarifa": 13.87,
           "stone_n": 19,
-          "trinks_valor": 3747.0,
-          "trinks_n": 34,
+          "trinks_valor": 4351.0,
+          "trinks_n": 39,
           "matches_n": 19,
           "orfaos_stone": [],
           "orfaos_trinks": [
+            {
+              "data": "2026-09-15",
+              "valor": 213.0,
+              "cliente": "Conceição dos Santos Silva"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 47.0,
+              "cliente": "Maria Eduarda De Aguiar Cardoso"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 79.0,
+              "cliente": "Jusilene Matos "
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 186.0,
+              "cliente": "Laura Armani Santini"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 79.0,
+              "cliente": "Sandra Camargo"
+            },
             {
               "data": "2026-09-14",
               "valor": 146.0,
@@ -976,14 +1082,14 @@
               "cliente": "Lucas de Pinho Garcia"
             }
           ],
-          "diff": -1599.0
+          "diff": -2203.0
         },
         "cartao": {
           "stone_recebido": 8008.99,
           "stone_n": 18,
-          "trinks_vendido": 15314.75,
-          "trinks_n": 119,
-          "a_receber_d30": 6769.74
+          "trinks_vendido": 15961.75,
+          "trinks_n": 124,
+          "a_receber_d30": 7394.1
         },
         "dinheiro": {
           "total": 810.0,
@@ -1043,7 +1149,7 @@
         },
         "resumo": {
           "recebido_total": 10953.12,
-          "a_receber": 6769.74
+          "a_receber": 7394.1
         },
         "periodo_ini": "2026-09-01",
         "periodo_fim": "2026-09-30"
@@ -1054,8 +1160,8 @@
           "stone_liquido": 11950.79,
           "stone_tarifa": 77.21,
           "stone_n": 95,
-          "trinks_valor": 13855.0,
-          "trinks_n": 110,
+          "trinks_valor": 14459.0,
+          "trinks_n": 115,
           "matches_n": 94,
           "orfaos_stone": [],
           "orfaos_trinks": [
@@ -1063,6 +1169,31 @@
               "data": "2026-08-29",
               "valor": 228.0,
               "cliente": "Biankarine Silva"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 213.0,
+              "cliente": "Conceição dos Santos Silva"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 47.0,
+              "cliente": "Maria Eduarda De Aguiar Cardoso"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 79.0,
+              "cliente": "Jusilene Matos "
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 186.0,
+              "cliente": "Laura Armani Santini"
+            },
+            {
+              "data": "2026-09-15",
+              "valor": 79.0,
+              "cliente": "Sandra Camargo"
             },
             {
               "data": "2026-09-14",
@@ -1140,14 +1271,14 @@
               "cliente": "Lucas de Pinho Garcia"
             }
           ],
-          "diff": -1827.0
+          "diff": -2431.0
         },
         "cartao": {
           "stone_recebido": 21507.32,
           "stone_n": 58,
-          "trinks_vendido": 51051.85,
-          "trinks_n": 420,
-          "a_receber_d30": 27757.72
+          "trinks_vendido": 51698.85,
+          "trinks_n": 425,
+          "a_receber_d30": 28382.07
         },
         "dinheiro": {
           "total": 2551.0,
@@ -1302,7 +1433,7 @@
         },
         "resumo": {
           "recebido_total": 36009.11,
-          "a_receber": 27757.72
+          "a_receber": 28382.07
         },
         "periodo_ini": "2026-01-01",
         "periodo_fim": "2026-12-31"
@@ -1559,7 +1690,7 @@
         "liq_antecipar": 0.0,
         "custo_antecipacao": 0.0,
         "dias_medio_recebimento": 0,
-        "dias_medio_restante": 0,
+        "dias_medio_restante": 0.0,
         "prazo_dias": 0
       },
       "credito": {
@@ -1693,6 +1824,10 @@
         {
           "data": "2026-10-14",
           "bruto": 0.0
+        },
+        {
+          "data": "2026-10-15",
+          "bruto": 0.0
         }
       ],
       "taxa_antecipacao_mensal_pct": 0.0,
@@ -1794,6 +1929,66 @@
       "vendas_trinks_apos_n": 0,
       "vendas_trinks_apos_v": 0.0,
       "vendas_apos_lista": [
+        {
+          "data": "2026-09-15T21:12",
+          "valor": 0.0,
+          "meio": "PIX",
+          "cliente": "Conceição dos Santos Silva"
+        },
+        {
+          "data": "2026-09-15T20:48",
+          "valor": 0.0,
+          "meio": "Visa Electron",
+          "cliente": "Jayne Nunes de Carvalho "
+        },
+        {
+          "data": "2026-09-15T20:19",
+          "valor": 0.0,
+          "meio": "Visa",
+          "cliente": "Carolina Nascer"
+        },
+        {
+          "data": "2026-09-15T18:36",
+          "valor": 0.0,
+          "meio": "Maestro/Redeshop",
+          "cliente": "Gabi Gabizinha"
+        },
+        {
+          "data": "2026-09-15T17:42",
+          "valor": 0.0,
+          "meio": "Mastercard",
+          "cliente": "Thais Gordenazi"
+        },
+        {
+          "data": "2026-09-15T16:56",
+          "valor": 0.0,
+          "meio": "PIX",
+          "cliente": "Maria Eduarda De Aguiar Cardoso"
+        },
+        {
+          "data": "2026-09-15T15:11",
+          "valor": 0.0,
+          "meio": "PIX",
+          "cliente": "Jusilene Matos "
+        },
+        {
+          "data": "2026-09-15T13:16",
+          "valor": 0.0,
+          "meio": "PIX",
+          "cliente": "Laura Armani Santini"
+        },
+        {
+          "data": "2026-09-15T11:44",
+          "valor": 0.0,
+          "meio": "Maestro/Redeshop",
+          "cliente": "Juliane Gabriele silva"
+        },
+        {
+          "data": "2026-09-15T09:15",
+          "valor": 0.0,
+          "meio": "PIX",
+          "cliente": "Sandra Camargo"
+        },
         {
           "data": "2026-09-14T17:25",
           "valor": 0.0,
@@ -2033,66 +2228,6 @@
           "valor": 0.0,
           "meio": "Visa Electron",
           "cliente": "ADRIELIA DIAS"
-        },
-        {
-          "data": "2026-09-11T19:29",
-          "valor": 0.0,
-          "meio": "Maestro/Redeshop",
-          "cliente": "Carolina de Souza Santos "
-        },
-        {
-          "data": "2026-09-11T18:41",
-          "valor": 0.0,
-          "meio": "PIX",
-          "cliente": "thamires cristina da silva"
-        },
-        {
-          "data": "2026-09-11T18:23",
-          "valor": 0.0,
-          "meio": "Mastercard",
-          "cliente": "Priscila Lima Rezende "
-        },
-        {
-          "data": "2026-09-11T17:25",
-          "valor": 0.0,
-          "meio": "Mastercard",
-          "cliente": "Alessandra San Juam"
-        },
-        {
-          "data": "2026-09-11T17:19",
-          "valor": 0.0,
-          "meio": "Mastercard",
-          "cliente": "Isabel Aglinskas"
-        },
-        {
-          "data": "2026-09-11T16:56",
-          "valor": 0.0,
-          "meio": "Maestro/Redeshop",
-          "cliente": "Margarete Frigo "
-        },
-        {
-          "data": "2026-09-11T16:46",
-          "valor": 0.0,
-          "meio": "Mastercard",
-          "cliente": "Stephanie Rubio "
-        },
-        {
-          "data": "2026-09-11T16:12",
-          "valor": 0.0,
-          "meio": "Visa Electron",
-          "cliente": "Carollina de Souza Cardoso "
-        },
-        {
-          "data": "2026-09-11T15:49",
-          "valor": 0.0,
-          "meio": "Mastercard",
-          "cliente": "Hilmar Ap da Silva Carlos"
-        },
-        {
-          "data": "2026-09-11T12:34",
-          "valor": 0.0,
-          "meio": "PIX",
-          "cliente": "Daniela rodrigues"
         }
       ],
       "horas_desatualizado": 0.0
@@ -2106,8 +2241,8 @@
     "data_corte": "2026-07-23",
     "resumo_risco": {
       "ok": 0,
-      "atencao": 0,
       "revisar": 0,
+      "atencao": 0,
       "info": 0
     },
     "por_profissional": [
@@ -2294,7 +2429,7 @@
         "cliente": "Lucicleide Pereira",
         "servico": "FAST NUTRI",
         "sem_prof": false,
-        "valor_atipico": true,
+        "valor_atipico": false,
         "valor_zero": false,
         "preco_ref": 0.0,
         "stone_match_n": 0,
@@ -2303,7 +2438,7 @@
           "JOICE PRINCIPE DA SILVA"
         ],
         "match_por_nome": false,
-        "risco": "atencao",
+        "risco": "revisar",
         "obs_cliente": "",
         "obs_estabelecimento": "",
         "criado_por": null,
@@ -3649,6 +3784,55 @@
       }
     },
     "dias": {
+      "2026-09-15": {
+        "kpis": {
+          "caixa": 0.0,
+          "faturamento_apurado": 0.0,
+          "receita_serv": 0.0,
+          "atend_fin": 0,
+          "atend_canc": 0,
+          "atend_total": 0,
+          "n_trans": 0,
+          "ticket_trans": 0.0,
+          "cliente_dia": 0,
+          "ticket_medio": 0.0,
+          "taxa_canc": 0.0,
+          "dias_op": 0,
+          "clientes_unicos": 0,
+          "em_atendimento": 0,
+          "n_prof_ativos": 0,
+          "rs_hora_salao": 0.0,
+          "horas_operacao_periodo": 0.0,
+          "utilizacao_agregada_pct": 0.0
+        },
+        "categorias": {
+          "pacotes": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "produtos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "fast_retoque": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos_gerais": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          }
+        }
+      },
       "2026-09-14": {
         "kpis": {
           "caixa": 0.0,
@@ -6809,6 +6993,13 @@
           "atend": 0,
           "receita": 0.0,
           "receita_ltv": 0.0
+        },
+        {
+          "data": "2026-09-15",
+          "novos": 0,
+          "atend": 0,
+          "receita": 0.0,
+          "receita_ltv": 0.0
         }
       ],
       "cross_sell": {
@@ -6816,8 +7007,8 @@
           "FAST ESCOVA - LISA",
           "MÃOS",
           "PÉS E MÃOS",
-          "PÉS",
           "FAST HIDRATAÇÃO - FAST MASK",
+          "PÉS",
           "FAST ESCOVA - MODELADA",
           "ADICIONAL ESCOVA MODELADORA"
         ],
@@ -6961,7 +7152,7 @@
           "peso_semana_atual_pct": 0.0,
           "peso_semana_anterior_pct": 0.0,
           "razao_peso": 0.0,
-          "comparavel": false,
+          "comparavel": true,
           "caixa_delta_ajustado_pct": 0.0,
           "dias_atipicos_na_base": {
             "2026-08-10": {
@@ -7050,6 +7241,11 @@
       },
       "rentabilidade_hora": [],
       "por_dia_mes": [
+        {
+          "d": 0,
+          "n": 0,
+          "v": 0.0
+        },
         {
           "d": 0,
           "n": 0,
@@ -7390,7 +7586,9 @@
         }
       },
       "categoria_native": [],
-      "pacotes_por_categoria": {},
+      "pacotes_por_categoria": {
+        "Unhas": 0.0
+      },
       "pacotes_sem_categoria_v": 0.0,
       "novos_vs_recorr": {
         "novos": {
@@ -7624,18 +7822,18 @@
         "rs_hora_salao": 0.0,
         "horas_operacao_periodo": 0.0,
         "utilizacao_agregada_pct": 0.0,
-        "caixa_delta_pct": null,
-        "atend_delta_pct": null,
-        "cliente_dia_delta_pct": null,
-        "caixa_delta_perdia_pct": null,
-        "atend_delta_perdia_pct": null,
-        "cliente_dia_delta_perdia_pct": null,
+        "caixa_delta_pct": 0.0,
+        "atend_delta_pct": 0.0,
+        "cliente_dia_delta_pct": 0.0,
+        "caixa_delta_perdia_pct": 0.0,
+        "atend_delta_perdia_pct": 0.0,
+        "cliente_dia_delta_perdia_pct": 0.0,
         "dias_com_movimento": {
           "atual": 0,
           "anterior": 0
         },
-        "ticket_delta_pct": null,
-        "caixa_delta_bruto_pct": null,
+        "ticket_delta_pct": 0.0,
+        "caixa_delta_bruto_pct": 0.0,
         "periodo_ant_ref": {
           "data": "2026-09-08",
           "hora_max": 0.0,
@@ -7657,7 +7855,7 @@
           "peso_semana_anterior_pct": 0.0,
           "razao_peso": 0.0,
           "comparavel": true,
-          "caixa_delta_ajustado_pct": null,
+          "caixa_delta_ajustado_pct": 0.0,
           "dias_atipicos_na_base": {
             "2026-09-08": {
               "ratio": 0.0,
@@ -7668,7 +7866,7 @@
           }
         },
         "pace_intraday": {
-          "hora_atual_str": "03:05",
+          "hora_atual_str": "21:32",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -7685,7 +7883,7 @@
         "ticket_gap_por_atend": 0.0,
         "visitas_projetadas": 0,
         "visitas_restantes": 0,
-        "ticket_meta_status": "fechado",
+        "ticket_meta_status": "encerrado_batido",
         "ticket_meta_deficit_caixa": 0.0,
         "ticket_meta_supera_caixa": 0.0,
         "dia_semana": "Ter",
@@ -7735,7 +7933,9 @@
         }
       },
       "categoria_native": [],
-      "pacotes_por_categoria": {},
+      "pacotes_por_categoria": {
+        "Unhas": 0.0
+      },
       "pacotes_sem_categoria_v": 0.0,
       "hora_abs": [
         {
@@ -7890,55 +8090,55 @@
   "insights": {
     "diario": [
       {
+        "tipo": "oportunidade",
+        "titulo": "Meta do dia batida",
+        "texto": "Caixa R$ 1.251,00 já superou a meta diária de R$ 800,41 (156%).",
+        "acao": "Toda venda daqui pra frente é margem pura. Oferecer produto adicional pra levar ticket médio pra cima."
+      },
+      {
+        "tipo": "atencao",
+        "titulo": "2 profissional(is) sem atendimento hoje",
+        "texto": "Charles, Beatriz ainda em zero de receita. Se não está em folga, é capacidade ociosa perdida.",
+        "acao": "Realocar walk-ins da fila para elas. Se agenda continuar vazia, avaliar reduzir dia de trabalho na próxima semana."
+      },
+      {
         "tipo": "info",
-        "titulo": "Picos previstos ainda hoje",
-        "texto": "Base semanal aponta 9h (1.0 clientes/hora), 13h (1.0 clientes/hora) como as próximas horas de fluxo.",
-        "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
+        "titulo": "Fechamento do dia",
+        "texto": "Caixa R$ 1.251,00 · 9 visitas · ticket R$ 139,00 · meta batida ✅.",
+        "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
       }
     ],
     "semanal": [
       {
         "tipo": "atencao",
-        "titulo": "Ritmo/dia -59% vs semana passada",
-        "texto": "Esta semana: R$ 549,00/dia · semana anterior (09-07-09-08): R$ 1.325,15/dia.",
-        "acao": "Queda — checar se algo mudou (feriado, doença, chuva). Ativar top clientes."
-      },
-      {
-        "tipo": "atencao",
-        "titulo": "Semana abaixo da meta",
-        "texto": "Projeção R$ 3.843,00 (34%). Gap de R$ 1.255,44/dia para os 6 dias restantes.",
-        "acao": "Ativar campanha WhatsApp pras top 20 clientes AGORA — retorno médio 3-4 walk-ins no fim de semana."
-      },
-      {
-        "tipo": "atencao",
-        "titulo": "Concentração em Regina (51%)",
-        "texto": "Regina Matheus = R$ 278,00 (ticket médio R$ 139,00). Se ficar doente, cai muita coisa junto.",
-        "acao": "Treinar 2ª profissional pros serviços que ela mais faz. Distribuir walk-ins mais equilibrado nas próximas semanas."
+        "titulo": "Semana começou em 56% da meta acumulada",
+        "texto": "R$ 1.800,00 contra R$ 3.244,65 de meta nos 2 dias já corridos (R$ -1.444,65).",
+        "acao": "Ainda dá pra virar: o peso da semana está no fim dela (sexta 19%, sábado 38%). Garantir escala e agenda do fim de semana."
       }
     ],
     "mensal": [
       {
         "tipo": "critico",
         "titulo": "Mês projeta ABAIXO de 80% da meta",
-        "texto": "Projeção R$ 46.079,42 (77%). Ritmo R$ 1.535,98/dia vs necessário R$ 2.354,84/dia. Gap: R$ 818,86/dia.",
-        "acao": "Restam 17 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
+        "texto": "Projeção R$ 45.468,75 (76%). Ritmo R$ 1.515,62/dia vs necessário R$ 2.423,83/dia. Gap: R$ 908,21/dia.",
+        "acao": "Restam 16 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
       },
       {
         "tipo": "atencao",
-        "titulo": "Retenção baixa (39% recorrentes)",
-        "texto": "86 novos vs 54 recorrentes. Novos gastam R$ 11.835,30, recorrentes R$ 6.958,15.",
+        "titulo": "Retenção baixa (38% recorrentes)",
+        "texto": "90 novos vs 54 recorrentes. Novos gastam R$ 12.905,30, recorrentes R$ 7.037,15.",
         "acao": "Loja abriu há pouco — normal ter muitos novos. Prioridade: fazer o cliente novo voltar. Cartão fidelidade + mensagem 20 dias após primeira visita costuma trazer 30% de volta."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos = 2.1% do caixa (R$ 413,45). Se chegasse a 8%, seriam +R$ 1.183,97/mês.",
+        "texto": "Produtos = 1.9% do caixa (R$ 413,45). Se chegasse a 8%, seriam +R$ 1.284,05/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 7%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 133,12.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 130,98.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -7969,28 +8169,34 @@
       },
       {
         "tipo": "oportunidade",
-        "titulo": "237 clientes recorrentes com espaço para cross-sell",
+        "titulo": "241 clientes recorrentes com espaço para cross-sell",
         "texto": "Nunca experimentaram serviços populares (ex: FAST ESCOVA - LISA, MÃOS, PÉS E MÃOS). Se 20% aceitar, aumenta ticket médio significativamente.",
         "acao": "Ver aba Anual > Cross-sell. Priorizar top 10 por LTV — recepção pode oferecer no fechamento."
       },
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 114,78. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 114,57. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
     "stone": [
       {
         "tipo": "critico",
-        "titulo": "15 PIX registrado no Trinks mas SEM confirmação Stone",
-        "texto": "Total R$ 1.599,00. O sistema marca como recebido, mas o dinheiro NÃO caiu na conta.",
+        "titulo": "1 PIX registrado no Trinks mas SEM confirmação Stone",
+        "texto": "Total R$ 35,00. O sistema marca como recebido, mas o dinheiro NÃO caiu na conta.",
         "acao": "Verificar comprovante com o cliente hoje. Se não confirmar, corrigir Trinks pra não inflar caixa fantasma."
       },
       {
+        "tipo": "atencao",
+        "titulo": "Extrato Stone parado em 09-09 (7 dias atrás)",
+        "texto": "19 PIX de R$ 2.168,00 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
+        "acao": "Exportar o extrato Stone atualizado e colocar em data/stone_extrato.csv. Antes disso, não vale ligar pra cliente nenhuma."
+      },
+      {
         "tipo": "info",
-        "titulo": "R$ 6.769,74 a receber em cartão (D+30)",
-        "texto": "Antecipar tudo hoje custaria R$ 112,38 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 76,82 (CDI). Custo real da antecipação: R$ 35,56.",
+        "titulo": "R$ 7.394,10 a receber em cartão (D+30)",
+        "texto": "Antecipar tudo hoje custaria R$ 122,74 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 83,91 (CDI). Custo real da antecipação: R$ 38,84.",
         "acao": "Só antecipa se tem uso melhor pro dinheiro que render >14,5% a.a. Caso contrário, é mais barato esperar D+30."
       },
       {
@@ -8003,14 +8209,14 @@
     "auditoria": [
       {
         "tipo": "atencao",
-        "titulo": "8 cancelamento(s) com valor/dia que batem no Stone",
+        "titulo": "9 cancelamento(s) com valor/dia que batem no Stone",
         "texto": "Valor cancelado bate com um recebimento Stone do mesmo dia, mas o nome não confere. Provável colisão estatística (R$ 79 e R$ 47 são comuns), mas vale conferir.",
         "acao": "Revisar cada linha da aba Auditoria. Se for coincidência, sem ação. Se aparecerem 2+ envolvendo mesma profissional, aprofundar."
       },
       {
         "tipo": "atencao",
-        "titulo": "8 cancelamento(s) com anomalia operacional",
-        "texto": "Distribuição: 6 sem profissional atribuída · 4 com valor fora do padrão.",
+        "titulo": "7 cancelamento(s) com anomalia operacional",
+        "texto": "Distribuição: 6 sem profissional atribuída · 3 com valor fora do padrão.",
         "acao": "Sem profissional → provavelmente registro velho do setup inicial da loja. Valor atípico → pode ser cortesia, meia porção ou erro de lançamento — perguntar à profissional."
       }
     ]
