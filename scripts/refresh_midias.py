@@ -200,6 +200,15 @@ def _janela(kind: str, hoje: date) -> tuple[date, date]:
         return hoje - timedelta(days=29), hoje
     if kind == "last_90d":
         return hoje - timedelta(days=89), hoje
+    if kind == "year_to_date":
+        # 1o de janeiro ate hoje. Nao e "ultimos N dias": nao rola, nao perde o
+        # comeco pela esquerda. O card principal do painel prometia "ano 2026
+        # (acumulado desde a abertura)" e lia 90d — uma janela ROLANTE. Em
+        # 15/09/2026 as duas quase coincidiam por acaso (loja abriu em julho,
+        # 90d comecava em 18/06), mas em outubro 90d passaria a comer julho e
+        # em dezembro perderia julho e agosto inteiros. O rotulo ficaria falso
+        # sozinho, sem ninguem mexer em nada.
+        return date(hoje.year, 1, 1), hoje
     raise ValueError(f"janela desconhecida: {kind}")
 
 
@@ -212,6 +221,7 @@ def _janelas_texto(hoje: date) -> dict[str, str]:
         "mtd_setembro": rng(*_janela("this_month", hoje)),
         "meta_ads_30d": rng(*_janela("last_30d", hoje)),
         "meta_ads_90d": rng(*_janela("last_90d", hoje)),
+        "meta_ads_ano": rng(*_janela("year_to_date", hoje)),
         "instagram_30d": rng(*_janela("last_30d", hoje)),
         "instagram_7d":  rng(*_janela("last_7d", hoje)),
         "facebook_page_30d": rng(*_janela("last_30d", hoje)),
@@ -294,6 +304,7 @@ def _fetch_ad_insights(act_id: str, token: str, hoje: date, now_iso: str) -> dic
         "mtd":  ("this_month", "Mes corrente"),
         "30d":  ("last_30d", "Ultimos 30 dias"),
         "90d":  ("last_90d", "Ultimos 90 dias"),
+        "ano":  ("year_to_date", "Ano corrente"),
     }
     saida: dict[str, dict[str, Any]] = {}
     for chave, (dr, label) in janelas.items():

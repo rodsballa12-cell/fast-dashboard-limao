@@ -5297,10 +5297,24 @@ function renderMidias(){
   // === HERO leigo-friendly · Mídia · ano acumulado ===
   // Usa janela 90d (cobre julho→set, todo o período operado desde a abertura).
   // Quando existir 'ano' no por_periodo do backend, trocar aqui.
+  // O backend passou a gerar por_periodo.ano (01/jan ate hoje). O fallback
+  // para 90d continua por seguranca, mas agora o card DIZ qual janela usou:
+  // ate 15/09/2026 ele prometia "ano (acumulado desde a abertura)" e lia uma
+  // janela rolante de 90 dias, que coincidia por acaso e deixaria de coincidir
+  // sozinha em outubro.
+  const heroUsaAno = !!(M.por_periodo && M.por_periodo.ano);
   const heroP = (M.por_periodo && (M.por_periodo.ano || M.por_periodo['90d'] || M.por_periodo.mtd)) || {};
+  const heroJanela = heroP.inicio && heroP.fim
+    ? `${fmtDate(heroP.inicio)} a ${fmtDate(heroP.fim)}`
+    : (heroUsaAno ? 'ano corrente' : 'últimos 90 dias');
   const gastoMes = heroP.gasto || 0;
   const convMes = heroP.conversas_msg || 0;
   const cpaMes = heroP.cpa_msg || 0;
+  // (c) MTD ao lado da janela longa: precisa existir no card um numero que se
+  // mexa TODO DIA. A janela longa anda ~1% ao dia — o CPA ficou identico em
+  // quatro refreshes seguidos e o painel parecia congelado.
+  const mtdP = (M.por_periodo && M.por_periodo.mtd) || {};
+  const cpaMtd = mtdP.cpa_msg || 0;
   const cpaMeta = (bench.cpa_msg_meta || 25);
   const cpaCor = cpaMes && cpaMes <= cpaMeta*0.85 ? 'var(--good)' : (cpaMes && cpaMes <= cpaMeta*1.15 ? 'var(--warn)' : 'var(--crit)');
   const cpaCtx = cpaMes ? (cpaMes <= cpaMeta*0.85 ? 'ótimo, muito abaixo da meta' : cpaMes <= cpaMeta*1.15 ? 'na meta' : `caro, ${((cpaMes/cpaMeta-1)*100).toFixed(0)}% acima da meta`) : '—';
@@ -5337,6 +5351,12 @@ function renderMidias(){
     ${(() => {
       const roasEst = (MID.funil_conversao && MID.funil_conversao.roas_estimado) || null;
       const roasVal = roasEst ? roasEst.valor : null;
+      // funil_conversao esta na lista de CAMPOS CURADOS PRESERVADOS do
+      // midias_refresh.yml: o cron diario passa por cima sem tocar. Ou seja, o
+      // numero em MAIOR destaque do card e o unico que o refresh nunca atualiza.
+      // Em 15/09/2026 ele marcava 4,72 baseado em AGOSTO fechado, enquanto o
+      // rodape do mesmo card dizia "Gerado 15/09 11:43". Nada na tela avisava.
+      const roasBase = (MID.funil_conversao && MID.funil_conversao.periodo) || null;
       const roasCor = !roasVal ? 'var(--muted)' : roasVal >= 5 ? '#22c55e' : roasVal >= 3 ? '#3b82f6' : roasVal >= 2 ? '#f59e0b' : '#ef4444';
       const roasCtx = !roasVal ? '' : roasVal >= 5 ? 'excelente' : roasVal >= 3 ? 'saudável' : roasVal >= 2 ? 'no limite' : 'abaixo do saudável';
       const cenariosRoas = (MID.funil_conversao && MID.funil_conversao.cenarios_roas) || [];
@@ -5346,6 +5366,7 @@ function renderMidias(){
           <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">⭐ Métrica estrela · Retorno sobre investimento (ROAS)</div>
           <div style="font-size:56px;font-weight:800;color:${roasCor};line-height:1.05;margin:4px 0">${roasVal?roasVal.toFixed(2).replace('.',',')+'x':'—'}</div>
           <div style="font-size:13px;color:var(--ink-2)">${roasVal?`cada R$ 1 investido em Meta Ads voltou R$ ${roasVal.toFixed(2).replace('.',',')} em receita · ${roasCtx}`:'aguardando mês fechado com atribuição'}</div>
+          ${roasVal ? `<div style="font-size:11px;margin-top:8px;padding:5px 10px;background:var(--bg);border-radius:999px;display:inline-block;color:var(--ink-3)" title="funil_conversao é campo curado: o refresh diário preserva e não recalcula. Só muda quando o gerente de Marketing atualiza à mão.">📌 base: <strong>${roasBase || 'período não declarado'}</strong> · curado à mão, <strong>não</strong> atualiza no refresh diário</div>` : ''}
           ${cenarioRec ? `<div style="font-size:11px;color:var(--ink-3);margin-top:4px;font-style:italic">Cenário medido: ${cenarioRec.cenario}</div>` : ''}
         </div>
 
@@ -5353,7 +5374,7 @@ function renderMidias(){
           <div style="text-align:center">
             <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700">💰 Investido no ano</div>
             <div style="font-size:24px;font-weight:800;color:var(--accent);margin-top:4px">${brl0(gastoMes)}</div>
-            <div style="font-size:11px;color:var(--ink-3)">desde a abertura</div>
+            <div style="font-size:11px;color:var(--ink-3)" title="A janela é declarada porque o rótulo já mentiu: o card dizia 'desde a abertura' e lia uma janela rolante de 90 dias.">${heroJanela}${heroUsaAno?'':' · janela rolante'}</div>
           </div>
           <div style="text-align:center">
             <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700">💬 Conversas geradas</div>
@@ -5361,9 +5382,9 @@ function renderMidias(){
             <div style="font-size:11px;color:var(--ink-3);color:${cpaCor}">CPA ${cpaMes?brl(cpaMes):'—'} · ${cpaCtx}</div>
           </div>
           <div style="text-align:center">
-            <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700">🎯 Meta CPA</div>
-            <div style="font-size:24px;font-weight:800;color:var(--ink);margin-top:4px">${brl(cpaMeta)}</div>
-            <div style="font-size:11px;color:var(--ink-3)">alerta se >${brl(cpaMeta*1.3)}</div>
+            <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700">📅 CPA do mês (MTD)</div>
+            <div style="font-size:24px;font-weight:800;color:${cpaMtd?(cpaMtd<=cpaMeta*0.85?'var(--good)':cpaMtd<=cpaMeta*1.15?'var(--warn)':'var(--crit)'):'var(--ink)'};margin-top:4px" title="Janela curta, que reage todo dia — ao contrário do acumulado do ano, que anda ~1% por dia e parece parado.">${cpaMtd?brl(cpaMtd):'—'}</div>
+            <div style="font-size:11px;color:var(--ink-3)">${mtdP.inicio?`${fmtDate(mtdP.inicio)} a ${fmtDate(mtdP.fim)}`:'mês corrente'} · meta ${brl(cpaMeta)}${cpaMtd&&cpaMes?` · ano ${brl(cpaMes)}`:''}</div>
           </div>
         </div>
 
