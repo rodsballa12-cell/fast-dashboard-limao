@@ -489,6 +489,7 @@
       <div id="per-ticket-meta"></div>
       <div id="per-categorias"></div>
       <div id="per-balcao"></div>
+      <div id="per-balcao-pessoa"></div>
       <div id="per-heatmap"></div>
       <!-- 2. TRAJETÓRIA -->
       <div id="per-meses"></div>
@@ -1557,6 +1558,74 @@ function renderBalcao(container_id, cats, catsAno, kpisPeriodo, kpisAno, metasFr
   </div>`;
 }
 
+// ============= BALCÃO POR PESSOA · a meta com nome =============
+// As metas das recepcionistas são nominais: R$ 7.200 em pacotes, R$ 4.200 em
+// Fast Retoque e R$ 1.800 em produtos, cada uma. Elas sabem disso; o painel
+// não sabia. O Trinks grava quem vendeu cada pacote e cada produto
+// (IdProfissionalQueRealizouAVenda) desde 23/07 — o campo nunca tinha sido lido.
+//
+// Fast Retoque fica de fora da coluna pessoal de propósito: é serviço, e o
+// Trinks só grava quem EXECUTOU. Atribuir a venda a quem passou a escova seria
+// inventar dado. Some da meta pessoal, mas continua no card de Balcão da loja.
+function renderBalcaoPessoa(container_id, bv, janela, metasFranq, escala){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  const linhas = bv && bv.por_janela && bv.por_janela[janela];
+  if(!linhas || !linhas.length){ el.innerHTML=''; return; }
+
+  const franq = metasFranq || {};
+  const porRec = franq.por_recepcionista_mensal || {};
+  const esc = escala || 1;
+  // Só pacote e produto entram na meta pessoal — o retoque não é atribuível.
+  const metaPessoal = ((porRec.pacotes||0) + (porRec.produtos||0)) * esc;
+
+  const ehRecepcao = l => /recep/i.test(l.funcao || '');
+  const naoIdent = linhas.filter(l => !l.identificado);
+  const tr = linhas.map(l => {
+    const alvo = ehRecepcao(l) ? metaPessoal : 0;
+    const p = alvo > 0 ? l.total_v/alvo*100 : 0;
+    const cor = p >= 100 ? 'up' : (p >= 70 ? 'warn' : 'dn');
+    return `<tr>
+      <td style="white-space:nowrap">${l.identificado ? '' : '⚠ '}<strong>${l.nome}</strong></td>
+      <td style="color:var(--ink-3);font-size:11px">${l.funcao || '—'}</td>
+      <td style="text-align:right">${l.pacotes_n || '—'}</td>
+      <td style="text-align:right;color:var(--ink-2)">${l.pacotes_v ? brl0(l.pacotes_v) : '—'}</td>
+      <td style="text-align:right">${l.produtos_n || '—'}</td>
+      <td style="text-align:right;color:var(--ink-2)">${l.produtos_v ? brl0(l.produtos_v) : '—'}</td>
+      <td style="text-align:right;font-weight:600">${brl0(l.total_v)}</td>
+      <td style="text-align:right" class="${alvo>0?cor:''}">${alvo>0 ? pct(p) : '·'}</td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML = `<div class="card">
+    <h2>👤 Balcão por pessoa · quem vendeu pacote e produto</h2>
+    <div class="cap">Do campo que o Trinks grava em cada linha de pacote e produto.
+      A coluna <strong>% meta</strong> só vale para a recepção, que tem meta nominal
+      (${brl0(metaPessoal)} no período: ${brl0((porRec.pacotes||0)*esc)} em pacotes +
+      ${brl0((porRec.produtos||0)*esc)} em produtos). Venda de quem está na cadeira é bônus, não meta.</div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;min-width:520px">
+        <thead><tr>
+          <th style="text-align:left">quem vendeu</th><th style="text-align:left">função</th>
+          <th style="text-align:right">pac</th><th style="text-align:right">R$</th>
+          <th style="text-align:right">prod</th><th style="text-align:right">R$</th>
+          <th style="text-align:right">total</th>
+          <th style="text-align:right" title="só para a recepção">% meta</th>
+        </tr></thead>
+        <tbody>${tr}</tbody>
+      </table>
+    </div>
+    <div class="insight" style="margin-top:12px">
+      <strong>Fast Retoque não aparece aqui.</strong> É serviço: o Trinks grava quem
+      <em>executou</em>, não quem vendeu. Os R$ ${(porRec.fast_retoque||0).toLocaleString('pt-BR')}/mês
+      de retoque de cada recepcionista só dá pra acompanhar no total da loja, no card acima.
+      ${naoIdent.length ? `<br>⚠ <strong>${naoIdent.length} vendedor(es) sem cadastro:</strong>
+        ${naoIdent.map(l => `${l.nome} (${brl0(l.total_v)})`).join(', ')} —
+        preencher em <code>data/prof_overrides.json</code> ou no cadastro do Trinks.` : ''}
+    </div>
+  </div>`;
+}
+
 // ============= NOVOS vs RECORRENTES =============
 function renderNovosRecorr(container_id, nvr, periodo){
   const el = document.getElementById(container_id);
@@ -2611,7 +2680,7 @@ function renderInsights(container_id, titulo_aba, insights){
 function clearPerContainers(){
   ['per-pace','per-kpis','per-ancora','per-meta','per-heatmap',
    'per-meses','per-dia','per-dow','per-sala-wrap',
-   'per-categorias','per-balcao','per-ticket-meta','per-rentabilidade',
+   'per-categorias','per-balcao','per-balcao-pessoa','per-ticket-meta','per-rentabilidade',
    'per-categoria-native','per-desvio-tabela',
    'per-prof','per-utilizacao','per-hora','per-comissoes','per-insights'
   ].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = ''; });
@@ -2643,6 +2712,7 @@ function renderAnual(data){
     const esc = (a.meta.meta||0) / mm;
     renderCategoriasMeta('per-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc, a.categoria_native, a.categoria_native, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.descontos);
     renderBalcao('per-balcao', a.categorias, a.categorias, k, k, mf, esc);
+    renderBalcaoPessoa('per-balcao-pessoa', data.balcao_vendedor, 'ano', mf, esc);
   }
 
   // Trajetória mensal · enxuta (4 colunas: Mês, Caixa, Atend, Ticket) + linha de subtotal.
@@ -2750,6 +2820,7 @@ function renderMensal(data){
     const mm = mf.meta_mensal_total || 60000;
     renderCategoriasMeta('per-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm, m.categoria_native, (data.abas.anual||{}).categoria_native, m.pacotes_por_categoria, m.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, m.descontos);
     renderBalcao('per-balcao', m.categorias, (data.abas.anual||{}).categorias, m.kpis, (data.abas.anual||{}).kpis, mf, m.meta.meta/mm, m.meta.dias_restantes);
+    renderBalcaoPessoa('per-balcao-pessoa', data.balcao_vendedor, 'mes', mf, m.meta.meta/mm);
   }
 
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
@@ -2786,6 +2857,7 @@ function renderSemanal(data){
     const mm = mf.meta_mensal_total || 60000;
     renderCategoriasMeta('per-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm, s.categoria_native, (data.abas.anual||{}).categoria_native, s.pacotes_por_categoria, s.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, s.descontos);
     renderBalcao('per-balcao', s.categorias, (data.abas.anual||{}).categorias, s.kpis, (data.abas.anual||{}).kpis, mf, s.meta.meta/mm, s.meta.dias_restantes);
+    renderBalcaoPessoa('per-balcao-pessoa', data.balcao_vendedor, 'semana', mf, s.meta.meta/mm);
   }
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
@@ -2819,6 +2891,7 @@ function renderDiario(data){
     const mm = mf.meta_mensal_total || 60000;
     renderCategoriasMeta('per-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao, mf, d.meta.meta/mm, d.categoria_native, (data.abas.anual||{}).categoria_native, d.pacotes_por_categoria, d.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, d.descontos);
     renderBalcao('per-balcao', d.categorias, (data.abas.anual||{}).categorias, d.kpis, (data.abas.anual||{}).kpis, mf, d.meta.meta/mm);
+    renderBalcaoPessoa('per-balcao-pessoa', data.balcao_vendedor, 'dia', mf, d.meta.meta/mm);
   }
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora HOJE', 'sinal em tempo real do mix — dá pra empurrar serviço mais rentável no restante do dia', d.rentabilidade_hora || []);
 

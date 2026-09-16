@@ -226,6 +226,16 @@ def main() -> int:
     conferir_bloco_derivado(achados, dash["consolidado"], "Consolidado")
     conferir_bloco_derivado(achados, dash["spa"], "Spa", sem_agendamentos_ok=True)
 
+    # O bloco de balcão por pessoa nasce dentro do github_refresh, num try/except
+    # cujo print vai para o log do Actions que ninguém lê. Mesma lição do mapa de
+    # escala: se some, tem que doer aqui, não passar despercebido no painel.
+    bv = dash["escova"].get("balcao_vendedor") if isinstance(dash["escova"], dict) else None
+    if not bv or not (bv.get("por_janela") or {}).get("ano"):
+        achados.append(("aviso",
+            "Escova: bloco `balcao_vendedor` ausente ou vazio — o card "
+            "\u0022Balc\u00e3o por pessoa\u0022 n\u00e3o vai renderizar e as metas nominais "
+            "da recep\u00e7\u00e3o ficam sem acompanhamento."))
+
     conferir_frescor(achados, {
         "data/dashboard_data.json": dash["escova"],
         "data/consolidado/dashboard_data.json": dash["consolidado"]})

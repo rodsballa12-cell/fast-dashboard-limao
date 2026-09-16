@@ -30,7 +30,7 @@ card do painel renderizar. Roda depois do github_refresh.py, no mesmo workflow.
 from __future__ import annotations
 import argparse, json, sys
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -206,7 +206,10 @@ def gravar(unidade, ocup, receita, datas, n):
                   "agendamentos brutos. A densidade agregada (abas.*.densidade_hora) "
                   "mistura os dias e não serve para decidir escala: em 14/09/2026 ela "
                   "dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01."),
-        "gerado_em": datetime.now().isoformat(timespec="seconds"),
+        # BRT explicito. O runner do GitHub roda em UTC: entre 21h e 00h BRT o
+        # bloco saia carimbado com a data de AMANHA enquanto o payload dizia hoje,
+        # e a auditoria acusava "o passo de densidade nao rodou" toda noite.
+        "gerado_em": datetime.now(timezone(timedelta(hours=-3))).isoformat(timespec="seconds"),
         "n_agendamentos": n,
         "horas": list(range(H_INI, H_FIM + 1)),
         "dias": dias,

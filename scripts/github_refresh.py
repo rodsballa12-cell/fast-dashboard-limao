@@ -2638,6 +2638,19 @@ def main():
         },
     }
 
+    # ==== BALCAO POR PESSOA · as metas nominais da recepcao ====
+    # Roda AQUI, e nao num passo separado depois, porque o campo que atribui a
+    # venda (IdProfissionalQueRealizouAVenda) so existe na lista `transac` ja
+    # mesclada: o cache em disco guarda o ano MENOS o mes corrente, entao um
+    # script standalone lendo o cache perde justamente o mes que interessa.
+    try:
+        from balcao_por_pessoa import apurar as _apurar_balcao
+        payload["balcao_vendedor"] = _apurar_balcao(payload, transac)
+        _n = len(payload["balcao_vendedor"]["por_janela"].get("mes") or [])
+        print(f"[balcao] {_n} vendedores com pacote/produto no mes")
+    except Exception as e:
+        print(f"[balcao] erro: {e}")
+
     # ==== INSIGHTS acionaveis por aba ====
     try:
         from insights import gerar_insights
