@@ -4732,7 +4732,7 @@ function renderFinanceiro(){
   const proj_final = proj_do_excel || proj_ritmo;
 
   // Custos e resultado projetados: se Excel tem mês corrente, usa dado dele
-  // (real do Excel — que inclui inadimplência, cmv correto etc). Senão calcula
+  // (real do Excel — cmv correto etc). Senão calcula
   // aproximado pelas premissas.
   let custo_var_proj, custo_fixo, res_proj;
   if(excelDoMesCorrente){
@@ -4740,7 +4740,7 @@ function renderFinanceiro(){
     custo_fixo = mesCorrenteData.fixo_real;
     res_proj = mesCorrenteData.res_real;
   } else {
-    const prem = FIN.premissas || {comissao:0.32, insumos:0.12, simples:0.07, inadimplencia:0.02};
+    const prem = FIN.premissas || {comissao:0.32, insumos:0.12, simples:0.07, inadimplencia:0};
     custo_var_proj = proj_final * (prem.comissao + prem.insumos + prem.simples + (prem.inadimplencia||0));
     custo_fixo = E.custo_fixo_mes;
     res_proj = proj_final - custo_var_proj - custo_fixo;
@@ -5068,7 +5068,7 @@ function renderFinanceiro(){
 
     <div class="dre-alerta">💡 <strong>Como o painel se atualiza:</strong> Trinks atualiza sozinho no cron (várias vezes ao dia). O Excel você atualiza a cada 15 dias com os realizados parciais — assim que subir a nova versão, a coluna "Projetado" vira "Realizado consolidado".</div>
 
-    <div class="fin-fonte">Prorata de custos: <strong>variáveis</strong> (comissão, CMV, Simples, inadimplência) recalculados a ${(RATIO_REC*100).toFixed(0)}% da receita realizada; <strong>fixos</strong> (pessoal, aluguel, ocupação, comercial) a ${(RATIO_DIA*100).toFixed(0)}% (${DIAS_OP}/${DIAS_MES} dias). Ponto de equilíbrio da estrutura fica em <strong>${brl0(R.be_modelo_1loja)}</strong>/mês.</div></div>`;
+    <div class="fin-fonte">Prorata de custos: <strong>variáveis</strong> (comissão, CMV e Simples) recalculados a ${(RATIO_REC*100).toFixed(0)}% da receita realizada; <strong>fixos</strong> (pessoal, aluguel, ocupação, comercial) a ${(RATIO_DIA*100).toFixed(0)}% (${DIAS_OP}/${DIAS_MES} dias). Ponto de equilíbrio da estrutura fica em <strong>${brl0(R.be_modelo_1loja)}</strong>/mês.</div></div>`;
 
   // ---- Fluxo de caixa: sempre renderiza. KPIs vêm de Trinks live + Excel prorateado.
   {

@@ -70,10 +70,10 @@ def zero_state(obj):
 def main():
     if not os.path.exists(SRC):
         raise SystemExit(f"Escova financeiro não existe em {SRC}")
-    with open(CONFIG) as f: cfg = json.load(f)
+    with open(CONFIG, encoding="utf-8") as f: cfg = json.load(f)
     spa_cfg = cfg["unidades"]["spa"]
 
-    with open(SRC) as f: escova = json.load(f)
+    with open(SRC, encoding="utf-8") as f: escova = json.load(f)
 
     payload = zero_state(escova)
 
@@ -94,12 +94,12 @@ def main():
     payload["kpis"]["meta_mes"] = META_MES_SPA
     payload["resultado"]["receita_meta"] = META_MES_SPA
 
-    # Premissas herdadas (12% CMV, 7% Simples, 2% inad) — quando SPA rodar podem mudar
+    # Premissas herdadas (12% CMV, 7% Simples) — quando SPA rodar podem mudar. Sem inadimplência (Rodrigo, 16/09)
     payload["premissas"] = {
         "comissao": None,  # até termos categoria_native SPA real
         "insumos": 0.12,
         "simples": 0.07,
-        "inadimplencia": 0.02,
+        "inadimplencia": 0.0,
     }
 
     os.makedirs(DST_DIR, exist_ok=True)

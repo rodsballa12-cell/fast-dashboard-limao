@@ -87,7 +87,7 @@ def _load_comissoes(dashboard_path):
 LINHAS_RELATIVAS = {
     1:  ("receita_bruta",        "(+) Receita Bruta"),
     2:  ("impostos",             "(-) Impostos (Simples 7%)"),
-    3:  ("inadimplencia",        "(-) Inadimplência 2%"),
+    3:  ("inadimplencia",        "(-) Inadimplência — não se aplica"),   # zerada no Excel em 16/09 (Rodrigo: não temos inadimplência)
     4:  ("receita_liquida",      "(=) Receita Líquida"),
     5:  ("comissoes",            "(-) Comissões"),
     6:  ("royalty",              "(-) Royalty (max 2500 ou 7%)"),
@@ -189,8 +189,6 @@ def monta_mes(ws, col, ano, mes, linha_titulo, meta_mes, comissao_pct, loja_labe
              _row("Impostos sobre venda — Simples", impostos, impostos,
                   "7% da receita · provisionado por competência", True,
                   {"esp_pct": 0.07, "real_pct": 0.07}),
-             _row("Inadimplência 2%", inad, inad,
-                  "2% da receita bruta", False),
          ]},
         {"id": "PESSOAL", "titulo": "Pessoal fixo — CLT",
          "linhas": [
@@ -349,7 +347,7 @@ def _empacotar(meses, loja_label, meta_mes, caixa_conta=0.0, a_receber_stone=0.0
             "mc_esp": principal["margem_contribuicao"],
         },
         "premissas": {
-            "comissao": None, "insumos": 0.12, "simples": 0.07, "inadimplencia": 0.02,
+            "comissao": None, "insumos": 0.12, "simples": 0.07, "inadimplencia": 0.0,
         },
         "equilibrio": {
             "fatura_hoje": rec_p,
@@ -357,20 +355,31 @@ def _empacotar(meses, loja_label, meta_mes, caixa_conta=0.0, a_receber_stone=0.0
             "cenarios": [
                 {"nome": "Projetado do Excel", "comissao": None, "mc": mc_pct_p},
                 {"nome": "Se comissão subir para 40%", "comissao": 0.40,
-                 "mc": 1 - 0.40 - 0.12 - 0.07 - 0.02},
+                 "mc": 1 - 0.40 - 0.12 - 0.07},
             ],
         },
     }
 
 
 def _detectar_titulo(ws, chaves_norm):
-    """Retorna linha onde qualquer chave em chaves_norm aparece em coluna A-C."""
-    for row in range(1, 80):
-        for col in range(1, 4):
-            v = _norm_txt(ws.cell(row, col).value)
-            if not v: continue
-            for k in chaves_norm:
-                if k in v: return row
+    """Linha do título de um bloco da DRE (ex.: '🟦 DRE FAST ESCOVA').
+
+    Só aceita a linha se a de baixo for '(+) Receita Bruta' — o que define um
+    bloco. Antes aceitava a palavra solta: em 16/09 'escova' casou com a nota
+    da linha 2 ('Estrutura: Escova → Spa → Consolidado'), o gerador leu tudo
+    5 linhas acima e a Escova saiu com receita zero em todos os meses.
+    Chaves em ordem de prioridade: a mais específica é testada na aba inteira
+    antes da seguinte.
+    """
+    for k in chaves_norm:
+        for row in range(1, 80):
+            abaixo = _norm_txt(ws.cell(row + 1, 1).value)
+            if "receita bruta" not in abaixo:
+                continue
+            for col in range(1, 4):
+                v = _norm_txt(ws.cell(row, col).value)
+                if v and k in v:
+                    return row
     return None
 
 

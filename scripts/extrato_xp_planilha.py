@@ -123,7 +123,7 @@ wp.cell(row=r, column=1, value='Premissas do DRE (para comparar)').font = NEG
 prem = [('Comissão sobre produção', 0.3744, 'nota do DRE: taxa efetiva ponderada · Trinks BackOffice'),
         ('Produtos e insumos (CMV)', 0.12, '12% da receita · padrão Fast Escova'),
         ('Impostos Simples', 0.07, 'provisionado por competência'),
-        ('Inadimplência', 0.02, '2% da receita bruta'),
+        ('Inadimplência', 0.0, 'não se aplica — sem inadimplência (Rodrigo, 16/09)'),
         ('Custo fixo mensal', 30807.52, 'financeiro.json · equilibrio.custo_fixo_mes'),
         ('Receita 23/07 a 31/08 (Trinks)', 47522.10, 'produção já fechada e já paga em comissão')]
 for k, (nome, v, nota) in enumerate(prem):

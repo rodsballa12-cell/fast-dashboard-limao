@@ -1,7 +1,7 @@
 {
- "gerado_em": "2026-09-05T11:22:44+00:00",
- "baseline": "2026-09-05",
- "custos_ate": "2026-09-05",
+ "gerado_em": "2026-09-16T10:56:11-03:00",
+ "baseline": "2026-09-16",
+ "custos_ate": "2026-09-16",
  "mes_corrente_chave": "2026-09",
  "mes_principal_chave": "2026-09",
  "mes_fechado_chave": "2026-08",
@@ -9,8 +9,8 @@
  "kpis": {
   "caixa_conta": 5060.93,
   "a_receber_stone": 20742.9,
-  "resultado_mes": -8785.147882026602,
-  "resultado_mes_caixa": -1366.250382026601,
+  "resultado_mes": -7788.441789351367,
+  "resultado_mes_caixa": -369.5442893513664,
   "receita_mes": 52992.125,
   "meta_mes": 60000.0
  },
@@ -34,9 +34,9 @@
        "cat": "Comissão sobre produção",
        "real": 0.0,
        "esp": 0.0,
-       "nota": "32% da receita (premissa do modelo)",
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.32,
+       "esp_pct": 0.3756,
        "real_delta_pct": 0.0
       },
       {
@@ -56,13 +56,6 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 0.0,
-       "esp": 0.0,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
      "sub_real": 0.0,
@@ -81,8 +74,8 @@
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 0.0,
-       "esp": 0.0,
+       "real": 0,
+       "esp": 0,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
@@ -92,20 +85,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 857.26881,
        "esp": 857.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 0.0,
        "esp": 0.0,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -120,7 +113,7 @@
        "cat": "Mídia paga",
        "real": 0.0,
        "esp": 0.0,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -151,10 +144,10 @@
    ],
    "var_real": 0.0,
    "var_esp": 0.0,
-   "fixo_real": 857.26881,
-   "fixo_esp": 857.26881,
-   "custo_real": 857.26881,
-   "custo_esp": 857.26881,
+   "fixo_real": 7357.26881,
+   "fixo_esp": 7357.26881,
+   "custo_real": 7357.26881,
+   "custo_esp": 7357.26881,
    "res_real": -857.26881,
    "res_caixa": -857.26881,
    "provisoes_nao_debitadas": 0.0
@@ -178,9 +171,9 @@
        "cat": "Comissão sobre produção",
        "real": 0.0,
        "esp": 0.0,
-       "nota": "32% da receita (premissa do modelo)",
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.32,
+       "esp_pct": 0.3756,
        "real_delta_pct": 0.0
       },
       {
@@ -200,13 +193,6 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 0.0,
-       "esp": 0.0,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
      "sub_real": 0.0,
@@ -225,8 +211,8 @@
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 0.0,
-       "esp": 0.0,
+       "real": 0,
+       "esp": 0,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
@@ -236,20 +222,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 857.26881,
        "esp": 857.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -264,7 +250,7 @@
        "cat": "Mídia paga",
        "real": 3185.0,
        "esp": 3185.0,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -295,10 +281,10 @@
    ],
    "var_real": 0.0,
    "var_esp": 0.0,
-   "fixo_real": 6044.06881,
-   "fixo_esp": 6044.06881,
-   "custo_real": 6044.06881,
-   "custo_esp": 6044.06881,
+   "fixo_real": 12544.06881,
+   "fixo_esp": 12544.06881,
+   "custo_real": 12544.06881,
+   "custo_esp": 12544.06881,
    "res_real": -6044.06881,
    "res_caixa": -6044.06881,
    "provisoes_nao_debitadas": 0.0
@@ -308,11 +294,11 @@
    "mes": 7,
    "chave": "2026-07",
    "receita_bruta": 12721.29,
-   "receita_liquida": 11576.3739,
+   "receita_liquida": 11830.799700000001,
    "receita_real": 12721.29,
    "receita_meta": 60000.0,
-   "ebitda": -26586.378548745022,
-   "margem_contribuicao": 1786.6902612549743,
+   "ebitda": -26347.109275250357,
+   "margem_contribuicao": 2733.432100000002,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -320,12 +306,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 4763.128838745027,
-       "esp": 4763.128838745027,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 4778.285365250361,
+       "esp": 4778.285365250361,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402836
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -344,17 +330,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 254.4258,
-       "esp": 254.4258,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 7434.599738745027,
-     "sub_esp": 7434.599738745027
+     "sub_real": 7195.330465250361,
+     "sub_esp": 7195.330465250361
     },
     {
      "id": "PESSOAL",
@@ -380,20 +359,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -408,7 +387,7 @@
        "cat": "Mídia paga",
        "real": 3185.0,
        "esp": 3185.0,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -437,14 +416,14 @@
      "sub_esp": 8505.0
     }
    ],
-   "var_real": 7434.599738745027,
-   "var_esp": 7434.599738745027,
+   "var_real": 7195.330465250361,
+   "var_esp": 7195.330465250361,
    "fixo_real": 31873.068809999997,
    "fixo_esp": 31873.068809999997,
-   "custo_real": 39307.66854874502,
-   "custo_esp": 39307.66854874502,
-   "res_real": -26586.378548745022,
-   "res_caixa": -23195.88824874502,
+   "custo_real": 39068.399275250355,
+   "custo_esp": 39068.399275250355,
+   "res_real": -26347.109275250357,
+   "res_caixa": -22956.618975250356,
    "provisoes_nao_debitadas": 3390.4903000000004
   },
   "2026-08": {
@@ -452,11 +431,11 @@
    "mes": 8,
    "chave": "2026-08",
    "receita_bruta": 49295.0,
-   "receita_liquida": 44858.45,
+   "receita_liquida": 45844.35,
    "receita_real": 49295.0,
    "receita_meta": 60000.0,
-   "ebitda": -10062.79352816428,
-   "margem_contribuicao": 16035.275281835717,
+   "ebitda": -9135.625069861731,
+   "margem_contribuicao": 19703.9,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -464,12 +443,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 18457.124718164283,
-       "esp": 18457.124718164283,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 18515.856259861735,
+       "esp": 18515.856259861735,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.37561327233718905
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -488,17 +467,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 985.9,
-       "esp": 985.9,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 28809.074718164287,
-     "sub_esp": 28809.074718164287
+     "sub_real": 27881.906259861735,
+     "sub_esp": 27881.906259861735
     },
     {
      "id": "PESSOAL",
@@ -524,20 +496,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -552,7 +524,7 @@
        "cat": "Mídia paga",
        "real": 910.0,
        "esp": 910.0,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -581,14 +553,14 @@
      "sub_esp": 7180.650000000001
     }
    ],
-   "var_real": 28809.074718164287,
-   "var_esp": 28809.074718164287,
+   "var_real": 27881.906259861735,
+   "var_esp": 27881.906259861735,
    "fixo_real": 30548.71881,
    "fixo_esp": 30548.71881,
-   "custo_real": 59357.793528164286,
-   "custo_esp": 59357.793528164286,
-   "res_real": -10062.79352816428,
-   "res_caixa": -3161.4935281642793,
+   "custo_real": 58430.62506986174,
+   "custo_esp": 58430.62506986174,
+   "res_real": -9135.625069861731,
+   "res_caixa": -2234.3250698617303,
    "provisoes_nao_debitadas": 6901.300000000001
   },
   "2026-09": {
@@ -596,11 +568,11 @@
    "mes": 9,
    "chave": "2026-09",
    "receita_bruta": 52992.125,
-   "receita_liquida": 48222.83375,
+   "receita_liquida": 49282.67625,
    "receita_real": 52992.125,
    "receita_meta": 60000.0,
-   "ebitda": -8785.147882026602,
-   "margem_contribuicao": 17312.920927973395,
+   "ebitda": -7788.441789351367,
+   "margem_contribuicao": 21256.692499999997,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -608,12 +580,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 19841.409072026603,
-       "esp": 19841.409072026603,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 19904.545479351367,
+       "esp": 19904.545479351367,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -632,17 +604,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 1059.8425,
-       "esp": 1059.8425,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 30969.7553220266,
-     "sub_esp": 30969.7553220266
+     "sub_real": 29973.049229351367,
+     "sub_esp": 29973.049229351367
     },
     {
      "id": "PESSOAL",
@@ -668,20 +633,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -696,7 +661,7 @@
        "cat": "Mídia paga",
        "real": 910.0,
        "esp": 910.0,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -725,14 +690,14 @@
      "sub_esp": 7439.4487500000005
     }
    ],
-   "var_real": 30969.7553220266,
-   "var_esp": 30969.7553220266,
-   "fixo_real": 30807.517559999997,
-   "fixo_esp": 30807.517559999997,
-   "custo_real": 61777.2728820266,
-   "custo_esp": 61777.2728820266,
-   "res_real": -8785.147882026602,
-   "res_caixa": -1366.250382026601,
+   "var_real": 29973.049229351367,
+   "var_esp": 29973.049229351367,
+   "fixo_real": 30807.51756,
+   "fixo_esp": 30807.51756,
+   "custo_real": 60780.56678935137,
+   "custo_esp": 60780.56678935137,
+   "res_real": -7788.441789351367,
+   "res_caixa": -369.5442893513664,
    "provisoes_nao_debitadas": 7418.897500000001
   },
   "2026-10": {
@@ -740,11 +705,11 @@
    "mes": 10,
    "chave": "2026-10",
    "receita_bruta": 56966.534375,
-   "receita_liquida": 51839.546281250005,
+   "receita_liquida": 52978.87696875,
    "receita_real": 56966.534375,
    "receita_meta": 60000.0,
-   "ebitda": -7411.678812428592,
-   "margem_contribuicao": 18686.389997571405,
+   "ebitda": -6340.219762802713,
+   "margem_contribuicao": 22925.944437500002,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -752,12 +717,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 21329.5147524286,
-       "esp": 21329.5147524286,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 21397.38639030272,
+       "esp": 21397.38639030272,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -776,17 +741,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 1139.3306875,
-       "esp": 1139.3306875,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 33292.4869711786,
-     "sub_esp": 33292.4869711786
+     "sub_real": 32221.02792155272,
+     "sub_esp": 32221.02792155272
     },
     {
      "id": "PESSOAL",
@@ -812,20 +770,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -840,7 +798,7 @@
        "cat": "Mídia paga",
        "real": 910.0,
        "esp": 910.0,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -869,14 +827,14 @@
      "sub_esp": 7717.65740625
     }
    ],
-   "var_real": 33292.4869711786,
-   "var_esp": 33292.4869711786,
+   "var_real": 32221.02792155272,
+   "var_esp": 32221.02792155272,
    "fixo_real": 31085.726216249997,
    "fixo_esp": 31085.726216249997,
-   "custo_real": 64378.2131874286,
-   "custo_esp": 64378.2131874286,
-   "res_real": -7411.678812428592,
-   "res_caixa": 563.6360000714094,
+   "custo_real": 63306.754137802716,
+   "custo_esp": 63306.754137802716,
+   "res_real": -6340.219762802713,
+   "res_caixa": 1635.0950496972882,
    "provisoes_nao_debitadas": 7975.314812500002
   },
   "2026-11": {
@@ -884,11 +842,11 @@
    "mes": 11,
    "chave": "2026-11",
    "receita_bruta": 61239.024453125,
-   "receita_liquida": 55727.51225234375,
+   "receita_liquida": 56952.29274140625,
    "receita_real": 61239.024453125,
    "receita_meta": 60000.0,
-   "ebitda": -5935.199562610738,
-   "margem_contribuicao": 20162.86924738926,
+   "ebitda": -4783.381084262921,
+   "margem_contribuicao": 24720.3902703125,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -896,12 +854,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 22929.228358860742,
-       "esp": 22929.228358860742,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 23002.190369575423,
+       "esp": 23002.190369575423,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -920,17 +878,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 1224.7804890625,
-       "esp": 1224.7804890625,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 35789.42349401699,
-     "sub_esp": 35789.42349401699
+     "sub_real": 34637.60501566917,
+     "sub_esp": 34637.60501566917
     },
     {
      "id": "PESSOAL",
@@ -956,20 +907,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -984,7 +935,7 @@
        "cat": "Mídia paga",
        "real": 910.0,
        "esp": 910.0,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -1013,14 +964,14 @@
      "sub_esp": 8016.73171171875
     }
    ],
-   "var_real": 35789.42349401699,
-   "var_esp": 35789.42349401699,
-   "fixo_real": 31384.800521718746,
-   "fixo_esp": 31384.800521718746,
-   "custo_real": 67174.22401573573,
-   "custo_esp": 67174.22401573573,
-   "res_real": -5935.199562610738,
-   "res_caixa": 2638.2638608267625,
+   "var_real": 34637.60501566917,
+   "var_esp": 34637.60501566917,
+   "fixo_real": 31384.80052171875,
+   "fixo_esp": 31384.80052171875,
+   "custo_real": 66022.40553738792,
+   "custo_esp": 66022.40553738792,
+   "res_real": -4783.381084262921,
+   "res_caixa": 3790.08233917458,
    "provisoes_nao_debitadas": 8573.4634234375
   },
   "2026-12": {
@@ -1028,11 +979,11 @@
    "mes": 12,
    "chave": "2026-12",
    "receita_bruta": 65831.9512871094,
-   "receita_liquida": 59907.07567126956,
+   "receita_liquida": 61223.71469701175,
    "receita_real": 65831.9512871094,
    "receita_meta": 60000.0,
-   "ebitda": -4347.984369056536,
-   "margem_contribuicao": 21750.08444094346,
+   "ebitda": -3109.7795048326298,
+   "margem_contribuicao": 26649.41954058595,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -1040,12 +991,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 24648.92048577531,
-       "esp": 24648.92048577531,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 24727.354647293592,
+       "esp": 24727.354647293592,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -1064,17 +1015,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 1316.639025742188,
-       "esp": 1316.639025742188,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 38473.63025606828,
-     "sub_esp": 38473.63025606828
+     "sub_real": 37235.42539184438,
+     "sub_esp": 37235.42539184438
     },
     {
      "id": "PESSOAL",
@@ -1100,20 +1044,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -1128,7 +1072,7 @@
        "cat": "Mídia paga",
        "real": 910.0,
        "esp": 910.0,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -1157,14 +1101,14 @@
      "sub_esp": 8338.236590097658
     }
    ],
-   "var_real": 38473.63025606828,
-   "var_esp": 38473.63025606828,
+   "var_real": 37235.42539184438,
+   "var_esp": 37235.42539184438,
    "fixo_real": 31706.305400097655,
    "fixo_esp": 31706.305400097655,
-   "custo_real": 70179.93565616594,
-   "custo_esp": 70179.93565616594,
-   "res_real": -4347.984369056536,
-   "res_caixa": 4868.488811138781,
+   "custo_real": 68941.73079194204,
+   "custo_esp": 68941.73079194204,
+   "res_real": -3109.7795048326298,
+   "res_caixa": 6106.693675362687,
    "provisoes_nao_debitadas": 9216.473180195317
   },
   "2027-01": {
@@ -1172,11 +1116,11 @@
    "mes": 1,
    "chave": "2027-01",
    "receita_bruta": 70769.3476336426,
-   "receita_liquida": 64400.10634661476,
+   "receita_liquida": 65815.49329928761,
    "receita_real": 70769.3476336426,
    "receita_meta": 60000.0,
-   "ebitda": -2641.728035985783,
-   "margem_contribuicao": 23456.340774014214,
+   "ebitda": -1310.6578069450807,
+   "margem_contribuicao": 28723.12600612989,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -1184,12 +1128,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 26497.589522208455,
-       "esp": 26497.589522208455,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 26581.906245840604,
+       "esp": 26581.906245840604,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -1208,17 +1152,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 1415.386952672852,
-       "esp": 1415.386952672852,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 41359.1525252734,
-     "sub_esp": 41359.1525252734
+     "sub_real": 40028.0822962327,
+     "sub_esp": 40028.0822962327
     },
     {
      "id": "PESSOAL",
@@ -1244,20 +1181,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -1272,7 +1209,7 @@
        "cat": "Mídia paga",
        "real": 910.0,
        "esp": 910.0,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -1301,14 +1238,14 @@
      "sub_esp": 8683.854334354983
     }
    ],
-   "var_real": 41359.1525252734,
-   "var_esp": 41359.1525252734,
+   "var_real": 40028.0822962327,
+   "var_esp": 40028.0822962327,
    "fixo_real": 32051.92314435498,
    "fixo_esp": 32051.92314435498,
-   "custo_real": 73411.07566962838,
-   "custo_esp": 73411.07566962838,
-   "res_real": -2641.728035985783,
-   "res_caixa": 7265.98063272418,
+   "custo_real": 72080.00544058767,
+   "custo_esp": 72080.00544058767,
+   "res_real": -1310.6578069450807,
+   "res_caixa": 8597.050861764883,
    "provisoes_nao_debitadas": 9907.708668709964
   },
   "2027-02": {
@@ -1316,11 +1253,11 @@
    "mes": 2,
    "chave": "2027-02",
    "receita_bruta": 76077.0487061658,
-   "receita_liquida": 69230.11432261088,
+   "receita_liquida": 70751.6552967342,
    "receita_real": 76077.0487061658,
    "receita_meta": 60000.0,
-   "ebitda": -807.5024779347114,
-   "margem_contribuicao": 25290.566332065286,
+   "ebitda": 623.3980182840423,
+   "margem_contribuicao": 30952.36045658964,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -1328,12 +1265,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 28484.908736374095,
-       "esp": 28484.908736374095,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 28575.549214278657,
+       "esp": 28575.549214278657,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -1352,17 +1289,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 1521.5409741233161,
-       "esp": 1521.5409741233161,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 44461.08896466892,
-     "sub_esp": 44461.08896466892
+     "sub_real": 43030.188468450164,
+     "sub_esp": 43030.188468450164
     },
     {
      "id": "PESSOAL",
@@ -1388,20 +1318,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -1416,7 +1346,7 @@
        "cat": "Mídia paga",
        "real": 910.0,
        "esp": 910.0,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -1445,14 +1375,14 @@
      "sub_esp": 9055.393409431606
     }
    ],
-   "var_real": 44461.08896466892,
-   "var_esp": 44461.08896466892,
+   "var_real": 43030.188468450164,
+   "var_esp": 43030.188468450164,
    "fixo_real": 32423.462219431603,
    "fixo_esp": 32423.462219431603,
-   "custo_real": 76884.55118410052,
-   "custo_esp": 76884.55118410052,
-   "res_real": -807.5024779347114,
-   "res_caixa": 9843.284340928503,
+   "custo_real": 75453.65068788177,
+   "custo_esp": 75453.65068788177,
+   "res_real": 623.3980182840423,
+   "res_caixa": 11274.184837147257,
    "provisoes_nao_debitadas": 10650.786818863215
   },
   "2027-03": {
@@ -1460,11 +1390,11 @@
    "mes": 3,
    "chave": "2027-03",
    "receita_bruta": 81782.8273591282,
-   "receita_liquida": 74422.37289680667,
+   "receita_liquida": 76058.02944398923,
    "receita_real": 81782.8273591282,
    "receita_meta": 60000.0,
-   "ebitda": -4371.460003029821,
-   "margem_contribuicao": 27262.358806970176,
+   "ebitda": -2833.2419695946664,
+   "margem_contribuicao": 33348.78749083385,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -1472,12 +1402,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 30621.276891602138,
-       "esp": 30621.276891602138,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 30718.715405349543,
+       "esp": 30718.715405349543,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -1496,17 +1426,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 1635.656547182564,
-       "esp": 1635.656547182564,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 47795.67063701906,
-     "sub_esp": 47795.67063701906
+     "sub_real": 46257.4526035839,
+     "sub_esp": 46257.4526035839
     },
     {
      "id": "PESSOAL",
@@ -1532,20 +1455,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -1560,7 +1483,7 @@
        "cat": "Mídia paga",
        "real": 6135.75,
        "esp": 6135.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -1589,14 +1512,14 @@
      "sub_esp": 14990.547915138974
     }
    ],
-   "var_real": 47795.67063701906,
-   "var_esp": 47795.67063701906,
+   "var_real": 46257.4526035839,
+   "var_esp": 46257.4526035839,
    "fixo_real": 38358.61672513897,
    "fixo_esp": 38358.61672513897,
-   "custo_real": 86154.28736215804,
-   "custo_esp": 86154.28736215804,
-   "res_real": -4371.460003029821,
-   "res_caixa": 7078.135827248128,
+   "custo_real": 84616.06932872286,
+   "custo_esp": 84616.06932872286,
+   "res_real": -2833.2419695946664,
+   "res_caixa": 8616.353860683283,
    "provisoes_nao_debitadas": 11449.595830277949
   },
   "2027-04": {
@@ -1604,11 +1527,11 @@
    "mes": 4,
    "chave": "2027-04",
    "receita_bruta": 87916.5394110628,
-   "receita_liquida": 80004.05086406715,
+   "receita_liquida": 81762.3816522884,
    "receita_real": 87916.5394110628,
    "receita_meta": 60000.0,
-   "ebitda": -2251.7830925070703,
-   "margem_contribuicao": 29382.035717492927,
+   "ebitda": -598.1987065642788,
+   "margem_contribuicao": 35924.946552646375,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -1616,12 +1539,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 32917.87265847229,
-       "esp": 32917.87265847229,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 33022.61906075075,
+       "esp": 33022.61906075075,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.37561327233718916
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -1640,17 +1563,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 1758.330788221256,
-       "esp": 1758.330788221256,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 51380.34593479548,
-     "sub_esp": 51380.34593479548
+     "sub_real": 49726.761548852686,
+     "sub_esp": 49726.761548852686
     },
     {
      "id": "PESSOAL",
@@ -1676,20 +1592,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -1704,7 +1620,7 @@
        "cat": "Mídia paga",
        "real": 6135.75,
        "esp": 6135.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -1733,14 +1649,14 @@
      "sub_esp": 15419.907758774396
     }
    ],
-   "var_real": 51380.34593479548,
-   "var_esp": 51380.34593479548,
+   "var_real": 49726.761548852686,
+   "var_esp": 49726.761548852686,
    "fixo_real": 38787.97656877439,
    "fixo_esp": 38787.97656877439,
-   "custo_real": 90168.32250356987,
-   "custo_esp": 90168.32250356987,
-   "res_real": -2251.7830925070703,
-   "res_caixa": 10056.532425041722,
+   "custo_real": 88514.73811762707,
+   "custo_esp": 88514.73811762707,
+   "res_real": -598.1987065642788,
+   "res_caixa": 11710.116810984513,
    "provisoes_nao_debitadas": 12308.315517548792
   },
   "2027-05": {
@@ -1748,11 +1664,11 @@
    "mes": 5,
    "chave": "2027-05",
    "receita_bruta": 94510.2798668925,
-   "receita_liquida": 86004.35467887217,
+   "receita_liquida": 87894.56027621002,
    "receita_real": 94510.2798668925,
    "receita_meta": 60000.0,
-   "ebitda": 26.869586304896075,
-   "margem_contribuicao": 31660.688396304893,
+   "ebitda": 1804.4728011933948,
+   "margem_contribuicao": 38694.31754409485,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -1760,12 +1676,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 35386.71310785771,
-       "esp": 35386.71310785771,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 35499.31549030705,
+       "esp": 35499.31549030705,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -1784,17 +1700,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 1890.20559733785,
-       "esp": 1890.20559733785,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 55233.871879905135,
-     "sub_esp": 55233.871879905135
+     "sub_real": 53456.26866501663,
+     "sub_esp": 53456.26866501663
     },
     {
      "id": "PESSOAL",
@@ -1820,20 +1729,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -1848,7 +1757,7 @@
        "cat": "Mídia paga",
        "real": 6135.75,
        "esp": 6135.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -1877,14 +1786,14 @@
      "sub_esp": 15881.469590682475
     }
    ],
-   "var_real": 55233.871879905135,
-   "var_esp": 55233.871879905135,
+   "var_real": 53456.26866501663,
+   "var_esp": 53456.26866501663,
    "fixo_real": 39249.538400682475,
    "fixo_esp": 39249.538400682475,
-   "custo_real": 94483.41028058762,
-   "custo_esp": 94483.41028058762,
-   "res_real": 26.869586304896075,
-   "res_caixa": 13258.308767669845,
+   "custo_real": 92705.8070656991,
+   "custo_esp": 92705.8070656991,
+   "res_real": 1804.4728011933948,
+   "res_caixa": 15035.911982558346,
    "provisoes_nao_debitadas": 13231.43918136495
   },
   "2027-06": {
@@ -1892,11 +1801,11 @@
    "mes": 6,
    "chave": "2027-06",
    "receita_bruta": 101598.550856909,
-   "receita_liquida": 92454.6812797872,
+   "receita_liquida": 94486.65229692537,
    "receita_real": 101598.550856909,
    "receita_meta": 60000.0,
-   "ebitda": 2476.421216027611,
-   "margem_contribuicao": 34110.240026027604,
+   "ebitda": 4387.344672032745,
+   "margem_contribuicao": 41671.391359901776,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -1904,12 +1813,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 38040.716590946875,
-       "esp": 38040.716590946875,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 38161.764152079915,
+       "esp": 38161.764152079915,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.37561327233718905
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -1928,17 +1837,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 2031.97101713818,
-       "esp": 2031.97101713818,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 59376.41227089777,
-     "sub_esp": 59376.41227089777
+     "sub_real": 57465.488814892626,
+     "sub_esp": 57465.488814892626
     },
     {
      "id": "PESSOAL",
@@ -1964,20 +1866,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -1992,7 +1894,7 @@
        "cat": "Mídia paga",
        "real": 6135.75,
        "esp": 6135.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -2021,14 +1923,14 @@
      "sub_esp": 16377.64855998363
     }
    ],
-   "var_real": 59376.41227089777,
-   "var_esp": 59376.41227089777,
+   "var_real": 57465.488814892626,
+   "var_esp": 57465.488814892626,
    "fixo_real": 39745.71736998363,
    "fixo_esp": 39745.71736998363,
-   "custo_real": 99122.1296408814,
-   "custo_esp": 99122.1296408814,
-   "res_real": 2476.421216027611,
-   "res_caixa": 16700.218335994872,
+   "custo_real": 97211.20618487625,
+   "custo_esp": 97211.20618487625,
+   "res_real": 4387.344672032745,
+   "res_caixa": 18611.141792000006,
    "provisoes_nao_debitadas": 14223.797119967261
   },
   "2027-07": {
@@ -2036,11 +1938,11 @@
    "mes": 7,
    "chave": "2027-07",
    "receita_bruta": 109218.442171178,
-   "receita_liquida": 99388.78237577197,
+   "receita_liquida": 101573.15121919554,
    "receita_real": 109218.442171178,
    "receita_meta": 60000.0,
-   "ebitda": 4200.6892179799615,
-   "margem_contribuicao": 36743.50802797996,
+   "ebitda": 6254.9319331855,
+   "margem_contribuicao": 44871.74571189476,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -2048,12 +1950,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 40893.77033526819,
-       "esp": 40893.77033526819,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 41023.89646348622,
+       "esp": 41023.89646348622,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -2072,17 +1974,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 2184.36884342356,
-       "esp": 2184.36884342356,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 63829.643191215575,
-     "sub_esp": 63829.643191215575
+     "sub_real": 61775.40047601004,
+     "sub_esp": 61775.40047601004
     },
     {
      "id": "PESSOAL",
@@ -2108,20 +2003,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -2136,7 +2031,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -2165,14 +2060,14 @@
      "sub_esp": 17820.04095198246
     }
    ],
-   "var_real": 63829.643191215575,
-   "var_esp": 63829.643191215575,
+   "var_real": 61775.40047601004,
+   "var_esp": 61775.40047601004,
    "fixo_real": 41188.10976198246,
    "fixo_esp": 41188.10976198246,
-   "custo_real": 105017.75295319804,
-   "custo_esp": 105017.75295319804,
-   "res_real": 4200.6892179799615,
-   "res_caixa": 19491.271121944883,
+   "custo_real": 102963.51023799251,
+   "custo_esp": 102963.51023799251,
+   "res_real": 6254.9319331855,
+   "res_caixa": 21545.51383715042,
    "provisoes_nao_debitadas": 15290.581903964921
   },
   "2027-08": {
@@ -2180,11 +2075,11 @@
    "mes": 8,
    "chave": "2027-08",
    "receita_bruta": 113914.835184538,
-   "receita_liquida": 103662.50001792957,
+   "receita_liquida": 105940.79672162034,
    "receita_real": 113914.835184538,
    "receita_meta": 60000.0,
-   "ebitda": 5253.660063182877,
-   "margem_contribuicao": 38366.478873182874,
+   "ebitda": 7396.235215142238,
+   "margem_contribuicao": 46844.23077750596,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -2192,12 +2087,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 42652.20245968448,
-       "esp": 42652.20245968448,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 42787.92401141588,
+       "esp": 42787.92401141588,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -2216,17 +2111,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 2278.29670369076,
-       "esp": 2278.29670369076,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 66574.31784843747,
-     "sub_esp": 66574.31784843747
+     "sub_real": 64431.742696478104,
+     "sub_esp": 64431.742696478104
     },
     {
      "id": "PESSOAL",
@@ -2252,20 +2140,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -2280,7 +2168,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -2309,14 +2197,14 @@
      "sub_esp": 18718.788462917662
     }
    ],
-   "var_real": 66574.31784843747,
-   "var_esp": 66574.31784843747,
+   "var_real": 64431.742696478104,
+   "var_esp": 64431.742696478104,
    "fixo_real": 42086.85727291766,
    "fixo_esp": 42086.85727291766,
-   "custo_real": 108661.17512135513,
-   "custo_esp": 108661.17512135513,
-   "res_real": 5253.660063182877,
-   "res_caixa": 21201.736989018198,
+   "custo_real": 106518.59996939576,
+   "custo_esp": 106518.59996939576,
+   "res_real": 7396.235215142238,
+   "res_caixa": 23344.31214097756,
    "provisoes_nao_debitadas": 15948.076925835321
   },
   "2027-09": {
@@ -2324,11 +2212,11 @@
    "mes": 9,
    "chave": "2027-09",
    "receita_bruta": 118813.173097473,
-   "receita_liquida": 108119.98751870042,
+   "receita_liquida": 110496.25098064989,
    "receita_real": 118813.173097473,
    "receita_meta": 60000.0,
-   "ebitda": 6946.418654729692,
-   "margem_contribuicao": 40059.23746472969,
+   "ebitda": 9181.124538223303,
+   "margem_contribuicao": 48901.53270093865,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -2336,12 +2224,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 44486.24716545086,
-       "esp": 44486.24716545086,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 44627.804743906716,
+       "esp": 44627.804743906716,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -2360,17 +2248,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 2376.26346194946,
-       "esp": 2376.26346194946,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 69437.0135159202,
-     "sub_esp": 69437.0135159202
+     "sub_real": 67202.30763242659,
+     "sub_esp": 67202.30763242659
     },
     {
      "id": "PESSOAL",
@@ -2396,20 +2277,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -2424,7 +2305,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -2453,14 +2334,14 @@
      "sub_esp": 19061.67211682311
     }
    ],
-   "var_real": 69437.0135159202,
-   "var_esp": 69437.0135159202,
+   "var_real": 67202.30763242659,
+   "var_esp": 67202.30763242659,
    "fixo_real": 42429.740926823106,
    "fixo_esp": 42429.740926823106,
-   "custo_real": 111866.75444274332,
-   "custo_esp": 111866.75444274332,
-   "res_real": 6946.418654729692,
-   "res_caixa": 23580.262888375913,
+   "custo_real": 109632.0485592497,
+   "custo_esp": 109632.0485592497,
+   "res_real": 9181.124538223303,
+   "res_caixa": 25814.968771869524,
    "provisoes_nao_debitadas": 16633.84423364622
   },
   "2027-10": {
@@ -2468,11 +2349,11 @@
    "mes": 10,
    "chave": "2027-10",
    "receita_bruta": 123922.139540665,
-   "receita_liquida": 112769.14698200516,
+   "receita_liquida": 115247.58977281845,
    "receita_real": 123922.139540665,
    "receita_meta": 60000.0,
-   "ebitda": 8711.965865713304,
-   "margem_contribuicao": 41824.7846757133,
+   "ebitda": 11042.764102197143,
+   "margem_contribuicao": 51047.2986070793,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -2480,12 +2361,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 46399.1557935655,
-       "esp": 46399.1557935655,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 46546.800347894954,
+       "esp": 46546.800347894954,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -2504,17 +2385,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 2478.4427908133,
-       "esp": 2478.4427908133,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 72422.80509710514,
-     "sub_esp": 72422.80509710514
+     "sub_real": 70092.0068606213,
+     "sub_esp": 70092.0068606213
     },
     {
      "id": "PESSOAL",
@@ -2540,20 +2414,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -2568,7 +2442,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -2597,14 +2471,14 @@
      "sub_esp": 19419.29976784655
     }
    ],
-   "var_real": 72422.80509710514,
-   "var_esp": 72422.80509710514,
-   "fixo_real": 42787.368577846544,
-   "fixo_esp": 42787.368577846544,
-   "custo_real": 115210.17367495169,
-   "custo_esp": 115210.17367495169,
-   "res_real": 8711.965865713304,
-   "res_caixa": 26061.065401406406,
+   "var_real": 70092.0068606213,
+   "var_esp": 70092.0068606213,
+   "fixo_real": 42787.36857784655,
+   "fixo_esp": 42787.36857784655,
+   "custo_real": 112879.37543846786,
+   "custo_esp": 112879.37543846786,
+   "res_real": 11042.764102197143,
+   "res_caixa": 28391.863637890245,
    "provisoes_nao_debitadas": 17349.0995356931
   },
   "2027-11": {
@@ -2612,11 +2486,11 @@
    "mes": 11,
    "chave": "2027-11",
    "receita_bruta": 129250.791540913,
-   "receita_liquida": 117618.22030223082,
+   "receita_liquida": 120203.23613304908,
    "receita_real": 129250.791540913,
    "receita_meta": 60000.0,
-   "ebitda": 10553.431606768761,
-   "margem_contribuicao": 43666.25041676876,
+   "ebitda": 12984.454167421398,
+   "margem_contribuicao": 53285.33244718345,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -2624,12 +2498,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 48394.31949268859,
-       "esp": 48394.31949268859,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 48548.31276285421,
+       "esp": 48548.31276285421,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -2648,17 +2522,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 2585.01583081826,
-       "esp": 2585.01583081826,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 75536.98571628031,
-     "sub_esp": 75536.98571628031
+     "sub_real": 73105.96315562769,
+     "sub_esp": 73105.96315562769
     },
     {
      "id": "PESSOAL",
@@ -2684,20 +2551,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -2712,7 +2579,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -2741,14 +2608,14 @@
      "sub_esp": 19792.30540786391
     }
    ],
-   "var_real": 75536.98571628031,
-   "var_esp": 75536.98571628031,
+   "var_real": 73105.96315562769,
+   "var_esp": 73105.96315562769,
    "fixo_real": 43160.37421786391,
    "fixo_esp": 43160.37421786391,
-   "custo_real": 118697.35993414422,
-   "custo_esp": 118697.35993414422,
-   "res_real": 10553.431606768761,
-   "res_caixa": 28648.542422496583,
+   "custo_real": 116266.3373734916,
+   "custo_esp": 116266.3373734916,
+   "res_real": 12984.454167421398,
+   "res_caixa": 31079.56498314922,
    "provisoes_nao_debitadas": 18095.11081572782
   },
   "2027-12": {
@@ -2756,11 +2623,11 @@
    "mes": 12,
    "chave": "2027-12",
    "receita_bruta": 134808.575577173,
-   "receita_liquida": 122675.80377522742,
+   "receita_liquida": 125371.97528677089,
    "receita_real": 134808.575577173,
    "receita_meta": 60000.0,
-   "ebitda": 12474.080374690064,
-   "margem_contribuicao": 45586.89918469006,
+   "ebitda": 15009.636905450789,
+   "margem_contribuicao": 55619.60174241265,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -2768,12 +2635,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 50475.27523087448,
-       "esp": 50475.27523087448,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 50635.89021165722,
+       "esp": 50635.89021165722,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -2792,17 +2659,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 2696.17151154346,
-       "esp": 2696.17151154346,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 78785.07610208081,
-     "sub_esp": 78785.07610208081
+     "sub_real": 76249.5195713201,
+     "sub_esp": 76249.5195713201
     },
     {
      "id": "PESSOAL",
@@ -2828,20 +2688,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -2856,7 +2716,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -2885,14 +2745,14 @@
      "sub_esp": 20181.35029040211
     }
    ],
-   "var_real": 78785.07610208081,
-   "var_esp": 78785.07610208081,
+   "var_real": 76249.5195713201,
+   "var_esp": 76249.5195713201,
    "fixo_real": 43549.41910040211,
    "fixo_esp": 43549.41910040211,
-   "custo_real": 122334.49520248293,
-   "custo_esp": 122334.49520248293,
-   "res_real": 12474.080374690064,
-   "res_caixa": 31347.280955494287,
+   "custo_real": 119798.93867172221,
+   "custo_esp": 119798.93867172221,
+   "res_real": 15009.636905450789,
+   "res_caixa": 33882.83748625501,
    "provisoes_nao_debitadas": 18873.200580804223
   },
   "2028-01": {
@@ -2900,11 +2760,11 @@
    "mes": 1,
    "chave": "2028-01",
    "receita_bruta": 140605.344326991,
-   "receita_liquida": 127950.86333756181,
+   "receita_liquida": 130762.97022410163,
    "receita_real": 140605.344326991,
    "receita_meta": 60000.0,
-   "ebitda": 14477.317039631605,
-   "margem_contribuicao": 47590.1358496316,
+   "ebitda": 17121.90250121503,
+   "margem_contribuicao": 58054.244617336226,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -2912,12 +2772,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 52645.71206580192,
-       "esp": 52645.71206580192,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 52813.23349075832,
+       "esp": 52813.23349075832,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -2936,17 +2796,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 2812.10688653982,
-       "esp": 2812.10688653982,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 82172.83437447004,
-     "sub_esp": 82172.83437447004
+     "sub_real": 79528.24891288661,
+     "sub_esp": 79528.24891288661
     },
     {
      "id": "PESSOAL",
@@ -2972,20 +2825,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -3000,7 +2853,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -3029,14 +2882,14 @@
      "sub_esp": 20587.12410288937
     }
    ],
-   "var_real": 82172.83437447004,
-   "var_esp": 82172.83437447004,
+   "var_real": 79528.24891288661,
+   "var_esp": 79528.24891288661,
    "fixo_real": 43955.19291288937,
    "fixo_esp": 43955.19291288937,
-   "custo_real": 126128.02728735941,
-   "custo_esp": 126128.02728735941,
-   "res_real": 14477.317039631605,
-   "res_caixa": 34162.06524541035,
+   "custo_real": 123483.44182577598,
+   "custo_esp": 123483.44182577598,
+   "res_real": 17121.90250121503,
+   "res_caixa": 36806.65070699377,
    "provisoes_nao_debitadas": 19684.748205778742
   },
   "2028-02": {
@@ -3044,11 +2897,11 @@
    "mes": 2,
    "chave": "2028-02",
    "receita_bruta": 146651.374133052,
-   "receita_liquida": 133452.75046107732,
+   "receita_liquida": 136385.77794373836,
    "receita_real": 146651.374133052,
    "receita_meta": 60000.0,
-   "ebitda": 16566.692881165887,
-   "margem_contribuicao": 49679.511691165884,
+   "ebitda": 19324.995517597403,
+   "margem_contribuicao": 60593.57713588183,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -3056,12 +2909,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 54909.47768463155,
-       "esp": 54909.47768463155,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 55084.202530861076,
+       "esp": 55084.202530861076,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -3080,17 +2933,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 2933.0274826610403,
-       "esp": 2933.0274826610403,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 85706.26625257247,
-     "sub_esp": 85706.26625257247
+     "sub_real": 82947.96361614096,
+     "sub_esp": 82947.96361614096
     },
     {
      "id": "PESSOAL",
@@ -3116,20 +2962,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -3144,7 +2990,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -3173,14 +3019,14 @@
      "sub_esp": 21010.34618931364
     }
    ],
-   "var_real": 85706.26625257247,
-   "var_esp": 85706.26625257247,
+   "var_real": 82947.96361614096,
+   "var_esp": 82947.96361614096,
    "fixo_real": 44378.41499931364,
    "fixo_esp": 44378.41499931364,
-   "custo_real": 130084.68125188611,
-   "custo_esp": 130084.68125188611,
-   "res_real": 16566.692881165887,
-   "res_caixa": 37097.88525979317,
+   "custo_real": 127326.3786154546,
+   "custo_esp": 127326.3786154546,
+   "res_real": 19324.995517597403,
+   "res_caixa": 39856.187896224685,
    "provisoes_nao_debitadas": 20531.192378627286
   },
   "2028-03": {
@@ -3188,11 +3034,11 @@
    "mes": 3,
    "chave": "2028-03",
    "receita_bruta": 152957.383220773,
-   "receita_liquida": 139191.21873090343,
+   "receita_liquida": 142250.36639531888,
    "receita_real": 152957.383220773,
    "receita_meta": 60000.0,
-   "ebitda": 18745.911883885972,
-   "margem_contribuicao": 51858.73069388597,
+   "ebitda": 21622.821533684022,
+   "margem_contribuicao": 63242.100952724664,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -3200,12 +3046,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 57270.58522507061,
-       "esp": 57270.58522507061,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 57452.823239688005,
+       "esp": 57452.823239688005,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -3224,17 +3070,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3059.14766441546,
-       "esp": 3059.14766441546,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 89391.63570143293,
-     "sub_esp": 89391.63570143293
+     "sub_real": 86514.72605163488,
+     "sub_esp": 86514.72605163488
     },
     {
      "id": "PESSOAL",
@@ -3260,20 +3099,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -3288,7 +3127,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -3317,14 +3156,14 @@
      "sub_esp": 21451.76682545411
     }
    ],
-   "var_real": 89391.63570143293,
-   "var_esp": 89391.63570143293,
-   "fixo_real": 44819.8356354541,
-   "fixo_esp": 44819.8356354541,
-   "custo_real": 134211.47133688704,
-   "custo_esp": 134211.47133688704,
-   "res_real": 18745.911883885972,
-   "res_caixa": 40159.94553479419,
+   "var_real": 86514.72605163488,
+   "var_esp": 86514.72605163488,
+   "fixo_real": 44819.83563545411,
+   "fixo_esp": 44819.83563545411,
+   "custo_real": 131334.56168708898,
+   "custo_esp": 131334.56168708898,
+   "res_real": 21622.821533684022,
+   "res_caixa": 43036.85518459224,
    "provisoes_nao_debitadas": 21414.03365090822
   },
   "2028-04": {
@@ -3332,11 +3171,11 @@
    "mes": 4,
    "chave": "2028-04",
    "receita_bruta": 159534.550699266,
-   "receita_liquida": 145176.44113633205,
+   "receita_liquida": 148367.13215031737,
    "receita_real": 159534.550699266,
    "receita_meta": 60000.0,
-   "ebitda": 21018.83730372296,
-   "margem_contribuicao": 54131.65611372296,
+   "ebitda": 24019.454068462335,
+   "margem_contribuicao": 66004.51129369171,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -3344,12 +3183,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 59733.22038974856,
-       "esp": 59733.22038974856,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 59923.2946389945,
+       "esp": 59923.2946389945,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -3368,17 +3207,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3190.69101398532,
-       "esp": 3190.69101398532,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 93235.47603659442,
-     "sub_esp": 93235.47603659442
+     "sub_real": 90234.85927185504,
+     "sub_esp": 90234.85927185504
     },
     {
      "id": "PESSOAL",
@@ -3404,20 +3236,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -3432,7 +3264,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -3461,14 +3293,14 @@
      "sub_esp": 21912.16854894862
     }
    ],
-   "var_real": 93235.47603659442,
-   "var_esp": 93235.47603659442,
+   "var_real": 90234.85927185504,
+   "var_esp": 90234.85927185504,
    "fixo_real": 45280.237358948616,
    "fixo_esp": 45280.237358948616,
-   "custo_real": 138515.71339554305,
-   "custo_esp": 138515.71339554305,
-   "res_real": 21018.83730372296,
-   "res_caixa": 43353.6744016202,
+   "custo_real": 135515.09663080366,
+   "custo_esp": 135515.09663080366,
+   "res_real": 24019.454068462335,
+   "res_caixa": 46354.29116635957,
    "provisoes_nao_debitadas": 22334.83709789724
   },
   "2028-05": {
@@ -3476,11 +3308,11 @@
    "mes": 5,
    "chave": "2028-05",
    "receita_bruta": 166394.536379335,
-   "receita_liquida": 151419.02810519486,
+   "receita_liquida": 154746.91883278155,
    "receita_real": 166394.536379335,
    "receita_meta": 60000.0,
-   "ebitda": 23389.498516613232,
-   "margem_contribuicao": 56502.31732661323,
+   "ebitda": 26519.14180223641,
+   "margem_contribuicao": 68885.70527932068,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -3488,12 +3320,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 62301.748866507965,
-       "esp": 62301.748866507965,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 62499.996308471484,
+       "esp": 62499.996308471484,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -3512,17 +3344,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3327.8907275867005,
-       "esp": 3327.8907275867005,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 97244.6015061683,
-     "sub_esp": 97244.6015061683
+     "sub_real": 94114.95822054513,
+     "sub_esp": 94114.95822054513
     },
     {
      "id": "PESSOAL",
@@ -3548,20 +3373,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -3576,7 +3401,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -3605,14 +3430,14 @@
      "sub_esp": 22392.367546553454
     }
    ],
-   "var_real": 97244.6015061683,
-   "var_esp": 97244.6015061683,
+   "var_real": 94114.95822054513,
+   "var_esp": 94114.95822054513,
    "fixo_real": 45760.43635655345,
    "fixo_esp": 45760.43635655345,
-   "custo_real": 143005.03786272174,
-   "custo_esp": 143005.03786272174,
-   "res_real": 23389.498516613232,
-   "res_caixa": 46684.73360972014,
+   "custo_real": 139875.39457709857,
+   "custo_esp": 139875.39457709857,
+   "res_real": 26519.14180223641,
+   "res_caixa": 49814.37689534332,
    "provisoes_nao_debitadas": 23295.235093106905
   },
   "2028-06": {
@@ -3620,11 +3445,11 @@
    "mes": 6,
    "chave": "2028-06",
    "receita_bruta": 173549.501443646,
-   "receita_liquida": 157930.04631371787,
+   "receita_liquida": 161401.03634259079,
    "receita_real": 173549.501443646,
    "receita_meta": 60000.0,
-   "ebitda": 25862.09816165747,
-   "margem_contribuicao": 58974.91697165747,
+   "ebitda": 29126.316108562438,
+   "margem_contribuicao": 71890.79060633131,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -3632,12 +3457,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 64980.72406776765,
-       "esp": 64980.72406776765,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 65187.4961497356,
+       "esp": 65187.4961497356,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -3656,17 +3481,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3470.99002887292,
-       "esp": 3470.99002887292,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 101426.11937093332,
-     "sub_esp": 101426.11937093332
+     "sub_real": 98161.90142402834,
+     "sub_esp": 98161.90142402834
     },
     {
      "id": "PESSOAL",
@@ -3692,20 +3510,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -3720,7 +3538,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -3749,14 +3567,14 @@
      "sub_esp": 22893.21510105522
     }
    ],
-   "var_real": 101426.11937093332,
-   "var_esp": 101426.11937093332,
+   "var_real": 98161.90142402834,
+   "var_esp": 98161.90142402834,
    "fixo_real": 46261.283911055216,
    "fixo_esp": 46261.283911055216,
-   "custo_real": 147687.40328198852,
-   "custo_esp": 147687.40328198852,
-   "res_real": 25862.09816165747,
-   "res_caixa": 50159.02836376791,
+   "custo_real": 144423.18533508357,
+   "custo_esp": 144423.18533508357,
+   "res_real": 29126.316108562438,
+   "res_caixa": 53423.24631067288,
    "provisoes_nao_debitadas": 24296.93020211044
   },
   "2028-07": {
@@ -3764,11 +3582,11 @@
    "mes": 7,
    "chave": "2028-07",
    "receita_bruta": 181012.130005723,
-   "receita_liquida": 164721.03830520794,
+   "receita_liquida": 168341.2809053224,
    "receita_real": 181012.130005723,
    "receita_meta": 60000.0,
-   "ebitda": 28441.01959143883,
-   "margem_contribuicao": 61553.83840143883,
+   "ebitda": 31845.598910060726,
+   "margem_contribuicao": 75025.09460240367,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -3776,12 +3594,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 67774.89520268174,
-       "esp": 67774.89520268174,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 67990.55848417431,
+       "esp": 67990.55848417431,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.37561327233718905
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -3800,17 +3618,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3620.2426001144604,
-       "esp": 3620.2426001144604,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 105787.44250388358,
-     "sub_esp": 105787.44250388358
+     "sub_real": 102382.86318526168,
+     "sub_esp": 102382.86318526168
     },
     {
      "id": "PESSOAL",
@@ -3836,20 +3647,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -3864,7 +3675,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -3893,14 +3704,14 @@
      "sub_esp": 23415.599100400614
     }
    ],
-   "var_real": 105787.44250388358,
-   "var_esp": 105787.44250388358,
+   "var_real": 102382.86318526168,
+   "var_esp": 102382.86318526168,
    "fixo_real": 46783.66791040061,
    "fixo_esp": 46783.66791040061,
-   "custo_real": 152571.1104142842,
-   "custo_esp": 152571.1104142842,
-   "res_real": 28441.01959143883,
-   "res_caixa": 53782.71779224006,
+   "custo_real": 149166.5310956623,
+   "custo_esp": 149166.5310956623,
+   "res_real": 31845.598910060726,
+   "res_caixa": 57187.29711086195,
    "provisoes_nao_debitadas": 25341.698200801224
   },
   "2028-08": {
@@ -3908,11 +3719,11 @@
    "mes": 8,
    "chave": "2028-08",
    "receita_bruta": 182822.25130578,
-   "receita_liquida": 166368.2486882598,
+   "receita_liquida": 170024.6937143754,
    "receita_real": 182822.25130578,
    "receita_meta": 60000.0,
-   "ebitda": 29066.557975453135,
-   "margem_contribuicao": 62179.37678545313,
+   "ebitda": 32505.183087261234,
+   "margem_contribuicao": 75785.3455484276,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -3920,12 +3731,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 68452.64415470847,
-       "esp": 68452.64415470847,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 68670.46406901597,
+       "esp": 68670.46406901597,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -3944,17 +3755,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3656.4450261156,
-       "esp": 3656.4450261156,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 106845.31692892227,
-     "sub_esp": 106845.31692892227
+     "sub_real": 103406.69181711417,
+     "sub_esp": 103406.69181711417
     },
     {
      "id": "PESSOAL",
@@ -3980,20 +3784,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -4008,7 +3812,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -4037,14 +3841,14 @@
      "sub_esp": 23542.3075914046
     }
    ],
-   "var_real": 106845.31692892227,
-   "var_esp": 106845.31692892227,
+   "var_real": 103406.69181711417,
+   "var_esp": 103406.69181711417,
    "fixo_real": 46910.376401404596,
    "fixo_esp": 46910.376401404596,
-   "custo_real": 153755.69333032687,
-   "custo_esp": 153755.69333032687,
-   "res_real": 29066.557975453135,
-   "res_caixa": 54661.67315826233,
+   "custo_real": 150317.06821851878,
+   "custo_esp": 150317.06821851878,
+   "res_real": 32505.183087261234,
+   "res_caixa": 58100.29827007043,
    "provisoes_nao_debitadas": 25595.1151828092
   },
   "2028-09": {
@@ -4052,11 +3856,11 @@
    "mes": 9,
    "chave": "2028-09",
    "receita_bruta": 184650.473818838,
-   "receita_liquida": 168031.93117514258,
+   "receita_liquida": 171724.94065151934,
    "receita_real": 184650.473818838,
    "receita_meta": 60000.0,
-   "ebitda": 29698.35174330772,
-   "margem_contribuicao": 62811.17055330772,
+   "ebitda": 33171.36310623391,
+   "margem_contribuicao": 76553.19900391196,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -4064,12 +3868,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 69137.17059625564,
-       "esp": 69137.17059625564,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 69357.16870970621,
+       "esp": 69357.16870970621,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -4088,17 +3892,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3693.00947637676,
-       "esp": 3693.00947637676,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 107913.77009821162,
-     "sub_esp": 107913.77009821162
+     "sub_real": 104440.75873528543,
+     "sub_esp": 104440.75873528543
     },
     {
      "id": "PESSOAL",
@@ -4124,20 +3921,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -4152,7 +3949,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -4181,14 +3978,14 @@
      "sub_esp": 23670.283167318663
     }
    ],
-   "var_real": 107913.77009821162,
-   "var_esp": 107913.77009821162,
-   "fixo_real": 47038.351977318656,
-   "fixo_esp": 47038.351977318656,
-   "custo_real": 154952.1220755303,
-   "custo_esp": 154952.1220755303,
-   "res_real": 29698.35174330772,
-   "res_caixa": 55549.41807794504,
+   "var_real": 104440.75873528543,
+   "var_esp": 104440.75873528543,
+   "fixo_real": 47038.35197731866,
+   "fixo_esp": 47038.35197731866,
+   "custo_real": 151479.1107126041,
+   "custo_esp": 151479.1107126041,
+   "res_real": 33171.36310623391,
+   "res_caixa": 59022.42944087124,
    "provisoes_nao_debitadas": 25851.066334637326
   },
   "2028-10": {
@@ -4196,11 +3993,11 @@
    "mes": 10,
    "chave": "2028-10",
    "receita_bruta": 186496.978557026,
-   "receita_liquida": 169712.2504868937,
+   "receita_liquida": 173442.1900580342,
    "receita_real": 186496.978557026,
    "receita_meta": 60000.0,
-   "ebitda": 30336.463448840703,
-   "margem_contribuicao": 63449.2822588407,
+   "ebitda": 33844.20492539613,
+   "margem_contribuicao": 77328.73099395093,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -4208,12 +4005,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 69828.54230221805,
-       "esp": 69828.54230221805,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 70050.74039680313,
+       "esp": 70050.74039680313,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -4232,17 +4029,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3729.9395711405205,
-       "esp": 3729.9395711405205,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 108992.90779919352,
-     "sub_esp": 108992.90779919352
+     "sub_real": 105485.16632263808,
+     "sub_esp": 105485.16632263808
     },
     {
      "id": "PESSOAL",
@@ -4268,20 +4058,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -4296,7 +4086,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -4325,14 +4115,14 @@
      "sub_esp": 23799.538498991824
     }
    ],
-   "var_real": 108992.90779919352,
-   "var_esp": 108992.90779919352,
+   "var_real": 105485.16632263808,
+   "var_esp": 105485.16632263808,
    "fixo_real": 47167.60730899182,
    "fixo_esp": 47167.60730899182,
-   "custo_real": 156160.51510818535,
-   "custo_esp": 156160.51510818535,
-   "res_real": 30336.463448840703,
-   "res_caixa": 56446.04044682435,
+   "custo_real": 152652.77363162988,
+   "custo_esp": 152652.77363162988,
+   "res_real": 33844.20492539613,
+   "res_caixa": 59953.78192337978,
    "provisoes_nao_debitadas": 26109.576997983644
   },
   "2028-11": {
@@ -4340,11 +4130,11 @@
    "mes": 11,
    "chave": "2028-11",
    "receita_bruta": 188361.948342596,
-   "receita_liquida": 171409.37299176236,
+   "receita_liquida": 175176.6119586143,
    "receita_real": 188361.948342596,
    "receita_meta": 60000.0,
-   "ebitda": 30980.956271428986,
-   "margem_contribuicao": 64093.77508142898,
+   "ebitda": 34523.77516274999,
+   "margem_contribuicao": 78112.01830389032,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -4352,12 +4142,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 70526.82772524013,
-       "esp": 70526.82772524013,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 70751.24780077106,
+       "esp": 70751.24780077106,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -4376,17 +4166,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3767.2389668519204,
-       "esp": 3767.2389668519204,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 110082.83687718528,
-     "sub_esp": 110082.83687718528
+     "sub_real": 106540.01798586431,
+     "sub_esp": 106540.01798586431
     },
     {
      "id": "PESSOAL",
@@ -4412,20 +4195,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -4440,7 +4223,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -4469,14 +4252,14 @@
      "sub_esp": 23930.08638398172
     }
    ],
-   "var_real": 110082.83687718528,
-   "var_esp": 110082.83687718528,
-   "fixo_real": 47298.155193981715,
-   "fixo_esp": 47298.155193981715,
-   "custo_real": 157380.99207116698,
-   "custo_esp": 157380.99207116698,
-   "res_real": 30980.956271428986,
-   "res_caixa": 57351.629039392436,
+   "var_real": 106540.01798586431,
+   "var_esp": 106540.01798586431,
+   "fixo_real": 47298.15519398172,
+   "fixo_esp": 47298.15519398172,
+   "custo_real": 153838.17317984602,
+   "custo_esp": 153838.17317984602,
+   "res_real": 34523.77516274999,
+   "res_caixa": 60894.44793071343,
    "provisoes_nao_debitadas": 26370.672767963442
   },
   "2028-12": {
@@ -4484,11 +4267,11 @@
    "mes": 12,
    "chave": "2028-12",
    "receita_bruta": 190245.567826022,
-   "receita_liquida": 173123.46672168002,
+   "receita_liquida": 176928.37807820045,
    "receita_real": 190245.567826022,
    "receita_meta": 60000.0,
-   "ebitda": 31631.8940222433,
-   "margem_contribuicao": 64744.7128322433,
+   "ebitda": 35210.1411024775,
+   "margem_contribuicao": 78903.13848692924,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -4496,12 +4279,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 71232.09600249254,
-       "esp": 71232.09600249254,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 71458.76027877878,
+       "esp": 71458.76027877878,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -4520,17 +4303,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3804.9113565204398,
-       "esp": 3804.9113565204398,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 111183.66524595716,
-     "sub_esp": 111183.66524595716
+     "sub_real": 107605.41816572295,
+     "sub_esp": 107605.41816572295
     },
     {
      "id": "PESSOAL",
@@ -4556,20 +4332,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -4584,7 +4360,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -4613,14 +4389,14 @@
      "sub_esp": 24061.93974782154
     }
    ],
-   "var_real": 111183.66524595716,
-   "var_esp": 111183.66524595716,
+   "var_real": 107605.41816572295,
+   "var_esp": 107605.41816572295,
    "fixo_real": 47430.00855782154,
    "fixo_esp": 47430.00855782154,
-   "custo_real": 158613.6738037787,
-   "custo_esp": 158613.6738037787,
-   "res_real": 31631.8940222433,
-   "res_caixa": 58266.27351788638,
+   "custo_real": 155035.4267235445,
+   "custo_esp": 155035.4267235445,
+   "res_real": 35210.1411024775,
+   "res_caixa": 61844.52059812058,
    "provisoes_nao_debitadas": 26634.37949564308
   },
   "2029-01": {
@@ -4628,11 +4404,11 @@
    "mes": 1,
    "chave": "2029-01",
    "receita_bruta": 192148.023504282,
-   "receita_liquida": 174854.70138889662,
+   "receita_liquida": 178697.66185898226,
    "receita_real": 192148.023504282,
    "receita_meta": 60000.0,
-   "ebitda": 32289.341150565655,
-   "margem_contribuicao": 65402.15996056565,
+   "ebitda": 35903.37070160221,
+   "margem_contribuicao": 79702.16987179845,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -4640,12 +4416,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 71944.4169625174,
-       "esp": 71944.4169625174,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 72173.34788156649,
+       "esp": 72173.34788156649,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -4664,17 +4440,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3842.96047008564,
-       "esp": 3842.96047008564,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 112295.50189841661,
-     "sub_esp": 112295.50189841661
+     "sub_real": 108681.47234738007,
+     "sub_esp": 108681.47234738007
     },
     {
      "id": "PESSOAL",
@@ -4700,20 +4469,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -4728,7 +4497,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -4757,14 +4526,14 @@
      "sub_esp": 24195.11164529974
     }
    ],
-   "var_real": 112295.50189841661,
-   "var_esp": 112295.50189841661,
-   "fixo_real": 47563.180455299735,
-   "fixo_esp": 47563.180455299735,
-   "custo_real": 159858.68235371634,
-   "custo_esp": 159858.68235371634,
-   "res_real": 32289.341150565655,
-   "res_caixa": 59190.06444116513,
+   "var_real": 108681.47234738007,
+   "var_esp": 108681.47234738007,
+   "fixo_real": 47563.18045529974,
+   "fixo_esp": 47563.18045529974,
+   "custo_real": 156244.6528026798,
+   "custo_esp": 156244.6528026798,
+   "res_real": 35903.37070160221,
+   "res_caixa": 62804.09399220169,
    "provisoes_nao_debitadas": 26900.723290599482
   },
   "2029-02": {
@@ -4772,11 +4541,11 @@
    "mes": 2,
    "chave": "2029-02",
    "receita_bruta": 194069.503739325,
-   "receita_liquida": 176603.24840278577,
+   "receita_liquida": 180484.63847757227,
    "receita_real": 194069.503739325,
    "receita_meta": 60000.0,
-   "ebitda": 32953.3627501714,
-   "margem_contribuicao": 66066.18156017139,
+   "ebitda": 36603.532596718294,
+   "margem_contribuicao": 80509.19157051652,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -4784,12 +4553,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 72663.86113214263,
-       "esp": 72663.86113214263,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 72895.08136038223,
+       "esp": 72895.08136038223,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402836
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.37561327233718916
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -4808,17 +4577,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3881.3900747865005,
-       "esp": 3881.3900747865005,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 113418.45691740088,
-     "sub_esp": 113418.45691740088
+     "sub_real": 109768.28707085398,
+     "sub_esp": 109768.28707085398
     },
     {
      "id": "PESSOAL",
@@ -4844,20 +4606,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -4872,7 +4634,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -4901,14 +4663,14 @@
      "sub_esp": 24329.61526175275
     }
    ],
-   "var_real": 113418.45691740088,
-   "var_esp": 113418.45691740088,
+   "var_real": 109768.28707085398,
+   "var_esp": 109768.28707085398,
    "fixo_real": 47697.68407175275,
    "fixo_esp": 47697.68407175275,
-   "custo_real": 161116.14098915365,
-   "custo_esp": 161116.14098915365,
-   "res_real": 32953.3627501714,
-   "res_caixa": 60123.093273676895,
+   "custo_real": 157465.97114260675,
+   "custo_esp": 157465.97114260675,
+   "res_real": 36603.532596718294,
+   "res_caixa": 63773.2631202238,
    "provisoes_nao_debitadas": 27169.730523505503
   },
   "2029-03": {
@@ -4916,11 +4678,11 @@
    "mes": 3,
    "chave": "2029-03",
    "receita_bruta": 196010.198776719,
-   "receita_liquida": 178369.28088681426,
+   "receita_liquida": 182289.48486234865,
    "receita_real": 196010.198776719,
    "receita_meta": 60000.0,
-   "ebitda": 33624.024565773325,
-   "margem_contribuicao": 66736.84337577331,
+   "ebitda": 37310.69611078573,
+   "margem_contribuicao": 81324.28348622196,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -4928,12 +4690,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 73390.49974346433,
-       "esp": 73390.49974346433,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 73624.03217398631,
+       "esp": 73624.03217398631,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.37561327233718905
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -4952,17 +4714,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3920.20397553438,
-       "esp": 3920.20397553438,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 114552.64148657532,
-     "sub_esp": 114552.64148657532
+     "sub_real": 110865.96994156291,
+     "sub_esp": 110865.96994156291
     },
     {
      "id": "PESSOAL",
@@ -4988,20 +4743,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -5016,7 +4771,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -5045,14 +4800,14 @@
      "sub_esp": 24465.46391437033
     }
    ],
-   "var_real": 114552.64148657532,
-   "var_esp": 114552.64148657532,
+   "var_real": 110865.96994156291,
+   "var_esp": 110865.96994156291,
    "fixo_real": 47833.53272437033,
    "fixo_esp": 47833.53272437033,
-   "custo_real": 162386.17421094564,
-   "custo_esp": 162386.17421094564,
-   "res_real": 33624.024565773325,
-   "res_caixa": 61065.45239451399,
+   "custo_real": 158699.50266593325,
+   "custo_esp": 158699.50266593325,
+   "res_real": 37310.69611078573,
+   "res_caixa": 64752.123939526384,
    "provisoes_nao_debitadas": 27441.42782874066
   },
   "2029-04": {
@@ -5060,11 +4815,11 @@
    "mes": 4,
    "chave": "2029-04",
    "receita_bruta": 197970.300764486,
-   "receita_liquida": 180152.97369568225,
+   "receita_liquida": 184112.37971097196,
    "receita_real": 197970.300764486,
    "receita_meta": 60000.0,
-   "ebitda": 34301.392999531,
-   "margem_contribuicao": 67414.211809531,
+   "ebitda": 38024.93125999352,
+   "margem_contribuicao": 82147.52632108411,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -5072,12 +4827,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 74124.40474089891,
-       "esp": 74124.40474089891,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 74360.27249572611,
+       "esp": 74360.27249572611,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -5096,17 +4851,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3959.40601528972,
-       "esp": 3959.40601528972,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 115698.16790144096,
-     "sub_esp": 115698.16790144096
+     "sub_real": 111974.62964097844,
+     "sub_esp": 111974.62964097844
     },
     {
      "id": "PESSOAL",
@@ -5132,20 +4880,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -5160,7 +4908,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -5189,14 +4937,14 @@
      "sub_esp": 24602.671053514023
     }
    ],
-   "var_real": 115698.16790144096,
-   "var_esp": 115698.16790144096,
+   "var_real": 111974.62964097844,
+   "var_esp": 111974.62964097844,
    "fixo_real": 47970.73986351402,
    "fixo_esp": 47970.73986351402,
-   "custo_real": 163668.907764955,
-   "custo_esp": 163668.907764955,
-   "res_real": 34301.392999531,
-   "res_caixa": 62017.23510655905,
+   "custo_real": 159945.36950449247,
+   "custo_esp": 159945.36950449247,
+   "res_real": 38024.93125999352,
+   "res_caixa": 65740.77336702157,
    "provisoes_nao_debitadas": 27715.842107028042
   },
   "2029-05": {
@@ -5204,11 +4952,11 @@
    "mes": 5,
    "chave": "2029-05",
    "receita_bruta": 199950.003772131,
-   "receita_liquida": 181954.5034326392,
+   "receita_liquida": 185953.50350808183,
    "receita_real": 199950.003772131,
    "receita_meta": 60000.0,
-   "ebitda": 34985.535117626365,
-   "margem_contribuicao": 68098.35392762636,
+   "ebitda": 38746.308760693515,
+   "margem_contribuicao": 82979.00158429502,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -5216,12 +4964,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 74865.64878830795,
-       "esp": 74865.64878830795,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 75103.87522068343,
+       "esp": 75103.87522068343,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -5240,17 +4988,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 3999.00007544262,
-       "esp": 3999.00007544262,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 116855.14958045546,
-     "sub_esp": 116855.14958045546
+     "sub_real": 113094.37593738832,
+     "sub_esp": 113094.37593738832
     },
     {
      "id": "PESSOAL",
@@ -5276,20 +5017,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -5304,7 +5045,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -5333,14 +5074,14 @@
      "sub_esp": 24741.250264049173
     }
    ],
-   "var_real": 116855.14958045546,
-   "var_esp": 116855.14958045546,
+   "var_real": 113094.37593738832,
+   "var_esp": 113094.37593738832,
    "fixo_real": 48109.31907404917,
    "fixo_esp": 48109.31907404917,
-   "custo_real": 164964.46865450463,
-   "custo_esp": 164964.46865450463,
-   "res_real": 34985.535117626365,
-   "res_caixa": 62978.53564572471,
+   "custo_real": 161203.6950114375,
+   "custo_esp": 161203.6950114375,
+   "res_real": 38746.308760693515,
+   "res_caixa": 66739.30928879186,
    "provisoes_nao_debitadas": 27993.000528098342
   },
   "2029-06": {
@@ -5348,11 +5089,11 @@
    "mes": 6,
    "chave": "2029-06",
    "receita_bruta": 201949.503809852,
-   "receita_liquida": 183774.04846696532,
+   "receita_liquida": 187813.03854316237,
    "receita_real": 201949.503809852,
    "receita_meta": 60000.0,
-   "ebitda": 35676.518656902525,
-   "margem_contribuicao": 68789.33746690252,
+   "ebitda": 39474.900036400344,
+   "margem_contribuicao": 83818.79160013785,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -5360,12 +5101,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 75614.30527619092,
-       "esp": 75614.30527619092,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 75854.91397289015,
+       "esp": 75854.91397289015,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -5384,17 +5125,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4038.9900761970403,
-       "esp": 4038.9900761970403,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 118023.70107625984,
-     "sub_esp": 118023.70107625984
+     "sub_real": 114225.31969676203,
+     "sub_esp": 114225.31969676203
     },
     {
      "id": "PESSOAL",
@@ -5420,20 +5154,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -5448,7 +5182,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -5477,14 +5211,14 @@
      "sub_esp": 24881.215266689644
     }
    ],
-   "var_real": 118023.70107625984,
-   "var_esp": 118023.70107625984,
+   "var_real": 114225.31969676203,
+   "var_esp": 114225.31969676203,
    "fixo_real": 48249.28407668964,
    "fixo_esp": 48249.28407668964,
-   "custo_real": 166272.98515294946,
-   "custo_esp": 166272.98515294946,
-   "res_real": 35676.518656902525,
-   "res_caixa": 63949.44919028181,
+   "custo_real": 162474.60377345167,
+   "custo_esp": 162474.60377345167,
+   "res_real": 39474.900036400344,
+   "res_caixa": 67747.83056977963,
    "provisoes_nao_debitadas": 28272.930533379284
   },
   "2029-07": {
@@ -5492,11 +5226,11 @@
    "mes": 7,
    "chave": "2029-07",
    "receita_bruta": 203968.99884795,
-   "receita_liquida": 185611.7889516345,
+   "receita_liquida": 189691.16892859348,
    "receita_real": 203968.99884795,
    "receita_meta": 60000.0,
-   "ebitda": 36374.41203157137,
-   "margem_contribuicao": 69487.23084157138,
+   "ebitda": 40210.77722486415,
+   "margem_contribuicao": 84666.97951613899,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -5504,12 +5238,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 76370.44832895263,
-       "esp": 76370.44832895263,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 76613.46311261885,
+       "esp": 76613.46311261885,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -5528,17 +5262,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4079.379976959,
-       "esp": 4079.379976959,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 119203.93808702212,
-     "sub_esp": 119203.93808702212
+     "sub_real": 115367.57289372935,
+     "sub_esp": 115367.57289372935
     },
     {
      "id": "PESSOAL",
@@ -5564,20 +5291,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -5592,7 +5319,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -5621,14 +5348,14 @@
      "sub_esp": 25022.5799193565
     }
    ],
-   "var_real": 119203.93808702212,
-   "var_esp": 119203.93808702212,
+   "var_real": 115367.57289372935,
+   "var_esp": 115367.57289372935,
    "fixo_real": 48390.6487293565,
    "fixo_esp": 48390.6487293565,
-   "custo_real": 167594.58681637864,
-   "custo_esp": 167594.58681637864,
-   "res_real": 36374.41203157137,
-   "res_caixa": 64930.07187028438,
+   "custo_real": 163758.22162308585,
+   "custo_esp": 163758.22162308585,
+   "res_real": 40210.77722486415,
+   "res_caixa": 68766.43706357715,
    "provisoes_nao_debitadas": 28555.659838713
   },
   "2029-08": {
@@ -5636,11 +5363,11 @@
    "mes": 8,
    "chave": "2029-08",
    "receita_bruta": 206008.68883643,
-   "receita_liquida": 187467.9068411513,
+   "receita_liquida": 191588.0806178799,
    "receita_real": 206008.68883643,
    "receita_meta": 60000.0,
-   "ebitda": 37079.284339987265,
-   "margem_contribuicao": 70192.10314998726,
+   "ebitda": 40954.013185212985,
+   "margem_contribuicao": 85523.6493113006,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -5648,12 +5375,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 77134.15281224235,
-       "esp": 77134.15281224235,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 77379.59774374522,
+       "esp": 77379.59774374522,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -5672,17 +5399,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4120.1737767286,
-       "esp": 4120.1737767286,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 120395.97746789263,
-     "sub_esp": 120395.97746789263
+     "sub_real": 116521.24862266693,
+     "sub_esp": 116521.24862266693
     },
     {
      "id": "PESSOAL",
@@ -5708,20 +5428,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -5736,7 +5456,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -5765,14 +5485,14 @@
      "sub_esp": 25165.3582185501
     }
    ],
-   "var_real": 120395.97746789263,
-   "var_esp": 120395.97746789263,
+   "var_real": 116521.24862266693,
+   "var_esp": 116521.24862266693,
    "fixo_real": 48533.4270285501,
    "fixo_esp": 48533.4270285501,
-   "custo_real": 168929.40449644273,
-   "custo_esp": 168929.40449644273,
-   "res_real": 37079.284339987265,
-   "res_caixa": 65920.50077708747,
+   "custo_real": 165054.67565121703,
+   "custo_esp": 165054.67565121703,
+   "res_real": 40954.013185212985,
+   "res_caixa": 69795.22962231319,
    "provisoes_nao_debitadas": 28841.216437100204
   },
   "2029-09": {
@@ -5780,11 +5500,11 @@
    "mes": 9,
    "chave": "2029-09",
    "receita_bruta": 208068.775724794,
-   "receita_liquida": 189342.58590956253,
+   "receita_liquida": 193503.96142405842,
    "receita_real": 208068.775724794,
    "receita_meta": 60000.0,
-   "ebitda": 37791.20537148703,
-   "margem_contribuicao": 70904.02418148702,
+   "ebitda": 41704.68150516499,
+   "margem_contribuicao": 86388.88580441348,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -5792,12 +5512,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 77905.49434036465,
-       "esp": 77905.49434036465,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78153.39372118257,
+       "esp": 78153.39372118257,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.37442184234028364
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -5816,17 +5536,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4161.3755144958795,
-       "esp": 4161.3755144958795,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121599.9372425714,
-     "sub_esp": 121599.9372425714
+     "sub_real": 117686.46110889343,
+     "sub_esp": 117686.46110889343
     },
     {
      "id": "PESSOAL",
@@ -5852,20 +5565,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -5880,7 +5593,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -5909,14 +5622,14 @@
      "sub_esp": 25309.564300735583
     }
    ],
-   "var_real": 121599.9372425714,
-   "var_esp": 121599.9372425714,
+   "var_real": 117686.46110889343,
+   "var_esp": 117686.46110889343,
    "fixo_real": 48677.63311073558,
    "fixo_esp": 48677.63311073558,
-   "custo_real": 170277.57035330698,
-   "custo_esp": 170277.57035330698,
-   "res_real": 37791.20537148703,
-   "res_caixa": 66920.8339729582,
+   "custo_real": 166364.094219629,
+   "custo_esp": 166364.094219629,
+   "res_real": 41704.68150516499,
+   "res_caixa": 70834.31010663616,
    "provisoes_nao_debitadas": 29129.628601471162
   },
   "2029-10": {
@@ -5924,11 +5637,11 @@
    "mes": 10,
    "chave": "2029-10",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -5936,12 +5649,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -5960,17 +5673,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -5996,20 +5702,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -6024,7 +5730,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -6053,14 +5759,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2029-11": {
@@ -6068,11 +5774,11 @@
    "mes": 11,
    "chave": "2029-11",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -6080,12 +5786,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -6104,17 +5810,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -6140,20 +5839,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -6168,7 +5867,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -6197,14 +5896,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2029-12": {
@@ -6212,11 +5911,11 @@
    "mes": 12,
    "chave": "2029-12",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -6224,12 +5923,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -6248,17 +5947,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -6284,20 +5976,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -6312,7 +6004,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -6341,14 +6033,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2030-01": {
@@ -6356,11 +6048,11 @@
    "mes": 1,
    "chave": "2030-01",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -6368,12 +6060,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -6392,17 +6084,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -6428,20 +6113,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -6456,7 +6141,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -6485,14 +6170,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2030-02": {
@@ -6500,11 +6185,11 @@
    "mes": 2,
    "chave": "2030-02",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -6512,12 +6197,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -6536,17 +6221,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -6572,20 +6250,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -6600,7 +6278,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -6629,14 +6307,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2030-03": {
@@ -6644,11 +6322,11 @@
    "mes": 3,
    "chave": "2030-03",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -6656,12 +6334,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -6680,17 +6358,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -6716,20 +6387,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -6744,7 +6415,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -6773,14 +6444,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2030-04": {
@@ -6788,11 +6459,11 @@
    "mes": 4,
    "chave": "2030-04",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -6800,12 +6471,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -6824,17 +6495,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -6860,20 +6524,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -6888,7 +6552,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -6917,14 +6581,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2030-05": {
@@ -6932,11 +6596,11 @@
    "mes": 5,
    "chave": "2030-05",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -6944,12 +6608,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -6968,17 +6632,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -7004,20 +6661,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -7032,7 +6689,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -7061,14 +6718,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2030-06": {
@@ -7076,11 +6733,11 @@
    "mes": 6,
    "chave": "2030-06",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -7088,12 +6745,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -7112,17 +6769,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -7148,20 +6798,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -7176,7 +6826,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -7205,14 +6855,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2030-07": {
@@ -7220,11 +6870,11 @@
    "mes": 7,
    "chave": "2030-07",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -7232,12 +6882,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -7256,17 +6906,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -7292,20 +6935,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -7320,7 +6963,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -7349,14 +6992,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2030-08": {
@@ -7364,11 +7007,11 @@
    "mes": 8,
    "chave": "2030-08",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -7376,12 +7019,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -7400,17 +7043,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -7436,20 +7072,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -7464,7 +7100,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -7493,14 +7129,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2030-09": {
@@ -7508,11 +7144,11 @@
    "mes": 9,
    "chave": "2030-09",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -7520,12 +7156,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -7544,17 +7180,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -7580,20 +7209,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -7608,7 +7237,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -7637,14 +7266,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2030-10": {
@@ -7652,11 +7281,11 @@
    "mes": 10,
    "chave": "2030-10",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -7664,12 +7293,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -7688,17 +7317,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -7724,20 +7346,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -7752,7 +7374,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -7781,14 +7403,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2030-11": {
@@ -7796,11 +7418,11 @@
    "mes": 11,
    "chave": "2030-11",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -7808,12 +7430,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -7832,17 +7454,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -7868,20 +7483,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -7896,7 +7511,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -7925,14 +7540,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2030-12": {
@@ -7940,11 +7555,11 @@
    "mes": 12,
    "chave": "2030-12",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -7952,12 +7567,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -7976,17 +7591,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -8012,20 +7620,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -8040,7 +7648,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -8069,14 +7677,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2031-01": {
@@ -8084,11 +7692,11 @@
    "mes": 1,
    "chave": "2031-01",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -8096,12 +7704,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -8120,17 +7728,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -8156,20 +7757,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -8184,7 +7785,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -8213,14 +7814,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2031-02": {
@@ -8228,11 +7829,11 @@
    "mes": 2,
    "chave": "2031-02",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -8240,12 +7841,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -8264,17 +7865,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -8300,20 +7894,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -8328,7 +7922,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -8357,14 +7951,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2031-03": {
@@ -8372,11 +7966,11 @@
    "mes": 3,
    "chave": "2031-03",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -8384,12 +7978,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -8408,17 +8002,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -8444,20 +8031,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -8472,7 +8059,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -8501,14 +8088,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   },
   "2031-04": {
@@ -8516,11 +8103,11 @@
    "mes": 4,
    "chave": "2031-04",
    "receita_bruta": 208712.0,
-   "receita_liquida": 189927.92,
+   "receita_liquida": 194102.16,
    "receita_real": 208712.0,
    "receita_meta": 60000.0,
-   "ebitda": 38013.48963147473,
-   "margem_contribuicao": 71126.30844147473,
+   "ebitda": 41939.0638939606,
+   "margem_contribuicao": 86659.04000000001,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -8528,12 +8115,12 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 78146.33155852529,
-       "esp": 78146.33155852529,
-       "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+       "real": 78394.99729603941,
+       "esp": 78394.99729603941,
+       "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
        "prov": false,
-       "esp_pct": 0.3744,
-       "real_delta_pct": 0.3744218423402837
+       "esp_pct": 0.3756,
+       "real_delta_pct": 0.3756132723371891
       },
       {
        "cat": "Produtos e insumos (CMV)",
@@ -8552,17 +8139,10 @@
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
-      },
-      {
-       "cat": "Inadimplência 2%",
-       "real": 4174.24,
-       "esp": 4174.24,
-       "nota": "2% da receita bruta",
-       "prov": false
       }
      ],
-     "sub_real": 121975.85155852529,
-     "sub_esp": 121975.85155852529
+     "sub_real": 118050.2772960394,
+     "sub_esp": 118050.2772960394
     },
     {
      "id": "PESSOAL",
@@ -8588,20 +8168,20 @@
     },
     {
      "id": "OCUPACAO",
-     "titulo": "Ocupação — rateio 45,5% do imóvel",
+     "titulo": "Ocupação — rateio do imóvel",
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
        "real": 9038.26881,
        "esp": 9038.26881,
-       "nota": "45,5% do rateio das 2 lojas",
+       "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Trinks + Sults (sistemas)",
        "real": 181.8,
        "esp": 181.8,
-       "nota": "45,5% rateio",
+       "nota": "rateio 2 lojas",
        "prov": false
       }
      ],
@@ -8616,7 +8196,7 @@
        "cat": "Mídia paga",
        "real": 7044.75,
        "esp": 7044.75,
-       "nota": "45,5% rateio · varia por fase",
+       "nota": "rateio · varia por fase",
        "prov": false
       },
       {
@@ -8645,14 +8225,14 @@
      "sub_esp": 25354.590000000004
     }
    ],
-   "var_real": 121975.85155852529,
-   "var_esp": 121975.85155852529,
+   "var_real": 118050.2772960394,
+   "var_esp": 118050.2772960394,
    "fixo_real": 48722.65881,
    "fixo_esp": 48722.65881,
-   "custo_real": 170698.51036852528,
-   "custo_esp": 170698.51036852528,
-   "res_real": 38013.48963147473,
-   "res_caixa": 67233.16963147474,
+   "custo_real": 166772.93610603941,
+   "custo_esp": 166772.93610603941,
+   "res_real": 41939.0638939606,
+   "res_caixa": 71158.7438939606,
    "provisoes_nao_debitadas": 29219.680000000004
   }
  },
@@ -8661,11 +8241,11 @@
   "mes": 9,
   "chave": "2026-09",
   "receita_bruta": 52992.125,
-  "receita_liquida": 48222.83375,
+  "receita_liquida": 49282.67625,
   "receita_real": 52992.125,
   "receita_meta": 60000.0,
-  "ebitda": -8785.147882026602,
-  "margem_contribuicao": 17312.920927973395,
+  "ebitda": -7788.441789351367,
+  "margem_contribuicao": 21256.692499999997,
   "grupos": [
    {
     "id": "VARIAVEL",
@@ -8673,12 +8253,12 @@
     "linhas": [
      {
       "cat": "Comissão sobre produção",
-      "real": 19841.409072026603,
-      "esp": 19841.409072026603,
-      "nota": "37.4% da receita (taxa efetiva ponderada · Trinks BackOffice)",
+      "real": 19904.545479351367,
+      "esp": 19904.545479351367,
+      "nota": "37.6% da receita (taxa efetiva ponderada · Trinks BackOffice)",
       "prov": false,
-      "esp_pct": 0.3744,
-      "real_delta_pct": 0.37442184234028364
+      "esp_pct": 0.3756,
+      "real_delta_pct": 0.3756132723371891
      },
      {
       "cat": "Produtos e insumos (CMV)",
@@ -8697,17 +8277,10 @@
       "prov": true,
       "esp_pct": 0.07,
       "real_pct": 0.07
-     },
-     {
-      "cat": "Inadimplência 2%",
-      "real": 1059.8425,
-      "esp": 1059.8425,
-      "nota": "2% da receita bruta",
-      "prov": false
      }
     ],
-    "sub_real": 30969.7553220266,
-    "sub_esp": 30969.7553220266
+    "sub_real": 29973.049229351367,
+    "sub_esp": 29973.049229351367
    },
    {
     "id": "PESSOAL",
@@ -8733,20 +8306,20 @@
    },
    {
     "id": "OCUPACAO",
-    "titulo": "Ocupação — rateio 45,5% do imóvel",
+    "titulo": "Ocupação — rateio do imóvel",
     "linhas": [
      {
       "cat": "Aluguel + IPTU",
       "real": 9038.26881,
       "esp": 9038.26881,
-      "nota": "45,5% do rateio das 2 lojas",
+      "nota": "rateio 2 lojas",
       "prov": false
      },
      {
       "cat": "Trinks + Sults (sistemas)",
       "real": 181.8,
       "esp": 181.8,
-      "nota": "45,5% rateio",
+      "nota": "rateio 2 lojas",
       "prov": false
      }
     ],
@@ -8761,7 +8334,7 @@
       "cat": "Mídia paga",
       "real": 910.0,
       "esp": 910.0,
-      "nota": "45,5% rateio · varia por fase",
+      "nota": "rateio · varia por fase",
       "prov": false
      },
      {
@@ -8790,40 +8363,40 @@
     "sub_esp": 7439.4487500000005
    }
   ],
-  "var_real": 30969.7553220266,
-  "var_esp": 30969.7553220266,
-  "fixo_real": 30807.517559999997,
-  "fixo_esp": 30807.517559999997,
-  "custo_real": 61777.2728820266,
-  "custo_esp": 61777.2728820266,
-  "res_real": -8785.147882026602,
-  "res_caixa": -1366.250382026601,
+  "var_real": 29973.049229351367,
+  "var_esp": 29973.049229351367,
+  "fixo_real": 30807.51756,
+  "fixo_esp": 30807.51756,
+  "custo_real": 60780.56678935137,
+  "custo_esp": 60780.56678935137,
+  "res_real": -7788.441789351367,
+  "res_caixa": -369.5442893513664,
   "provisoes_nao_debitadas": 7418.897500000001,
-  "res_esp_mesma_receita": -8785.147882026602,
+  "res_esp_mesma_receita": -7788.441789351367,
   "res_esp_na_meta": null,
-  "be_modelo_1loja": 65547.90970212764,
-  "mc_real": 17312.920927973395,
-  "mc_esp": 17312.920927973395
+  "be_modelo_1loja": 70921.86661815799,
+  "mc_real": 21256.692499999997,
+  "mc_esp": 21256.692499999997
  },
  "premissas": {
-  "comissao": 0.3744,
+  "comissao": 0.3756,
   "insumos": 0.12,
   "simples": 0.07,
-  "inadimplencia": 0.02
+  "inadimplencia": 0.0
  },
  "equilibrio": {
   "fatura_hoje": 52992.125,
-  "custo_fixo_mes": 30807.517559999997,
+  "custo_fixo_mes": 30807.51756,
   "cenarios": [
    {
     "nome": "Projetado do Excel",
-    "comissao": 0.3744,
-    "mc": 0.41557815765971634
+    "comissao": 0.3756,
+    "mc": 0.43438672766281095
    },
    {
     "nome": "Se comissão subir para 40%",
     "comissao": 0.4,
-    "mc": 0.38999999999999996
+    "mc": 0.41
    }
   ]
  }
