@@ -1488,6 +1488,15 @@ def _fetch_fb_page(page_id: str, token: str, hoje: date) -> dict[str, Any]:
 
 def _update_periodo(base_periodo: dict[str, Any], novo: dict[str, Any]) -> None:
     """Sobrescreve os campos numericos, preserva `alerta` da base (curado)."""
+    # `_erro` GRUDAVA. Ele so era escrito, nunca apagado: quando a chamada
+    # seguinte dava certo, o dado novo nao trazia a chave e o erro antigo
+    # continuava no arquivo. O erro de 13/09/2026 ("token invalidado porque o
+    # usuario trocou a senha") ficou tres dias convivendo com numeros frescos
+    # ao lado, e todo parecer de Marketing ia continuar anunciando um token
+    # morto que ja tinha sido trocado.
+    if "_erro" not in novo:
+        base_periodo.pop("_erro", None)
+
     for k, v in novo.items():
         if k == "_erro":
             base_periodo["_erro"] = v
