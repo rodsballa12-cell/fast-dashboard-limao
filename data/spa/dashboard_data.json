@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-16T16:59:42-03:00",
+  "gerado_em": "2026-09-16T20:15:41-03:00",
   "hoje": "2026-09-16",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -733,6 +733,11 @@
       "orfaos_fora_extrato_v": 0.0,
       "orfaos_fora_extrato": [
         {
+          "data": "2026-09-16",
+          "valor": 0.0,
+          "cliente": "Laura Armani Santini"
+        },
+        {
           "data": "2026-09-15",
           "valor": 0.0,
           "cliente": "Conceição dos Santos Silva"
@@ -746,11 +751,6 @@
           "data": "2026-09-15",
           "valor": 0.0,
           "cliente": "Jusilene Matos "
-        },
-        {
-          "data": "2026-09-15",
-          "valor": 0.0,
-          "cliente": "Laura Armani Santini"
         },
         {
           "data": "2026-09-15",
@@ -853,7 +853,13 @@
           "trinks_n": 0,
           "matches_n": 0,
           "orfaos_stone": [],
-          "orfaos_trinks": [],
+          "orfaos_trinks": [
+            {
+              "data": "2026-09-16",
+              "valor": 0.0,
+              "cliente": "Laura Armani Santini"
+            }
+          ],
           "diff": 0.0
         },
         "cartao": {
@@ -887,6 +893,11 @@
           "orfaos_stone": [],
           "orfaos_trinks": [
             {
+              "data": "2026-09-16",
+              "valor": 186.0,
+              "cliente": "Laura Armani Santini"
+            },
+            {
               "data": "2026-09-15",
               "valor": 213.0,
               "cliente": "Conceição dos Santos Silva"
@@ -900,11 +911,6 @@
               "data": "2026-09-15",
               "valor": 79.0,
               "cliente": "Jusilene Matos "
-            },
-            {
-              "data": "2026-09-15",
-              "valor": 186.0,
-              "cliente": "Laura Armani Santini"
             },
             {
               "data": "2026-09-15",
@@ -956,6 +962,11 @@
           "orfaos_stone": [],
           "orfaos_trinks": [
             {
+              "data": "2026-09-16",
+              "valor": 186.0,
+              "cliente": "Laura Armani Santini"
+            },
+            {
               "data": "2026-09-15",
               "valor": 213.0,
               "cliente": "Conceição dos Santos Silva"
@@ -969,11 +980,6 @@
               "data": "2026-09-15",
               "valor": 79.0,
               "cliente": "Jusilene Matos "
-            },
-            {
-              "data": "2026-09-15",
-              "valor": 186.0,
-              "cliente": "Laura Armani Santini"
             },
             {
               "data": "2026-09-15",
@@ -1145,6 +1151,11 @@
               "cliente": "Biankarine Silva"
             },
             {
+              "data": "2026-09-16",
+              "valor": 186.0,
+              "cliente": "Laura Armani Santini"
+            },
+            {
               "data": "2026-09-15",
               "valor": 213.0,
               "cliente": "Conceição dos Santos Silva"
@@ -1158,11 +1169,6 @@
               "data": "2026-09-15",
               "valor": 79.0,
               "cliente": "Jusilene Matos "
-            },
-            {
-              "data": "2026-09-15",
-              "valor": 186.0,
-              "cliente": "Laura Armani Santini"
             },
             {
               "data": "2026-09-15",
@@ -1904,6 +1910,12 @@
       "vendas_trinks_apos_v": 0.0,
       "vendas_apos_lista": [
         {
+          "data": "2026-09-16T18:50",
+          "valor": 0.0,
+          "meio": "PIX",
+          "cliente": "Laura Armani Santini"
+        },
+        {
           "data": "2026-09-16T16:21",
           "valor": 0.0,
           "meio": "Maestro/Redeshop",
@@ -1968,12 +1980,6 @@
           "valor": 0.0,
           "meio": "PIX",
           "cliente": "Jusilene Matos "
-        },
-        {
-          "data": "2026-09-15T13:16",
-          "valor": 0.0,
-          "meio": "PIX",
-          "cliente": "Laura Armani Santini"
         },
         {
           "data": "2026-09-15T11:44",
@@ -7898,7 +7904,7 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "16:59",
+          "hora_atual_str": "20:15",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -8119,7 +8125,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-16T16:59:42-03:00",
+    "gerado_em": "2026-09-16T20:15:41-03:00",
     "hoje": "2026-09-16",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -8290,35 +8296,29 @@
     "diario": [
       {
         "tipo": "atencao",
-        "titulo": "Ritmo abaixo do esperado",
-        "texto": "Só 47% da meta às 16h com 4h úteis restantes.",
-        "acao": "Postar story/status no WhatsApp com 'últimas vagas hoje' pode gerar 2-3 walk-ins na última hora."
-      },
-      {
-        "tipo": "info",
-        "titulo": "Picos previstos ainda hoje",
-        "texto": "Base semanal aponta 17h (0.7 clientes/hora), 20h (0.7 clientes/hora) como as próximas horas de fluxo.",
-        "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
-      },
-      {
-        "tipo": "atencao",
         "titulo": "1 profissional(is) sem atendimento hoje",
         "texto": "Beatriz ainda em zero de receita. Se não está em folga, é capacidade ociosa perdida.",
         "acao": "Realocar walk-ins da fila para elas. Se agenda continuar vazia, avaliar reduzir dia de trabalho na próxima semana."
+      },
+      {
+        "tipo": "info",
+        "titulo": "Fechamento do dia",
+        "texto": "Caixa R$ 616,00 · 5 visitas · ticket R$ 123,20 · meta 65% (R$ 329,52 faltou).",
+        "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
       }
     ],
     "semanal": [
       {
         "tipo": "atencao",
         "titulo": "Semana começou em 46% da meta acumulada",
-        "texto": "R$ 2.230,00 contra R$ 4.871,27 de meta nos 3 dias já corridos (R$ -2.641,27).",
+        "texto": "R$ 2.230,00 contra R$ 4.871,28 de meta nos 3 dias já corridos (R$ -2.641,28).",
         "acao": "Ainda dá pra virar: o peso da semana está no fim dela (sexta 19%, sábado 38%). Garantir escala e agenda do fim de semana."
       },
       {
         "tipo": "oportunidade",
-        "titulo": "Ter rende 2.9× Qua",
-        "texto": "Ter: R$ 1.251,00/dia · Qua: R$ 430,00/dia.",
-        "acao": "Reforçar equipe no Ter. No Qua, testar promoção ou reduzir 1 profissional pra cortar custo."
+        "titulo": "Ter rende 1.9× Seg",
+        "texto": "Ter: R$ 1.065,00/dia · Seg: R$ 549,00/dia.",
+        "acao": "Reforçar equipe no Ter. No Seg, testar promoção ou reduzir 1 profissional pra cortar custo."
       }
     ],
     "mensal": [
@@ -8342,8 +8342,8 @@
       },
       {
         "tipo": "oportunidade",
-        "titulo": "Ocupação geral do salão: 7%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 127,36.",
+        "titulo": "Ocupação geral do salão: 6%",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 124,96.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -8381,7 +8381,7 @@
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 113,77. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 113,16. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
