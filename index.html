@@ -490,6 +490,7 @@
       <div id="per-categorias"></div>
       <div id="per-balcao"></div>
       <div id="per-balcao-pessoa"></div>
+      <div id="per-comissao-recepcao"></div>
       <div id="per-heatmap"></div>
       <!-- 2. TRAJETÓRIA -->
       <div id="per-meses"></div>
@@ -1626,6 +1627,104 @@ function renderBalcaoPessoa(container_id, bv, janela, metasFranq, escala){
   </div>`;
 }
 
+// ============= COMISSÃO DA RECEPÇÃO =============
+// A tabela da franqueadora: 5% sobre pacotes, 5% sobre Fast Retoque, 10% sobre
+// produtos, mais um bônus fixo por categoria batida. No alvo, R$ 1.440/mês.
+//
+// SÓ NA ABA MÊS, de propósito. Comissão é paga por mês fechado e o bônus é
+// tudo-ou-nada: mostrar "bônus proporcional da semana" seria inventar uma regra
+// que não existe. As outras abas mostram a venda; esta mostra o que ela paga.
+//
+// Fast Retoque entra como linha da LOJA, não da pessoa — o Trinks não grava
+// quem vendeu um serviço. São R$ 490 dos R$ 1.440 (34%) que hoje não têm como
+// ser atribuídos, e isso é dito no card em vez de ser rateado no chute.
+function renderComissaoRecepcao(container_id, bv, categorias, plano, nrec){
+  const el = document.getElementById(container_id);
+  if(!el){ return; }
+  if(!plano || !plano.por_categoria){ el.innerHTML=''; return; }
+  const pc = plano.por_categoria;
+  const linhas = (bv && bv.por_janela && bv.por_janela.mes) || [];
+  const recep = linhas.filter(l => /recep/i.test(l.funcao || ''));
+  const semNome = linhas.filter(l => !l.identificado && (l.pacotes_v + l.produtos_v) > 0);
+
+  const calc = (cat, valor) => {
+    const d = pc[cat] || {};
+    const alvo = d.faturamento_alvo || 0;
+    const com = valor * (d.comissao_pct || 0) / 100;
+    const bateu = alvo > 0 && valor >= alvo;
+    const bon = bateu ? (d.bonus_ao_bater || 0) : 0;
+    return {alvo, com, bon, bateu, p: alvo>0 ? valor/alvo*100 : 0};
+  };
+
+  const blocos = recep.map(l => {
+    const pac = calc('pacotes', l.pacotes_v);
+    const pro = calc('produtos', l.produtos_v);
+    const ganho = pac.com + pac.bon + pro.com + pro.bon;
+    const teto = (pc.pacotes.faturamento_alvo*pc.pacotes.comissao_pct/100 + pc.pacotes.bonus_ao_bater)
+               + (pc.produtos.faturamento_alvo*pc.produtos.comissao_pct/100 + pc.produtos.bonus_ao_bater);
+    // Bônus é tudo-ou-nada: ou saiu, ou está lá em cinza mostrando o que se perde.
+    const cel_bonus = (cat, c) => {
+      const prev = (pc[cat] || {}).bonus_ao_bater || 0;
+      if(!prev) return '<span style="color:var(--ink-3)">sem bônus</span>';
+      return c.bateu ? `✅ ${brl0(prev)}`
+                     : `<span style="color:var(--ink-3)" title="só ao bater a meta da categoria">${brl0(prev)} se bater</span>`;
+    };
+    const row = (cat, nome, v, c) => `<tr>
+      <td>${nome}</td>
+      <td style="text-align:right">${brl0(v)}</td>
+      <td style="text-align:right;color:var(--ink-3)">${brl0(c.alvo)}</td>
+      <td style="text-align:right" class="${c.p>=100?'up':(c.p>=70?'warn':'dn')}">${pct(c.p)}</td>
+      <td style="text-align:right">${brl0(c.com)}</td>
+      <td style="text-align:center;font-size:11px">${cel_bonus(cat, c)}</td>
+    </tr>`;
+    return `<div style="margin-bottom:14px">
+      <div style="font-weight:600;margin-bottom:4px">${l.nome}
+        <span style="color:var(--ink-3);font-weight:400;font-size:11px">· ${l.funcao}</span></div>
+      <table style="width:100%;min-width:460px">
+        <thead><tr>
+          <th style="text-align:left">categoria</th><th style="text-align:right">faturado</th>
+          <th style="text-align:right">alvo</th><th style="text-align:right">%</th>
+          <th style="text-align:right">comissão</th><th style="text-align:center">bônus</th>
+        </tr></thead>
+        <tbody>
+          ${row('pacotes', 'Pacotes', l.pacotes_v, pac)}
+          ${row('produtos', 'Produtos', l.produtos_v, pro)}
+          <tr style="font-weight:700;background:var(--surface-2)">
+            <td>a receber</td><td colspan="3"></td>
+            <td style="text-align:right;color:var(--accent)">${brl0(ganho)}</td>
+            <td style="text-align:center;color:var(--ink-3);font-size:11px">de ${brl0(teto)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+  }).join('');
+
+  // Fast Retoque: linha da loja, sem dono.
+  const retLoja = ((categorias||{}).fast_retoque || {}).v || 0;
+  const rp = pc.fast_retoque || {};
+  const alvoRetLoja = (rp.faturamento_alvo || 0) * (nrec || 1);
+  const pRet = alvoRetLoja > 0 ? retLoja/alvoRetLoja*100 : 0;
+
+  el.innerHTML = `<div class="card">
+    <h2>💰 Comissão da recepção · mês</h2>
+    <div class="cap">Tabela da franqueadora: <strong>5%</strong> em pacotes e Fast Retoque,
+      <strong>10%</strong> em produtos, mais bônus fixo por categoria batida.
+      No alvo, <strong>${brl0((plano.total_no_alvo||{}).total || 1440)}/mês</strong> por recepcionista.
+      Comissão é de mês fechado — por isso este card só existe na aba Mês.</div>
+    ${blocos || '<div class="insight">Nenhuma pessoa com função "Recepção" vendeu pacote ou produto no mês.</div>'}
+    <div class="insight" style="margin-top:8px">
+      <strong>✂️ Fast Retoque · ${brl0(retLoja)} de ${brl0(alvoRetLoja)} (${pct(pRet)}) — da loja, sem dono.</strong>
+      O Trinks grava quem <em>executou</em> o serviço, não quem vendeu. São
+      <strong>${brl0((rp.faturamento_alvo||0)*(rp.comissao_pct||0)/100 + (rp.bonus_ao_bater||0))}
+      dos ${brl0((plano.total_no_alvo||{}).total || 1440)}</strong> de cada recepcionista que hoje
+      não têm como ser calculados por pessoa. Ratear no chute seria pior que não mostrar.
+      ${semNome.length ? `<br>⚠ <strong>${semNome.map(l=>l.nome).join(', ')}</strong> vendeu
+        ${brl0(semNome.reduce((s,l)=>s+l.pacotes_v+l.produtos_v,0))} e não tem cadastro —
+        sem nome, não entra em nenhuma comissão.` : ''}
+    </div>
+  </div>`;
+}
+
 // ============= NOVOS vs RECORRENTES =============
 function renderNovosRecorr(container_id, nvr, periodo){
   const el = document.getElementById(container_id);
@@ -2680,7 +2779,7 @@ function renderInsights(container_id, titulo_aba, insights){
 function clearPerContainers(){
   ['per-pace','per-kpis','per-ancora','per-meta','per-heatmap',
    'per-meses','per-dia','per-dow','per-sala-wrap',
-   'per-categorias','per-balcao','per-balcao-pessoa','per-ticket-meta','per-rentabilidade',
+   'per-categorias','per-balcao','per-balcao-pessoa','per-comissao-recepcao','per-ticket-meta','per-rentabilidade',
    'per-categoria-native','per-desvio-tabela',
    'per-prof','per-utilizacao','per-hora','per-comissoes','per-insights'
   ].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = ''; });
@@ -2821,6 +2920,7 @@ function renderMensal(data){
     renderCategoriasMeta('per-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm, m.categoria_native, (data.abas.anual||{}).categoria_native, m.pacotes_por_categoria, m.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, m.descontos);
     renderBalcao('per-balcao', m.categorias, (data.abas.anual||{}).categorias, m.kpis, (data.abas.anual||{}).kpis, mf, m.meta.meta/mm, m.meta.dias_restantes);
     renderBalcaoPessoa('per-balcao-pessoa', data.balcao_vendedor, 'mes', mf, m.meta.meta/mm);
+    renderComissaoRecepcao('per-comissao-recepcao', data.balcao_vendedor, m.categorias, (CONFIG||{}).plano_comissao_recepcao, mf.recepcionistas);
   }
 
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes

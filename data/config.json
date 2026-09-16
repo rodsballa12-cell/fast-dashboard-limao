@@ -17,7 +17,7 @@
       "cidade": "São Paulo",
       "trinks_estabelecimento_id": 276461,
       "data_inauguracao": "2026-07-23",
-      "meta_mensal": 60000.00,
+      "meta_mensal": 60000.0,
       "cor_accent": "#F5B800",
       "emoji": "🥂",
       "data_prefix": "",
@@ -47,7 +47,7 @@
       "cidade": "São Paulo",
       "trinks_estabelecimento_id": null,
       "data_inauguracao": "2026-09-25",
-      "meta_mensal": 15000.00,
+      "meta_mensal": 15000.0,
       "_meta_mensal_nota": "Provisória, definida por Rodrigo em 14/09/2026. A oficial da franqueadora sai em outubro/2026 — revisar então.",
       "cor_accent": "#24B3A6",
       "emoji": "🧖",
@@ -64,7 +64,11 @@
         "google_business_location_id": null,
         "google_business_nome": "Fast SPA Limão",
         "google_business_endereco": "Av. Dep. Emílio Carlos, 358 · Limão · São Paulo (mesmo endereço da Escova · sala/andar diferente)",
-        "google_business_categorias": ["Spa", "Salão de beleza", "Estúdio de massagem"],
+        "google_business_categorias": [
+          "Spa",
+          "Salão de beleza",
+          "Estúdio de massagem"
+        ],
         "whatsapp_business_account_id": null,
         "whatsapp_phone_number_id": null,
         "whatsapp_display_name": "Fast Spa Limão",
@@ -77,9 +81,9 @@
   "meta_categoria_nativa_share": {
     "_desc": "Share OFICIAL de cada categoria nativa Trinks sobre a meta de SERVIÇOS (Serviços gerais + Fast Retoque). Sum deve ser ~1.0. Aplicado em todos os períodos: meta_cat_periodo = share × meta_serv_periodo. % de atingimento varia por período conforme cada categoria performa vs esse share. Ajustar quando o mix ideal mudar. Defaults iniciais baseados no mix realizado do ano 2026 até 09/09.",
     "Escova": 0.35,
-    "Unhas": 0.30,
+    "Unhas": 0.3,
     "Maquiagem": 0.13,
-    "Tratamento": 0.10,
+    "Tratamento": 0.1,
     "Retoque": 0.07,
     "Harmonização": 0.03,
     "Penteados": 0.02
@@ -105,7 +109,7 @@
     "itens": [
       {
         "data": "2026-08-29",
-        "valor": 228.00,
+        "valor": 228.0,
         "cliente_contem": "Biankarine",
         "motivo": "PIX feito para conta XP (não passou pelo Stone)",
         "confirmado_em": "2026-09-04"
@@ -248,6 +252,40 @@
         "template": "reativacao_fast_v1",
         "lingua": "pt_BR"
       }
+    }
+  },
+  "plano_comissao_recepcao": {
+    "_desc": "Como a recepcao e remunerada pelas metas de balcao. Comissao e percentual sobre o faturado na categoria; bonus e valor fixo, pago so ao bater a meta da categoria (nao e proporcional).",
+    "_fonte": "Tabela da franqueadora, informada pelo Rodrigo em 16/09/2026.",
+    "_conflito_a_resolver": "O faturamento desta tabela (8.000 + 5.800 + 3.000 = 16.800) NAO bate com metas_franqueadora.por_recepcionista_mensal (7.200 + 4.200 + 1.800 = 13.200). Se a tabela for POR recepcionista, o balcao da loja vira 33.600 e sobram 26.400 para servicos gerais - exatamente os dois numeros de hoje trocados de lugar, o que sugere transposicao em algum momento. Se for da LOJA (as duas somadas), o balcao vira 16.800 e servicos gerais 43.200. Ate o Rodrigo confirmar, o painel segue usando por_recepcionista_mensal para a META e esta tabela so para CALCULAR COMISSAO - que e percentual e nao depende de qual total esta certo.",
+    "por_categoria": {
+      "pacotes": {
+        "faturamento_alvo": 8000,
+        "comissao_pct": 5.0,
+        "bonus_ao_bater": 250
+      },
+      "fast_retoque": {
+        "faturamento_alvo": 5800,
+        "comissao_pct": 5.0,
+        "bonus_ao_bater": 200
+      },
+      "produtos": {
+        "faturamento_alvo": 3000,
+        "comissao_pct": 10.0,
+        "bonus_ao_bater": 0
+      }
+    },
+    "total_no_alvo": {
+      "faturamento": 16800,
+      "comissao": 990,
+      "bonus": 450,
+      "total": 1440
+    },
+    "_atribuivel_por_pessoa": {
+      "pacotes": true,
+      "produtos": true,
+      "fast_retoque": false,
+      "_por_que": "Fast Retoque e servico: o Trinks grava idProfissionalQueRealizouServico (quem executou), nao quem vendeu. Os R$ 490 de comissao+bonus do retoque - 34% do total de R$ 1.440 - nao tem como ser calculados por pessoa com o dado que existe hoje."
     }
   }
 }
