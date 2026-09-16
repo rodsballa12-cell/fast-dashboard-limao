@@ -76,6 +76,27 @@ if (-not (Git-Passo "atualizar o repositorio antes de rodar" @("pull","--rebase"
   $avisoGit = "> [!warning] Nao consegui atualizar o repositorio. Os numeros podem estar atrasados.`n"
 }
 
+# --- Reserva Stone no Excel -------------------------------------------------
+# O extrato Stone chega pelo repositorio; o Excel so existe neste PC. Depois
+# do pull, leva o saldo da Reserva Stone para o rodape da aba Conta_XP, que
+# entra no saldo total da empresa. O script so abre o Excel quando o extrato
+# e novo e pula se a planilha estiver aberta. Falha aqui nunca derruba o
+# cargo: fica no log e a rodada segue. Pedido do Rodrigo em 16/09/2026.
+function Stone-Para-Excel {
+  $anterior = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $py = (Get-Command python -ErrorAction SilentlyContinue).Source
+    if (-not $py) { Registrar "Reserva Stone no Excel: python nao encontrado, pulei."; return }
+    $saidaPy = (& $py (Join-Path $Projeto "scripts\stone_reserva_excel.py") 2>&1 | Out-String).Trim()
+    if ($LASTEXITCODE -ne 0) { Registrar "FALHOU: Reserva Stone no Excel (codigo $LASTEXITCODE). $saidaPy" }
+    else { Registrar "Reserva Stone no Excel: $saidaPy" }
+  } catch {
+    Registrar ("FALHOU: Reserva Stone no Excel. " + $_.Exception.Message)
+  } finally { $ErrorActionPreference = $anterior }
+}
+Stone-Para-Excel
+
 # 'claude' pode nao estar no PATH de uma tarefa agendada.
 $claude = (Get-Command claude -ErrorAction SilentlyContinue).Source
 if (-not $claude) {

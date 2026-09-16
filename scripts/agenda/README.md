@@ -106,3 +106,19 @@ nenhum — ensina a ignorar.
 
 **Se em duas semanas você não estiver abrindo os briefings, desligue.** O
 problema não terá sido a automação, e sim o ritual que ela tentou substituir.
+
+## O que mais roda junto: Reserva Stone no Excel
+
+Logo depois do `git pull`, toda rodada chama `scripts/stone_reserva_excel.py`.
+Ele lê `data/stone_extrato.csv` com o mesmo processador do painel e grava o
+**principal aplicado na Reserva Stone** no rodapé da aba `Conta_XP` do Excel —
+linha que entra no saldo total da empresa.
+
+- Só abre o Excel quando chegou extrato Stone novo; senão registra "sem novidade".
+- Se a planilha estiver aberta, pula e tenta na próxima rodada.
+- Grava pelo próprio Excel, nunca pelo openpyxl (que apagaria o valor
+  calculado das fórmulas que o `gerar_financeiro.py` lê).
+- Falha nunca derruba o cargo: vai para o `_execucoes.log` e a rodada segue.
+
+Para rodar na hora, sem esperar a agenda: `python scripts/stone_reserva_excel.py`.
+
