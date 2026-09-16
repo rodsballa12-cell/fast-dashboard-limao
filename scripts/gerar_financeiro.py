@@ -95,7 +95,7 @@ LINHAS_RELATIVAS = {
     8:  ("marketing_local",      "(-) Marketing local mínimo"),
     9:  ("margem_contribuicao",  "(=) Margem Contribuição"),
     10: ("aluguel_iptu",         "(-) Aluguel + IPTU (rateio)"),
-    11: ("trinks_sults",         "(-) Trinks/Sults"),
+    11: ("trinks_sults",         "(-) Sistemas, utilidades, seguro e outros"),
     12: ("pessoal_clt",          "(-) Pessoal CLT"),
     13: ("beleza_boost",         "(-) Beleza Boost gestão"),
     14: ("midia",                "(-) Mídia"),
@@ -157,10 +157,14 @@ def monta_mes(ws, col, ano, mes, linha_titulo, meta_mes, comissao_pct, loja_labe
     receita_liquida = v["receita_liquida"]
     impostos   = abs(v["impostos"])
     inad       = abs(v["inadimplencia"])
-    comissoes_excel = abs(v["comissoes"])
-    comissoes  = receita_bruta * comissao_pct
-    delta_comissao = comissoes - comissoes_excel
-    ebitda     = v["ebitda"] - delta_comissao
+    # Desde 16/09 a DRE do Excel já traz a comissão certa: mês fechado = tabela
+    # oficial × produção real; projeção = premissa revisada (aba Premissas,
+    # bloco 10). Antes o gerador trocava a comissão por receita × taxa ponderada
+    # sobre a receita bruta inteira, o que superestimava (a tabela vale sobre
+    # serviços, não sobre pacote vendido e produto).
+    comissoes  = abs(v["comissoes"])
+    ebitda     = v["ebitda"]
+    comissao_pct = comissoes / receita_bruta if receita_bruta > 0 else comissao_pct
     royalty    = abs(v["royalty"])
     cmv        = abs(v["cmv"])
     mkt_local  = abs(v["marketing_local"])
@@ -181,11 +185,11 @@ def monta_mes(ws, col, ano, mes, linha_titulo, meta_mes, comissao_pct, loja_labe
         {"id": "VARIAVEL", "titulo": "Custos variáveis — acompanham a venda",
          "linhas": [
              _row("Comissão sobre produção", comissoes, comissoes,
-                  f"{comissao_pct*100:.1f}% da receita (taxa efetiva ponderada · Trinks BackOffice)", False,
+                  f"{comissao_pct*100:.1f}% da receita (tabela oficial do Trinks sobre serviços)", False,
                   {"esp_pct": round(comissao_pct, 4), "real_delta_pct": comissoes/max(rec,1)}),
              _row("Produtos e insumos (CMV)", cmv, cmv,
-                  f"12% da receita ({loja_label})", False,
-                  {"esp_pct": 0.12, "real_delta_pct": cmv/max(rec,1)}),
+                  f"{cmv/max(rec,1)*100:.1f}% da receita ({loja_label})", False,
+                  {"esp_pct": round(cmv/max(rec,1), 4), "real_delta_pct": cmv/max(rec,1)}),
              _row("Impostos sobre venda — Simples", impostos, impostos,
                   "7% da receita · provisionado por competência", True,
                   {"esp_pct": 0.07, "real_pct": 0.07}),
@@ -202,8 +206,8 @@ def monta_mes(ws, col, ano, mes, linha_titulo, meta_mes, comissao_pct, loja_labe
          "linhas": [
              _row("Aluguel + IPTU", aluguel, aluguel,
                   "rateio 2 lojas"),
-             _row("Trinks + Sults (sistemas)", trinks, trinks,
-                  "rateio 2 lojas"),
+             _row("Sistemas, utilidades, seguro e outros", trinks, trinks,
+                  "rateio 2 lojas · inclui saídas ainda sem natureza"),
          ]},
         {"id": "COMERCIAL", "titulo": "Comercial e franquia",
          "linhas": [
@@ -347,7 +351,10 @@ def _empacotar(meses, loja_label, meta_mes, caixa_conta=0.0, a_receber_stone=0.0
             "mc_esp": principal["margem_contribuicao"],
         },
         "premissas": {
-            "comissao": None, "insumos": 0.12, "simples": 0.07, "inadimplencia": 0.0,
+            # lidas do mês principal da DRE (premissas revisadas em 16/09 · aba Premissas, bloco 10)
+            "comissao": round(principal["grupos"][0]["linhas"][0]["real"] / rec_p, 4) if rec_p else None,
+            "insumos": round(principal["grupos"][0]["linhas"][1]["real"] / rec_p, 4) if rec_p else None,
+            "simples": 0.07, "inadimplencia": 0.0,
         },
         "equilibrio": {
             "fatura_hoje": rec_p,
@@ -359,6 +366,22 @@ def _empacotar(meses, loja_label, meta_mes, caixa_conta=0.0, a_receber_stone=0.0
             ],
         },
     }
+
+
+def _ler_caixa(wb):
+    """Conta corrente e Reserva Stone do rodapé da Conta_XP, pelo rótulo (o rodapé anda quando o razão cresce)."""
+    ws = wb["Conta_XP"]
+    cc = reserva = 0.0
+    for r in range(ws.max_row, 1, -1):
+        rot = _norm_txt(ws.cell(r, 2).value)
+        v = ws.cell(r, 5).value
+        if not isinstance(v, (int, float)):
+            continue
+        if not cc and rot.startswith("conta corrente xp"):
+            cc = float(v)
+        if not reserva and rot.startswith("stone"):
+            reserva = float(v)
+    return round(cc, 2), round(reserva, 2)
 
 
 def _detectar_titulo(ws, chaves_norm):
@@ -445,14 +468,19 @@ def main():
     _print_resumo("consol", meses_cons)
 
     # Empacotar e salvar
+    # Caixa lido do rodapé da Conta_XP pelo rótulo (antes: fixo no código com os valores de 28/08).
+    # A comissão NÃO é mais sobrescrita pela taxa ponderada: a DRE já traz a real/revisada.
+    caixa_cc, reserva_stone = _ler_caixa(wb)
+    # "a receber" é o que a Stone ainda vai liquidar (vem do extrato processado), não a Reserva aplicada
+    try:
+        with open(dash_escova, encoding="utf-8") as fh:
+            a_receber = float(((json.load(fh).get("stone") or {}).get("nao_conciliado") or {}).get("a_receber_d30") or 0.0)
+    except (OSError, ValueError):
+        a_receber = 0.0
     d_escova = _empacotar(meses_escova, "FAST ESCOVA LIMÃO", META_MES_ESCOVA,
-                          caixa_conta=5060.93, a_receber_stone=20742.90)
-    d_escova["premissas"]["comissao"] = round(com_escova, 4)
-    d_escova["equilibrio"]["cenarios"][0]["comissao"] = round(com_escova, 4)
+                          caixa_conta=caixa_cc, a_receber_stone=round(a_receber, 2))
 
     d_spa = _empacotar(meses_spa, "FAST SPA LIMÃO", META_MES_SPA)
-    d_spa["premissas"]["comissao"] = round(com_spa, 4)
-    d_spa["equilibrio"]["cenarios"][0]["comissao"] = round(com_spa, 4)
     d_spa["_pre_abertura"] = True
     d_spa["_data_inauguracao"] = ((CFG.get("unidades") or {}).get("spa") or {}).get("data_inauguracao")
     d_spa["_fonte_receita"] = "Projeção Excel (Rodrigo) — Trinks estabelecimentoId ainda não existe."
@@ -460,8 +488,8 @@ def main():
     d_cons = _empacotar(meses_cons, "FAST LIMÃO CONSOLIDADO", META_MES_ESCOVA + META_MES_SPA,
                         caixa_conta=d_escova["kpis"]["caixa_conta"],
                         a_receber_stone=d_escova["kpis"]["a_receber_stone"])
-    d_cons["premissas"]["comissao"] = round((com_escova + com_spa)/2, 4)
-    d_cons["equilibrio"]["cenarios"][0]["comissao"] = round((com_escova + com_spa)/2, 4)
+    d_cons["premissas"]["comissao"] = (round(sum(m["grupos"][0]["linhas"][0]["real"] for m in [meses_cons.get(d_cons["mes_principal_chave"])] if m) / max(d_cons["resultado"]["receita_real"], 1), 4)
+                                       if d_cons.get("mes_principal_chave") in meses_cons else d_escova["premissas"]["comissao"])
 
     for path, payload, tag in [
         (OUT_ESCOVA, d_escova, "escova"),
