@@ -43,6 +43,65 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+# ---------------------------------------------------------------------------
+# REGISTRO DE METRICA RECUSADA
+#
+# Por que existe: em 15/09/2026 uma auditoria achou 40 falhas por execucao que
+# nao apareciam em lugar nenhum. post_impressions e post_impressions_unique
+# morreram na depreciacao do Facebook de 15/06/2026, e profile_activity saiu da
+# lista aceita do Instagram. As tres falhavam em 100% das chamadas, todo dia,
+# nas duas unidades — e o run terminava verde.
+#
+# Duas causas somadas:
+#   1. a falha era classificada [INFO] e enterrada num log de 360 linhas
+#   2. o valor default era 0, entao "nao medido" virava "medido, deu zero"
+#
+# O segundo e o perigoso: ausencia de medicao vestida de medicao. O painel
+# mostrava "0 cliques no perfil em 30 dias" e "0 de alcance em 9 posts", e
+# qualquer leitor — pessoa ou agente — le isso como fato sobre o negocio.
+#
+# Agora metrica recusada vale None, fica registrada aqui, sai como [WARN] no
+# resumo do run e viaja dentro do proprio payload em _nao_medido.
+_METRICA_RECUSADA: dict[str, dict[str, Any]] = {}
+
+
+def registrar_recusa(metrica: str, erro: Exception | str, contexto: str = "") -> None:
+    """Anota que a API recusou esta metrica. Guarda a mensagem INTEIRA.
+
+    Sem truncar de proposito: a Graph API responde "metric[0] must be one of
+    the following values: reach, follower_count, ..." — ou seja, ela entrega de
+    graca a lista do que ainda vale. O codigo antigo cortava em 100 caracteres
+    e jogava a resposta fora, justamente a parte que diria como consertar.
+    """
+    reg = _METRICA_RECUSADA.setdefault(metrica, {"vezes": 0, "erro": "", "contextos": []})
+    reg["vezes"] += 1
+    if not reg["erro"]:
+        reg["erro"] = str(erro)
+    if contexto and contexto not in reg["contextos"] and len(reg["contextos"]) < 5:
+        reg["contextos"].append(contexto)
+
+
+def limpar_recusas() -> dict[str, Any]:
+    """Devolve o resumo desta unidade e zera, pra proxima comecar limpa."""
+    r = resumo_recusas()
+    _METRICA_RECUSADA.clear()
+    return r
+
+
+def resumo_recusas() -> dict[str, Any]:
+    """Bloco pro payload + linhas pro log. Vazio quando nada foi recusado."""
+    if not _METRICA_RECUSADA:
+        return {}
+    return {
+        "metricas": sorted(_METRICA_RECUSADA),
+        "detalhe": {m: {"vezes": r["vezes"], "erro_api": r["erro"][:400],
+                        "onde": r["contextos"]}
+                    for m, r in _METRICA_RECUSADA.items()},
+        "nota": ("Estas metricas foram RECUSADAS pela API e valem null no payload, "
+                 "nao zero. Nao leia ausencia de medicao como resultado zero. "
+                 "erro_api costuma listar os nomes que ainda valem."),
+    }
+
 try:
     # requests deixa o codigo mais limpo se disponivel (workflow instala).
     import requests  # type: ignore
@@ -890,9 +949,13 @@ def _fetch_ig_insights_range(ig_user_id: str, token: str, since: date, until: da
     period=day (time_series diario); profile_views + profile_activity +
     website_clicks precisam metric_type=total_value.
     """
-    agg: dict[str, int] = {
-        "reach": 0, "profile_views": 0, "novos_seguidores": 0,
-        "profile_activity": 0, "website_clicks": 0,
+    # reach e novos_seguidores comecam em 0 porque sao SOMAS de uma serie
+    # diaria: zero ali significa "somei e deu zero". As tres de total_value
+    # comecam em None porque sao leitura unica: se a chamada nao voltar, nao
+    # houve medicao — e None e a unica forma honesta de dizer isso.
+    agg: dict[str, Any] = {
+        "reach": 0, "novos_seguidores": 0,
+        "profile_views": None, "profile_activity": None, "website_clicks": None,
     }
     since_ts = int(datetime.combine(since, datetime.min.time(), tzinfo=BRT).timestamp())
     until_ts = int(datetime.combine(until, datetime.max.time(), tzinfo=BRT).timestamp())
@@ -946,7 +1009,7 @@ def _fetch_ig_insights_range(ig_user_id: str, token: str, since: date, until: da
                 if isinstance(v, (int, float)):
                     agg[metric_name] = int(v)
         except Exception as e:
-            print(f"  [INFO] IG {metric_name} {since}..{until} indisponivel: {str(e)[:100]}", file=sys.stderr)
+            registrar_recusa(f"IG:{metric_name}", e, f"{since}..{until}")
 
     return agg
 
@@ -1303,7 +1366,14 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
     # Meta v22+ rejeita o batch inteiro se QUALQUER metric for invalida.
     # Chama uma por uma pra descobrir quais funcionam e nao perder tudo.
     # Ordem: primeiro batch com todas; se 400, chama isolada por metric.
+    # post_views primeiro: e o substituto oficial de post_impressions desde a
+    # depreciacao de 15/06/2026. As duas antigas ficam na lista como legado —
+    # se a conta ainda responder por elas, o dado entra; se nao, a recusa fica
+    # registrada em vez de virar zero. Views e impressions nao sao a mesma
+    # coisa (views conta conteudo efetivamente exibido), entao o campo de saida
+    # diz qual das duas alimentou o numero.
     metric_names = [
+        "post_views",
         "post_impressions",
         "post_impressions_unique",
         "post_reactions_by_type_total",
@@ -1311,8 +1381,10 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
     ]
     for p in posts[:30]:
         pid = p.get("id")
-        ins = {"post_impressions": 0, "post_impressions_unique": 0,
-               "post_reactions_by_type_total": {}, "post_activity_by_action_type": {}}
+        ins: dict[str, Any] = {
+            "post_views": None, "post_impressions": None,
+            "post_impressions_unique": None,
+            "post_reactions_by_type_total": {}, "post_activity_by_action_type": {}}
 
         # 1) tentativa em batch
         batch_ok = False
@@ -1352,9 +1424,12 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
                         if name in ins:
                             ins[name] = v if isinstance(v, dict) else int(v or 0)
                 except Exception as e:
-                    # so loga se for a primeira metric (pra nao poluir com 4x/post)
-                    if metric == metric_names[0]:
-                        print(f"  [INFO] FB post {pid} metric={metric} falhou: {str(e)[:100]}", file=sys.stderr)
+                    # Registra TODAS, nao so a primeira. O filtro antigo existia
+                    # pra nao poluir o log com 4 linhas por post — mas escondia
+                    # metade das falhas: post_impressions_unique morreu junto com
+                    # post_impressions e nunca apareceu em lugar nenhum. O
+                    # registrador agrega por metrica, entao 20 posts viram 1 linha.
+                    registrar_recusa(f"FB:{metric}", e, f"post {pid}")
 
         msg = (p.get("message") or "").strip().replace("\n", " ")
         attach = (((p.get("attachments") or {}).get("data") or [{}])[0]).get("media_type", "-")
@@ -1367,8 +1442,12 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
             "id": pid,
             "data": (p.get("created_time") or "")[:10],
             "tipo": attach,
-            "impressions": ins["post_impressions"] if isinstance(ins["post_impressions"], int) else 0,
-            "reach": ins["post_impressions_unique"] if isinstance(ins["post_impressions_unique"], int) else 0,
+            "views": ins["post_views"] if isinstance(ins["post_views"], int) else None,
+            "impressions": ins["post_impressions"] if isinstance(ins["post_impressions"], int) else None,
+            "reach": ins["post_impressions_unique"] if isinstance(ins["post_impressions_unique"], int) else None,
+            "_fonte_alcance": ("post_views" if isinstance(ins["post_views"], int)
+                               else "post_impressions" if isinstance(ins["post_impressions"], int)
+                               else None),
             "atividade_total": int(activity_total),
             "atividade_por_tipo": activity if isinstance(activity, dict) else {},
             "reactions": reactions,
@@ -1379,7 +1458,9 @@ def _fetch_fb_posts_detalhes(page_id: str, page_token: str, hoje: date) -> list[
         })
     # ordena por engajamento (mais robusto que reach — Meta bloqueia reach em
     # paginas <100 fas). Fallback pra reach se paginha maior.
-    saida.sort(key=lambda x: (x.get("engajamento_total", 0), x.get("reach", 0)), reverse=True)
+    # None vira 0 SO na chave de ordenacao — no payload continua None.
+    saida.sort(key=lambda x: (x.get("engajamento_total") or 0,
+                              x.get("views") or x.get("reach") or 0), reverse=True)
     return saida
 
 
@@ -1869,6 +1950,31 @@ def _build_consolidado(escova: dict[str, Any], spa: dict[str, Any]) -> dict[str,
         "facebook_page": cons_fp,
         "google_business": cons_gb,
     })
+
+    # Diagnostico do consolidado = uniao das duas unidades, sempre reescrito.
+    # Reescrever importa: cons vem de _load_base, que preserva o arquivo
+    # anterior. Sem apagar, um _nao_medido de ontem ficaria preso no painel da
+    # holding avisando de metrica que ja voltou a funcionar — o mesmo tipo de
+    # texto velho que a mensagem do Google Business ja tinha causado.
+    uniao: dict[str, Any] = {}
+    for origem in (escova, spa):
+        det = ((origem.get("_nao_medido") or {}).get("detalhe") or {})
+        for m, d in det.items():
+            alvo = uniao.setdefault(m, {"vezes": 0, "erro_api": d.get("erro_api", ""), "onde": []})
+            alvo["vezes"] += d.get("vezes", 0)
+            for o in d.get("onde", []):
+                if len(alvo["onde"]) < 5:
+                    alvo["onde"].append(o)
+    if uniao:
+        cons["_nao_medido"] = {
+            "metricas": sorted(uniao),
+            "detalhe": uniao,
+            "nota": ("Estas metricas foram RECUSADAS pela API e valem null no payload, "
+                     "nao zero. Soma das duas unidades."),
+        }
+    else:
+        cons.pop("_nao_medido", None)
+
     return cons
 
 
@@ -1944,6 +2050,7 @@ def main() -> int:
     print(f"[refresh_midias] hoje BRT = {hoje.isoformat()} · unidades = {alvo}")
 
     rc = 0
+    recusas: dict[str, Any] = {}
     for u in alvo:
         meta = UNIDADES[u]
         ids = cfg.get("unidades", {}).get(meta["config_key"], {}).get("midia_ids", {}) or {}
@@ -1961,6 +2068,17 @@ def main() -> int:
             print(f"[{u}] FALHA no merge: {e}", file=sys.stderr)
             rc = 1
             continue
+
+        # Diagnostico VIAJA COM O DADO. Log some no run seguinte; o payload
+        # e o que o painel e os cargos leem. Sem a chave quando nada foi
+        # recusado — para nao deixar residuo de uma execucao anterior dizendo
+        # que algo esta quebrado depois de consertado.
+        diag = limpar_recusas()
+        if diag:
+            depois["_nao_medido"] = diag
+            recusas[u] = diag
+        else:
+            depois.pop("_nao_medido", None)
 
         if args.dry_run:
             print(_diff_resumo(antes, depois, u))
@@ -1984,6 +2102,23 @@ def main() -> int:
         except Exception as e:
             print(f"[consolidado] FALHA: {e}", file=sys.stderr)
             rc = 1
+
+    # RESUMO DAS METRICAS RECUSADAS
+    #
+    # Sai por ultimo e como [WARN] para nao morrer no meio de um log de 360
+    # linhas, que foi como 40 falhas por execucao passaram dias despercebidas.
+    # Nao muda o codigo de saida: metrica morta e manutencao de API, nao motivo
+    # pra derrubar um refresh que trouxe todo o resto.
+    if recusas:
+        print("\n[WARN] Metricas recusadas pela API nesta execucao:", file=sys.stderr)
+        for u, diag in recusas.items():
+            for m, det in sorted(diag["detalhe"].items()):
+                print(f"  [WARN] [{u}] {m} — recusada {det['vezes']}x",
+                      file=sys.stderr)
+                print(f"         API respondeu: {det['erro_api']}", file=sys.stderr)
+        print("  [WARN] Estes campos valem null no payload, NAO zero. "
+              "A mensagem da API costuma listar os nomes que ainda valem.",
+              file=sys.stderr)
 
     return rc
 

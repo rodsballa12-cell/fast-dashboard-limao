@@ -125,6 +125,29 @@ confundir os dois caminhos. Nas duas o painel estava fresco: a rotina tinha
 puxado dado novo da Meta horas antes, e o Supermetrics, quando testado de
 verdade, devolveu gasto dia a dia das duas contas sem cache.
 
+### Passo 1b — o que NÃO foi medido neste refresh
+
+**Leia `_nao_medido` antes de citar qualquer número.** O bloco existe quando a
+Graph API recusou alguma métrica; lista quais, quantas vezes, e a resposta
+literal da API (que costuma dizer quais nomes ainda valem).
+
+Campo recusado vale **`null`**, nunca `0`. No painel aparece como “—”.
+
+Isso foi descoberto em 15/09/2026 numa auditoria: `post_impressions` e
+`post_impressions_unique` morreram na depreciação do Facebook de 15/06/2026, e
+`profile_activity` saiu da lista aceita do Instagram. **40 falhas por execução,
+todo dia, nas duas unidades, e o run terminava verde** — porque a falha era
+classificada `[INFO]` e o valor default era `0`.
+
+Enquanto isso o painel afirmava *"0 cliques nos botões do perfil em 30 dias"* e
+*"0 de alcance em 9 posts"*. Números falsos sobre o negócio, com cara de número
+verdadeiro.
+
+**A regra:** nunca escreva um parecer dizendo que uma métrica está em zero sem
+antes conferir se ela está em `_nao_medido`. Ausência de medição e resultado
+zero exigem ações opostas — uma é consertar o pipeline, a outra é consertar a
+operação.
+
 ### Passo 2 — a conta está entregando?
 
 Depois de confirmar que o pipeline está fresco, confira `meta_ads.serie_diaria_30d`.

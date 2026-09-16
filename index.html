@@ -5788,14 +5788,19 @@ function renderMidias(){
       ${(() => {
         // orgânico expandido: reach 30d, profile_activity, website_clicks, ultimo_post
         const ext = org30.reach || ig.alcance_organico_30d || 0;
-        const pa = org30.profile_activity || 0;
-        const wc = org30.website_clicks || 0;
+        // null != 0. A Meta recusa metricas depreciadas e o refresh grava null;
+        // pintar isso como "0" ja fez o painel afirmar "ninguem clicou nos
+        // botoes do perfil em 30 dias" quando o certo era "nao foi medido".
+        const pa = org30.profile_activity;
+        const wc = org30.website_clicks;
+        const naoMedido = (MID._nao_medido || {}).metricas || [];
+        const semMedida = m => naoMedido.some(x => x.endsWith(':' + m));
         const ultimo = ig.ultimo_post || {};
         const dias_sem = ultimo.dias_sem_postar;
-        return (ext || pa || wc || ultimo.data) ? `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;font-size:12px">
+        return (ext || pa || wc || ultimo.data || naoMedido.length) ? `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;font-size:12px">
           <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Reach orgânico 30d</div><div style="font-weight:700;font-size:22px">${nfmt(ext)}</div><div style="color:var(--ink-3);font-size:10.5px">${nfmt(Math.round(ext/30))}/dia médio</div></div>
-          <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Cliques em botões do perfil 30d</div><div style="font-weight:700;font-size:22px">${nfmt(pa)}</div><div style="color:var(--ink-3);font-size:10.5px">chamada · e-mail · rota</div></div>
-          <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Cliques no site (bio)</div><div style="font-weight:700;font-size:22px">${nfmt(wc)}</div><div style="color:var(--ink-3);font-size:10.5px">últimos 30d</div></div>
+          <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Cliques em botões do perfil 30d</div><div style="font-weight:700;font-size:22px"${pa==null?' title="A Meta não mede mais esta métrica nesta versão da API — não é zero, é ausência de medição."':''}>${nOpt(pa)}</div><div style="color:var(--ink-3);font-size:10.5px">${pa==null?(semMedida('profile_activity')?'API recusou a métrica':'sem medição'):'chamada · e-mail · rota'}</div></div>
+          <div style="background:var(--surface-2);border-radius:8px;padding:12px"><div style="color:var(--ink-3);font-size:10.5px">Cliques no site (bio)</div><div style="font-weight:700;font-size:22px"${wc==null?' title="Não medido nesta execução — não confundir com zero clique."':''}>${nOpt(wc)}</div><div style="color:var(--ink-3);font-size:10.5px">${wc==null?(semMedida('website_clicks')?'API recusou a métrica':'sem medição'):'últimos 30d'}</div></div>
           <div style="background:${dias_sem!=null && dias_sem>7?'rgba(239,68,68,.08)':'var(--surface-2)'};border-radius:8px;padding:12px${dias_sem!=null && dias_sem>7?';border-left:3px solid #ef4444':''}"><div style="color:${dias_sem!=null && dias_sem>7?'#ef4444':'var(--ink-3)'};font-size:10.5px">Último post</div><div style="font-weight:700;font-size:18px">${ultimo.data?fmtDate(ultimo.data):'—'}</div><div style="color:var(--ink-3);font-size:10.5px">${dias_sem!=null?`${dias_sem} dia(s) sem postar`:'—'}</div></div>
         </div>` : '';
       })()}
@@ -5860,6 +5865,17 @@ function renderMidias(){
   // paralelos onde a plataforma pequena (54 seg) toma o mesmo espaco visual da
   // grande (1825 seg).
   document.querySelectorAll('.fb-page-card').forEach(e => e.remove());
+  // Aviso de metrica recusada. Mesmo padrao dos vizinhos: remove a versao
+  // anterior antes de injetar, senao cada re-render empilha um card novo.
+  document.querySelectorAll('.metrica-recusada-card').forEach(e => e.remove());
+  if(igBox && MID._nao_medido && (MID._nao_medido.metricas||[]).length){
+    const nm = MID._nao_medido;
+    igBox.insertAdjacentHTML('afterend', `<div class="metrica-recusada-card" style="margin:14px 0;padding:10px 12px;background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;border-radius:6px;font-size:11.5px;color:var(--ink-2)">
+      <strong>⚠️ ${nm.metricas.length} métrica(s) recusada(s) pela API neste refresh</strong> — aparecem como “—”, não como zero.
+      <div style="margin-top:6px;font-size:10.5px;color:var(--ink-3)">${nm.metricas.map(m=>`<code>${m}</code>`).join(' · ')}</div>
+      <div style="margin-top:6px;font-size:10.5px;color:var(--ink-3)">${nm.nota||''}</div>
+    </div>`);
+  }
   if(MID.facebook_page && MID.facebook_page.conectado){
     const fbp = MID.facebook_page.organico_30d || {};
     const fbPost = MID.facebook_page.posts_30d_detalhes || [];
@@ -5904,7 +5920,7 @@ function renderMidias(){
           <td style="padding:5px">${fmtDate(p.data)}</td>
           <td style="padding:5px"><span style="background:#1877F2;color:#fff;font-size:9px;padding:1px 5px;border-radius:6px">${(p.tipo||'-').toUpperCase()}</span></td>
           <td style="padding:5px;font-size:10.5px">${p.texto_curto||'—'}</td>
-          <td style="text-align:right;padding:5px">${nfmt(p.reach||0)}</td>
+          <td style="text-align:right;padding:5px"${(p.views==null&&p.reach==null)?' title="post_impressions foi depreciado pela Meta em 15/06/2026. Sem alcance medido para este post — não é zero."':''}>${nOpt(p.views != null ? p.views : p.reach)}</td>
           <td style="text-align:right;padding:5px">${nfmt(p.reactions_total||0)}</td>
           <td style="text-align:right;padding:5px;font-weight:700;color:#1877F2">${nfmt(p.engajamento_total||0)}</td>
           <td style="text-align:center;padding:5px">${p.url?`<a href="${p.url}" target="_blank" style="color:var(--accent);text-decoration:none">🔗</a>`:'—'}</td>
