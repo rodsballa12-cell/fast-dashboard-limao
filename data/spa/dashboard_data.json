@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-17T13:51:48-03:00",
+  "gerado_em": "2026-09-17T17:12:23-03:00",
   "hoje": "2026-09-17",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -760,6 +760,11 @@
       "orfaos_fora_extrato_v": 0.0,
       "orfaos_fora_extrato": [
         {
+          "data": "2026-09-17",
+          "valor": 0.0,
+          "cliente": "Jessica Ribeiro"
+        },
+        {
           "data": "2026-09-16",
           "valor": 0.0,
           "cliente": "Laura Armani Santini"
@@ -880,7 +885,13 @@
           "trinks_n": 0,
           "matches_n": 0,
           "orfaos_stone": [],
-          "orfaos_trinks": [],
+          "orfaos_trinks": [
+            {
+              "data": "2026-09-17",
+              "valor": 0.0,
+              "cliente": "Jessica Ribeiro"
+            }
+          ],
           "diff": 0.0
         },
         "cartao": {
@@ -908,11 +919,16 @@
           "stone_liquido": 0.0,
           "stone_tarifa": 0.0,
           "stone_n": 0,
-          "trinks_valor": 750.0,
-          "trinks_n": 6,
+          "trinks_valor": 803.0,
+          "trinks_n": 7,
           "matches_n": 0,
           "orfaos_stone": [],
           "orfaos_trinks": [
+            {
+              "data": "2026-09-17",
+              "valor": 53.0,
+              "cliente": "Jessica Ribeiro"
+            },
             {
               "data": "2026-09-16",
               "valor": 186.0,
@@ -944,7 +960,7 @@
               "cliente": "MONICA MARINE"
             }
           ],
-          "diff": -750.0
+          "diff": -803.0
         },
         "cartao": {
           "stone_recebido": 0.0,
@@ -977,11 +993,16 @@
           "stone_liquido": 2134.13,
           "stone_tarifa": 13.87,
           "stone_n": 19,
-          "trinks_valor": 4351.0,
-          "trinks_n": 39,
+          "trinks_valor": 4404.0,
+          "trinks_n": 40,
           "matches_n": 19,
           "orfaos_stone": [],
           "orfaos_trinks": [
+            {
+              "data": "2026-09-17",
+              "valor": 53.0,
+              "cliente": "Jessica Ribeiro"
+            },
             {
               "data": "2026-09-16",
               "valor": 186.0,
@@ -1083,7 +1104,7 @@
               "cliente": "Lucas de Pinho Garcia"
             }
           ],
-          "diff": -2203.0
+          "diff": -2256.0
         },
         "cartao": {
           "stone_recebido": 8008.99,
@@ -1161,8 +1182,8 @@
           "stone_liquido": 11950.79,
           "stone_tarifa": 77.21,
           "stone_n": 95,
-          "trinks_valor": 14459.0,
-          "trinks_n": 115,
+          "trinks_valor": 14512.0,
+          "trinks_n": 116,
           "matches_n": 94,
           "orfaos_stone": [],
           "orfaos_trinks": [
@@ -1170,6 +1191,11 @@
               "data": "2026-08-29",
               "valor": 228.0,
               "cliente": "Biankarine Silva"
+            },
+            {
+              "data": "2026-09-17",
+              "valor": 53.0,
+              "cliente": "Jessica Ribeiro"
             },
             {
               "data": "2026-09-16",
@@ -1272,7 +1298,7 @@
               "cliente": "Lucas de Pinho Garcia"
             }
           ],
-          "diff": -2431.0
+          "diff": -2484.0
         },
         "cartao": {
           "stone_recebido": 21507.32,
@@ -1931,6 +1957,12 @@
       "vendas_trinks_apos_v": 0.0,
       "vendas_apos_lista": [
         {
+          "data": "2026-09-17T14:14",
+          "valor": 0.0,
+          "meio": "PIX",
+          "cliente": "Jessica Ribeiro"
+        },
+        {
           "data": "2026-09-17T13:18",
           "valor": 0.0,
           "meio": "Visa Electron",
@@ -2223,12 +2255,6 @@
           "valor": 0.0,
           "meio": "Visa",
           "cliente": "Ladjane Gomes Lukue"
-        },
-        {
-          "data": "2026-09-12T12:43",
-          "valor": 0.0,
-          "meio": "PIX",
-          "cliente": "Michele Cristine Martins"
         }
       ],
       "horas_desatualizado": 0.0
@@ -8008,7 +8034,7 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "13:51",
+          "hora_atual_str": "17:12",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -8231,7 +8257,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-17T13:51:48-03:00",
+    "gerado_em": "2026-09-17T17:12:23-03:00",
     "hoje": "2026-09-17",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -8422,19 +8448,12 @@
     }
   },
   "insights": {
-    "diario": [
-      {
-        "tipo": "info",
-        "titulo": "Picos previstos ainda hoje",
-        "texto": "Base semanal aponta 15h (0.8 clientes/hora), 16h (0.8 clientes/hora) como as próximas horas de fluxo.",
-        "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
-      }
-    ],
+    "diario": [],
     "semanal": [
       {
         "tipo": "atencao",
         "titulo": "Semana abaixo da meta",
-        "texto": "Projeção R$ 5.236,00 (46%). Gap de R$ 2.042,95/dia para os 3 dias restantes.",
+        "texto": "Projeção R$ 5.328,75 (47%). Gap de R$ 2.012,12/dia para os 3 dias restantes.",
         "acao": "Ativar campanha WhatsApp pras top 20 clientes AGORA — retorno médio 3-4 walk-ins no fim de semana."
       },
       {
@@ -8448,25 +8467,25 @@
       {
         "tipo": "critico",
         "titulo": "Mês projeta ABAIXO de 80% da meta",
-        "texto": "Projeção R$ 42.020,16 (70%). Ritmo R$ 1.400,67/dia vs necessário R$ 2.684,95/dia. Gap: R$ 1.284,28/dia.",
+        "texto": "Projeção R$ 42.119,53 (70%). Ritmo R$ 1.403,98/dia vs necessário R$ 2.681,16/dia. Gap: R$ 1.277,18/dia.",
         "acao": "Restam 14 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
       },
       {
         "tipo": "atencao",
         "titulo": "Retenção baixa (36% recorrentes)",
-        "texto": "97 novos vs 54 recorrentes. Novos gastam R$ 13.846,30, recorrentes R$ 7.426,15.",
+        "texto": "99 novos vs 55 recorrentes. Novos gastam R$ 14.130,30, recorrentes R$ 7.479,15.",
         "acao": "Loja abriu há pouco — normal ter muitos novos. Prioridade: fazer o cliente novo voltar. Cartão fidelidade + mensagem 20 dias após primeira visita costuma trazer 30% de volta."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos = 1.8% do caixa (R$ 413,45). Se chegasse a 8%, seriam +R$ 1.379,41/mês.",
+        "texto": "Produtos = 1.8% do caixa (R$ 413,45). Se chegasse a 8%, seriam +R$ 1.383,65/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 6%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 125,30.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 123,29.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -8504,7 +8523,7 @@
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 113,37. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 112,84. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
@@ -8518,7 +8537,7 @@
       {
         "tipo": "atencao",
         "titulo": "Extrato Stone parado em 09-09 (8 dias atrás)",
-        "texto": "19 PIX de R$ 2.168,00 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
+        "texto": "20 PIX de R$ 2.221,00 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
         "acao": "Exportar o extrato Stone atualizado e colocar em data/stone_extrato.csv. Antes disso, não vale ligar pra cliente nenhuma."
       },
       {
