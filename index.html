@@ -489,8 +489,6 @@
       <div id="per-ticket-meta"></div>
       <div id="per-categorias"></div>
       <div id="per-balcao"></div>
-      <div id="per-balcao-pessoa"></div>
-      <div id="per-comissao-recepcao"></div>
       <div id="per-heatmap"></div>
       <!-- 2. TRAJETÓRIA -->
       <div id="per-meses"></div>
@@ -1451,6 +1449,152 @@ function renderDensidadeDow(container_id, dd){
 //
 // Preço médio vem do ANO, não do período: o mês pode ter zero venda de uma
 // categoria (e aí não há preço) e três vendas atípicas não podem virar régua.
+// ============= BALCÃO · UM CARD SÓ (16/09/2026) =============
+// Consolida os 3 cards antigos (Balcão-loja + Balcão-pessoa + Comissão) num
+// UNICO card, na tentativa de facilitar leitura mobile:
+//   · TABELA por pessoa (nome, funcao, pac, prod, total, %meta, comissao, bonus)
+//   · RODAPE da loja: Fast Retoque (sem dono) + attach rate + o que falta
+// Colunas de comissao/bonus so aparecem na aba Mes (regra de pagamento fechada).
+function renderBalcaoUnificado(container_id, bv, cats, catsAno, kpisPeriodo, kpisAno, metasFranq, escala, janela, plano, diasRestantes){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  const franq = metasFranq || {};
+  const catmes = franq.categorias_mensal || {};
+  const porRec = franq.por_recepcionista_mensal || {};
+  const nrec = franq.recepcionistas || 1;
+  const esc = escala || 1;
+  const C = cats || {}, A = catsAno || {};
+  const ehMes = janela === 'mes';
+  const pc = (plano && plano.por_categoria) ? plano.por_categoria : null;
+
+  if(!catmes.pacotes && !catmes.fast_retoque && !catmes.produtos){ el.innerHTML=''; return; }
+
+  // === TOTAIS DA LOJA (rodape) ===
+  const defs = [
+    {k:'pacotes',      nome:'Pacotes',      emoji:'🎁'},
+    {k:'fast_retoque', nome:'Fast Retoque', emoji:'✂️'},
+    {k:'produtos',     nome:'Produtos',     emoji:'🧴'},
+  ];
+  let metaUnPeriodo = 0, feitoUn = 0, metaUnMes = 0;
+  const totLoja = defs.map(r => {
+    const ano = A[r.k] || {v:0,n:0};
+    const preco = ano.n > 0 ? ano.v / ano.n : 0;
+    const metaMesUn = preco > 0 ? (catmes[r.k]||0) / preco : 0;
+    const metaUn = metaMesUn * esc;
+    const feito = (C[r.k]||{}).n || 0;
+    const valor = (C[r.k]||{}).v || 0;
+    const faltam = Math.max(0, metaUn - feito);
+    metaUnPeriodo += metaUn; feitoUn += feito; metaUnMes += metaMesUn;
+    const p = metaUn > 0 ? feito/metaUn*100 : 0;
+    return {...r, preco, metaUn, feito, valor, p, faltam};
+  });
+  const atendPer = (kpisPeriodo||{}).atend_fin || 0;
+  const ka = kpisAno || {};
+  const atendMes = (ka.dias_op > 0) ? (ka.atend_fin / ka.dias_op) * 30 : 0;
+  const attachAtual = atendPer > 0 ? feitoUn / atendPer : 0;
+  const attachAlvo  = atendMes > 0 ? metaUnMes / atendMes : 0;
+  const umAcada  = attachAtual > 0 ? 1/attachAtual : 0;
+  const umAcadaA = attachAlvo  > 0 ? 1/attachAlvo  : 0;
+  const porDia = (diasRestantes && diasRestantes > 0)
+    ? Math.max(0, metaUnPeriodo - feitoUn) / diasRestantes / nrec : 0;
+
+  // === TABELA POR PESSOA ===
+  const linhas = (bv && bv.por_janela && bv.por_janela[janela]) || [];
+  const ehRecepcao = l => /recep/i.test(l.funcao || '');
+  const naoIdent = linhas.filter(l => !l.identificado);
+  // Meta pessoal (só pacote + produto — retoque nao rastreavel por pessoa)
+  const metaPessoal = ((porRec.pacotes||0) + (porRec.produtos||0)) * esc;
+
+  const calcCom = (cat, valor) => {
+    if(!pc) return null;
+    const d = pc[cat] || {};
+    const alvo = d.faturamento_alvo || 0;
+    const com = valor * (d.comissao_pct || 0) / 100;
+    const bateu = alvo > 0 && valor >= alvo;
+    const bon = bateu ? (d.bonus_ao_bater || 0) : 0;
+    return {alvo, com, bon, bateu, prev: d.bonus_ao_bater || 0};
+  };
+
+  const trPessoas = linhas.map(l => {
+    const alvo = ehRecepcao(l) ? metaPessoal : 0;
+    const p = alvo > 0 ? l.total_v/alvo*100 : 0;
+    const cor = p >= 100 ? 'up' : (p >= 70 ? 'warn' : 'dn');
+    // Colunas mensal-only (comissao + bonus)
+    let comissaoCel = '', bonusCel = '';
+    if(ehMes && ehRecepcao(l) && pc){
+      const pac = calcCom('pacotes', l.pacotes_v);
+      const pro = calcCom('produtos', l.produtos_v);
+      const totCom = (pac?.com || 0) + (pac?.bon || 0) + (pro?.com || 0) + (pro?.bon || 0);
+      comissaoCel = `<td style="text-align:right;font-weight:600;color:var(--accent)">${brl0(totCom)}</td>`;
+      const bonusVisual = [];
+      if(pac?.prev) bonusVisual.push(pac.bateu ? `✅ pac ${brl0(pac.prev)}` : `<span style="color:var(--ink-3)">pac ${brl0(pac.prev)}?</span>`);
+      if(pro?.prev) bonusVisual.push(pro.bateu ? `✅ prod ${brl0(pro.prev)}` : `<span style="color:var(--ink-3)">prod ${brl0(pro.prev)}?</span>`);
+      bonusCel = `<td style="text-align:center;font-size:10.5px">${bonusVisual.join(' · ') || '—'}</td>`;
+    } else if(ehMes){
+      comissaoCel = `<td style="text-align:right;color:var(--ink-3);font-size:11px">—</td>`;
+      bonusCel = `<td style="text-align:center;color:var(--ink-3);font-size:11px">—</td>`;
+    }
+    return `<tr>
+      <td style="white-space:nowrap">${l.identificado ? '' : '⚠ '}<strong>${l.nome}</strong>
+        <div style="color:var(--ink-3);font-size:10.5px">${l.funcao || '—'}</div></td>
+      <td style="text-align:right">${l.pacotes_n || '·'}<div style="color:var(--ink-3);font-size:10.5px">${l.pacotes_v ? brl0(l.pacotes_v) : ''}</div></td>
+      <td style="text-align:right">${l.produtos_n || '·'}<div style="color:var(--ink-3);font-size:10.5px">${l.produtos_v ? brl0(l.produtos_v) : ''}</div></td>
+      <td style="text-align:right;font-weight:600">${brl0(l.total_v)}</td>
+      <td style="text-align:right" class="${alvo>0?cor:''}">${alvo>0 ? pct(p) : '·'}</td>
+      ${comissaoCel}${bonusCel}
+    </tr>`;
+  }).join('');
+
+  // Fast Retoque loja (rodape)
+  const retLoja = totLoja.find(x=>x.k==='fast_retoque');
+  const rp = (pc && pc.fast_retoque) || {};
+  const alvoRetLoja = (rp.faturamento_alvo || 0) * nrec;
+  const pRet = alvoRetLoja > 0 ? retLoja.valor/alvoRetLoja*100 : 0;
+
+  el.innerHTML = `<div class="card">
+    <h2>🧾 Balcão · vendas da recepção${ehMes ? ' + comissão' : ''}</h2>
+    <div class="cap">O que a recepção vendeu no período — pacote e produto, por pessoa
+      (o Trinks grava <strong>quem vendeu</strong> em cada linha). Meta pessoal só vale
+      pra função <strong>Recepção</strong> (${brl0(metaPessoal)}/período: ${brl0((porRec.pacotes||0)*esc)} pac + ${brl0((porRec.produtos||0)*esc)} prod).
+      Venda de quem está na cadeira aparece como bônus, não meta.
+      ${ehMes ? ' A coluna comissão sai só na aba Mês (regra de pagamento é mês fechado).' : ''}
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;min-width:520px">
+        <thead><tr>
+          <th style="text-align:left">quem vendeu</th>
+          <th style="text-align:right">🎁 pac</th>
+          <th style="text-align:right">🧴 prod</th>
+          <th style="text-align:right">total</th>
+          <th style="text-align:right" title="só para função Recepção">% meta</th>
+          ${ehMes ? '<th style="text-align:right" title="5% pac + 10% prod (regra franqueadora)">comissão</th><th style="text-align:center">bônus</th>' : ''}
+        </tr></thead>
+        <tbody>${trPessoas || `<tr><td colspan="${ehMes?7:5}" style="color:var(--ink-3);padding:16px;text-align:center">Sem venda registrada no período.</td></tr>`}</tbody>
+        <tfoot>
+          <tr style="border-top:2px solid var(--border);background:var(--surface-2);font-weight:600">
+            <td>TOTAL LOJA <span style="color:var(--ink-3);font-weight:400;font-size:11px">— inclui ✂️ Fast Retoque (${retLoja.feito}un · ${brl0(retLoja.valor)}) sem dono</span></td>
+            <td style="text-align:right">${totLoja.find(x=>x.k==='pacotes').feito}</td>
+            <td style="text-align:right">${totLoja.find(x=>x.k==='produtos').feito}</td>
+            <td style="text-align:right">${brl0(totLoja.reduce((s,x)=>s+x.valor,0))}</td>
+            <td colspan="${ehMes?3:1}" style="text-align:right;color:var(--ink-3);font-size:11px">
+              ${totLoja.map(x => `${x.emoji} ${x.feito}/${x.metaUn.toFixed(x.metaUn<10?1:0)} (${pct(x.p)})`).join(' · ')}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="insight" style="margin-top:12px">
+      <strong>Régua do dia:</strong> hoje sai <strong>1 venda a cada ${umAcada ? umAcada.toFixed(1) : '—'} clientes</strong>${atendPer ? ` (${feitoUn} em ${atendPer})` : ''}.
+      Modelo pede <strong>1 a cada ${umAcadaA ? umAcadaA.toFixed(1) : '—'}</strong>.
+      ${porDia > 0 ? ` <strong>Falta ${(metaUnPeriodo - feitoUn).toFixed(0)} vendas em ${diasRestantes}d = ${porDia.toFixed(1)}/rec/dia.</strong>` : ''}
+      ${ehMes ? `<br><strong>✂️ Fast Retoque</strong>: ${brl0(retLoja.valor)} de ${brl0(alvoRetLoja)} (${pct(pRet)}) — da loja, sem dono. O Trinks grava quem <em>executou</em>, não quem vendeu; são ${brl0((rp.faturamento_alvo||0)*(rp.comissao_pct||0)/100 + (rp.bonus_ao_bater||0))} de comissão que não têm como ratear por pessoa.` : ''}
+      ${naoIdent.length ? `<br>⚠ <strong>${naoIdent.length} vendedor(es) sem cadastro:</strong> ${naoIdent.map(l => `${l.nome} (${brl0(l.total_v)})`).join(', ')} — preencher em <code>data/prof_overrides.json</code>.` : ''}
+    </div>
+  </div>`;
+}
+
+// LEGACY: mantidas as 3 funcoes antigas pra retrocompatibilidade caso outro
+// consumidor as chame; nao sao mais chamadas do painel principal.
 function renderBalcao(container_id, cats, catsAno, kpisPeriodo, kpisAno, metasFranq, escala, diasRestantes){
   const el = document.getElementById(container_id);
   if(!el) return;
@@ -2779,7 +2923,7 @@ function renderInsights(container_id, titulo_aba, insights){
 function clearPerContainers(){
   ['per-pace','per-kpis','per-ancora','per-meta','per-heatmap',
    'per-meses','per-dia','per-dow','per-sala-wrap',
-   'per-categorias','per-balcao','per-balcao-pessoa','per-comissao-recepcao','per-ticket-meta','per-rentabilidade',
+   'per-categorias','per-balcao','per-ticket-meta','per-rentabilidade',
    'per-categoria-native','per-desvio-tabela',
    'per-prof','per-utilizacao','per-hora','per-comissoes','per-insights'
   ].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = ''; });
@@ -2810,8 +2954,7 @@ function renderAnual(data){
     const mm = mf.meta_mensal_total || 60000;
     const esc = (a.meta.meta||0) / mm;
     renderCategoriasMeta('per-categorias','2026',a.categorias,a.meta.meta||0,k.caixa,a.meta.projecao||0, mf, esc, a.categoria_native, a.categoria_native, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.pacotes_por_categoria, a.pacotes_sem_categoria_v, a.descontos);
-    renderBalcao('per-balcao', a.categorias, a.categorias, k, k, mf, esc);
-    renderBalcaoPessoa('per-balcao-pessoa', data.balcao_vendedor, 'ano', mf, esc);
+    renderBalcaoUnificado('per-balcao', data.balcao_vendedor, a.categorias, a.categorias, k, k, mf, esc, 'ano', (CONFIG||{}).plano_comissao_recepcao);
   }
 
   // Trajetória mensal · enxuta (4 colunas: Mês, Caixa, Atend, Ticket) + linha de subtotal.
@@ -2918,9 +3061,7 @@ function renderMensal(data){
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
     renderCategoriasMeta('per-categorias','mês',m.categorias,m.meta.meta,m.meta.realizado,m.meta.projecao, mf, m.meta.meta/mm, m.categoria_native, (data.abas.anual||{}).categoria_native, m.pacotes_por_categoria, m.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, m.descontos);
-    renderBalcao('per-balcao', m.categorias, (data.abas.anual||{}).categorias, m.kpis, (data.abas.anual||{}).kpis, mf, m.meta.meta/mm, m.meta.dias_restantes);
-    renderBalcaoPessoa('per-balcao-pessoa', data.balcao_vendedor, 'mes', mf, m.meta.meta/mm);
-    renderComissaoRecepcao('per-comissao-recepcao', data.balcao_vendedor, m.categorias, (CONFIG||{}).plano_comissao_recepcao, mf.recepcionistas);
+    renderBalcaoUnificado('per-balcao', data.balcao_vendedor, m.categorias, (data.abas.anual||{}).categorias, m.kpis, (data.abas.anual||{}).kpis, mf, m.meta.meta/mm, 'mes', (CONFIG||{}).plano_comissao_recepcao, m.meta.dias_restantes);
   }
 
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
@@ -2956,8 +3097,7 @@ function renderSemanal(data){
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
     renderCategoriasMeta('per-categorias','semana',s.categorias,s.meta.meta,s.meta.realizado,s.meta.projecao, mf, s.meta.meta/mm, s.categoria_native, (data.abas.anual||{}).categoria_native, s.pacotes_por_categoria, s.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, s.descontos);
-    renderBalcao('per-balcao', s.categorias, (data.abas.anual||{}).categorias, s.kpis, (data.abas.anual||{}).kpis, mf, s.meta.meta/mm, s.meta.dias_restantes);
-    renderBalcaoPessoa('per-balcao-pessoa', data.balcao_vendedor, 'semana', mf, s.meta.meta/mm);
+    renderBalcaoUnificado('per-balcao', data.balcao_vendedor, s.categorias, (data.abas.anual||{}).categorias, s.kpis, (data.abas.anual||{}).kpis, mf, s.meta.meta/mm, 'semana', (CONFIG||{}).plano_comissao_recepcao, s.meta.dias_restantes);
   }
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
@@ -2990,8 +3130,7 @@ function renderDiario(data){
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
     renderCategoriasMeta('per-categorias','hoje',d.categorias,d.meta.meta,d.meta.realizado,d.meta.projecao, mf, d.meta.meta/mm, d.categoria_native, (data.abas.anual||{}).categoria_native, d.pacotes_por_categoria, d.pacotes_sem_categoria_v, (data.abas.anual||{}).pacotes_por_categoria, (data.abas.anual||{}).pacotes_sem_categoria_v, d.descontos);
-    renderBalcao('per-balcao', d.categorias, (data.abas.anual||{}).categorias, d.kpis, (data.abas.anual||{}).kpis, mf, d.meta.meta/mm);
-    renderBalcaoPessoa('per-balcao-pessoa', data.balcao_vendedor, 'dia', mf, d.meta.meta/mm);
+    renderBalcaoUnificado('per-balcao', data.balcao_vendedor, d.categorias, (data.abas.anual||{}).categorias, d.kpis, (data.abas.anual||{}).kpis, mf, d.meta.meta/mm, 'dia', (CONFIG||{}).plano_comissao_recepcao);
   }
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora HOJE', 'sinal em tempo real do mix — dá pra empurrar serviço mais rentável no restante do dia', d.rentabilidade_hora || []);
 
