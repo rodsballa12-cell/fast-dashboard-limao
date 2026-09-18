@@ -279,6 +279,16 @@ def analisar(agend, transac, ini: date, fim: date):
     pac_v = pac_n = 0
     prod_v = prod_n = 0
     serv_v = serv_n = 0
+    # Rankings por SKU + por prof executor de venda de produto/pacote.
+    # Trinks devolve nome, valorUnitario, quantidade e IdProfissionalQueRealizouAVenda
+    # em cada item de produtos/pacotes. Antes era so somado em prod_v/pac_v —
+    # sem visibilidade de qual produto vende mais e quem vende.
+    ranking_prod_sku = defaultdict(lambda: {"n": 0, "v": 0.0})     # {nome: {n, v}}
+    ranking_pac_sku = defaultdict(lambda: {"n": 0, "v": 0.0})      # {nome: {n, v}}
+    prof_prod_v = defaultdict(float)     # {prof_id: valor produtos vendidos}
+    prof_prod_n = defaultdict(int)       # {prof_id: qtd itens produtos}
+    prof_pac_v = defaultdict(float)      # {prof_id: valor pacotes vendidos}
+    prof_pac_n = defaultdict(int)
     # Fast Retoque: subset de serviços com meta específica da franqueadora.
     # Continua contando dentro de serv_v (pra compat) mas também separado.
     fast_retoque_v = 0.0; fast_retoque_n = 0
@@ -322,8 +332,17 @@ def analisar(agend, transac, ini: date, fim: date):
             parcelas_agg[(nome, parc)]["v"] += v
         for p in (t.get("pacotes") or []):
             q = int(p.get("quantidade") or 1)
-            pac_v += float(p.get("valorUnitario") or 0) * q
+            v_pac = float(p.get("valorUnitario") or 0) * q
+            pac_v += v_pac
             pac_n += q
+            _nome = (p.get("nome") or "").strip()
+            if _nome:
+                ranking_pac_sku[_nome]["n"] += q
+                ranking_pac_sku[_nome]["v"] += v_pac
+            _prof_venda = p.get("IdProfissionalQueRealizouAVenda")
+            if _prof_venda:
+                prof_pac_v[_prof_venda] += v_pac
+                prof_pac_n[_prof_venda] += q
             # Tenta classificar o pacote numa categoria nativa Trinks pelo nome
             # (o Trinks não devolve categoria explícita pro pacote, só o nome tipo
             # "4 MÃOS + 2 PÉS"). Se casar, distribui em pacotes_por_categoria.
@@ -345,8 +364,17 @@ def analisar(agend, transac, ini: date, fim: date):
                 pacotes_por_categoria[_cat_pac] += float(p.get("valorUnitario") or 0) * q
         for p in (t.get("produtos") or []):
             q = int(p.get("quantidade") or 1)
-            prod_v += float(p.get("valorUnitario") or 0) * q
+            v_prd = float(p.get("valorUnitario") or 0) * q
+            prod_v += v_prd
             prod_n += q
+            _nome = (p.get("nome") or "").strip()
+            if _nome:
+                ranking_prod_sku[_nome]["n"] += q
+                ranking_prod_sku[_nome]["v"] += v_prd
+            _prof_venda = p.get("IdProfissionalQueRealizouAVenda")
+            if _prof_venda:
+                prof_prod_v[_prof_venda] += v_prd
+                prof_prod_n[_prof_venda] += q
         for s in (t.get("servicos") or []):
             preco_s = float(s.get("preco") or 0)
             nome_s = s.get("nome") or ""
@@ -752,6 +780,34 @@ def analisar(agend, transac, ini: date, fim: date):
         "ranking_prof_total_n": ranking_prof_total_n,
         "ranking_prof_executor": ranking_prof_executor,
         "ranking_serv": ranking_serv,
+        # Rankings de SKU (produto e pacote) — quais vendem mais no periodo.
+        # Enriquecidos com nome do prof que efetuou a venda quando disponivel.
+        "ranking_produtos": sorted(
+            [{"nome": k, "n": v["n"], "v": brl_round(v["v"]),
+              "ticket_medio": brl_round(v["v"]/max(v["n"],1))}
+             for k, v in ranking_prod_sku.items()],
+            key=lambda x: -x["v"]
+        ),
+        "ranking_pacotes": sorted(
+            [{"nome": k, "n": v["n"], "v": brl_round(v["v"]),
+              "ticket_medio": brl_round(v["v"]/max(v["n"],1))}
+             for k, v in ranking_pac_sku.items()],
+            key=lambda x: -x["v"]
+        ),
+        # Prof que mais vende produtos/pacotes (upsell champions). Nome resolvido
+        # via prof_map_global (agora via analisar._prof_id_nome_cache).
+        "upsell_produtos": sorted(
+            [{"nome": (getattr(analisar, "_prof_id_nome_cache", {}) or {}).get(pid) or (getattr(analisar, "_prof_id_nome_cache", {}) or {}).get(str(pid)) or f"ID {pid}",
+              "prof_id": pid, "n": prof_prod_n[pid], "v": brl_round(prof_prod_v[pid])}
+             for pid in prof_prod_v],
+            key=lambda x: -x["v"]
+        ),
+        "upsell_pacotes": sorted(
+            [{"nome": (getattr(analisar, "_prof_id_nome_cache", {}) or {}).get(pid) or (getattr(analisar, "_prof_id_nome_cache", {}) or {}).get(str(pid)) or f"ID {pid}",
+              "prof_id": pid, "n": prof_pac_n[pid], "v": brl_round(prof_pac_v[pid])}
+             for pid in prof_pac_v],
+            key=lambda x: -x["v"]
+        ),
         "rentabilidade_hora": rent_hora,
         "clientes_top": top_cli,
         "descontos": brl_round(descontos),
@@ -1077,12 +1133,15 @@ def main():
     print(f"[fetch] transacoes merged: {len(transac)} total")
 
     # === CLIENTES LISTA · cache 12h (base muda pouco durante o dia) ===
+    # incluirEtiquetas=true: cada cliente vem com etiquetasAssociadas populado
+    # (segmentacao manual do BackOffice: VIP, aniversariante, etc). Custo zero
+    # de req extra — mesma chamada, campo adicional.
     if _cache_valido(CLIENTES_LISTA_CACHE, TTL_CLI_LISTA_HORAS):
         clientes = _load_cache(CLIENTES_LISTA_CACHE)
         print(f"[fetch] clientes: {len(clientes)} (cache local · <{TTL_CLI_LISTA_HORAS}h)")
     else:
-        print("[fetch] clientes...")
-        clientes = list(t.paginate("/v1/clientes"))
+        print("[fetch] clientes (com etiquetas)...")
+        clientes = list(t.paginate("/v1/clientes", {"incluirEtiquetas": "true"}))
         print(f"  {len(clientes)} clientes")
         _save_cache(CLIENTES_LISTA_CACHE, clientes)
 
@@ -1157,6 +1216,33 @@ def main():
         if nome and preco > 0:
             tabela_precos[nome] = {"preco": preco, "duracao": s.get("duracaoEmMinutos") or 0,
                                     "categoria": (s.get("categoria") or {}).get("nome") if isinstance(s.get("categoria"), dict) else s.get("categoria")}
+
+    # === PRODUTOS CATÁLOGO · cache 7d (mesma cadencia dos servicos) ===
+    # Descoberto no probe: /v1/produtos retorna 169 SKUs cadastrados.
+    # Cachear pra enriquecer ranking_produtos com categoria + preco tabela.
+    PROD_CACHE = DATA_UNIT / "produtos_cache.json"
+    produtos_catalogo = []
+    if _cache_valido(PROD_CACHE, TTL_CATALOGO_HORAS):
+        produtos_catalogo = _load_cache(PROD_CACHE)
+        print(f"[fetch] produtos catalogo: {len(produtos_catalogo)} (cache · <{TTL_CATALOGO_HORAS}h)")
+    else:
+        print("[fetch] produtos catalogo...")
+        try:
+            produtos_catalogo = list(t.paginate("/v1/produtos"))
+            _save_cache(PROD_CACHE, produtos_catalogo)
+            print(f"  {len(produtos_catalogo)} produtos no catálogo")
+        except Exception as e:
+            print(f"  [warn] /v1/produtos falhou: {e}")
+
+    produtos_tabela = {}   # nome_normalizado → {preco, categoria, id}
+    for p in produtos_catalogo:
+        nome = (p.get("nome") or "").strip()
+        if not nome: continue
+        produtos_tabela[nome] = {
+            "id": p.get("id"),
+            "preco": float(p.get("preco") or p.get("valor") or 0),
+            "categoria": ((p.get("categoria") or {}).get("nome") if isinstance(p.get("categoria"), dict) else p.get("categoria")) or "",
+        }
 
     # === COMISSÕES · /v1/profissionais/comissoes ===
     # Endpoint existe (200 OK) mas está sem cadastro no Trinks hoje (totalRecords=0).
@@ -1233,6 +1319,8 @@ def main():
     bairro_map = {}       # {id: bairro}
     obs_map = {}          # {id: observacoes} · alergias, preferências
     email_map = {}
+    etiquetas_map = {}    # {id: [etiqueta1, etiqueta2]} · segmentacao manual BackOffice
+    etiquetas_ctr = Counter()  # freq das etiquetas na base ativa
     for c in clientes:
         cid = c.get("id")
         if not cid: continue
@@ -1294,6 +1382,21 @@ def main():
         # email
         em = c.get("email") or det.get("email")
         if em: email_map[cid] = em
+        # etiquetasAssociadas — vem do listing quando incluirEtiquetas=true;
+        # tambem cai pro detalhes_cache. Cada etiqueta pode ser string ou dict
+        # {id, nome}. Normaliza pra lista de strings limpas.
+        raw_etq = c.get("etiquetasAssociadas") or det.get("etiquetasAssociadas") or []
+        etqs = []
+        for e in raw_etq:
+            if isinstance(e, str) and e.strip():
+                etqs.append(e.strip())
+            elif isinstance(e, dict):
+                _n = (e.get("nome") or e.get("descricao") or "").strip()
+                if _n: etqs.append(_n)
+        if etqs:
+            etiquetas_map[cid] = etqs
+            for _e in etqs:
+                etiquetas_ctr[_e] += 1
 
     # === PROFS HISTÓRICAS (removidas do BackOffice) ===
     # /v1/profissionais lista só ativas/inativas. Profs completamente
@@ -1736,6 +1839,8 @@ def main():
         "n_alerta_churn": len(churn_candidatos),
         "n_aniv_14d": len(aniversariantes),
         "n_obs_vip": len(obs_alertas),
+        "n_com_etiqueta": len(etiquetas_map),
+        "etiquetas_distintas": len(etiquetas_ctr),
     }
 
     # === Observações por agendamento (finalizados) — VIP notes agregadas ===
@@ -2529,6 +2634,14 @@ def main():
             "desvio_tabela": desvio_tabela[:30],
             "n_com_desvio": len(desvio_tabela),
         },
+        "catalogo_produtos": {
+            "n_total": len(produtos_tabela),
+            # Amostra: top 30 por preco (referencia visual, nao ranking de vendas)
+            "top_preco": sorted(
+                [{"nome": n, **d} for n, d in produtos_tabela.items() if d.get("preco",0) > 0],
+                key=lambda x: -x.get("preco", 0)
+            )[:30],
+        },
         "stone": stone_data,
         "auditoria_cancelados": {
             "n_com_valor": len(canc_com_valor),
@@ -2562,6 +2675,10 @@ def main():
                 "ranking_prof_total_n": a_anual.get("ranking_prof_total_n", 0),
                 "ranking_prof_executor": a_anual.get("ranking_prof_executor", []),
                 "ranking_serv": a_anual["ranking_serv"],
+                "ranking_produtos": a_anual.get("ranking_produtos", []),
+                "ranking_pacotes": a_anual.get("ranking_pacotes", []),
+                "upsell_produtos": a_anual.get("upsell_produtos", []),
+                "upsell_pacotes": a_anual.get("upsell_pacotes", []),
                 "meios_pagamento": a_anual["meios_pagamento"], "descontos": a_anual["descontos"],
                 "clientes_top": a_anual["clientes_top"],
                 "cadeiras_utilizacao": a_anual["cadeiras_utilizacao"],
@@ -2577,6 +2694,7 @@ def main():
                 "seg_canal": seg_canal,
                 "seg_genero": seg_genero,
                 "seg_bairro": seg_bairro,
+                "seg_etiquetas": [{"nome": k, "n": v} for k, v in etiquetas_ctr.most_common()],
                 "obs_alertas": obs_alertas[:30],
                 "obs_agend_alertas": obs_agend_alertas[:30],
                 "clientes_snapshot": clientes_snapshot,
@@ -2594,6 +2712,10 @@ def main():
                 "ranking_prof_total_n": a_mensal.get("ranking_prof_total_n", 0),
                 "ranking_prof_executor": a_mensal.get("ranking_prof_executor", []),
                 "ranking_serv": a_mensal["ranking_serv"],
+                "ranking_produtos": a_mensal.get("ranking_produtos", []),
+                "ranking_pacotes": a_mensal.get("ranking_pacotes", []),
+                "upsell_produtos": a_mensal.get("upsell_produtos", []),
+                "upsell_pacotes": a_mensal.get("upsell_pacotes", []),
                 "meios_pagamento": a_mensal["meios_pagamento"], "descontos": a_mensal["descontos"],
                 "clientes_top": a_mensal["clientes_top"],
                 "cadeiras_utilizacao": a_mensal["cadeiras_utilizacao"],
@@ -2612,6 +2734,10 @@ def main():
                 "ranking_prof_total_n": a_semanal.get("ranking_prof_total_n", 0),
                 "ranking_prof_executor": a_semanal.get("ranking_prof_executor", []),
                 "ranking_serv": a_semanal["ranking_serv"],
+                "ranking_produtos": a_semanal.get("ranking_produtos", []),
+                "ranking_pacotes": a_semanal.get("ranking_pacotes", []),
+                "upsell_produtos": a_semanal.get("upsell_produtos", []),
+                "upsell_pacotes": a_semanal.get("upsell_pacotes", []),
                 "rentabilidade_hora": a_semanal["rentabilidade_hora"],
                 "meios_pagamento": a_semanal["meios_pagamento"],
                 "clientes_top": a_semanal["clientes_top"],
@@ -2629,6 +2755,10 @@ def main():
                 "ranking_prof_total_n": a_diario.get("ranking_prof_total_n", 0),
                 "ranking_prof_executor": a_diario.get("ranking_prof_executor", []),
                 "ranking_serv": a_diario["ranking_serv"],
+                "ranking_produtos": a_diario.get("ranking_produtos", []),
+                "ranking_pacotes": a_diario.get("ranking_pacotes", []),
+                "upsell_produtos": a_diario.get("upsell_produtos", []),
+                "upsell_pacotes": a_diario.get("upsell_pacotes", []),
                 "rentabilidade_hora": a_diario["rentabilidade_hora"],
                 "meios_pagamento": a_diario["meios_pagamento"],
                 "clientes_top": a_diario["clientes_top"],
