@@ -136,6 +136,11 @@ def _matchear_pix(stone_pix_list, trinks_pix_list):
     ]
     orfaos_trinks = [
         {"data": trinks_pix_list[i]["data"].isoformat(),
+         # A hora da venda, quando o Trinks informa. Sem ela nao da pra saber se
+         # um PIX de hoje e um pagamento que sumiu ou um pagamento que o extrato
+         # ainda nao alcanca — ver o filtro de cobertura mais abaixo.
+         "data_hora": (trinks_pix_list[i].get("data_hora").isoformat(timespec="minutes")
+                       if trinks_pix_list[i].get("data_hora") else None),
          "valor": trinks_pix_list[i]["valor"],
          "cliente": trinks_pix_list[i]["cliente"]}
         for i in range(len(trinks_pix_list)) if i not in usados_trinks
@@ -247,6 +252,21 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     ini = datas_stone[0] if datas_stone else None
     fim = datas_stone[-1] if datas_stone else None
 
+    # Ate que HORA o extrato enxerga. O extrato de 18/09/2026 terminava as 08h20
+    # — a varredura da manha. Tratar "cobre ate 18/09" como "cobre o dia 18
+    # inteiro" transformou tres PIX da tarde em "pagamento que nao caiu".
+    ultima_dt_stone = None
+    for row in recs:
+        data_str = (row.get("Data") or "")[:16]
+        for fmt in ["%d/%m/%Y %H:%M", "%d/%m/%Y"]:
+            try:
+                dt_row = datetime.strptime(data_str, fmt)
+                if ultima_dt_stone is None or dt_row > ultima_dt_stone:
+                    ultima_dt_stone = dt_row
+                break
+            except Exception:
+                pass
+
     # ==== 2. NORMALIZAR TRINKS (separa débito D+1 de crédito D+30) ====
     pix_trinks_all = []
     cartao_trinks_all = []
@@ -256,7 +276,9 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     for t in transacoes_trinks:
         if not t.get("data") or not t.get("meio"): continue
         if t["meio"] == "PIX":
-            pix_trinks_all.append({"data": t["data"], "valor": t["valor"], "cliente": t.get("cliente", "")})
+            pix_trinks_all.append({"data": t["data"], "valor": t["valor"],
+                                   "cliente": t.get("cliente", ""),
+                                   "data_hora": t.get("data_hora")})
         elif t["meio"] in CARTAO_MEIOS:
             item = {"data": t["data"], "valor": t["valor"], "cliente": t.get("cliente", ""), "meio": t["meio"], "parcelas": t.get("parcelas", 1)}
             cartao_trinks_all.append(item)
@@ -348,10 +370,23 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     # confirmação, R$ 1.599, conferir com cada cliente hoje", e 14 deles
     # (R$ 1.564) eram simplesmente posteriores a 09/09, o último dia do extrato.
     # Sobrava um órfão real de R$ 35.
+    # A comparacao e por HORA, nao por dia. Com granularidade de dia, um PIX
+    # das 17h de hoje caia no lado errado sempre que o extrato do dia tivesse
+    # sido exportado de manha — que e o caso normal.
     fim_cobertura = fim.isoformat() if fim else None
-    if fim_cobertura:
-        orf_t_fora = [o for o in orf_t_pendentes if (o.get("data") or "") > fim_cobertura]
-        orf_t_pendentes = [o for o in orf_t_pendentes if (o.get("data") or "") <= fim_cobertura]
+    corte = ultima_dt_stone.isoformat(timespec="minutes") if ultima_dt_stone else None
+
+    def _fora_da_cobertura(o):
+        if not corte:
+            return False
+        # Quando o Trinks nao deu a hora, assume o fim do dia: um PIX sem hora
+        # so conta como coberto se o extrato passou da meia-noite seguinte.
+        quando = o.get("data_hora") or ((o.get("data") or "") + "T23:59")
+        return quando > corte
+
+    if corte:
+        orf_t_fora = [o for o in orf_t_pendentes if _fora_da_cobertura(o)]
+        orf_t_pendentes = [o for o in orf_t_pendentes if not _fora_da_cobertura(o)]
     else:
         orf_t_fora = []
 
@@ -362,6 +397,8 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     nao_conciliado = {
         "total_valor_risco": _r(total_risco),
         "extrato_cobre_ate": fim_cobertura,
+        # Com a hora: "18/09" sozinho parece o dia inteiro, e quase nunca e.
+        "extrato_cobre_ate_hora": corte,
         "orfaos_stone_n": len(orf_s_all),
         "orfaos_stone_v": _r(valor_orf_stone),
         "orfaos_stone": orf_s_all[:50],
@@ -595,18 +632,7 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     # Trinks é ao vivo · CSV Stone é snapshot manual. Vendas Trinks feitas APÓS a última
     # movimentação do CSV Stone naturalmente NÃO aparecem na reconciliação.
     from datetime import datetime as _dt
-    ultima_dt_stone = None
-    for row in recs:
-        try:
-            data_str = row.get("Data", "")[:16]
-            for fmt in ["%d/%m/%Y %H:%M", "%d/%m/%Y"]:
-                try:
-                    dt_row = _dt.strptime(data_str, fmt)
-                    if ultima_dt_stone is None or dt_row > ultima_dt_stone:
-                        ultima_dt_stone = dt_row
-                    break
-                except: pass
-        except: pass
+    # ultima_dt_stone ja foi calculada la em cima, junto com ini/fim.
 
     vendas_apos = []
     if ultima_dt_stone:

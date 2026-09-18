@@ -479,15 +479,30 @@ def _insights_stone(stone):
     # não ligar pros clientes.
     fora = nc.get("orfaos_fora_extrato") or []
     ate = nc.get("extrato_cobre_ate")
+    ate_hora = nc.get("extrato_cobre_ate_hora")
     if fora and ate:
         try:
             dias = (date.today() - date.fromisoformat(ate)).days
         except Exception:
             dias = None
-        atraso = f" ({dias} dias atrás)" if dias else ""
-        ins.append(_mk("atencao", f"Extrato Stone parado em {ate[-5:]}{atraso}",
-            f"{len(fora)} PIX de {_fmt(sum(o.get('valor', 0) for o in fora))} são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
-            "Exportar o extrato Stone atualizado e colocar em data/stone_extrato.csv. Antes disso, não vale ligar pra cliente nenhuma."))
+        valor_fora = sum(o.get("valor", 0) for o in fora)
+        hora = ate_hora[-5:] if ate_hora else None
+        # Extrato do próprio dia não é extrato atrasado. Um export feito de
+        # manhã nunca vai conter o PIX da tarde — isso é o funcionamento normal,
+        # não um pendura. Vira aviso só quando o extrato ficou para trás de um
+        # dia para o outro.
+        if dias is not None and dias <= 0:
+            quando = f"hoje às {hora}" if hora else "hoje"
+            ins.append(_mk("info", f"{len(fora)} PIX depois do último lançamento do extrato",
+                f"{_fmt(valor_fora)} entraram no Trinks depois que o extrato parou ({quando}). "
+                f"Não é dinheiro sumido — é movimento que o extrato ainda não alcança.",
+                "Nada a fazer: o próximo extrato cobre esses lançamentos."))
+        else:
+            atraso = f" ({dias} dias atrás)" if dias else ""
+            marca = f"{ate[-5:]} {hora}" if hora else ate[-5:]
+            ins.append(_mk("atencao", f"Extrato Stone parado em {marca}{atraso}",
+                f"{len(fora)} PIX de {_fmt(valor_fora)} são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
+                "Exportar o extrato Stone atualizado e colocar em data/stone_extrato.csv. Antes disso, não vale ligar pra cliente nenhuma."))
 
     # 2. PIX Stone sem venda no Trinks — dinheiro entrou mas não foi lançado
     orf_stone = nc.get("orfaos_stone") or []
