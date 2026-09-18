@@ -48,6 +48,27 @@ def dm(d):
 def avaliar(caminho):
     """Devolve (nivel, titulo, detalhe). nivel: 'ok' | 'alerta' | 'critico' | 'indef'."""
     d = json.loads(pathlib.Path(caminho).read_text(encoding="utf-8"))
+    # ERRO DE COLETA NÃO É QUEDA DE ENTREGA.
+    # Em 17/09/2026 este script gritou "entrega despencou 85% — foi assim que
+    # começou a parada de 27/08" quando o token da Meta tinha expirado às 11h do
+    # dia anterior. O R$ 14,31 não era o gasto do dia: era o que a API alcançou
+    # antes de morrer. O alerta mandou o Rodrigo investigar a conta de anúncio,
+    # quando o problema era credencial — e ficaria vermelho todo dia até alguém
+    # perceber, ensinando a ignorar a cor.
+    #
+    # Zero por falta de dado e zero por falta de entrega parecem iguais no JSON
+    # e pedem ações opostas. Esta checagem vem antes de qualquer julgamento.
+    erros = [b["_erro"] for b in (d.get("meta_ads", {}).get("por_periodo") or {}).values()
+             if isinstance(b, dict) and b.get("_erro")]
+    if erros:
+        bruto = erros[0]
+        motivo = (bruto.split('"message":"')[-1].split('","')[0]
+                  if '"message":"' in bruto else bruto)[:170]
+        return ("indef", "A coleta falhou — não dá para avaliar a entrega",
+                f"A Meta recusou a chamada: {motivo}\n"
+                f"   Os números zerados são ausência de DADO, não ausência de entrega. "
+                f"Renove o META_ACCESS_TOKEN antes de olhar para a conta de anúncio.")
+
     serie = d.get("meta_ads", {}).get("serie_diaria_30d") or []
     if len(serie) < 8:
         return "indef", "Série curta demais", f"{len(serie)} pontos — não dá para avaliar."

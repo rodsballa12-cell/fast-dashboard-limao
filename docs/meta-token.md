@@ -1,5 +1,16 @@
 # Renovar o META_ACCESS_TOKEN
 
+> **⚠️ O caminho rápido pelo Graph API Explorer NÃO serve.** Em 16/09/2026 o
+> token gerado por ali durou **1h20**: nasceu às 09h40, a Meta expirou às 11h00
+> em ponto, e o painel ficou zerado por mais um dia inteiro. O botão
+> *Generate Access Token* do Explorer entrega um token **de curta duração** —
+> uma a duas horas, arredondado para a hora cheia. Os "60 dias" só existem
+> depois de **trocar** esse token por um de longa duração, que é um passo a
+> mais que quase ninguém lembra de fazer.
+>
+> **Use o Usuário do Sistema abaixo.** Não é o caminho longo — é o único.
+
+
 **Por que ele morreu:** o token em uso era um *token de usuário*, amarrado à
 conta pessoal do Rodrigo no Facebook. **Trocar a senha invalida esse tipo de
 token na hora** — foi o que a própria Meta respondeu:
