@@ -52,22 +52,40 @@ jobs:
       - name: Install deps
         run: pip install requests
 
-      # Ja rodou hoje? Entao este e um dos fires extras — sai em segundos.
+      # Ja rodou hoje COM SUCESSO? Entao este e um dos fires extras.
       # A comparacao e por DATA em BRT, nao por horas de idade: o trabalho e
       # "uma atualizacao por dia", e uma regra de horas erraria na virada.
-      - name: Ja atualizou hoje?
+      #
+      # E NAO BASTA TER RODADO. Em 18/09/2026 o fire das 11h22 rodou com o
+      # token expirado: gravou zeros, carimbou a data de hoje, e a partir dali
+      # o early-exit teria bloqueado todos os fires seguintes. O Rodrigo trocou
+      # o token as 16h e o painel ficaria quebrado ate o dia seguinte, sem que
+      # nada acusasse — o arquivo estava "atualizado hoje".
+      #
+      # Coleta que falhou deixa `_erro` nas janelas do meta_ads. Enquanto ele
+      # estiver la, todo fire tenta de novo.
+      - name: Ja atualizou hoje (com sucesso)?
         id: recencia
         run: |
           hoje=$(TZ=America/Sao_Paulo date +%Y-%m-%d)
           ger=$(sed -nE 's/.*"gerado_em": *"([^"]+)".*/\1/p' data/midias_sociais.json | head -1)
           dia_ger=${ger:0:10}
-          echo "hoje (BRT): $hoje · dado de: ${dia_ger:-nenhum}"
-          if [ "$dia_ger" = "$hoje" ]; then
+          if grep -q '"_erro"' data/midias_sociais.json data/spa/midias_sociais.json 2>/dev/null; then
+            erro=sim
+          else
+            erro=nao
+          fi
+          echo "hoje (BRT): $hoje · dado de: ${dia_ger:-nenhum} · erro na ultima coleta: $erro"
+          if [ "$dia_ger" = "$hoje" ] && [ "$erro" = "nao" ]; then
             echo "skip=true" >> $GITHUB_OUTPUT
-            echo "⏭  Midia ja atualizada hoje — outro fire cobriu."
+            echo "⏭  Midia ja atualizada hoje com sucesso — outro fire cobriu."
           else
             echo "skip=false" >> $GITHUB_OUTPUT
-            echo "▶️  Rodando refresh de midia."
+            if [ "$erro" = "sim" ]; then
+              echo "▶️  A ultima coleta falhou — tentando de novo mesmo sendo de hoje."
+            else
+              echo "▶️  Rodando refresh de midia."
+            fi
           fi
 
       - name: Refresh midias Meta (Escova + SPA)
