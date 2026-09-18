@@ -2635,12 +2635,12 @@ def main():
             "n_com_desvio": len(desvio_tabela),
         },
         "catalogo_produtos": {
+            # /v1/produtos listing so devolve id+nome (nao preco/categoria).
+            # Pra ter detalhes precisaria hit /v1/produtos/{id} individual —
+            # 148 requests, muito custo. Ranking de vendas ja vem completo
+            # em ranking_produtos (via valorUnitario nas transacoes).
             "n_total": len(produtos_tabela),
-            # Amostra: top 30 por preco (referencia visual, nao ranking de vendas)
-            "top_preco": sorted(
-                [{"nome": n, **d} for n, d in produtos_tabela.items() if d.get("preco",0) > 0],
-                key=lambda x: -x.get("preco", 0)
-            )[:30],
+            "todos_nomes": sorted(produtos_tabela.keys()),
         },
         "stone": stone_data,
         "auditoria_cancelados": {
