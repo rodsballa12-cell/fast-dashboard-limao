@@ -107,3 +107,29 @@ for cid in candidatos:
         pass
 
 print("\n[fim] Se nada apareceu alem de 276461, a API key nao tem acesso a SPA.")
+
+# === PROBE FEATURES NAO USADAS ===
+# Verifica se as APIs listadas no manual retornam dado (endpoint existe + tem
+# conteudo pro nosso estabelecimento) antes de investir em integracao.
+print("\n=== FEATURES DO MANUAL — probe de disponibilidade ===")
+_probe_headers = {**HEADERS, "estabelecimentoId": "276461"}
+for rota, label in [
+    ("/clube/planos", "Clube / assinaturas"),
+    ("/fidelidade", "Programa de fidelidade"),
+    ("/vendas", "Vendas (endpoint separado de transacoes)"),
+    ("/produtos", "Catalogo de produtos"),
+    ("/clientes?incluirEtiquetas=true&pageSize=5", "Clientes com etiquetas"),
+]:
+    try:
+        resp = requests.get(BASE + "/" + rota.lstrip("/"), headers=_probe_headers, timeout=20)
+        js = {}
+        if resp.status_code == 200:
+            try: js = resp.json()
+            except: pass
+        tot = js.get("totalRecords") if isinstance(js, dict) else None
+        n = len(js.get("data") or []) if isinstance(js, dict) else 0
+        # Amostra: primeiro item pra ver estrutura
+        primeiro_keys = list((js.get("data") or [{}])[0].keys()) if n > 0 else []
+        print(f"  {label:<48} HTTP {resp.status_code} · totalRecords={tot} · sample_keys={primeiro_keys[:8]}")
+    except Exception as e:
+        print(f"  {label}: excecao {e}")
