@@ -153,8 +153,54 @@ def main() -> int:
                   f"   ({(a.get('cliente') or {}).get('nome','?')[:18]} / "
                   f"{(b.get('cliente') or {}).get('nome','?')[:18]})")
 
+    # --- Busca funda: itens, diferencas e taxa de maquininha ---------------
+    # A diferenca raramente e uma venda inteira. Costuma ser um item a mais, um
+    # item a menos, dois valores trocados, ou a taxa que a maquininha ja
+    # desconta antes de o dinheiro cair.
+    itens = []
+    for x in transac:
+        for chave in ("servicos", "produtos", "pacotes"):
+            for it in (x.get(chave) or []):
+                v = float(it.get("preco") or it.get("precoUnitario") or it.get("valor") or 0)
+                if v > 0:
+                    itens.append((v, it.get("nome", "?"), str(x.get("dataHora", ""))[11:16],
+                                  (x.get("cliente") or {}).get("nome", "?")))
+    for r in (2, 3):
+        vistos = set()
+        for combo in combinations(itens, r):
+            if bate(sum(c[0] for c in combo)):
+                assinatura = tuple(sorted(c[0] for c in combo))
+                if assinatura in vistos:
+                    continue
+                vistos.add(assinatura)
+                achou = True
+                print("  ITENS SOMANDO       " + "  +  ".join(
+                    f"{c[1]} {brl(c[0])} ({c[2]} {c[3][:16]})" for c in combo))
+
+    # Dois valores trocados entre si: a diferenca vira o dobro do engano, mas
+    # tambem pode aparecer como a propria diferenca entre duas vendas.
+    for a, b in combinations(transac, 2):
+        d = abs(float(a.get("totalPagar") or 0) - float(b.get("totalPagar") or 0))
+        if bate(d):
+            achou = True
+            print(f"  DIFERENCA ENTRE DUAS VENDAS  {str(a.get('dataHora',''))[11:16]} "
+                  f"{brl(a.get('totalPagar'))}  vs  {str(b.get('dataHora',''))[11:16]} "
+                  f"{brl(b.get('totalPagar'))}")
+
+    # Taxa Stone: debito 1,46% · credito 1x 2,08% (tabela oficial SIIBELLO).
+    DEBITO = {"Maestro/Redeshop", "Visa Electron", "Elo Débito"}
+    v_deb = sum(v for nome, vals in por_meio.items() if nome in DEBITO for v in vals)
+    v_cred = sum(v for nome, vals in por_meio.items()
+                 if nome not in DEBITO and nome not in ("Dinheiro", "PIX") for v in vals)
+    taxa = v_deb * 0.0146 + v_cred * 0.0208
+    print(f"\n  [referencia] taxa da maquininha no dia: debito {brl(v_deb)} x 1,46% + "
+          f"credito {brl(v_cred)} x 2,08% = {brl(taxa)}")
+    if bate(taxa):
+        achou = True
+        print("  >>> A DIFERENCA E EXATAMENTE A TAXA DA MAQUININHA.")
+
     if not achou:
-        print("  Nada no Trinks soma exatamente esse valor.")
+        print("\n  Nada no Trinks soma exatamente esse valor.")
         print("  Isso empurra a origem para FORA do Trinks: conferencia de cedula,")
         print("  taxa de maquininha descontada na hora, ou uma venda que nunca foi")
         print("  lancada no sistema.")
