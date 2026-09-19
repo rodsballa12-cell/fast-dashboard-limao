@@ -70,9 +70,10 @@ def _r(v): return round(float(v or 0), 2)
 
 
 def _matchear_pix(stone_pix_list, trinks_pix_list):
-    """Match em 2 passes:
+    """Match em 3 passes:
        1) 1:1 exato por (data, valor ±0.5)
        2) Composto: 1 Trinks = soma de N Stones do MESMO DIA (ex: pagou em 2 PIX)
+       3) 1:1 com 1 dia de diferenca, so com valor IGUAL e sem ambiguidade
     Retorna (matches, orfaos_stone, orfaos_trinks)."""
     matches = []
     usados_trinks = set()
@@ -126,6 +127,76 @@ def _matchear_pix(stone_pix_list, trinks_pix_list):
                 "origem_stone": f"[COMPOSTO {len(achou)}×] {origens}",
                 "tipo": f"composto_{len(achou)}",
             })
+
+    # --- PASS 3: 1 dia de diferença, valor idêntico, sem ambiguidade ---
+    # O caso que motivou este passo (15-16/09/2026): entrou na Stone
+    # "ODONTOLOGIA SORRINI LTDA · R$ 186" no dia 15, e o Trinks registrou
+    # "Laura Armani Santini · R$ 186" no dia 16. O mesmo pagamento, feito pela
+    # conta da clínica, lançado no dia seguinte. Pelos passos 1 e 2 isso vira
+    # DOIS alarmes ao mesmo tempo — "dinheiro que entrou sem venda" e "venda
+    # que não caiu" — apontando para a mesma nota de R$ 186.
+    #
+    # As três travas que tornam isso seguro, e por que cada uma existe:
+    #
+    # 1. VALOR IDÊNTICO (±R$ 0,01), não a tolerância de R$ 0,50 dos outros
+    #    passos. Abrir a data já é uma concessão; abrir as duas ao mesmo tempo
+    #    é chute.
+    # 2. JANELA DE UM DIA. Lançamento atrasado é de um dia; dois dias já é
+    #    outra história, e uma janela maior varre meia semana de preços
+    #    repetidos.
+    # 3. SEM AMBIGUIDADE — a trava que mais importa. Num salão os preços se
+    #    repetem o dia inteiro: R$ 79 a escova, R$ 47 as mãos. Se houver mais
+    #    de um candidato daquele valor na janela, de qualquer um dos lados,
+    #    o passo NÃO escolhe: deixa os dois como órfãos para uma pessoa olhar.
+    #    Casar errado é pior do que não casar — um alarme a mais custa uma
+    #    conferência; uma conciliação errada esconde dinheiro de verdade.
+    #
+    # O nome NÃO entra na decisão, de propósito: no caso Sorrini/Laura os nomes
+    # são diferentes, e é exatamente esse o tipo de caso que o passo resolve.
+    def _sobra_stone():
+        return [(i, x) for i, x in enumerate(stone_pix_list) if i not in usados_stone]
+
+    def _sobra_trinks():
+        return [(i, x) for i, x in enumerate(trinks_pix_list) if i not in usados_trinks]
+
+    for si, s_reg in list(_sobra_stone()):
+        if si in usados_stone:
+            continue
+        ds, vs = s_reg["data"], s_reg["valor"]
+        if not ds:
+            continue
+
+        # candidatos do Trinks: mesmo valor exato, no dia anterior ou seguinte
+        cands = [(i, t) for i, t in _sobra_trinks()
+                 if t["data"] and abs((t["data"] - ds).days) == 1
+                 and abs(t["valor"] - vs) <= 0.01]
+        if len(cands) != 1:
+            continue  # zero candidatos, ou mais de um: não adivinha
+
+        # e do outro lado? se dois lançamentos da Stone disputam o mesmo
+        # Trinks, também não dá para saber qual é qual.
+        rivais = [j for j, x in _sobra_stone()
+                  if j != si and x["data"] and abs((x["data"] - ds).days) <= 1
+                  and abs(x["valor"] - vs) <= 0.01]
+        if rivais:
+            continue
+
+        ti, t_reg = cands[0]
+        dias = (t_reg["data"] - ds).days   # +1 = Trinks lançou depois
+        usados_stone.add(si)
+        usados_trinks.add(ti)
+        matches.append({
+            "data": ds.isoformat(),
+            "data_trinks": t_reg["data"].isoformat(),
+            "valor": vs,
+            "cliente_trinks": t_reg["cliente"],
+            "origem_stone": s_reg["origem"],
+            "tipo": "1:1_d1",
+            "defasagem_dias": dias,
+            "nota": ("Valor idêntico com {} dia de diferença e nenhum outro "
+                     "candidato — provável lançamento fora do dia do pagamento."
+                     ).format(abs(dias)),
+        })
 
     # --- ÓRFÃOS finais ---
     orfaos_stone = [
