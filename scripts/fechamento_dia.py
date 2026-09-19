@@ -41,8 +41,20 @@ def main() -> int:
 
     t = TrinksClient()
     print(f"[api] transacoes e agendamentos de {dia}...")
-    transac = list(t.paginate("/v1/transacoes", {"dataInicio": dia.isoformat(), "dataFim": dia.isoformat()}))
-    agend = list(t.paginate("/v1/agendamentos", {"dataInicio": dia.isoformat(), "dataFim": dia.isoformat()}))
+
+    # A janela vai ate o dia seguinte e o filtro fino e feito aqui. Motivo: em
+    # 19/09/2026 uma consulta com dataInicio = dataFim = 2026-09-19 devolveu
+    # ZERO transacoes, com 37 existindo — o /v1/transacoes trata o dataFim como
+    # exclusivo, ao contrario do /v1/agendamentos, que devolveu o dia certinho.
+    # Pedir a janela maior e filtrar por data aqui funciona nos dois casos e nao
+    # depende de adivinhar a regra de cada rota.
+    from datetime import timedelta
+    janela = {"dataInicio": dia.isoformat(), "dataFim": (dia + timedelta(days=1)).isoformat()}
+    alvo_iso = dia.isoformat()
+    transac = [x for x in t.paginate("/v1/transacoes", janela)
+               if str(x.get("dataHora", ""))[:10] == alvo_iso]
+    agend = [a for a in t.paginate("/v1/agendamentos", janela)
+             if str(a.get("dataHoraInicio", ""))[:10] == alvo_iso]
 
     total = sum(float(x.get("totalPagar") or 0) for x in transac)
     descontos = sum(float(x.get("descontos") or 0) for x in transac)
