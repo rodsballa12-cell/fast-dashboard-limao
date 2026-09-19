@@ -1497,19 +1497,24 @@ def _update_periodo(base_periodo: dict[str, Any], novo: dict[str, Any]) -> None:
     if "_erro" not in novo:
         base_periodo.pop("_erro", None)
 
+    # ANTES esta funcao so escrevia chave que a base ja tivesse — "respeita
+    # schema". A intencao era nao pisar em campo curado, mas o efeito era
+    # outro: campo que a API traz todo dia era jogado fora para sempre se o
+    # arquivo de andaime nao o tivesse declarado.
+    #
+    # O Spa pagou caro por isso. data/spa/midias_sociais.json nasceu sem
+    # `inicio`, `fim`, `cliques`, `link_clicks`, `cpc`, `cpc_link`,
+    # `link_ctr_pct` e `post_engagement` — e ficou sem, nas cinco janelas, por
+    # quase um mes. Sem `inicio`/`fim` o painel nao consegue contar os dias da
+    # janela: o card do Spa mostrava "MES CORRENTE · NAN DIAS", "NaN/dia" e
+    # "R$ 0/dia", e metade das metricas aparecia como travessao. Nada disso
+    # deu erro em lugar nenhum — o dado simplesmente nao chegava.
+    #
+    # A protecao de campo curado nao precisava daquela regra: so escrevemos as
+    # chaves que vem em `novo`, e a API nunca manda `alerta`. Campo curado fica
+    # intacto porque nao e mencionado, nao porque foi bloqueado.
     for k, v in novo.items():
-        if k == "_erro":
-            base_periodo["_erro"] = v
-            continue
-        # nunca criar chaves que a base nao tenha (respeita schema)
-        if k in base_periodo:
-            base_periodo[k] = v
-    # se veio label novo e a base nao tinha, ainda preserva um label sensato
-    if "label" not in base_periodo and "label" in novo:
-        base_periodo["label"] = novo["label"]
-    # atualizado_em pode nao existir na base SPA — cria se novo trouxer
-    if "atualizado_em" not in base_periodo and novo.get("atualizado_em"):
-        base_periodo["atualizado_em"] = novo["atualizado_em"]
+        base_periodo[k] = v
 
 
 def _set_if_key(d: dict[str, Any], key: str, value: Any) -> None:
@@ -1825,6 +1830,8 @@ def _build_consolidado(escova: dict[str, Any], spa: dict[str, Any]) -> dict[str,
         impr = n(e.get("impressoes")) + n(s.get("impressoes"))
         clicks = n(e.get("cliques") or e.get("clicks")) + n(s.get("cliques") or s.get("clicks"))
         reach = n(e.get("reach")) + n(s.get("reach"))
+        link = n(e.get("link_clicks")) + n(s.get("link_clicks"))
+        engaj = n(e.get("post_engagement")) + n(s.get("post_engagement"))
         cons_pp[p] = {
             "label": e.get("label") or s.get("label") or p,
             "inicio": e.get("inicio") or s.get("inicio"),
@@ -1832,11 +1839,22 @@ def _build_consolidado(escova: dict[str, Any], spa: dict[str, Any]) -> dict[str,
             "gasto": round(gasto, 2),
             "impressoes": int(impr),
             "cliques": int(clicks),
+            "link_clicks": int(link),
+            "post_engagement": int(engaj),
             "conversas_msg": int(conv),
             "reach": int(reach),
             "cpa_msg": round(gasto / conv, 2) if conv else None,
             "cpm": round(gasto / impr * 1000, 2) if impr else None,
+            "cpc": round(gasto / clicks, 2) if clicks else None,
+            "cpc_link": round(gasto / link, 2) if link else None,
             "ctr_pct": round(clicks / impr * 100, 2) if impr else None,
+            "link_ctr_pct": round(link / impr * 100, 2) if impr else None,
+            # Frequencia = impressoes / alcance. O alcance somado das duas
+            # contas conta duas vezes quem viu anuncio da Escova E do Spa, entao
+            # esta frequencia e um piso: a real e igual ou maior. Serve para o
+            # card nao quebrar e para ver tendencia, nao para decidir corte de
+            # publico — para isso, olhe a frequencia de cada loja.
+            "frequency": round(impr / reach, 4) if reach else None,
             "atualizado_em": _now_brt_iso(),
         }
 

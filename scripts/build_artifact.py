@@ -8,6 +8,13 @@ index.html busca em runtime precisa ir embutido. O painel busca QUATRO arquivos
 primeiro deixa as abas Financeiro e Mídias permanentemente vazias no Artifact,
 sem erro visível, porque os loaders engolem a falha num catch.
 
+E busca esses quatro PARA CADA UNIDADE: o seletor do topo (Escova · Spa ·
+Consolidado) troca o caminho para data/spa/… e data/consolidado/…. Embutir só
+a Escova fazia as outras duas vistas nunca carregarem no celular — o fetch ia
+para a rede, a CSP recusava, a promessa era rejeitada (não um 404, então nem o
+fallback para a Escova disparava) e a tela ficava com o que já estava
+desenhado. Foi o que o Rodrigo viu em 19/09/2026 na aba Mídias.
+
 Em vez de reescrever cada call site com regex (frágil: quebra quando o
 index.html muda), instala um shim de fetch que serve os arquivos embutidos e
 repassa o resto. O index.html não é modificado.
@@ -28,10 +35,21 @@ SAIDA_PADRAO = pathlib.Path("/tmp/artifact-updated.html")
 # é um estado legítimo (quota_status.json só existe quando a cota estourou);
 # o shim devolve 404 para esses, que é o que o loader do painel já trata.
 ARQUIVOS = [
+    # Escova — a unidade padrão, a única obrigatória.
     ("data/dashboard_data.json", True),
     ("data/financeiro.json", True),
     ("data/midias_sociais.json", True),
     ("data/quota_status.json", False),
+    # Spa e Consolidado: o seletor de unidade busca estes caminhos. Não são
+    # obrigatórios — antes de 25/09 o Spa pode legitimamente não ter arquivo,
+    # e aí o shim devolve 404, que é o único caso em que o painel sabe cair
+    # de volta para a Escova.
+    ("data/spa/dashboard_data.json", False),
+    ("data/spa/financeiro.json", False),
+    ("data/spa/midias_sociais.json", False),
+    ("data/consolidado/dashboard_data.json", False),
+    ("data/consolidado/financeiro.json", False),
+    ("data/consolidado/midias_sociais.json", False),
 ]
 
 
@@ -106,6 +124,13 @@ def main() -> int:
         "      return Promise.resolve(new Response(JSON.stringify(valor), {\n"
         "        status: 200, headers: {'Content-Type': 'application/json'}\n"
         "      }));\n"
+        "    }\n"
+        # Qualquer outro data/*.json vira 404 em vez de ir para a rede. Dentro
+        # do Artifact a rede está bloqueada pela CSP e a promessa REJEITA — o
+        # painel só sabe tratar 404 (fallback para a Escova); uma rejeição cai
+        # num catch mudo e a tela congela no que já estava.
+        "    if (/^data\\/.*\\.json$/.test(chave)) {\n"
+        "      return Promise.resolve(new Response('', {status: 404, statusText: 'Not Found'}));\n"
         "    }\n"
         "    if (!orig) return Promise.reject(new Error('fetch indisponível: ' + url));\n"
         "    return orig(entrada, init);\n"
