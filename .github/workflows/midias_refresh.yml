@@ -64,27 +64,47 @@ jobs:
       #
       # Coleta que falhou deixa `_erro` nas janelas do meta_ads. Enquanto ele
       # estiver la, todo fire tenta de novo.
-      - name: Ja atualizou hoje (com sucesso)?
+      # E TAMBEM NAO BASTA A ESCOVA ESTAR EM DIA. Em 19/09/2026 uma sessao do
+      # Claude no PC do Rodrigo atualizou so data/midias_sociais.json as 09h15
+      # e commitou. Aquele arquivo passou a carimbar a data de hoje — e o
+      # early-exit, que olhava so para ele, teria pulado todos os fires
+      # seguintes, deixando o Spa e o Consolidado parados em 18/09 o dia
+      # inteiro. Atualizacao parcial nao e atualizacao: o skip so vale quando
+      # as TRES unidades estao do mesmo dia.
+      - name: Ja atualizou hoje (com sucesso, nas tres unidades)?
         id: recencia
         run: |
           hoje=$(TZ=America/Sao_Paulo date +%Y-%m-%d)
-          ger=$(sed -nE 's/.*"gerado_em": *"([^"]+)".*/\1/p' data/midias_sociais.json | head -1)
-          dia_ger=${ger:0:10}
-          if grep -q '"_erro"' data/midias_sociais.json data/spa/midias_sociais.json 2>/dev/null; then
+          arquivos="data/midias_sociais.json data/spa/midias_sociais.json data/consolidado/midias_sociais.json"
+
+          atrasados=""
+          for f in $arquivos; do
+            if [ ! -f "$f" ]; then
+              atrasados="${atrasados} ${f}(ausente)"
+              continue
+            fi
+            ger=$(sed -nE 's/.*"gerado_em": *"([^"]+)".*/\1/p' "$f" | head -1)
+            dia=${ger:0:10}
+            echo "  $f -> ${dia:-nenhum}"
+            [ "$dia" = "$hoje" ] || atrasados="${atrasados} ${f}(${dia:-nenhum})"
+          done
+
+          if grep -q '"_erro"' $arquivos 2>/dev/null; then
             erro=sim
           else
             erro=nao
           fi
-          echo "hoje (BRT): $hoje · dado de: ${dia_ger:-nenhum} · erro na ultima coleta: $erro"
-          if [ "$dia_ger" = "$hoje" ] && [ "$erro" = "nao" ]; then
+
+          echo "hoje (BRT): $hoje · erro na ultima coleta: $erro"
+          if [ -z "$atrasados" ] && [ "$erro" = "nao" ]; then
             echo "skip=true" >> $GITHUB_OUTPUT
-            echo "⏭  Midia ja atualizada hoje com sucesso — outro fire cobriu."
+            echo "⏭  As tres unidades ja atualizaram hoje com sucesso — outro fire cobriu."
           else
             echo "skip=false" >> $GITHUB_OUTPUT
             if [ "$erro" = "sim" ]; then
               echo "▶️  A ultima coleta falhou — tentando de novo mesmo sendo de hoje."
             else
-              echo "▶️  Rodando refresh de midia."
+              echo "▶️  Faltam atualizar hoje:${atrasados}"
             fi
           fi
 

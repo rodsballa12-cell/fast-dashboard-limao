@@ -1866,6 +1866,72 @@ def _build_consolidado(escova: dict[str, Any], spa: dict[str, Any]) -> dict[str,
     # Google Business: so Escova (SPA sem GBP conectado)
     cons_gb = escova.get("google_business") or {}
 
+    # --- KPI-estrela e reguas do Consolidado -------------------------------
+    # O card principal da aba Midias le MID.kpi_estrela para escrever a linha
+    # "KPI-estrela: ...". O Consolidado nunca teve esse campo, entao o card
+    # inteiro morria com TypeError e a aba ficava com o conteudo anterior na
+    # tela — foi o que o Rodrigo viu em 19/09/2026. A definicao da metrica e a
+    # mesma nas duas lojas, entao herdar da Escova e correto, nao remendo.
+    cons["kpi_estrela"] = escova.get("kpi_estrela") or spa.get("kpi_estrela")
+
+    # As metas NAO se herdam: a Escova mira CPA de R$ 8 e o Spa de R$ 25.
+    # Copiar a regua da Escova julgaria o gasto do Spa pelo alvo errado, e
+    # copiar a do Spa faria o contrario. A meta combinada certa sai da soma
+    # das quantidades esperadas, nao da media dos alvos:
+    #
+    #   conversas esperadas = gasto_escova/meta_escova + gasto_spa/meta_spa
+    #   meta combinada      = gasto total / conversas esperadas
+    #
+    # Com R$ 2.369 a R$ 8 e R$ 554 a R$ 25, o alvo combinado e R$ 9,18 — nao
+    # R$ 8 nem R$ 16,50, que seria a media simples.
+    e_bm = escova.get("benchmarks") or {}
+    s_bm = spa.get("benchmarks") or {}
+    e_30 = e_pp.get("30d") or {}
+    s_30 = s_pp.get("30d") or {}
+    g_e, g_s = n(e_30.get("gasto")), n(s_30.get("gasto"))
+
+    def _meta_custo(chave):
+        """Alvo combinado de uma metrica de custo (R$ por unidade)."""
+        a, b = n(e_bm.get(chave)), n(s_bm.get(chave))
+        # Sem gasto ou sem alvo de um dos lados, o outro responde sozinho.
+        qtd = (g_e / a if a > 0 else 0) + (g_s / b if b > 0 else 0)
+        if qtd <= 0:
+            return e_bm.get(chave) if a > 0 else s_bm.get(chave)
+        return round((g_e + g_s) / qtd, 2)
+
+    def _atual_custo(chave):
+        """Mesmo raciocinio para o realizado dos 30 dias."""
+        a, b = n(e_bm.get(chave)), n(s_bm.get(chave))
+        qtd = (g_e / a if a > 0 else 0) + (g_s / b if b > 0 else 0)
+        if qtd <= 0:
+            return e_bm.get(chave) if a > 0 else s_bm.get(chave)
+        return round((g_e + g_s) / qtd, 2)
+
+    # CTR e frequencia sao razoes sobre impressoes, nao sobre dinheiro:
+    # pondera pelas impressoes de cada loja nos 30 dias.
+    i_e, i_s = n(e_30.get("impressoes")), n(s_30.get("impressoes"))
+    def _media_por_impressao(chave):
+        a, b = e_bm.get(chave), s_bm.get(chave)
+        if a is None and b is None:
+            return None
+        if i_e + i_s <= 0:
+            return a if a is not None else b
+        return round((n(a) * i_e + n(b) * i_s) / (i_e + i_s), 2)
+
+    cons["benchmarks"] = {
+        "cpa_msg_meta": _meta_custo("cpa_msg_meta"),
+        "cpa_msg_atual_30d": _atual_custo("cpa_msg_atual_30d"),
+        "cpm_meta": _meta_custo("cpm_meta"),
+        "cpm_atual_30d": _atual_custo("cpm_atual_30d"),
+        "ctr_meta": _media_por_impressao("ctr_meta"),
+        "ctr_atual_30d": _media_por_impressao("ctr_atual_30d"),
+        "frequency_alerta": e_bm.get("frequency_alerta") or s_bm.get("frequency_alerta"),
+        "frequency_atual_30d": _media_por_impressao("frequency_atual_30d"),
+        "_origem": ("alvos combinados a partir de Escova e Spa pelo gasto de 30 dias "
+                    "(custos) e pelas impressoes (CTR e frequencia) — nao sao copia "
+                    "da regua de nenhuma das duas lojas"),
+    }
+
     cons.update({
         "gerado_em": _now_brt_iso(),
         "fonte": "consolidado (escova + spa)",

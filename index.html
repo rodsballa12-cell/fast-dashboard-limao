@@ -6265,7 +6265,7 @@ function renderMidias(){
     <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;margin-bottom:14px">
       <div>
         <h2 style="margin:0">📊 KPIs Meta Ads · ${pSel.label}${_viewLabel}</h2>
-        <div class="cap" style="margin-top:4px"><strong>KPI-estrela:</strong> ${MID.kpi_estrela.explicacao}</div>
+        <div class="cap" style="margin-top:4px"><strong>KPI-estrela:</strong> ${(MID.kpi_estrela && MID.kpi_estrela.explicacao) || 'Custo por conversa iniciada no WhatsApp — proxy do CAC.'}</div>
       </div>
       <div style="display:flex;gap:10px;align-items:stretch">
         <div style="background:${gradeColor};color:#fff;padding:10px 16px;border-radius:8px;text-align:center;min-width:80px">
