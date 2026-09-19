@@ -1,0 +1,42 @@
+name: Fechamento do dia (conferencia)
+
+# Abre um dia transacao a transacao e, se voce informar a diferenca do seu
+# fechamento, procura o que explica exatamente aquele valor.
+#
+# Nao grava nada no repositorio: a resposta sai no log deste run.
+
+on:
+  workflow_dispatch:
+    inputs:
+      data:
+        description: 'Dia a conferir (AAAA-MM-DD)'
+        required: true
+        type: string
+      diferenca:
+        description: 'Valor que esta sobrando ou faltando no seu caixa (ex: 174)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  fechamento:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        run: pip install requests python-dotenv
+      - name: Conferir
+        env:
+          TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
+          TRINKS_ESTABELECIMENTO_ID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID }}
+          DATA: ${{ inputs.data }}
+          DIF: ${{ inputs.diferenca }}
+        run: |
+          args=(--data "$DATA")
+          [ -n "$DIF" ] && args+=(--diferenca "$DIF")
+          python scripts/fechamento_dia.py "${args[@]}"
