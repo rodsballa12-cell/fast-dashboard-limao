@@ -71,8 +71,13 @@ jobs:
       # seguintes, deixando o Spa e o Consolidado parados em 18/09 o dia
       # inteiro. Atualizacao parcial nao e atualizacao: o skip so vale quando
       # as TRES unidades estao do mesmo dia.
+      # Aplica so a fires do cron. Dispatch manual sempre roda — mesma regra
+      # do refresh.yml. Sem isso, um conserto no codigo nao tem como ser
+      # testado no mesmo dia: o arquivo ja esta com a data de hoje e o skip
+      # pula o run inteiro em 11 segundos.
       - name: Ja atualizou hoje (com sucesso, nas tres unidades)?
         id: recencia
+        if: github.event_name == 'schedule'
         run: |
           hoje=$(TZ=America/Sao_Paulo date +%Y-%m-%d)
           arquivos="data/midias_sociais.json data/spa/midias_sociais.json data/consolidado/midias_sociais.json"
