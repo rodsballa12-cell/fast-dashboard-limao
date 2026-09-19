@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-18T20:13:07-03:00",
+  "gerado_em": "2026-09-18T21:03:05-03:00",
   "hoje": "2026-09-18",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -12,6 +12,12 @@
   "meta_mensal_valor": 0,
   "dias_op_mes": 0,
   "dias_atipicos": {
+    "2026-09-18": {
+      "ratio": 0.0,
+      "tipo": "alto",
+      "mediana_dow": 0.0,
+      "caixa": 0.0
+    },
     "2026-09-15": {
       "ratio": 0.0,
       "tipo": "alto",
@@ -1160,8 +1166,8 @@
         "cartao": {
           "stone_recebido": 6867.54,
           "stone_n": 16,
-          "trinks_vendido": 5280.0,
-          "trinks_n": 37,
+          "trinks_vendido": 5644.0,
+          "trinks_n": 39,
           "a_receber_d30": 0.0
         },
         "dinheiro": {
@@ -1278,9 +1284,9 @@
         "cartao": {
           "stone_recebido": 16008.57,
           "stone_n": 42,
-          "trinks_vendido": 20274.75,
-          "trinks_n": 153,
-          "a_receber_d30": 3556.56
+          "trinks_vendido": 20638.75,
+          "trinks_n": 155,
+          "a_receber_d30": 3907.82
         },
         "dinheiro": {
           "total": 810.0,
@@ -1340,7 +1346,7 @@
         },
         "resumo": {
           "recebido_total": 21297.47,
-          "a_receber": 3556.56
+          "a_receber": 3907.82
         },
         "periodo_ini": "2026-09-01",
         "periodo_fim": "2026-09-30"
@@ -1447,9 +1453,9 @@
         "cartao": {
           "stone_recebido": 29506.9,
           "stone_n": 82,
-          "trinks_vendido": 56011.85,
-          "trinks_n": 454,
-          "a_receber_d30": 24544.54
+          "trinks_vendido": 56375.85,
+          "trinks_n": 456,
+          "a_receber_d30": 24895.8
         },
         "dinheiro": {
           "total": 2551.0,
@@ -1604,7 +1610,7 @@
         },
         "resumo": {
           "recebido_total": 46353.46,
-          "a_receber": 24544.54
+          "a_receber": 24895.8
         },
         "periodo_ini": "2026-01-01",
         "periodo_fim": "2026-12-31"
@@ -2196,6 +2202,18 @@
       "vendas_trinks_apos_n": 0,
       "vendas_trinks_apos_v": 0.0,
       "vendas_apos_lista": [
+        {
+          "data": "2026-09-18T20:35",
+          "valor": 0.0,
+          "meio": "Mastercard",
+          "cliente": "M° Fernanda Vazquz"
+        },
+        {
+          "data": "2026-09-18T20:31",
+          "valor": 0.0,
+          "meio": "Mastercard",
+          "cliente": "Edna Marques"
+        },
         {
           "data": "2026-09-18T19:23",
           "valor": 0.0,
@@ -8461,7 +8479,7 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "20:13",
+          "hora_atual_str": "21:03",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -8714,7 +8732,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-18T20:13:07-03:00",
+    "gerado_em": "2026-09-18T21:03:05-03:00",
     "hoje": "2026-09-18",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -8953,7 +8971,7 @@
       {
         "tipo": "oportunidade",
         "titulo": "Meta do dia batida",
-        "texto": "Caixa R$ 3.490,00 já superou a meta diária de R$ 2.350,40 (148%).",
+        "texto": "Caixa R$ 3.854,00 já superou a meta diária de R$ 2.389,38 (161%).",
         "acao": "Toda venda daqui pra frente é margem pura. Oferecer produto adicional pra levar ticket médio pra cima."
       },
       {
@@ -8965,27 +8983,21 @@
       {
         "tipo": "info",
         "titulo": "Fechamento do dia",
-        "texto": "Caixa R$ 3.490,00 · 22 visitas · ticket R$ 158,64 · meta batida ✅.",
+        "texto": "Caixa R$ 3.854,00 · 25 visitas · ticket R$ 154,16 · meta batida ✅.",
         "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
       }
     ],
     "semanal": [
       {
-        "tipo": "atencao",
-        "titulo": "Ritmo/dia -13% vs semana passada",
-        "texto": "Esta semana: R$ 1.381,40/dia · semana anterior (09-07-09-11): R$ 1.586,61/dia.",
-        "acao": "Queda — checar se algo mudou (feriado, doença, chuva). Ativar top clientes."
-      },
-      {
         "tipo": "info",
         "titulo": "Semana perto da meta",
-        "texto": "Projeção R$ 9.669,80 (85%). Precisa R$ 2.233,94/dia nos 2 dias restantes vs atual R$ 1.381,40/dia.",
-        "acao": "Faltam R$ 4.467,87. Um sábado bom já fecha a semana."
+        "texto": "Projeção R$ 10.179,40 (90%). Precisa R$ 2.052,75/dia nos 2 dias restantes vs atual R$ 1.454,20/dia.",
+        "acao": "Faltam R$ 4.105,50. Um sábado bom já fecha a semana."
       },
       {
         "tipo": "oportunidade",
-        "titulo": "Sex rende 6.4× Seg",
-        "texto": "Sex: R$ 3.490,00/dia · Seg: R$ 549,00/dia.",
+        "titulo": "Sex rende 7.0× Seg",
+        "texto": "Sex: R$ 3.854,00/dia · Seg: R$ 549,00/dia.",
         "acao": "Reforçar equipe no Sex. No Seg, testar promoção ou reduzir 1 profissional pra cortar custo."
       }
     ],
@@ -8993,25 +9005,25 @@
       {
         "tipo": "critico",
         "titulo": "Mês projeta ABAIXO de 80% da meta",
-        "texto": "Projeção R$ 46.457,21 (77%). Ritmo R$ 1.548,57/dia vs necessário R$ 2.590,33/dia. Gap: R$ 1.041,76/dia.",
+        "texto": "Projeção R$ 47.099,56 (78%). Ritmo R$ 1.569,99/dia vs necessário R$ 2.562,33/dia. Gap: R$ 992,34/dia.",
         "acao": "Restam 13 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
       },
       {
         "tipo": "atencao",
         "titulo": "Retenção baixa (37% recorrentes)",
-        "texto": "101 novos vs 59 recorrentes. Novos gastam R$ 14.960,30, recorrentes R$ 9.463,15.",
+        "texto": "101 novos vs 60 recorrentes. Novos gastam R$ 14.960,30, recorrentes R$ 9.559,15.",
         "acao": "Loja abriu há pouco — normal ter muitos novos. Prioridade: fazer o cliente novo voltar. Cartão fidelidade + mensagem 20 dias após primeira visita costuma trazer 30% de volta."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos = 1.6% do caixa (R$ 413,45). Se chegasse a 8%, seriam +R$ 1.692,61/mês.",
+        "texto": "Produtos = 1.5% do caixa (R$ 413,45). Se chegasse a 8%, seriam +R$ 1.721,73/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 7%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 133,49.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 134,80.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -9042,14 +9054,14 @@
       },
       {
         "tipo": "oportunidade",
-        "titulo": "248 clientes recorrentes com espaço para cross-sell",
+        "titulo": "251 clientes recorrentes com espaço para cross-sell",
         "texto": "Nunca experimentaram serviços populares (ex: FAST ESCOVA - LISA, MÃOS, PÉS E MÃOS). Se 20% aceitar, aumenta ticket médio significativamente.",
         "acao": "Ver aba Anual > Cross-sell. Priorizar top 10 por LTV — recepção pode oferecer no fechamento."
       },
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 116,26. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 116,69. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
@@ -9061,10 +9073,10 @@
         "acao": "Verificar comprovante com o cliente hoje. Se não confirmar, corrigir Trinks pra não inflar caixa fantasma."
       },
       {
-        "tipo": "info",
-        "titulo": "5 PIX depois do último lançamento do extrato",
-        "texto": "R$ 688,00 entraram no Trinks depois que o extrato parou (hoje às 08:20). Não é dinheiro sumido — é movimento que o extrato ainda não alcança.",
-        "acao": "Nada a fazer: o próximo extrato cobre esses lançamentos."
+        "tipo": "atencao",
+        "titulo": "Extrato Stone parado em 09-18 08:20 (1 dias atrás)",
+        "texto": "5 PIX de R$ 688,00 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
+        "acao": "Exportar o extrato Stone atualizado e colocar em data/stone_extrato.csv. Antes disso, não vale ligar pra cliente nenhuma."
       },
       {
         "tipo": "atencao",
