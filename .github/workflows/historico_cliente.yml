@@ -1,0 +1,55 @@
+name: Historico de uma cliente (sob demanda)
+
+# Responde "o que a fulana ja consumiu", varrendo TODOS os dias desde a
+# abertura — inclusive hoje e ontem, que os caches do repositorio nao tem
+# (eles guardam o ano menos o mes corrente).
+#
+# Nao grava nada no repositorio: a resposta sai no log deste run.
+
+on:
+  workflow_dispatch:
+    inputs:
+      nome:
+        description: 'Nome ou parte do nome da cliente (sem precisar de acento)'
+        required: false
+        type: string
+      id:
+        description: 'Id da cliente no Trinks (use quando o nome casar com mais de uma)'
+        required: false
+        type: string
+      desde:
+        description: 'Data inicial AAAA-MM-DD (vazio = desde a abertura, 22/07/2026)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  historico:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps
+        run: pip install requests python-dotenv
+
+      - name: Historico da cliente
+        env:
+          TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
+          TRINKS_ESTABELECIMENTO_ID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID }}
+          NOME: ${{ inputs.nome }}
+          ID: ${{ inputs.id }}
+          DESDE: ${{ inputs.desde }}
+        run: |
+          args=()
+          [ -n "$NOME" ]  && args+=(--nome "$NOME")
+          [ -n "$ID" ]    && args+=(--id "$ID")
+          [ -n "$DESDE" ] && args+=(--desde "$DESDE")
+          if [ ${#args[@]} -eq 0 ]; then
+            echo "::error::Informe 'nome' ou 'id' ao disparar o workflow."
+            exit 2
+          fi
+          python scripts/historico_cliente.py "${args[@]}"
