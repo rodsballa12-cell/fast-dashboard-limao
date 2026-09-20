@@ -1,21 +1,108 @@
 {
   "pages": [
-    { "id": "page-1", "name": "Carrossel" },
-    { "id": "page-2", "name": "Stories" }
+    {
+      "id": "page-1",
+      "name": "Carrossel"
+    },
+    {
+      "id": "page-2",
+      "name": "Stories"
+    }
   ],
   "artboards": [
-    { "file": "Main.dc.html", "page": "page-1", "x": 0, "y": 0, "w": 1080, "h": 1350, "title": "1 · preto" },
-    { "file": "Slide2.dc.html", "page": "page-1", "x": 1240, "y": 0, "w": 1080, "h": 1350, "title": "2 · amarelo" },
-    { "file": "Slide3.dc.html", "page": "page-1", "x": 2480, "y": 0, "w": 1080, "h": 1350, "title": "3 · a virada" },
-    { "file": "Slide4.dc.html", "page": "page-1", "x": 3720, "y": 0, "w": 1080, "h": 1350, "title": "4 · a data" },
-    { "file": "Slide5.dc.html", "page": "page-1", "x": 4960, "y": 0, "w": 1080, "h": 1350, "title": "5 · branco · CTA" },
-    { "file": "Story1.dc.html", "page": "page-2", "x": 0, "y": 0, "w": 1080, "h": 1920, "title": "Story 1 · preto e amarelo" },
-    { "file": "Story2.dc.html", "page": "page-2", "x": 1240, "y": 0, "w": 1080, "h": 1920, "title": "Story 2 · a virada" },
-    { "file": "Story3.dc.html", "page": "page-2", "x": 2480, "y": 0, "w": 1080, "h": 1920, "title": "Story 3 · branco · CTA" }
+    {
+      "file": "Main.dc.html",
+      "page": "page-1",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1350,
+      "title": "1 · preto"
+    },
+    {
+      "file": "Slide2.dc.html",
+      "page": "page-1",
+      "x": 1240,
+      "y": 0,
+      "w": 1080,
+      "h": 1350,
+      "title": "2 · amarelo"
+    },
+    {
+      "file": "Slide3.dc.html",
+      "page": "page-1",
+      "x": 2480,
+      "y": 0,
+      "w": 1080,
+      "h": 1350,
+      "title": "3 · a virada"
+    },
+    {
+      "file": "Slide4.dc.html",
+      "page": "page-1",
+      "x": 3720,
+      "y": 0,
+      "w": 1080,
+      "h": 1350,
+      "title": "4 · a data"
+    },
+    {
+      "file": "Slide5.dc.html",
+      "page": "page-1",
+      "x": 4960,
+      "y": 0,
+      "w": 1080,
+      "h": 1350,
+      "title": "5 · branco · CTA"
+    },
+    {
+      "file": "Story1.dc.html",
+      "page": "page-2",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "title": "Story 1 · preto e amarelo"
+    },
+    {
+      "file": "Story2.dc.html",
+      "page": "page-2",
+      "x": 1240,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "title": "Story 2 · a virada"
+    },
+    {
+      "file": "Story3.dc.html",
+      "page": "page-2",
+      "x": 2480,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "title": "Story 3 · branco · CTA"
+    }
   ],
   "annotations": [
-    { "id": "arco", "page": "page-1", "x": 0, "y": -250, "w": 1100, "text": "CARROSSEL 1080x1350 · feed da Fast Escova Limao\nO arco de cor e a narrativa: PRETO (a Escova, o que voce ja faz) -> AMARELO (a pergunta) -> AMARELO+TEAL na mesma tela (a virada) -> TEAL (a data) -> BRANCO (o convite). Quem chega no ultimo slide ja mudou de marca sem que ninguem tenha explicado.\n\nO rodape preto do slide 5 assina as duas lojas lado a lado." },
-    { "id": "st", "page": "page-2", "x": 0, "y": -220, "w": 1100, "text": "STORIES 1080x1920 · mesmo arco em tres telas\n1 preto e amarelo · 2 a virada · 3 branco com o convite.\nPublicar na sequencia, com alguns minutos entre elas." }
+    {
+      "id": "arco",
+      "page": "page-1",
+      "x": 0,
+      "y": -250,
+      "w": 1100,
+      "text": "CARROSSEL 1080x1350 · feed da Fast Escova Limao\nCORES OFICIAIS, amostradas dos PDFs de logo: amarelo #FBD300, teal #00A6A4 (fundos grandes usam #006C6B, mesmo matiz escurecido para dar contraste com o branco), preto #000000.\n\nO arco de cor e a narrativa: PRETO -> AMARELO -> AMARELO+TEAL na mesma tela -> TEAL -> BRANCO. O rodape preto do slide 5 assina as duas marcas."
+    },
+    {
+      "id": "st",
+      "page": "page-2",
+      "x": 0,
+      "y": -220,
+      "w": 1100,
+      "text": "STORIES 1080x1920 · mesmo arco em tres telas.\nLogos oficiais extraidos dos PDFs em alta resolucao, com fundo transparente: versao clara para fundo escuro, escura para fundo claro, e uma toda branca para o fundo teal, onde o teal do logo nao teria contraste."
+    }
   ],
-  "launch": { "view": "canvas", "page": "page-1" }
+  "launch": {
+    "view": "canvas",
+    "page": "page-1"
+  }
 }
