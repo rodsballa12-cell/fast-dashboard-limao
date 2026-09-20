@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-19T21:02:49-03:00",
+  "gerado_em": "2026-09-19T21:12:32-03:00",
   "hoje": "2026-09-19",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -136,7 +136,7 @@
       },
       {
         "h": 15,
-        "pct_acum": 45.6
+        "pct_acum": 45.5
       },
       {
         "h": 16,
@@ -144,19 +144,19 @@
       },
       {
         "h": 17,
-        "pct_acum": 64.3
+        "pct_acum": 64.2
       },
       {
         "h": 18,
-        "pct_acum": 76.7
+        "pct_acum": 76.6
       },
       {
         "h": 19,
-        "pct_acum": 90.6
+        "pct_acum": 90.5
       },
       {
         "h": 20,
-        "pct_acum": 98.9
+        "pct_acum": 98.8
       },
       {
         "h": 21,
@@ -922,7 +922,7 @@
     "pix_tarifa_pct": 0.643,
     "taxa_pix_pct": 0.643,
     "nao_conciliado": {
-      "total_valor_risco": 28925.78,
+      "total_valor_risco": 28649.78,
       "extrato_cobre_ate": "2026-09-19",
       "extrato_cobre_ate_hora": "2026-09-19T20:19",
       "orfaos_stone_n": 2,
@@ -941,15 +941,9 @@
           "tarifa": 1.54
         }
       ],
-      "orfaos_trinks_n": 5,
-      "orfaos_trinks_v": 546.0,
+      "orfaos_trinks_n": 3,
+      "orfaos_trinks_v": 270.0,
       "orfaos_trinks": [
-        {
-          "data": "2026-09-19",
-          "data_hora": "2026-09-19T14:10",
-          "valor": 229.0,
-          "cliente": "Thais lirio"
-        },
         {
           "data": "2026-09-15",
           "data_hora": "2026-09-15T16:56",
@@ -963,12 +957,6 @@
           "cliente": "Grazieli Rocha "
         },
         {
-          "data": "2026-09-13",
-          "data_hora": "2026-09-13T10:24",
-          "valor": 47.0,
-          "cliente": "Rosangela Siqueira de Pinho Garcia"
-        },
-        {
           "data": "2026-09-05",
           "data_hora": "2026-09-05T19:33",
           "valor": 35.0,
@@ -978,8 +966,8 @@
       "orfaos_fora_extrato_n": 0,
       "orfaos_fora_extrato_v": 0.0,
       "orfaos_fora_extrato": [],
-      "orfaos_trinks_reconciliados_n": 1,
-      "orfaos_trinks_reconciliados_v": 228.0,
+      "orfaos_trinks_reconciliados_n": 3,
+      "orfaos_trinks_reconciliados_v": 504.0,
       "orfaos_trinks_reconciliados": [
         {
           "data": "2026-08-29",
@@ -988,6 +976,22 @@
           "cliente": "Biankarine Silva",
           "motivo": "PIX feito para conta XP (não passou pelo Stone)",
           "confirmado_em": "2026-09-04"
+        },
+        {
+          "data": "2026-09-19",
+          "data_hora": "2026-09-19T14:10",
+          "valor": 229.0,
+          "cliente": "Thais lirio",
+          "motivo": "PIX antecipado direto para a conta XP (nao passou pelo Stone) — confirmado pelo Rodrigo",
+          "confirmado_em": "2026-09-20"
+        },
+        {
+          "data": "2026-09-13",
+          "data_hora": "2026-09-13T10:24",
+          "valor": 47.0,
+          "cliente": "Rosangela Siqueira de Pinho Garcia",
+          "motivo": "Pendencia quitada em 20/09 pelo Rodrigo, no cartao dele, para limpar a conciliacao",
+          "confirmado_em": "2026-09-20"
         }
       ],
       "a_receber_d30": 28011.78,
@@ -1828,33 +1832,33 @@
     ],
     "antecipacao_analise": {
       "debito": {
-        "bruto": 1289.63,
-        "n": 9,
+        "bruto": 1351.36,
+        "n": 10,
         "mdr_pct": 1.46,
-        "liq_espera": 1270.81,
-        "liq_antecipar": 1270.1,
-        "custo_antecipacao": 0.7,
+        "liq_espera": 1331.62,
+        "liq_antecipar": 1330.89,
+        "custo_antecipacao": 0.73,
         "dias_medio_recebimento": 1,
         "dias_medio_restante": 1.0,
         "prazo_dias": 1
       },
       "credito": {
-        "bruto": 27309.01,
-        "n": 171,
+        "bruto": 27246.89,
+        "n": 170,
         "mdr_pct": 2.08,
-        "liq_espera": 26740.97,
-        "liq_antecipar": 26487.88,
-        "custo_antecipacao": 253.09,
+        "liq_espera": 26680.16,
+        "liq_antecipar": 26428.07,
+        "custo_antecipacao": 252.09,
         "dias_medio_recebimento": 30,
         "dias_medio_restante": 17.1,
         "prazo_dias": 30
       },
       "total": {
-        "bruto": 28598.64,
+        "bruto": 28598.25,
         "liq_espera": 28011.78,
-        "liq_antecipar": 27757.99,
-        "custo_antecipacao": 253.79,
-        "custo_pct": 0.91
+        "liq_antecipar": 27758.96,
+        "custo_antecipacao": 252.82,
+        "custo_pct": 0.9
       },
       "confronto_a_receber": {
         "a_receber_extrato": 28011.78,
@@ -1864,7 +1868,7 @@
       "cronograma_liberacao": [
         {
           "data": "2026-09-20",
-          "bruto": 2824.16
+          "bruto": 2884.64
         },
         {
           "data": "2026-09-21",
@@ -1972,7 +1976,7 @@
         },
         {
           "data": "2026-10-19",
-          "bruto": 2921.15
+          "bruto": 2860.67
         }
       ],
       "taxa_antecipacao_mensal_pct": 1.66,
@@ -2071,9 +2075,15 @@
     },
     "gap_trinks_stone": {
       "ultima_data_stone": "2026-09-19T20:19:00",
-      "vendas_trinks_apos_n": 1,
-      "vendas_trinks_apos_v": 119.0,
+      "vendas_trinks_apos_n": 2,
+      "vendas_trinks_apos_v": 172.0,
       "vendas_apos_lista": [
+        {
+          "data": "2026-09-19T21:11",
+          "valor": 53.0,
+          "meio": "Maestro/Redeshop",
+          "cliente": "Josefina Ribeiro dos santos "
+        },
         {
           "data": "2026-09-19T20:26",
           "valor": 119.0,
@@ -2081,7 +2091,7 @@
           "cliente": "Ruthe Cristina Silva Soares "
         }
       ],
-      "horas_desatualizado": 0.7
+      "horas_desatualizado": 0.9
     }
   },
   "auditoria_cancelados": {
@@ -7080,8 +7090,8 @@
         },
         {
           "h": 14,
-          "media": 0.98,
-          "n_total": 52
+          "media": 0.96,
+          "n_total": 51
         },
         {
           "h": 15,
@@ -7228,14 +7238,14 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Prof desligado #707880",
+          "nome": "Prof desligado #38018",
           "n": 0,
           "v": 535.0,
           "ticket_medio": 535.0,
           "horas_trab": 0.0
         },
         {
-          "nome": "Prof desligado #38018",
+          "nome": "Prof desligado #707880",
           "n": 0,
           "v": 535.0,
           "ticket_medio": 535.0,
@@ -7291,18 +7301,18 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Kimberly Soares Vasconcelos",
-          "n": 4,
-          "v": 79.0,
-          "ticket_medio": 19.75,
-          "horas_trab": 1.8
-        },
-        {
           "nome": "Prof desligado #518669",
           "n": 0,
           "v": 79.0,
           "ticket_medio": 79.0,
           "horas_trab": 0.0
+        },
+        {
+          "nome": "Kimberly Soares Vasconcelos",
+          "n": 4,
+          "v": 79.0,
+          "ticket_medio": 19.75,
+          "horas_trab": 1.8
         },
         {
           "nome": "Prof desligado #729910",
@@ -7312,41 +7322,6 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Lidiane Quiteria Da Silva",
-          "n": 9,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 5.2
-        },
-        {
-          "nome": "Jeniffer Roberta De Oliveira Felix",
-          "n": 17,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 9.2
-        },
-        {
-          "nome": "Eliana Sampaio Cerqueira",
-          "n": 1,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 0.5
-        },
-        {
-          "nome": "Aline Dos Santos Gonzaga",
-          "n": 4,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.6
-        },
-        {
-          "nome": "Sandra Margarete Da Silva",
-          "n": 6,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 3.5
-        },
-        {
           "nome": "Matheus Jesus Azevedo",
           "n": 7,
           "v": 0.0,
@@ -7354,25 +7329,18 @@
           "horas_trab": 4.2
         },
         {
-          "nome": "Cacilda Guimarães",
-          "n": 3,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.5
-        },
-        {
-          "nome": "Vanessa Nascimento D Silva",
-          "n": 4,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 2.0
-        },
-        {
           "nome": "Giovanna Guedes Da Silva",
           "n": 65,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 35.1
+        },
+        {
+          "nome": "Julia Kathleen Souza Da Silva",
+          "n": 11,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 5.5
         },
         {
           "nome": "Claudia Cabral Pereira",
@@ -7389,6 +7357,20 @@
           "horas_trab": 6.3
         },
         {
+          "nome": "Sandra Margarete Da Silva",
+          "n": 6,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 3.5
+        },
+        {
+          "nome": "Vanessa Nascimento D Silva",
+          "n": 4,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 2.0
+        },
+        {
           "nome": "Niedja Rafaelle Leite Nunes",
           "n": 4,
           "v": 0.0,
@@ -7396,18 +7378,46 @@
           "horas_trab": 2.4
         },
         {
+          "nome": "Eliana Sampaio Cerqueira",
+          "n": 1,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 0.5
+        },
+        {
+          "nome": "Jeniffer Roberta De Oliveira Felix",
+          "n": 17,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 9.2
+        },
+        {
+          "nome": "Lidiane Quiteria Da Silva",
+          "n": 9,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 5.2
+        },
+        {
+          "nome": "Cacilda Guimarães",
+          "n": 3,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 1.5
+        },
+        {
+          "nome": "Aline Dos Santos Gonzaga",
+          "n": 4,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 1.6
+        },
+        {
           "nome": "Bianca Doria Araujo Santos",
           "n": 8,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 4.9
-        },
-        {
-          "nome": "Julia Kathleen Souza Da Silva",
-          "n": 11,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 5.5
         }
       ],
       "ranking_prof_total_n": 42,
@@ -8007,9 +8017,9 @@
       "meios_pagamento": [
         {
           "nome": "Mastercard",
-          "n": 182,
-          "v": 25773.6,
-          "pct": 32.4
+          "n": 181,
+          "v": 25720.6,
+          "pct": 32.3
         },
         {
           "nome": "PIX",
@@ -8025,8 +8035,8 @@
         },
         {
           "nome": "Maestro/Redeshop",
-          "n": 120,
-          "v": 12952.15,
+          "n": 121,
+          "v": 13005.15,
           "pct": 16.3
         },
         {
@@ -8193,8 +8203,8 @@
         {
           "meio": "Mastercard",
           "parcelas": 1,
-          "n": 182,
-          "v": 25773.6
+          "n": 181,
+          "v": 25720.6
         },
         {
           "meio": "PIX",
@@ -8211,8 +8221,8 @@
         {
           "meio": "Maestro/Redeshop",
           "parcelas": 1,
-          "n": 120,
-          "v": 12952.15
+          "n": 121,
+          "v": 13005.15
         },
         {
           "meio": "Visa Electron",
@@ -10713,8 +10723,8 @@
         },
         {
           "h": 14,
-          "media": 1.0,
-          "n_total": 18
+          "media": 0.94,
+          "n_total": 17
         },
         {
           "h": 15,
@@ -10847,18 +10857,18 @@
           "horas_trab": 1.8
         },
         {
-          "nome": "Kimberly Soares Vasconcelos",
-          "n": 4,
-          "v": 79.0,
-          "ticket_medio": 19.75,
-          "horas_trab": 1.8
-        },
-        {
           "nome": "Prof desligado #518669",
           "n": 0,
           "v": 79.0,
           "ticket_medio": 79.0,
           "horas_trab": 0.0
+        },
+        {
+          "nome": "Kimberly Soares Vasconcelos",
+          "n": 4,
+          "v": 79.0,
+          "ticket_medio": 19.75,
+          "horas_trab": 1.8
         },
         {
           "nome": "Matheus Jesus Azevedo",
@@ -11260,9 +11270,9 @@
       "meios_pagamento": [
         {
           "nome": "Mastercard",
-          "n": 70,
-          "v": 10425.6,
-          "pct": 32.5
+          "n": 69,
+          "v": 10372.6,
+          "pct": 32.4
         },
         {
           "nome": "PIX",
@@ -11272,9 +11282,9 @@
         },
         {
           "nome": "Maestro/Redeshop",
-          "n": 52,
-          "v": 5880.15,
-          "pct": 18.4
+          "n": 53,
+          "v": 5933.15,
+          "pct": 18.5
         },
         {
           "nome": "Visa",
@@ -11687,8 +11697,8 @@
         },
         {
           "h": 14,
-          "media": 1.17,
-          "n_total": 7
+          "media": 1.0,
+          "n_total": 6
         },
         {
           "h": 15,
@@ -12330,9 +12340,9 @@
       "meios_pagamento": [
         {
           "nome": "Mastercard",
-          "n": 22,
-          "v": 3142.0,
-          "pct": 24.9
+          "n": 21,
+          "v": 3089.0,
+          "pct": 24.5
         },
         {
           "nome": "PIX",
@@ -12348,9 +12358,9 @@
         },
         {
           "nome": "Maestro/Redeshop",
-          "n": 21,
-          "v": 2379.0,
-          "pct": 18.9
+          "n": 22,
+          "v": 2432.0,
+          "pct": 19.3
         },
         {
           "nome": "Visa Electron",
@@ -12536,7 +12546,7 @@
         "caixa_delta_bruto_pct": 62.7,
         "periodo_ant_ref": {
           "data": "2026-09-12",
-          "hora_max": 21.03,
+          "hora_max": 21.2,
           "caixa": 3283.0,
           "atend_fin": 48,
           "faturamento_apurado": 3283.0,
@@ -12559,15 +12569,15 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "21:02",
-          "hora_atual_num": 21.03,
-          "pct_esperado_agora": 98.9,
+          "hora_atual_str": "21:12",
+          "hora_atual_num": 21.2,
+          "pct_esperado_agora": 99.0,
           "meta_dia": 4312.74,
-          "meta_esperada_agora": 4266.59,
+          "meta_esperada_agora": 4269.61,
           "realizado_agora": 5340.0,
-          "pace_delta": 1073.41,
-          "pace_ratio_pct": 125.2,
-          "projecao_dia": 5397.76,
+          "pace_delta": 1070.39,
+          "pace_ratio_pct": 125.1,
+          "projecao_dia": 5393.94,
           "opera_hoje": true
         },
         "ticket_meta": 0.0,
@@ -12700,8 +12710,8 @@
         },
         {
           "h": 14,
-          "n": 3,
-          "v": 380.0
+          "n": 2,
+          "v": 327.0
         },
         {
           "h": 15,
@@ -13254,9 +13264,9 @@
       "meios_pagamento": [
         {
           "nome": "Mastercard",
-          "n": 11,
-          "v": 1809.0,
-          "pct": 33.9
+          "n": 10,
+          "v": 1756.0,
+          "pct": 32.9
         },
         {
           "nome": "PIX",
@@ -13271,16 +13281,16 @@
           "pct": 14.1
         },
         {
+          "nome": "Maestro/Redeshop",
+          "n": 7,
+          "v": 603.0,
+          "pct": 11.3
+        },
+        {
           "nome": "Visa Electron",
           "n": 3,
           "v": 557.0,
           "pct": 10.4
-        },
-        {
-          "nome": "Maestro/Redeshop",
-          "n": 6,
-          "v": 550.0,
-          "pct": 10.3
         },
         {
           "nome": "Dinheiro",
@@ -13409,7 +13419,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-19T21:02:49-03:00",
+    "gerado_em": "2026-09-19T21:12:32-03:00",
     "hoje": "2026-09-19",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -13773,8 +13783,8 @@
     "stone": [
       {
         "tipo": "critico",
-        "titulo": "5 PIX registrado no Trinks mas SEM confirmação Stone",
-        "texto": "Total R$ 546,00. O sistema marca como recebido, mas o dinheiro NÃO caiu na conta.",
+        "titulo": "3 PIX registrado no Trinks mas SEM confirmação Stone",
+        "texto": "Total R$ 270,00. O sistema marca como recebido, mas o dinheiro NÃO caiu na conta.",
         "acao": "Verificar comprovante com o cliente hoje. Se não confirmar, corrigir Trinks pra não inflar caixa fantasma."
       },
       {
@@ -13813,7 +13823,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-09-19T21:02:49-03:00",
+    "gerado_em": "2026-09-19T21:12:33-03:00",
     "n_agendamentos": 970,
     "horas": [
       9,

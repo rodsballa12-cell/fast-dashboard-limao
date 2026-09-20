@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-19T21:02:49-03:00",
+  "gerado_em": "2026-09-19T21:12:33-03:00",
   "hoje": "2026-09-19",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -945,12 +945,6 @@
       "orfaos_trinks_v": 0.0,
       "orfaos_trinks": [
         {
-          "data": "2026-09-19",
-          "data_hora": "2026-09-19T14:10",
-          "valor": 0.0,
-          "cliente": "Thais lirio"
-        },
-        {
           "data": "2026-09-15",
           "data_hora": "2026-09-15T16:56",
           "valor": 0.0,
@@ -961,12 +955,6 @@
           "data_hora": "2026-09-13T16:14",
           "valor": 0.0,
           "cliente": "Grazieli Rocha "
-        },
-        {
-          "data": "2026-09-13",
-          "data_hora": "2026-09-13T10:24",
-          "valor": 0.0,
-          "cliente": "Rosangela Siqueira de Pinho Garcia"
         },
         {
           "data": "2026-09-05",
@@ -988,6 +976,22 @@
           "cliente": "Biankarine Silva",
           "motivo": "PIX feito para conta XP (não passou pelo Stone)",
           "confirmado_em": "2026-09-04"
+        },
+        {
+          "data": "2026-09-19",
+          "data_hora": "2026-09-19T14:10",
+          "valor": 0.0,
+          "cliente": "Thais lirio",
+          "motivo": "PIX antecipado direto para a conta XP (nao passou pelo Stone) — confirmado pelo Rodrigo",
+          "confirmado_em": "2026-09-20"
+        },
+        {
+          "data": "2026-09-13",
+          "data_hora": "2026-09-13T10:24",
+          "valor": 0.0,
+          "cliente": "Rosangela Siqueira de Pinho Garcia",
+          "motivo": "Pendencia quitada em 20/09 pelo Rodrigo, no cartao dele, para limpar a conciliacao",
+          "confirmado_em": "2026-09-20"
         }
       ],
       "a_receber_d30": 0.0,
@@ -2074,6 +2078,12 @@
       "vendas_trinks_apos_n": 0,
       "vendas_trinks_apos_v": 0.0,
       "vendas_apos_lista": [
+        {
+          "data": "2026-09-19T21:11",
+          "valor": 0.0,
+          "meio": "Maestro/Redeshop",
+          "cliente": "Josefina Ribeiro dos santos "
+        },
         {
           "data": "2026-09-19T20:26",
           "valor": 0.0,
@@ -8342,7 +8352,7 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "21:02",
+          "hora_atual_str": "21:12",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -8597,7 +8607,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-19T21:02:49-03:00",
+    "gerado_em": "2026-09-19T21:12:32-03:00",
     "hoje": "2026-09-19",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -8961,8 +8971,8 @@
     "stone": [
       {
         "tipo": "critico",
-        "titulo": "5 PIX registrado no Trinks mas SEM confirmação Stone",
-        "texto": "Total R$ 546,00. O sistema marca como recebido, mas o dinheiro NÃO caiu na conta.",
+        "titulo": "3 PIX registrado no Trinks mas SEM confirmação Stone",
+        "texto": "Total R$ 270,00. O sistema marca como recebido, mas o dinheiro NÃO caiu na conta.",
         "acao": "Verificar comprovante com o cliente hoje. Se não confirmar, corrigir Trinks pra não inflar caixa fantasma."
       },
       {
