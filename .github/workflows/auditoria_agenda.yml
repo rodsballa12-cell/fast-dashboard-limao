@@ -1,0 +1,50 @@
+name: A empresa digital se reuniu ontem?
+
+# As sete tarefas agendadas no PC deveriam deixar uma ata por cargo por dia em
+# docs/atas/. Ata que nao aparece nao faz barulho nenhum — o arquivo
+# simplesmente nao existe. Em 20/09/2026 descobrimos assim que os seis
+# departamentos tinham rodado UMA vez, e ninguem havia percebido.
+#
+# Este workflow transforma a ausencia em e-mail. Roda de manha, depois de a
+# agenda da noite ja ter tido sua chance.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dia:
+        description: 'Dia a conferir (AAAA-MM-DD). Vazio = ontem.'
+        required: false
+        type: string
+  schedule:
+    # 12h e 13h UTC = 09h e 10h BRT. Dois fires porque o cron do GitHub atrasa
+    # e as vezes pula — mesma licao de docs/aprendizados/cron-do-github-nao-e-relogio.md
+    - cron: '20 12 * * *'
+    - cron: '20 13 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: auditoria-agenda
+  cancel-in-progress: false
+
+jobs:
+  conferir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Chamada dos sete cargos
+        run: |
+          args=()
+          [ -n "${{ inputs.dia }}" ] && args+=(--dia "${{ inputs.dia }}")
+          set +e
+          python scripts/auditoria_agenda.py "${args[@]}"
+          rc=$?
+          set -e
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::A empresa digital nao se reuniu ontem. Veja quem faltou acima."
+            exit 1
+          fi
