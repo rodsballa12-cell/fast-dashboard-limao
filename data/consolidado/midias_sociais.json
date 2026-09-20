@@ -563,6 +563,61 @@
         "Etiquetas de cliente: `?incluirEtiquetas=true` ativado mas 0/429 clientes têm etiqueta",
         "GBP Fast Spa Limão: `location_id: null` · SPA abre 25/09 (7 dias) sem GBP criado"
       ]
+    },
+    {
+      "data": "2026-09-20",
+      "hora": "09:30",
+      "tipo": "matinal",
+      "sincronizado_em": "2026-09-20T09:04:23-03:00",
+      "sincronizado_por": "auto (workflow conselho_sync.yml)",
+      "ata": "docs/atas/2026-09-20-conselho.md",
+      "mesa": {
+        "operacao": "ok",
+        "financeiro": "atencao",
+        "marketing": "atencao",
+        "relacionamento": "critico",
+        "pessoas": "atencao"
+      },
+      "decisoes": [
+        {
+          "n": 1,
+          "titulo": "Cancelar a antecipação da Stone marcada para segunda de manhã",
+          "em_jogo": "~R$ 200 de taxa para adiantar dinheiro que não falta, com R$ 19.621 parados na Reserva",
+          "executor": "Rodrigo, antes de segunda de manhã",
+          "status": "aprovada",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-09-20-conselho-cancelar-a-antecipacao-da-stone-marcada.md"
+        },
+        {
+          "n": 2,
+          "titulo": "Ligar a fila de WhatsApp para os 69 clientes em alerta de churn",
+          "em_jogo": "R$ 16.862 de LTV, com custo de reativação zero porque já são clientes",
+          "executor": "Relacionamento",
+          "status": "aprovada",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-09-20-conselho-ligar-a-fila-de-whatsapp-para-os-69-clie.md"
+        },
+        {
+          "n": 3,
+          "titulo": "Pedir hoje a liberação da chave do Trinks do Spa",
+          "em_jogo": "abrir dia 25 sem enxergar receita na semana de inauguração, sendo que a liberação leva até 48h e não depende de nós",
+          "executor": "Rodrigo, hoje",
+          "status": "aprovada",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-09-20-conselho-pedir-hoje-a-liberacao-da-chave-do-trink.md"
+        }
+      ],
+      "cruzamentos_chave": [
+        "A decisão de segunda está errada e segunda é amanhã. O Conselho de 18/09 aprovou antecipar R$ 8-10k da Stone justificando com \"R$ 1.171 de caixa vs R$ 1.016/dia\". O painel enxergava até 09/09. A Reserva Stone tem R$ 19.621 — antecipar custaria taxa sobre dinheiro que já está na conta. Financeiro contra Financeiro, com dois relógios diferentes.",
+        "A base virou de novos para recorrentes e ninguém cuida dos recorrentes. W38 (6 de 7 dias): 27 novos / R$ 3.240 contra 49 recorrentes / R$ 5.444. Na W37 era o inverso: 41 novos contra 35. E o Relacionamento está com wa_fila desligada (ativo=false, 0 mensagens) com 69 clientes em alerta de churn e R$ 16.862 de LTV em risco. Marketing paga R$ 8,82 por conversa nova enquanto 69 clientes que já vieram vão embora sem ninguém falar com elas.",
+        "Sábado e terça são dois negócios no mesmo endereço. Pico de sábado 3,94 simultâneos às 17h, e a manhã de sábado (2,40) é mais cheia que o pico de qualquer segunda, terça ou quarta (0,71 · 0,90 · 0,96). Manhãs de seg/ter/qua entre 0,25 e 0,31. Ontem 11 profissionais fizeram R$ 5.340; em 01/08, 7 fizeram R$ 5.464.",
+        "Silêncio suspeito: o Spa abre em 5 dias sem chave do Trinks. Marketing mostra o Spa comprando conversa a R$ 2,90 — três vezes mais barato que a Escova, 182 em 7 dias — e o painel financeiro dele está zerado. Ninguém consegue dizer se essas conversas viram cliente."
+      ],
+      "sem_dono": [
+        "Por que a agenda parou? Os seis departamentos rodaram uma vez só (15/09) e o Conselho quatro vezes em sete dias. O rastro está em _execucoes.log, no vault — só o PC alcança.",
+        "As 182 conversas do Spa viram cliente? Falta o conector TRINKS_API_KEY_SPA.",
+        "A margem está certa? A comissão não tem regra cadastrada no Trinks (comissoes.habilitado false); o equilíbrio de R$ 58.729 usa percentual presumido."
+      ]
     }
   ],
   "recomendacoes": [
@@ -598,6 +653,39 @@
       "revisao_em": null,
       "docs_decisao": "docs/decisoes/2026-09-18-conselho-investigar-hoje-mesmo-o-que-puxou-7-clie.md",
       "origem_conselho": "2026-09-18"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-09-20] Cancelar a antecipação da Stone marcada para segunda de manhã",
+      "detalhe": "~R$ 200 de taxa para adiantar dinheiro que não falta, com R$ 19.621 parados na Reserva",
+      "acao": "Executar: Rodrigo, antes de segunda de manhã.",
+      "status": "aprovada",
+      "aprovada_em": "2026-09-20",
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-09-20-conselho-cancelar-a-antecipacao-da-stone-marcada.md",
+      "origem_conselho": "2026-09-20"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-09-20] Ligar a fila de WhatsApp para os 69 clientes em alerta de churn",
+      "detalhe": "R$ 16.862 de LTV, com custo de reativação zero porque já são clientes",
+      "acao": "Executar: Relacionamento.",
+      "status": "aprovada",
+      "aprovada_em": "2026-09-20",
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-09-20-conselho-ligar-a-fila-de-whatsapp-para-os-69-clie.md",
+      "origem_conselho": "2026-09-20"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-09-20] Pedir hoje a liberação da chave do Trinks do Spa",
+      "detalhe": "abrir dia 25 sem enxergar receita na semana de inauguração, sendo que a liberação leva até 48h e não depende de nós",
+      "acao": "Executar: Rodrigo, hoje.",
+      "status": "aprovada",
+      "aprovada_em": "2026-09-20",
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-09-20-conselho-pedir-hoje-a-liberacao-da-chave-do-trink.md",
+      "origem_conselho": "2026-09-20"
     }
   ],
   "kpi_estrela": {
