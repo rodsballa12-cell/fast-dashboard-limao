@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-21T03:11:05-03:00",
+  "gerado_em": "2026-09-21T12:56:49-03:00",
   "hoje": "2026-09-21",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -3801,9 +3801,121 @@
             "receita": 0.0
           }
         }
+      },
+      "2026-W39": {
+        "periodo_ini": "2026-09-21",
+        "periodo_fim": "2026-09-21",
+        "kpis": {
+          "caixa": 0.0,
+          "faturamento_apurado": 0.0,
+          "receita_serv": 0.0,
+          "atend_fin": 0,
+          "atend_canc": 0,
+          "atend_total": 0,
+          "n_trans": 0,
+          "ticket_trans": 0.0,
+          "cliente_dia": 0,
+          "ticket_medio": 0.0,
+          "taxa_canc": 0.0,
+          "dias_op": 0,
+          "clientes_unicos": 0,
+          "em_atendimento": 0,
+          "n_prof_ativos": 0,
+          "rs_hora_salao": 0.0,
+          "horas_operacao_periodo": 0.0,
+          "utilizacao_agregada_pct": 0.0
+        },
+        "categorias": {
+          "pacotes": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "produtos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "fast_retoque": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos_gerais": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          }
+        },
+        "novos_vs_recorr": {
+          "novos": {
+            "clientes": 0,
+            "atend": 0,
+            "receita": 0.0
+          },
+          "recorrentes": {
+            "clientes": 0,
+            "atend": 0,
+            "receita": 0.0
+          }
+        }
       }
     },
     "dias": {
+      "2026-09-21": {
+        "kpis": {
+          "caixa": 0.0,
+          "faturamento_apurado": 0.0,
+          "receita_serv": 0.0,
+          "atend_fin": 0,
+          "atend_canc": 0,
+          "atend_total": 0,
+          "n_trans": 0,
+          "ticket_trans": 0.0,
+          "cliente_dia": 0,
+          "ticket_medio": 0.0,
+          "taxa_canc": 0.0,
+          "dias_op": 0,
+          "clientes_unicos": 0,
+          "em_atendimento": 0,
+          "n_prof_ativos": 0,
+          "rs_hora_salao": 0.0,
+          "horas_operacao_periodo": 0.0,
+          "utilizacao_agregada_pct": 0.0
+        },
+        "categorias": {
+          "pacotes": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "produtos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "fast_retoque": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos_gerais": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          }
+        }
+      },
       "2026-09-20": {
         "kpis": {
           "caixa": 0.0,
@@ -8247,9 +8359,9 @@
         "rs_hora_salao": 0.0,
         "horas_operacao_periodo": 0.0,
         "utilizacao_agregada_pct": 0.0,
-        "caixa_delta_pct": null,
-        "atend_delta_pct": null,
-        "cliente_dia_delta_pct": null,
+        "caixa_delta_pct": 0.0,
+        "atend_delta_pct": 0.0,
+        "cliente_dia_delta_pct": 0.0,
         "caixa_delta_perdia_pct": null,
         "atend_delta_perdia_pct": null,
         "cliente_dia_delta_perdia_pct": null,
@@ -8257,8 +8369,8 @@
           "atual": 0,
           "anterior": 0
         },
-        "ticket_delta_pct": null,
-        "caixa_delta_bruto_pct": null,
+        "ticket_delta_pct": 0.0,
+        "caixa_delta_bruto_pct": 0.0,
         "periodo_ant_ref": {
           "data": "2026-09-14",
           "hora_max": 0.0,
@@ -8280,11 +8392,11 @@
           "peso_semana_anterior_pct": 0.0,
           "razao_peso": 0.0,
           "comparavel": true,
-          "caixa_delta_ajustado_pct": null,
+          "caixa_delta_ajustado_pct": 0.0,
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "03:11",
+          "hora_atual_str": "12:56",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -8509,7 +8621,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-21T03:11:04-03:00",
+    "gerado_em": "2026-09-21T12:56:48-03:00",
     "hoje": "2026-09-21",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -8728,7 +8840,7 @@
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 7%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 151,53.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 148,82.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -8766,7 +8878,7 @@
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 122,71. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 121,98. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
