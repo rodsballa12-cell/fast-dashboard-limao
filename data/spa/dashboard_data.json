@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-22T17:07:51-03:00",
+  "gerado_em": "2026-09-22T20:34:53-03:00",
   "hoje": "2026-09-22",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -25,12 +25,6 @@
       "caixa": 0.0
     },
     "2026-09-08": {
-      "ratio": 0.0,
-      "tipo": "alto",
-      "mediana_dow": 0.0,
-      "caixa": 0.0
-    },
-    "2026-09-01": {
       "ratio": 0.0,
       "tipo": "alto",
       "mediana_dow": 0.0,
@@ -1133,9 +1127,9 @@
         "cartao": {
           "stone_recebido": 0.0,
           "stone_n": 0,
-          "trinks_vendido": 657.0,
-          "trinks_n": 6,
-          "a_receber_d30": 634.0
+          "trinks_vendido": 799.0,
+          "trinks_n": 8,
+          "a_receber_d30": 771.03
         },
         "dinheiro": {
           "total": 0.0,
@@ -1144,7 +1138,7 @@
         },
         "resumo": {
           "recebido_total": 0.0,
-          "a_receber": 634.0
+          "a_receber": 771.03
         },
         "periodo_ini": "2026-09-21",
         "periodo_fim": "2026-09-27"
@@ -1245,9 +1239,9 @@
         "cartao": {
           "stone_recebido": 16008.57,
           "stone_n": 42,
-          "trinks_vendido": 25514.75,
-          "trinks_n": 192,
-          "a_receber_d30": 8613.16
+          "trinks_vendido": 25656.75,
+          "trinks_n": 194,
+          "a_receber_d30": 8750.19
         },
         "dinheiro": {
           "total": 1002.0,
@@ -1317,7 +1311,7 @@
         },
         "resumo": {
           "recebido_total": 23416.94,
-          "a_receber": 8613.16
+          "a_receber": 8750.19
         },
         "periodo_ini": "2026-09-01",
         "periodo_fim": "2026-09-30"
@@ -1424,9 +1418,9 @@
         "cartao": {
           "stone_recebido": 29506.9,
           "stone_n": 82,
-          "trinks_vendido": 61251.85,
-          "trinks_n": 493,
-          "a_receber_d30": 29601.14
+          "trinks_vendido": 61393.85,
+          "trinks_n": 495,
+          "a_receber_d30": 29738.17
         },
         "dinheiro": {
           "total": 2743.0,
@@ -1591,7 +1585,7 @@
         },
         "resumo": {
           "recebido_total": 48472.93,
-          "a_receber": 29601.14
+          "a_receber": 29738.17
         },
         "periodo_ini": "2026-01-01",
         "periodo_fim": "2026-12-31"
@@ -2082,6 +2076,10 @@
         {
           "data": "2026-10-21",
           "bruto": 0.0
+        },
+        {
+          "data": "2026-10-22",
+          "bruto": 0.0
         }
       ],
       "taxa_antecipacao_mensal_pct": 0.0,
@@ -2183,6 +2181,18 @@
       "vendas_trinks_apos_n": 0,
       "vendas_trinks_apos_v": 0.0,
       "vendas_apos_lista": [
+        {
+          "data": "2026-09-22T20:16",
+          "valor": 0.0,
+          "meio": "Maestro/Redeshop",
+          "cliente": "Rosangela Siqueira de Pinho Garcia"
+        },
+        {
+          "data": "2026-09-22T19:05",
+          "valor": 0.0,
+          "meio": "Mastercard",
+          "cliente": "NÁDIA OLIVEIRA SOUZA"
+        },
         {
           "data": "2026-09-22T16:51",
           "valor": 0.0,
@@ -7685,6 +7695,13 @@
           "atend": 0,
           "receita": 0.0,
           "receita_ltv": 0.0
+        },
+        {
+          "data": "2026-09-22",
+          "novos": 0,
+          "atend": 0,
+          "receita": 0.0,
+          "receita_ltv": 0.0
         }
       ],
       "cross_sell": {
@@ -8704,7 +8721,7 @@
           }
         },
         "pace_intraday": {
-          "hora_atual_str": "17:07",
+          "hora_atual_str": "20:34",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -8929,7 +8946,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-22T17:07:51-03:00",
+    "gerado_em": "2026-09-22T20:34:53-03:00",
     "hoje": "2026-09-22",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -9122,21 +9139,21 @@
       {
         "tipo": "atencao",
         "titulo": "Ritmo abaixo do esperado",
-        "texto": "Só 26% da meta às 17h com 3h úteis restantes.",
+        "texto": "Só 36% da meta às 20h com 0h úteis restantes.",
         "acao": "Postar story/status no WhatsApp com 'últimas vagas hoje' pode gerar 2-3 walk-ins na última hora."
       },
       {
         "tipo": "info",
-        "titulo": "Picos previstos ainda hoje",
-        "texto": "Base semanal aponta 19h (1.0 clientes/hora) como as próximas horas de fluxo.",
-        "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
+        "titulo": "Fechamento do dia",
+        "texto": "Caixa R$ 479,00 · 4 visitas · ticket R$ 119,75 · meta 36% (R$ 834,32 faltou).",
+        "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
       }
     ],
     "semanal": [
       {
         "tipo": "atencao",
-        "titulo": "Semana começou em 20% da meta acumulada",
-        "texto": "R$ 1.118,00 contra R$ 5.688,14 de meta nos 2 dias já corridos (R$ -4.570,14).",
+        "titulo": "Semana começou em 22% da meta acumulada",
+        "texto": "R$ 1.260,00 contra R$ 5.686,75 de meta nos 2 dias já corridos (R$ -4.426,75).",
         "acao": "Ainda dá pra virar: o peso da semana está no fim dela (sexta 19%, sábado 38%). Garantir escala e agenda do fim de semana."
       }
     ],
@@ -9144,25 +9161,25 @@
       {
         "tipo": "atencao",
         "titulo": "Mês precisa acelerar pra bater meta",
-        "texto": "Projeção R$ 48.226,79 (80%). Precisa +R$ 1.308,13/dia acima do ritmo atual pelos próximos 9 dias.",
+        "texto": "Projeção R$ 48.429,64 (81%). Precisa +R$ 1.285,60/dia acima do ritmo atual pelos próximos 9 dias.",
         "acao": "Foco: fechar cada walk-in com upsell (adicional escova + hidratação = +R$ 40 por atendimento)."
       },
       {
         "tipo": "atencao",
         "titulo": "Retenção baixa (36% recorrentes)",
-        "texto": "133 novos vs 75 recorrentes. Novos gastam R$ 20.087,30, recorrentes R$ 13.291,45.",
+        "texto": "133 novos vs 75 recorrentes. Novos gastam R$ 20.087,30, recorrentes R$ 13.380,45.",
         "acao": "Loja abriu há pouco — normal ter muitos novos. Prioridade: fazer o cliente novo voltar. Cartão fidelidade + mensagem 20 dias após primeira visita costuma trazer 30% de volta."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos = 1.5% do caixa (R$ 492,45). Se chegasse a 8%, seriam +R$ 2.208,25/mês.",
+        "texto": "Produtos = 1.4% do caixa (R$ 492,45). Se chegasse a 8%, seriam +R$ 2.219,61/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 7%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 142,97.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 141,51.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -9175,8 +9192,8 @@
       },
       {
         "tipo": "info",
-        "titulo": "Top 10 clientes = R$ 12.722,00 (16% do ano)",
-        "texto": "Média por cliente top: R$ 1.272,20. Adquirir 1 novo cliente equivalente dá muito mais trabalho do que reter esses 10.",
+        "titulo": "Top 10 clientes = R$ 12.811,00 (16% do ano)",
+        "texto": "Média por cliente top: R$ 1.281,10. Adquirir 1 novo cliente equivalente dá muito mais trabalho do que reter esses 10.",
         "acao": "Programa VIP: agenda prioritária + serviço-cortesia trimestral + surpresa de aniversário. Custo baixo, impacto alto."
       },
       {
@@ -9200,7 +9217,7 @@
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 120,57. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 120,17. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
@@ -9225,8 +9242,8 @@
       },
       {
         "tipo": "info",
-        "titulo": "R$ 8.613,16 a receber em cartão (D+30)",
-        "texto": "Antecipar tudo hoje custaria R$ 142,98 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 97,74 (CDI). Custo real da antecipação: R$ 45,24.",
+        "titulo": "R$ 8.750,19 a receber em cartão (D+30)",
+        "texto": "Antecipar tudo hoje custaria R$ 145,25 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 99,29 (CDI). Custo real da antecipação: R$ 45,96.",
         "acao": "Só antecipa se tem uso melhor pro dinheiro que render >14,5% a.a. Caso contrário, é mais barato esperar D+30."
       },
       {
