@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-22T12:25:48-03:00",
+  "gerado_em": "2026-09-22T13:49:51-03:00",
   "hoje": "2026-09-22",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -12,12 +12,6 @@
   "meta_mensal_valor": 0,
   "dias_op_mes": 0,
   "dias_atipicos": {
-    "2026-09-22": {
-      "ratio": 0.0,
-      "tipo": "baixo",
-      "mediana_dow": 0.0,
-      "caixa": 0.0
-    },
     "2026-09-18": {
       "ratio": 0.0,
       "tipo": "alto",
@@ -985,6 +979,12 @@
       "orfaos_fora_extrato_v": 0.0,
       "orfaos_fora_extrato": [
         {
+          "data": "2026-09-22",
+          "data_hora": "2026-09-22T13:05",
+          "valor": 0.0,
+          "cliente": "Monique de Souza Ramos "
+        },
+        {
           "data": "2026-09-21",
           "data_hora": "2026-09-21T17:54",
           "valor": 0.0,
@@ -1057,7 +1057,14 @@
           "trinks_n": 0,
           "matches_n": 0,
           "orfaos_stone": [],
-          "orfaos_trinks": [],
+          "orfaos_trinks": [
+            {
+              "data": "2026-09-22",
+              "data_hora": "2026-09-22T13:05",
+              "valor": 0.0,
+              "cliente": "Monique de Souza Ramos "
+            }
+          ],
           "diff": 0.0
         },
         "cartao": {
@@ -1085,11 +1092,17 @@
           "stone_liquido": 0.0,
           "stone_tarifa": 0.0,
           "stone_n": 0,
-          "trinks_valor": 355.0,
-          "trinks_n": 4,
+          "trinks_valor": 461.0,
+          "trinks_n": 5,
           "matches_n": 0,
           "orfaos_stone": [],
           "orfaos_trinks": [
+            {
+              "data": "2026-09-22",
+              "data_hora": "2026-09-22T13:05",
+              "valor": 106.0,
+              "cliente": "Monique de Souza Ramos "
+            },
             {
               "data": "2026-09-21",
               "data_hora": "2026-09-21T17:54",
@@ -1115,7 +1128,7 @@
               "cliente": "Maria Eduarda De Aguiar Cardoso"
             }
           ],
-          "diff": -355.0
+          "diff": -461.0
         },
         "cartao": {
           "stone_recebido": 0.0,
@@ -1142,8 +1155,8 @@
           "stone_liquido": 6406.37,
           "stone_tarifa": 41.63,
           "stone_n": 54,
-          "trinks_valor": 7060.0,
-          "trinks_n": 61,
+          "trinks_valor": 7166.0,
+          "trinks_n": 62,
           "matches_n": 51,
           "orfaos_stone": [
             {
@@ -1160,6 +1173,12 @@
             }
           ],
           "orfaos_trinks": [
+            {
+              "data": "2026-09-22",
+              "data_hora": "2026-09-22T13:05",
+              "valor": 106.0,
+              "cliente": "Monique de Souza Ramos "
+            },
             {
               "data": "2026-09-21",
               "data_hora": "2026-09-21T17:54",
@@ -1221,7 +1240,7 @@
               "cliente": "Lucas de Pinho Garcia"
             }
           ],
-          "diff": -612.0
+          "diff": -718.0
         },
         "cartao": {
           "stone_recebido": 16008.57,
@@ -1309,8 +1328,8 @@
           "stone_liquido": 16223.03,
           "stone_tarifa": 104.97,
           "stone_n": 130,
-          "trinks_valor": 17168.0,
-          "trinks_n": 137,
+          "trinks_valor": 17274.0,
+          "trinks_n": 138,
           "matches_n": 126,
           "orfaos_stone": [
             {
@@ -1332,6 +1351,12 @@
               "data_hora": "2026-08-29T19:02",
               "valor": 228.0,
               "cliente": "Biankarine Silva"
+            },
+            {
+              "data": "2026-09-22",
+              "data_hora": "2026-09-22T13:05",
+              "valor": 106.0,
+              "cliente": "Monique de Souza Ramos "
             },
             {
               "data": "2026-09-21",
@@ -1394,7 +1419,7 @@
               "cliente": "Lucas de Pinho Garcia"
             }
           ],
-          "diff": -840.0
+          "diff": -946.0
         },
         "cartao": {
           "stone_recebido": 29506.9,
@@ -2158,6 +2183,12 @@
       "vendas_trinks_apos_n": 0,
       "vendas_trinks_apos_v": 0.0,
       "vendas_apos_lista": [
+        {
+          "data": "2026-09-22T13:05",
+          "valor": 0.0,
+          "meio": "PIX",
+          "cliente": "Monique de Souza Ramos "
+        },
         {
           "data": "2026-09-22T10:14",
           "valor": 0.0,
@@ -8673,7 +8704,7 @@
           }
         },
         "pace_intraday": {
-          "hora_atual_str": "12:25",
+          "hora_atual_str": "13:49",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -8898,7 +8929,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-22T12:25:47-03:00",
+    "gerado_em": "2026-09-22T13:49:51-03:00",
     "hoje": "2026-09-22",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -9091,15 +9122,15 @@
       {
         "tipo": "info",
         "titulo": "Picos previstos ainda hoje",
-        "texto": "Base semanal aponta 13h (1.5 clientes/hora), 17h (1.5 clientes/hora) como as próximas horas de fluxo.",
+        "texto": "Base semanal aponta 17h (1.5 clientes/hora), 19h (1.5 clientes/hora) como as próximas horas de fluxo.",
         "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
       }
     ],
     "semanal": [
       {
         "tipo": "atencao",
-        "titulo": "Semana começou em 18% da meta acumulada",
-        "texto": "R$ 1.012,00 contra R$ 5.687,85 de meta nos 2 dias já corridos (R$ -4.675,85).",
+        "titulo": "Semana começou em 20% da meta acumulada",
+        "texto": "R$ 1.118,00 contra R$ 5.686,81 de meta nos 2 dias já corridos (R$ -4.568,81).",
         "acao": "Ainda dá pra virar: o peso da semana está no fim dela (sexta 19%, sábado 38%). Garantir escala e agenda do fim de semana."
       }
     ],
@@ -9107,25 +9138,25 @@
       {
         "tipo": "atencao",
         "titulo": "Mês precisa acelerar pra bater meta",
-        "texto": "Projeção R$ 48.202,50 (80%). Precisa +R$ 1.310,83/dia acima do ritmo atual pelos próximos 9 dias.",
+        "texto": "Projeção R$ 48.353,93 (81%). Precisa +R$ 1.294,01/dia acima do ritmo atual pelos próximos 9 dias.",
         "acao": "Foco: fechar cada walk-in com upsell (adicional escova + hidratação = +R$ 40 por atendimento)."
       },
       {
         "tipo": "atencao",
-        "titulo": "Retenção baixa (36% recorrentes)",
-        "texto": "130 novos vs 74 recorrentes. Novos gastam R$ 19.832,30, recorrentes R$ 13.185,45.",
+        "titulo": "Retenção baixa (37% recorrentes)",
+        "texto": "130 novos vs 75 recorrentes. Novos gastam R$ 19.832,30, recorrentes R$ 13.291,45.",
         "acao": "Loja abriu há pouco — normal ter muitos novos. Prioridade: fazer o cliente novo voltar. Cartão fidelidade + mensagem 20 dias após primeira visita costuma trazer 30% de volta."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos = 1.5% do caixa (R$ 492,45). Se chegasse a 8%, seriam +R$ 2.206,89/mês.",
+        "texto": "Produtos = 1.5% do caixa (R$ 492,45). Se chegasse a 8%, seriam +R$ 2.215,37/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 7%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 145,81.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 145,38.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -9156,14 +9187,14 @@
       },
       {
         "tipo": "oportunidade",
-        "titulo": "271 clientes recorrentes com espaço para cross-sell",
+        "titulo": "272 clientes recorrentes com espaço para cross-sell",
         "texto": "Nunca experimentaram serviços populares (ex: FAST ESCOVA - LISA, MÃOS, PÉS E MÃOS). Se 20% aceitar, aumenta ticket médio significativamente.",
         "acao": "Ver aba Anual > Cross-sell. Priorizar top 10 por LTV — recepção pode oferecer no fechamento."
       },
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 121,40. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 121,30. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
@@ -9177,7 +9208,7 @@
       {
         "tipo": "atencao",
         "titulo": "Extrato Stone parado em 09-19 20:19 (3 dias atrás)",
-        "texto": "5 PIX de R$ 434,00 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
+        "texto": "6 PIX de R$ 540,00 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
         "acao": "Exportar o extrato Stone atualizado e colocar em data/stone_extrato.csv. Antes disso, não vale ligar pra cliente nenhuma."
       },
       {
