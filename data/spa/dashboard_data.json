@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-21T19:47:10-03:00",
+  "gerado_em": "2026-09-21T22:34:24-03:00",
   "hoje": "2026-09-21",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -8661,7 +8661,7 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "19:47",
+          "hora_atual_str": "22:34",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -8886,7 +8886,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-21T19:47:10-03:00",
+    "gerado_em": "2026-09-21T22:34:24-03:00",
     "hoje": "2026-09-21",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -9075,7 +9075,14 @@
     }
   },
   "insights": {
-    "diario": [],
+    "diario": [
+      {
+        "tipo": "info",
+        "titulo": "Fechamento do dia",
+        "texto": "Caixa R$ 870,00 · 11 visitas · ticket R$ 79,09 · meta 91% (R$ 84,34 faltou).",
+        "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
+      }
+    ],
     "semanal": [
       {
         "tipo": "atencao",
@@ -9118,7 +9125,7 @@
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 7%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 148,16.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 147,37.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -9156,7 +9163,7 @@
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 122,03. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 121,80. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
@@ -9169,7 +9176,7 @@
       },
       {
         "tipo": "atencao",
-        "titulo": "Extrato Stone parado em 09-19 20:19 (2 dias atrás)",
+        "titulo": "Extrato Stone parado em 09-19 20:19 (3 dias atrás)",
         "texto": "5 PIX de R$ 434,00 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
         "acao": "Exportar o extrato Stone atualizado e colocar em data/stone_extrato.csv. Antes disso, não vale ligar pra cliente nenhuma."
       },
