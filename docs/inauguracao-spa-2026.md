@@ -336,6 +336,54 @@ A sexta (25) é o dia reservado para as clientes de casa, com hora marcada.
 Me responde só o dia que você prefere que eu separo seu horário.
 ```
 
+### Teaser "está chegando" (sem data, sem lista de dias)
+
+> Use este quando o convite nominal é que carrega o dia e o horário. A mensagem
+> generalizada só cria expectativa; **nenhuma data aparece**, para ninguém achar
+> que pode escolher o dia ou aparecer no dia de outra pessoa.
+
+**Principal**
+```
+Tem cheirinho de casa nova no Limão 🌿
+
+O Fast SPA está chegando — e o seu convite já tem nome, dia e horário guardados
+só para você.
+
+Fica de olho aqui no WhatsApp que ele chega. 💚
+
+Este lugar é pra você!
+```
+
+**Mais afetiva (para a base da Escova)**
+```
+Oi, [Nome] 🌿
+
+Passamos meses cuidando de cada detalhe desta casa pensando em você — e ela
+está quase pronta para te receber.
+
+O Fast SPA Limão está chegando.
+
+Seu convite vem separado, com o seu dia e o seu horário. Fica de olho aqui. 💚
+
+Este lugar é pra você!
+```
+
+**Status do WhatsApp / Stories**
+```
+Respira fundo… 🌿
+O Fast SPA Limão está chegando.
+Seu convite vem com dia e horário só seus. 💚
+```
+
+**Para quem já recebeu o convite nominal**
+```
+[Nome], tá chegando 🌿
+Sua poltrona e seu horário já estão guardados.
+Até logo! 💚
+```
+
+---
+
 ### Ordem do disparo de véspera
 
 1. **Hoje (23/09), até o fim da tarde** — lista de transmissão + Status + post no
