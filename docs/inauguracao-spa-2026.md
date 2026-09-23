@@ -3,7 +3,7 @@ titulo: Inauguração Fast SPA Limão · 24 a 27/09/2026
 unidade: spa
 tags: [fast-spa, inauguracao, convites, marketing]
 criado: 2026-09-11
-painel: https://claude.ai/code/artifact/d3d9ad76-e084-4218-9567-6514d4b0d4bb
+painel: https://claude.ai/artifact/TAHqmRB5VDWnBmJp8iGY98
 ---
 
 # Inauguração Fast SPA Limão · 24 a 27 de setembro de 2026
@@ -13,7 +13,7 @@ painel: https://claude.ai/code/artifact/d3d9ad76-e084-4218-9567-6514d4b0d4bb
 **Data oficial de inauguração no `data/config.json`:** 2026-09-25
 
 > Página interativa com o convite, as cotas e o quadro de convidados:
-> https://claude.ai/code/artifact/d3d9ad76-e084-4218-9567-6514d4b0d4bb
+> https://claude.ai/artifact/TAHqmRB5VDWnBmJp8iGY98
 
 ---
 
