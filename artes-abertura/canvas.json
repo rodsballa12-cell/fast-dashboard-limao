@@ -11,6 +11,10 @@
     {
       "id": "page-3",
       "name": "Molde diário"
+    },
+    {
+      "id": "page-4",
+      "name": "Contagem do Spa"
     }
   ],
   "artboards": [
@@ -103,6 +107,33 @@
       "w": 1080,
       "h": 1920,
       "title": "Molde Escova · amarelo"
+    },
+    {
+      "file": "ContagemDias.dc.html",
+      "page": "page-4",
+      "x": 0,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "title": "Faltam N dias · número ajustável"
+    },
+    {
+      "file": "ContagemAmanha.dc.html",
+      "page": "page-4",
+      "x": 1240,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "title": "Amanhã · 24/09"
+    },
+    {
+      "file": "ContagemHoje.dc.html",
+      "page": "page-4",
+      "x": 2480,
+      "y": 0,
+      "w": 1080,
+      "h": 1920,
+      "title": "É hoje · 25/09"
     }
   ],
   "annotations": [
@@ -129,10 +160,18 @@
       "y": -230,
       "w": 1100,
       "text": "MOLDE DIARIO DA ESCOVA · 1080x1920\nMesma estrutura do molde do Spa: logo no topo, area tracejada para a foto do dia, botao ESTAMOS ABERTOS, perfil e endereco.\n\nDuas versoes. A PRETA usa o logo original branco-e-amarelo e deixa a foto brilhar; a AMARELA usa o logo todo escuro, porque na versao normal a palavra escova e amarela e sumiria no fundo.\n\nA area tracejada e so guia: a foto entra POR CIMA dela no editor de stories, cobrindo o tracejado e o texto de instrucao."
+    },
+    {
+      "id": "cont",
+      "page": "page-4",
+      "x": 0,
+      "y": -230,
+      "w": 1100,
+      "text": "CONTAGEM DO SPA · 1080x1920\nO Spa abre sexta 25/09. Em 23/09 restam tres telas uteis: 2 dias, amanha e e hoje.\n\nNa primeira, o NUMERO E AJUSTAVEL na barra acima da arte -- serve para qualquer contagem futura, e nao precisa de arte nova a cada dia.\n\nTeal #006C6B nas telas de fundo cheio e #00A6A4 na do dia, que e o teal exato do logo: a cor fica mais viva justamente no dia da abertura."
     }
   ],
   "launch": {
     "view": "canvas",
-    "page": "page-1"
+    "page": "page-4"
   }
 }

@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+    a { color: #00A6A4; } a:hover { color: #006C6B; }
+  </style>
+</helmet>
+<div style="width: 1080px; height: 1920px; background: #006C6B; box-sizing: border-box; padding: 190px 92px 150px; display: flex; flex-direction: column; overflow: hidden;">
+  <img src="fastspa-branco.png" alt="fast spa limão" style="width: 350px; height: auto;">
+  <div style="margin: auto 0;">
+    <div style="font-size: 46px; letter-spacing: 12px; color: #7FCFCE; font-weight: 600;">FALTAM</div>
+    <div style="font-family: Georgia, \x27Times New Roman\x27, serif; font-size: 460px; color: #FFFFFF; line-height: 0.84; margin: 18px 0 0 -18px;">{{dias}}</div>
+    <div style="font-size: 76px; letter-spacing: 14px; color: #FFFFFF; margin-top: 6px;">DIAS</div>
+    <div style="margin-top: 78px; font-family: Georgia, \x27Times New Roman\x27, serif; font-size: 58px; color: #FFFFFF; line-height: 1.24;">Massagem sem hora marcada,<br>no mesmo prédio da sua escova.</div>
+  </div>
+  <div style="border-top: 3px solid rgba(255,255,255,0.28); padding-top: 34px; display: flex; flex-direction: column; gap: 10px;">
+    <span style="font-size: 36px; color: #FFFFFF; font-weight: 600;">sexta 25/09 · das 8h às 20h</span>
+    <span style="font-size: 31px; color: #A9E4E3;">Av. Dep. Emílio Carlos, 358 · @fastspa.limao</span>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"dias":{"editor":"int","default":2,"min":1,"max":30},"$preview":{"width":1080,"height":1920}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { dias: this.props.dias ?? 2 };
+  }
+}
+</script>
+</body>
+</html>
