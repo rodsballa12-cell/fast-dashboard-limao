@@ -272,6 +272,84 @@ Responda 1 se vier — guardo uma senha para você.
 
 ---
 
+## 7b. Disparo de véspera (23/09) — mensagem generalizada
+
+> Contexto: o cronograma previa convite nominal em 14/09 e RSVP fechado em 21/09.
+> A 1 dia do evento, a mensagem deixa de ser "save the date" e vira **"é amanhã"**.
+> Convite generalizado quebra a distribuição por dia — o que devolve o controle é
+> pedir **o dia como resposta**: "responda 24, 25, 26 ou 27".
+
+### Lista de transmissão / WhatsApp geral
+```
+É amanhã! 🧖‍♀️
+
+O Fast SPA Limão abre as portas — quatro dias de inauguração, no mesmo prédio
+da Fast Escova Limão.
+
+📍 Av. Dep. Emílio Carlos, 358 · Limão · São Paulo
+
+QUI 24 · 18h às 22h — noite de inauguração
+SEX 25 · 10h às 20h — abertura oficial, com hora marcada
+SÁB 26 · 9h às 19h — venha com uma amiga
+DOM 27 · 10h às 17h — portas abertas, é só chegar
+
+Responda só o dia que você vem (24, 25, 26 ou 27) que eu já separo seu horário.
+
+Este lugar é pra você!
+```
+
+### Status do WhatsApp / Stories (curta)
+```
+Amanhã o Fast SPA Limão abre! 🧖‍♀️
+24 a 27/09 · Av. Dep. Emílio Carlos, 358 · Limão
+Me chama com o dia que você vem.
+```
+
+### Instagram (legenda de post)
+```
+Chegou. O Fast SPA Limão abre amanhã. 🧖‍♀️
+
+De 24 a 27 de setembro, no mesmo prédio da Fast Escova Limão:
+
+• Qui 24, 18h–22h — noite de inauguração
+• Sex 25, 10h–20h — abertura oficial, com hora marcada
+• Sáb 26, 9h–19h — venha com uma amiga
+• Dom 27, 10h–17h — portas abertas, sem hora marcada
+
+📍 Av. Dep. Emílio Carlos, 358 · Limão · São Paulo
+📲 (11) 99024-3927
+
+Comenta ou chama no direct o dia que você vem que a gente separa seu horário.
+Este lugar é pra você!
+
+#fastspa #fastspalimao #limao #zonanorte #spa #inauguracao
+```
+
+### Base da Escova (um a um, com nome)
+```
+[Nome], amanhã abre o Fast SPA — no mesmo prédio da Fast Escova, onde você
+já é de casa 💛
+
+São quatro dias: 24, 25, 26 e 27.
+A sexta (25) é o dia reservado para as clientes de casa, com hora marcada.
+
+Me responde só o dia que você prefere que eu separo seu horário.
+```
+
+### Ordem do disparo de véspera
+
+1. **Hoje (23/09), até o fim da tarde** — lista de transmissão + Status + post no
+   Instagram + Google Business. Quem responder um dia entra na agenda na hora.
+2. **Hoje à noite** — um a um para as listas A, B, C e D (quinta é amanhã e é a
+   única com lista fechada; essas pessoas não podem descobrir por transmissão).
+3. **Amanhã de manhã** — reforço no Status: "hoje, das 18h às 22h".
+4. **A cada manhã dos outros três dias** — Status com o dia e o horário daquele dia.
+
+> ⚠️ As artes deixaram de trazer "confirme até 21/09" — o prazo já passou.
+> Hoje o pedido é o dia, não a confirmação dentro do prazo.
+
+---
+
 ## 8. Cronograma até a inauguração
 
 | Quando | O quê | Detalhe |

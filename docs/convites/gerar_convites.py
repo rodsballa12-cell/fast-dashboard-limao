@@ -173,7 +173,7 @@ h1{{font-family:'Playfair Display',serif;font-weight:700;font-size:52px;line-hei
 
     <p class="local">Av. Dep. Emílio Carlos, 358 · Limão · São Paulo<br>
       <em>no mesmo prédio da Fast Escova Limão</em>
-      <span class="zap">Confirme até 21/09 pelo WhatsApp (11) 99024-3927</span></p>
+      <span class="zap">Confirme pelo WhatsApp (11) 99024-3927</span></p>
   </div>
 </div>
 
