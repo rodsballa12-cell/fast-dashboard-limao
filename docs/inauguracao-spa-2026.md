@@ -342,8 +342,8 @@ Me responde só o dia que você prefere que eu separo seu horário.
 > generalizada só cria expectativa; **nenhuma data aparece**, para ninguém achar
 > que pode escolher o dia ou aparecer no dia de outra pessoa.
 >
-> Coração **azul** 💙, puxando o turquesa do logo. O azul-claro 🩵 fica ainda mais
-> perto da marca, mas é emoji novo e some em celular antigo — por isso o padrão é 💙.
+> Coração **azul** 🩵, puxando o turquesa do logo. O azul-claro 🩵 fica ainda mais
+> perto da marca, mas é emoji novo e some em celular antigo — por isso o padrão é 🩵.
 
 **Principal**
 ```
@@ -352,7 +352,7 @@ Tem cheirinho de casa nova no Limão 🌿
 O Fast SPA está chegando — e o seu convite já tem nome, dia e horário guardados
 só para você.
 
-Fica de olho aqui no WhatsApp que ele chega. 💙
+Fica de olho aqui no WhatsApp que ele chega. 🩵
 
 Este lugar é pra você!
 ```
@@ -366,7 +366,7 @@ está quase pronta para te receber.
 
 O Fast SPA Limão está chegando.
 
-Seu convite vem separado, com o seu dia e o seu horário. Fica de olho aqui. 💙
+Seu convite vem separado, com o seu dia e o seu horário. Fica de olho aqui. 🩵
 
 Este lugar é pra você!
 ```
@@ -375,14 +375,14 @@ Este lugar é pra você!
 ```
 Respira fundo… 🌿
 O Fast SPA Limão está chegando.
-Seu convite vem com dia e horário só seus. 💙
+Seu convite vem com dia e horário só seus. 🩵
 ```
 
 **Para quem já recebeu o convite nominal**
 ```
 [Nome], tá chegando 🌿
 Sua poltrona e seu horário já estão guardados.
-Até logo! 💙
+Até logo! 🩵
 ```
 
 ---
