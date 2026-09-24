@@ -1,6 +1,6 @@
 {
-  "gerado_em": "2026-09-23T20:00:47-03:00",
-  "hoje": "2026-09-23",
+  "gerado_em": "2026-09-24T03:05:10-03:00",
+  "hoje": "2026-09-24",
   "_unidade_ativa": "escova",
   "unidade": {
     "produto": "Ritmo",
@@ -1070,8 +1070,8 @@
           "recebido_total": 0.0,
           "a_receber": 0.0
         },
-        "periodo_ini": "2026-09-23",
-        "periodo_fim": "2026-09-23"
+        "periodo_ini": "2026-09-24",
+        "periodo_fim": "2026-09-24"
       },
       "semana": {
         "pix": {
@@ -1931,7 +1931,7 @@
         "liq_antecipar": 0.0,
         "custo_antecipacao": 0.0,
         "dias_medio_recebimento": 0,
-        "dias_medio_restante": 0.0,
+        "dias_medio_restante": 0,
         "prazo_dias": 0
       },
       "credito": {
@@ -1958,10 +1958,6 @@
         "diferenca": 0.0
       },
       "cronograma_liberacao": [
-        {
-          "data": "2026-09-24",
-          "bruto": 0.0
-        },
         {
           "data": "2026-09-25",
           "bruto": 0.0
@@ -4122,7 +4118,7 @@
       },
       "2026-W39": {
         "periodo_ini": "2026-09-21",
-        "periodo_fim": "2026-09-23",
+        "periodo_fim": "2026-09-24",
         "kpis": {
           "caixa": 0.0,
           "faturamento_apurado": 0.0,
@@ -7853,7 +7849,7 @@
         "caixa_delta_bruto_pct": 0.0,
         "periodo_ant_ref": {
           "periodo_ini": "2026-08-01",
-          "periodo_fim": "2026-08-23",
+          "periodo_fim": "2026-08-24",
           "janela_dias": 0,
           "caixa": 0.0,
           "atend_fin": 0,
@@ -7886,7 +7882,8 @@
             "Dom",
             "Seg",
             "Ter",
-            "Qua"
+            "Qua",
+            "Qui"
           ],
           "composicao_anterior": [
             "Sáb",
@@ -7911,7 +7908,8 @@
             "Qui",
             "Sex",
             "Sáb",
-            "Dom"
+            "Dom",
+            "Seg"
           ],
           "peso_semana_atual_pct": 0.0,
           "peso_semana_anterior_pct": 0.0,
@@ -8397,7 +8395,7 @@
         "caixa_delta_bruto_pct": 0.0,
         "periodo_ant_ref": {
           "periodo_ini": "2026-09-14",
-          "periodo_fim": "2026-09-16",
+          "periodo_fim": "2026-09-17",
           "janela_dias": 0,
           "sem_completa_fim": "2026-09-20",
           "caixa": 0.0,
@@ -8413,12 +8411,14 @@
           "composicao_atual": [
             "Seg",
             "Ter",
-            "Qua"
+            "Qua",
+            "Qui"
           ],
           "composicao_anterior": [
             "Seg",
             "Ter",
-            "Qua"
+            "Qua",
+            "Qui"
           ],
           "peso_semana_atual_pct": 0.0,
           "peso_semana_anterior_pct": 0.0,
@@ -8621,7 +8621,7 @@
       "clientes_top": [],
       "semana_anterior": {
         "periodo_ini": "2026-09-14",
-        "periodo_fim": "2026-09-16",
+        "periodo_fim": "2026-09-17",
         "janela_dias": 0,
         "sem_completa_fim": "2026-09-20",
         "caixa": 0.0,
@@ -8728,20 +8728,20 @@
         "rs_hora_salao": 0.0,
         "horas_operacao_periodo": 0.0,
         "utilizacao_agregada_pct": 0.0,
-        "caixa_delta_pct": 0.0,
-        "atend_delta_pct": 0.0,
-        "cliente_dia_delta_pct": 0.0,
-        "caixa_delta_perdia_pct": 0.0,
-        "atend_delta_perdia_pct": 0.0,
-        "cliente_dia_delta_perdia_pct": 0.0,
+        "caixa_delta_pct": null,
+        "atend_delta_pct": null,
+        "cliente_dia_delta_pct": null,
+        "caixa_delta_perdia_pct": null,
+        "atend_delta_perdia_pct": null,
+        "cliente_dia_delta_perdia_pct": null,
         "dias_com_movimento": {
           "atual": 0,
           "anterior": 0
         },
-        "ticket_delta_pct": 0.0,
-        "caixa_delta_bruto_pct": 0.0,
+        "ticket_delta_pct": null,
+        "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
-          "data": "2026-09-16",
+          "data": "2026-09-17",
           "hora_max": 0.0,
           "caixa": 0.0,
           "atend_fin": 0,
@@ -8752,20 +8752,20 @@
         },
         "base_comparacao": {
           "composicao_atual": [
-            "Qua"
+            "Qui"
           ],
           "composicao_anterior": [
-            "Qua"
+            "Qui"
           ],
           "peso_semana_atual_pct": 0.0,
           "peso_semana_anterior_pct": 0.0,
           "razao_peso": 0.0,
           "comparavel": true,
-          "caixa_delta_ajustado_pct": 0.0,
+          "caixa_delta_ajustado_pct": null,
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "20:00",
+          "hora_atual_str": "03:05",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -8782,11 +8782,11 @@
         "ticket_gap_por_atend": 0.0,
         "visitas_projetadas": 0,
         "visitas_restantes": 0,
-        "ticket_meta_status": "encerrado_deficit",
+        "ticket_meta_status": "fechado",
         "ticket_meta_deficit_caixa": 0.0,
         "ticket_meta_supera_caixa": 0.0,
-        "dia_semana": "Qua",
-        "data": "2026-09-23"
+        "dia_semana": "Qui",
+        "data": "2026-09-24"
       },
       "meta": {
         "meta": 0.0,
@@ -8990,8 +8990,8 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-23T20:00:47-03:00",
-    "hoje": "2026-09-23",
+    "gerado_em": "2026-09-24T03:05:10-03:00",
+    "hoje": "2026-09-24",
     "retoque_atribuivel": false,
     "por_janela": {
       "dia": [],
@@ -9181,16 +9181,10 @@
   "insights": {
     "diario": [
       {
-        "tipo": "atencao",
-        "titulo": "1 profissional(is) sem atendimento hoje",
-        "texto": "Gisele ainda em zero de receita. Se não está em folga, é capacidade ociosa perdida.",
-        "acao": "Realocar walk-ins da fila para elas. Se agenda continuar vazia, avaliar reduzir dia de trabalho na próxima semana."
-      },
-      {
         "tipo": "info",
-        "titulo": "Fechamento do dia",
-        "texto": "Caixa R$ 921,00 · 8 visitas · ticket R$ 115,12 · meta 55% (R$ 755,62 faltou).",
-        "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
+        "titulo": "Picos previstos ainda hoje",
+        "texto": "Base semanal aponta 17h (1.7 clientes/hora), 13h (1.3 clientes/hora) como as próximas horas de fluxo.",
+        "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
       }
     ],
     "semanal": [
@@ -9229,7 +9223,7 @@
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 7%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 138,73.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 138,18.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -9248,9 +9242,9 @@
       },
       {
         "tipo": "critico",
-        "titulo": "77 clientes que sumiram (LTV R$ 18.547,00)",
-        "texto": "Vieram 3+ vezes e não voltam há 14+ dias. Top: Brenda, Juliana, Gabrielly (e mais 74).",
-        "acao": "Ver aba Clientes → 🛟 Clientes que sumiram. WhatsApp pessoal citando último serviço + voucher salva 30-40% do LTV — potencial resgate R$ 6.491,45."
+        "titulo": "78 clientes que sumiram (LTV R$ 18.705,00)",
+        "texto": "Vieram 3+ vezes e não voltam há 14+ dias. Top: Brenda, Juliana, Gabrielly (e mais 75).",
+        "acao": "Ver aba Clientes → 🛟 Clientes que sumiram. WhatsApp pessoal citando último serviço + voucher salva 30-40% do LTV — potencial resgate R$ 6.546,75."
       },
       {
         "tipo": "oportunidade",
@@ -9267,7 +9261,7 @@
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 119,51. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 119,34. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
@@ -9280,7 +9274,7 @@
       },
       {
         "tipo": "atencao",
-        "titulo": "Extrato Stone parado em 09-19 20:19 (4 dias atrás)",
+        "titulo": "Extrato Stone parado em 09-19 20:19 (5 dias atrás)",
         "texto": "6 PIX de R$ 540,00 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
         "acao": "Exportar o extrato Stone atualizado e colocar em data/stone_extrato.csv. Antes disso, não vale ligar pra cliente nenhuma."
       },
