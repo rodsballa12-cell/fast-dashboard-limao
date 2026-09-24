@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-24T03:05:10-03:00",
+  "gerado_em": "2026-09-24T14:03:02-03:00",
   "hoje": "2026-09-24",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -12,6 +12,12 @@
   "meta_mensal_valor": 0,
   "dias_op_mes": 0,
   "dias_atipicos": {
+    "2026-09-24": {
+      "ratio": 0.0,
+      "tipo": "baixo",
+      "mediana_dow": 0.0,
+      "caixa": 0.0
+    },
     "2026-09-18": {
       "ratio": 0.0,
       "tipo": "alto",
@@ -27,12 +33,6 @@
     "2026-09-08": {
       "ratio": 0.0,
       "tipo": "alto",
-      "mediana_dow": 0.0,
-      "caixa": 0.0
-    },
-    "2026-08-20": {
-      "ratio": 0.0,
-      "tipo": "baixo",
       "mediana_dow": 0.0,
       "caixa": 0.0
     },
@@ -401,12 +401,12 @@
       "id_profissional": 0,
       "genero": "F"
     },
-    "943772": {
-      "nome": "Kimberly Soares Vasconcelos",
-      "apelido": "Kim",
+    "947952": {
+      "nome": "Kemilly Do Nascimento Roxo",
+      "apelido": "Kemilly",
       "funcao": "",
       "status": "Ativo",
-      "possui_agenda": true,
+      "possui_agenda": false,
       "id_profissional": 0,
       "genero": "F"
     },
@@ -422,6 +422,15 @@
     "915624": {
       "nome": "Márcia Queiroz",
       "apelido": "Márcia",
+      "funcao": "",
+      "status": "Ativo",
+      "possui_agenda": true,
+      "id_profissional": 0,
+      "genero": "F"
+    },
+    "947507": {
+      "nome": "Matheus Jesus Azevedo",
+      "apelido": "Matheus",
       "funcao": "",
       "status": "Ativo",
       "possui_agenda": true,
@@ -472,15 +481,6 @@
       "possui_agenda": false,
       "id_profissional": 0,
       "genero": "X"
-    },
-    "945607": {
-      "nome": "Sabrina Rodrigues Santos Pupp",
-      "apelido": "Sabrina",
-      "funcao": "",
-      "status": "Ativo",
-      "possui_agenda": false,
-      "id_profissional": 0,
-      "genero": "F"
     },
     "924829": {
       "nome": "Tais Cristina Leite Cabral",
@@ -973,6 +973,12 @@
       "orfaos_fora_extrato_v": 0.0,
       "orfaos_fora_extrato": [
         {
+          "data": "2026-09-24",
+          "data_hora": "2026-09-24T09:45",
+          "valor": 0.0,
+          "cliente": "Ana Dos Santos "
+        },
+        {
           "data": "2026-09-22",
           "data_hora": "2026-09-22T13:05",
           "valor": 0.0,
@@ -1051,7 +1057,14 @@
           "trinks_n": 0,
           "matches_n": 0,
           "orfaos_stone": [],
-          "orfaos_trinks": [],
+          "orfaos_trinks": [
+            {
+              "data": "2026-09-24",
+              "data_hora": "2026-09-24T09:45",
+              "valor": 0.0,
+              "cliente": "Ana Dos Santos "
+            }
+          ],
           "diff": 0.0
         },
         "cartao": {
@@ -1079,11 +1092,17 @@
           "stone_liquido": 0.0,
           "stone_tarifa": 0.0,
           "stone_n": 0,
-          "trinks_valor": 461.0,
-          "trinks_n": 5,
+          "trinks_valor": 514.0,
+          "trinks_n": 6,
           "matches_n": 0,
           "orfaos_stone": [],
           "orfaos_trinks": [
+            {
+              "data": "2026-09-24",
+              "data_hora": "2026-09-24T09:45",
+              "valor": 53.0,
+              "cliente": "Ana Dos Santos "
+            },
             {
               "data": "2026-09-22",
               "data_hora": "2026-09-22T13:05",
@@ -1115,14 +1134,14 @@
               "cliente": "Maria Eduarda De Aguiar Cardoso"
             }
           ],
-          "diff": -461.0
+          "diff": -514.0
         },
         "cartao": {
           "stone_recebido": 0.0,
           "stone_n": 0,
-          "trinks_vendido": 1720.0,
-          "trinks_n": 15,
-          "a_receber_d30": 1659.8
+          "trinks_vendido": 2084.0,
+          "trinks_n": 18,
+          "a_receber_d30": 2011.06
         },
         "dinheiro": {
           "total": 0.0,
@@ -1131,7 +1150,7 @@
         },
         "resumo": {
           "recebido_total": 0.0,
-          "a_receber": 1659.8
+          "a_receber": 2011.06
         },
         "periodo_ini": "2026-09-21",
         "periodo_fim": "2026-09-27"
@@ -1142,8 +1161,8 @@
           "stone_liquido": 6406.37,
           "stone_tarifa": 41.63,
           "stone_n": 54,
-          "trinks_valor": 7166.0,
-          "trinks_n": 62,
+          "trinks_valor": 7219.0,
+          "trinks_n": 63,
           "matches_n": 51,
           "orfaos_stone": [
             {
@@ -1160,6 +1179,12 @@
             }
           ],
           "orfaos_trinks": [
+            {
+              "data": "2026-09-24",
+              "data_hora": "2026-09-24T09:45",
+              "valor": 53.0,
+              "cliente": "Ana Dos Santos "
+            },
             {
               "data": "2026-09-22",
               "data_hora": "2026-09-22T13:05",
@@ -1227,14 +1252,14 @@
               "cliente": "Lucas de Pinho Garcia"
             }
           ],
-          "diff": -718.0
+          "diff": -771.0
         },
         "cartao": {
           "stone_recebido": 16008.57,
           "stone_n": 42,
-          "trinks_vendido": 26577.75,
-          "trinks_n": 201,
-          "a_receber_d30": 9638.96
+          "trinks_vendido": 26941.75,
+          "trinks_n": 204,
+          "a_receber_d30": 9990.22
         },
         "dinheiro": {
           "total": 1002.0,
@@ -1304,7 +1329,7 @@
         },
         "resumo": {
           "recebido_total": 23416.94,
-          "a_receber": 9638.96
+          "a_receber": 9990.22
         },
         "periodo_ini": "2026-09-01",
         "periodo_fim": "2026-09-30"
@@ -1315,8 +1340,8 @@
           "stone_liquido": 16223.03,
           "stone_tarifa": 104.97,
           "stone_n": 130,
-          "trinks_valor": 17274.0,
-          "trinks_n": 138,
+          "trinks_valor": 17327.0,
+          "trinks_n": 139,
           "matches_n": 126,
           "orfaos_stone": [
             {
@@ -1338,6 +1363,12 @@
               "data_hora": "2026-08-29T19:02",
               "valor": 228.0,
               "cliente": "Biankarine Silva"
+            },
+            {
+              "data": "2026-09-24",
+              "data_hora": "2026-09-24T09:45",
+              "valor": 53.0,
+              "cliente": "Ana Dos Santos "
             },
             {
               "data": "2026-09-22",
@@ -1406,14 +1437,14 @@
               "cliente": "Lucas de Pinho Garcia"
             }
           ],
-          "diff": -946.0
+          "diff": -999.0
         },
         "cartao": {
           "stone_recebido": 29506.9,
           "stone_n": 82,
-          "trinks_vendido": 62314.85,
-          "trinks_n": 502,
-          "a_receber_d30": 30626.93
+          "trinks_vendido": 62678.85,
+          "trinks_n": 505,
+          "a_receber_d30": 30978.19
         },
         "dinheiro": {
           "total": 2743.0,
@@ -1578,7 +1609,7 @@
         },
         "resumo": {
           "recebido_total": 48472.93,
-          "a_receber": 30626.93
+          "a_receber": 30978.19
         },
         "periodo_ini": "2026-01-01",
         "periodo_fim": "2026-12-31"
@@ -2069,6 +2100,10 @@
         {
           "data": "2026-10-23",
           "bruto": 0.0
+        },
+        {
+          "data": "2026-10-24",
+          "bruto": 0.0
         }
       ],
       "taxa_antecipacao_mensal_pct": 0.0,
@@ -2170,6 +2205,30 @@
       "vendas_trinks_apos_n": 0,
       "vendas_trinks_apos_v": 0.0,
       "vendas_apos_lista": [
+        {
+          "data": "2026-09-24T13:26",
+          "valor": 0.0,
+          "meio": "Visa",
+          "cliente": "Jessica Ribeiro"
+        },
+        {
+          "data": "2026-09-24T12:39",
+          "valor": 0.0,
+          "meio": "Mastercard",
+          "cliente": "ALINE CRISTINA DE FREITAS"
+        },
+        {
+          "data": "2026-09-24T12:09",
+          "valor": 0.0,
+          "meio": "Visa",
+          "cliente": "Aline Boeno Mirando"
+        },
+        {
+          "data": "2026-09-24T09:45",
+          "valor": 0.0,
+          "meio": "PIX",
+          "cliente": "Ana Dos Santos "
+        },
         {
           "data": "2026-09-23T19:19",
           "valor": 0.0,
@@ -4181,6 +4240,55 @@
       }
     },
     "dias": {
+      "2026-09-24": {
+        "kpis": {
+          "caixa": 0.0,
+          "faturamento_apurado": 0.0,
+          "receita_serv": 0.0,
+          "atend_fin": 0,
+          "atend_canc": 0,
+          "atend_total": 0,
+          "n_trans": 0,
+          "ticket_trans": 0.0,
+          "cliente_dia": 0,
+          "ticket_medio": 0.0,
+          "taxa_canc": 0.0,
+          "dias_op": 0,
+          "clientes_unicos": 0,
+          "em_atendimento": 0,
+          "n_prof_ativos": 0,
+          "rs_hora_salao": 0.0,
+          "horas_operacao_periodo": 0.0,
+          "utilizacao_agregada_pct": 0.0
+        },
+        "categorias": {
+          "pacotes": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "produtos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "fast_retoque": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos_gerais": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          }
+        }
+      },
       "2026-09-23": {
         "kpis": {
           "caixa": 0.0,
@@ -7139,6 +7247,12 @@
           "ticket_medio": 0.0
         },
         {
+          "nome": "Stick Antifrizz 19g",
+          "n": 0,
+          "v": 0.0,
+          "ticket_medio": 0.0
+        },
+        {
           "nome": "Fast Nutrição 120ml",
           "n": 0,
           "v": 0.0,
@@ -7198,6 +7312,12 @@
         },
         {
           "nome": "ID 604489",
+          "prof_id": 0,
+          "n": 0,
+          "v": 0.0
+        },
+        {
+          "nome": "Kemilly Do Nascimento Roxo",
           "prof_id": 0,
           "n": 0,
           "v": 0.0
@@ -7740,6 +7860,13 @@
           "atend": 0,
           "receita": 0.0,
           "receita_ltv": 0.0
+        },
+        {
+          "data": "2026-09-24",
+          "novos": 0,
+          "atend": 0,
+          "receita": 0.0,
+          "receita_ltv": 0.0
         }
       ],
       "cross_sell": {
@@ -7917,12 +8044,6 @@
           "comparavel": true,
           "caixa_delta_ajustado_pct": 0.0,
           "dias_atipicos_na_base": {
-            "2026-08-20": {
-              "ratio": 0.0,
-              "tipo": "baixo",
-              "mediana_dow": 0.0,
-              "caixa": 0.0
-            },
             "2026-08-10": {
               "ratio": 0.0,
               "tipo": "alto",
@@ -8009,6 +8130,11 @@
       },
       "rentabilidade_hora": [],
       "por_dia_mes": [
+        {
+          "d": 0,
+          "n": 0,
+          "v": 0.0
+        },
         {
           "d": 0,
           "n": 0,
@@ -8205,6 +8331,12 @@
           "ticket_medio": 0.0
         },
         {
+          "nome": "Stick Antifrizz 19g",
+          "n": 0,
+          "v": 0.0,
+          "ticket_medio": 0.0
+        },
+        {
           "nome": "Fast Nutrição 120ml",
           "n": 0,
           "v": 0.0,
@@ -8240,6 +8372,12 @@
       "upsell_produtos": [
         {
           "nome": "Mirian Fabiano De Carlos",
+          "prof_id": 0,
+          "n": 0,
+          "v": 0.0
+        },
+        {
+          "nome": "Kemilly Do Nascimento Roxo",
           "prof_id": 0,
           "n": 0,
           "v": 0.0
@@ -8612,9 +8750,23 @@
       "ranking_prof_total_n": 0,
       "ranking_prof_executor": [],
       "ranking_serv": [],
-      "ranking_produtos": [],
+      "ranking_produtos": [
+        {
+          "nome": "Stick Antifrizz 19g",
+          "n": 0,
+          "v": 0.0,
+          "ticket_medio": 0.0
+        }
+      ],
       "ranking_pacotes": [],
-      "upsell_produtos": [],
+      "upsell_produtos": [
+        {
+          "nome": "Kemilly Do Nascimento Roxo",
+          "prof_id": 0,
+          "n": 0,
+          "v": 0.0
+        }
+      ],
       "upsell_pacotes": [],
       "rentabilidade_hora": [],
       "meios_pagamento": [],
@@ -8728,18 +8880,18 @@
         "rs_hora_salao": 0.0,
         "horas_operacao_periodo": 0.0,
         "utilizacao_agregada_pct": 0.0,
-        "caixa_delta_pct": null,
-        "atend_delta_pct": null,
-        "cliente_dia_delta_pct": null,
-        "caixa_delta_perdia_pct": null,
-        "atend_delta_perdia_pct": null,
-        "cliente_dia_delta_perdia_pct": null,
+        "caixa_delta_pct": 0.0,
+        "atend_delta_pct": 0.0,
+        "cliente_dia_delta_pct": 0.0,
+        "caixa_delta_perdia_pct": 0.0,
+        "atend_delta_perdia_pct": 0.0,
+        "cliente_dia_delta_perdia_pct": 0.0,
         "dias_com_movimento": {
           "atual": 0,
           "anterior": 0
         },
-        "ticket_delta_pct": null,
-        "caixa_delta_bruto_pct": null,
+        "ticket_delta_pct": 0.0,
+        "caixa_delta_bruto_pct": 0.0,
         "periodo_ant_ref": {
           "data": "2026-09-17",
           "hora_max": 0.0,
@@ -8761,11 +8913,11 @@
           "peso_semana_anterior_pct": 0.0,
           "razao_peso": 0.0,
           "comparavel": true,
-          "caixa_delta_ajustado_pct": null,
+          "caixa_delta_ajustado_pct": 0.0,
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "03:05",
+          "hora_atual_str": "14:03",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -8782,7 +8934,7 @@
         "ticket_gap_por_atend": 0.0,
         "visitas_projetadas": 0,
         "visitas_restantes": 0,
-        "ticket_meta_status": "fechado",
+        "ticket_meta_status": "encerrado_deficit",
         "ticket_meta_deficit_caixa": 0.0,
         "ticket_meta_supera_caixa": 0.0,
         "dia_semana": "Qui",
@@ -8905,9 +9057,23 @@
       "ranking_prof_total_n": 0,
       "ranking_prof_executor": [],
       "ranking_serv": [],
-      "ranking_produtos": [],
+      "ranking_produtos": [
+        {
+          "nome": "Stick Antifrizz 19g",
+          "n": 0,
+          "v": 0.0,
+          "ticket_medio": 0.0
+        }
+      ],
       "ranking_pacotes": [],
-      "upsell_produtos": [],
+      "upsell_produtos": [
+        {
+          "nome": "Kemilly Do Nascimento Roxo",
+          "prof_id": 0,
+          "n": 0,
+          "v": 0.0
+        }
+      ],
       "upsell_pacotes": [],
       "rentabilidade_hora": [],
       "meios_pagamento": [],
@@ -8990,12 +9156,36 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-24T03:05:10-03:00",
+    "gerado_em": "2026-09-24T14:03:02-03:00",
     "hoje": "2026-09-24",
     "retoque_atribuivel": false,
     "por_janela": {
-      "dia": [],
-      "semana": [],
+      "dia": [
+        {
+          "id": "374768",
+          "nome": "Kemilly Do Nascimento Roxo",
+          "funcao": "",
+          "pacotes_n": 0,
+          "pacotes_v": 0.0,
+          "produtos_n": 1,
+          "produtos_v": 99.0,
+          "total_v": 99.0,
+          "identificado": true
+        }
+      ],
+      "semana": [
+        {
+          "id": "374768",
+          "nome": "Kemilly Do Nascimento Roxo",
+          "funcao": "",
+          "pacotes_n": 0,
+          "pacotes_v": 0.0,
+          "produtos_n": 1,
+          "produtos_v": 99.0,
+          "total_v": 99.0,
+          "identificado": true
+        }
+      ],
       "mes": [
         {
           "id": "722601",
@@ -9050,6 +9240,17 @@
           "produtos_n": 0,
           "produtos_v": 0.0,
           "total_v": 270.0,
+          "identificado": true
+        },
+        {
+          "id": "374768",
+          "nome": "Kemilly Do Nascimento Roxo",
+          "funcao": "",
+          "pacotes_n": 0,
+          "pacotes_v": 0.0,
+          "produtos_n": 1,
+          "produtos_v": 99.0,
+          "total_v": 99.0,
           "identificado": true
         },
         {
@@ -9165,6 +9366,17 @@
           "identificado": true
         },
         {
+          "id": "374768",
+          "nome": "Kemilly Do Nascimento Roxo",
+          "funcao": "",
+          "pacotes_n": 0,
+          "pacotes_v": 0.0,
+          "produtos_n": 1,
+          "produtos_v": 99.0,
+          "total_v": 99.0,
+          "identificado": true
+        },
+        {
           "id": "559055",
           "nome": "Não identificado #559055",
           "funcao": "",
@@ -9183,47 +9395,53 @@
       {
         "tipo": "info",
         "titulo": "Picos previstos ainda hoje",
-        "texto": "Base semanal aponta 17h (1.7 clientes/hora), 13h (1.3 clientes/hora) como as próximas horas de fluxo.",
+        "texto": "Base semanal aponta 17h (1.2 clientes/hora), 19h (1.0 clientes/hora) como as próximas horas de fluxo.",
         "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
       }
     ],
     "semanal": [
       {
         "tipo": "atencao",
-        "titulo": "Semana começou em 26% da meta acumulada",
-        "texto": "R$ 2.181,00 contra R$ 8.527,86 de meta nos 3 dias já corridos (R$ -6.346,86).",
-        "acao": "Ainda dá pra virar: o peso da semana está no fim dela (sexta 19%, sábado 38%). Garantir escala e agenda do fim de semana."
+        "titulo": "Ritmo/dia -24% vs semana passada",
+        "texto": "Esta semana: R$ 649,50/dia · semana anterior (09-14-09-17): R$ 854,25/dia.",
+        "acao": "Queda — checar se algo mudou (feriado, doença, chuva). Ativar top clientes."
+      },
+      {
+        "tipo": "atencao",
+        "titulo": "Semana abaixo da meta",
+        "texto": "Projeção R$ 4.546,50 (23%). Gap de R$ 5.114,05/dia para os 3 dias restantes.",
+        "acao": "Ativar campanha WhatsApp pras top 20 clientes AGORA — retorno médio 3-4 walk-ins no fim de semana."
       },
       {
         "tipo": "oportunidade",
-        "titulo": "Qua rende 1.9× Ter",
-        "texto": "Qua: R$ 921,00/dia · Ter: R$ 479,00/dia.",
-        "acao": "Reforçar equipe no Qua. No Ter, testar promoção ou reduzir 1 profissional pra cortar custo."
+        "titulo": "Qua rende 2.2× Qui",
+        "texto": "Qua: R$ 921,00/dia · Qui: R$ 417,00/dia.",
+        "acao": "Reforçar equipe no Qua. No Qui, testar promoção ou reduzir 1 profissional pra cortar custo."
       }
     ],
     "mensal": [
       {
         "tipo": "critico",
         "titulo": "Mês projeta ABAIXO de 80% da meta",
-        "texto": "Projeção R$ 47.484,20 (79%). Ritmo R$ 1.582,81/dia vs necessário R$ 3.147,28/dia. Gap: R$ 1.564,47/dia.",
-        "acao": "Restam 8 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
+        "texto": "Projeção R$ 45.963,59 (77%). Ritmo R$ 1.532,12/dia vs necessário R$ 3.537,32/dia. Gap: R$ 2.005,20/dia.",
+        "acao": "Restam 7 dias úteis. Duas ações que funcionam: (1) mensagem para as top 30 clientes com combo do mês, (2) reforçar sáb/dom com todos os profissionais."
       },
       {
         "tipo": "atencao",
         "titulo": "Retenção baixa (36% recorrentes)",
-        "texto": "137 novos vs 76 recorrentes. Novos gastam R$ 20.592,30, recorrentes R$ 13.647,45.",
+        "texto": "137 novos vs 76 recorrentes. Novos gastam R$ 20.592,30, recorrentes R$ 13.859,45.",
         "acao": "Loja abriu há pouco — normal ter muitos novos. Prioridade: fazer o cliente novo voltar. Cartão fidelidade + mensagem 20 dias após primeira visita costuma trazer 30% de volta."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos = 1.4% do caixa (R$ 492,45). Se chegasse a 8%, seriam +R$ 2.293,29/mês.",
+        "texto": "Produtos = 1.7% do caixa (R$ 591,45). Se chegasse a 8%, seriam +R$ 2.227,65/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 7%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 138,18.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 137,09.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -9236,15 +9454,15 @@
       },
       {
         "tipo": "info",
-        "titulo": "Top 10 clientes = R$ 12.811,00 (16% do ano)",
+        "titulo": "Top 10 clientes = R$ 12.811,00 (15% do ano)",
         "texto": "Média por cliente top: R$ 1.281,10. Adquirir 1 novo cliente equivalente dá muito mais trabalho do que reter esses 10.",
         "acao": "Programa VIP: agenda prioritária + serviço-cortesia trimestral + surpresa de aniversário. Custo baixo, impacto alto."
       },
       {
         "tipo": "critico",
-        "titulo": "78 clientes que sumiram (LTV R$ 18.705,00)",
-        "texto": "Vieram 3+ vezes e não voltam há 14+ dias. Top: Brenda, Juliana, Gabrielly (e mais 75).",
-        "acao": "Ver aba Clientes → 🛟 Clientes que sumiram. WhatsApp pessoal citando último serviço + voucher salva 30-40% do LTV — potencial resgate R$ 6.546,75."
+        "titulo": "77 clientes que sumiram (LTV R$ 18.564,00)",
+        "texto": "Vieram 3+ vezes e não voltam há 14+ dias. Top: Brenda, Juliana, Gabrielly (e mais 74).",
+        "acao": "Ver aba Clientes → 🛟 Clientes que sumiram. WhatsApp pessoal citando último serviço + voucher salva 30-40% do LTV — potencial resgate R$ 6.497,40."
       },
       {
         "tipo": "oportunidade",
@@ -9254,14 +9472,14 @@
       },
       {
         "tipo": "oportunidade",
-        "titulo": "274 clientes recorrentes com espaço para cross-sell",
+        "titulo": "275 clientes recorrentes com espaço para cross-sell",
         "texto": "Nunca experimentaram serviços populares (ex: FAST ESCOVA - LISA, MÃOS, PÉS E MÃOS). Se 20% aceitar, aumenta ticket médio significativamente.",
         "acao": "Ver aba Anual > Cross-sell. Priorizar top 10 por LTV — recepção pode oferecer no fechamento."
       },
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 119,34. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 119,07. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
@@ -9275,7 +9493,7 @@
       {
         "tipo": "atencao",
         "titulo": "Extrato Stone parado em 09-19 20:19 (5 dias atrás)",
-        "texto": "6 PIX de R$ 540,00 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
+        "texto": "7 PIX de R$ 593,00 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
         "acao": "Exportar o extrato Stone atualizado e colocar em data/stone_extrato.csv. Antes disso, não vale ligar pra cliente nenhuma."
       },
       {
@@ -9286,8 +9504,8 @@
       },
       {
         "tipo": "info",
-        "titulo": "R$ 9.638,96 a receber em cartão (D+30)",
-        "texto": "Antecipar tudo hoje custaria R$ 160,01 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 109,38 (CDI). Custo real da antecipação: R$ 50,63.",
+        "titulo": "R$ 9.990,22 a receber em cartão (D+30)",
+        "texto": "Antecipar tudo hoje custaria R$ 165,84 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 113,37 (CDI). Custo real da antecipação: R$ 52,47.",
         "acao": "Só antecipa se tem uso melhor pro dinheiro que render >14,5% a.a. Caso contrário, é mais barato esperar D+30."
       },
       {
