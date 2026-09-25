@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-25T19:48:26-03:00",
+  "gerado_em": "2026-09-25T20:45:51-03:00",
   "hoje": "2026-09-25",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -1229,9 +1229,9 @@
         "cartao": {
           "stone_recebido": 0.0,
           "stone_n": 0,
-          "trinks_vendido": 5092.0,
-          "trinks_n": 39,
-          "a_receber_d30": 4913.78
+          "trinks_vendido": 5270.0,
+          "trinks_n": 40,
+          "a_receber_d30": 5085.55
         },
         "dinheiro": {
           "total": 100.0,
@@ -1246,7 +1246,7 @@
         },
         "resumo": {
           "recebido_total": 100.0,
-          "a_receber": 4913.78
+          "a_receber": 5085.55
         },
         "periodo_ini": "2026-09-21",
         "periodo_fim": "2026-09-27"
@@ -1389,9 +1389,9 @@
         "cartao": {
           "stone_recebido": 16008.57,
           "stone_n": 42,
-          "trinks_vendido": 29949.75,
-          "trinks_n": 225,
-          "a_receber_d30": 12892.94
+          "trinks_vendido": 30127.75,
+          "trinks_n": 226,
+          "a_receber_d30": 13064.71
         },
         "dinheiro": {
           "total": 1102.0,
@@ -1466,7 +1466,7 @@
         },
         "resumo": {
           "recebido_total": 23516.94,
-          "a_receber": 12892.94
+          "a_receber": 13064.71
         },
         "periodo_ini": "2026-09-01",
         "periodo_fim": "2026-09-30"
@@ -1615,9 +1615,9 @@
         "cartao": {
           "stone_recebido": 29506.9,
           "stone_n": 82,
-          "trinks_vendido": 65686.85,
-          "trinks_n": 526,
-          "a_receber_d30": 33880.91
+          "trinks_vendido": 65864.85,
+          "trinks_n": 527,
+          "a_receber_d30": 34052.68
         },
         "dinheiro": {
           "total": 2843.0,
@@ -1787,7 +1787,7 @@
         },
         "resumo": {
           "recebido_total": 48572.93,
-          "a_receber": 33880.91
+          "a_receber": 34052.68
         },
         "periodo_ini": "2026-01-01",
         "periodo_fim": "2026-12-31"
@@ -2384,6 +2384,12 @@
       "vendas_trinks_apos_v": 0.0,
       "vendas_apos_lista": [
         {
+          "data": "2026-09-25T20:30",
+          "valor": 0.0,
+          "meio": "Visa Electron",
+          "cliente": "JIULIA BARBOSA RODRIGUES "
+        },
+        {
           "data": "2026-09-25T19:37",
           "valor": 0.0,
           "meio": "Maestro/Redeshop",
@@ -2676,12 +2682,6 @@
           "valor": 0.0,
           "meio": "Mastercard",
           "cliente": "Luciana Ferreira Cagazon"
-        },
-        {
-          "data": "2026-09-21T13:06",
-          "valor": 0.0,
-          "meio": "PIX",
-          "cliente": "Pyetra Germano"
         }
       ],
       "horas_desatualizado": 0.0
@@ -9260,7 +9260,7 @@
           }
         },
         "pace_intraday": {
-          "hora_atual_str": "19:48",
+          "hora_atual_str": "20:45",
           "hora_atual_num": 0.0,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
@@ -9501,7 +9501,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-25T19:48:26-03:00",
+    "gerado_em": "2026-09-25T20:45:51-03:00",
     "hoje": "2026-09-25",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -9742,25 +9742,31 @@
         "titulo": "1 profissional(is) sem atendimento hoje",
         "texto": "João ainda em zero de receita. Se não está em folga, é capacidade ociosa perdida.",
         "acao": "Realocar walk-ins da fila para elas. Se agenda continuar vazia, avaliar reduzir dia de trabalho na próxima semana."
+      },
+      {
+        "tipo": "info",
+        "titulo": "Fechamento do dia",
+        "texto": "Caixa R$ 2.571,00 · 22 visitas · ticket R$ 116,86 · meta 60% (R$ 1.753,52 faltou).",
+        "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
       }
     ],
     "semanal": [
       {
         "tipo": "atencao",
-        "titulo": "Ritmo/dia -14% vs semana passada",
-        "texto": "Esta semana: R$ 1.252,60/dia · semana anterior (09-14-09-18): R$ 1.454,20/dia.",
+        "titulo": "Ritmo/dia -11% vs semana passada",
+        "texto": "Esta semana: R$ 1.288,20/dia · semana anterior (09-14-09-18): R$ 1.454,20/dia.",
         "acao": "Queda — checar se algo mudou (feriado, doença, chuva). Ativar top clientes."
       },
       {
         "tipo": "atencao",
         "titulo": "Semana abaixo da meta",
-        "texto": "Projeção R$ 8.768,20 (44%). Gap de R$ 5.572,33/dia para os 2 dias restantes.",
+        "texto": "Projeção R$ 9.017,40 (45%). Gap de R$ 5.448,99/dia para os 2 dias restantes.",
         "acao": "Ativar campanha WhatsApp pras top 20 clientes AGORA — retorno médio 3-4 walk-ins no fim de semana."
       },
       {
         "tipo": "oportunidade",
-        "titulo": "Sex rende 5.0× Ter",
-        "texto": "Sex: R$ 2.393,00/dia · Ter: R$ 479,00/dia.",
+        "titulo": "Sex rende 5.4× Ter",
+        "texto": "Sex: R$ 2.571,00/dia · Ter: R$ 479,00/dia.",
         "acao": "Reforçar equipe no Sex. No Ter, testar promoção ou reduzir 1 profissional pra cortar custo."
       }
     ],
@@ -9768,25 +9774,25 @@
       {
         "tipo": "atencao",
         "titulo": "Mês precisa acelerar pra bater meta",
-        "texto": "Projeção R$ 48.629,69 (81%). Precisa +R$ 1.895,05/dia acima do ritmo atual pelos próximos 6 dias.",
+        "texto": "Projeção R$ 48.852,19 (81%). Precisa +R$ 1.857,97/dia acima do ritmo atual pelos próximos 6 dias.",
         "acao": "Foco: fechar cada walk-in com upsell (adicional escova + hidratação = +R$ 40 por atendimento)."
       },
       {
         "tipo": "atencao",
         "titulo": "Retenção baixa (35% recorrentes)",
-        "texto": "153 novos vs 83 recorrentes. Novos gastam R$ 23.363,30, recorrentes R$ 15.051,45.",
+        "texto": "153 novos vs 84 recorrentes. Novos gastam R$ 23.363,30, recorrentes R$ 15.229,45.",
         "acao": "Loja abriu há pouco — normal ter muitos novos. Prioridade: fazer o cliente novo voltar. Cartão fidelidade + mensagem 20 dias após primeira visita costuma trazer 30% de volta."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos = 1.5% do caixa (R$ 591,45). Se chegasse a 8%, seriam +R$ 2.520,85/mês.",
+        "texto": "Produtos = 1.5% do caixa (R$ 591,45). Se chegasse a 8%, seriam +R$ 2.535,09/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       },
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 7%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 141,57.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 141,73.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -9824,7 +9830,7 @@
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 6% (ano)",
-        "texto": "R$/hora média do salão: R$ 121,25. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 121,34. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
@@ -9849,8 +9855,8 @@
       },
       {
         "tipo": "info",
-        "titulo": "R$ 12.892,94 a receber em cartão (D+30)",
-        "texto": "Antecipar tudo hoje custaria R$ 214,02 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 146,30 (CDI). Custo real da antecipação: R$ 67,72.",
+        "titulo": "R$ 13.064,71 a receber em cartão (D+30)",
+        "texto": "Antecipar tudo hoje custaria R$ 216,87 (1,66%). Se o dinheiro ficar parado 30d na aplicação Stone, você deixa de ganhar R$ 148,25 (CDI). Custo real da antecipação: R$ 68,62.",
         "acao": "Só antecipa se tem uso melhor pro dinheiro que render >14,5% a.a. Caso contrário, é mais barato esperar D+30."
       },
       {
