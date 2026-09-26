@@ -442,7 +442,7 @@
       <span class="chip" id="chip-age" style="display:none;"></span>
       <span class="chip" id="chip-cota" style="display:none;"></span>
       <span class="chip" id="chip-live" style="display:none;"></span>
-      <button id="btn-reload" class="btn-refresh btn-sync" title="Recarrega os últimos dados publicados. Cron atualiza os dados automaticamente a cada ~15min.">🔄 Atualizar dados</button>
+      <button id="btn-reload" class="btn-refresh btn-sync" onclick="try{(window.refreshInteligente||window.reloadAllTabs||function(){location.reload();})();}catch(e){location.reload();}" title="Recarrega os últimos dados publicados. Cron atualiza os dados automaticamente a cada ~15min.">🔄 Atualizar dados</button>
     </div>
   </header>
 
@@ -4866,6 +4866,8 @@ function reloadAllTabs(showToast=false){
 }
 
 async function refreshInteligente(){
+  if(window._refreshing) return;  // evita dupla execucao (onclick inline + addEventListener)
+  window._refreshing = true;
   const btn = document.getElementById('btn-reload');
   let token = localStorage.getItem('gh_token');
   if(token){ token = sanitizeToken(token); if(token.length < 20) token = null; }
@@ -4894,6 +4896,7 @@ async function refreshInteligente(){
     } finally {
       btn.disabled = false;
       btn.textContent = '🔄 Atualizar dados';
+      window._refreshing = false;
     }
     return;
   }
@@ -4916,8 +4919,9 @@ async function refreshInteligente(){
       btn.textContent = '⏳ ~60s pra carregar';
       setTimeout(() => {
         btn.disabled = false;
-        reloadAllTabs(true);
+        reloadAllTabs(true).finally(() => { window._refreshing = false; });
       }, 70000);
+      return;  // _refreshing sera limpo pelo setTimeout, nao aqui
     } else if(r.status === 401){
       localStorage.removeItem('gh_token');
       toast('❌ Token expirado ou inválido — removi do browser. Clica de novo pra colar outro.', true);
@@ -4927,14 +4931,24 @@ async function refreshInteligente(){
       const txt = (await r.text()).slice(0, 150);
       toast(`⚠️ Sync falhou (HTTP ${r.status}). Recarregando últimos dados publicados.<br><small>${txt}</small>`, true);
       btn.disabled = false;
-      reloadAllTabs(true);
+      await reloadAllTabs(true);
     }
   } catch(e){
     toast(`⚠️ Sem rede pro sync: ${e.message}. Recarregando local.`, true);
     btn.disabled = false;
-    reloadAllTabs(true);
+    await reloadAllTabs(true);
+  } finally {
+    window._refreshing = false;
   }
 }
+
+// Expoe as funcoes em window ANTES do bindReload, pra que o onclick inline
+// no botao (que roda no primeiro clique, sem esperar o DOMContentLoaded)
+// tambem consiga chamar. Sem isso, se algum JS entre aqui e bindReload
+// falhar, o botao fica sem addEventListener MAS o onclick inline ainda
+// resolve via location.reload() fallback.
+window.refreshInteligente = refreshInteligente;
+window.reloadAllTabs = typeof reloadAllTabs !== 'undefined' ? reloadAllTabs : null;
 
 // ---------- ABA FINANCEIRO ----------
 let FIN = null, TRINKS = null;
