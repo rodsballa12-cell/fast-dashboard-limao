@@ -4,83 +4,90 @@ Data: 26/09/2026.
 Referências: perfil **@fastspa.vilamariana** (padrão da rede) e o posicionamento
 definido por Rodrigo: **"o primeiro spa urbano acessível chegou"**.
 
-A bio precisa carregar três mensagens ao mesmo tempo, nesta ordem de prioridade:
-
-1. **Primeiro spa urbano acessível** — o posicionamento (pedido de Rodrigo)
-2. **Sem hora marcada + preço de entrada** — o DNA da marca e a prova do
-   "acessível"
-3. **Unidade irmã da Fast Escova, mesmo prédio** — a ponte com a base atual
+Decisões de Rodrigo em 26/09:
+- posicionamento "primeiro spa urbano acessível" na primeira linha;
+- coração **🩵 azul claro** (cor da marca), não o 💙;
+- **sem preço na bio**;
+- **horário de funcionamento na bio**: seg a sex 8h–20h e domingo 9h–15h.
 
 Limite do Instagram: **150 caracteres** (quebras de linha contam 1 cada).
 
 ---
 
-## Bio de lançamento — usar agora (144 caracteres)
+## Bio de lançamento — usar agora (141 caracteres)
 
 ```
 Chegou o primeiro spa urbano acessível do Limão 🩵
-Sem hora marcada · a partir de R$59
-🩵 O spa da @fastescova.limao, mesmo prédio
+Sem hora marcada · o spa da @fastescova.limao
+⏰ Seg–Sex 8h–20h | Dom 9h–15h
 #semhoramarcada
 ```
 
 Linha a linha:
 
-- **`Chegou o primeiro spa urbano acessível do Limão`** — o posicionamento na
-  primeira linha, que é a única que aparece na busca e no preview do perfil.
-  "Chegou" é o gatilho de novidade e só funciona nas primeiras semanas.
-- **`Sem hora marcada · a partir de R$59`** — o DNA da marca e a prova do
-  "acessível" na linha seguinte. Afirmação sem prova vira propaganda; com o R$59
-  logo abaixo, vira fato verificável.
-- **`O spa da @fastescova.limao, mesmo prédio`** — menção clicável, puxa a
-  confiança de quem já é cliente.
+- **posicionamento** na primeira linha, que é a única que aparece na busca e no
+  preview do perfil. "Chegou" é o gatilho de novidade e só funciona nas
+  primeiras semanas.
+- **`Sem hora marcada · o spa da @fastescova.limao`** — o DNA da marca e a
+  ponte com a base atual. A menção é link clicável.
+- **horário** no formato da rede (`⏰ Seg–Sáb 8h–20h | Dom 9h–15h` na Vila
+  Mariana).
 - **`#semhoramarcada`** — hashtag da rede, clicável, agrega o conteúdo das
   outras unidades dentro do seu perfil. Alcance sem custo.
 
-## Bio permanente — trocar por volta de 25/11 (137 caracteres)
+Saiu o **"a partir de R$59"** e saiu o **"mesmo prédio"** — foi o espaço que o
+horário ocupou. O preço continua valendo como argumento; só não é mais promessa
+pública fixada na bio, o que dá liberdade para mexer na tabela sem ter de editar
+o perfil.
+
+## Bio permanente — trocar por volta de 25/11 (134 caracteres)
 
 ```
 O primeiro spa urbano acessível do Limão 🩵
-Sem hora marcada · a partir de R$59
-🩵 O spa da @fastescova.limao, mesmo prédio
+Sem hora marcada · o spa da @fastescova.limao
+⏰ Seg–Sex 8h–20h | Dom 9h–15h
 #semhoramarcada
 ```
 
 Só cai o "Chegou". Depois de ~60 dias, "chegou" deixa de comunicar novidade e
 passa a comunicar que ninguém mexe no perfil.
 
-### Sobre o coração
+---
 
-Usar o **🩵 (coração azul claro)**, não o 💙 (azul escuro). O azul claro é o tom
-da marca — combina com o teal **#00A6A4** do Fast Spa; o 💙 puxa para um azul
-marinho que não existe na identidade. Corrigido em 26/09 por Rodrigo.
+## PENDENTE: o sábado
 
-Nota técnica: o 🩵 é um emoji recente (2022). Aparelhos muito antigos podem
-mostrar um quadrado vazio. Depois de colar a bio, **abrir o perfil num Android
-antigo** para conferir. Se aparecer quadrado, o substituto mais próximo é o 💠.
+A instrução foi "segunda à sexta das 8 às 20 e domingo das 9 às 15" — **o sábado
+não foi citado**. Três motivos para conferir antes de colar:
 
-### Sobre o "primeiro"
+1. A Vila Mariana abre `Seg–Sáb 8h–20h | Dom 9h–15h`.
+2. O sábado é dia forte na Fast Escova (30 pessoas distintas).
+3. A abertura tem atendimento exclusivo no **sábado 26/09, 9h–12h** — ou seja,
+   o Spa abre neste sábado.
 
-Fica **qualificado pelo bairro** ("do Limão") de propósito. "O primeiro spa
-urbano acessível" sem recorte é uma afirmação que qualquer concorrente pode
-contestar; "do Limão" é verificável, defensável e ainda melhora a busca local,
-que é de onde vem a cliente que chega a pé.
+Se o Spa abre aos sábados, é só trocar `Seg–Sex` por `Seg–Sáb` (mesma contagem,
+141 caracteres):
+
+```
+Chegou o primeiro spa urbano acessível do Limão 🩵
+Sem hora marcada · o spa da @fastescova.limao
+⏰ Seg–Sáb 8h–20h | Dom 9h–15h
+#semhoramarcada
+```
+
+Bio dizendo que não abre num dia em que abre é porta fechada na cara de quem
+saiu de casa. Vale os 10 segundos de conferência.
 
 ---
 
-## Campos do perfil (é aqui que sobrou espaço na bio)
+## Campos do perfil
 
 | Campo | O que colocar |
 |---|---|
 | **Nome** (não o @) | `Fast Spa Limão · Sem hora marcada` — campo indexado na busca. Se a franqueadora exigir padrão de rede, use `Fast Spa Limão` puro. |
 | **Categoria** | `Spa` (ou `Massoterapeuta` para aparecer em busca de massagem) |
-| **Endereço** | `Av. Dep. Emílio Carlos, 358 · Limão · São Paulo` — campo próprio, não a bio |
-| **Horário** | `Seg–Sáb 8h–20h` — campo próprio, não a bio |
+| **Endereço** | `Av. Dep. Emílio Carlos, 358 · Limão · São Paulo` — campo próprio |
+| **Horário** | Repetir o mesmo horário da bio no campo próprio |
 | **Botões** | Ativar "Localizações" e "Informações de contato", como a Vila Mariana |
-
-Endereço e horário saíram da bio porque o perfil profissional tem campo próprio
-para os dois. São 51 caracteres devolvidos — foi o que permitiu o posicionamento
-inteiro caber na primeira linha.
 
 ## Links: são até 5
 
@@ -91,11 +98,32 @@ A Vila Mariana usa 4. Ordem sugerida para o Limão:
 3. Tabela de preços
 4. Vaga no grupo VIP
 
+Com o preço fora da bio, o link 3 passa a ser o caminho de quem quer saber
+quanto custa. Ele precisa existir desde o primeiro dia.
+
 ## Destaques
 
 Nomes da rede: `Eventos` · `Especialistas` · `Experiências` · `Ambiente` ·
 `Parcerias`. Acrescentar o que só o Limão tem: **`Fast Escova`** — o prédio, a
 recepção, as duas portas.
+
+---
+
+## Sobre o "primeiro"
+
+Fica **qualificado pelo bairro** ("do Limão") de propósito. "O primeiro spa
+urbano acessível" sem recorte é uma afirmação que qualquer concorrente pode
+contestar; "do Limão" é verificável, defensável e ainda melhora a busca local,
+que é de onde vem a cliente que chega a pé.
+
+## Sobre o coração
+
+Usar o **🩵 (azul claro)**, não o 💙 (azul escuro). O azul claro é o tom da
+marca — combina com o teal **#00A6A4** do Fast Spa.
+
+Nota técnica: o 🩵 é um emoji recente (2022). Aparelhos muito antigos podem
+mostrar um quadrado vazio. Depois de colar a bio, abrir o perfil num Android
+antigo para conferir. Se aparecer quadrado, o substituto mais próximo é o 💠.
 
 ---
 
@@ -106,8 +134,6 @@ recepção, as duas portas.
    o Limão entra e quando.
 2. **"Indicou, ganhou!"** — a cliente indica uma amiga e as duas ganham um
    adicional. Peça pronta da rede; encaixa nos ~344 clientes da Escova.
-3. **Domingo 9h–15h** — a Vila Mariana abre, o Limão não. Reavaliar em 4
-   semanas, com o movimento de sábado medido.
 
 ## Cuidados
 
@@ -115,11 +141,9 @@ recepção, as duas portas.
 - Nada de promessa de resultado físico na bio.
 - Endereço correto é **358**, não 362 (a peça oficial da franqueadora erra).
 - WhatsApp do Spa é **(11) 99024-3927**, não o 96612-9197 (da Escova).
-- R$59 é verdade (drenagem facial 15 min). Preço na bio é promessa pública: se
-  essa entrada sair da tabela, a bio muda no mesmo dia.
 
 ## Ação imediata
 
-Colar a bio de lançamento, preencher endereço e horário nos campos próprios,
-ativar os dois botões, subir o destaque `Fast Escova`.
+Conferir o sábado, colar a bio, preencher endereço e horário nos campos
+próprios, ativar os dois botões, subir o destaque `Fast Escova`.
 Agendar a troca para a bio permanente por volta de **25/11/2026**.
