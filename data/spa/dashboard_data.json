@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-26T20:02:41-03:00",
+  "gerado_em": "2026-09-26T20:57:49-03:00",
   "hoje": "2026-09-26",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -95,27 +95,27 @@
       },
       {
         "h": 14,
-        "pct_acum": 2.0
+        "pct_acum": 1.7
       },
       {
         "h": 15,
-        "pct_acum": 22.0
+        "pct_acum": 19.3
       },
       {
         "h": 16,
-        "pct_acum": 33.9
+        "pct_acum": 29.7
       },
       {
         "h": 17,
-        "pct_acum": 65.4
+        "pct_acum": 57.4
       },
       {
         "h": 18,
-        "pct_acum": 82.5
+        "pct_acum": 72.4
       },
       {
         "h": 19,
-        "pct_acum": 86.5
+        "pct_acum": 75.9
       },
       {
         "h": 20,
@@ -158,8 +158,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 88,
-    "saldoRestante": 9912
+    "totalUtilizado": 93,
+    "saldoRestante": 9907
   },
   "metas_franqueadora": null,
   "unidade_config": {
@@ -306,6 +306,14 @@
         "sinal": "ok"
       },
       {
+        "servico": "LIMPEZA DE PELE SUPER VIP + SPA DOS LABIOS",
+        "tabela": 199.0,
+        "praticado": 199.0,
+        "diff": 0.0,
+        "pct": 0.0,
+        "sinal": "ok"
+      },
+      {
         "servico": "RENOVE-SE EM 45",
         "tabela": 149.0,
         "praticado": 149.0,
@@ -314,7 +322,7 @@
         "sinal": "ok"
       }
     ],
-    "n_com_desvio": 2
+    "n_com_desvio": 3
   },
   "catalogo_produtos": {
     "n_total": 41,
@@ -679,9 +687,21 @@
       "orfaos_trinks_n": 0,
       "orfaos_trinks_v": 0.0,
       "orfaos_trinks": [],
-      "orfaos_fora_extrato_n": 5,
-      "orfaos_fora_extrato_v": 495.9,
+      "orfaos_fora_extrato_n": 7,
+      "orfaos_fora_extrato_v": 693.9,
       "orfaos_fora_extrato": [
+        {
+          "data": "2026-09-26",
+          "data_hora": "2026-09-26T20:09",
+          "valor": 99.0,
+          "cliente": "Alexandra Souza"
+        },
+        {
+          "data": "2026-09-26",
+          "data_hora": "2026-09-26T20:08",
+          "valor": 99.0,
+          "cliente": "Saulo Soares"
+        },
         {
           "data": "2026-09-26",
           "data_hora": "2026-09-26T18:44",
@@ -726,11 +746,23 @@
           "stone_liquido": 0.0,
           "stone_tarifa": 0.0,
           "stone_n": 0,
-          "trinks_valor": 495.9,
-          "trinks_n": 5,
+          "trinks_valor": 693.9,
+          "trinks_n": 7,
           "matches_n": 0,
           "orfaos_stone": [],
           "orfaos_trinks": [
+            {
+              "data": "2026-09-26",
+              "data_hora": "2026-09-26T20:09",
+              "valor": 99.0,
+              "cliente": "Alexandra Souza"
+            },
+            {
+              "data": "2026-09-26",
+              "data_hora": "2026-09-26T20:08",
+              "valor": 99.0,
+              "cliente": "Saulo Soares"
+            },
             {
               "data": "2026-09-26",
               "data_hora": "2026-09-26T18:44",
@@ -762,23 +794,29 @@
               "cliente": "Paola Messina"
             }
           ],
-          "diff": -495.9
+          "diff": -693.9
         },
         "cartao": {
           "stone_recebido": 0.0,
           "stone_n": 0,
-          "trinks_vendido": 3321.6,
-          "trinks_n": 19,
-          "a_receber_d30": 3205.34
+          "trinks_vendido": 3719.6,
+          "trinks_n": 21,
+          "a_receber_d30": 3589.41
         },
         "dinheiro": {
-          "total": 0.0,
-          "n": 0,
-          "transacoes": []
+          "total": 99.0,
+          "n": 1,
+          "transacoes": [
+            {
+              "data": "2026-09-26",
+              "valor": 99.0,
+              "cliente": "Anna Alice Bezerra de Oliveira"
+            }
+          ]
         },
         "resumo": {
-          "recebido_total": 0.0,
-          "a_receber": 3205.34
+          "recebido_total": 99.0,
+          "a_receber": 3589.41
         },
         "periodo_ini": "2026-09-26",
         "periodo_fim": "2026-09-26"
@@ -789,11 +827,23 @@
           "stone_liquido": 0.0,
           "stone_tarifa": 0.0,
           "stone_n": 0,
-          "trinks_valor": 495.9,
-          "trinks_n": 5,
+          "trinks_valor": 693.9,
+          "trinks_n": 7,
           "matches_n": 0,
           "orfaos_stone": [],
           "orfaos_trinks": [
+            {
+              "data": "2026-09-26",
+              "data_hora": "2026-09-26T20:09",
+              "valor": 99.0,
+              "cliente": "Alexandra Souza"
+            },
+            {
+              "data": "2026-09-26",
+              "data_hora": "2026-09-26T20:08",
+              "valor": 99.0,
+              "cliente": "Saulo Soares"
+            },
             {
               "data": "2026-09-26",
               "data_hora": "2026-09-26T18:44",
@@ -825,23 +875,29 @@
               "cliente": "Paola Messina"
             }
           ],
-          "diff": -495.9
+          "diff": -693.9
         },
         "cartao": {
           "stone_recebido": 0.0,
           "stone_n": 0,
-          "trinks_vendido": 4493.57,
-          "trinks_n": 30,
-          "a_receber_d30": 4336.3
+          "trinks_vendido": 4891.57,
+          "trinks_n": 32,
+          "a_receber_d30": 4720.37
         },
         "dinheiro": {
-          "total": 0.0,
-          "n": 0,
-          "transacoes": []
+          "total": 99.0,
+          "n": 1,
+          "transacoes": [
+            {
+              "data": "2026-09-26",
+              "valor": 99.0,
+              "cliente": "Anna Alice Bezerra de Oliveira"
+            }
+          ]
         },
         "resumo": {
-          "recebido_total": 0.0,
-          "a_receber": 4336.3
+          "recebido_total": 99.0,
+          "a_receber": 4720.37
         },
         "periodo_ini": "2026-09-21",
         "periodo_fim": "2026-09-27"
@@ -852,8 +908,8 @@
           "stone_liquido": 6406.37,
           "stone_tarifa": 41.63,
           "stone_n": 54,
-          "trinks_valor": 495.9,
-          "trinks_n": 5,
+          "trinks_valor": 693.9,
+          "trinks_n": 7,
           "matches_n": 0,
           "orfaos_stone": [
             {
@@ -1184,6 +1240,18 @@
           "orfaos_trinks": [
             {
               "data": "2026-09-26",
+              "data_hora": "2026-09-26T20:09",
+              "valor": 99.0,
+              "cliente": "Alexandra Souza"
+            },
+            {
+              "data": "2026-09-26",
+              "data_hora": "2026-09-26T20:08",
+              "valor": 99.0,
+              "cliente": "Saulo Soares"
+            },
+            {
+              "data": "2026-09-26",
               "data_hora": "2026-09-26T18:44",
               "valor": 99.0,
               "cliente": "Jose Netto "
@@ -1213,22 +1281,28 @@
               "cliente": "Paola Messina"
             }
           ],
-          "diff": 5952.1
+          "diff": 5754.1
         },
         "cartao": {
           "stone_recebido": 16008.57,
           "stone_n": 42,
-          "trinks_vendido": 4493.57,
-          "trinks_n": 30,
+          "trinks_vendido": 4891.57,
+          "trinks_n": 32,
           "a_receber_d30": 0.0
         },
         "dinheiro": {
-          "total": 0.0,
-          "n": 0,
-          "transacoes": []
+          "total": 99.0,
+          "n": 1,
+          "transacoes": [
+            {
+              "data": "2026-09-26",
+              "valor": 99.0,
+              "cliente": "Anna Alice Bezerra de Oliveira"
+            }
+          ]
         },
         "resumo": {
-          "recebido_total": 22414.94,
+          "recebido_total": 22513.94,
           "a_receber": 0.0
         },
         "periodo_ini": "2026-09-01",
@@ -1240,8 +1314,8 @@
           "stone_liquido": 16223.03,
           "stone_tarifa": 104.97,
           "stone_n": 130,
-          "trinks_valor": 495.9,
-          "trinks_n": 5,
+          "trinks_valor": 693.9,
+          "trinks_n": 7,
           "matches_n": 0,
           "orfaos_stone": [
             {
@@ -2028,6 +2102,18 @@
           "orfaos_trinks": [
             {
               "data": "2026-09-26",
+              "data_hora": "2026-09-26T20:09",
+              "valor": 99.0,
+              "cliente": "Alexandra Souza"
+            },
+            {
+              "data": "2026-09-26",
+              "data_hora": "2026-09-26T20:08",
+              "valor": 99.0,
+              "cliente": "Saulo Soares"
+            },
+            {
+              "data": "2026-09-26",
               "data_hora": "2026-09-26T18:44",
               "valor": 99.0,
               "cliente": "Jose Netto "
@@ -2057,22 +2143,28 @@
               "cliente": "Paola Messina"
             }
           ],
-          "diff": 15832.1
+          "diff": 15634.1
         },
         "cartao": {
           "stone_recebido": 29506.9,
           "stone_n": 82,
-          "trinks_vendido": 4493.57,
-          "trinks_n": 30,
+          "trinks_vendido": 4891.57,
+          "trinks_n": 32,
           "a_receber_d30": 0.0
         },
         "dinheiro": {
-          "total": 0.0,
-          "n": 0,
-          "transacoes": []
+          "total": 99.0,
+          "n": 1,
+          "transacoes": [
+            {
+              "data": "2026-09-26",
+              "valor": 99.0,
+              "cliente": "Anna Alice Bezerra de Oliveira"
+            }
+          ]
         },
         "resumo": {
-          "recebido_total": 45729.93,
+          "recebido_total": 45828.93,
           "a_receber": 0.0
         },
         "periodo_ini": "2026-01-01",
@@ -2430,27 +2522,27 @@
         "prazo_dias": 1
       },
       "credito": {
-        "bruto": 3639.67,
-        "n": 24,
+        "bruto": 4037.67,
+        "n": 26,
         "mdr_pct": 2.08,
-        "liq_espera": 3563.96,
-        "liq_antecipar": 3505.44,
-        "custo_antecipacao": 58.53,
+        "liq_espera": 3953.69,
+        "liq_antecipar": 3888.69,
+        "custo_antecipacao": 65.0,
         "dias_medio_recebimento": 30,
         "dias_medio_restante": 29.7,
         "prazo_dias": 30
       },
       "total": {
-        "bruto": 4493.57,
-        "liq_espera": 4405.39,
-        "liq_antecipar": 4346.39,
-        "custo_antecipacao": 59.0,
-        "custo_pct": 1.34
+        "bruto": 4891.57,
+        "liq_espera": 4795.12,
+        "liq_antecipar": 4729.65,
+        "custo_antecipacao": 65.47,
+        "custo_pct": 1.37
       },
       "confronto_a_receber": {
         "a_receber_extrato": 0.0,
-        "pendente_vendas": 4405.39,
-        "diferenca": 4405.39
+        "pendente_vendas": 4795.12,
+        "diferenca": 4795.12
       },
       "cronograma_liberacao": [
         {
@@ -2463,7 +2555,7 @@
         },
         {
           "data": "2026-10-26",
-          "bruto": 2467.7
+          "bruto": 2865.7
         }
       ],
       "taxa_antecipacao_mensal_pct": 1.66,
@@ -2562,9 +2654,33 @@
     },
     "gap_trinks_stone": {
       "ultima_data_stone": "2026-09-19T20:19:00",
-      "vendas_trinks_apos_n": 35,
-      "vendas_trinks_apos_v": 4989.47,
+      "vendas_trinks_apos_n": 39,
+      "vendas_trinks_apos_v": 5585.47,
       "vendas_apos_lista": [
+        {
+          "data": "2026-09-26T20:49",
+          "valor": 199.0,
+          "meio": "Visa",
+          "cliente": "Genesis Vanessa"
+        },
+        {
+          "data": "2026-09-26T20:49",
+          "valor": 199.0,
+          "meio": "Visa",
+          "cliente": "Paula Andreza Gonçalves Maqueda"
+        },
+        {
+          "data": "2026-09-26T20:09",
+          "valor": 99.0,
+          "meio": "PIX",
+          "cliente": "Alexandra Souza"
+        },
+        {
+          "data": "2026-09-26T20:08",
+          "valor": 99.0,
+          "meio": "PIX",
+          "cliente": "Saulo Soares"
+        },
         {
           "data": "2026-09-26T19:05",
           "valor": 99.0,
@@ -2776,7 +2892,7 @@
           "cliente": "Vinicius Canosa"
         }
       ],
-      "horas_desatualizado": 167.7
+      "horas_desatualizado": 168.6
     }
   },
   "auditoria_cancelados": {
@@ -2916,24 +3032,24 @@
         "periodo_ini": "2026-09-21",
         "periodo_fim": "2026-09-26",
         "kpis": {
-          "caixa": 4989.47,
-          "faturamento_apurado": 4989.47,
-          "receita_serv": 2930.0,
-          "atend_fin": 20,
+          "caixa": 5684.47,
+          "faturamento_apurado": 5684.47,
+          "receita_serv": 3526.0,
+          "atend_fin": 24,
           "atend_canc": 5,
-          "atend_total": 25,
-          "n_trans": 40,
-          "ticket_trans": 124.74,
-          "cliente_dia": 20,
-          "ticket_medio": 249.47,
-          "taxa_canc": 20.0,
+          "atend_total": 29,
+          "n_trans": 45,
+          "ticket_trans": 126.32,
+          "cliente_dia": 24,
+          "ticket_medio": 236.85,
+          "taxa_canc": 17.2,
           "dias_op": 4,
-          "clientes_unicos": 19,
+          "clientes_unicos": 23,
           "em_atendimento": 0,
           "n_prof_ativos": 7,
-          "rs_hora_salao": 216.62,
-          "horas_operacao_periodo": 23.0,
-          "utilizacao_agregada_pct": 8.7
+          "rs_hora_salao": 237.35,
+          "horas_operacao_periodo": 24.0,
+          "utilizacao_agregada_pct": 10.4
         },
         "categorias": {
           "pacotes": {
@@ -2942,8 +3058,8 @@
             "pct": 0.0
           },
           "servicos": {
-            "v": 2930.0,
-            "n": 20,
+            "v": 3526.0,
+            "n": 24,
             "pct": 100.0
           },
           "produtos": {
@@ -2957,8 +3073,8 @@
             "pct": 0.0
           },
           "servicos_gerais": {
-            "v": 2930.0,
-            "n": 20,
+            "v": 3526.0,
+            "n": 24,
             "pct": 100.0
           }
         },
@@ -2979,24 +3095,24 @@
     "dias": {
       "2026-09-26": {
         "kpis": {
-          "caixa": 3817.5,
-          "faturamento_apurado": 3817.5,
-          "receita_serv": 1431.0,
-          "atend_fin": 9,
+          "caixa": 4512.5,
+          "faturamento_apurado": 4512.5,
+          "receita_serv": 2027.0,
+          "atend_fin": 13,
           "atend_canc": 5,
-          "atend_total": 14,
-          "n_trans": 24,
-          "ticket_trans": 159.06,
-          "cliente_dia": 9,
-          "ticket_medio": 424.17,
-          "taxa_canc": 35.7,
+          "atend_total": 18,
+          "n_trans": 29,
+          "ticket_trans": 155.6,
+          "cliente_dia": 13,
+          "ticket_medio": 347.12,
+          "taxa_canc": 27.8,
           "dias_op": 1,
-          "clientes_unicos": 9,
+          "clientes_unicos": 13,
           "em_atendimento": 0,
           "n_prof_ativos": 4,
-          "rs_hora_salao": 346.0,
-          "horas_operacao_periodo": 11.0,
-          "utilizacao_agregada_pct": 8.2
+          "rs_hora_salao": 377.62,
+          "horas_operacao_periodo": 12.0,
+          "utilizacao_agregada_pct": 11.8
         },
         "categorias": {
           "pacotes": {
@@ -3005,8 +3121,8 @@
             "pct": 0.0
           },
           "servicos": {
-            "v": 1431.0,
-            "n": 9,
+            "v": 2027.0,
+            "n": 13,
             "pct": 100.0
           },
           "produtos": {
@@ -3020,8 +3136,8 @@
             "pct": 0.0
           },
           "servicos_gerais": {
-            "v": 1431.0,
-            "n": 9,
+            "v": 2027.0,
+            "n": 13,
             "pct": 100.0
           }
         }
@@ -3178,49 +3294,49 @@
   "abas": {
     "anual": {
       "kpis": {
-        "caixa": 4989.47,
-        "faturamento_apurado": 4989.47,
-        "receita_serv": 2930.0,
-        "atend_fin": 20,
+        "caixa": 5684.47,
+        "faturamento_apurado": 5684.47,
+        "receita_serv": 3526.0,
+        "atend_fin": 24,
         "atend_canc": 5,
-        "atend_total": 25,
-        "n_trans": 40,
-        "ticket_trans": 124.74,
-        "cliente_dia": 20,
-        "ticket_medio": 249.47,
-        "taxa_canc": 20.0,
+        "atend_total": 29,
+        "n_trans": 45,
+        "ticket_trans": 126.32,
+        "cliente_dia": 24,
+        "ticket_medio": 236.85,
+        "taxa_canc": 17.2,
         "dias_op": 4,
-        "clientes_unicos": 19,
+        "clientes_unicos": 23,
         "em_atendimento": 0,
         "n_prof_ativos": 7,
-        "rs_hora_salao": 216.62,
-        "horas_operacao_periodo": 23.0,
-        "utilizacao_agregada_pct": 8.7,
-        "ticket_meta": 11.47,
-        "ticket_meta_periodo": 16.33,
-        "ticket_atingimento_pct": 2175.1,
+        "rs_hora_salao": 237.35,
+        "horas_operacao_periodo": 24.0,
+        "utilizacao_agregada_pct": 10.4,
+        "ticket_meta": 8.95,
+        "ticket_meta_periodo": 13.61,
+        "ticket_atingimento_pct": 2645.1,
         "ticket_gap_por_atend": 0.0,
-        "visitas_projetadas": 980,
-        "visitas_restantes": 960,
+        "visitas_projetadas": 1176,
+        "visitas_restantes": 1152,
         "ticket_meta_status": "em_curso",
-        "ticket_meta_deficit_caixa": 11010.53,
+        "ticket_meta_deficit_caixa": 10315.53,
         "ticket_meta_supera_caixa": 0.0
       },
       "meta": {
         "meta": 16000.0,
-        "realizado": 4989.47,
-        "pct": 31.2,
-        "falta": 11010.53,
+        "realizado": 5684.47,
+        "pct": 35.5,
+        "falta": 10315.53,
         "dias_realizados": 2,
         "dias_total": 98,
         "dias_restantes": 96,
-        "necessario_dia": 114.69,
-        "ritmo_dia": 2494.74,
-        "projecao": 244484.03,
-        "projecao_pct": 1528.0,
+        "necessario_dia": 107.45,
+        "ritmo_dia": 2842.24,
+        "projecao": 278539.03,
+        "projecao_pct": 1740.9,
         "meta_ate_hoje": 326.53,
-        "pct_ate_hoje": 1528.0,
-        "saldo_ate_hoje": 4662.94
+        "pct_ate_hoje": 1740.9,
+        "saldo_ate_hoje": 5357.94
       },
       "categorias": {
         "pacotes": {
@@ -3229,8 +3345,8 @@
           "pct": 0.0
         },
         "servicos": {
-          "v": 2930.0,
-          "n": 20,
+          "v": 3526.0,
+          "n": 24,
           "pct": 100.0
         },
         "produtos": {
@@ -3244,21 +3360,21 @@
           "pct": 0.0
         },
         "servicos_gerais": {
-          "v": 2930.0,
-          "n": 20,
+          "v": 3526.0,
+          "n": 24,
           "pct": 100.0
         }
       },
       "meses": {
         "2026-09": {
-          "caixa": 4989.47,
-          "receita_serv": 2930.0,
-          "faturamento_apurado": 4989.47,
-          "atend_fin": 20,
-          "clientes_unicos": 19,
-          "n_trans": 40,
-          "ticket_trans": 124.74,
-          "taxa_canc": 20.0,
+          "caixa": 5684.47,
+          "receita_serv": 3526.0,
+          "faturamento_apurado": 5684.47,
+          "atend_fin": 24,
+          "clientes_unicos": 23,
+          "n_trans": 45,
+          "ticket_trans": 126.32,
+          "taxa_canc": 17.2,
           "categorias": {
             "pacotes": {
               "v": 0.0,
@@ -3266,8 +3382,8 @@
               "pct": 0.0
             },
             "servicos": {
-              "v": 2930.0,
-              "n": 20,
+              "v": 3526.0,
+              "n": 24,
               "pct": 100.0
             },
             "produtos": {
@@ -3281,8 +3397,8 @@
               "pct": 0.0
             },
             "servicos_gerais": {
-              "v": 2930.0,
-              "n": 20,
+              "v": 3526.0,
+              "n": 24,
               "pct": 100.0
             }
           },
@@ -3290,13 +3406,13 @@
         }
       },
       "top_ltv": {
-        "total_clientes": 19,
-        "receita_total": 2203.79,
-        "uma_vez": 18,
+        "total_clientes": 23,
+        "receita_total": 2799.79,
+        "uma_vez": 22,
         "duas_mais": 1,
-        "pareto20_n": 3,
-        "pareto20_v": 755.8,
-        "pareto20_pct": 34.3,
+        "pareto20_n": 4,
+        "pareto20_v": 955.0,
+        "pareto20_pct": 34.1,
         "top": [
           {
             "nome": "Natália Pateo Barra",
@@ -3305,6 +3421,18 @@
             "telefone": "+55 (11) 98317-4643",
             "data_aniversario": "13/07",
             "data_aniversario_txt": "13 Jul"
+          },
+          {
+            "nome": "Paula Andreza Gonçalves Maqueda",
+            "n": 1,
+            "v": 199.0,
+            "telefone": ""
+          },
+          {
+            "nome": "Genesis Vanessa",
+            "n": 1,
+            "v": 199.0,
+            "telefone": ""
           },
           {
             "nome": "Pamela Ferreira Dos Santos ",
@@ -3345,6 +3473,18 @@
             "data_aniversario_txt": "11 Jun"
           },
           {
+            "nome": "Alexandra Souza",
+            "n": 1,
+            "v": 99.0,
+            "telefone": ""
+          },
+          {
+            "nome": "Saulo Soares",
+            "n": 1,
+            "v": 99.0,
+            "telefone": ""
+          },
+          {
             "nome": "Jose Netto ",
             "n": 1,
             "v": 99.0,
@@ -3369,46 +3509,14 @@
             "telefone": "+55 (11) 96309-9939",
             "data_aniversario": "23/02",
             "data_aniversario_txt": "23 Fev"
-          },
-          {
-            "nome": "Gabriel Gomes",
-            "n": 1,
-            "v": 99.0,
-            "telefone": "+55 (11) 96191-8071",
-            "data_aniversario": "17/02",
-            "data_aniversario_txt": "17 Fev"
-          },
-          {
-            "nome": "Lucas De Pinho Garcia",
-            "n": 1,
-            "v": 99.0,
-            "telefone": "+55 (11) 99708-7480",
-            "data_aniversario": "07/02",
-            "data_aniversario_txt": "7 Fev"
-          },
-          {
-            "nome": "Rodrigo De Pinho Garcia",
-            "n": 1,
-            "v": 99.0,
-            "telefone": "+55 (11) 9824-4173",
-            "data_aniversario": "17/01",
-            "data_aniversario_txt": "17 Jan"
-          },
-          {
-            "nome": "Vinicius Canosa",
-            "n": 1,
-            "v": 99.0,
-            "telefone": "+55 (11) 99104-2114",
-            "data_aniversario": "07/02",
-            "data_aniversario_txt": "7 Fev"
           }
         ]
       },
       "novos_vs_recorr": {
         "novos": {
-          "clientes": 18,
-          "atend": 18,
-          "receita": 1845.79
+          "clientes": 22,
+          "atend": 22,
+          "receita": 2441.79
         },
         "recorrentes": {
           "clientes": 1,
@@ -3425,7 +3533,7 @@
           "ticket": 179.0,
           "rs_hora": 238.67,
           "horas_total": 0.8,
-          "pct_faturamento": 6.1,
+          "pct_faturamento": 5.1,
           "confianca": "baixa",
           "tipo": "cadeira"
         },
@@ -3437,20 +3545,8 @@
           "ticket": 149.0,
           "rs_hora": 198.67,
           "horas_total": 0.8,
-          "pct_faturamento": 5.1,
+          "pct_faturamento": 4.2,
           "confianca": "baixa",
-          "tipo": "cadeira"
-        },
-        {
-          "nome": "RENOVE-SE EM 45",
-          "n": 14,
-          "v": 1886.0,
-          "min_medio": 45,
-          "ticket": 134.71,
-          "rs_hora": 179.62,
-          "horas_total": 10.5,
-          "pct_faturamento": 64.4,
-          "confianca": "alta",
           "tipo": "cadeira"
         },
         {
@@ -3461,8 +3557,32 @@
           "ticket": 179.0,
           "rs_hora": 179.0,
           "horas_total": 4.0,
-          "pct_faturamento": 24.4,
+          "pct_faturamento": 20.3,
           "confianca": "media",
+          "tipo": "cadeira"
+        },
+        {
+          "nome": "RENOVE-SE EM 45",
+          "n": 16,
+          "v": 2084.0,
+          "min_medio": 45,
+          "ticket": 130.25,
+          "rs_hora": 173.67,
+          "horas_total": 12.0,
+          "pct_faturamento": 59.1,
+          "confianca": "alta",
+          "tipo": "cadeira"
+        },
+        {
+          "nome": "LIMPEZA DE PELE SUPER VIP + SPA DOS LABIOS",
+          "n": 2,
+          "v": 398.0,
+          "min_medio": 75,
+          "ticket": 199.0,
+          "rs_hora": 159.2,
+          "horas_total": 2.5,
+          "pct_faturamento": 11.3,
+          "confianca": "baixa",
           "tipo": "cadeira"
         }
       ],
@@ -3529,30 +3649,30 @@
         },
         {
           "h": 20,
-          "media": 1.5,
-          "n_total": 6
+          "media": 2.75,
+          "n_total": 11
         }
       ],
       "ranking_prof": [
         {
           "nome": "Monique Carvalho Da Silva",
-          "n": 5,
-          "v": 805.0,
-          "ticket_medio": 161.0,
-          "horas_trab": 4.0
+          "n": 7,
+          "v": 1103.0,
+          "ticket_medio": 157.57,
+          "horas_trab": 6.0
+        },
+        {
+          "nome": "Marly Feitosa De Lima Ledoux",
+          "n": 6,
+          "v": 824.0,
+          "ticket_medio": 137.33,
+          "horas_trab": 5.2
         },
         {
           "nome": "Sarah Barbosa Carmelita",
           "n": 4,
           "v": 626.0,
           "ticket_medio": 156.5,
-          "horas_trab": 3.2
-        },
-        {
-          "nome": "Marly Feitosa De Lima Ledoux",
-          "n": 4,
-          "v": 526.0,
-          "ticket_medio": 131.5,
           "horas_trab": 3.2
         },
         {
@@ -3588,15 +3708,29 @@
       "ranking_prof_executor": [
         {
           "nome": "Monique Carvalho Da Silva",
-          "n_serv": 5,
-          "v": 805.0,
+          "n_serv": 7,
+          "v": 1103.0,
           "v_via_pacote": 0.0,
-          "comissao": 241.5,
+          "comissao": 330.9,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "CORPORAL": 805.0
+            "FACIAL": 199.0,
+            "CORPORAL": 904.0
           },
-          "ticket_medio_serv": 161.0
+          "ticket_medio_serv": 157.57
+        },
+        {
+          "nome": "Marly Feitosa De Lima Ledoux",
+          "n_serv": 6,
+          "v": 824.0,
+          "v_via_pacote": 0.0,
+          "comissao": 247.2,
+          "taxa_efetiva": 0.3,
+          "por_cat": {
+            "FACIAL": 199.0,
+            "CORPORAL": 625.0
+          },
+          "ticket_medio_serv": 137.33
         },
         {
           "nome": "Sarah Barbosa Carmelita",
@@ -3609,18 +3743,6 @@
             "CORPORAL": 626.0
           },
           "ticket_medio_serv": 156.5
-        },
-        {
-          "nome": "Marly Feitosa De Lima Ledoux",
-          "n_serv": 4,
-          "v": 526.0,
-          "v_via_pacote": 0.0,
-          "comissao": 157.8,
-          "taxa_efetiva": 0.3,
-          "por_cat": {
-            "CORPORAL": 526.0
-          },
-          "ticket_medio_serv": 131.5
         },
         {
           "nome": "Ashley De Oliveira Costa",
@@ -3674,15 +3796,21 @@
       "ranking_serv": [
         {
           "nome": "RENOVE-SE EM 45",
-          "n": 14,
-          "v": 1886.0,
-          "min": 630
+          "n": 16,
+          "v": 2084.0,
+          "min": 720
         },
         {
           "nome": "FAST SPA CASUAL",
           "n": 4,
           "v": 716.0,
           "min": 240
+        },
+        {
+          "nome": "LIMPEZA DE PELE SUPER VIP + SPA DOS LABIOS",
+          "n": 2,
+          "v": 398.0,
+          "min": 150
         },
         {
           "nome": "TERAPIA LIBERAÇÃO MIOFASCIAL",
@@ -3706,31 +3834,37 @@
           "nome": "Mastercard",
           "n": 16,
           "v": 2547.07,
-          "pct": 51.0
+          "pct": 44.8
         },
         {
           "nome": "Visa",
-          "n": 8,
-          "v": 1092.6,
-          "pct": 21.9
+          "n": 10,
+          "v": 1490.6,
+          "pct": 26.2
+        },
+        {
+          "nome": "PIX",
+          "n": 7,
+          "v": 693.9,
+          "pct": 12.2
         },
         {
           "nome": "Visa Electron",
           "n": 4,
           "v": 556.0,
-          "pct": 11.1
-        },
-        {
-          "nome": "PIX",
-          "n": 5,
-          "v": 495.9,
-          "pct": 9.9
+          "pct": 9.8
         },
         {
           "nome": "Maestro/Redeshop",
           "n": 2,
           "v": 297.9,
-          "pct": 6.0
+          "pct": 5.2
+        },
+        {
+          "nome": "Dinheiro",
+          "n": 1,
+          "v": 99.0,
+          "pct": 1.7
         }
       ],
       "descontos": -1124.1,
@@ -3738,6 +3872,22 @@
         {
           "nome": "Natália Pateo Barra",
           "n": 2
+        },
+        {
+          "nome": "Paula Andreza Gonçalves Maqueda",
+          "n": 1
+        },
+        {
+          "nome": "Genesis Vanessa",
+          "n": 1
+        },
+        {
+          "nome": "Alexandra Souza",
+          "n": 1
+        },
+        {
+          "nome": "Saulo Soares",
+          "n": 1
         },
         {
           "nome": "Gabriel Alves Aposto",
@@ -3758,30 +3908,14 @@
         {
           "nome": "Roberto Fontana ",
           "n": 1
-        },
-        {
-          "nome": "Mariana Rodrigues ",
-          "n": 1
-        },
-        {
-          "nome": "Suely Santos Barbosa ",
-          "n": 1
-        },
-        {
-          "nome": "Pamela Ferreira Dos Santos ",
-          "n": 1
-        },
-        {
-          "nome": "Andre Reis Viana",
-          "n": 1
         }
       ],
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 184.3,
-          "horas_ocupadas": 16.0,
-          "utilizacao_pct": 8.7
+          "capacidade_horas": 191.6,
+          "horas_ocupadas": 20.0,
+          "utilizacao_pct": 10.4
         }
       },
       "densidade_hora": [
@@ -3835,7 +3969,7 @@
         },
         {
           "h": 20,
-          "media_simultaneos": 0.31
+          "media_simultaneos": 0.79
         }
       ],
       "parcelas": [
@@ -3848,8 +3982,14 @@
         {
           "meio": "Visa",
           "parcelas": 1,
-          "n": 8,
-          "v": 1092.6
+          "n": 10,
+          "v": 1490.6
+        },
+        {
+          "meio": "PIX",
+          "parcelas": 1,
+          "n": 7,
+          "v": 693.9
         },
         {
           "meio": "Visa Electron",
@@ -3858,36 +3998,42 @@
           "v": 556.0
         },
         {
-          "meio": "PIX",
-          "parcelas": 1,
-          "n": 5,
-          "v": 495.9
-        },
-        {
           "meio": "Maestro/Redeshop",
           "parcelas": 1,
           "n": 2,
           "v": 297.9
+        },
+        {
+          "meio": "Dinheiro",
+          "parcelas": 1,
+          "n": 1,
+          "v": 99.0
         }
       ],
       "categoria_native": [
         {
           "nome": "Drenagem/Modeladora",
-          "n": 14,
-          "v": 1886.0,
-          "pct_receita": 37.8
+          "n": 16,
+          "v": 2084.0,
+          "pct_receita": 36.7
         },
         {
           "nome": "Massagem Relaxante",
           "n": 5,
           "v": 865.0,
-          "pct_receita": 17.3
+          "pct_receita": 15.2
+        },
+        {
+          "nome": "Facial",
+          "n": 2,
+          "v": 398.0,
+          "pct_receita": 7.0
         },
         {
           "nome": "Terapia Miofascial",
           "n": 1,
           "v": 179.0,
-          "pct_receita": 3.6
+          "pct_receita": 3.1
         }
       ],
       "pacotes_por_categoria": {},
@@ -3921,10 +4067,10 @@
         },
         {
           "data": "2026-09-26",
-          "novos": 8,
-          "atend": 8,
-          "receita": 1252.0,
-          "receita_ltv": 1250.8
+          "novos": 12,
+          "atend": 12,
+          "receita": 1848.0,
+          "receita_ltv": 1846.8
         }
       ],
       "cross_sell": {
@@ -3934,47 +4080,47 @@
       },
       "aniversariantes": [],
       "seg_canal": {
-        "cobertura_pct": 10.5,
+        "cobertura_pct": 8.7,
         "sem_dado": {
-          "n": 17,
-          "receita": 2732.0
+          "n": 21,
+          "receita": 3328.0
         },
         "top": [
           {
             "nome": "Indicação Amigo",
             "n_clientes": 2,
             "receita": 198.0,
-            "pct_receita": 6.8,
+            "pct_receita": 5.6,
             "ticket_medio_cliente": 99.0
           }
         ]
       },
       "seg_genero": {
-        "cobertura_pct": 57.9,
+        "cobertura_pct": 47.8,
         "sem_dado": {
-          "n": 8,
-          "receita": 1252.0
+          "n": 12,
+          "receita": 1848.0
         },
         "top": [
           {
             "nome": "O",
             "n_clientes": 6,
             "receita": 794.0,
-            "pct_receita": 27.1,
+            "pct_receita": 22.5,
             "ticket_medio_cliente": 132.33
           },
           {
             "nome": "F",
             "n_clientes": 3,
             "receita": 686.0,
-            "pct_receita": 23.4,
+            "pct_receita": 19.5,
             "ticket_medio_cliente": 228.67
           },
           {
             "nome": "M",
             "n_clientes": 2,
             "receita": 198.0,
-            "pct_receita": 6.8,
+            "pct_receita": 5.6,
             "ticket_medio_cliente": 99.0
           }
         ]
@@ -3982,8 +4128,8 @@
       "seg_bairro": {
         "cobertura_pct": 0.0,
         "sem_dado": {
-          "n": 19,
-          "receita": 2930.0
+          "n": 23,
+          "receita": 3526.0
         },
         "top": []
       },
@@ -4027,6 +4173,32 @@
       ],
       "obs_agend_alertas": [
         {
+          "cliente": "Alexandra Souza",
+          "n_observacoes": 1,
+          "n_visitas": 1,
+          "ltv": 99.0,
+          "telefone": "",
+          "observacoes": [
+            {
+              "tipo": "est",
+              "texto": "Valor promocional de inauguração"
+            }
+          ]
+        },
+        {
+          "cliente": "Saulo Soares",
+          "n_observacoes": 1,
+          "n_visitas": 1,
+          "ltv": 99.0,
+          "telefone": "",
+          "observacoes": [
+            {
+              "tipo": "est",
+              "texto": "Valor Promocional de Inauguração"
+            }
+          ]
+        },
+        {
           "cliente": "Rodrigo De Pinho Garcia",
           "n_observacoes": 1,
           "n_visitas": 1,
@@ -4054,18 +4226,18 @@
         }
       ],
       "clientes_snapshot": {
-        "total_base": 19,
-        "ativos_30d": 19,
-        "ativos_60d": 19,
-        "ativos_90d": 19,
+        "total_base": 23,
+        "ativos_30d": 23,
+        "ativos_60d": 23,
+        "ativos_90d": 23,
         "dormentes_60d": 0,
         "novos_30d": 15,
-        "n_uma_vez": 18,
+        "n_uma_vez": 22,
         "n_recorrentes": 1,
-        "pct_recorrentes": 5.3,
-        "ltv_medio": 115.99,
-        "ticket_medio_visita": 110.19,
-        "freq_media_visitas": 1.05,
+        "pct_recorrentes": 4.3,
+        "ltv_medio": 121.73,
+        "ticket_medio_visita": 116.66,
+        "freq_media_visitas": 1.04,
         "n_alerta_churn": 0,
         "n_aniv_14d": 0,
         "n_obs_vip": 5,
@@ -4073,37 +4245,37 @@
         "etiquetas_distintas": 0
       },
       "clientes_cadastro": {
-        "total": 19,
+        "total": 23,
         "cobertura": {
-          "telefone": 57.9,
-          "email": 21.1,
-          "data_nasc": 52.6,
-          "genero": 57.9,
-          "canal_aquisicao": 10.5,
+          "telefone": 47.8,
+          "email": 17.4,
+          "data_nasc": 43.5,
+          "genero": 47.8,
+          "canal_aquisicao": 8.7,
           "bairro": 0.0
         }
       }
     },
     "mensal": {
       "kpis": {
-        "caixa": 4989.47,
-        "faturamento_apurado": 4989.47,
-        "receita_serv": 2930.0,
-        "atend_fin": 20,
+        "caixa": 5684.47,
+        "faturamento_apurado": 5684.47,
+        "receita_serv": 3526.0,
+        "atend_fin": 24,
         "atend_canc": 5,
-        "atend_total": 25,
-        "n_trans": 40,
-        "ticket_trans": 124.74,
-        "cliente_dia": 20,
-        "ticket_medio": 249.47,
-        "taxa_canc": 20.0,
+        "atend_total": 29,
+        "n_trans": 45,
+        "ticket_trans": 126.32,
+        "cliente_dia": 24,
+        "ticket_medio": 236.85,
+        "taxa_canc": 17.2,
         "dias_op": 4,
-        "clientes_unicos": 19,
+        "clientes_unicos": 23,
         "em_atendimento": 0,
         "n_prof_ativos": 7,
-        "rs_hora_salao": 216.62,
-        "horas_operacao_periodo": 23.0,
-        "utilizacao_agregada_pct": 8.7,
+        "rs_hora_salao": 237.35,
+        "horas_operacao_periodo": 24.0,
+        "utilizacao_agregada_pct": 10.4,
         "caixa_delta_pct": null,
         "atend_delta_pct": null,
         "cliente_dia_delta_pct": null,
@@ -4192,30 +4364,30 @@
           "dias_atipicos_na_base": {}
         },
         "ticket_meta": 0.0,
-        "ticket_meta_periodo": 133.33,
+        "ticket_meta_periodo": 111.11,
         "ticket_atingimento_pct": 0.0,
         "ticket_gap_por_atend": 0.0,
-        "visitas_projetadas": 30,
-        "visitas_restantes": 10,
+        "visitas_projetadas": 36,
+        "visitas_restantes": 12,
         "ticket_meta_status": "em_curso",
         "ticket_meta_deficit_caixa": 0.0,
-        "ticket_meta_supera_caixa": 989.47
+        "ticket_meta_supera_caixa": 1684.47
       },
       "meta": {
         "meta": 4000.0,
-        "realizado": 4989.47,
-        "pct": 124.7,
-        "falta": -989.47,
+        "realizado": 5684.47,
+        "pct": 142.1,
+        "falta": -1684.47,
         "dias_realizados": 4,
         "dias_total": 6,
         "dias_restantes": 2,
-        "necessario_dia": -494.74,
-        "ritmo_dia": 1247.37,
-        "projecao": 7484.2,
-        "projecao_pct": 187.1,
+        "necessario_dia": -842.24,
+        "ritmo_dia": 1421.12,
+        "projecao": 8526.7,
+        "projecao_pct": 213.2,
         "meta_ate_hoje": 2666.67,
-        "pct_ate_hoje": 187.1,
-        "saldo_ate_hoje": 2322.8
+        "pct_ate_hoje": 213.2,
+        "saldo_ate_hoje": 3017.8
       },
       "categorias": {
         "pacotes": {
@@ -4224,8 +4396,8 @@
           "pct": 0.0
         },
         "servicos": {
-          "v": 2930.0,
-          "n": 20,
+          "v": 3526.0,
+          "n": 24,
           "pct": 100.0
         },
         "produtos": {
@@ -4239,29 +4411,35 @@
           "pct": 0.0
         },
         "servicos_gerais": {
-          "v": 2930.0,
-          "n": 20,
+          "v": 3526.0,
+          "n": 24,
           "pct": 100.0
         }
       },
       "categoria_native": [
         {
           "nome": "Drenagem/Modeladora",
-          "n": 14,
-          "v": 1886.0,
-          "pct_receita": 37.8
+          "n": 16,
+          "v": 2084.0,
+          "pct_receita": 36.7
         },
         {
           "nome": "Massagem Relaxante",
           "n": 5,
           "v": 865.0,
-          "pct_receita": 17.3
+          "pct_receita": 15.2
+        },
+        {
+          "nome": "Facial",
+          "n": 2,
+          "v": 398.0,
+          "pct_receita": 7.0
         },
         {
           "nome": "Terapia Miofascial",
           "n": 1,
           "v": 179.0,
-          "pct_receita": 3.6
+          "pct_receita": 3.1
         }
       ],
       "pacotes_por_categoria": {},
@@ -4287,7 +4465,7 @@
           "ticket": 179.0,
           "rs_hora": 238.67,
           "horas_total": 0.8,
-          "pct_faturamento": 6.1,
+          "pct_faturamento": 5.1,
           "confianca": "baixa",
           "tipo": "cadeira"
         },
@@ -4299,20 +4477,8 @@
           "ticket": 149.0,
           "rs_hora": 198.67,
           "horas_total": 0.8,
-          "pct_faturamento": 5.1,
+          "pct_faturamento": 4.2,
           "confianca": "baixa",
-          "tipo": "cadeira"
-        },
-        {
-          "nome": "RENOVE-SE EM 45",
-          "n": 14,
-          "v": 1886.0,
-          "min_medio": 45,
-          "ticket": 134.71,
-          "rs_hora": 179.62,
-          "horas_total": 10.5,
-          "pct_faturamento": 64.4,
-          "confianca": "alta",
           "tipo": "cadeira"
         },
         {
@@ -4323,8 +4489,32 @@
           "ticket": 179.0,
           "rs_hora": 179.0,
           "horas_total": 4.0,
-          "pct_faturamento": 24.4,
+          "pct_faturamento": 20.3,
           "confianca": "media",
+          "tipo": "cadeira"
+        },
+        {
+          "nome": "RENOVE-SE EM 45",
+          "n": 16,
+          "v": 2084.0,
+          "min_medio": 45,
+          "ticket": 130.25,
+          "rs_hora": 173.67,
+          "horas_total": 12.0,
+          "pct_faturamento": 59.1,
+          "confianca": "alta",
+          "tipo": "cadeira"
+        },
+        {
+          "nome": "LIMPEZA DE PELE SUPER VIP + SPA DOS LABIOS",
+          "n": 2,
+          "v": 398.0,
+          "min_medio": 75,
+          "ticket": 199.0,
+          "rs_hora": 159.2,
+          "horas_total": 2.5,
+          "pct_faturamento": 11.3,
+          "confianca": "baixa",
           "tipo": "cadeira"
         }
       ],
@@ -4346,8 +4536,8 @@
         },
         {
           "d": 26,
-          "n": 24,
-          "v": 3817.5
+          "n": 29,
+          "v": 4512.5
         }
       ],
       "hora_media": [
@@ -4413,30 +4603,30 @@
         },
         {
           "h": 20,
-          "media": 1.5,
-          "n_total": 6
+          "media": 2.75,
+          "n_total": 11
         }
       ],
       "ranking_prof": [
         {
           "nome": "Monique Carvalho Da Silva",
-          "n": 5,
-          "v": 805.0,
-          "ticket_medio": 161.0,
-          "horas_trab": 4.0
+          "n": 7,
+          "v": 1103.0,
+          "ticket_medio": 157.57,
+          "horas_trab": 6.0
+        },
+        {
+          "nome": "Marly Feitosa De Lima Ledoux",
+          "n": 6,
+          "v": 824.0,
+          "ticket_medio": 137.33,
+          "horas_trab": 5.2
         },
         {
           "nome": "Sarah Barbosa Carmelita",
           "n": 4,
           "v": 626.0,
           "ticket_medio": 156.5,
-          "horas_trab": 3.2
-        },
-        {
-          "nome": "Marly Feitosa De Lima Ledoux",
-          "n": 4,
-          "v": 526.0,
-          "ticket_medio": 131.5,
           "horas_trab": 3.2
         },
         {
@@ -4472,15 +4662,29 @@
       "ranking_prof_executor": [
         {
           "nome": "Monique Carvalho Da Silva",
-          "n_serv": 5,
-          "v": 805.0,
+          "n_serv": 7,
+          "v": 1103.0,
           "v_via_pacote": 0.0,
-          "comissao": 241.5,
+          "comissao": 330.9,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "CORPORAL": 805.0
+            "FACIAL": 199.0,
+            "CORPORAL": 904.0
           },
-          "ticket_medio_serv": 161.0
+          "ticket_medio_serv": 157.57
+        },
+        {
+          "nome": "Marly Feitosa De Lima Ledoux",
+          "n_serv": 6,
+          "v": 824.0,
+          "v_via_pacote": 0.0,
+          "comissao": 247.2,
+          "taxa_efetiva": 0.3,
+          "por_cat": {
+            "FACIAL": 199.0,
+            "CORPORAL": 625.0
+          },
+          "ticket_medio_serv": 137.33
         },
         {
           "nome": "Sarah Barbosa Carmelita",
@@ -4493,18 +4697,6 @@
             "CORPORAL": 626.0
           },
           "ticket_medio_serv": 156.5
-        },
-        {
-          "nome": "Marly Feitosa De Lima Ledoux",
-          "n_serv": 4,
-          "v": 526.0,
-          "v_via_pacote": 0.0,
-          "comissao": 157.8,
-          "taxa_efetiva": 0.3,
-          "por_cat": {
-            "CORPORAL": 526.0
-          },
-          "ticket_medio_serv": 131.5
         },
         {
           "nome": "Ashley De Oliveira Costa",
@@ -4558,15 +4750,21 @@
       "ranking_serv": [
         {
           "nome": "RENOVE-SE EM 45",
-          "n": 14,
-          "v": 1886.0,
-          "min": 630
+          "n": 16,
+          "v": 2084.0,
+          "min": 720
         },
         {
           "nome": "FAST SPA CASUAL",
           "n": 4,
           "v": 716.0,
           "min": 240
+        },
+        {
+          "nome": "LIMPEZA DE PELE SUPER VIP + SPA DOS LABIOS",
+          "n": 2,
+          "v": 398.0,
+          "min": 150
         },
         {
           "nome": "TERAPIA LIBERAÇÃO MIOFASCIAL",
@@ -4590,31 +4788,37 @@
           "nome": "Mastercard",
           "n": 16,
           "v": 2547.07,
-          "pct": 51.0
+          "pct": 44.8
         },
         {
           "nome": "Visa",
-          "n": 8,
-          "v": 1092.6,
-          "pct": 21.9
+          "n": 10,
+          "v": 1490.6,
+          "pct": 26.2
+        },
+        {
+          "nome": "PIX",
+          "n": 7,
+          "v": 693.9,
+          "pct": 12.2
         },
         {
           "nome": "Visa Electron",
           "n": 4,
           "v": 556.0,
-          "pct": 11.1
-        },
-        {
-          "nome": "PIX",
-          "n": 5,
-          "v": 495.9,
-          "pct": 9.9
+          "pct": 9.8
         },
         {
           "nome": "Maestro/Redeshop",
           "n": 2,
           "v": 297.9,
-          "pct": 6.0
+          "pct": 5.2
+        },
+        {
+          "nome": "Dinheiro",
+          "n": 1,
+          "v": 99.0,
+          "pct": 1.7
         }
       ],
       "descontos": -1124.1,
@@ -4622,6 +4826,22 @@
         {
           "nome": "Natália Pateo Barra",
           "n": 2
+        },
+        {
+          "nome": "Paula Andreza Gonçalves Maqueda",
+          "n": 1
+        },
+        {
+          "nome": "Genesis Vanessa",
+          "n": 1
+        },
+        {
+          "nome": "Alexandra Souza",
+          "n": 1
+        },
+        {
+          "nome": "Saulo Soares",
+          "n": 1
         },
         {
           "nome": "Gabriel Alves Aposto",
@@ -4642,30 +4862,14 @@
         {
           "nome": "Roberto Fontana ",
           "n": 1
-        },
-        {
-          "nome": "Mariana Rodrigues ",
-          "n": 1
-        },
-        {
-          "nome": "Suely Santos Barbosa ",
-          "n": 1
-        },
-        {
-          "nome": "Pamela Ferreira Dos Santos ",
-          "n": 1
-        },
-        {
-          "nome": "Andre Reis Viana",
-          "n": 1
         }
       ],
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 184.3,
-          "horas_ocupadas": 16.0,
-          "utilizacao_pct": 8.7
+          "capacidade_horas": 191.6,
+          "horas_ocupadas": 20.0,
+          "utilizacao_pct": 10.4
         }
       },
       "densidade_hora": [
@@ -4719,30 +4923,30 @@
         },
         {
           "h": 20,
-          "media_simultaneos": 0.31
+          "media_simultaneos": 0.79
         }
       ]
     },
     "semanal": {
       "kpis": {
-        "caixa": 4989.47,
-        "faturamento_apurado": 4989.47,
-        "receita_serv": 2930.0,
-        "atend_fin": 20,
+        "caixa": 5684.47,
+        "faturamento_apurado": 5684.47,
+        "receita_serv": 3526.0,
+        "atend_fin": 24,
         "atend_canc": 5,
-        "atend_total": 25,
-        "n_trans": 40,
-        "ticket_trans": 124.74,
-        "cliente_dia": 20,
-        "ticket_medio": 249.47,
-        "taxa_canc": 20.0,
+        "atend_total": 29,
+        "n_trans": 45,
+        "ticket_trans": 126.32,
+        "cliente_dia": 24,
+        "ticket_medio": 236.85,
+        "taxa_canc": 17.2,
         "dias_op": 4,
-        "clientes_unicos": 19,
+        "clientes_unicos": 23,
         "em_atendimento": 0,
         "n_prof_ativos": 7,
-        "rs_hora_salao": 216.62,
-        "horas_operacao_periodo": 23.0,
-        "utilizacao_agregada_pct": 8.7,
+        "rs_hora_salao": 237.35,
+        "horas_operacao_periodo": 24.0,
+        "utilizacao_agregada_pct": 10.4,
         "caixa_delta_pct": null,
         "atend_delta_pct": null,
         "cliente_dia_delta_pct": null,
@@ -4794,32 +4998,32 @@
           "dias_atipicos_na_base": {}
         },
         "ticket_meta": 0.0,
-        "ticket_meta_periodo": 133.33,
+        "ticket_meta_periodo": 111.11,
         "ticket_atingimento_pct": 100.0,
         "ticket_gap_por_atend": 0.0,
-        "visitas_projetadas": 15,
+        "visitas_projetadas": 18,
         "visitas_restantes": 0,
         "ticket_meta_status": "encerrado_batido",
         "ticket_meta_deficit_caixa": 0.0,
-        "ticket_meta_supera_caixa": 2989.47,
+        "ticket_meta_supera_caixa": 3684.47,
         "periodo_ini": "2026-09-21",
         "periodo_fim": "2026-09-27"
       },
       "meta": {
         "meta": 2000.0,
-        "realizado": 4989.47,
-        "pct": 249.5,
-        "falta": -2989.47,
+        "realizado": 5684.47,
+        "pct": 284.2,
+        "falta": -3684.47,
         "dias_realizados": 4,
         "dias_total": 3,
         "dias_restantes": 0,
         "necessario_dia": 0.0,
-        "ritmo_dia": 1247.37,
-        "projecao": 3742.1,
-        "projecao_pct": 187.1,
+        "ritmo_dia": 1421.12,
+        "projecao": 4263.35,
+        "projecao_pct": 213.2,
         "meta_ate_hoje": 2666.67,
-        "pct_ate_hoje": 187.1,
-        "saldo_ate_hoje": 2322.8
+        "pct_ate_hoje": 213.2,
+        "saldo_ate_hoje": 3017.8
       },
       "categorias": {
         "pacotes": {
@@ -4828,8 +5032,8 @@
           "pct": 0.0
         },
         "servicos": {
-          "v": 2930.0,
-          "n": 20,
+          "v": 3526.0,
+          "n": 24,
           "pct": 100.0
         },
         "produtos": {
@@ -4843,29 +5047,35 @@
           "pct": 0.0
         },
         "servicos_gerais": {
-          "v": 2930.0,
-          "n": 20,
+          "v": 3526.0,
+          "n": 24,
           "pct": 100.0
         }
       },
       "categoria_native": [
         {
           "nome": "Drenagem/Modeladora",
-          "n": 14,
-          "v": 1886.0,
-          "pct_receita": 37.8
+          "n": 16,
+          "v": 2084.0,
+          "pct_receita": 36.7
         },
         {
           "nome": "Massagem Relaxante",
           "n": 5,
           "v": 865.0,
-          "pct_receita": 17.3
+          "pct_receita": 15.2
+        },
+        {
+          "nome": "Facial",
+          "n": 2,
+          "v": 398.0,
+          "pct_receita": 7.0
         },
         {
           "nome": "Terapia Miofascial",
           "n": 1,
           "v": 179.0,
-          "pct_receita": 3.6
+          "pct_receita": 3.1
         }
       ],
       "pacotes_por_categoria": {},
@@ -4910,8 +5120,8 @@
         },
         {
           "nome": "Sáb",
-          "n": 24,
-          "v": 3817.5
+          "n": 29,
+          "v": 4512.5
         },
         {
           "nome": "Dom",
@@ -4982,30 +5192,30 @@
         },
         {
           "h": 20,
-          "media": 1.5,
-          "n_total": 6
+          "media": 2.75,
+          "n_total": 11
         }
       ],
       "ranking_prof": [
         {
           "nome": "Monique Carvalho Da Silva",
-          "n": 5,
-          "v": 805.0,
-          "ticket_medio": 161.0,
-          "horas_trab": 4.0
+          "n": 7,
+          "v": 1103.0,
+          "ticket_medio": 157.57,
+          "horas_trab": 6.0
+        },
+        {
+          "nome": "Marly Feitosa De Lima Ledoux",
+          "n": 6,
+          "v": 824.0,
+          "ticket_medio": 137.33,
+          "horas_trab": 5.2
         },
         {
           "nome": "Sarah Barbosa Carmelita",
           "n": 4,
           "v": 626.0,
           "ticket_medio": 156.5,
-          "horas_trab": 3.2
-        },
-        {
-          "nome": "Marly Feitosa De Lima Ledoux",
-          "n": 4,
-          "v": 526.0,
-          "ticket_medio": 131.5,
           "horas_trab": 3.2
         },
         {
@@ -5041,15 +5251,29 @@
       "ranking_prof_executor": [
         {
           "nome": "Monique Carvalho Da Silva",
-          "n_serv": 5,
-          "v": 805.0,
+          "n_serv": 7,
+          "v": 1103.0,
           "v_via_pacote": 0.0,
-          "comissao": 241.5,
+          "comissao": 330.9,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "CORPORAL": 805.0
+            "FACIAL": 199.0,
+            "CORPORAL": 904.0
           },
-          "ticket_medio_serv": 161.0
+          "ticket_medio_serv": 157.57
+        },
+        {
+          "nome": "Marly Feitosa De Lima Ledoux",
+          "n_serv": 6,
+          "v": 824.0,
+          "v_via_pacote": 0.0,
+          "comissao": 247.2,
+          "taxa_efetiva": 0.3,
+          "por_cat": {
+            "FACIAL": 199.0,
+            "CORPORAL": 625.0
+          },
+          "ticket_medio_serv": 137.33
         },
         {
           "nome": "Sarah Barbosa Carmelita",
@@ -5062,18 +5286,6 @@
             "CORPORAL": 626.0
           },
           "ticket_medio_serv": 156.5
-        },
-        {
-          "nome": "Marly Feitosa De Lima Ledoux",
-          "n_serv": 4,
-          "v": 526.0,
-          "v_via_pacote": 0.0,
-          "comissao": 157.8,
-          "taxa_efetiva": 0.3,
-          "por_cat": {
-            "CORPORAL": 526.0
-          },
-          "ticket_medio_serv": 131.5
         },
         {
           "nome": "Ashley De Oliveira Costa",
@@ -5127,15 +5339,21 @@
       "ranking_serv": [
         {
           "nome": "RENOVE-SE EM 45",
-          "n": 14,
-          "v": 1886.0,
-          "min": 630
+          "n": 16,
+          "v": 2084.0,
+          "min": 720
         },
         {
           "nome": "FAST SPA CASUAL",
           "n": 4,
           "v": 716.0,
           "min": 240
+        },
+        {
+          "nome": "LIMPEZA DE PELE SUPER VIP + SPA DOS LABIOS",
+          "n": 2,
+          "v": 398.0,
+          "min": 150
         },
         {
           "nome": "TERAPIA LIBERAÇÃO MIOFASCIAL",
@@ -5163,7 +5381,7 @@
           "ticket": 179.0,
           "rs_hora": 238.67,
           "horas_total": 0.8,
-          "pct_faturamento": 6.1,
+          "pct_faturamento": 5.1,
           "confianca": "baixa",
           "tipo": "cadeira"
         },
@@ -5175,20 +5393,8 @@
           "ticket": 149.0,
           "rs_hora": 198.67,
           "horas_total": 0.8,
-          "pct_faturamento": 5.1,
+          "pct_faturamento": 4.2,
           "confianca": "baixa",
-          "tipo": "cadeira"
-        },
-        {
-          "nome": "RENOVE-SE EM 45",
-          "n": 14,
-          "v": 1886.0,
-          "min_medio": 45,
-          "ticket": 134.71,
-          "rs_hora": 179.62,
-          "horas_total": 10.5,
-          "pct_faturamento": 64.4,
-          "confianca": "alta",
           "tipo": "cadeira"
         },
         {
@@ -5199,8 +5405,32 @@
           "ticket": 179.0,
           "rs_hora": 179.0,
           "horas_total": 4.0,
-          "pct_faturamento": 24.4,
+          "pct_faturamento": 20.3,
           "confianca": "media",
+          "tipo": "cadeira"
+        },
+        {
+          "nome": "RENOVE-SE EM 45",
+          "n": 16,
+          "v": 2084.0,
+          "min_medio": 45,
+          "ticket": 130.25,
+          "rs_hora": 173.67,
+          "horas_total": 12.0,
+          "pct_faturamento": 59.1,
+          "confianca": "alta",
+          "tipo": "cadeira"
+        },
+        {
+          "nome": "LIMPEZA DE PELE SUPER VIP + SPA DOS LABIOS",
+          "n": 2,
+          "v": 398.0,
+          "min_medio": 75,
+          "ticket": 199.0,
+          "rs_hora": 159.2,
+          "horas_total": 2.5,
+          "pct_faturamento": 11.3,
+          "confianca": "baixa",
           "tipo": "cadeira"
         }
       ],
@@ -5209,37 +5439,59 @@
           "nome": "Mastercard",
           "n": 16,
           "v": 2547.07,
-          "pct": 51.0
+          "pct": 44.8
         },
         {
           "nome": "Visa",
-          "n": 8,
-          "v": 1092.6,
-          "pct": 21.9
+          "n": 10,
+          "v": 1490.6,
+          "pct": 26.2
+        },
+        {
+          "nome": "PIX",
+          "n": 7,
+          "v": 693.9,
+          "pct": 12.2
         },
         {
           "nome": "Visa Electron",
           "n": 4,
           "v": 556.0,
-          "pct": 11.1
-        },
-        {
-          "nome": "PIX",
-          "n": 5,
-          "v": 495.9,
-          "pct": 9.9
+          "pct": 9.8
         },
         {
           "nome": "Maestro/Redeshop",
           "n": 2,
           "v": 297.9,
-          "pct": 6.0
+          "pct": 5.2
+        },
+        {
+          "nome": "Dinheiro",
+          "n": 1,
+          "v": 99.0,
+          "pct": 1.7
         }
       ],
       "clientes_top": [
         {
           "nome": "Natália Pateo Barra",
           "n": 2
+        },
+        {
+          "nome": "Paula Andreza Gonçalves Maqueda",
+          "n": 1
+        },
+        {
+          "nome": "Genesis Vanessa",
+          "n": 1
+        },
+        {
+          "nome": "Alexandra Souza",
+          "n": 1
+        },
+        {
+          "nome": "Saulo Soares",
+          "n": 1
         },
         {
           "nome": "Gabriel Alves Aposto",
@@ -5260,22 +5512,6 @@
         {
           "nome": "Roberto Fontana ",
           "n": 1
-        },
-        {
-          "nome": "Mariana Rodrigues ",
-          "n": 1
-        },
-        {
-          "nome": "Suely Santos Barbosa ",
-          "n": 1
-        },
-        {
-          "nome": "Pamela Ferreira Dos Santos ",
-          "n": 1
-        },
-        {
-          "nome": "Andre Reis Viana",
-          "n": 1
         }
       ],
       "semana_anterior": {
@@ -5295,9 +5531,9 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 184.3,
-          "horas_ocupadas": 16.0,
-          "utilizacao_pct": 8.7
+          "capacidade_horas": 191.6,
+          "horas_ocupadas": 20.0,
+          "utilizacao_pct": 10.4
         }
       },
       "densidade_hora": [
@@ -5351,30 +5587,30 @@
         },
         {
           "h": 20,
-          "media_simultaneos": 0.31
+          "media_simultaneos": 0.79
         }
       ]
     },
     "diario": {
       "kpis": {
-        "caixa": 3817.5,
-        "faturamento_apurado": 3817.5,
-        "receita_serv": 1431.0,
-        "atend_fin": 9,
+        "caixa": 4512.5,
+        "faturamento_apurado": 4512.5,
+        "receita_serv": 2027.0,
+        "atend_fin": 13,
         "atend_canc": 5,
-        "atend_total": 14,
-        "n_trans": 24,
-        "ticket_trans": 159.06,
-        "cliente_dia": 9,
-        "ticket_medio": 424.17,
-        "taxa_canc": 35.7,
+        "atend_total": 18,
+        "n_trans": 29,
+        "ticket_trans": 155.6,
+        "cliente_dia": 13,
+        "ticket_medio": 347.12,
+        "taxa_canc": 27.8,
         "dias_op": 1,
-        "clientes_unicos": 9,
+        "clientes_unicos": 13,
         "em_atendimento": 0,
         "n_prof_ativos": 4,
-        "rs_hora_salao": 346.0,
-        "horas_operacao_periodo": 11.0,
-        "utilizacao_agregada_pct": 8.2,
+        "rs_hora_salao": 377.62,
+        "horas_operacao_periodo": 12.0,
+        "utilizacao_agregada_pct": 11.8,
         "caixa_delta_pct": null,
         "atend_delta_pct": null,
         "cliente_dia_delta_pct": null,
@@ -5389,7 +5625,7 @@
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "data": "2026-09-19",
-          "hora_max": 20.03,
+          "hora_max": 20.95,
           "caixa": 0.0,
           "atend_fin": 0,
           "faturamento_apurado": 0.0,
@@ -5412,13 +5648,13 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "20:02",
-          "hora_atual_num": 20.03,
+          "hora_atual_str": "20:57",
+          "hora_atual_num": 20.95,
           "pct_esperado_agora": 0.0,
           "meta_dia": 0.0,
           "meta_esperada_agora": 0.0,
-          "realizado_agora": 3817.5,
-          "pace_delta": 3817.5,
+          "realizado_agora": 4512.5,
+          "pace_delta": 4512.5,
           "pace_ratio_pct": 0,
           "projecao_dia": 0.0,
           "opera_hoje": true
@@ -5427,29 +5663,29 @@
         "ticket_meta_periodo": 0.0,
         "ticket_atingimento_pct": 100.0,
         "ticket_gap_por_atend": 0.0,
-        "visitas_projetadas": 9,
+        "visitas_projetadas": 13,
         "visitas_restantes": 0,
         "ticket_meta_status": "encerrado_batido",
         "ticket_meta_deficit_caixa": 0.0,
-        "ticket_meta_supera_caixa": 3817.5,
+        "ticket_meta_supera_caixa": 4512.5,
         "dia_semana": "Sáb",
         "data": "2026-09-26"
       },
       "meta": {
         "meta": 0.0,
-        "realizado": 3817.5,
-        "pct": 381750.0,
-        "falta": -3817.5,
+        "realizado": 4512.5,
+        "pct": 451250.0,
+        "falta": -4512.5,
         "dias_realizados": 1,
         "dias_total": 1,
         "dias_restantes": 0,
         "necessario_dia": 0.0,
-        "ritmo_dia": 3817.5,
-        "projecao": 3817.5,
-        "projecao_pct": 381750.0,
+        "ritmo_dia": 4512.5,
+        "projecao": 4512.5,
+        "projecao_pct": 451250.0,
         "meta_ate_hoje": 0.0,
         "pct_ate_hoje": null,
-        "saldo_ate_hoje": 3817.5
+        "saldo_ate_hoje": 4512.5
       },
       "categorias": {
         "pacotes": {
@@ -5458,8 +5694,8 @@
           "pct": 0.0
         },
         "servicos": {
-          "v": 1431.0,
-          "n": 9,
+          "v": 2027.0,
+          "n": 13,
           "pct": 100.0
         },
         "produtos": {
@@ -5473,29 +5709,35 @@
           "pct": 0.0
         },
         "servicos_gerais": {
-          "v": 1431.0,
-          "n": 9,
+          "v": 2027.0,
+          "n": 13,
           "pct": 100.0
         }
       },
       "categoria_native": [
         {
           "nome": "Drenagem/Modeladora",
-          "n": 6,
-          "v": 894.0,
-          "pct_receita": 23.4
+          "n": 8,
+          "v": 1092.0,
+          "pct_receita": 24.2
+        },
+        {
+          "nome": "Facial",
+          "n": 2,
+          "v": 398.0,
+          "pct_receita": 8.8
         },
         {
           "nome": "Massagem Relaxante",
           "n": 2,
           "v": 358.0,
-          "pct_receita": 9.4
+          "pct_receita": 7.9
         },
         {
           "nome": "Terapia Miofascial",
           "n": 1,
           "v": 179.0,
-          "pct_receita": 4.7
+          "pct_receita": 4.0
         }
       ],
       "pacotes_por_categoria": {},
@@ -5563,11 +5805,18 @@
         },
         {
           "h": 20,
-          "n": 0,
-          "v": 0.0
+          "n": 5,
+          "v": 695.0
         }
       ],
       "ranking_prof": [
+        {
+          "nome": "Monique Carvalho Da Silva",
+          "n": 5,
+          "v": 775.0,
+          "ticket_medio": 155.0,
+          "horas_trab": 4.2
+        },
         {
           "nome": "Sarah Barbosa Carmelita",
           "n": 4,
@@ -5576,18 +5825,11 @@
           "horas_trab": 3.2
         },
         {
-          "nome": "Monique Carvalho Da Silva",
+          "nome": "Marly Feitosa De Lima Ledoux",
           "n": 3,
           "v": 477.0,
           "ticket_medio": 159.0,
-          "horas_trab": 2.2
-        },
-        {
-          "nome": "Marly Feitosa De Lima Ledoux",
-          "n": 1,
-          "v": 179.0,
-          "ticket_medio": 179.0,
-          "horas_trab": 1.0
+          "horas_trab": 3.0
         },
         {
           "nome": "Ashley De Oliveira Costa",
@@ -5599,6 +5841,19 @@
       ],
       "ranking_prof_total_n": 4,
       "ranking_prof_executor": [
+        {
+          "nome": "Monique Carvalho Da Silva",
+          "n_serv": 5,
+          "v": 775.0,
+          "v_via_pacote": 0.0,
+          "comissao": 232.5,
+          "taxa_efetiva": 0.3,
+          "por_cat": {
+            "FACIAL": 199.0,
+            "CORPORAL": 576.0
+          },
+          "ticket_medio_serv": 155.0
+        },
         {
           "nome": "Sarah Barbosa Carmelita",
           "n_serv": 4,
@@ -5612,28 +5867,17 @@
           "ticket_medio_serv": 156.5
         },
         {
-          "nome": "Monique Carvalho Da Silva",
+          "nome": "Marly Feitosa De Lima Ledoux",
           "n_serv": 3,
           "v": 477.0,
           "v_via_pacote": 0.0,
           "comissao": 143.1,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "CORPORAL": 477.0
+            "FACIAL": 199.0,
+            "CORPORAL": 278.0
           },
           "ticket_medio_serv": 159.0
-        },
-        {
-          "nome": "Marly Feitosa De Lima Ledoux",
-          "n_serv": 1,
-          "v": 179.0,
-          "v_via_pacote": 0.0,
-          "comissao": 53.7,
-          "taxa_efetiva": 0.3,
-          "por_cat": {
-            "CORPORAL": 179.0
-          },
-          "ticket_medio_serv": 179.0
         },
         {
           "nome": "Ashley De Oliveira Costa",
@@ -5651,9 +5895,15 @@
       "ranking_serv": [
         {
           "nome": "RENOVE-SE EM 45",
-          "n": 6,
-          "v": 894.0,
-          "min": 270
+          "n": 8,
+          "v": 1092.0,
+          "min": 360
+        },
+        {
+          "nome": "LIMPEZA DE PELE SUPER VIP + SPA DOS LABIOS",
+          "n": 2,
+          "v": 398.0,
+          "min": 150
         },
         {
           "nome": "FAST SPA CASUAL",
@@ -5681,19 +5931,19 @@
           "ticket": 179.0,
           "rs_hora": 238.67,
           "horas_total": 0.8,
-          "pct_faturamento": 12.5,
+          "pct_faturamento": 8.8,
           "confianca": "baixa",
           "tipo": "cadeira"
         },
         {
           "nome": "RENOVE-SE EM 45",
-          "n": 6,
-          "v": 894.0,
+          "n": 8,
+          "v": 1092.0,
           "min_medio": 45,
-          "ticket": 149.0,
-          "rs_hora": 198.67,
-          "horas_total": 4.5,
-          "pct_faturamento": 62.5,
+          "ticket": 136.5,
+          "rs_hora": 182.0,
+          "horas_total": 6.0,
+          "pct_faturamento": 53.9,
           "confianca": "alta",
           "tipo": "cadeira"
         },
@@ -5705,7 +5955,19 @@
           "ticket": 179.0,
           "rs_hora": 179.0,
           "horas_total": 2.0,
-          "pct_faturamento": 25.0,
+          "pct_faturamento": 17.7,
+          "confianca": "baixa",
+          "tipo": "cadeira"
+        },
+        {
+          "nome": "LIMPEZA DE PELE SUPER VIP + SPA DOS LABIOS",
+          "n": 2,
+          "v": 398.0,
+          "min_medio": 75,
+          "ticket": 199.0,
+          "rs_hora": 159.2,
+          "horas_total": 2.5,
+          "pct_faturamento": 19.6,
           "confianca": "baixa",
           "tipo": "cadeira"
         }
@@ -5715,34 +5977,56 @@
           "nome": "Mastercard",
           "n": 9,
           "v": 1771.1,
-          "pct": 46.4
+          "pct": 39.2
         },
         {
           "nome": "Visa",
-          "n": 4,
-          "v": 696.6,
-          "pct": 18.2
+          "n": 6,
+          "v": 1094.6,
+          "pct": 24.3
+        },
+        {
+          "nome": "PIX",
+          "n": 7,
+          "v": 693.9,
+          "pct": 15.4
         },
         {
           "nome": "Visa Electron",
           "n": 4,
           "v": 556.0,
-          "pct": 14.6
-        },
-        {
-          "nome": "PIX",
-          "n": 5,
-          "v": 495.9,
-          "pct": 13.0
+          "pct": 12.3
         },
         {
           "nome": "Maestro/Redeshop",
           "n": 2,
           "v": 297.9,
-          "pct": 7.8
+          "pct": 6.6
+        },
+        {
+          "nome": "Dinheiro",
+          "n": 1,
+          "v": 99.0,
+          "pct": 2.2
         }
       ],
       "clientes_top": [
+        {
+          "nome": "Paula Andreza Gonçalves Maqueda",
+          "n": 1
+        },
+        {
+          "nome": "Genesis Vanessa",
+          "n": 1
+        },
+        {
+          "nome": "Alexandra Souza",
+          "n": 1
+        },
+        {
+          "nome": "Saulo Soares",
+          "n": 1
+        },
         {
           "nome": "Natália Pateo Barra",
           "n": 1
@@ -5766,26 +6050,14 @@
         {
           "nome": "Roberto Fontana ",
           "n": 1
-        },
-        {
-          "nome": "Mariana Rodrigues ",
-          "n": 1
-        },
-        {
-          "nome": "Suely Santos Barbosa ",
-          "n": 1
-        },
-        {
-          "nome": "Pamela Ferreira Dos Santos ",
-          "n": 1
         }
       ],
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 88.3,
-          "horas_ocupadas": 7.2,
-          "utilizacao_pct": 8.2
+          "capacidade_horas": 95.6,
+          "horas_ocupadas": 11.2,
+          "utilizacao_pct": 11.8
         }
       },
       "densidade_hora": [
@@ -5839,14 +6111,14 @@
         },
         {
           "h": 20,
-          "media_simultaneos": 0.0
+          "media_simultaneos": 1.93
         }
       ]
     }
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-26T20:02:41-03:00",
+    "gerado_em": "2026-09-26T20:57:49-03:00",
     "hoje": "2026-09-26",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -5861,7 +6133,7 @@
       {
         "tipo": "info",
         "titulo": "Fechamento do dia",
-        "texto": "Caixa R$ 3.817,50 · 9 visitas · ticket R$ 424,17 · meta batida ✅.",
+        "texto": "Caixa R$ 4.512,50 · 13 visitas · ticket R$ 347,12 · meta batida ✅.",
         "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
       }
     ],
@@ -5869,7 +6141,7 @@
       {
         "tipo": "oportunidade",
         "titulo": "Semana projeta bater meta",
-        "texto": "Projeção R$ 3.742,10 (187%). Ritmo atual R$ 1.247,37/dia já basta.",
+        "texto": "Projeção R$ 4.263,35 (213%). Ritmo atual R$ 1.421,12/dia já basta.",
         "acao": "Semana no azul — usar a margem para testar preço ou combo novo sem risco."
       }
     ],
@@ -5877,7 +6149,7 @@
       {
         "tipo": "oportunidade",
         "titulo": "Mês projeta ACIMA da meta",
-        "texto": "Projeção R$ 7.484,20 vs meta R$ 4.000,00 (187%). Excedente estimado R$ 3.484,20.",
+        "texto": "Projeção R$ 8.526,70 vs meta R$ 4.000,00 (213%). Excedente estimado R$ 4.526,70.",
         "acao": "Definir onde o excedente vai: reinvestir em marketing, comprar mais produto pra revenda, ou reserva de caixa."
       },
       {
@@ -5889,7 +6161,7 @@
       {
         "tipo": "oportunidade",
         "titulo": "Produtos sub-vendidos no mês",
-        "texto": "Produtos = 0.0% do caixa (R$ 0,00). Se chegasse a 8%, seriam +R$ 399,16/mês.",
+        "texto": "Produtos = 0.0% do caixa (R$ 0,00). Se chegasse a 8%, seriam +R$ 454,76/mês.",
         "acao": "Vitrine no caixa + treinar a recepção pra oferecer 1 produto sempre no fechamento. Óleo/finalizador batem 90% de aceitação após escova."
       }
     ],
@@ -5897,21 +6169,27 @@
       {
         "tipo": "oportunidade",
         "titulo": "Ano projeta bater meta",
-        "texto": "Projeção R$ 244.484,03 (1528%). Ritmo atual R$ 2.494,74/dia já leva a meta.",
+        "texto": "Projeção R$ 278.539,03 (1741%). Ritmo atual R$ 2.842,24/dia já leva a meta.",
         "acao": "Planejar Q4 (nov/dez sempre são mais fortes por causa das festas). Reinvestir excedente em campanha de fim de ano."
       },
       {
         "tipo": "info",
-        "titulo": "Top 10 clientes = R$ 1.708,79 (34% do ano)",
-        "texto": "Média por cliente top: R$ 170,88. Adquirir 1 novo cliente equivalente dá muito mais trabalho do que reter esses 10.",
+        "titulo": "Top 10 clientes = R$ 1.908,79 (34% do ano)",
+        "texto": "Média por cliente top: R$ 190,88. Adquirir 1 novo cliente equivalente dá muito mais trabalho do que reter esses 10.",
         "acao": "Programa VIP: agenda prioritária + serviço-cortesia trimestral + surpresa de aniversário. Custo baixo, impacto alto."
+      },
+      {
+        "tipo": "oportunidade",
+        "titulo": "22 clientes vieram apenas 1 vez (96%)",
+        "texto": "Base tem 23 clientes únicos. Se converter 20% desses 22 numa segunda visita, são ~4 clientes a mais recorrentes.",
+        "acao": "Campanha de reativação com voucher (R$ 30 off na próxima visita) pra quem só veio uma vez — investimento baixo, retorno alto."
       }
     ],
     "stone": [
       {
         "tipo": "atencao",
         "titulo": "Extrato Stone parado em 09-19 20:19 (7 dias atrás)",
-        "texto": "5 PIX de R$ 495,90 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
+        "texto": "7 PIX de R$ 693,90 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
         "acao": "Exportar o extrato Stone atualizado e colocar em data/stone_extrato.csv. Antes disso, não vale ligar pra cliente nenhuma."
       },
       {
@@ -5938,7 +6216,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-09-26T20:02:42-03:00",
+    "gerado_em": "2026-09-26T20:57:49-03:00",
     "n_agendamentos": 11,
     "horas": [
       9,
