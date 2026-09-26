@@ -18,9 +18,9 @@ Limite do Instagram: **150 caracteres** (quebras de linha contam 1 cada).
 ## Bio de lançamento — usar agora (144 caracteres)
 
 ```
-Chegou o primeiro spa urbano acessível do Limão 💙
+Chegou o primeiro spa urbano acessível do Limão 🩵
 Sem hora marcada · a partir de R$59
-💙 O spa da @fastescova.limao, mesmo prédio
+🩵 O spa da @fastescova.limao, mesmo prédio
 #semhoramarcada
 ```
 
@@ -40,14 +40,24 @@ Linha a linha:
 ## Bio permanente — trocar por volta de 25/11 (137 caracteres)
 
 ```
-O primeiro spa urbano acessível do Limão 💙
+O primeiro spa urbano acessível do Limão 🩵
 Sem hora marcada · a partir de R$59
-💙 O spa da @fastescova.limao, mesmo prédio
+🩵 O spa da @fastescova.limao, mesmo prédio
 #semhoramarcada
 ```
 
 Só cai o "Chegou". Depois de ~60 dias, "chegou" deixa de comunicar novidade e
 passa a comunicar que ninguém mexe no perfil.
+
+### Sobre o coração
+
+Usar o **🩵 (coração azul claro)**, não o 💙 (azul escuro). O azul claro é o tom
+da marca — combina com o teal **#00A6A4** do Fast Spa; o 💙 puxa para um azul
+marinho que não existe na identidade. Corrigido em 26/09 por Rodrigo.
+
+Nota técnica: o 🩵 é um emoji recente (2022). Aparelhos muito antigos podem
+mostrar um quadrado vazio. Depois de colar a bio, **abrir o perfil num Android
+antigo** para conferir. Se aparecer quadrado, o substituto mais próximo é o 💠.
 
 ### Sobre o "primeiro"
 
