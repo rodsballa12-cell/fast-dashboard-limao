@@ -31,9 +31,9 @@ A `memoria` continua sendo o único cargo com escrita em `docs/decisoes/` e
 
 ### Passo 1 — achar o briefing do Conselho
 
-Padrão: `Cerebro_Claude/Briefings/AAAA-MM-DD-conselho.md` (no vault do
+Padrão: `Cerebro_Claude/02-PROJETOS/Franquia_FAST_Limao/76_Briefings_Agentes/AAAA-MM-DD-conselho.md` (no vault do
 Obsidian, caminho absoluto `C:\Users\rods_\OneDrive\Documentos\Obsidian
-Vault\Cerebro_Claude\Briefings\`).
+Vault\Cerebro_Claude\02-PROJETOS\Franquia_FAST_Limao\76_Briefings_Agentes\`).
 
 Se o arquivo do dia não existir:
 1. Perguntar ao Rodrigo qual data (o Conselho pode ter sido rodado uma vez

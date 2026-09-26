@@ -173,7 +173,7 @@ vai ser retomada do zero daqui a dois meses.
 ## Passo 6 — salvar o briefing no repo (dispara sync automática)
 
 O briefing sempre vai pro vault do Obsidian
-(`Cerebro_Claude/Briefings/AAAA-MM-DD-conselho.md`).
+(`Cerebro_Claude/02-PROJETOS/Franquia_FAST_Limao/76_Briefings_Agentes/AAAA-MM-DD-conselho.md`).
 
 **Adicional obrigatório:** também gravar cópia idêntica em
 `Briefings/AAAA-MM-DD-conselho.md` do repo `fast-dashboard-limao` e

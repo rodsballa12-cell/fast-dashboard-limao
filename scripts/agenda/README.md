@@ -6,7 +6,9 @@ no Claude Code do PC. **Não gera custo adicional.**
 
 ## Onde o resultado aparece
 
-`Obsidian Vault / Cerebro_Claude / Briefings / AAAA-MM-DD-<cargo>.md`
+`Obsidian Vault / Cerebro_Claude / 02-PROJETOS / Franquia_FAST_Limao / 76_Briefings_Agentes / AAAA-MM-DD-<cargo>.md`
+
+_(Path atualizado em 2026-09-19: antes era `Cerebro_Claude/Briefings/` na raiz do vault, movido pra dentro do projeto FAST pra respeitar a Regra Madre do vault — nada na raiz.)_
 
 O da noite — `AAAA-MM-DD-conselho.md` — é o mais importante: é o fechamento do
 dia nas quatro janelas (dia, semana, mês, ano), com as decisões que sobraram

@@ -19,7 +19,7 @@ param(
   [Parameter(Mandatory=$true)][string]$Agente,
   [switch]$Publicar,   # roda o cargo /publicar depois da ata (so o Conselho usa)
   [string]$Projeto = "C:\Users\rods_\dev\fast-dashboard-limao",
-  [string]$Destino = "C:\Users\rods_\OneDrive\Documentos\Obsidian Vault\Cerebro_Claude\Briefings"
+  [string]$Destino = "C:\Users\rods_\OneDrive\Documentos\Obsidian Vault\Cerebro_Claude\02-PROJETOS\Franquia_FAST_Limao\76_Briefings_Agentes"
 )
 
 $ErrorActionPreference = "Stop"

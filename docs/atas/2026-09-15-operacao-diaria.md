@@ -1,23 +1,23 @@
 ---
 agente: operacao-diaria
 data: 2026-09-15
-hora: 09:43
+hora: 21:32
 gerado_por: tarefa agendada
 ---
 
-# operacao-diaria · 2026-09-15 às 09:43
+# operacao-diaria · 2026-09-15 às 21:32
 
-🥂 ESCOVA · 15/09 · dado de 03:05 (antes da abertura — normal, painel atualiza a partir das 11h)
+🥂 ESCOVA · 15/09 · dado de 19h30 (loja fechada agora, entrada de cliente novo já tinha encerrado às 19h15)
 
 🔴 EXIGE AÇÃO HOJE
-   • R$ 1.599 em PIX (15 clientes) registrados no Trinks sem confirmação da Stone → conferir comprovante com o cliente hoje; se não confirmar, corrigir o Trinks pra não inflar caixa fantasma
+   • R$ 35 em PIX que o Trinks marca como recebido mas o Stone não confirmou → conferir comprovante com a cliente hoje; se não bater, corrigir o Trinks antes que infle o caixa.
 
 📊 O DIA
-   • Ainda sem venda no snapshot (loja abriu 9h, dado é de antes disso) · meta do dia R$ 702,89
-   • Ontem (seg): R$ 549 · mesma terça da semana passada (08/09): R$ 1.325 — mas 08/09 foi dia atípico (3x acima do normal pra terça), então a queda real é bem menor do que os números sugerem
+   • R$ 912 de meta R$ 752 · 21% acima do ritmo, meta do dia já batida
+   • vs ontem (segunda, R$ 549): +66% · vs terça passada (R$ 973): -6% de caixa, mas com metade dos clientes (6 vs 10) e ticket médio quase dobrado (R$ 152 vs R$ 97) — caixa quase igual, perfil do dia bem diferente
 
 👀 VIGIAR
-   • Mês projeta 77% da meta (R$ 46.079 de R$ 60.000) — ritmo R$ 1.536/dia contra R$ 2.355/dia necessários, faltam 17 dias úteis
-   • Cota API: 6.336 de 10.000 restantes, ok pros 15 dias que faltam de mês
+   • Charles seguiu o dia inteiro sem nenhum atendimento — real ociosidade, não só um número baixo
+   • Semana abriu em 45% da meta acumulada; o peso dela está em sex/sáb, então ainda dá pra recuperar se a escala do fim de semana estiver garantida
 
-Spa segue em estado pré-abertura (sem ID do Trinks, inaugura 25/09) — nada a reportar lá ainda.
+Spa ainda sem dado real (segue no estado-zero, sem identificador Trinks até 25/09).
