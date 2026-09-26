@@ -26,6 +26,7 @@ import requests
 
 BASE_URL = "https://api.trinks.com"
 MIN_INTERVAL = 1.05
+# META_MENSAL default (Escova) — sobrescrito abaixo pelo config por unidade
 META_MENSAL = 60000
 DIAS_OP_MES = 26
 DOW_NOMES = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
@@ -90,6 +91,15 @@ try:
     _cfg = json.loads(CONFIG_JSON.read_text(encoding="utf-8"))
 except Exception:
     _cfg = {}
+# META_MENSAL por unidade (le do config.unidades.<UNIT>.meta_mensal).
+# Fallback pro default de 60000 (Escova) se ausente.
+try:
+    _unit_cfg = (_cfg.get("unidades") or {}).get(UNIT) or {}
+    _meta_unit = _unit_cfg.get("meta_mensal")
+    if _meta_unit:
+        META_MENSAL = float(_meta_unit)
+except Exception:
+    pass  # META_MENSAL fica com o default 60000
 CADEIRAS_FIS = _cfg.get("cadeiras") or {"cabelo": 5, "maquiagem": 3, "unhas": 8}
 HORAS_OPERACAO_DIA = _cfg.get("horas_operacao_dia", 12)
 # Jornada de operação por dow (0=seg .. 6=dom). Default: 12h seg-sáb, 0 dom.
