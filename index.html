@@ -4872,24 +4872,50 @@ async function refreshInteligente(){
   let token = localStorage.getItem('gh_token');
   if(token){ token = sanitizeToken(token); if(token.length < 20) token = null; }
 
-  // Sem token: recarrega dados publicados + toast informativo com timestamp
-  // e opcao de configurar token pra sync ao vivo.
+  // Sem token: 1) recarrega dados publicados; 2) se snapshot nao mudou,
+  // oferece configurar token com prompt amigavel (uma unica vez, fica salvo).
   if(!token){
     const antesGer = (TRINKS && TRINKS.gerado_em) || null;
     btn.disabled = true;
     btn.textContent = '🔄 Verificando…';
     try {
-      await reloadAllTabs(false);  // sem toast automatico, faz o proprio
+      await reloadAllTabs(false);  // recarrega o JSON publicado no Pages
       const depoisGer = (TRINKS && TRINKS.gerado_em) || null;
-      if(antesGer && depoisGer && depoisGer === antesGer){
-        const dt = new Date(depoisGer);
-        const ageMin = Math.floor((Date.now()-dt.getTime())/60000);
-        const h = Math.floor(ageMin/60), m = ageMin%60;
-        const idade = h ? `${h}h${String(m).padStart(2,'0')}m` : `${m} min`;
-        toast(`ℹ️ <strong>Ainda sem dados novos</strong><br><small>Último snapshot: ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} BRT (há ${idade}). Cron atualiza a cada ~2h — pro sync <em>ao vivo</em> com Trinks agora, use <code>setGhToken('ghp_…')</code> no console.</small>`);
-      } else if(depoisGer){
+      if(depoisGer && (!antesGer || depoisGer !== antesGer)){
         const dt = new Date(depoisGer);
         toast(`✅ <strong>Dados novos carregados</strong><br><small>Snapshot ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} BRT</small>`);
+      } else {
+        // Snapshot igual — nao tem dado novo publicado. Oferece configurar
+        // token pra disparar refresh backend AGORA.
+        const dt = depoisGer ? new Date(depoisGer) : null;
+        const ageMin = dt ? Math.floor((Date.now()-dt.getTime())/60000) : 0;
+        const idade = ageMin < 60 ? `${ageMin} min` : `${Math.floor(ageMin/60)}h${String(ageMin%60).padStart(2,'0')}m`;
+        const quer = confirm(
+          `Snapshot atual: ${dt ? dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'}) : '?'} BRT (${idade} atrás).\n\n` +
+          `O cron atualiza automático a cada ~2h.\n\n` +
+          `Quer forçar refresh AO VIVO do Trinks agora (~60s)?\n` +
+          `Vai pedir seu GitHub token (guardado só no seu browser, colar uma única vez).`
+        );
+        if(quer){
+          const t = prompt(
+            'Cole seu GitHub Personal Access Token:\n\n' +
+            'Criar em: github.com/settings/tokens/new\n' +
+            'Escopo: repo · Expiração: 90 dias\n\n' +
+            'Fica salvo no seu browser (localStorage). Não vai pro HTML público.'
+          );
+          if(t && t.trim().startsWith('ghp_')){
+            const clean = sanitizeToken(t);
+            if(clean.length >= 20){
+              localStorage.setItem('gh_token', clean);
+              toast('✅ Token salvo. Disparando refresh…');
+              window._refreshing = false;  // libera pra rechamada usar o token novo
+              btn.disabled = false;
+              return refreshInteligente();  // rechamada agora com token
+            }
+          } else if(t){
+            toast('❌ Token deve começar com <code>ghp_</code>. Tenta de novo.', true);
+          }
+        }
       }
     } catch(e){
       toast(`❌ Falha ao recarregar: ${e.message}`, true);
