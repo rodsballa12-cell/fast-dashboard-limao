@@ -1452,7 +1452,7 @@ function renderCategTile(container_id, titulo, subtitle, categorias){
 
 // ============= UTILIZAÇÃO POR CADEIRA FÍSICA (por tipo) =============
 // Modelo PJ: capacidade é do IMÓVEL (cadeiras físicas), não das profissionais.
-function renderUtilizacao(container_id, periodo, kpis, aba){
+function renderUtilizacao(container_id, periodo, kpis, aba, unidade_config){
   const el = document.getElementById(container_id);
   if(!el) return;
   const cad = (aba || {}).cadeiras_utilizacao;
@@ -1462,15 +1462,23 @@ function renderUtilizacao(container_id, periodo, kpis, aba){
   const horasOp = kpis.horas_operacao_periodo || 0;
   const utilAgr = kpis.utilizacao_agregada_pct || 0;
 
+  // Terminologia por unidade: SPA tem SALAS (cadeira_unica='sala'), Escova tem CADEIRAS.
+  const uc = unidade_config || {};
+  const isSala = uc.cadeira_unica === 'sala';
+  const NOME = isSala ? 'sala' : 'cadeira';
+  const NOMES = isSala ? 'salas' : 'cadeiras';
+  const ICON = isSala ? '🚪' : '🪑';
+  const localTitulo = isSala ? 'IMÓVEL (salas × horas)' : 'IMÓVEL (cadeiras físicas × horas de operação)';
+
   const corUtil = v => v >= 75 ? 'warn' : (v < 25 ? 'dn' : 'up');
-  const rotulo = t => ({cabelo:'💇 Cabelo', maquiagem:'💄 Maquiagem/Rosto', unhas:'💅 Unhas', outro:'Outros'})[t] || t;
+  const rotulo = t => ({cabelo:'💇 Cabelo', maquiagem:'💄 Maquiagem/Rosto', unhas:'💅 Unhas', sala:'🚪 Salas SPA', outro:'Outros'})[t] || t;
 
   const cadeirasHTML = Object.entries(cad).filter(([t,d]) => d.n_cadeiras > 0 || d.horas_ocupadas > 0).map(([t, d]) => {
     const barPct = Math.min(100, d.utilizacao_pct);
     const cor = corUtil(d.utilizacao_pct);
     return `<div style="margin-bottom:12px">
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
-        <span><strong>${rotulo(t)}</strong> <span style="color:var(--ink-3)">(${d.n_cadeiras || 0} cadeiras)</span></span>
+        <span><strong>${rotulo(t)}</strong> <span style="color:var(--ink-3)">(${d.n_cadeiras || 0} ${NOMES})</span></span>
         <span class="${cor}"><strong>${d.utilizacao_pct.toFixed(0)}%</strong> · ${d.horas_ocupadas.toFixed(0)}h de ${d.capacidade_horas.toFixed(0)}h</span>
       </div>
       <div style="height:10px;background:var(--surface-2);border-radius:5px;overflow:hidden;border:1px solid var(--border)">
@@ -1491,15 +1499,15 @@ function renderUtilizacao(container_id, periodo, kpis, aba){
   }
 
   el.innerHTML = `<div class="card">
-    <h2>🪑 Ocupação por tipo de cadeira · ${periodo}</h2>
-    <div class="cap">Capacidade do IMÓVEL (cadeiras físicas × horas de operação). Independe de quantas profissionais atendem — mostra se o espaço está sendo bem usado.</div>
+    <h2>${ICON} Ocupação por ${isSala ? 'sala' : 'tipo de cadeira'} · ${periodo}</h2>
+    <div class="cap">Capacidade do ${localTitulo}. Independe de quantas profissionais atendem — mostra se o espaço está sendo bem usado.</div>
     <div class="categ-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
       ${tile('','Utilização geral', `<span class="${corUtil(utilAgr)}">${utilAgr.toFixed(0)}%</span>`, `${Object.values(cad).reduce((s,d)=>s+(d.horas_ocupadas||0),0).toFixed(0)}h ocupadas de ${Object.values(cad).reduce((s,d)=>s+(d.capacidade_horas||0),0).toFixed(0)}h`)}
       ${tile('c2','R$/hora do salão', brl(rsHora), `${horasOp}h de operação no período`)}
-      ${tile('c3','Tipo mais ocupado', Object.entries(cad).filter(([t])=>t!=='outro').sort((a,b)=>b[1].utilizacao_pct-a[1].utilizacao_pct)[0]?.[0] || '—', 'onde está o gargalo')}
+      ${tile('c3', isSala ? 'Total de salas' : 'Tipo mais ocupado', isSala ? String(Object.values(cad).reduce((s,d)=>s+(d.n_cadeiras||0),0)) : (Object.entries(cad).filter(([t])=>t!=='outro').sort((a,b)=>b[1].utilizacao_pct-a[1].utilizacao_pct)[0]?.[0] || '—'), isSala ? 'macas de massagem/estética' : 'onde está o gargalo')}
     </div>
     ${cadeirasHTML}
-    <div class="insight"><strong>Como ler:</strong> ${utilAgr < 25 ? 'Utilização baixa — há espaço pra crescer sem obra/reforma.' : (utilAgr >= 75 ? 'Alta — considerar mais cadeiras ou preço premium nos horários de pico.' : 'Saudável — espaço para crescer sem estresse.')} ${densInsight}</div>
+    <div class="insight"><strong>Como ler:</strong> ${utilAgr < 25 ? `Utilização baixa — há espaço pra crescer sem obra/reforma.` : (utilAgr >= 75 ? `Alta — considerar mais ${NOMES} ou preço premium nos horários de pico.` : 'Saudável — espaço para crescer sem estresse.')} ${densInsight}</div>
   </div>`;
 }
 
@@ -3255,7 +3263,7 @@ function renderAnual(data){
 
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade por serviço', '2026 · R$/hora ao lado do volume revela onde há upside real', a.rentabilidade_hora || []);
   renderEscalaFluxo('per-escala-fluxo', data.densidade_dow, a.hora_media, '2026 · '+k.dias_op+'d op.');
-  renderUtilizacao('per-utilizacao', 'ano', k, a);
+  renderUtilizacao('per-utilizacao', 'ano', k, a, data.unidade_config);
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   // Categorias nativas Trinks agora vivem dentro do card "Detalhamento por categoria"
   renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
@@ -3328,7 +3336,7 @@ function renderMensal(data){
   renderMetaProgress('per-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
   renderHeatmapMeta('per-heatmap', data.sazonalidade, m.por_dia_mes, data.hoje);
   renderTicketMeta('per-ticket-meta', 'mês', k);
-  renderUtilizacao('per-utilizacao', 'mês', k, m);
+  renderUtilizacao('per-utilizacao', 'mês', k, m, data.unidade_config);
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
@@ -3363,7 +3371,7 @@ function renderSemanal(data){
   renderTicketMeta('per-ticket-meta', 'semana', k);
   // Removido renderComparacaoSemana — duplicava info que ja aparece nos KPIs
   // do topo (Faturamento com delta_pct, Visitas com delta_pct, Ticket delta).
-  renderUtilizacao('per-utilizacao', 'semana', k, s);
+  renderUtilizacao('per-utilizacao', 'semana', k, s, data.unidade_config);
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
@@ -3395,7 +3403,7 @@ function renderDiario(data){
   renderMetaProgress('per-meta','Meta Diária',d.meta,'Meta específica do dia da semana atual (peso histórico do DOW × META_MENSAL, respeitando jornada)');
   renderPaceIntraday('per-pace', k.pace_intraday, (data.sazonalidade||{}).curva_horaria);
   renderTicketMeta('per-ticket-meta', 'hoje', k);
-  renderUtilizacao('per-utilizacao', 'hoje', k, d);
+  renderUtilizacao('per-utilizacao', 'hoje', k, d, data.unidade_config);
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
