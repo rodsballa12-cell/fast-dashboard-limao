@@ -1,0 +1,44 @@
+name: TESTE · Chave Escova autoriza SPA?
+
+# Workflow descartavel · testa se a mesma X-Api-Key da Escova autoriza
+# requests contra estabelecimentoId=282163 (SPA). Apenas leitura (/v1/consumo),
+# nao altera nada. Depois de rodar 1x, este arquivo pode ser removido.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Testar Escova key contra estabelecimento 282163 (SPA)
+        env:
+          KEY: ${{ secrets.TRINKS_API_KEY }}
+        run: |
+          echo "=== Testando: mesma X-Api-Key da Escova + estabelecimentoId=282163 (SPA) ==="
+          echo ""
+          # nao imprimir a chave nunca; -sS silencia progress mas mantem erros
+          status=$(curl -sS -o /tmp/body -w "%{http_code}" \
+            -H "X-Api-Key: $KEY" \
+            -H "estabelecimentoId: 282163" \
+            -H "Accept: application/json" \
+            -H "User-Agent: fast-check-spa/1.0" \
+            "https://api.trinks.com/v1/consumo")
+          echo "HTTP status: $status"
+          echo ""
+          echo "=== Resposta (primeiros 500 chars) ==="
+          head -c 500 /tmp/body
+          echo ""
+          echo ""
+          if [ "$status" = "200" ]; then
+            echo "RESULTADO: mesma chave autoriza a SPA. Pode cadastrar TRINKS_API_KEY_SPA=<mesma chave>."
+          elif [ "$status" = "401" ] || [ "$status" = "403" ]; then
+            echo "RESULTADO: chave da Escova NAO autoriza a SPA. Precisa pedir chave separada pro suporte Trinks."
+          elif [ "$status" = "404" ]; then
+            echo "RESULTADO: 404 no endpoint OU estabelecimentoId 282163 nao existe pra essa conta."
+          else
+            echo "RESULTADO: HTTP $status inesperado — ver corpo acima."
+          fi
