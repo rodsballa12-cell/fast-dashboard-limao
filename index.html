@@ -2275,23 +2275,27 @@ function mergeRankingProf(rp_agend, rp_exec){
   }).sort((a,b) => (b.v||0) - (a.v||0));
 }
 
-function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_prof_total_n, categoria_native, caixa){
+function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_prof_total_n, categoria_native, caixa, unidade_config){
   const el = document.getElementById(container_id);
   if(!el) return;
   const cfg = (typeof COMISSOES_CFG !== 'undefined' && COMISSOES_CFG) || null;
   const rp = (ranking_prof || []);
   const cats_in = (categoria_native || []);
+  const uc = unidade_config || {};
+  // Taxa plana da unidade (ex SPA: 20%) sobrepõe o mapa por categoria da Escova
+  const taxaFlat = (typeof uc.comissao_producao_pct === 'number' && uc.comissao_producao_pct > 0) ? uc.comissao_producao_pct : null;
 
-  // Taxa efetiva ponderada pelo mix (se comissoes.json carregou)
+  // Taxa efetiva ponderada pelo mix (se comissoes.json carregou OU taxaFlat definida)
   let taxaEfetiva = 0, comissaoTotal = 0, receitaServ = 0, catBreak = [];
-  if(cfg && cats_in.length){
+  if((cfg || taxaFlat) && cats_in.length){
     const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
     const taxaCat = (nome) => {
-      const map = cfg.por_categoria || {};
+      if(taxaFlat != null) return taxaFlat;  // unidade com taxa plana (SPA)
+      const map = (cfg && cfg.por_categoria) || {};
       if(nome in map) return map[nome];
       const nn = norm(nome);
       for(const k in map){ if(norm(k) === nn) return map[k]; }
-      return cfg.regra_padrao_pct || 0.32;
+      return (cfg && cfg.regra_padrao_pct) || 0.32;
     };
     // Escala categorias tb pra somar = caixa (produtos+pacotes-vendidos entram
     // proporcionalmente distribuídos pelo mix. Assim TOTAL SERVIÇOS = FATURAMENTO).
@@ -2393,7 +2397,7 @@ function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_
   const totalFatRow = '';
   el.innerHTML = `<div class="card">
     <h2>👥 Profissionais + Comissões · ${periodo_label}${badgeTaxa}${totalBadge}</h2>
-    <div class="cap">Base = <strong>Faturamento do período</strong> (${brl0(caixa)} · bate com Trinks tela Resultado + Stone). Cada prof recebe sua fatia proporcional aos serviços que executou. Comissão = fatia × taxa oficial da categoria (<code>data/comissoes.json</code>). ${cfg ? '' : '<em>Aguardando <code>data/comissoes.json</code>.</em>'}</div>
+    <div class="cap">Base = <strong>Faturamento do período</strong> (${brl0(caixa)} · bate com Trinks tela Resultado + Stone). Cada prof recebe sua fatia proporcional aos serviços que executou. ${taxaFlat != null ? `Comissão = fatia × <strong>taxa plana da unidade (${(taxaFlat*100).toFixed(0)}%)</strong> · <code>config.json → unidades.<em>x</em>.comissao_producao_pct</code>.` : `Comissão = fatia × taxa oficial da categoria (<code>data/comissoes.json</code>). ${cfg ? '' : '<em>Aguardando <code>data/comissoes.json</code>.</em>'}`}</div>
     <div style="overflow-x:auto;margin-top:10px"><table class="simple">
       <thead><tr><th>Profissional</th><th style="text-align:right">Atend</th><th style="text-align:right">Horas</th><th style="text-align:right">Ticket médio</th><th style="text-align:right">Receita serv</th><th style="text-align:right">% equipe</th><th style="text-align:right">Comissão</th></tr></thead>
       <tbody>${rowsProf}${totalRow}${naoAtribRow}${totalFatRow}</tbody>
@@ -3256,7 +3260,7 @@ function renderAnual(data){
   // Categorias nativas Trinks agora vivem dentro do card "Detalhamento por categoria"
   renderDesvioTabela('per-desvio-tabela', data.catalogo_servicos);
   // UNIFICADO · Profissionais + Comissões · Ano usa seu próprio ranking_prof anual.
-  renderProfComissoes('per-prof', 'ano', mergeRankingProf(a.ranking_prof, a.ranking_prof_executor), a.ranking_prof_total_n || 0, a.categoria_native, k.caixa || 0);
+  renderProfComissoes('per-prof', 'ano', mergeRankingProf(a.ranking_prof, a.ranking_prof_executor), a.ranking_prof_total_n || 0, a.categoria_native, k.caixa || 0, data.unidade_config);
   renderInsights('per-insights', 'Ano 2026', (data.insights||{}).anual);
 }
 
@@ -3339,7 +3343,7 @@ function renderMensal(data){
   renderBarsDia('per-dia','📈 Trajetória do mês · dia a dia','Onde bombou, onde travou — vê quais dias-alavanca faltam pra bater meta',m.por_dia_mes,'');
   renderEscalaFluxo('per-escala-fluxo', data.densidade_dow, m.hora_media, 'mês · '+k.dias_op+'d op.');
   // UNIFICADO · Profissionais + Comissões num único card
-  renderProfComissoes('per-prof', 'mês', mergeRankingProf(m.ranking_prof, m.ranking_prof_executor), m.ranking_prof_total_n, m.categoria_native, k.caixa || 0);
+  renderProfComissoes('per-prof', 'mês', mergeRankingProf(m.ranking_prof, m.ranking_prof_executor), m.ranking_prof_total_n, m.categoria_native, k.caixa || 0, data.unidade_config);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro (card "Quando o dinheiro entra")
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes (aba canônica)
   renderInsights('per-insights', 'Mês corrente', (data.insights||{}).mensal);
@@ -3372,7 +3376,7 @@ function renderSemanal(data){
   // Cruzamento Google × Faturamento por DOW: movido pra aba Mídia (renderMidiasGoogleDow)
   renderEscalaFluxo('per-escala-fluxo', data.densidade_dow, s.hora_media, 'semana · '+k.dias_op+'d op.');
   // UNIFICADO · Profissionais + Comissões num único card
-  renderProfComissoes('per-prof', 'semana', mergeRankingProf(s.ranking_prof, s.ranking_prof_executor), s.ranking_prof_total_n, s.categoria_native, k.caixa || 0);
+  renderProfComissoes('per-prof', 'semana', mergeRankingProf(s.ranking_prof, s.ranking_prof_executor), s.ranking_prof_total_n, s.categoria_native, k.caixa || 0, data.unidade_config);
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
   renderInsights('per-insights', 'Semana corrente', (data.insights||{}).semanal);
@@ -3425,7 +3429,7 @@ function renderDiario(data){
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro
   // CONSOLIDAÇÃO E · Top clientes agora só em Clientes
   // UNIFICADO · Profissionais + Comissões num único card (Diário mantém a "SALA AGORA" acima como visão em tempo real)
-  renderProfComissoes('per-prof', 'hoje', mergeRankingProf(d.ranking_prof, d.ranking_prof_executor), d.ranking_prof_total_n, d.categoria_native, k.caixa || 0);
+  renderProfComissoes('per-prof', 'hoje', mergeRankingProf(d.ranking_prof, d.ranking_prof_executor), d.ranking_prof_total_n, d.categoria_native, k.caixa || 0, data.unidade_config);
   renderInsights('per-insights', 'Hoje', (data.insights||{}).diario);
 }
 
