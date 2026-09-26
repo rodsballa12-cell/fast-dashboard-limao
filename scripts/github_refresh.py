@@ -91,16 +91,17 @@ try:
     _cfg = json.loads(CONFIG_JSON.read_text(encoding="utf-8"))
 except Exception:
     _cfg = {}
+_unit_cfg = (_cfg.get("unidades") or {}).get(UNIT) or {}
 # META_MENSAL por unidade (le do config.unidades.<UNIT>.meta_mensal).
 # Fallback pro default de 60000 (Escova) se ausente.
 try:
-    _unit_cfg = (_cfg.get("unidades") or {}).get(UNIT) or {}
     _meta_unit = _unit_cfg.get("meta_mensal")
     if _meta_unit:
         META_MENSAL = float(_meta_unit)
 except Exception:
     pass  # META_MENSAL fica com o default 60000
-CADEIRAS_FIS = _cfg.get("cadeiras") or {"cabelo": 5, "maquiagem": 3, "unhas": 8}
+# Cadeiras/salas: primeiro tenta config da unidade, depois global (Escova legacy)
+CADEIRAS_FIS = _unit_cfg.get("cadeiras") or _cfg.get("cadeiras") or {"cabelo": 5, "maquiagem": 3, "unhas": 8}
 HORAS_OPERACAO_DIA = _cfg.get("horas_operacao_dia", 12)
 # Jornada de operação por dow (0=seg .. 6=dom). Default: 12h seg-sáb, 0 dom.
 _horas_dow_cfg = _cfg.get("horas_operacao_por_dow") or {}
@@ -112,18 +113,58 @@ DATA_INICIO_DOM = date.fromisoformat(_dom_ini_str) if _dom_ini_str else None
 _feriados_cfg = (_cfg.get("feriados_6h") or {}).get("datas") or []
 FERIADOS_6H = {date.fromisoformat(s) for s in _feriados_cfg if isinstance(s, str)}
 HORAS_FERIADO = float((_cfg.get("feriados_6h") or {}).get("horas", 6))
-CADEIRA_KEYWORDS = _cfg.get("cadeira_por_servico_keywords") or {}
+# Keywords de classificacao serviço→cadeira: primeiro unidade, depois global
+CADEIRA_KEYWORDS = _unit_cfg.get("cadeira_por_servico_keywords") or _cfg.get("cadeira_por_servico_keywords") or {}
+# Nome da cadeira "default" pra quando a unidade tem so 1 tipo (SPA: 'sala' pra tudo).
+# Se definido, TODO servico cai nesse tipo (curto-circuito de CADEIRA_KEYWORDS).
+CADEIRA_UNICA = _unit_cfg.get("cadeira_unica")
+# Data de inauguracao: dias antes disso não operam (bloqueia meta em dias que nem existiam)
+_data_inaug_str = _unit_cfg.get("data_inauguracao")
+DATA_INAUGURACAO = date.fromisoformat(_data_inaug_str) if _data_inaug_str else None
 
 
 def horas_no_dia(d: date) -> float:
     """Jornada em horas para a data d. Feriados listados = HORAS_FERIADO (6h);
-    caso contrario, HORAS_POR_DOW[weekday]. Domingo antes de DATA_INICIO_DOM = 0."""
+    caso contrario, HORAS_POR_DOW[weekday]. Domingo antes de DATA_INICIO_DOM = 0.
+    Dias antes de DATA_INAUGURACAO da unidade tambem = 0."""
+    if DATA_INAUGURACAO and d < DATA_INAUGURACAO:
+        return 0.0
     if d in FERIADOS_6H:
         return HORAS_FERIADO
     if d.weekday() == 6:
         if DATA_INICIO_DOM is None or d < DATA_INICIO_DOM:
             return 0.0
     return HORAS_POR_DOW[d.weekday()]
+
+
+# Rateio META_MENSAL pro mês inaugural: se a unidade abriu DENTRO do mês corrente,
+# a meta cheia (ex 20k) representa mês inteiro (26 dias op). Setembro parcial (5 dias
+# op reais) recebe meta proporcional: 20k × 5/26 ≈ 3.846.
+# Aplicado UMA vez no boot; sobrescreve META_MENSAL antes de calc_meta rodar.
+def _rateio_mes_inaugural():
+    global META_MENSAL
+    if not DATA_INAUGURACAO:
+        return
+    hoje_brt = datetime.now(BRT).date()
+    if DATA_INAUGURACAO.year != hoje_brt.year or DATA_INAUGURACAO.month != hoje_brt.month:
+        return  # ja passou do mes de inauguracao — meta cheia
+    # Conta dias operacionais REAIS (respeitando data_inauguracao) no mes corrente
+    dias_op_reais = sum(1 for d_num in range(1, monthrange(hoje_brt.year, hoje_brt.month)[1] + 1)
+                        if horas_no_dia(date(hoje_brt.year, hoje_brt.month, d_num)) > 0)
+    # Conta dias operacionais TIPICOS (ignorando data_inauguracao) — usando so dow+feriado
+    def _horas_sem_inaug(d):
+        if d in FERIADOS_6H: return HORAS_FERIADO
+        if d.weekday() == 6 and (DATA_INICIO_DOM is None or d < DATA_INICIO_DOM): return 0.0
+        return HORAS_POR_DOW[d.weekday()]
+    dias_op_tipicos = sum(1 for d_num in range(1, monthrange(hoje_brt.year, hoje_brt.month)[1] + 1)
+                          if _horas_sem_inaug(date(hoje_brt.year, hoje_brt.month, d_num)) > 0)
+    if dias_op_tipicos > 0 and dias_op_reais < dias_op_tipicos:
+        META_MENSAL_ORIG = META_MENSAL
+        META_MENSAL = round(META_MENSAL * dias_op_reais / dias_op_tipicos, 2)
+        print(f"[meta] mês inaugural · rateio: META_MENSAL R${META_MENSAL_ORIG:.0f} → R${META_MENSAL:.2f} ({dias_op_reais}/{dias_op_tipicos} dias op)")
+
+
+_rateio_mes_inaugural()
 
 # === METAS DA FRANQUEADORA (fixas, por categoria) ===
 # Franqueadora define meta MENSAL por recepcionista pra 3 categorias específicas.
@@ -156,7 +197,11 @@ def dias_operacionais_no_mes(ano: int, mes: int) -> int:
 
 
 def classificar_cadeira(nome_serv):
-    """Retorna 'cabelo' | 'maquiagem' | 'unhas' | 'outro' pelo nome do serviço."""
+    """Retorna o tipo de cadeira/sala pelo nome do serviço.
+    Se a unidade tem CADEIRA_UNICA definida (SPA=sala), TODO servico cai nesse tipo.
+    Senao usa CADEIRA_KEYWORDS. Fallback: 'outro'."""
+    if CADEIRA_UNICA:
+        return CADEIRA_UNICA
     if not nome_serv: return "outro"
     n = nome_serv.upper()
     for tipo, kws in CADEIRA_KEYWORDS.items():
@@ -2625,17 +2670,30 @@ def main():
             "meta_por_data": {dt.isoformat(): m for dt, m in meta_por_data.items() if m > 0},
         },
         "cota_api": cota_final,
-        "metas_franqueadora": {
-            "recepcionistas": N_RECEPCIONISTAS,
-            "por_recepcionista_mensal": _por_rec,
-            "meta_mensal_total": META_MENSAL,
-            "categorias_mensal": {
-                "pacotes": METAS_CATEGORIA_MENSAL.get("pacotes", 0),
-                "fast_retoque": METAS_CATEGORIA_MENSAL.get("fast_retoque", 0),
-                "produtos": METAS_CATEGORIA_MENSAL.get("produtos", 0),
-                "servicos_gerais": max(META_MENSAL - _subtotal_franq, 0),
-            },
-            "subtotal_franqueadora": _subtotal_franq,
+        # metas_franqueadora só aplica a unidades que seguem o plano de recepção
+        # (pacotes/fast_retoque/produtos com meta por recepcionista). SPA não usa.
+        "metas_franqueadora": (
+            {
+                "recepcionistas": N_RECEPCIONISTAS,
+                "por_recepcionista_mensal": _por_rec,
+                "meta_mensal_total": META_MENSAL,
+                "categorias_mensal": {
+                    "pacotes": METAS_CATEGORIA_MENSAL.get("pacotes", 0),
+                    "fast_retoque": METAS_CATEGORIA_MENSAL.get("fast_retoque", 0),
+                    "produtos": METAS_CATEGORIA_MENSAL.get("produtos", 0),
+                    "servicos_gerais": max(META_MENSAL - _subtotal_franq, 0),
+                },
+                "subtotal_franqueadora": _subtotal_franq,
+            }
+            if _unit_cfg.get("usa_metas_franqueadora", True) else None
+        ),
+        # Flags de config da unidade (frontend le pra decidir qual card mostrar)
+        "unidade_config": {
+            "usa_categoria_native": bool(_unit_cfg.get("usa_categoria_native", False)),
+            "usa_metas_franqueadora": bool(_unit_cfg.get("usa_metas_franqueadora", True)),
+            "cadeira_unica": _unit_cfg.get("cadeira_unica"),
+            "comissao_producao_pct": _unit_cfg.get("comissao_producao_pct"),
+            "data_inauguracao": _unit_cfg.get("data_inauguracao"),
         },
         "comissoes": comissoes_data,
         "prof_meta": {str(k): v for k, v in prof_meta_global.items()},
