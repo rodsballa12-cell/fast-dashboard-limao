@@ -87,6 +87,116 @@
         "sala": [
           "*"
         ]
+      },
+      "subcategorias": {
+        "_desc": "Sub-classificacao paralela ao Trinks. Cada regra: keywords no NOME do servico (case-insensitive, sem acento). Ordem importa — primeira regra que casa vence. Servico que nao casa em nenhuma vai pra 'Outros'.",
+        "regras": [
+          {
+            "nome": "Facial",
+            "keywords": [
+              "LIMPEZA DE PELE",
+              "PELLING",
+              "PEELING",
+              "FACIAL",
+              "HIPER HIDRATA"
+            ]
+          },
+          {
+            "nome": "Pos-operatorio",
+            "keywords": [
+              "POS OPERAT",
+              "POS-OPERAT",
+              "PÓS OPERAT",
+              "PÓS-OPERAT"
+            ]
+          },
+          {
+            "nome": "Gestante",
+            "keywords": [
+              "GESTANTE",
+              "GRAVID"
+            ]
+          },
+          {
+            "nome": "Ritual/Especiais",
+            "keywords": [
+              "BANHO DE LUA"
+            ]
+          },
+          {
+            "nome": "Terapia Miofascial",
+            "keywords": [
+              "MIOFASCIAL"
+            ]
+          },
+          {
+            "nome": "Reflexologia/Pes",
+            "keywords": [
+              "REFLEXOLOGIA",
+              "PERNAS E PÉS",
+              "PERNAS E PES"
+            ]
+          },
+          {
+            "nome": "Drenagem/Modeladora",
+            "keywords": [
+              "DETOX",
+              "MODELADORA",
+              "RENOVE-SE",
+              "DRENAGEM",
+              "SPA ACTIVE"
+            ]
+          },
+          {
+            "nome": "Massagem Relaxante",
+            "keywords": [
+              "ACONCHEGO",
+              "CASUAL",
+              "SPA VIP",
+              "SPA KIDS",
+              "NEURO RELAX",
+              "ESSENCE",
+              "QUICK",
+              "RELAXANTE"
+            ]
+          },
+          {
+            "nome": "Revitalizacao/Tratamento",
+            "keywords": [
+              "REVITALIZA",
+              "TRATAMENTO",
+              "PESCOCO",
+              "PESCOÇO",
+              "MAOS"
+            ]
+          },
+          {
+            "nome": "Capilar",
+            "keywords": [
+              "CAPILAR",
+              "LED TERAPIA CAPILAR"
+            ]
+          },
+          {
+            "nome": "Adicional",
+            "keywords": [
+              "ADICIONAL",
+              "MANTA TERMICA",
+              "PEDRAS QUENTES",
+              "MÁSCARA DE LED",
+              "MASCARA DE LED",
+              "LED",
+              "ANTEBRA",
+              "VENTOSA",
+              "LIBERACAO MIO",
+              "LIBERAÇÃO MIO",
+              "SPA DOS LABIOS",
+              "SPA DOS LÁBIOS",
+              "RELAXANTE FACIAL",
+              "RELAXANTE NA CABE"
+            ]
+          }
+        ]
       }
     }
   },

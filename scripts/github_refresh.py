@@ -121,6 +121,34 @@ CADEIRA_UNICA = _unit_cfg.get("cadeira_unica")
 # Data de inauguracao: dias antes disso não operam (bloqueia meta em dias que nem existiam)
 _data_inaug_str = _unit_cfg.get("data_inauguracao")
 DATA_INAUGURACAO = date.fromisoformat(_data_inaug_str) if _data_inaug_str else None
+# Sub-categorizacao paralela ao Trinks (SPA: quebra 'Corporal' em Massagem/Drenagem/etc).
+# Cada regra: {nome, keywords[]}. Ordem importa — primeira que casa vence. Servico sem
+# match cai na categoria Trinks original (fallback conservador).
+_subcat_cfg = (_unit_cfg.get("subcategorias") or {}).get("regras") or []
+SUBCATEGORIAS_REGRAS = []
+if _subcat_cfg:
+    import unicodedata as _uni
+    def _norm_kw(s):
+        return "".join(ch for ch in _uni.normalize("NFKD", str(s or "").upper()) if not _uni.combining(ch))
+    for _r in _subcat_cfg:
+        SUBCATEGORIAS_REGRAS.append({
+            "nome": _r.get("nome") or "?",
+            "keywords_norm": [_norm_kw(k) for k in (_r.get("keywords") or []) if k]
+        })
+
+
+def _reclassifica_servico(nome_serv, cat_original):
+    """Se SUBCATEGORIAS_REGRAS estiver definida, procura keyword no nome do servico
+    e retorna a subcategoria; senao retorna cat_original (comportamento atual)."""
+    if not SUBCATEGORIAS_REGRAS or not nome_serv:
+        return cat_original
+    import unicodedata as _uni
+    n = "".join(ch for ch in _uni.normalize("NFKD", nome_serv.upper()) if not _uni.combining(ch))
+    for r in SUBCATEGORIAS_REGRAS:
+        for kw in r["keywords_norm"]:
+            if kw in n:
+                return r["nome"]
+    return cat_original  # sem match → mantem categoria original
 
 
 def horas_no_dia(d: date) -> float:
@@ -445,6 +473,8 @@ def analisar(agend, transac, ini: date, fim: date):
             cat = s.get("categoria") or ""
             if isinstance(cat, dict): cat = cat.get("nome") or ""
             cat = (cat or "sem categoria").strip().title()
+            # Reclassifica se a unidade tem subcategorias configuradas (SPA)
+            cat = _reclassifica_servico(nome_s, cat)
             categoria_native[cat]["n"] += 1
             categoria_native[cat]["v"] += preco_s
         descontos += float(t.get("descontos") or 0)
