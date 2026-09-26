@@ -43,7 +43,7 @@ def _meta_mensal(unidade: str, padrao: float) -> float:
         return padrao
 
 META_MES_ESCOVA = _meta_mensal("escova", 60000.00)
-META_MES_SPA = _meta_mensal("spa", 15000.00)
+META_MES_SPA = _meta_mensal("spa", 20000.00)
 
 # Carrega config pra puxar salário da gerente (separa do pessoal_clt consolidado do Excel)
 def _load_cfg():

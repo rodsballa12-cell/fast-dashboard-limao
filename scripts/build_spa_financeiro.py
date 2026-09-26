@@ -42,7 +42,7 @@ def _meta_mensal(unidade: str, padrao: float) -> float:
     except Exception:
         return padrao
 
-META_MES_SPA = _meta_mensal("spa", 15000.00)
+META_MES_SPA = _meta_mensal("spa", 20000.00)
 
 PRESERVAR = {
     "gerado_em", "baseline", "custos_ate", "mes_corrente_chave",

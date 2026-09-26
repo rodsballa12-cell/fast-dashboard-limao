@@ -83,6 +83,7 @@ def main() -> int:
     ap.add_argument("--nome", help="busca parcial, sem precisar de acento")
     ap.add_argument("--id", type=int, help="id da cliente no Trinks")
     ap.add_argument("--desde", help="AAAA-MM-DD (padrão: abertura da loja)")
+    ap.add_argument("--unidade", default="escova", choices=["escova", "spa"], help="qual unidade (default: escova)")
     args = ap.parse_args()
     if not args.nome and not args.id:
         print("Informe --nome ou --id.")
@@ -91,7 +92,7 @@ def main() -> int:
     ini = date.fromisoformat(args.desde) if args.desde else PRIMEIRO_DIA
     fim = date.today()
 
-    t = TrinksClient()
+    t = TrinksClient(unidade=args.unidade)
     cli = achar_cliente(t, args.nome, args.id)
     if not cli:
         return 1

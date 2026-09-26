@@ -74,7 +74,7 @@ def _meta_anual_spa() -> float:
                                 "data", "config.json")
         with open(caminho, encoding="utf-8") as fh:
             u = _json.load(fh)["unidades"]["spa"]
-        mensal = float(u.get("meta_mensal") or 15000.0)
+        mensal = float(u.get("meta_mensal") or 20000.0)
         ab = date.fromisoformat(u["data_inauguracao"])
     except Exception:
         return 45000.0
@@ -97,9 +97,9 @@ def _meta_mensal_spa() -> float:
                                 "data", "config.json")
         with open(caminho, encoding="utf-8") as fh:
             v = _json.load(fh)["unidades"]["spa"].get("meta_mensal")
-        return float(v) if v is not None else 15000.0
+        return float(v) if v is not None else 20000.0
     except Exception:
-        return 15000.0
+        return 20000.0
 
 
 def zero_state(obj, key_path=""):

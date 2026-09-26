@@ -16,6 +16,14 @@ on:
         description: 'Valor que esta sobrando ou faltando no seu caixa (ex: 174)'
         required: false
         type: string
+      unidade:
+        description: 'Qual unidade conferir'
+        required: false
+        default: 'escova'
+        type: choice
+        options:
+          - escova
+          - spa
 
 permissions:
   contents: read
@@ -32,11 +40,16 @@ jobs:
         run: pip install requests python-dotenv
       - name: Conferir
         env:
+          # Escova (legacy sem sufixo · TrinksClient(unidade='escova') tambem le sufixo _ESCOVA se presente)
           TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
           TRINKS_ESTABELECIMENTO_ID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID }}
+          # SPA (multi-unit)
+          TRINKS_API_KEY_SPA: ${{ secrets.TRINKS_API_KEY_SPA }}
+          TRINKS_ESTABELECIMENTO_ID_SPA: ${{ secrets.TRINKS_ESTABELECIMENTO_ID_SPA }}
           DATA: ${{ inputs.data }}
           DIF: ${{ inputs.diferenca }}
+          UNIDADE: ${{ inputs.unidade }}
         run: |
-          args=(--data "$DATA")
+          args=(--data "$DATA" --unidade "${UNIDADE:-escova}")
           [ -n "$DIF" ] && args+=(--diferenca "$DIF")
           python scripts/fechamento_dia.py "${args[@]}"

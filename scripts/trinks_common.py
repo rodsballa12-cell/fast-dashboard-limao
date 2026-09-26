@@ -23,19 +23,30 @@ MIN_INTERVAL_SEC = 1.05  # ~57 req/min, folga sobre o limite de 60/min
 
 
 class TrinksClient:
-    def __init__(self) -> None:
-        # 1) tenta variáveis de ambiente diretas (GitHub Actions, Docker etc.)
-        api_key = os.getenv("TRINKS_API_KEY")
-        eid = os.getenv("TRINKS_ESTABELECIMENTO_ID")
-        # 2) fallback: .env em %USERPROFILE%/.trinks/ (setup local Windows)
+    def __init__(self, unidade: str = "escova") -> None:
+        # Multi-unidade: primeiro tenta TRINKS_API_KEY_<UNIT>, depois cai pra
+        # TRINKS_API_KEY sem sufixo (compat com pipeline antigo da Escova).
+        # SPA sempre precisa do sufixo — sem fallback pra evitar rodar SPA com
+        # credencial da Escova por engano.
+        unidade = (unidade or "escova").lower()
+        suf = unidade.upper()
+        # 1) variáveis de ambiente com sufixo (GitHub Actions multi-unit)
+        api_key = os.getenv(f"TRINKS_API_KEY_{suf}")
+        eid = os.getenv(f"TRINKS_ESTABELECIMENTO_ID_{suf}")
+        # 2) Escova aceita fallback sem sufixo (legacy)
+        if unidade == "escova":
+            api_key = api_key or os.getenv("TRINKS_API_KEY")
+            eid = eid or os.getenv("TRINKS_ESTABELECIMENTO_ID")
+        # 3) fallback local: .env em %USERPROFILE%/.trinks/ (Windows PC)
         if (not api_key or not eid) and "USERPROFILE" in os.environ:
             env_path = Path(os.environ["USERPROFILE"]) / ".trinks" / ".env"
             if env_path.exists():
                 load_dotenv(env_path)
-                api_key = api_key or os.getenv("TRINKS_API_KEY")
-                eid = eid or os.getenv("TRINKS_ESTABELECIMENTO_ID")
+                api_key = api_key or os.getenv(f"TRINKS_API_KEY_{suf}") or (os.getenv("TRINKS_API_KEY") if unidade == "escova" else None)
+                eid = eid or os.getenv(f"TRINKS_ESTABELECIMENTO_ID_{suf}") or (os.getenv("TRINKS_ESTABELECIMENTO_ID") if unidade == "escova" else None)
         if not api_key or not eid:
-            raise ValueError("TRINKS_API_KEY e TRINKS_ESTABELECIMENTO_ID obrigatórios (via env ou ~/.trinks/.env)")
+            raise ValueError(f"TRINKS_API_KEY_{suf} e TRINKS_ESTABELECIMENTO_ID_{suf} obrigatórios (unidade={unidade})")
+        self.unidade = unidade
         self.headers = {
             "X-Api-Key": api_key,
             "estabelecimentoId": eid,

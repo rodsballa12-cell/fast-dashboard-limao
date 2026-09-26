@@ -36,11 +36,12 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", required=True, help="AAAA-MM-DD")
     ap.add_argument("--diferenca", type=float, help="valor que sobra ou falta no seu fechamento")
+    ap.add_argument("--unidade", default="escova", choices=["escova", "spa"], help="qual unidade (default: escova)")
     args = ap.parse_args()
     dia = date.fromisoformat(args.data)
 
-    t = TrinksClient()
-    print(f"[api] transacoes e agendamentos de {dia}...")
+    t = TrinksClient(unidade=args.unidade)
+    print(f"[api] unidade={args.unidade} · transacoes e agendamentos de {dia}...")
 
     # A janela vai ate o dia seguinte e o filtro fino e feito aqui. Motivo: em
     # 19/09/2026 uma consulta com dataInicio = dataFim = 2026-09-19 devolveu

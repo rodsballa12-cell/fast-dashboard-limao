@@ -21,6 +21,14 @@ on:
         description: 'Data inicial AAAA-MM-DD (vazio = desde a abertura, 22/07/2026)'
         required: false
         type: string
+      unidade:
+        description: 'Qual unidade buscar'
+        required: false
+        default: 'escova'
+        type: choice
+        options:
+          - escova
+          - spa
 
 permissions:
   contents: read
@@ -40,15 +48,18 @@ jobs:
         env:
           TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
           TRINKS_ESTABELECIMENTO_ID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID }}
+          TRINKS_API_KEY_SPA: ${{ secrets.TRINKS_API_KEY_SPA }}
+          TRINKS_ESTABELECIMENTO_ID_SPA: ${{ secrets.TRINKS_ESTABELECIMENTO_ID_SPA }}
           NOME: ${{ inputs.nome }}
           ID: ${{ inputs.id }}
           DESDE: ${{ inputs.desde }}
+          UNIDADE: ${{ inputs.unidade }}
         run: |
-          args=()
+          args=(--unidade "${UNIDADE:-escova}")
           [ -n "$NOME" ]  && args+=(--nome "$NOME")
           [ -n "$ID" ]    && args+=(--id "$ID")
           [ -n "$DESDE" ] && args+=(--desde "$DESDE")
-          if [ ${#args[@]} -eq 0 ]; then
+          if [ -z "$NOME" ] && [ -z "$ID" ]; then
             echo "::error::Informe 'nome' ou 'id' ao disparar o workflow."
             exit 2
           fi
