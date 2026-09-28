@@ -2319,12 +2319,15 @@ def main():
     # Meses anteriores a DATA_INAUGURACAO da unidade recebem meta 0 (loja
     # ainda nao existia). Antes: META_MENSAL × 12 — quebrava quando os meses
     # tinham valores diferentes (SPA cresce 20→30→40→50 set-dez).
+    # Le DATA_INAUGURACAO via globals() pra evitar NameError quando alguma
+    # atribuicao dentro desta funcao enclosing faz Python tratar como local.
+    _data_inaug = globals().get('DATA_INAUGURACAO')
     def _meta_mes_do_ano(ano, mes):
         key = f"{ano}-{mes:02d}"
         if key in META_MENSAL_POR_MES:
             return META_MENSAL_POR_MES[key]
-        if DATA_INAUGURACAO and (ano < DATA_INAUGURACAO.year or
-                                  (ano == DATA_INAUGURACAO.year and mes < DATA_INAUGURACAO.month)):
+        if _data_inaug and (ano < _data_inaug.year or
+                            (ano == _data_inaug.year and mes < _data_inaug.month)):
             return 0.0
         return META_MENSAL
     meta_ano_valor = round(sum(_meta_mes_do_ano(hoje.year, m) for m in range(1, 13)), 2)
