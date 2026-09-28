@@ -406,6 +406,14 @@ def analisar(agend, transac, ini: date, fim: date):
     for t in tr:
         for fp in (t.get("formasPagamentos") or []):
             v = float(fp.get("valor") or 0)
+            # Ignora Pre-Pago negativo (pacote consumido): o dinheiro entrou no
+            # caixa quando o pacote foi VENDIDO — dias depois, quando o cliente
+            # usa o credito, o Trinks registra como forma de pagto negativa.
+            # Deduzir do caixa do dia deixa o painel abaixo do "Total Recebido"
+            # que o Trinks mostra. Descoberto 28/09 no SPA: Trinks R$ 674 vs
+            # painel R$ 278 (bug de R$ 396 de creditos consumidos deduzidos).
+            if v < 0:
+                continue
             caixa += v
             nome = fp.get("nome") or "outros"
             mp_c[nome] += 1; mp_v[nome] += v
