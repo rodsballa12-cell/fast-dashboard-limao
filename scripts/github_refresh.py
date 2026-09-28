@@ -100,6 +100,25 @@ try:
         META_MENSAL = float(_meta_unit)
 except Exception:
     pass  # META_MENSAL fica com o default 60000
+# Overrides POR MES: se config tem meta_mensal_por_mes[YYYY-MM], vence sobre
+# META_MENSAL geral. Usado quando a meta muda de mes a mes (ex: SPA cresce
+# 20/30/40/50k set→dez). Chaves comecando com _ sao descrição, ignoradas.
+META_MENSAL_POR_MES = {}
+try:
+    _por_mes = _unit_cfg.get("meta_mensal_por_mes") or {}
+    for _k, _v in _por_mes.items():
+        if not _k.startswith("_") and isinstance(_v, (int, float)):
+            META_MENSAL_POR_MES[_k] = float(_v)
+except Exception:
+    pass
+# Sobrescreve META_MENSAL pelo override do mes corrente (se existir)
+try:
+    _hoje_key = datetime.now(BRT).strftime("%Y-%m")
+    if _hoje_key in META_MENSAL_POR_MES:
+        META_MENSAL = META_MENSAL_POR_MES[_hoje_key]
+        print(f"[meta] mes corrente {_hoje_key} · override META_MENSAL = R${META_MENSAL:.2f}")
+except Exception:
+    pass
 # Cadeiras/salas: primeiro tenta config da unidade, depois global (Escova legacy)
 CADEIRAS_FIS = _unit_cfg.get("cadeiras") or _cfg.get("cadeiras") or {"cabelo": 5, "maquiagem": 3, "unhas": 8}
 HORAS_OPERACAO_DIA = _cfg.get("horas_operacao_dia", 12)
@@ -165,34 +184,12 @@ def horas_no_dia(d: date) -> float:
     return HORAS_POR_DOW[d.weekday()]
 
 
-# Rateio META_MENSAL pro mês inaugural: se a unidade abriu DENTRO do mês corrente,
-# a meta cheia (ex 20k) representa mês inteiro (26 dias op). Setembro parcial (5 dias
-# op reais) recebe meta proporcional: 20k × 5/26 ≈ 3.846.
-# Aplicado UMA vez no boot; sobrescreve META_MENSAL antes de calc_meta rodar.
-def _rateio_mes_inaugural():
-    global META_MENSAL
-    if not DATA_INAUGURACAO:
-        return
-    hoje_brt = datetime.now(BRT).date()
-    if DATA_INAUGURACAO.year != hoje_brt.year or DATA_INAUGURACAO.month != hoje_brt.month:
-        return  # ja passou do mes de inauguracao — meta cheia
-    # Conta dias operacionais REAIS (respeitando data_inauguracao) no mes corrente
-    dias_op_reais = sum(1 for d_num in range(1, monthrange(hoje_brt.year, hoje_brt.month)[1] + 1)
-                        if horas_no_dia(date(hoje_brt.year, hoje_brt.month, d_num)) > 0)
-    # Conta dias operacionais TIPICOS (ignorando data_inauguracao) — usando so dow+feriado
-    def _horas_sem_inaug(d):
-        if d in FERIADOS_6H: return HORAS_FERIADO
-        if d.weekday() == 6 and (DATA_INICIO_DOM is None or d < DATA_INICIO_DOM): return 0.0
-        return HORAS_POR_DOW[d.weekday()]
-    dias_op_tipicos = sum(1 for d_num in range(1, monthrange(hoje_brt.year, hoje_brt.month)[1] + 1)
-                          if _horas_sem_inaug(date(hoje_brt.year, hoje_brt.month, d_num)) > 0)
-    if dias_op_tipicos > 0 and dias_op_reais < dias_op_tipicos:
-        META_MENSAL_ORIG = META_MENSAL
-        META_MENSAL = round(META_MENSAL * dias_op_reais / dias_op_tipicos, 2)
-        print(f"[meta] mês inaugural · rateio: META_MENSAL R${META_MENSAL_ORIG:.0f} → R${META_MENSAL:.2f} ({dias_op_reais}/{dias_op_tipicos} dias op)")
-
-
-_rateio_mes_inaugural()
+# NOTA: rateio de meta pro mes inaugural foi DESATIVADO em 28/09/2026.
+# Rodrigo pediu: "20k para o mes de setembro, nao rateado" (mesmo em 6 dias
+# operacionais de 26 no mes normal). Prefere ver meta cheia definida por ele
+# no config. Setembro SPA = R$ 20k (cheia), out 30k, nov 40k, dez 50k — todos
+# via meta_mensal_por_mes acima. Se um dia quiser rateio automatico de novo,
+# basta reativar aqui.
 
 # === METAS DA FRANQUEADORA (fixas, por categoria) ===
 # Franqueadora define meta MENSAL por recepcionista pra 3 categorias específicas.
@@ -2317,17 +2314,20 @@ def main():
     meta_sem = calc_meta(a_semanal["kpis"]["caixa"], round(meta_sem_valor, 2),
                          a_semanal["kpis"]["dias_op"], dias_op_sem_real)
 
-    # META ANO: com histórico de meses fechados (2027+), usa peso_mes_ano pra ponderar
-    # o restante do ano. Sem histórico: mantém extrapolação META_MENSAL × meses_rest.
-    real_pre_atual = sum(m["caixa"] for k, m in meses.items() if k < f"{hoje.year}-{hoje.month:02d}")
-    meses_rest = 12 - hoje.month + 1  # inclui mês atual
-    if fonte_mes_ano.startswith("histórico"):
-        # META_ANUAL_TOTAL = META_MENSAL × 12 (equivalente ao target anual). Distribui pelo peso_mes.
-        meta_anual_alvo = META_MENSAL * 12
-        meta_dos_meses_rest = sum(meta_anual_alvo * peso_mes_ano.get(m, 1/12) for m in range(hoje.month, 13))
-        meta_ano_valor = round(real_pre_atual + meta_dos_meses_rest, 2)
-    else:
-        meta_ano_valor = round(real_pre_atual + META_MENSAL * meses_rest, 2)
+    # META ANO: soma das metas mensais dos 12 meses. Cada mes usa
+    # META_MENSAL_POR_MES[YYYY-MM] se definido; senao META_MENSAL (fallback).
+    # Meses anteriores a DATA_INAUGURACAO da unidade recebem meta 0 (loja
+    # ainda nao existia). Antes: META_MENSAL × 12 — quebrava quando os meses
+    # tinham valores diferentes (SPA cresce 20→30→40→50 set-dez).
+    def _meta_mes_do_ano(ano, mes):
+        key = f"{ano}-{mes:02d}"
+        if key in META_MENSAL_POR_MES:
+            return META_MENSAL_POR_MES[key]
+        if DATA_INAUGURACAO and (ano < DATA_INAUGURACAO.year or
+                                  (ano == DATA_INAUGURACAO.year and mes < DATA_INAUGURACAO.month)):
+            return 0.0
+        return META_MENSAL
+    meta_ano_valor = round(sum(_meta_mes_do_ano(hoje.year, m) for m in range(1, 13)), 2)
 
     # dias operacionais reais desde abertura da loja (23/07/26) até 31/12/26
     # · exclui domingos antes de DATA_INICIO_DOM; inclui a partir daí
