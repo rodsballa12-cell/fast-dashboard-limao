@@ -2207,11 +2207,24 @@ def main():
     # Capacidade base de cada data = caixa_medio_dow × peso_semana_do_mes (aplicado a cada dia real).
     # Depois escala uniformemente pra bater META_MENSAL. Assim cada dia individual do mês recebe uma
     # meta específica que respeita 3 fatores: dia da semana, posição no mês, e horas de operação.
+    #
+    # IMPORTANTE: itera sobre TODOS os dias operacionais TIPICOS do mes (ignora
+    # data_inauguracao). Antes usava opera_no_dia (que respeita data_inauguracao)
+    # e no mes de abertura da SPA gerava capacidade agregada baixa (so 6 dias uteis),
+    # inflando o scale_factor e a meta diaria (setembro SPA: R$ 3.636/dia em vez
+    # de ~R$ 667/dia). Como Rodrigo definiu meta setembro = R$ 20k CHEIA (nao
+    # rateada), cada dia operacional tipico do mes deve receber sua fatia proporcional
+    # da meta cheia, mesmo que a loja so opere alguns deles no mes inaugural.
+    def _horas_dow_feriado(d):
+        """Horas de operacao ignorando DATA_INAUGURACAO (so DOW + feriado + dom)."""
+        if d in FERIADOS_6H: return HORAS_FERIADO
+        if d.weekday() == 6 and (DATA_INICIO_DOM is None or d < DATA_INICIO_DOM): return 0.0
+        return HORAS_POR_DOW[d.weekday()]
     capacidade_por_data = {}
     n_dias_dow_mes = {i: 0 for i in range(7)}
     for d_num in range(1, monthrange(hoje.year, hoje.month)[1] + 1):
         dt = date(hoje.year, hoje.month, d_num)
-        if not opera_no_dia(dt):
+        if _horas_dow_feriado(dt) <= 0:
             capacidade_por_data[dt] = 0.0
             continue
         dow = dt.weekday()
@@ -2325,18 +2338,16 @@ def main():
     # cruzar fronteira setembro-outubro, e cada mês pode ter meta diferente via
     # META_MENSAL_POR_MES). Para cada dia da semana atual: pega meta do mes
     # daquele dia / dias operacionais TIPICOS daquele mes (ignora data_inauguracao).
-    def _horas_sem_inaug(d):
-        """Horas de operacao ignorando data_inauguracao (so DOW + feriado + dom)."""
-        if d in FERIADOS_6H: return HORAS_FERIADO
-        if d.weekday() == 6 and (DATA_INICIO_DOM is None or d < DATA_INICIO_DOM): return 0.0
-        return HORAS_POR_DOW[d.weekday()]
-
     def _meta_mensal_do_mes(y, m):
         return META_MENSAL_POR_MES.get(f"{y}-{m:02d}", META_MENSAL)
 
     def _dias_op_tipicos_mes(y, m):
         return sum(1 for dn in range(1, monthrange(y, m)[1] + 1)
-                   if _horas_sem_inaug(date(y, m, dn)) > 0)
+                   if _horas_dow_feriado(date(y, m, dn)) > 0)
+
+    def _dias_op_tipicos_dow(y, m, dow):
+        return sum(1 for dn in range(1, monthrange(y, m)[1] + 1)
+                   if date(y, m, dn).weekday() == dow and _horas_dow_feriado(date(y, m, dn)) > 0)
 
     dias_op_sem_real = sum(1 for i in range(7) if opera_no_dia(seg + timedelta(days=i)))
     meta_sem_valor = 0.0
@@ -2352,7 +2363,16 @@ def main():
         else:
             meta_mes_d = _meta_mensal_do_mes(d.year, d.month)
             dias_tipic_d = _dias_op_tipicos_mes(d.year, d.month)
-            meta_sem_valor += meta_mes_d / max(dias_tipic_d, 1)
+            # Peso por dow: se caixa_medio_dow tem info, usa proporcional; senao flat.
+            _dow = d.weekday()
+            if sum(caixa_medio_dow.values()) > 0:
+                total_dow_mes = sum(caixa_medio_dow[i] * _dias_op_tipicos_dow(d.year, d.month, i) for i in range(7))
+                if total_dow_mes > 0:
+                    meta_sem_valor += meta_mes_d * caixa_medio_dow[_dow] / total_dow_mes
+                else:
+                    meta_sem_valor += meta_mes_d / max(dias_tipic_d, 1)
+            else:
+                meta_sem_valor += meta_mes_d / max(dias_tipic_d, 1)
     meta_sem = calc_meta(a_semanal["kpis"]["caixa"], round(meta_sem_valor, 2),
                          a_semanal["kpis"]["dias_op"], dias_op_sem_real)
 
