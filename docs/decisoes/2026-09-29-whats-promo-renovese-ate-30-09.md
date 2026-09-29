@@ -19,6 +19,31 @@ A arte de hoje diz **SÓ ATÉ AMANHÃ**; a de amanhã diz **HOJE É O ÚLTIMO DI
 São peças de uso datado — a de hoje não pode ser reenviada amanhã, porque
 "amanhã" já seria 01/10 e a promoção teria acabado.
 
+### Fundo (revisão de 29/09)
+
+Rodrigo pediu a arte "mais com a cara do spa", com **foto de massagem ao fundo
+em marca d'água**. O fundo passou a ter quatro camadas:
+
+1. `fotos/textura-toalha.jpg` — textura real de toalha branca, extraída da
+   própria peça oficial da franqueadora;
+2. cáusticas de água (ruído fractal em teal, filtro SVG);
+3. ondas horizontais deslocadas por ruído — o desenho de superfície de água;
+4. anéis concêntricos, como gota caindo na água;
+5. véu branco em diagonal, mais forte na coluna do texto, para o contraste de
+   leitura não cair.
+
+**A foto de massagem ainda não entrou.** O gerador de imagem do Canva devolveu
+"Too many requests" em seis tentativas seguidas — é limite de uso da conta, não
+falta de recurso. Duas saídas, em ordem de preferência:
+
+- **Uma foto real do Spa do Limão** (maca, toalhas, uma sessão acontecendo, luz
+  clara). É melhor que qualquer banco de imagem: é o espaço dela, não um spa
+  genérico. Entra trocando uma linha em `fotos/`.
+- Repetir a geração no Canva mais tarde, quando o limite liberar.
+
+O arquivo está montado para a troca: basta substituir `fotos/textura-toalha.jpg`
+mantendo o nome, ou apontar `.foto` para o novo arquivo. Nada mais muda.
+
 ### O que a arte mantém e o que acrescenta
 
 Mantém a oferta oficial da franqueadora sem alterar nada: Pacote Renove-se,
