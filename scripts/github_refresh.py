@@ -400,17 +400,19 @@ def analisar(agend, transac, ini: date, fim: date):
     except Exception as e:
         print(f"[analisar] aviso: catalogo serviços indisponível ({e}); consumo via pacote nao contara")
 
+    # Formas de pagamento que NAO sao entrada de caixa real — sao registros
+    # internos do Trinks (saldos de cliente sendo movimentados). O dinheiro
+    # entrou no caixa quando o PACOTE foi vendido (via Mastercard/Visa/etc);
+    # essas formas so aparecem depois pra amortizar a movimentacao interna
+    # (positivas = consumo de credito; negativas = credito nascendo com a venda).
+    # Ignorar as duas mantem "caixa" = "Total Recebido" que o Trinks exibe.
+    FORMAS_INTERNAS = ("crédito de cliente", "credito de cliente", "pré-pago", "pre-pago", "voucher")
     for t in tr:
         for fp in (t.get("formasPagamentos") or []):
             v = float(fp.get("valor") or 0)
-            # Ignora Pre-Pago negativo (pacote consumido): o dinheiro entrou no
-            # caixa quando o pacote foi VENDIDO — dias depois, quando o cliente
-            # usa o credito, o Trinks registra como forma de pagto negativa.
-            # Deduzir do caixa do dia deixa o painel abaixo do "Total Recebido"
-            # que o Trinks mostra. Descoberto 28/09 no SPA: Trinks R$ 674 vs
-            # painel R$ 278 (bug de R$ 396 de creditos consumidos deduzidos).
-            if v < 0:
-                continue
+            _nome_lower = (fp.get("descricao") or fp.get("nome") or "").lower().strip()
+            if any(kw in _nome_lower for kw in FORMAS_INTERNAS):
+                continue  # nao e caixa real, e movimentacao interna de saldo
             caixa += v
             nome = fp.get("nome") or "outros"
             mp_c[nome] += 1; mp_v[nome] += v
@@ -1214,27 +1216,6 @@ def main():
     print("[fetch] transacoes MÊS corrente (fresh)...")
     transac_mes = list(t.paginate("/v1/transacoes", {"dataInicio": ini_mes.isoformat(), "dataFim": fim_mes.isoformat()}))
     print(f"  {len(transac_mes)} transações do mês")
-
-    # DEBUG TEMPORARIO (remover apos investigar divergencia SPA 28/09):
-    # dumpa cada transacao do DIA de hoje pra comparar com Trinks Dashboard.
-    _hoje_iso = hoje.isoformat()
-    _tx_hoje = [x for x in transac_mes if str(x.get("dataHora", ""))[:10] == _hoje_iso]
-    print(f"[DEBUG {UNIT}] transacoes fresh do dia {_hoje_iso}: {len(_tx_hoje)}")
-    for _i, _tx in enumerate(_tx_hoje):
-        _cli = (_tx.get("cliente") or {}).get("nome", "?")
-        _tp = float(_tx.get("totalPagar") or 0)
-        _desc = float(_tx.get("descontos") or 0)
-        _st = _tx.get("status", {}).get("nome", "?") if isinstance(_tx.get("status"), dict) else "?"
-        _formas = _tx.get("formasPagamentos") or []
-        _servicos = _tx.get("servicos") or []
-        _pacotes = _tx.get("pacotes") or []
-        print(f"  Tx{_i+1} {str(_tx.get('dataHora',''))[11:16]} · {_cli} · totalPagar=R${_tp:.2f} · desc={_desc:.2f} · status={_st}")
-        for _f in _formas:
-            print(f"    forma: {_f.get('descricao', _f.get('nome', '?'))} R${float(_f.get('valor', 0)):.2f} · parc={_f.get('parcelas', 1)}")
-        for _s in _servicos:
-            print(f"    servico: {_s.get('nome','?')} R${float(_s.get('preco') or 0):.2f}")
-        for _pkg in _pacotes:
-            print(f"    pacote: {_pkg.get('nome','?')} unit=R${float(_pkg.get('valorUnitario',0)):.2f} x{_pkg.get('quantidade',1)}")
 
     # Merge: cache ano SEM mês corrente + mês corrente fresh
     transac = [x for x in transac_ano
