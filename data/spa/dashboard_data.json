@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-28T21:21:13-03:00",
+  "gerado_em": "2026-09-28T21:27:30-03:00",
   "hoje": "2026-09-28",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -14,22 +14,22 @@
   "dias_atipicos": {},
   "sazonalidade": {
     "peso_dow": {
-      "Seg": 14.3,
-      "Ter": 14.3,
-      "Qua": 14.3,
-      "Qui": 14.3,
-      "Sex": 14.3,
-      "Sáb": 14.3,
-      "Dom": 14.3
+      "Seg": 15.4,
+      "Ter": 15.4,
+      "Qua": 15.4,
+      "Qui": 15.4,
+      "Sex": 15.4,
+      "Sáb": 15.4,
+      "Dom": 7.7
     },
     "meta_dia_por_dow": {
-      "Seg": 0.0,
-      "Ter": 0.0,
-      "Qua": 0.0,
+      "Seg": 3636.36,
+      "Ter": 3636.36,
+      "Qua": 3636.36,
       "Qui": 0.0,
-      "Sex": 0.0,
-      "Sáb": 0.0,
-      "Dom": 0.0
+      "Sex": 3636.36,
+      "Sáb": 3636.36,
+      "Dom": 1818.18
     },
     "n_dias_dow_mes": {
       "Seg": 1,
@@ -136,7 +136,30 @@
       "4": 100.0,
       "5": 100.0
     },
-    "sem_mes_meta": [],
+    "sem_mes_meta": [
+      {
+        "sem_do_mes": 4,
+        "n_dias": 4,
+        "meta_total": 12727.26,
+        "peso_pct": 100.0,
+        "datas": [
+          "2026-09-25",
+          "2026-09-26",
+          "2026-09-27",
+          "2026-09-28"
+        ]
+      },
+      {
+        "sem_do_mes": 5,
+        "n_dias": 2,
+        "meta_total": 7272.72,
+        "peso_pct": 100.0,
+        "datas": [
+          "2026-09-29",
+          "2026-09-30"
+        ]
+      }
+    ],
     "fonte_sem_mes": "uniforme (aguarda ≥2 meses fechados · atual: 0)",
     "peso_mes_ano": {
       "1": 8.3,
@@ -153,7 +176,14 @@
       "12": 8.3
     },
     "fonte_mes_ano": "uniforme (aguarda ≥1 ano fechado · framework pronto pra 2027)",
-    "meta_por_data": {}
+    "meta_por_data": {
+      "2026-09-25": 3636.36,
+      "2026-09-26": 3636.36,
+      "2026-09-27": 1818.18,
+      "2026-09-28": 3636.36,
+      "2026-09-29": 3636.36,
+      "2026-09-30": 3636.36
+    }
   },
   "cota_api": {
     "plano": "Plano Padrao",
@@ -2874,7 +2904,7 @@
           "cliente": "Vinicius Canosa"
         }
       ],
-      "horas_desatualizado": 217.0
+      "horas_desatualizado": 217.1
     }
   },
   "auditoria_cancelados": {
@@ -5382,40 +5412,40 @@
           "composicao_anterior": [
             "Seg"
           ],
-          "peso_semana_atual_pct": 14.3,
-          "peso_semana_anterior_pct": 14.3,
+          "peso_semana_atual_pct": 15.4,
+          "peso_semana_anterior_pct": 15.4,
           "razao_peso": 1.0,
           "comparavel": true,
           "caixa_delta_ajustado_pct": null,
           "dias_atipicos_na_base": {}
         },
-        "ticket_meta": 1888.28,
-        "ticket_meta_periodo": 1666.67,
-        "ticket_atingimento_pct": 17.8,
-        "ticket_gap_por_atend": 1551.28,
+        "ticket_meta": 1175.5,
+        "ticket_meta_periodo": 1055.72,
+        "ticket_atingimento_pct": 28.7,
+        "ticket_gap_por_atend": 838.5,
         "visitas_projetadas": 14,
         "visitas_restantes": 12,
         "ticket_meta_status": "em_curso",
-        "ticket_meta_deficit_caixa": 22659.33,
+        "ticket_meta_deficit_caixa": 14106.05,
         "ticket_meta_supera_caixa": 0.0,
         "periodo_ini": "2026-09-28",
         "periodo_fim": "2026-10-04"
       },
       "meta": {
-        "meta": 23333.33,
+        "meta": 14780.05,
         "realizado": 674.0,
-        "pct": 2.9,
-        "falta": 22659.33,
+        "pct": 4.6,
+        "falta": 14106.05,
         "dias_realizados": 1,
         "dias_total": 7,
         "dias_restantes": 6,
-        "necessario_dia": 3776.56,
+        "necessario_dia": 2351.01,
         "ritmo_dia": 674.0,
         "projecao": 4718.0,
-        "projecao_pct": 20.2,
-        "meta_ate_hoje": 3333.33,
-        "pct_ate_hoje": 20.2,
-        "saldo_ate_hoje": -2659.33
+        "projecao_pct": 31.9,
+        "meta_ate_hoje": 2111.44,
+        "pct_ate_hoje": 31.9,
+        "saldo_ate_hoje": -1437.44
       },
       "categorias": {
         "pacotes": {
@@ -5798,7 +5828,7 @@
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "data": "2026-09-21",
-          "hora_max": 21.35,
+          "hora_max": 21.45,
           "caixa": 0.0,
           "atend_fin": 0,
           "faturamento_apurado": 0.0,
@@ -5813,52 +5843,52 @@
           "composicao_anterior": [
             "Seg"
           ],
-          "peso_semana_atual_pct": 14.3,
-          "peso_semana_anterior_pct": 14.3,
+          "peso_semana_atual_pct": 15.4,
+          "peso_semana_anterior_pct": 15.4,
           "razao_peso": 1.0,
           "comparavel": true,
           "caixa_delta_ajustado_pct": null,
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "21:21",
-          "hora_atual_num": 21.35,
-          "pct_esperado_agora": 0.0,
-          "meta_dia": 0.0,
-          "meta_esperada_agora": 0.0,
+          "hora_atual_str": "21:27",
+          "hora_atual_num": 21.45,
+          "pct_esperado_agora": 100.0,
+          "meta_dia": 3636.36,
+          "meta_esperada_agora": 3636.36,
           "realizado_agora": 674.0,
-          "pace_delta": 674.0,
-          "pace_ratio_pct": 0,
-          "projecao_dia": 0.0,
+          "pace_delta": -2962.36,
+          "pace_ratio_pct": 18.5,
+          "projecao_dia": 674.0,
           "opera_hoje": true
         },
         "ticket_meta": 0.0,
-        "ticket_meta_periodo": 0.0,
-        "ticket_atingimento_pct": 100.0,
+        "ticket_meta_periodo": 1818.18,
+        "ticket_atingimento_pct": 0.0,
         "ticket_gap_por_atend": 0.0,
         "visitas_projetadas": 2,
         "visitas_restantes": 0,
-        "ticket_meta_status": "encerrado_batido",
-        "ticket_meta_deficit_caixa": 0.0,
-        "ticket_meta_supera_caixa": 674.0,
+        "ticket_meta_status": "encerrado_deficit",
+        "ticket_meta_deficit_caixa": 2962.36,
+        "ticket_meta_supera_caixa": 0.0,
         "dia_semana": "Seg",
         "data": "2026-09-28"
       },
       "meta": {
-        "meta": 0.0,
+        "meta": 3636.36,
         "realizado": 674.0,
-        "pct": 67400.0,
-        "falta": -674.0,
+        "pct": 18.5,
+        "falta": 2962.36,
         "dias_realizados": 1,
         "dias_total": 1,
         "dias_restantes": 0,
         "necessario_dia": 0.0,
         "ritmo_dia": 674.0,
         "projecao": 674.0,
-        "projecao_pct": 67400.0,
-        "meta_ate_hoje": 0.0,
-        "pct_ate_hoje": null,
-        "saldo_ate_hoje": 674.0
+        "projecao_pct": 18.5,
+        "meta_ate_hoje": 3636.36,
+        "pct_ate_hoje": 18.5,
+        "saldo_ate_hoje": -2962.36
       },
       "categorias": {
         "pacotes": {
@@ -6147,7 +6177,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-28T21:21:13-03:00",
+    "gerado_em": "2026-09-28T21:27:30-03:00",
     "hoje": "2026-09-28",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -6160,17 +6190,23 @@
   "insights": {
     "diario": [
       {
+        "tipo": "atencao",
+        "titulo": "Ritmo abaixo do esperado",
+        "texto": "Só 18% da meta às 21h com 0h úteis restantes.",
+        "acao": "Postar story/status no WhatsApp com 'últimas vagas hoje' pode gerar 2-3 walk-ins na última hora."
+      },
+      {
         "tipo": "info",
         "titulo": "Fechamento do dia",
-        "texto": "Caixa R$ 674,00 · 2 visitas · ticket R$ 337,00 · meta batida ✅.",
+        "texto": "Caixa R$ 674,00 · 2 visitas · ticket R$ 337,00 · meta 18% (R$ 2.962,36 faltou).",
         "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
       }
     ],
     "semanal": [
       {
         "tipo": "atencao",
-        "titulo": "Semana começou em 20% da meta acumulada",
-        "texto": "R$ 674,00 contra R$ 3.333,33 de meta no primeiro dia da semana (R$ -2.659,33).",
+        "titulo": "Semana começou em 32% da meta acumulada",
+        "texto": "R$ 674,00 contra R$ 2.111,44 de meta no primeiro dia da semana (R$ -1.437,44).",
         "acao": "Ainda dá pra virar: o peso da semana está no fim dela (sexta 19%, sábado 38%). Garantir escala e agenda do fim de semana."
       },
       {
@@ -6257,7 +6293,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-09-28T21:21:14-03:00",
+    "gerado_em": "2026-09-28T21:27:31-03:00",
     "n_agendamentos": 36,
     "horas": [
       9,
