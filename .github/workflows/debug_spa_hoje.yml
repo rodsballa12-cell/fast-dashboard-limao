@@ -1,0 +1,69 @@
+name: DEBUG · Dump transacoes SPA hoje
+
+# Workflow descartavel: dumpa as transacoes SPA do dia direto da API pra
+# entender divergencia painel vs Trinks. Remover depois de usar.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dia:
+        description: 'Dia AAAA-MM-DD (default hoje BRT)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump direto
+        env:
+          KEY: ${{ secrets.TRINKS_API_KEY_SPA }}
+          EID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID_SPA }}
+          DIA: ${{ inputs.dia }}
+        run: |
+          set -e
+          DIA=${DIA:-$(TZ=America/Sao_Paulo date +%Y-%m-%d)}
+          echo "=== Dia alvo: $DIA ==="
+          echo ""
+          echo "=== Transacoes ==="
+          # janela ate o dia seguinte (dataFim exclusivo em /v1/transacoes)
+          NEXT=$(date -d "$DIA + 1 day" +%Y-%m-%d)
+          curl -sS \
+            -H "X-Api-Key: $KEY" \
+            -H "estabelecimentoId: $EID" \
+            -H "Accept: application/json" \
+            -H "User-Agent: fast-debug/1.0" \
+            "https://api.trinks.com/v1/transacoes?dataInicio=$DIA&dataFim=$NEXT&pageSize=100" \
+            | python3 -c "
+import json, sys
+d = json.load(sys.stdin)
+data = d.get('data') or []
+alvo = '$DIA'
+tot = 0
+tot_pos = 0
+for t in data:
+    if str(t.get('dataHora',''))[:10] != alvo: continue
+    tp = float(t.get('totalPagar') or 0)
+    desc = float(t.get('descontos') or 0)
+    formas = t.get('formasPagamentos') or []
+    pos = sum(float(f.get('valor',0)) for f in formas if float(f.get('valor',0))>0)
+    neg = sum(float(f.get('valor',0)) for f in formas if float(f.get('valor',0))<0)
+    cli = (t.get('cliente') or {}).get('nome','?')
+    stat = t.get('status',{}).get('nome','?') if isinstance(t.get('status'),dict) else '?'
+    print(f'{t.get(\"dataHora\",\"?\")[11:16]} · {cli} · totalPagar={tp:.2f} · desc={desc:.2f} · pos={pos:.2f} · neg={neg:.2f} · status={stat}')
+    for f in formas:
+        print(f'  forma: {f.get(\"descricao\",\"?\")} R\${float(f.get(\"valor\",0)):.2f} · parc={f.get(\"parcelas\",1)}')
+    for s in (t.get('servicos') or []):
+        print(f'  servico: {s.get(\"nome\",\"?\")} R\${float(s.get(\"preco\") or 0):.2f}')
+    for pkg in (t.get('pacotes') or []):
+        print(f'  pacote: {pkg.get(\"nome\",\"?\")} unit=R\${float(pkg.get(\"valorUnitario\",0)):.2f} x{pkg.get(\"quantidade\",1)}')
+    tot += tp
+    tot_pos += pos
+    print()
+print(f'TOTAL totalPagar: R\${tot:.2f}')
+print(f'TOTAL formas positivas: R\${tot_pos:.2f}')
+print(f'Total transacoes: {sum(1 for t in data if str(t.get(\"dataHora\",\"\"))[:10]==alvo)}')
+"
