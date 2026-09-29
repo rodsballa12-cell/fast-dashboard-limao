@@ -1,0 +1,69 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+  .art {
+    width: 1080px; height: 1920px; background: #FFFFFF;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .glow { position: absolute; border-radius: 50%; filter: blur(90px); }
+  .g1 { width: 720px; height: 720px; background: rgba(0,166,164,.16); top: -260px; right: -240px; }
+  .g2 { width: 620px; height: 620px; background: rgba(0,166,164,.10); bottom: -300px; left: -220px; }
+  .inner { position: relative; z-index: 2; padding: 250px 76px 0; display: flex; flex-direction: column; height: 100%; }
+  .logo { width: 286px; height: auto; align-self: center; }
+  .pill {
+    align-self: center; margin-top: 70px;
+    background: #00A6A4; color: #fff; border-radius: 999px;
+    padding: 20px 46px; font-size: 40px; font-weight: 800;
+    letter-spacing: 5px; text-transform: uppercase;
+  }
+  .kicker { margin-top: 84px; font-size: 38px; color: #5A6A6A; letter-spacing: 3px; line-height: 1.35; }
+  .kicker b { color: #00A6A4; font-weight: 600; }
+  .pack { margin-top: 54px; font-size: 74px; font-weight: 800; color: #14282A; letter-spacing: 5px; }
+  .price { margin-top: 14px; font-size: 54px; color: #14282A; font-weight: 300; }
+  .price b { font-weight: 700; }
+  .parcela {
+    margin-top: 56px; background: #00A6A4; color: #fff; border-radius: 26px;
+    padding: 30px 44px; text-align: center;
+  }
+  .parcela .big { font-size: 66px; font-weight: 800; letter-spacing: 1px; display: block; }
+  .parcela .sm { font-size: 34px; font-weight: 400; opacity: .95; letter-spacing: 3px; text-transform: uppercase; display: block; margin-top: 6px; }
+  .bonus { margin-top: 74px; }
+  .bonus h3 { font-size: 36px; font-weight: 800; color: #14282A; letter-spacing: 3px; text-transform: uppercase; }
+  .bonus ul { list-style: none; margin-top: 20px; }
+  .bonus li { font-size: 39px; color: #2C3F41; letter-spacing: 1px; line-height: 2.0; }
+  .bonus li span { color: #00A6A4; font-weight: 800; margin-right: 12px; }
+  .foot {
+    margin-top: auto; margin-left: -76px; margin-right: -76px;
+    background: #00A6A4; color: #fff; padding: 40px 76px 140px; text-align: center;
+  }
+  .foot .l1 { font-size: 37px; font-weight: 700; letter-spacing: 3px; }
+  .foot .l2 { font-size: 27px; opacity: .93; margin-top: 8px; letter-spacing: 1px; }
+</style></head>
+<body>
+<div class="art">
+  <div class="glow g1"></div><div class="glow g2"></div>
+  <div class="inner">
+    <img class="logo" src="logos/fastspa-escuro.png" alt="fast spa limão">
+    <div class="pill">só até amanhã</div>
+    <div class="kicker">Mais que um momento de relaxamento,<br><b>uma experiência para você.</b></div>
+    <div class="pack">PACOTE RENOVE-SE</div>
+    <div class="price">10 sessões por <b>R$ 1.490</b></div>
+    <div class="parcela"><span class="big">ou 3x de R$ 496,67</span><span class="sm">no cartão</span></div>
+    <div class="bonus">
+      <h3>Fechou o pacote, ganhou:</h3>
+      <ul>
+        <li><span>+</span>1 sessão Renove-se</li>
+        <li><span>+</span>2 sessões à sua escolha</li>
+        <li><span>+</span>1 escova bônus na Fast Escova</li>
+      </ul>
+    </div>
+    <div class="foot">
+      <div class="l1">SEM HORA MARCADA · É SÓ CHEGAR</div>
+      <div class="l2">Av. Dep. Emílio Carlos, 358 · Limão · estacionamento próprio</div>
+    </div>
+  </div>
+</div>
+</body></html>
