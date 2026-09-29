@@ -2088,6 +2088,13 @@ def main():
                 if i == 6 and (not DATA_INICIO_DOM or (DATA_INICIO_DOM.year, DATA_INICIO_DOM.month) > (hoje.year, hoje.month)):
                     continue  # dom ainda não começou nesse mês
                 caixa_medio_dow[i] = caixa_hora_medio * HORAS_POR_DOW[i]
+    else:
+        # Nenhum dow tem >= 3 amostras — loja MUITO nova (SPA setembro).
+        # Fallback duro: cada dow que opera recebe peso proporcional as horas
+        # de operação. Sem isso, capacidade_por_data fica ZERO e meta diaria = 0.
+        for i in range(7):
+            if HORAS_POR_DOW[i] > 0:
+                caixa_medio_dow[i] = float(HORAS_POR_DOW[i])
 
     total = sum(caixa_medio_dow.values())
     if total > 0:
@@ -2314,17 +2321,38 @@ def main():
         "opera_hoje": opera_no_dia(hoje),
     }
 
-    # Meta da SEMANA: soma das metas ESPECÍFICAS por data dos dias da semana atual.
-    # Se semana cruzar fronteira de mês, os dias fora do mês corrente ficam sem meta ainda —
-    # meta reflete a fatia do mês corrente. Fallback: divisão flat se meta_por_data vazio.
+    # Meta da SEMANA: soma dia a dia respeitando o MÊS de cada dia (semana pode
+    # cruzar fronteira setembro-outubro, e cada mês pode ter meta diferente via
+    # META_MENSAL_POR_MES). Para cada dia da semana atual: pega meta do mes
+    # daquele dia / dias operacionais TIPICOS daquele mes (ignora data_inauguracao).
+    def _horas_sem_inaug(d):
+        """Horas de operacao ignorando data_inauguracao (so DOW + feriado + dom)."""
+        if d in FERIADOS_6H: return HORAS_FERIADO
+        if d.weekday() == 6 and (DATA_INICIO_DOM is None or d < DATA_INICIO_DOM): return 0.0
+        return HORAS_POR_DOW[d.weekday()]
+
+    def _meta_mensal_do_mes(y, m):
+        return META_MENSAL_POR_MES.get(f"{y}-{m:02d}", META_MENSAL)
+
+    def _dias_op_tipicos_mes(y, m):
+        return sum(1 for dn in range(1, monthrange(y, m)[1] + 1)
+                   if _horas_sem_inaug(date(y, m, dn)) > 0)
+
     dias_op_sem_real = sum(1 for i in range(7) if opera_no_dia(seg + timedelta(days=i)))
     meta_sem_valor = 0.0
     for i in range(7):
         d = seg + timedelta(days=i)
-        if opera_no_dia(d):
-            meta_sem_valor += meta_por_data.get(d, 0.0)
-    if meta_sem_valor == 0:
-        meta_sem_valor = round(META_MENSAL / max(dias_op_mes_real, 1) * dias_op_sem_real, 2)
+        if not opera_no_dia(d):
+            continue
+        # Se a data cai no mes corrente E temos meta_por_data especifica, usa
+        # (respeita peso_semana_do_mes e caixa_medio_dow). Senao, rateia flat
+        # pelo mes daquele dia.
+        if d.year == hoje.year and d.month == hoje.month and meta_por_data.get(d, 0.0) > 0:
+            meta_sem_valor += meta_por_data[d]
+        else:
+            meta_mes_d = _meta_mensal_do_mes(d.year, d.month)
+            dias_tipic_d = _dias_op_tipicos_mes(d.year, d.month)
+            meta_sem_valor += meta_mes_d / max(dias_tipic_d, 1)
     meta_sem = calc_meta(a_semanal["kpis"]["caixa"], round(meta_sem_valor, 2),
                          a_semanal["kpis"]["dias_op"], dias_op_sem_real)
 
