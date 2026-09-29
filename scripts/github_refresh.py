@@ -797,22 +797,34 @@ def analisar(agend, transac, ini: date, fim: date):
     rent_hora = cadeira_top + addons_all
 
     # por_dow: mesmo motivo que por_dia_mes — usa CAIXA (transações), não só receita_serv.
+    # Helper: mesmo criterio de caixa (soma formas de pagto positivas nao-internas).
+    # Antes usavamos totalPagar, mas Tx onde o cliente paga 100% com Credito de
+    # Cliente tem totalPagar=0, causando divergencia entre por_dia_mes/por_dow
+    # e o caixa agregado. Agora as tres metricas usam a mesma logica.
+    def _caixa_tx(_tx):
+        _tot = 0.0
+        for _fp in (_tx.get("formasPagamentos") or []):
+            _v = float(_fp.get("valor") or 0)
+            _nome = (_fp.get("descricao") or _fp.get("nome") or "").lower().strip()
+            if any(_kw in _nome for _kw in FORMAS_INTERNAS):
+                continue
+            _tot += _v
+        return _tot
+
     by_dow = defaultdict(lambda: {"n": 0, "v": 0.0})
     for t in tr:
         dt = parse_trinks_dt(t["dataHora"])
         by_dow[DOW_NOMES[dt.weekday()]]["n"] += 1
-        by_dow[DOW_NOMES[dt.weekday()]]["v"] += float(t.get("totalPagar") or 0)
+        by_dow[DOW_NOMES[dt.weekday()]]["v"] += _caixa_tx(t)
     dow_list = [{"nome": n, "n": by_dow[n]["n"], "v": brl_round(by_dow[n]["v"])} for n in DOW_NOMES]
 
-    # por_dia_mes agora usa CAIXA (serviços + produtos + pacotes), não só receita_serv.
-    # Antes: iterava sobre `fin` somando valor do agendamento — batia com Trinks
-    # "Serviços" mas não com "Total Recebido". Agora itera sobre `tr` (transações)
-    # e usa totalPagar, alinhando com o valor de caixa que o BackOffice mostra.
+    # por_dia_mes: mesma logica de caixa (soma das formas de pagto reais,
+    # excluindo Credito de Cliente/Pre-Pago). Alinhado com kpis.caixa mensal.
     by_day = defaultdict(lambda: {"n": 0, "v": 0.0})
     for t in tr:
         dt = parse_trinks_dt(t["dataHora"])
         by_day[dt.day]["n"] += 1
-        by_day[dt.day]["v"] += float(t.get("totalPagar") or 0)
+        by_day[dt.day]["v"] += _caixa_tx(t)
     dia_list = [{"d": d, "n": by_day[d]["n"], "v": brl_round(by_day[d]["v"])} for d in sorted(by_day)]
 
     cli_c = Counter((a.get("cliente") or {}).get("nome") for a in fin if (a.get("cliente") or {}).get("nome"))
