@@ -1215,6 +1215,27 @@ def main():
     transac_mes = list(t.paginate("/v1/transacoes", {"dataInicio": ini_mes.isoformat(), "dataFim": fim_mes.isoformat()}))
     print(f"  {len(transac_mes)} transações do mês")
 
+    # DEBUG TEMPORARIO (remover apos investigar divergencia SPA 28/09):
+    # dumpa cada transacao do DIA de hoje pra comparar com Trinks Dashboard.
+    _hoje_iso = hoje.isoformat()
+    _tx_hoje = [x for x in transac_mes if str(x.get("dataHora", ""))[:10] == _hoje_iso]
+    print(f"[DEBUG {UNIT}] transacoes fresh do dia {_hoje_iso}: {len(_tx_hoje)}")
+    for _i, _tx in enumerate(_tx_hoje):
+        _cli = (_tx.get("cliente") or {}).get("nome", "?")
+        _tp = float(_tx.get("totalPagar") or 0)
+        _desc = float(_tx.get("descontos") or 0)
+        _st = _tx.get("status", {}).get("nome", "?") if isinstance(_tx.get("status"), dict) else "?"
+        _formas = _tx.get("formasPagamentos") or []
+        _servicos = _tx.get("servicos") or []
+        _pacotes = _tx.get("pacotes") or []
+        print(f"  Tx{_i+1} {str(_tx.get('dataHora',''))[11:16]} · {_cli} · totalPagar=R${_tp:.2f} · desc={_desc:.2f} · status={_st}")
+        for _f in _formas:
+            print(f"    forma: {_f.get('descricao', _f.get('nome', '?'))} R${float(_f.get('valor', 0)):.2f} · parc={_f.get('parcelas', 1)}")
+        for _s in _servicos:
+            print(f"    servico: {_s.get('nome','?')} R${float(_s.get('preco') or 0):.2f}")
+        for _pkg in _pacotes:
+            print(f"    pacote: {_pkg.get('nome','?')} unit=R${float(_pkg.get('valorUnitario',0)):.2f} x{_pkg.get('quantidade',1)}")
+
     # Merge: cache ano SEM mês corrente + mês corrente fresh
     transac = [x for x in transac_ano
                if x.get("dataHora")
