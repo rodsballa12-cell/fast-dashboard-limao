@@ -32,6 +32,10 @@ NAO_SOMAR = {
     "ticket_medio", "ticket_medio_serv", "ticket_medio_visita",
     "ltv_medio", "freq_media_visitas", "rs_hora", "rs_hora_salao",
     "media_dia",
+    # Taxas do bloco Stone — somar duas taxas da 1,286 em vez de 0,643.
+    # So aparecem no consolidado quando as duas unidades tem extrato proprio.
+    "taxa_pix_pct", "pix_tarifa_pct", "taxa_antecipacao_mensal_pct",
+    "rendimento_estimado_pct",
 }
 
 # Chaves de identidade — pega da Escova (baseline)

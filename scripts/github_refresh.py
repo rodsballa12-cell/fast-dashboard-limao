@@ -52,10 +52,16 @@ SERV_CACHE = DATA_UNIT / "servicos_cache.json"
 AGEND_DET_CACHE = DATA_UNIT / "agend_detail_cache.json"
 # Config e regras de comissao sao SHARED (mesma franqueadora)
 CONFIG_JSON = REPO_ROOT / "data" / "config.json"
-# Stone extrato por-unidade (SPA tera terminal proprio) — cai gracioso se ausente
+# Stone extrato por-unidade. NAO existe fallback para o arquivo da Escova: um
+# extrato descreve UMA conta, e o que nao esta nele nao e divergencia, e outra
+# loja. O fallback existia como "cai gracioso se ausente" e ficou inofensivo
+# enquanto o SPA nao faturava. Quando o SPA abriu (25/09/2026) ele passou a
+# conciliar o dinheiro da Escova contra as vendas do SPA: 130 creditos sem par,
+# R$ 16.328 anunciados como "nao conciliado" que eram simplesmente da outra
+# loja. E o consolidado somava os dois blocos identicos — 890 lancamentos onde
+# ha 445, e taxa de PIX de 1,286 (0,643 + 0,643).
+# Sem arquivo proprio a unidade fica SEM bloco Stone, que e a leitura honesta.
 STONE_CSV = DATA_UNIT / "stone_extrato.csv"
-if not STONE_CSV.exists():
-    STONE_CSV = REPO_ROOT / "data" / "stone_extrato.csv"
 
 # TTLs de cache (economia de API)
 TTL_PROF_HORAS = 24 * 7   # profs quase nunca mudam
