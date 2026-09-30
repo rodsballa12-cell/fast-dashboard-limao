@@ -366,6 +366,13 @@ def formulas_mes_corrente(c, blk, pl_rec):
             "Sistemas": f"=-({b['out']}+{b['out_aj']})*{P}{rat}",
             "Mídia": f"=-({b['mid']}+{b['mid_aj']})*{P}{rat}",
         }
+    # CMV do mes corrente = compras de insumo no mes (Rodrigo 30/09/2026: sem
+    # contagem de estoque, o % das Premissas lancava de novo o estoque inicial ja
+    # pago). Tudo na Escova ate o Spa ter compra propria identificada.
+    out["escova"]["CMV"] = (f'=-SUMIFS(Conta_XP!$D$15:$D$3000,Conta_XP!$G$15:$G$3000,'
+                            f'"OPEX (Produtos e insumos)",Conta_XP!$A$15:$A$3000,">="&{c}$4,'
+                            f'Conta_XP!$A$15:$A$3000,"<"&EDATE({c}$4,1))')
+    out["spa"]["CMV"] = "=0"
     out["escova"]["Pessoal"] = f"=-({b['ger']}*{P}82+{b['pes']}+{b['pes_aj']})"
     out["escova"]["Beleza Boost"] = f"=-({b['bb']}+{b['bb_aj']})"
     # royalty do Spa so a partir do mes de inicio da cobranca (Premissas B120)
