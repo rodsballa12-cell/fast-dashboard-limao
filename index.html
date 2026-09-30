@@ -7850,7 +7850,7 @@ function renderConsolidadoPainel(){
       </tr></thead>
       <tbody>
         ${lin('Faturamento', x=>_cR0(x.faturamento))}
-        ${lin('Meta do período <span style="color:var(--ink-3);font-size:11px">(Spa: só desde a abertura)</span>', x=>_cR0(x.meta))}
+        ${lin('Meta do período <span style="color:var(--ink-3);font-size:11px">(Spa: meta cheia do mês, sem ratear)</span>', x=>_cR0(x.meta))}
         ${L.spa && L.spa.super_meta ? lin('⭐ Super meta', x=>x.super_meta ? _cR0(x.super_meta) : '—') : ''}
         ${lin('% da meta até hoje', x=>_cPct(x.pct_meta_ate_hoje), x=>`color:${_cCorMeta(x.pct_meta_ate_hoje)};font-weight:700`)}
         ${lin('Projeção de fechamento', x=>_cR0(x.projecao))}

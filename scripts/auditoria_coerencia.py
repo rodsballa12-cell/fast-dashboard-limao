@@ -212,12 +212,13 @@ def conferir_calendario_e_metas(achados, esc, spa, cons):
         cheia = (me.get("meta") or 0) + (ms.get("meta") or 0)
         if (mc.get("meta") or 0) > cheia + TOL:
             achados.append(("erro", f"Meta {aba}: consolidada {mc.get('meta')} passa da soma das metas cheias {cheia}"))
-        inaug = ((spa.get("unidade_config") or {}).get("data_inauguracao")) or ""
-        hoje = (esc.get("hoje") or "")
-        if aba == "mensal" and inaug and hoje and inaug[:7] == hoje[:7] and inaug > hoje[:7] + "-01" \
-                and (mc.get("meta") or 0) >= cheia - TOL and (ms.get("meta") or 0) > 0:
-            achados.append(("erro", f"Meta mensal: o Spa abriu em {inaug} e o consolidado ainda conta o mês inteiro dele "
-                                    f"({mc.get('meta')} = soma das metas cheias). A meta do Spa vale só desde a abertura."))
+        # Painel e Financeiro têm que dizer a MESMA meta do mês (30/09/2026: R$ 63,9 mil
+        # num e R$ 110 mil no outro). Spa no mês da abertura = meta cheia, sem ratear.
+        if aba == "mensal":
+            fc = carregar("data/consolidado/financeiro.json") or {}
+            mf = (fc.get("kpis") or {}).get("meta_mes")
+            if mf and abs(mf - (mc.get("meta") or 0)) > 1:
+                achados.append(("erro", f"Meta mensal: o Painel consolidado diz {mc.get('meta')} e o Financeiro consolidado diz {mf}"))
         if mc.get("dias_realizados") is not None and mc.get("dias_total") is not None and mc["dias_realizados"] > mc["dias_total"]:
             achados.append(("erro", f"Calendário {aba}: {mc['dias_realizados']} dias realizados de {mc['dias_total']}"))
         ate = mc.get("meta_ate_hoje")
