@@ -14,7 +14,9 @@
     "facebook_page_30d": "2026-08-29 a 2026-09-27"
   },
   "kpi_estrela": {
-    "explicacao": "Custo por conversa iniciada (WhatsApp) · no Spa a conta mistura campanhas de vaga (conversa custa ~R$ 1-2) com a de serviço [COMBO INAUG] (R$ 10,15) e posts impulsionados sem conversa. Olhe o CPA de serviço separado do de vaga."
+    "explicacao": "Custo por conversa iniciada (WhatsApp) · no Spa a conta mistura campanhas de vaga (conversa custa ~R$ 1-2) com a de serviço [COMBO INAUG] (R$ 10,15) e posts impulsionados sem conversa. Olhe o CPA de serviço separado do de vaga.",
+    "nome": "Custo por conversa iniciada (WhatsApp)",
+    "campo": "cost_per_new_messaging_conversation"
   },
   "instagram": {
     "handle": "fastspa.limao",
@@ -1095,8 +1097,8 @@
         }
       },
       {
-        "ad": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
-        "campanha": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
+        "ad": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
+        "campanha": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
         "gasto": 348.62,
         "impressoes": 20929,
         "cliques": 419,
@@ -1123,7 +1125,7 @@
         }
       },
       {
-        "ad": "AD01 - DIÁRIO DE OBRAS ~PIPE~ FAST SPA LIMÃO",
+        "ad": "AD01 - DIÁRIO DE OBRAS | FAST SPA LIMÃO",
         "campanha": "[RECONHECIMENTO] [BRANDING] 150926",
         "gasto": 60.12,
         "impressoes": 25125,
@@ -1332,8 +1334,8 @@
         "insight": null
       },
       {
-        "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
-        "campanha": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
+        "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
+        "campanha": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
         "gasto": 348.62,
         "impressoes": 20929,
         "cliques": 419,
@@ -1476,8 +1478,8 @@
         "cpa_msg": 2.0864
       },
       {
-        "nome": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
-        "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
+        "nome": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
+        "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
         "objetivo": "LINK_CLICKS",
         "status": "sem conversão",
         "gasto": 348.62,
@@ -1602,9 +1604,36 @@
       "ad_sets_ativos": 3,
       "verificado_em": "2026-09-30T11:15:00-03:00",
       "nota_verificacao": "Ritmo e projecao calculados automaticamente a partir de /act/insights (MTD + last_30d).",
-      "budget_diario_configurado": null,
+      "budget_diario_configurado": 18,
       "nota_ritmo": "Ritmo = gasto de 01 a 29/09 (R$ 2.349,03) dividido pelos 29 dias do mês, como na Escova. O Spa só começou a gastar em 09/09; nos 7 dias de 24 a 30/09 o gasto médio foi R$ 156,79/dia, mas caiu para R$ 18,65 em 29/09.",
-      "nota": "Em 30/09 só 3 campanhas estão ENABLED no Spa: [VAGA MASSOTERAPEUTA] 100926, o post impulsionado 'ESTAMOS ABERTOS!' (R$ 6/dia) e [BRANDING] 250926-300926 (termina hoje). A [COMBO INAUG] 130926 e as vagas de recepção não estão mais ativas."
+      "nota": "R$ 18/dia = soma do daily_budget dos ad sets ENABLED em 30/09 (3 campanhas). Antes, a COMBO INAUG rodava com orçamento maior e chegou a R$ 305 de gasto em 27/09.",
+      "gasto_agosto_fechado": 0.0,
+      "quebra": [
+        {
+          "grupo": "Vagas (recrutamento)",
+          "budget_dia": 6,
+          "share_pct": 33.33,
+          "detalhe": "[VAGA MASSOTERAPEUTA] 100926 R$ 6/dia (raio de 16 km, interesses Job interview + Spa). As campanhas de vaga de recepção não estão mais ativas."
+        },
+        {
+          "grupo": "Post impulsionado (tráfego)",
+          "budget_dia": 6,
+          "share_pct": 33.33,
+          "detalhe": "'ESTAMOS ABERTOS!' R$ 6/dia, objetivo cliques no link (não gera conversa)."
+        },
+        {
+          "grupo": "Branding",
+          "budget_dia": 6,
+          "share_pct": 33.33,
+          "detalhe": "[BRANDING] 250926-300926 R$ 6/dia — termina hoje (30/09)."
+        },
+        {
+          "grupo": "Serviço (mensagem)",
+          "budget_dia": 0,
+          "share_pct": 0.0,
+          "detalhe": "Nenhuma campanha de serviço ativa: a [COMBO INAUG] 130926 parou de gastar em 28/09."
+        }
+      ]
     },
     "nota_reach": "Alcance deduplicado dentro de cada recorte; não some entre linhas. Spa começou a gastar em 09/09/2026.",
     "demografia_30d": [
@@ -2283,8 +2312,8 @@
             "cpa_msg": 3.446
           },
           {
-            "nome": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
-            "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
+            "nome": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
+            "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
             "objetivo": "LINK_CLICKS",
             "status": "sem conversão",
             "gasto": 109.11,
@@ -2375,8 +2404,8 @@
             "insight": null
           },
           {
-            "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
-            "campanha": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
+            "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
+            "campanha": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
             "gasto": 109.11,
             "impressoes": 6551,
             "cliques": 110,
@@ -2964,8 +2993,8 @@
             "cpa_msg": 2.0906
           },
           {
-            "nome": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
-            "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
+            "nome": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
+            "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
             "objetivo": "LINK_CLICKS",
             "status": "sem conversão",
             "gasto": 348.62,
@@ -3124,8 +3153,8 @@
             "insight": null
           },
           {
-            "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
-            "campanha": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
+            "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
+            "campanha": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
             "gasto": 348.62,
             "impressoes": 20929,
             "cliques": 419,
@@ -3780,8 +3809,8 @@
             "cpa_msg": 2.0906
           },
           {
-            "nome": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
-            "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
+            "nome": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
+            "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
             "objetivo": "LINK_CLICKS",
             "status": "sem conversão",
             "gasto": 348.62,
@@ -3940,8 +3969,8 @@
             "insight": null
           },
           {
-            "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
-            "campanha": "Post do Instagram: 🚧 DIÁRIO DE OBRAS ~PIPE~ FAST SPA...",
+            "adset": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
+            "campanha": "Post do Instagram: 🚧 DIÁRIO DE OBRAS | FAST SPA...",
             "gasto": 348.62,
             "impressoes": 20929,
             "cliques": 419,
@@ -4545,43 +4574,73 @@
     },
     "device_30d": [
       {
-        "device": "mobile_app",
-        "gasto": 1988.05,
-        "impressoes": 127817,
-        "cliques": 2503,
-        "reach": 59125,
-        "frequency": 2.16,
-        "cpm": 15.55,
-        "cpc": 0.79,
-        "ctr_pct": 1.96,
-        "conversas_msg": 359,
-        "link_clicks": 1639,
-        "cpa_msg": 5.54,
-        "share_pct": 99.85
+        "device": "android_smartphone",
+        "gasto": 1370.4925,
+        "impressoes": 80644,
+        "cliques": 1757,
+        "reach": 37282,
+        "frequency": 2.1631,
+        "cpm": 16.9944,
+        "cpc": 0.78,
+        "ctr_pct": 2.18,
+        "conversas_msg": 250,
+        "link_clicks": 1136,
+        "cpa_msg": 5.48,
+        "share_pct": 58.34
       },
       {
-        "device": "mobile_web",
-        "gasto": 2.78,
-        "impressoes": 148,
-        "cliques": 6,
-        "reach": 95,
-        "frequency": 1.56,
-        "cpm": 18.8,
-        "cpc": 0.46,
-        "ctr_pct": 4.05,
+        "device": "iphone",
+        "gasto": 975.5275,
+        "impressoes": 71044,
+        "cliques": 1107,
+        "reach": 31747,
+        "frequency": 2.2378,
+        "cpm": 13.7313,
+        "cpc": 0.8812,
+        "ctr_pct": 1.56,
+        "conversas_msg": 125,
+        "link_clicks": 794,
+        "cpa_msg": 7.8,
+        "share_pct": 41.53
+      },
+      {
+        "device": "android_tablet",
+        "gasto": 1.57,
+        "impressoes": 153,
+        "cliques": 2,
+        "reach": 96,
+        "frequency": 1.5938,
+        "cpm": 10.2613,
+        "cpc": 0.785,
+        "ctr_pct": 1.31,
         "conversas_msg": 0,
-        "link_clicks": 2,
+        "link_clicks": 1,
         "cpa_msg": null,
-        "share_pct": 0.14
+        "share_pct": 0.07
+      },
+      {
+        "device": "ipad",
+        "gasto": 1.21,
+        "impressoes": 109,
+        "cliques": 6,
+        "reach": 73,
+        "frequency": 1.4932,
+        "cpm": 11.1008,
+        "cpc": 0.2017,
+        "ctr_pct": 5.5,
+        "conversas_msg": 1,
+        "link_clicks": 5,
+        "cpa_msg": 1.21,
+        "share_pct": 0.05
       },
       {
         "device": "desktop",
-        "gasto": 0.13,
-        "impressoes": 25,
+        "gasto": 0.23,
+        "impressoes": 36,
         "cliques": 0,
-        "reach": 24,
-        "frequency": 1.04,
-        "cpm": 5.21,
+        "reach": 33,
+        "frequency": 1.0909,
+        "cpm": 6.3888,
         "cpc": 0.0,
         "ctr_pct": 0.0,
         "conversas_msg": 0,
@@ -4593,243 +4652,243 @@
     "hourly_30d": [
       {
         "hora": "00:00",
-        "gasto": 60.83,
-        "impressoes": 4572,
-        "cliques": 79,
+        "gasto": 74.74,
+        "impressoes": 5497,
+        "cliques": 90,
         "conversas_msg": 3,
         "reach": 0,
-        "cpa_msg": 20.28,
-        "ctr_pct": 1.73
+        "cpa_msg": 24.91,
+        "ctr_pct": 1.64
       },
       {
         "hora": "01:00",
-        "gasto": 36.03,
-        "impressoes": 2647,
-        "cliques": 72,
+        "gasto": 43.17,
+        "impressoes": 3167,
+        "cliques": 82,
         "conversas_msg": 8,
         "reach": 0,
-        "cpa_msg": 4.5,
-        "ctr_pct": 2.72
+        "cpa_msg": 5.4,
+        "ctr_pct": 2.59
       },
       {
         "hora": "02:00",
-        "gasto": 20.59,
-        "impressoes": 1376,
-        "cliques": 27,
+        "gasto": 24.18,
+        "impressoes": 1627,
+        "cliques": 29,
         "conversas_msg": 4,
         "reach": 0,
-        "cpa_msg": 5.15,
-        "ctr_pct": 1.96
+        "cpa_msg": 6.04,
+        "ctr_pct": 1.78
       },
       {
         "hora": "03:00",
-        "gasto": 12.56,
-        "impressoes": 921,
-        "cliques": 21,
+        "gasto": 15.88,
+        "impressoes": 1103,
+        "cliques": 26,
         "conversas_msg": 2,
         "reach": 0,
-        "cpa_msg": 6.28,
-        "ctr_pct": 2.28
+        "cpa_msg": 7.94,
+        "ctr_pct": 2.36
       },
       {
         "hora": "04:00",
-        "gasto": 16.32,
-        "impressoes": 924,
-        "cliques": 17,
-        "conversas_msg": 1,
+        "gasto": 20.61,
+        "impressoes": 1106,
+        "cliques": 21,
+        "conversas_msg": 2,
         "reach": 0,
-        "cpa_msg": 16.32,
-        "ctr_pct": 1.84
+        "cpa_msg": 10.3,
+        "ctr_pct": 1.9
       },
       {
         "hora": "05:00",
-        "gasto": 27.43,
-        "impressoes": 1594,
-        "cliques": 35,
+        "gasto": 32.58,
+        "impressoes": 1879,
+        "cliques": 39,
         "conversas_msg": 4,
         "reach": 0,
-        "cpa_msg": 6.86,
-        "ctr_pct": 2.2
+        "cpa_msg": 8.14,
+        "ctr_pct": 2.08
       },
       {
         "hora": "06:00",
-        "gasto": 52.31,
-        "impressoes": 3133,
-        "cliques": 55,
-        "conversas_msg": 7,
+        "gasto": 65.96,
+        "impressoes": 3916,
+        "cliques": 69,
+        "conversas_msg": 8,
         "reach": 0,
-        "cpa_msg": 7.47,
+        "cpa_msg": 8.24,
         "ctr_pct": 1.76
       },
       {
         "hora": "07:00",
-        "gasto": 76.88,
-        "impressoes": 4209,
-        "cliques": 95,
-        "conversas_msg": 13,
+        "gasto": 94.93,
+        "impressoes": 5191,
+        "cliques": 106,
+        "conversas_msg": 14,
         "reach": 0,
-        "cpa_msg": 5.91,
-        "ctr_pct": 2.26
+        "cpa_msg": 6.78,
+        "ctr_pct": 2.04
       },
       {
         "hora": "08:00",
-        "gasto": 82.46,
-        "impressoes": 4851,
-        "cliques": 105,
-        "conversas_msg": 11,
+        "gasto": 93.4,
+        "impressoes": 5643,
+        "cliques": 113,
+        "conversas_msg": 12,
         "reach": 0,
-        "cpa_msg": 7.5,
-        "ctr_pct": 2.16
+        "cpa_msg": 7.78,
+        "ctr_pct": 2.0
       },
       {
         "hora": "09:00",
-        "gasto": 85.86,
-        "impressoes": 5141,
-        "cliques": 110,
-        "conversas_msg": 21,
+        "gasto": 98.89,
+        "impressoes": 5924,
+        "cliques": 125,
+        "conversas_msg": 23,
         "reach": 0,
-        "cpa_msg": 4.09,
-        "ctr_pct": 2.14
-      },
-      {
-        "hora": "10:00",
-        "gasto": 90.32,
-        "impressoes": 5058,
-        "cliques": 131,
-        "conversas_msg": 16,
-        "reach": 0,
-        "cpa_msg": 5.64,
-        "ctr_pct": 2.59
-      },
-      {
-        "hora": "11:00",
-        "gasto": 107.96,
-        "impressoes": 6095,
-        "cliques": 145,
-        "conversas_msg": 25,
-        "reach": 0,
-        "cpa_msg": 4.32,
-        "ctr_pct": 2.38
-      },
-      {
-        "hora": "12:00",
-        "gasto": 114.78,
-        "impressoes": 7132,
-        "cliques": 138,
-        "conversas_msg": 32,
-        "reach": 0,
-        "cpa_msg": 3.59,
-        "ctr_pct": 1.93
-      },
-      {
-        "hora": "13:00",
-        "gasto": 99.97,
-        "impressoes": 6787,
-        "cliques": 95,
-        "conversas_msg": 24,
-        "reach": 0,
-        "cpa_msg": 4.17,
-        "ctr_pct": 1.4
-      },
-      {
-        "hora": "14:00",
-        "gasto": 103.82,
-        "impressoes": 6497,
-        "cliques": 137,
-        "conversas_msg": 26,
-        "reach": 0,
-        "cpa_msg": 3.99,
+        "cpa_msg": 4.3,
         "ctr_pct": 2.11
       },
       {
-        "hora": "15:00",
-        "gasto": 95.54,
-        "impressoes": 6322,
-        "cliques": 121,
-        "conversas_msg": 18,
+        "hora": "10:00",
+        "gasto": 104.23,
+        "impressoes": 5792,
+        "cliques": 141,
+        "conversas_msg": 16,
         "reach": 0,
-        "cpa_msg": 5.31,
-        "ctr_pct": 1.91
+        "cpa_msg": 6.51,
+        "ctr_pct": 2.43
       },
       {
-        "hora": "16:00",
-        "gasto": 102.61,
-        "impressoes": 7267,
-        "cliques": 136,
+        "hora": "11:00",
+        "gasto": 112.1,
+        "impressoes": 6419,
+        "cliques": 148,
         "conversas_msg": 28,
         "reach": 0,
-        "cpa_msg": 3.66,
-        "ctr_pct": 1.87
+        "cpa_msg": 4.0,
+        "ctr_pct": 2.31
       },
       {
-        "hora": "17:00",
-        "gasto": 103.73,
-        "impressoes": 6975,
-        "cliques": 128,
-        "conversas_msg": 20,
+        "hora": "12:00",
+        "gasto": 128.2,
+        "impressoes": 8078,
+        "cliques": 149,
+        "conversas_msg": 33,
         "reach": 0,
-        "cpa_msg": 5.19,
+        "cpa_msg": 3.88,
         "ctr_pct": 1.84
       },
       {
-        "hora": "18:00",
-        "gasto": 106.14,
-        "impressoes": 6937,
-        "cliques": 148,
-        "conversas_msg": 15,
+        "hora": "13:00",
+        "gasto": 114.55,
+        "impressoes": 7807,
+        "cliques": 116,
+        "conversas_msg": 26,
         "reach": 0,
-        "cpa_msg": 7.08,
-        "ctr_pct": 2.13
+        "cpa_msg": 4.41,
+        "ctr_pct": 1.49
+      },
+      {
+        "hora": "14:00",
+        "gasto": 114.87,
+        "impressoes": 7433,
+        "cliques": 147,
+        "conversas_msg": 27,
+        "reach": 0,
+        "cpa_msg": 4.25,
+        "ctr_pct": 1.98
+      },
+      {
+        "hora": "15:00",
+        "gasto": 108.68,
+        "impressoes": 7345,
+        "cliques": 136,
+        "conversas_msg": 17,
+        "reach": 0,
+        "cpa_msg": 6.39,
+        "ctr_pct": 1.85
+      },
+      {
+        "hora": "16:00",
+        "gasto": 120.27,
+        "impressoes": 8338,
+        "cliques": 152,
+        "conversas_msg": 28,
+        "reach": 0,
+        "cpa_msg": 4.3,
+        "ctr_pct": 1.82
+      },
+      {
+        "hora": "17:00",
+        "gasto": 123.06,
+        "impressoes": 8221,
+        "cliques": 152,
+        "conversas_msg": 19,
+        "reach": 0,
+        "cpa_msg": 6.48,
+        "ctr_pct": 1.85
+      },
+      {
+        "hora": "18:00",
+        "gasto": 124.54,
+        "impressoes": 8340,
+        "cliques": 170,
+        "conversas_msg": 16,
+        "reach": 0,
+        "cpa_msg": 7.78,
+        "ctr_pct": 2.04
       },
       {
         "hora": "19:00",
-        "gasto": 116.23,
-        "impressoes": 7725,
-        "cliques": 135,
-        "conversas_msg": 19,
+        "gasto": 137.89,
+        "impressoes": 9196,
+        "cliques": 162,
+        "conversas_msg": 20,
         "reach": 0,
-        "cpa_msg": 6.12,
-        "ctr_pct": 1.75
+        "cpa_msg": 6.89,
+        "ctr_pct": 1.76
       },
       {
         "hora": "20:00",
-        "gasto": 118.78,
-        "impressoes": 7766,
-        "cliques": 133,
-        "conversas_msg": 12,
+        "gasto": 142.06,
+        "impressoes": 9374,
+        "cliques": 161,
+        "conversas_msg": 14,
         "reach": 0,
-        "cpa_msg": 9.9,
-        "ctr_pct": 1.71
+        "cpa_msg": 10.15,
+        "ctr_pct": 1.72
       },
       {
         "hora": "21:00",
-        "gasto": 138.1,
-        "impressoes": 8494,
-        "cliques": 140,
-        "conversas_msg": 13,
+        "gasto": 172.64,
+        "impressoes": 10680,
+        "cliques": 168,
+        "conversas_msg": 15,
         "reach": 0,
-        "cpa_msg": 10.62,
-        "ctr_pct": 1.65
+        "cpa_msg": 11.51,
+        "ctr_pct": 1.57
       },
       {
         "hora": "22:00",
-        "gasto": 124.43,
-        "impressoes": 8906,
-        "cliques": 173,
-        "conversas_msg": 23,
+        "gasto": 155.48,
+        "impressoes": 10972,
+        "cliques": 213,
+        "conversas_msg": 22,
         "reach": 0,
-        "cpa_msg": 5.41,
+        "cpa_msg": 7.07,
         "ctr_pct": 1.94
       },
       {
         "hora": "23:00",
-        "gasto": 97.28,
-        "impressoes": 6661,
-        "cliques": 133,
-        "conversas_msg": 14,
+        "gasto": 126.12,
+        "impressoes": 8938,
+        "cliques": 157,
+        "conversas_msg": 15,
         "reach": 0,
-        "cpa_msg": 6.95,
-        "ctr_pct": 2.0
+        "cpa_msg": 8.41,
+        "ctr_pct": 1.76
       }
     ],
     "video_insights_30d": {
@@ -4845,10 +4904,163 @@
     },
     "recomendacoes_meta": {
       "fonte": "Meta Ads Recommendations API",
-      "lido_em": "2026-09-27T12:04:45-03:00",
-      "itens_api": [],
-      "nota": "0 recomendacoes ativas da Meta para esta conta."
-    }
+      "lido_em": "2026-09-30T12:10:00-03:00",
+      "itens_api": [
+        {
+          "type": "CTX_CREATION_PACKAGE",
+          "objects": [
+            {
+              "id": "1381925294040065",
+              "name": ""
+            }
+          ],
+          "stage": "pre_create_guidance",
+          "description": "Experimenta criar uma campanha de mensagens personalizada com predefinições, incluindo posicionamentos Advantage+, para simplificar a criação. As campanhas de mensagens personalizadas são otimizadas para ajudar a receber mais mensagens ao melhor valor.",
+          "lift_estimate": "Podes reduzir o custo por conversa em 7% com uma campanha de mensagens personalizada",
+          "opportunity_score": 6,
+          "url": "https://adsmanager.facebook.com/adsmanager/manage/accounts?act=1381925294040065"
+        },
+        {
+          "type": "REELS_PC_RECOMMENDATION",
+          "objects": [
+            {
+              "id": "120251046056750511",
+              "name": "[GEO] [6KM] [INTERESSE]"
+            }
+          ],
+          "stage": "mid_flight_recommendation",
+          "description": "Incluir um vídeo em formato vertical em ecrã completo (9:16) com áudio nos teus anúncios em reels pode melhorar o desempenho.",
+          "lift_estimate": "Otimiza o formato dos teus reels para ajudar a obter Custo por resultado 8% inferior",
+          "opportunity_score": 1,
+          "url": "https://adsmanager.facebook.com/adsmanager/manage/accounts?act=1381925294040065"
+        },
+        {
+          "type": "ADVANTAGE_PLUS_AUDIENCE",
+          "objects": [
+            {
+              "id": "120251046056750511",
+              "name": "[GEO] [6KM] [INTERESSE]"
+            }
+          ],
+          "stage": "mid_flight_recommendation",
+          "description": "Com o público Advantage+, os anúncios são apresentados a pessoas além do público que definiste quando houver a possibilidade de melhorar o desempenho.",
+          "lift_estimate": "Usa o público Advantage+ para ajudar a receber Custo por resposta 19% mais baixo, com base nos resultados de negócios como o teu",
+          "opportunity_score": 2,
+          "url": "https://adsmanager.facebook.com/adsmanager/manage/adsets?act=1381925294040065"
+        }
+      ],
+      "itens": [
+        {
+          "tipo": "CTX_CREATION_PACKAGE",
+          "prioridade_meta": 6,
+          "alvo": "conta (nova campanha)",
+          "diagnostico": "Sugestão de criar campanha de mensagens com predefinições Advantage+ ao criar a próxima campanha.",
+          "ganho_estimado_meta": "-7% custo por conversa",
+          "acao": "Usar o template de campanha de mensagens Advantage+ na próxima campanha de serviço do Spa (a COMBO INAUG está parada).",
+          "url": "https://adsmanager.facebook.com/adsmanager/manage/accounts?act=1381925294040065"
+        },
+        {
+          "tipo": "ADVANTAGE_PLUS_AUDIENCE",
+          "prioridade_meta": 2,
+          "alvo": "1 ad set ([GEO] [6KM] [INTERESSE] da vaga de massoterapeuta)",
+          "diagnostico": "Meta sugere abrir o público (Advantage+) para achar mais gente parecida com quem já converte.",
+          "ganho_estimado_meta": "Custo por resposta até 19% menor",
+          "acao": "Testar Advantage+ na campanha de vaga de massoterapeuta; não aplicar em campanha de serviço sem comparar.",
+          "url": "https://adsmanager.facebook.com/adsmanager/manage/adsets?act=1381925294040065"
+        },
+        {
+          "tipo": "REELS_PC_RECOMMENDATION",
+          "prioridade_meta": 1,
+          "alvo": "1 ad set ([GEO] [6KM] [INTERESSE])",
+          "diagnostico": "Reels sem vídeo vertical (9:16) em tela cheia com áudio.",
+          "ganho_estimado_meta": "Custo por resultado até 8% menor",
+          "acao": "Subir versão vertical 9:16 com áudio quando houver novo criativo do Spa.",
+          "url": "https://adsmanager.facebook.com/adsmanager/manage/accounts?act=1381925294040065"
+        }
+      ],
+      "nota": "3 recomendações ativas da Meta para esta conta — lidas em 30/09 via campaign_and_resource_get/recommendations."
+    },
+    "vagas_30d": {
+      "janela": "2026-08-31 a 2026-09-29",
+      "gasto_total": 511.85,
+      "share_da_verba_pct": 21.79,
+      "budget_diario": 6,
+      "conversas": 303,
+      "cpa_msg": 1.69,
+      "campanhas": 4,
+      "no_ar_desde": "2026-09-09",
+      "situacao": "recrutamento de abertura — só [VAGA MASSOTERAPEUTA] 100926 segue ativa (R$ 6/dia); as duas de recepção e a MASSOTERAPEUTA 090926 já não estão ativas",
+      "por_plataforma": [],
+      "por_faixa": [],
+      "lacuna_de_medicao": "303 conversas de vaga em 30 dias (Massoterapeuta e Recepção). Ninguém registra quantas viraram candidato e quantas contratação — conversa barata (R$ 1.69) pode ser conversa desqualificada. Não some isso ao CPA de serviço do Spa."
+    },
+    "foco_geografico": {
+      "endereco_loja": "Av. Deputado Emílio Carlos, 358 - Limão, São Paulo-SP",
+      "coordenadas": {
+        "lat": -23.48,
+        "lng": -46.69
+      },
+      "raio_atual_km": 6,
+      "raio_atual_ad_sets": {
+        "msg": 6,
+        "vagas": 16,
+        "branding": 6
+      },
+      "bairros_no_raio_5km": [
+        {
+          "bairro": "Limão",
+          "distancia_km": 0.0,
+          "populacao_estimada": 35000,
+          "mulheres_25_65_estimadas": 12000,
+          "prioridade": "core"
+        },
+        {
+          "bairro": "Casa Verde",
+          "distancia_km": 1.5,
+          "populacao_estimada": 90000,
+          "mulheres_25_65_estimadas": 30000,
+          "prioridade": "alta"
+        },
+        {
+          "bairro": "Parque Peruche",
+          "distancia_km": 2.0,
+          "populacao_estimada": 15000,
+          "mulheres_25_65_estimadas": 5000,
+          "prioridade": "media"
+        },
+        {
+          "bairro": "Freguesia do Ó",
+          "distancia_km": 3.5,
+          "populacao_estimada": 140000,
+          "mulheres_25_65_estimadas": 47000,
+          "prioridade": "alta"
+        },
+        {
+          "bairro": "Vila Nova Cachoeirinha",
+          "distancia_km": 4.0,
+          "populacao_estimada": 120000,
+          "mulheres_25_65_estimadas": 40000,
+          "prioridade": "media"
+        },
+        {
+          "bairro": "Santana (parcial)",
+          "distancia_km": 4.5,
+          "populacao_estimada": 60000,
+          "mulheres_25_65_estimadas": 20000,
+          "prioridade": "baixa (competitivo)"
+        }
+      ],
+      "totais_5km": {
+        "populacao": 460000,
+        "publico_alvo_estimado": 154000,
+        "reach_atual_30d": 67860,
+        "penetracao_pct": 44.06
+      },
+      "expansao_sugerida": [],
+      "recomendacao_gestor": "Spa e Escova ficam no mesmo endereço, então a população e o público-alvo (mulheres 25-65) vêm das mesmas estimativas do raio de 5 km da Escova — não há estimativa própria para 6 km. O alcance de 67.860 pessoas em 30 dias vem dos anúncios do Spa (raio de 6 km; a vaga de massoterapeuta roda em 16 km), por isso a penetração mostrada é aproximada e tende a estar levemente superestimada.",
+      "reach_atual_30d": 67860
+    },
+    "descoberta_ad_sets": "Ad sets do Spa: [GEO] [6KM] [INTERESSE] em todas as campanhas de serviço/branding; a vaga de massoterapeuta usa raio de 16 km com interesses Job interview + Spa. Só 1 ad set de serviço/vaga e 2 de tráfego/branding estão ativos em 30/09."
   },
   "facebook_page": {
     "nome": "Fast Spa Limão",
