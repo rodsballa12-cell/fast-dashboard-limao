@@ -98,6 +98,27 @@ function Stone-Para-Excel {
 }
 Stone-Para-Excel
 
+# --- Dados frescos na DRE e no Fluxo ----------------------------------------
+# Leva a receita apurada do Trinks e o que a Stone liquidou para o bloco
+# MES EM CURSO da DRE e para o bloco DADOS FRESCOS do Fluxo de Caixa, e fecha
+# no P&L o mes que ja terminou. Mesmas travas do script da Reserva: nao abre o
+# Excel sem novidade e pula se a planilha estiver aberta. Falha aqui nunca
+# derruba o cargo. Pedido do Rodrigo em 30/09/2026.
+function Frescos-Para-Excel {
+  $anterior = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $py = (Get-Command python -ErrorAction SilentlyContinue).Source
+    if (-not $py) { Registrar "Dados frescos no Excel: python nao encontrado, pulei."; return }
+    $saidaPy = (& $py (Join-Path $Projeto "scripts\atualiza_painel.py") 2>&1 | Out-String).Trim()
+    if ($LASTEXITCODE -ne 0) { Registrar "FALHOU: dados frescos no Excel (codigo $LASTEXITCODE). $saidaPy" }
+    else { Registrar "Dados frescos no Excel: $saidaPy" }
+  } catch {
+    Registrar ("FALHOU: dados frescos no Excel. " + $_.Exception.Message)
+  } finally { $ErrorActionPreference = $anterior }
+}
+Frescos-Para-Excel
+
 # 'claude' pode nao estar no PATH de uma tarefa agendada.
 $claude = (Get-Command claude -ErrorAction SilentlyContinue).Source
 if (-not $claude) {
