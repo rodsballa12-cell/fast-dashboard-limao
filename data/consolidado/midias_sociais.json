@@ -1,12 +1,11 @@
 {
   "gerado_em": "2026-09-30T11:15:00-03:00",
-  "fonte": "consolidado (escova + spa) · refresh rotina Supermetrics 30/09 11:15 BRT",
+  "fonte": "consolidado (escova + spa) · scripts/consolida_midias.py",
   "meta_ads": {
     "ad_account_id": "consolidado",
     "ad_account_nome": "Escova + SPA",
     "por_periodo": {
       "hoje": {
-        "label": "Hoje (30/09)",
         "gasto": 31.24,
         "impressoes": 1813,
         "cliques": 32,
@@ -14,19 +13,19 @@
         "post_engagement": 194,
         "conversas_msg": 1,
         "reach": 1549,
-        "frequency": 1.1704,
-        "ctr_pct": 1.77,
-        "cpm": 17.23,
-        "cpc": 0.98,
-        "cpa_msg": 31.24,
-        "cpc_link": 2.4,
-        "link_ctr_pct": 0.72,
+        "label": "Hoje (30/09)",
         "inicio": "2026-09-30",
         "fim": "2026-09-30",
+        "frequency": 1.1704,
+        "ctr_pct": 1.77,
+        "link_ctr_pct": 0.72,
+        "cpm": 17.23,
+        "cpc": 0.98,
+        "cpc_link": 2.4,
+        "cpa_msg": 31.24,
         "atualizado_em": "2026-09-30T11:15:00-03:00"
       },
       "7d": {
-        "label": "Ultimos 7 dias",
         "gasto": 1709.84,
         "impressoes": 111147,
         "cliques": 1779,
@@ -34,19 +33,19 @@
         "post_engagement": 14658,
         "conversas_msg": 102,
         "reach": 67540,
-        "frequency": 1.6456,
-        "ctr_pct": 1.6,
-        "cpm": 15.38,
-        "cpc": 0.96,
-        "cpa_msg": 16.76,
-        "cpc_link": 1.53,
-        "link_ctr_pct": 1.0,
+        "label": "Ultimos 7 dias",
         "inicio": "2026-09-24",
         "fim": "2026-09-30",
+        "frequency": 1.6456,
+        "ctr_pct": 1.6,
+        "link_ctr_pct": 1.0,
+        "cpm": 15.38,
+        "cpc": 0.96,
+        "cpc_link": 1.53,
+        "cpa_msg": 16.76,
         "atualizado_em": "2026-09-30T11:15:00-03:00"
       },
       "mtd": {
-        "label": "Mes corrente",
         "gasto": 5088.57,
         "impressoes": 366063,
         "cliques": 6132,
@@ -54,19 +53,19 @@
         "post_engagement": 43528,
         "conversas_msg": 665,
         "reach": 144626,
-        "frequency": 2.5311,
-        "ctr_pct": 1.68,
-        "cpm": 13.9,
-        "cpc": 0.83,
-        "cpa_msg": 7.65,
-        "cpc_link": 1.6,
-        "link_ctr_pct": 0.87,
+        "label": "Mes corrente",
         "inicio": "2026-09-01",
         "fim": "2026-09-30",
+        "frequency": 2.5311,
+        "ctr_pct": 1.68,
+        "link_ctr_pct": 0.87,
+        "cpm": 13.9,
+        "cpc": 0.83,
+        "cpc_link": 1.6,
+        "cpa_msg": 7.65,
         "atualizado_em": "2026-09-30T11:15:00-03:00"
       },
       "30d": {
-        "label": "Últimos 30 dias",
         "gasto": 5057.33,
         "impressoes": 364250,
         "cliques": 6100,
@@ -74,19 +73,19 @@
         "post_engagement": 43334,
         "conversas_msg": 664,
         "reach": 144311,
-        "frequency": 2.5241,
-        "ctr_pct": 1.67,
-        "cpm": 13.88,
-        "cpc": 0.83,
-        "cpa_msg": 7.62,
-        "cpc_link": 1.6,
-        "link_ctr_pct": 0.87,
+        "label": "Últimos 30 dias",
         "inicio": "2026-08-31",
         "fim": "2026-09-29",
+        "frequency": 2.5241,
+        "ctr_pct": 1.67,
+        "link_ctr_pct": 0.87,
+        "cpm": 13.88,
+        "cpc": 0.83,
+        "cpc_link": 1.6,
+        "cpa_msg": 7.62,
         "atualizado_em": "2026-09-30T11:15:00-03:00"
       },
       "90d": {
-        "label": "Ultimos 90 dias",
         "gasto": 10388.66,
         "impressoes": 980189,
         "cliques": 15889,
@@ -94,18 +93,406 @@
         "post_engagement": 135303,
         "conversas_msg": 1626,
         "reach": 283127,
-        "frequency": 3.462,
-        "ctr_pct": 1.62,
-        "cpm": 10.6,
-        "cpc": 0.65,
-        "cpa_msg": 6.39,
-        "cpc_link": 1.16,
-        "link_ctr_pct": 0.91,
+        "label": "Ultimos 90 dias",
         "inicio": "2026-07-03",
         "fim": "2026-09-30",
+        "frequency": 3.462,
+        "ctr_pct": 1.62,
+        "link_ctr_pct": 0.91,
+        "cpm": 10.6,
+        "cpc": 0.65,
+        "cpc_link": 1.16,
+        "cpa_msg": 6.39,
         "atualizado_em": "2026-09-30T11:15:00-03:00"
       }
-    }
+    },
+    "serie_diaria_30d": [
+      {
+        "data": "2026-08-31",
+        "gasto": 0,
+        "impressoes": 0,
+        "cliques": 0,
+        "clicks": 0,
+        "reach": 0,
+        "conversas_msg": 0,
+        "cpa_msg": null
+      },
+      {
+        "data": "2026-09-01",
+        "gasto": 83.58,
+        "impressoes": 5997,
+        "cliques": 110,
+        "clicks": 110,
+        "reach": 5065,
+        "conversas_msg": 3,
+        "cpa_msg": 27.86
+      },
+      {
+        "data": "2026-09-02",
+        "gasto": 140.84,
+        "impressoes": 9894,
+        "cliques": 187,
+        "clicks": 187,
+        "reach": 7958,
+        "conversas_msg": 22,
+        "cpa_msg": 6.4
+      },
+      {
+        "data": "2026-09-03",
+        "gasto": 143.24,
+        "impressoes": 10432,
+        "cliques": 161,
+        "clicks": 161,
+        "reach": 8600,
+        "conversas_msg": 13,
+        "cpa_msg": 11.02
+      },
+      {
+        "data": "2026-09-04",
+        "gasto": 116.24,
+        "impressoes": 10718,
+        "cliques": 161,
+        "clicks": 161,
+        "reach": 8615,
+        "conversas_msg": 17,
+        "cpa_msg": 6.84
+      },
+      {
+        "data": "2026-09-05",
+        "gasto": 100.66,
+        "impressoes": 8881,
+        "cliques": 129,
+        "clicks": 129,
+        "reach": 7581,
+        "conversas_msg": 14,
+        "cpa_msg": 7.19
+      },
+      {
+        "data": "2026-09-06",
+        "gasto": 91.59,
+        "impressoes": 8246,
+        "cliques": 123,
+        "clicks": 123,
+        "reach": 7240,
+        "conversas_msg": 11,
+        "cpa_msg": 8.33
+      },
+      {
+        "data": "2026-09-07",
+        "gasto": 84.66,
+        "impressoes": 8959,
+        "cliques": 106,
+        "clicks": 106,
+        "reach": 7580,
+        "conversas_msg": 4,
+        "cpa_msg": 21.16
+      },
+      {
+        "data": "2026-09-08",
+        "gasto": 83.33,
+        "impressoes": 7806,
+        "cliques": 97,
+        "clicks": 97,
+        "reach": 6646,
+        "conversas_msg": 6,
+        "cpa_msg": 13.89
+      },
+      {
+        "data": "2026-09-09",
+        "gasto": 136.35,
+        "impressoes": 9579,
+        "cliques": 188,
+        "clicks": 188,
+        "reach": 7759,
+        "conversas_msg": 40,
+        "cpa_msg": 3.41
+      },
+      {
+        "data": "2026-09-10",
+        "gasto": 97.05,
+        "impressoes": 7276,
+        "cliques": 113,
+        "clicks": 113,
+        "reach": 5846,
+        "conversas_msg": 12,
+        "cpa_msg": 8.09
+      },
+      {
+        "data": "2026-09-11",
+        "gasto": 80.34,
+        "impressoes": 6545,
+        "cliques": 99,
+        "clicks": 99,
+        "reach": 5366,
+        "conversas_msg": 13,
+        "cpa_msg": 6.18
+      },
+      {
+        "data": "2026-09-12",
+        "gasto": 115.89,
+        "impressoes": 8963,
+        "cliques": 221,
+        "clicks": 221,
+        "reach": 7476,
+        "conversas_msg": 45,
+        "cpa_msg": 2.58
+      },
+      {
+        "data": "2026-09-13",
+        "gasto": 159.87,
+        "impressoes": 10558,
+        "cliques": 213,
+        "clicks": 213,
+        "reach": 8777,
+        "conversas_msg": 35,
+        "cpa_msg": 4.57
+      },
+      {
+        "data": "2026-09-14",
+        "gasto": 214.43,
+        "impressoes": 11531,
+        "cliques": 282,
+        "clicks": 282,
+        "reach": 9359,
+        "conversas_msg": 66,
+        "cpa_msg": 3.25
+      },
+      {
+        "data": "2026-09-15",
+        "gasto": 176.34,
+        "impressoes": 9253,
+        "cliques": 273,
+        "clicks": 273,
+        "reach": 7138,
+        "conversas_msg": 48,
+        "cpa_msg": 3.67
+      },
+      {
+        "data": "2026-09-16",
+        "gasto": 140.84,
+        "impressoes": 10246,
+        "cliques": 145,
+        "clicks": 145,
+        "reach": 9105,
+        "conversas_msg": 25,
+        "cpa_msg": 5.63
+      },
+      {
+        "data": "2026-09-17",
+        "gasto": 164.17,
+        "impressoes": 11267,
+        "cliques": 198,
+        "clicks": 198,
+        "reach": 9750,
+        "conversas_msg": 30,
+        "cpa_msg": 5.47
+      },
+      {
+        "data": "2026-09-18",
+        "gasto": 156.73,
+        "impressoes": 14427,
+        "cliques": 215,
+        "clicks": 215,
+        "reach": 12957,
+        "conversas_msg": 32,
+        "cpa_msg": 4.9
+      },
+      {
+        "data": "2026-09-19",
+        "gasto": 132.66,
+        "impressoes": 12847,
+        "cliques": 166,
+        "clicks": 166,
+        "reach": 11389,
+        "conversas_msg": 14,
+        "cpa_msg": 9.48
+      },
+      {
+        "data": "2026-09-20",
+        "gasto": 166.24,
+        "impressoes": 15885,
+        "cliques": 193,
+        "clicks": 193,
+        "reach": 14290,
+        "conversas_msg": 25,
+        "cpa_msg": 6.65
+      },
+      {
+        "data": "2026-09-21",
+        "gasto": 259.74,
+        "impressoes": 16324,
+        "cliques": 288,
+        "clicks": 288,
+        "reach": 13397,
+        "conversas_msg": 32,
+        "cpa_msg": 8.12
+      },
+      {
+        "data": "2026-09-22",
+        "gasto": 278.98,
+        "impressoes": 20492,
+        "cliques": 364,
+        "clicks": 364,
+        "reach": 16407,
+        "conversas_msg": 31,
+        "cpa_msg": 9.0
+      },
+      {
+        "data": "2026-09-23",
+        "gasto": 254.96,
+        "impressoes": 18790,
+        "cliques": 321,
+        "clicks": 321,
+        "reach": 16192,
+        "conversas_msg": 25,
+        "cpa_msg": 10.2
+      },
+      {
+        "data": "2026-09-24",
+        "gasto": 236.57,
+        "impressoes": 17739,
+        "cliques": 236,
+        "clicks": 236,
+        "reach": 15142,
+        "conversas_msg": 13,
+        "cpa_msg": 18.2
+      },
+      {
+        "data": "2026-09-25",
+        "gasto": 306.78,
+        "impressoes": 19238,
+        "cliques": 318,
+        "clicks": 318,
+        "reach": 16171,
+        "conversas_msg": 14,
+        "cpa_msg": 21.91
+      },
+      {
+        "data": "2026-09-26",
+        "gasto": 351.33,
+        "impressoes": 21843,
+        "cliques": 396,
+        "clicks": 396,
+        "reach": 18610,
+        "conversas_msg": 18,
+        "cpa_msg": 19.52
+      },
+      {
+        "data": "2026-09-27",
+        "gasto": 435.18,
+        "impressoes": 27469,
+        "cliques": 460,
+        "clicks": 460,
+        "reach": 22483,
+        "conversas_msg": 25,
+        "cpa_msg": 17.41
+      },
+      {
+        "data": "2026-09-28",
+        "gasto": 228.59,
+        "impressoes": 14199,
+        "cliques": 202,
+        "clicks": 202,
+        "reach": 12431,
+        "conversas_msg": 20,
+        "cpa_msg": 11.43
+      },
+      {
+        "data": "2026-09-29",
+        "gasto": 120.15,
+        "impressoes": 8846,
+        "cliques": 135,
+        "clicks": 135,
+        "reach": 7360,
+        "conversas_msg": 11,
+        "cpa_msg": 10.92
+      }
+    ],
+    "vagas_30d": {
+      "janela": "2026-08-31 a 2026-09-29",
+      "gasto_total": 963.47,
+      "conversas": 372,
+      "cpa_msg": 2.59,
+      "share_da_verba_pct": 19.05,
+      "campanhas": 8
+    },
+    "por_unidade": {
+      "escova": {
+        "hoje": {
+          "gasto": 28.33,
+          "conversas": 1,
+          "cpa": 28.33
+        },
+        "7d": {
+          "gasto": 612.34,
+          "conversas": 54,
+          "cpa": 11.34
+        },
+        "mtd": {
+          "gasto": 2736.63,
+          "conversas": 289,
+          "cpa": 9.47
+        },
+        "30d": {
+          "gasto": 2708.3,
+          "conversas": 288,
+          "cpa": 9.4
+        },
+        "90d": {
+          "gasto": 8036.72,
+          "conversas": 1250,
+          "cpa": 6.43
+        },
+        "30d_servico": {
+          "gasto": 2256.68,
+          "conversas": 219,
+          "cpa": 10.3
+        },
+        "30d_vaga": {
+          "gasto": 451.62,
+          "conversas": 69,
+          "cpa": 6.55
+        }
+      },
+      "spa": {
+        "hoje": {
+          "gasto": 2.91,
+          "conversas": 0,
+          "cpa": null
+        },
+        "7d": {
+          "gasto": 1097.5,
+          "conversas": 48,
+          "cpa": 22.86
+        },
+        "mtd": {
+          "gasto": 2351.94,
+          "conversas": 376,
+          "cpa": 6.26
+        },
+        "30d": {
+          "gasto": 2349.03,
+          "conversas": 376,
+          "cpa": 6.25
+        },
+        "90d": {
+          "gasto": 2351.94,
+          "conversas": 376,
+          "cpa": 6.26
+        },
+        "30d_servico": {
+          "gasto": 1837.18,
+          "conversas": 73,
+          "cpa": 25.17
+        },
+        "30d_vaga": {
+          "gasto": 511.85,
+          "conversas": 303,
+          "cpa": 1.69
+        }
+      }
+    },
+    "nota": "Soma direta dos dois Ad Accounts (Escova + Spa). Reach é aproximado (soma sem deduplicar). Gerado por scripts/consolida_midias.py."
   },
   "instagram": {
     "handle": "consolidado",
@@ -702,5 +1089,67 @@
     "frequency_alerta": "atencao",
     "frequency_atual_30d": 2.48,
     "_origem": "alvos combinados a partir de Escova e Spa pelo gasto de 30 dias (custos) e pelas impressoes (CTR e frequencia) — nao sao copia da regua de nenhuma das duas lojas"
+  },
+  "alertas_por_loja": {
+    "escova": {
+      "alarme_entrega": {
+        "nivel": "ok",
+        "titulo": "Entrega normal em 29/09",
+        "detalhe": "R$ 101,50 contra mediana de R$ 83,98/dia."
+      },
+      "alertas": [
+        {
+          "icone": "🕳️",
+          "sev": "crit",
+          "titulo": "Vaga de escovista segue sem entrega no Meta Ads — R$ 6/dia reservado há 19 dias",
+          "detalhe": "A [VAGA ESCOVISTA] 200726 (a antiga, que gerava conversas) segue PAUSADA. A [VAGA ESCOVISTA] 100926 está ENABLED com R$ 6/dia reservado desde 11/09 e não aparece com nenhum gasto nos 30 dias (reconfirmado em 30/09)."
+        },
+        {
+          "icone": "📐",
+          "sev": "warn",
+          "titulo": "CPA dos últimos 30 dias fechados segue 18% acima da meta — R$ 9,40 contra R$ 8,00",
+          "detalhe": "Janela 31/08-29/09 (D-30..D-1): R$ 2708,30 e 288 conversas — CPA R$ 9,40. O MTD (01-30/09, dia de hoje ainda em curso) está em R$ 2736,63 e 289 conversas, CPA R$ 9,47 — os dois batem: tendência sustentada do mês."
+        },
+        {
+          "icone": "📉",
+          "sev": "warn",
+          "titulo": "7 dias piorou: 54 conversas contra 57 na semana anterior (-5%) e CPA em R$ 11,34 — 42% acima da meta",
+          "detalhe": "24-30/09 (R$ 612,34 · 54 conversas · CPA R$ 11,34) contra 17-23/09 (R$ 561,91 · 57 conversas · CPA R$ 9,86). Gastou 9% a mais para trazer menos conversa. Ressalva: hoje (30/09) foi lido de manhã, com o dia em curso (R$ 28,33 e 1 conversa até agora)."
+        }
+      ]
+    },
+    "spa": {
+      "alarme_entrega": {
+        "nivel": "alerta",
+        "titulo": "Entrega despencou em 29/09",
+        "detalhe": "R$ 18,65 contra mediana de R$ 143,37/dia — queda de 87%. Foi assim que começou a parada de 27/08, que virou 4 dias zerados. Vale olhar hoje, não semana que vem."
+      },
+      "alertas": [
+        {
+          "icone": "🛑",
+          "sev": "crit",
+          "titulo": "Gasto do Spa despencou: R$ 18,65 em 29/09 contra R$ 305,54 em 27/09 — a campanha [COMBO INAUG] não está mais ativa",
+          "detalhe": "Só 3 campanhas estão ENABLED em 30/09: [VAGA MASSOTERAPEUTA] 100926, o post 'ESTAMOS ABERTOS!' (R$ 6/dia) e um branding que termina hoje. A [COMBO INAUG] 130926 (73 conversas, CPA R$ 10,15) parou de gastar em 28/09. Se foi decisão, ok; se não foi, o Spa está sem anúncio de serviço na primeira semana aberta."
+        },
+        {
+          "icone": "📉",
+          "sev": "crit",
+          "titulo": "7 dias: 48 conversas contra 132 na semana anterior (-64%) e CPA R$ 22,86 (era R$ 6,45)",
+          "detalhe": "24-30/09: R$ 1.097,50 e 48 conversas contra 17-23/09: R$ 851,57 e 132 conversas. O gasto subiu 29%, mas 56% dele (R$ 615) foi no post impulsionado 'ESTAMOS ABERTOS!', que não gera conversa (objetivo cliques no link). As conversas baratas eram das vagas."
+        },
+        {
+          "icone": "🎯",
+          "sev": "warn",
+          "titulo": "Post impulsionado 'ESTAMOS ABERTOS!' consumiu R$ 615 em 30 dias sem nenhuma conversa",
+          "detalhe": "620 cliques e 20.623 pessoas alcançadas, mas objetivo é tráfego para o perfil (LINK_CLICKS), não mensagem. Mais o post 'DIÁRIO DE OBRAS' (R$ 349): juntos, 41% da verba de 30d sem conversa registrada."
+        }
+      ]
+    }
+  },
+  "_frescor": {
+    "escova": "2026-09-30T11:00:00-03:00",
+    "spa": "2026-09-30T11:15:00-03:00",
+    "fonte_escova": "Supermetrics (Meta Ads) · refresh rotina 30/09 11:00 BRT · IG/FB preservados de 20/09",
+    "fonte_spa": "Supermetrics (Meta Ads) · refresh rotina 30/09 11:15 BRT · IG/FB sem atualização (mantidos do refresh automático de 27/09)"
   }
 }

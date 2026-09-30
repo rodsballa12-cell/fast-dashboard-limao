@@ -2072,6 +2072,10 @@ def main() -> int:
                 os.makedirs(os.path.dirname(CONSOLIDADO_PATH), exist_ok=True)
                 _write_base(CONSOLIDADO_PATH, cons)
                 print(f"[consolidado] gravado {CONSOLIDADO_PATH}")
+                # leitura por loja (serviço × vaga, alarme de entrega, frescor):
+                # sem isso o consolidado volta a ser uma coluna só.
+                import consolida_midias
+                consolida_midias.main()
             else:
                 print("[consolidado] pulando (escova ou spa sem base)", file=sys.stderr)
         except Exception as e:

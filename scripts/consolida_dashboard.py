@@ -13,6 +13,7 @@ Saída:
 """
 
 import json, os, copy
+from datetime import date, datetime, timedelta
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ESC = os.path.join(ROOT, "data", "dashboard_data.json")
@@ -163,6 +164,200 @@ def recalcular_derivados(d):
                 v["pct"] = round((v.get("v") or 0) / caixa * 100, 1)
 
 
+# ---------------------------------------------------------------------------
+# CORREÇÃO DE METAS, DIAS E TICKET DO CONSOLIDADO
+#
+# A soma cega folha-a-folha (merge) produzia, em 30/09/2026:
+#   · "36 dias de 36" (30 do Escova + 6 do Spa) e meta de R$ 80.000 — a meta de
+#     um mês CHEIO do Spa, que abriu há 6 dias;
+#   · "128,7% do ritmo" e "atrasado em R$ 21 mil" na mesma tela;
+#   · ticket alvo de R$ 750 por visita (meta inflada ÷ visitas projetadas com
+#     dias dobrados);
+#   · sazonalidade somada: peso por dia da semana passando de 100%, n de
+#     sábados = 8, horas por dia = 24.
+# Dia, semana e mês têm UM calendário; a meta do Spa só conta a partir da
+# abertura; projeção = realizado + ritmo somado × dias que faltam.
+# ---------------------------------------------------------------------------
+
+def _d(s):
+    return datetime.strptime(s, "%Y-%m-%d").date()
+
+
+def _inicio_spa(spa):
+    return _d((spa.get("unidade_config") or {}).get("data_inauguracao") or "2026-09-25")
+
+
+def _janela(aba, hoje):
+    """(ini, fim) da aba mensal/semanal/diaria no calendário comum."""
+    if aba == "diario":
+        return hoje, hoje
+    if aba == "semanal":
+        ini = hoje - timedelta(days=hoje.weekday())
+        return ini, ini + timedelta(days=6)
+    if aba == "mensal":
+        ini = hoje.replace(day=1)
+        prox = (ini.replace(day=28) + timedelta(days=4)).replace(day=1)
+        return ini, prox - timedelta(days=1)
+    return None, None
+
+
+def _meta_spa_efetiva(spa, aba, hoje, inicio):
+    """(meta_total, meta_ate_hoje) do Spa na janela, contando só depois da abertura."""
+    mp = (spa.get("sazonalidade") or {}).get("meta_por_data") or {}
+    ini, fim = _janela(aba, hoje)
+    if ini is None:  # anual: o Spa já conta a partir da abertura
+        m = (spa.get("abas", {}).get("anual", {}).get("meta") or {})
+        return m.get("meta") or 0, m.get("meta_ate_hoje") or 0
+    tot = ate = 0.0
+    for ds, v in mp.items():
+        dd = _d(ds)
+        if ini <= dd <= fim and dd >= inicio:
+            tot += v
+            # mesma régua do Escova: "dias realizados" não inclui o dia corrente,
+            # exceto na aba do dia, onde o próprio dia é a janela
+            if dd < hoje or aba == "diario":
+                ate += v
+    return round(tot, 2), round(ate, 2)
+
+
+def _ticket_meta(k, meta, dias_rest, ritmo_vis):
+    """Mesma regra do refresh (_inject_ticket_meta), sobre o total consolidado."""
+    v_atual = k.get("cliente_dia") or 0
+    visitas_proj = round(v_atual + ritmo_vis * dias_rest)
+    realizado = meta.get("realizado") or 0
+    falta_caixa = (meta.get("meta") or 0) - realizado
+    visitas_rest = max(visitas_proj - v_atual, 0)
+    ticket_atual = k.get("ticket_medio") or 0
+    ticket_alvo_total = (meta.get("meta") or 0) / visitas_proj if visitas_proj > 0 else 0
+    if v_atual == 0 and dias_rest == 0:
+        status, alvo_rest = "fechado", 0
+    elif visitas_rest == 0:
+        status = "encerrado_batido" if falta_caixa <= 0 else "encerrado_deficit"
+        alvo_rest = 0
+    else:
+        status = "em_curso"
+        alvo_rest = max(falta_caixa, 0) / visitas_rest
+    gap = max(alvo_rest - ticket_atual, 0)
+    k["ticket_meta"] = round(alvo_rest, 2)
+    k["ticket_meta_periodo"] = round(ticket_alvo_total, 2)
+    k["ticket_atingimento_pct"] = round(ticket_atual / max(alvo_rest, 1) * 100, 1) if alvo_rest > 0 else (100.0 if status == "encerrado_batido" else 0.0)
+    k["ticket_gap_por_atend"] = round(gap, 2)
+    k["visitas_projetadas"] = visitas_proj
+    k["visitas_restantes"] = visitas_rest
+    k["ticket_meta_status"] = status
+    k["ticket_meta_deficit_caixa"] = round(max(falta_caixa, 0), 2)
+    k["ticket_meta_supera_caixa"] = round(max(-falta_caixa, 0), 2)
+
+
+def corrigir_consolidado(c, esc, spa):
+    hoje = _d(esc.get("hoje") or date.today().isoformat())
+    inicio = _inicio_spa(spa)
+    esc_saz, spa_saz = esc.get("sazonalidade") or {}, spa.get("sazonalidade") or {}
+
+    # -- sazonalidade: forma (dia da semana, hora, semanas) é a do Escova, que
+    #    tem histórico; a meta diária é Escova + Spa depois da abertura.
+    saz = copy.deepcopy(esc_saz)
+    mp = {}
+    for ds, v in (esc_saz.get("meta_por_data") or {}).items():
+        mp[ds] = round(v + (((spa_saz.get("meta_por_data") or {}).get(ds) or 0) if _d(ds) >= inicio else 0), 2)
+    saz["meta_por_data"] = mp
+    soma, cont = {}, {}
+    nomes = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"]
+    for ds, v in mp.items():
+        n = nomes[_d(ds).weekday()]
+        soma[n] = soma.get(n, 0) + v
+        cont[n] = cont.get(n, 0) + 1
+    saz["meta_dia_por_dow"] = {n: round(soma[n] / cont[n], 2) for n in soma}
+    saz["_nota_consolidado"] = ("Forma semanal/horária = Escova (tem histórico). Meta diária = Escova + Spa "
+                                "contada só a partir da abertura do Spa (%s)." % inicio.isoformat())
+    c["sazonalidade"] = saz
+    c["dias_atipicos"] = copy.deepcopy(esc.get("dias_atipicos") or {})
+    c["dias_op_mes"] = esc.get("dias_op_mes")
+
+    # -- metas, projeção e ticket por aba
+    for aba in ("diario", "semanal", "mensal", "anual"):
+        ca, ea, sa = (x.get("abas", {}).get(aba) or {} for x in (c, esc, spa))
+        if not ca:
+            continue
+        em, sm = ea.get("meta") or {}, sa.get("meta") or {}
+        ek, sk, ck = ea.get("kpis") or {}, sa.get("kpis") or {}, ca.get("kpis") or {}
+        if not em:
+            continue
+        spa_tot, spa_ate = _meta_spa_efetiva(spa, aba, hoje, inicio)
+        meta_tot = round((em.get("meta") or 0) + spa_tot, 2)
+        meta_ate = round((em.get("meta_ate_hoje") or 0) + spa_ate, 2)
+        real = ck.get("caixa") or 0
+        rest = em.get("dias_restantes") or 0
+        ritmo = (em.get("ritmo_dia") or 0) + (sm.get("ritmo_dia") or 0)
+        proj = real + ritmo * rest
+        falta = meta_tot - real
+        cm = ca.setdefault("meta", {})
+        cm.update({
+            "meta": meta_tot, "realizado": round(real, 2), "pct": round(real / max(meta_tot, 1) * 100, 1),
+            "falta": round(falta, 2), "dias_realizados": em.get("dias_realizados"), "dias_total": em.get("dias_total"),
+            "dias_restantes": rest, "necessario_dia": round(falta / rest, 2) if rest else 0.0,
+            "ritmo_dia": round(ritmo, 2), "projecao": round(proj, 2),
+            "projecao_pct": round(proj / max(meta_tot, 1) * 100, 1),
+            "meta_ate_hoje": meta_ate,
+            "pct_ate_hoje": round(real / meta_ate * 100, 1) if meta_ate > 0 else None,
+            "saldo_ate_hoje": round(real - meta_ate, 2),
+            "_meta_escova": em.get("meta"), "_meta_spa": spa_tot,
+        })
+        # dias operados = calendário comum (não soma de dois calendários)
+        ck["dias_op"] = max(ek.get("dias_op") or 0, sk.get("dias_op") or 0)
+        horas = ck.get("horas_operacao_periodo") or 0
+        if horas > 0:
+            ck["rs_hora_salao"] = round(real / horas, 2)
+        vis_dia = lambda k: (k.get("cliente_dia") or 0) / max(k.get("dias_op") or 1, 1)
+        _ticket_meta(ck, cm, rest, vis_dia(ek) + vis_dia(sk))
+
+    mes = c["abas"]["mensal"]["meta"]
+    c["meta_mensal_valor"] = mes["meta"]
+    c["metas_franqueadora"] = copy.deepcopy(esc.get("metas_franqueadora") or {})
+    # a escala das categorias (meta consolidada ÷ meta Escova) sai do que o front calcula
+
+
+def _lado(k, m):
+    return {
+        "faturamento": round(k.get("caixa") or 0, 2), "meta": m.get("meta"), "meta_ate_hoje": m.get("meta_ate_hoje"),
+        "pct_meta_ate_hoje": m.get("pct_ate_hoje"), "projecao": m.get("projecao"),
+        "visitas": k.get("cliente_dia") or 0, "ticket_medio": k.get("ticket_medio") or 0,
+        "dias_op": k.get("dias_op") or 0, "dias_total": m.get("dias_total"),
+    }
+
+
+def anexar_lado_a_lado(c, esc, spa):
+    hoje = _d(esc.get("hoje"))
+    out = {}
+    for aba in ("diario", "semanal", "mensal", "anual"):
+        ea, sa, ca = (x.get("abas", {}).get(aba) or {} for x in (esc, spa, c))
+        if not ca:
+            continue
+        spa_tot, spa_ate = _meta_spa_efetiva(spa, aba, hoje, _inicio_spa(spa))
+        sm = dict(sa.get("meta") or {}); sm["meta"] = spa_tot; sm["meta_ate_hoje"] = spa_ate
+        sm["pct_ate_hoje"] = round((sa.get("kpis", {}).get("caixa") or 0) / spa_ate * 100, 1) if spa_ate else None
+        sm["projecao"] = round((sa.get("kpis", {}).get("caixa") or 0) + (sm.get("ritmo_dia") or 0) * (ea.get("meta", {}).get("dias_restantes") or 0), 2)
+        sm["dias_total"] = (ea.get("meta") or {}).get("dias_total")  # um calendário só
+        out[aba] = {"escova": _lado(ea.get("kpis") or {}, ea.get("meta") or {}),
+                    "spa": _lado(sa.get("kpis") or {}, sm),
+                    "total": _lado(ca.get("kpis") or {}, ca.get("meta") or {})}
+    c["_lado_a_lado"] = out
+    ini_e = (esc.get("unidade_config") or {}).get("data_inauguracao") or "2026-07-23"
+    ini_s = (spa.get("unidade_config") or {}).get("data_inauguracao") or "2026-09-25"
+    dias = lambda i: (hoje - _d(i)).days + 1
+    c["_contexto"] = {
+        "escova": {"aberta_desde": ini_e, "dias_aberta": dias(ini_e)},
+        "spa": {"aberta_desde": ini_s, "dias_aberta": dias(ini_s)},
+        "aviso": ("Escova aberta há %d dias, Spa há %d. Comparar mês cheio de uma loja com mês parcial da outra "
+                  "inventa queda: a meta do Spa conta só a partir da abertura." % (dias(ini_e), dias(ini_s))),
+    }
+    st = (esc.get("stone") or {})
+    c["_frescor"] = {
+        "escova_dashboard": esc.get("gerado_em"), "spa_dashboard": spa.get("gerado_em"),
+        "stone_extrato_ate": st.get("periodo_fim"),
+    }
+
+
 def main():
     if not os.path.exists(ESC):
         raise SystemExit("Escova payload não existe.")
@@ -174,6 +369,8 @@ def main():
 
     consolidado = merge(escova, spa)
     recalcular_derivados(consolidado)
+    corrigir_consolidado(consolidado, escova, spa)
+    anexar_lado_a_lado(consolidado, escova, spa)
 
     consolidado["_consolidado"] = True
     consolidado["_fontes"] = ["escova", "spa"]

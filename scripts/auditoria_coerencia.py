@@ -38,13 +38,13 @@ TOL = 0.01
 # Derivados: percentuais, médias, taxas e deltas. Somá-los não faz sentido —
 # o consolidado precisa recalcular a partir dos totais somados.
 DERIVADO = re.compile(
-    r"(_pct$|^taxa_|_delta|^ticket_|_medio$|_media$|^rs_hora|^hora_media|"
+    r"(_pct$|^taxa_|_delta|^ticket_|_medio$|_media$|^rs_hora|^hora_media|^visitas_(projetadas|restantes)$|^dias_op$|"
     r"^utilizacao|_atingimento|^pct_|^freq_)", re.I)
 # Absolutos conhecidos: devem somar.
 SOMAVEL = re.compile(
     r"(^caixa$|^caixa_conta$|^receita|^faturamento|^atend|^n_|^clientes_unicos$|"
     r"^cliente_dia$|^visitas_|^meta_mes$|^a_receber|^resultado_mes|^horas_|"
-    r"^dias_op$|^em_atendimento$)", re.I)
+    r"^em_atendimento$)", re.I)
 
 
 def carregar(rel: str):
@@ -190,6 +190,46 @@ def conferir_frescor(achados, arquivos):
             "rode scripts/consolida_dashboard.py."))
 
 
+def conferir_calendario_e_metas(achados, esc, spa, cons):
+    """Um calendário só e meta do Spa contada desde a abertura.
+
+    Em 30/09/2026 o consolidado somava os dias das duas lojas (36 de 36) e a
+    meta cheia do mês do Spa (R$ 80 mil), e o painel dizia "128% do ritmo" e
+    "atrasado R$ 21 mil" na mesma tela. dias_op não é somável: é o calendário.
+    """
+    for aba in ("diario", "semanal", "mensal", "anual"):
+        ke, ks, kc = kpis(esc, aba), kpis(spa, aba), kpis(cons, aba)
+        me = ((esc.get("abas") or {}).get(aba) or {}).get("meta") or {}
+        ms = ((spa.get("abas") or {}).get(aba) or {}).get("meta") or {}
+        mc = ((cons.get("abas") or {}).get(aba) or {}).get("meta") or {}
+        if not mc:
+            continue
+        esp = max(ke.get("dias_op") or 0, ks.get("dias_op") or 0)
+        if kc.get("dias_op") != esp:
+            achados.append(("erro", f"Calendário {aba}: dias_op do consolidado é {kc.get('dias_op')}, esperado {esp} (o maior das lojas, não a soma)"))
+        if mc.get("dias_total") != me.get("dias_total"):
+            achados.append(("erro", f"Calendário {aba}: dias_total do consolidado é {mc.get('dias_total')}, mas a Escova tem {me.get('dias_total')}"))
+        cheia = (me.get("meta") or 0) + (ms.get("meta") or 0)
+        if (mc.get("meta") or 0) > cheia + TOL:
+            achados.append(("erro", f"Meta {aba}: consolidada {mc.get('meta')} passa da soma das metas cheias {cheia}"))
+        inaug = ((spa.get("unidade_config") or {}).get("data_inauguracao")) or ""
+        hoje = (esc.get("hoje") or "")
+        if aba == "mensal" and inaug and hoje and inaug[:7] == hoje[:7] and inaug > hoje[:7] + "-01" \
+                and (mc.get("meta") or 0) >= cheia - TOL and (ms.get("meta") or 0) > 0:
+            achados.append(("erro", f"Meta mensal: o Spa abriu em {inaug} e o consolidado ainda conta o mês inteiro dele "
+                                    f"({mc.get('meta')} = soma das metas cheias). A meta do Spa vale só desde a abertura."))
+        if mc.get("dias_realizados") is not None and mc.get("dias_total") is not None and mc["dias_realizados"] > mc["dias_total"]:
+            achados.append(("erro", f"Calendário {aba}: {mc['dias_realizados']} dias realizados de {mc['dias_total']}"))
+        ate = mc.get("meta_ate_hoje")
+        if ate and mc.get("pct_ate_hoje") is not None:
+            calc = round((kc.get("caixa") or 0) / ate * 100, 1)
+            if abs(calc - mc["pct_ate_hoje"]) > 0.11:
+                achados.append(("erro", f"Meta {aba}: pct_ate_hoje {mc['pct_ate_hoje']} não bate com caixa÷meta_ate_hoje ({calc})"))
+        # o texto do painel não pode dizer "adiantado" e "atrasado" ao mesmo tempo
+        if ate and ((kc.get("caixa") or 0) - ate) * ((mc.get("pct_ate_hoje") or 100) - 100) < 0:
+            achados.append(("erro", f"Meta {aba}: saldo e percentual até hoje apontam para lados opostos"))
+
+
 def main() -> int:
     achados: list[tuple[str, str]] = []
 
@@ -212,6 +252,7 @@ def main() -> int:
     conferir_unidades(achados, fin["escova"], fin["spa"], fin["consolidado"],
                       "Financeiro", lambda d: (d or {}).get("kpis") or {})
 
+    conferir_calendario_e_metas(achados, dash["escova"], dash["spa"], dash["consolidado"])
     for u, d in dash.items():
         if d:
             conferir_periodos(achados, d, f"Operação {u}")
