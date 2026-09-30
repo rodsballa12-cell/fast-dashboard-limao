@@ -1,0 +1,114 @@
+name: Stone · extrato novo entra somando
+
+# Dispara quando um CSV e commitado em data/stone_entrada/.
+#
+# Para que serve: a exportacao da Stone traz uma janela (o mes corrente),
+# nao o historico. Subir o arquivo por cima de data/stone_extrato.csv apaga
+# julho e agosto, e com eles a visao do ano, o historico da Reserva Stone e
+# a base de recebiveis em D+30. Este workflow soma em vez de substituir.
+#
+# Como o Rodrigo usa: arrasta o arquivo exportado para data/stone_entrada/
+# no github.com (funciona do celular) e nao faz mais nada. Ver o LEIA-ME
+# daquela pasta.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/stone_entrada/**.csv'
+      - 'data/stone_entrada/**.CSV'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write   # para acordar o refresh do painel no fim
+
+concurrency:
+  group: stone-entrada
+  cancel-in-progress: false
+
+jobs:
+  somar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Pular se o commit e do proprio robo
+        id: guard
+        shell: bash
+        run: |
+          # Consumir os arquivos da pasta de entrada e um delete DENTRO do
+          # caminho que dispara este workflow — sem esta guarda ele acordaria
+          # uma segunda vez so para descobrir que a pasta esta vazia.
+          msg="$(git log -1 --pretty=%s)"
+          case "$msg" in
+            "stone: extrato somado ao historico (auto)"*)
+              echo "Commit e do proprio robo. Pulando."
+              echo "skip=true" >> "$GITHUB_OUTPUT" ;;
+            *)
+              echo "skip=false" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Python
+        if: steps.guard.outputs.skip == 'false'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Somar o extrato ao historico
+        if: steps.guard.outputs.skip == 'false'
+        id: merge
+        shell: bash
+        run: |
+          set +e
+          # Num pipeline, $? e o codigo do tee (sempre 0) — o que interessa e
+          # o do script, que vem em PIPESTATUS[0].
+          python3 scripts/stone_merge.py | tee /tmp/saida.txt
+          rc="${PIPESTATUS[0]}"
+          echo "rc=${rc}" >> "$GITHUB_OUTPUT"
+          resumo="$(sed -nE 's/^RESUMO=(.*)$/\1/p' /tmp/saida.txt | head -1)"
+          echo "resumo=${resumo}" >> "$GITHUB_OUTPUT"
+
+      - name: Commitar
+        if: steps.guard.outputs.skip == 'false'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data/stone_extrato.csv data/stone_entrada
+          if git diff --cached --quiet; then
+            echo "Nada mudou — nenhum arquivo aproveitado."
+            exit 0
+          fi
+          git commit -m "stone: extrato somado ao historico (auto) · ${{ steps.merge.outputs.resumo }}"
+          # O refresh do painel tambem commita em data/; rebase antes de empurrar.
+          for i in 1 2 3 4; do
+            if git push; then exit 0; fi
+            echo "push falhou; rebase e nova tentativa ($i)"
+            git pull --rebase --autostash || true
+            sleep $((i * 3))
+          done
+          git push
+
+      - name: Acordar o painel
+        if: steps.guard.outputs.skip == 'false'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # O refresh agendado so olharia o extrato novo no proximo slot. Um
+          # disparo manual pula o early-exit de recencia (ele vale apenas para
+          # event_name == schedule) e custa ~27 chamadas da cota do Trinks.
+          # Se falhar, nao e grave: o proximo slot agendado pega.
+          gh workflow run refresh.yml || echo "nao consegui disparar o refresh; o proximo slot agendado resolve"
+
+      - name: Falhar se algum arquivo foi recusado
+        if: steps.guard.outputs.skip == 'false' && steps.merge.outputs.rc != '0'
+        shell: bash
+        run: |
+          echo "Algum arquivo da pasta de entrada foi recusado e continua lá. Motivo no log acima."
+          exit 1
