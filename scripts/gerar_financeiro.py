@@ -490,9 +490,16 @@ def main():
                           caixa_conta=caixa_cc, a_receber_stone=round(a_receber, 2))
 
     d_spa = _empacotar(meses_spa, "FAST SPA LIMÃO", META_MES_SPA)
-    d_spa["_pre_abertura"] = True
-    d_spa["_data_inauguracao"] = ((CFG.get("unidades") or {}).get("spa") or {}).get("data_inauguracao")
-    d_spa["_fonte_receita"] = "Projeção Excel (Rodrigo) — Trinks estabelecimentoId ainda não existe."
+    # Pré-abertura é uma data, não um estado fixo: o Spa abriu em 25/09/2026 e a
+    # marca continuava ligada, com número real no payload — a auditoria de
+    # coerência acusava a contradição (30/09).
+    _abre = ((CFG.get("unidades") or {}).get("spa") or {}).get("data_inauguracao")
+    _hoje = datetime.date.today().isoformat()
+    _aberta = bool(_abre) and _hoje >= str(_abre)[:10]
+    d_spa["_pre_abertura"] = not _aberta
+    d_spa["_data_inauguracao"] = _abre
+    d_spa["_fonte_receita"] = ("Painel: receita real do Trinks nos meses fechados e projeção da DRE nos demais."
+                               if _aberta else "Projeção Excel (Rodrigo) — Spa ainda não abriu.")
 
     d_cons = _empacotar(meses_cons, "FAST LIMÃO CONSOLIDADO", META_MES_ESCOVA + META_MES_SPA,
                         caixa_conta=d_escova["kpis"]["caixa_conta"],

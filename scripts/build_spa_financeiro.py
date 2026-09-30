@@ -1,4 +1,4 @@
-"""Gera data/spa/financeiro.json em zero-state honesto — estrutura
+"""Zero-state do Spa ENQUANTO a loja não abre — estrutura
 igual à Escova mas com todos os valores em 0 e flag _pre_abertura.
 
 Executado quando o Excel real ainda não tem dados SPA preenchidos.
@@ -81,6 +81,17 @@ def main():
         raise SystemExit(f"Escova financeiro não existe em {SRC}")
     with open(CONFIG, encoding="utf-8") as f: cfg = json.load(f)
     spa_cfg = cfg["unidades"]["spa"]
+
+    # A loja abriu: o zero-state sai de cena e quem manda é o gerar_financeiro.py,
+    # que lê o bloco DRE FAST SPA do painel. Sem esta guarda o script zerava a
+    # unidade para sempre — em 30/09/2026 o Spa estava aberto desde 25/09 e
+    # faturando R$ 9.819,47, e a aba financeira dele mostrava zero.
+    abertura = (spa_cfg.get("data_inauguracao") or "")[:10]
+    hoje = datetime.now(BRT).strftime("%Y-%m-%d")
+    if abertura and hoje >= abertura:
+        print(f"[build_spa_financeiro] Spa aberto desde {abertura} — nada a zerar; "
+              f"o financeiro do Spa e o consolidado vêm de gerar_financeiro.py (painel).")
+        return
 
     with open(SRC, encoding="utf-8") as f: escova = json.load(f)
 
