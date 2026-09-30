@@ -15,6 +15,16 @@ O que faz, todo dia, na rotina do agente:
      projecao de fechamento pelo ritmo dos dias corridos, o que a Stone liquidou
      no mes e o saldo da Stone (conta + Reserva).
 
+1b. MES CORRENTE NA DRE = REAL (pedido do Rodrigo em 30/09/2026: "no mes
+   corrente o realizado de fato de receitas e despesas, e nos proximos meses a
+   projecao")
+   - a coluna do mes corrente no P&L 2026 recebe a receita real do Trinks e as
+     despesas por competencia estimada: caixa do razao da Conta_XP no mes + os
+     ajustes (linhas azuis) do bloco "COMPETENCIA DO MES EM CURSO", rateados
+     por m2; comissao, royalty, CMV e Simples por regra das Premissas.
+   - a grade da DRE do mes corrente passa a ler o P&L; os meses seguintes
+     continuam na projecao.
+
 2. FECHAMENTO DE MES (so depois que o mes termina)
    - grava a receita real do mes no P&L 2026 (linhas de Receita bruta das duas
      lojas), aponta a DRE do mes para o P&L e marca o status como
@@ -313,7 +323,54 @@ def mapa_painel() -> dict:
         "frescos": {k: {ym: fx.cell(v, c).value for ym, c in flx["cols"].items()}
                     for k, v in flx.items() if k.startswith("fr_")},
     }
-    return {"dre": dre, "fluxo": flx, "valores": valores}
+    # 1b. mes corrente real: linhas da grade (Escova e Spa), do P&L e do bloco
+    # de competencia, todas achadas pelo rotulo dentro do proprio bloco.
+    comp = _linha(d, "COMPETÊNCIA DO MÊS CORRENTE")
+    blk = {k: _linha(d, frag, inicio=comp, fim=comp + 16) for k, frag in (
+        ("alu", "Aluguel + IPTU — caixa"), ("alu_aj", "Aluguel + IPTU — ajuste"),
+        ("out", "consumo e sem natureza — caixa"), ("out_aj", "Sistemas, utilidades e outros — ajuste"),
+        ("pes", "encargos e rescisão (Escova) — caixa"), ("pes_aj", "Pessoal CLT — ajuste"),
+        ("ger", "Gerente única — competência"), ("bb", "Beleza Boost — caixa"),
+        ("bb_aj", "Beleza Boost Escova — ajuste"), ("bb_spa", "Beleza Boost Spa — competência"),
+        ("mid", "impressos — caixa"), ("mid_aj", "Mídia — ajuste"))}
+    g_esc = _linha(d, "FAST ESCOVA — DRE mensal")
+    g_spa = _linha(d, "FAST SPA — DRE mensal")
+    linhas_dre = ("Simples", "Comiss", "Royalty", "CMV", "Marketing local", "Aluguel",
+                  "Sistemas", "Pessoal", "Beleza Boost", "Mídia")
+    corrente = {
+        "blk": blk,
+        "grid": {u: {k: _linha(d, k, inicio=ini, fim=ini + 15) for k in linhas_dre}
+                 for u, ini in (("escova", g_esc), ("spa", g_spa))},
+        "pl": {u: {k: _linha(d, k, inicio=ini, fim=ini + 14) for k in linhas_dre}
+               for u, ini in (("escova", esc), ("spa", spa))},
+        "formula": lambda linha, col: df.cell(linha, col).value,
+    }
+    return {"dre": dre, "fluxo": flx, "valores": valores, "corrente": corrente}
+
+
+def formulas_mes_corrente(c, blk, pl_rec):
+    """Despesas do mes corrente no P&L: competencia estimada (ver bloco 1b)."""
+    b = {k: f"{c}{v}" for k, v in blk.items()}
+    P = "Premissas!$B$"
+    out = {}
+    for u, rec, rat, com, cmv in (("escova", pl_rec["escova"], "82", "90", "91"),
+                                  ("spa", pl_rec["spa"], "83", "101", "102")):
+        r = f"{c}{rec}"
+        out[u] = {
+            "Simples": f"=-{r}*{P}78",
+            "Comiss": f"=-{r}*{P}{com}",
+            "Royalty": f"=IF({r}>0,-MAX({P}80,{r}*{P}79),0)",
+            "CMV": f"=-{r}*{P}{cmv}",
+            "Marketing local": "=0",
+            "Aluguel": f"=-({b['alu']}+{b['alu_aj']})*{P}{rat}",
+            "Sistemas": f"=-({b['out']}+{b['out_aj']})*{P}{rat}",
+            "Mídia": f"=-({b['mid']}+{b['mid_aj']})*{P}{rat}",
+        }
+    out["escova"]["Pessoal"] = f"=-({b['ger']}*{P}82+{b['pes']}+{b['pes_aj']})"
+    out["escova"]["Beleza Boost"] = f"=-({b['bb']}+{b['bb_aj']})"
+    out["spa"]["Pessoal"] = f"=-{b['ger']}*{P}83"
+    out["spa"]["Beleza Boost"] = f"=-{b['bb_spa']}"
+    return out
 
 
 def _fmt(v):
@@ -337,6 +394,10 @@ def main():
         return 0
 
     hoje = datetime.date.today()
+    # --hoje=AAAA-MM-DD so vale com --simular: ensaio da virada de mes sem gravar
+    for a in sys.argv:
+        if a.startswith("--hoje=") and simular:
+            hoje = datetime.date.fromisoformat(a.split("=", 1)[1])
     mes = hoje.strftime("%Y-%m")
     dias_mes = calendar.monthrange(hoje.year, hoje.month)[1]
 
@@ -406,6 +467,38 @@ def main():
     else:
         avisos.append(f"o Fluxo nao tem coluna para {_mes_pt(mes)} - "
                       f"bloco de dados frescos nao foi atualizado")
+
+    # ---------------- 1b. mes corrente real na DRE ----------------
+    cor = m["corrente"]
+    c_pl, c_gr = dre["pl_cols"].get(mes), dre["grid_cols"].get(mes)
+    if c_pl and c_gr and not str(val["pl_status"].get(mes) or "").upper().startswith("REAL"):
+        L_pl, L_gr = get_column_letter(c_pl), get_column_letter(c_gr)
+        op("DRE", dre["pl_escova"], c_pl, "num", r_esc, "Receita bruta",
+           val["pl_escova"].get(mes), f"P&L {_mes_pt(mes)} Escova (real ate {ate_br})")
+        op("DRE", dre["pl_spa"], c_pl, "num", r_spa, "Receita bruta",
+           val["pl_spa"].get(mes), f"P&L {_mes_pt(mes)} Spa (real ate {ate_br})")
+        form = formulas_mes_corrente(L_pl, cor["blk"],
+                                     {"escova": dre["pl_escova"], "spa": dre["pl_spa"]})
+        n_antes = len(ops)
+        for u, pl_rec in (("escova", dre["pl_escova"]), ("spa", dre["pl_spa"])):
+            for k, f in form[u].items():
+                linha = cor["pl"][u][k]
+                op("DRE", linha, c_pl, "f", f, k, cor["formula"](linha, c_pl))
+                g = cor["grid"][u][k]
+                op("DRE", g, c_gr, "f", f"=DRE!{L_pl}{linha}", k, cor["formula"](g, c_gr))
+        for linha_gr, linha_pl in zip(dre["grid_receita"], (dre["pl_escova"], dre["pl_spa"])):
+            op("DRE", linha_gr, c_gr, "f", f"=DRE!{L_pl}{linha_pl}", "Receita bruta",
+               cor["formula"](linha_gr, c_gr))
+        op("DRE", dre["pl_status"], c_pl, "txt", "EM CURSO (real + competência estimada)", "",
+           val["pl_status"].get(mes))
+        op("DRE", dre["grid_status"], c_gr, "txt", "EM CURSO (real)", "Status do m",
+           cor["formula"](dre["grid_status"], c_gr))
+        if len(ops) > n_antes:
+            mudou.append(f"DRE {_mes_pt(mes)}: coluna do mes corrente passa a real "
+                         f"({len(ops) - n_antes} celulas)")
+    elif not c_pl:
+        avisos.append(f"o P&L 2026 nao tem coluna para {_mes_pt(mes)} - a DRE do mes corrente "
+                      f"continua na projecao (precisa de bloco novo no P&L)")
 
     # ---------------- 2. fechamento de mes ----------------
     for ym in sorted(set(rec["escova"]["meses"]) | set(rec["spa"]["meses"])):
