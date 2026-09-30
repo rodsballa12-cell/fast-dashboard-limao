@@ -4770,6 +4770,7 @@ async function load(showToast=false){
     document.getElementById('loading').style.display='none';
     document.getElementById('content').style.display='';
     try{ renderScaffoldingBanner(); }catch(e){}
+    try{ renderConsolidadoPainel(); }catch(e){ console.warn('consolidado painel', e); }
     if(showToast) toast(`✅ Dados recarregados<br><small>Snapshot de ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} BRT · idade ${ageMin} min</small>`);
   } catch(e){
     if(showToast) toast(`❌ <strong>Erro</strong> ao recarregar: ${e.message}`, true);
@@ -5966,8 +5967,15 @@ function renderMidias(){
   const convMes = heroP.conversas_msg || 0;
   const cpaMes = heroP.cpa_msg || 0;
   const cpaMeta = (bench.cpa_msg_meta || 25);
-  const cpaCor = cpaMes && cpaMes <= cpaMeta*0.85 ? 'var(--good)' : (cpaMes && cpaMes <= cpaMeta*1.15 ? 'var(--warn)' : 'var(--crit)');
-  const cpaCtx = cpaMes ? (cpaMes <= cpaMeta*0.85 ? 'ótimo, muito abaixo da meta' : cpaMes <= cpaMeta*1.15 ? 'na meta' : `caro, ${((cpaMes/cpaMeta-1)*100).toFixed(0)}% acima da meta`) : '—';
+  // Vaga de emprego (conversa de R$ 1-2) não é cliente: a orientação de "escalar"
+  // ou "pausar" olha o CPA de SERVIÇO (janela 30d menos as campanhas de vaga).
+  const _p30 = (M.por_periodo && M.por_periodo['30d']) || null, _vg = M.vagas_30d || null;
+  const _svcConv = (_p30 && _vg) ? (_p30.conversas_msg||0) - (_vg.conversas||0) : 0;
+  const cpaSvc = (_svcConv > 0) ? ((_p30.gasto||0) - (_vg.gasto_total||0)) / _svcConv : null;
+  const cpaDir = cpaSvc || cpaMes, cpaDirTxt = cpaSvc ? ' de serviço (sem vagas, 30d)' : '';
+
+  const cpaCor = cpaDir && cpaDir <= cpaMeta*0.85 ? 'var(--good)' : (cpaDir && cpaDir <= cpaMeta*1.15 ? 'var(--warn)' : 'var(--crit)');
+  const cpaCtx = cpaDir ? ((cpaSvc ? `serviço ${brl(cpaSvc)} (sem vagas) · ` : '') + (cpaDir <= cpaMeta*0.85 ? 'ótimo, muito abaixo da meta' : cpaDir <= cpaMeta*1.15 ? 'na meta' : `caro, ${((cpaDir/cpaMeta-1)*100).toFixed(0)}% acima da meta`)) : '—';
   const igSeg = (MID.instagram && MID.instagram.followers) || 0;
   const gmb30 = MID.google_business && MID.google_business.kpis_30d;
   const gmbAcoes = gmb30 ? ((gmb30.actions_phone||0) + (gmb30.actions_directions||0)) : 0;
@@ -5976,10 +5984,10 @@ function renderMidias(){
   let direcMidia;
   if(!gastoMes){
     direcMidia = `<strong>Sem investimento no mês.</strong> Se a base está crescendo só com o orgânico + Google, é sinal bom — mas revisar se vale escalar (mídia paga acelera aquisição).`;
-  } else if(cpaMes > cpaMeta*1.3){
-    direcMidia = `<strong>CPA de ${brl(cpaMes)} está caro</strong> (meta ${brl(cpaMeta)}). Pausa o pior anúncio no card abaixo (🎨 Anúncios individuais) e realoca o budget nos que puxam CPA pra baixo.`;
-  } else if(cpaMes && cpaMes <= cpaMeta*0.7){
-    direcMidia = `<strong>CPA de ${brl(cpaMes)} está ótimo</strong> (30%+ abaixo da meta). Momento pra <strong>escalar</strong> — subir 20-40% do budget dos anúncios com status "escalar" no card abaixo.`;
+  } else if(cpaDir > cpaMeta*1.3){
+    direcMidia = `<strong>CPA${cpaDirTxt} de ${brl(cpaDir)} está caro</strong> (meta ${brl(cpaMeta)}). Pausa o pior anúncio no card abaixo (🎨 Anúncios individuais) e realoca o budget nos que puxam CPA pra baixo.`;
+  } else if(cpaDir && cpaDir <= cpaMeta*0.7){
+    direcMidia = `<strong>CPA${cpaDirTxt} de ${brl(cpaDir)} está ótimo</strong> (30%+ abaixo da meta). Momento pra <strong>escalar</strong> — subir 20-40% do budget dos anúncios com status "escalar" no card abaixo.`;
   } else {
     direcMidia = `<strong>Mídia rodando na meta.</strong> Continua acompanhando CPA e frequência (se passar de 3, público cansa). Boa hora de testar novo criativo pra não estagnar.`;
   }
@@ -7259,6 +7267,7 @@ function renderMidias(){
           <td style="text-align:center;padding:8px"><span style="color:${priColor(b.prioridade)};font-weight:600;font-size:11px;text-transform:uppercase">${b.prioridade}</span></td>
         </tr>`).join('')}</tbody></table></div>
 
+      ${(focoGeo.expansao_sugerida||[]).length ? `
       <h2 style="margin-top:20px;font-size:15px">📈 Simulação de expansão de raio</h2>
       <div class="cap">Comparativo: manter 5km, expandir pra 7km ou 10km.</div>
       <div style="overflow-x:auto;margin-top:10px"><table style="width:100%;font-size:12px;border-collapse:collapse">
@@ -7280,6 +7289,7 @@ function renderMidias(){
           <td style="text-align:right;padding:8px">${e.custo_extra_estimado||'—'}</td>
           <td style="padding:8px;font-size:11px;color:var(--ink-2)">${e.bairros_extra||'—'}</td>
         </tr>`;}).join('')}</tbody></table></div>
+      ` : ''}
 
       <div style="margin-top:14px;padding:12px;background:rgba(168,85,247,.08);border-left:4px solid #a855f7;border-radius:6px;font-size:12px">
         <strong>💡 Recomendação do gestor:</strong> ${focoGeo.recomendacao_gestor}
@@ -7792,6 +7802,110 @@ function renderMidias(){
   }
 }
 
+
+// ===========================================================================
+// CONSOLIDADO · leitura POR LOJA (Escova | Spa | Total)
+// O consolidado somava tudo numa coluna só e escondia de onde vinha cada número.
+// Aqui cada loja tem a sua coluna, com o total ao lado, o aviso de que as lojas
+// têm idades diferentes e a idade de cada fonte de dado.
+// ===========================================================================
+const _cR0 = v => (v==null||isNaN(v)) ? '—' : 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+const _cR2 = v => (v==null||isNaN(v)) ? '—' : 'R$ ' + Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const _cPct = v => (v==null||isNaN(v)) ? '—' : Number(v).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}) + '%';
+const _cDT = iso => { if(!iso) return '—'; const d = new Date(iso); return isNaN(d) ? String(iso) : d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}) + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); };
+const _cDia = iso => { if(!iso) return '—'; const s = String(iso).slice(0,10).split('-'); return s.length===3 ? s[2]+'/'+s[1] : String(iso); };
+function _cIdadeDias(iso, ref){ if(!iso) return null; const a = new Date(String(iso).slice(0,10)+'T12:00'), b = new Date(String(ref||new Date().toISOString()).slice(0,10)+'T12:00'); return Math.round((b-a)/86400000); }
+const _cChipIdade = (rot, iso, ref) => { const n = _cIdadeDias(iso, ref); const cor = n==null ? 'var(--ink-3)' : n<=1 ? 'var(--good)' : n<=3 ? 'var(--warn)' : 'var(--crit)'; return `<span style="display:inline-flex;gap:5px;align-items:center;padding:3px 9px;border:1px solid var(--border);border-radius:999px;font-size:11px;background:var(--surface-2)"><span style="width:6px;height:6px;border-radius:50%;background:${cor}"></span>${rot}: <strong style="color:${cor}">${_cDia(iso)}</strong>${n!=null&&n>1?` (${n} dias)`:''}</span>`; };
+const _cCorMeta = p => p==null ? 'var(--ink-2)' : p>=100 ? 'var(--good)' : p>=85 ? 'var(--warn)' : 'var(--crit)';
+
+let _consAba = 'mensal';
+function renderConsolidadoPainel(){
+  document.querySelectorAll('.cons-painel').forEach(e => e.remove());
+  if(UNIDADE_ATIVA !== 'consolidado' || !TRINKS || !TRINKS._lado_a_lado) return;
+  const L = TRINKS._lado_a_lado[_consAba] || TRINKS._lado_a_lado.mensal;
+  const ctx = TRINKS._contexto || {}, fr = TRINKS._frescor || {};
+  const hoje = TRINKS.hoje;
+  const abas = [['mensal','🎯 Mês'],['semanal','📅 Semana'],['diario','🔴 Hoje'],['anual','📊 Ano']];
+  const btn = ([k,l]) => `<button class="btn-refresh" style="${k===_consAba?'background:var(--accent);color:#0A0A0C;border-color:var(--accent)':''}" onclick="_consAba='${k}';renderConsolidadoPainel()">${l}</button>`;
+  const col = (u, tit, sub) => `<th style="text-align:right;padding:8px 10px">${tit}<div style="font-weight:400;font-size:10.5px;color:var(--ink-3)">${sub}</div></th>`;
+  const lin = (nome, f, extra) => `<tr><td style="padding:8px 10px">${nome}</td>${['escova','spa','total'].map(u => `<td style="text-align:right;padding:8px 10px;${u==='total'?'font-weight:700;background:var(--surface-2)':''}${extra?extra(L[u]):''}">${f(L[u])}</td>`).join('')}</tr>`;
+  const stoneDias = _cIdadeDias(fr.stone_extrato_ate, hoje);
+  const dreBase = (typeof FIN !== 'undefined' && FIN) ? FIN.baseline : null;
+  const html = `<section class="card cons-painel" style="border-left:4px solid #0A0A0A;margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h2 style="margin:0">🏢 Consolidado · Escova × Spa × Total</h2>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">${abas.map(btn).join('')}</div>
+    </div>
+    <div class="cap" style="margin-top:6px">${ctx.aviso || ''}</div>
+    <div style="overflow-x:auto"><table style="width:100%;font-size:13px;border-collapse:collapse;min-width:520px">
+      <thead><tr style="color:var(--ink-2);border-bottom:1px solid var(--border)"><th style="text-align:left;padding:8px 10px"></th>
+        ${col('escova','💇 Escova',`aberta há ${(ctx.escova||{}).dias_aberta ?? '—'} dias`)}${col('spa','🧖 Spa',`aberto há ${(ctx.spa||{}).dias_aberta ?? '—'} dias`)}${col('total','Total','')}
+      </tr></thead>
+      <tbody>
+        ${lin('Faturamento', x=>_cR0(x.faturamento))}
+        ${lin('Meta do período <span style="color:var(--ink-3);font-size:11px">(Spa: só desde a abertura)</span>', x=>_cR0(x.meta))}
+        ${lin('% da meta até hoje', x=>_cPct(x.pct_meta_ate_hoje), x=>`color:${_cCorMeta(x.pct_meta_ate_hoje)};font-weight:700`)}
+        ${lin('Projeção de fechamento', x=>_cR0(x.projecao))}
+        ${lin('Visitas', x=>(x.visitas||0).toLocaleString('pt-BR'))}
+        ${lin('Ticket médio / visita', x=>_cR2(x.ticket_medio))}
+        ${lin('Dias operados', x=>`${x.dias_op} de ${x.dias_total ?? '—'}`)}
+      </tbody></table></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+      ${_cChipIdade('Trinks Escova', fr.escova_dashboard, hoje)}${_cChipIdade('Trinks Spa', fr.spa_dashboard, hoje)}
+      ${_cChipIdade('Extrato Stone até', fr.stone_extrato_ate, hoje)}${_cChipIdade('DRE/caixa em conta', dreBase, hoje)}
+    </div>
+    <div style="font-size:11.5px;color:var(--ink-3);margin-top:8px">Cada fonte tem o seu atraso: Trinks é do dia, o extrato Stone é carregado à parte${stoneDias>1?` (hoje está ${stoneDias} dias atrás — pendências de PIX recentes podem ser só extrato atrasado)`:''} e a DRE entra à mão.</div>
+  </section>`;
+  const alvo = document.getElementById('tab-painel');
+  if(alvo) alvo.insertAdjacentHTML('afterbegin', html);
+}
+
+function renderConsolidadoMidias(){
+  document.querySelectorAll('.cons-midias').forEach(e => e.remove());
+  if(UNIDADE_ATIVA !== 'consolidado' || !MID || !MID.meta_ads || !MID.meta_ads.por_unidade) return;
+  const U = MID.meta_ads.por_unidade, A = MID.alertas_por_loja || {}, fr = MID._frescor || {};
+  const T = MID.meta_ads.por_periodo || {};
+  const cel = (o, k) => o && o[k] ? o[k] : {};
+  const linha = (nome, jan, campo, fmt) => `<tr><td style="padding:8px 10px">${nome}</td>
+    <td style="text-align:right;padding:8px 10px">${fmt(cel(U.escova,jan)[campo])}</td><td style="text-align:right;padding:8px 10px">${fmt(cel(U.spa,jan)[campo])}</td>
+    <td style="text-align:right;padding:8px 10px;font-weight:700;background:var(--surface-2)">${jan.endsWith('_servico')||jan.endsWith('_vaga') ? fmt(campo==='gasto'?(cel(U.escova,jan).gasto||0)+(cel(U.spa,jan).gasto||0):campo==='conversas'?(cel(U.escova,jan).conversas||0)+(cel(U.spa,jan).conversas||0):(()=>{const g=(cel(U.escova,jan).gasto||0)+(cel(U.spa,jan).gasto||0),c=(cel(U.escova,jan).conversas||0)+(cel(U.spa,jan).conversas||0);return c?g/c:null})()) : fmt(campo==='gasto'?(T[jan]||{}).gasto:campo==='conversas'?(T[jan]||{}).conversas_msg:(T[jan]||{}).cpa_msg)}</td></tr>`;
+  const cabec = t => `<tr style="background:var(--surface-2)"><td colspan="4" style="padding:6px 10px;font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em">${t}</td></tr>`;
+  const alertaLoja = (nome, ico, a) => {
+    const al = (a && a.alarme_entrega) || {};
+    const cor = al.nivel==='alerta'||al.nivel==='critico' ? 'var(--crit)' : al.nivel==='ok' ? 'var(--good)' : 'var(--ink-3)';
+    const lista = ((a && a.alertas) || []).map(x => `<li style="margin:4px 0"><span style="color:${x.sev==='crit'?'var(--crit)':x.sev==='warn'?'var(--warn)':'var(--ink-3)'};font-weight:700">${x.icone||'•'} ${x.titulo}</span></li>`).join('');
+    return `<div style="flex:1;min-width:260px;background:var(--surface-2);border-radius:10px;padding:12px 14px;border-left:3px solid ${cor}">
+      <div style="font-weight:700">${ico} ${nome}</div>
+      <div style="font-size:12px;color:${cor};font-weight:600;margin-top:4px">${al.titulo||'—'}</div>
+      <div style="font-size:11.5px;color:var(--ink-2)">${al.detalhe||''}</div>
+      <ul style="margin:8px 0 0 16px;padding:0;font-size:12px">${lista}</ul></div>`;
+  };
+  const html = `<section class="card cons-midias" style="border-left:4px solid #0A0A0A;margin-bottom:16px">
+    <h2 style="margin:0 0 4px">🏢 Consolidado · anúncios por loja</h2>
+    <div class="cap">Conversa de <strong>vaga</strong> (recrutamento) custa R$ 1–3 e não é cliente — por isso o custo por conversa de <strong>serviço</strong> vem separado. Os cards abaixo que dizem “Escova” no título são só dela.</div>
+    <div style="overflow-x:auto"><table style="width:100%;font-size:13px;border-collapse:collapse;min-width:520px">
+      <thead><tr style="color:var(--ink-2);border-bottom:1px solid var(--border)"><th style="text-align:left;padding:8px 10px"></th><th style="text-align:right;padding:8px 10px">💇 Escova</th><th style="text-align:right;padding:8px 10px">🧖 Spa</th><th style="text-align:right;padding:8px 10px">Total</th></tr></thead>
+      <tbody>
+        ${cabec('Últimos 30 dias')}
+        ${linha('Gasto em anúncios','30d','gasto',_cR0)}${linha('Conversas iniciadas','30d','conversas',v=>v==null?'—':v.toLocaleString('pt-BR'))}${linha('Custo por conversa (tudo)','30d','cpa',_cR2)}
+        ${linha('↳ só serviço (sem vagas)','30d_servico','cpa',_cR2)}${linha('↳ só vagas','30d_vaga','cpa',_cR2)}
+        ${cabec('Últimos 7 dias')}
+        ${linha('Gasto em anúncios','7d','gasto',_cR0)}${linha('Conversas iniciadas','7d','conversas',v=>v==null?'—':v.toLocaleString('pt-BR'))}${linha('Custo por conversa','7d','cpa',_cR2)}
+        ${cabec('Hoje')}
+        ${linha('Gasto em anúncios','hoje','gasto',_cR0)}
+      </tbody></table></div>
+    <h3 style="margin:16px 0 8px;font-size:14px">🚨 O que pede atenção, por loja</h3>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">${alertaLoja('Escova','💇',A.escova)}${alertaLoja('Spa','🧖',A.spa)}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">${_cChipIdade('Anúncios Escova', fr.escova, MID.gerado_em)}${_cChipIdade('Anúncios Spa', fr.spa, MID.gerado_em)}</div>
+  </section>`;
+  const alvo = document.getElementById('midias-status');
+  if(alvo) alvo.insertAdjacentHTML('beforebegin', html);
+  // rotular o que é só da Escova (Google Meu Negócio ainda não existe para o Spa)
+  document.querySelectorAll('#tab-midias h2, #tab-midias h3').forEach(h => {
+    if(/Google Meu Neg/i.test(h.textContent) && !h.querySelector('.so-escova')) h.insertAdjacentHTML('beforeend', ' <span class="so-escova" style="font-size:10.5px;font-weight:700;background:var(--warn-soft);color:var(--warn);padding:2px 8px;border-radius:999px;margin-left:6px">só Escova</span>');
+  });
+}
+
 async function loadMidias(){
   if(UNIDADE_SEM_DADOS) return;  // placeholder mode
   try{
@@ -7804,6 +7918,7 @@ async function loadMidias(){
       MID._debug_scaffolding = UNIDADE_SCAFFOLDING;
       console.log('[loadMidias]', {url: r.url, unidade: UNIDADE_ATIVA, scaffolding: UNIDADE_SCAFFOLDING, handle: MID.instagram?.handle, ad_account: MID.meta_ads?.ad_account_id});
       renderMidias();
+      try{ renderConsolidadoMidias(); }catch(e){ console.warn('consolidado mídias', e); }
     }
   }catch(e){ console.warn('midias_sociais.json indisponível', e); }
 }
