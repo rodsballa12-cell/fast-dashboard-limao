@@ -124,3 +124,24 @@ linha que entra no saldo total da empresa.
 
 Para rodar na hora, sem esperar a agenda: `python scripts/stone_reserva_excel.py`.
 
+## E logo depois: dados frescos na DRE e no Fluxo de Caixa
+
+Na sequência roda `scripts/atualiza_painel.py`, com as mesmas travas. Ele leva
+para o Excel o que as fontes já sabem hoje, em três frentes:
+
+- **Mês em curso** — receita apurada do Trinks por loja vai para o bloco
+  `MÊS EM CURSO` da DRE e para o bloco `DADOS FRESCOS` do Fluxo, junto com a
+  projeção de fechamento pelo ritmo dos dias corridos, o que a Stone liquidou
+  no mês e o saldo da Stone (conta + Reserva).
+- **Fechamento de mês** — quando o mês termina, grava a receita real no P&L
+  2026, aponta a DRE do mês para o P&L e marca o status como `REAL (receita)`.
+  Os custos continuam vindo das premissas até o extrato da conta XP entrar no
+  razão, que é passo manual — por isso o status não é `REAL` puro. A receita
+  recebida do Fluxo só fecha quando o extrato da Stone cobre o mês inteiro.
+- **Conferência** — em mês já marcado como real, não reescreve nada: compara e
+  avisa a divergência no log. Competência fechada só muda por decisão do Rodrigo.
+
+A receita **nunca** sai do extrato da conta XP: vem do Trinks (cache de
+transações do ano, emendado com o fechamento de cada dia). Para ver o que ele
+faria sem tocar na planilha: `python scripts/atualiza_painel.py --simular`.
+
