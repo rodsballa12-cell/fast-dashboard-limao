@@ -913,6 +913,13 @@ function renderMetaProgress(container_id, titulo, meta, subtitle){
         <span>· Você está em <b class="${paceCor}">${pct(meta.pct_ate_hoje)}</b> do ritmo</span>
         <span>· ${saldo>=0?'Adiantado':'Atrasado'} em <b class="${paceCor}">${brl0(Math.abs(saldo))}</b></span>
       </div>`:''}
+      ${(titulo==='Meta Mensal' && typeof TRINKS!=='undefined' && TRINKS && TRINKS.super_meta_mensal_valor) ? (()=>{
+        const sm = TRINKS.super_meta_mensal_valor, falta = Math.max(sm - meta.realizado, 0);
+        return `<div class="pace-line" style="border-left:3px solid var(--accent)">
+          <span>⭐ Super meta do mês: <b>${brl0(sm)}</b></span>
+          <span>· ${falta>0?`faltam <b>${brl0(falta)}</b> (${pct(meta.realizado/sm*100)} da super meta)`:'<b class="good">super meta batida</b>'}</span>
+          <span>· projeção linear cobre <b>${pct(meta.projecao/sm*100)}</b></span>
+        </div>`;})() : ''}
       <div class="meta-row" style="margin-top:20px;">
         <div class="meta-cell"><div class="l">Realizado</div><div class="v accent">${brl0(meta.realizado)}</div></div>
         <div class="meta-cell"><div class="l">Falta</div><div class="v">${brl0(meta.falta)}</div></div>
@@ -7844,6 +7851,7 @@ function renderConsolidadoPainel(){
       <tbody>
         ${lin('Faturamento', x=>_cR0(x.faturamento))}
         ${lin('Meta do período <span style="color:var(--ink-3);font-size:11px">(Spa: só desde a abertura)</span>', x=>_cR0(x.meta))}
+        ${L.spa && L.spa.super_meta ? lin('⭐ Super meta', x=>x.super_meta ? _cR0(x.super_meta) : '—') : ''}
         ${lin('% da meta até hoje', x=>_cPct(x.pct_meta_ate_hoje), x=>`color:${_cCorMeta(x.pct_meta_ate_hoje)};font-weight:700`)}
         ${lin('Projeção de fechamento', x=>_cR0(x.projecao))}
         ${lin('Visitas', x=>(x.visitas||0).toLocaleString('pt-BR'))}

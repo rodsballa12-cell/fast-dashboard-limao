@@ -206,9 +206,13 @@
       "meta_mensal_por_mes": {
         "_desc": "Override por mes especifico (formato YYYY-MM). Se presente, vence sobre meta_mensal (fallback). Ausente = usa meta_mensal.",
         "2026-09": 20000.0,
-        "2026-10": 30000.0,
+        "2026-10": 25000.0,
         "2026-11": 40000.0,
         "2026-12": 50000.0
+      },
+      "super_meta_mensal_por_mes": {
+        "_desc": "SUPER META do mes (acima da meta). Mesmo formato YYYY-MM. Outubro/2026: planilha Meta_Limão (Meta 2 = meta R$ 25.000; Meta 3 = super meta R$ 30.000), definido por Rodrigo em 30/09/2026.",
+        "2026-10": 30000.0
       }
     }
   },

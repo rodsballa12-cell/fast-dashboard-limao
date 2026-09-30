@@ -341,6 +341,10 @@ def anexar_lado_a_lado(c, esc, spa):
         out[aba] = {"escova": _lado(ea.get("kpis") or {}, ea.get("meta") or {}),
                     "spa": _lado(sa.get("kpis") or {}, sm),
                     "total": _lado(ca.get("kpis") or {}, ca.get("meta") or {})}
+    sup = spa.get("super_meta_mensal_valor")
+    if sup and "mensal" in out:
+        out["mensal"]["spa"]["super_meta"] = sup
+        out["mensal"]["total"]["super_meta"] = round((out["mensal"]["total"].get("meta") or 0) - (out["mensal"]["spa"].get("meta") or 0) + sup, 2)
     c["_lado_a_lado"] = out
     ini_e = (esc.get("unidade_config") or {}).get("data_inauguracao") or "2026-07-23"
     ini_s = (spa.get("unidade_config") or {}).get("data_inauguracao") or "2026-09-25"
