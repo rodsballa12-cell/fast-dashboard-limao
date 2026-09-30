@@ -184,6 +184,18 @@ def _d(s):
 
 
 def _inicio_spa(spa):
+    """Desde quando a meta do Spa conta.
+
+    Rodrigo, 28/09/2026: "20k para o mês de setembro, não rateado". A meta do
+    Spa vale CHEIA no mês da abertura — o mesmo critério do Financeiro e do
+    painel do próprio Spa. (Em 30/09 eu tinha ratado por conta própria; isso
+    deixava o Painel em R$ 63,9 mil e o Financeiro em R$ 80 mil para o mesmo mês.)
+    Para voltar a ratear, devolva a data de inauguração aqui.
+    """
+    return date(2000, 1, 1)
+
+
+def _inauguracao_spa(spa):
     return _d((spa.get("unidade_config") or {}).get("data_inauguracao") or "2026-09-25")
 
 
@@ -217,6 +229,9 @@ def _meta_spa_efetiva(spa, aba, hoje, inicio):
             # exceto na aba do dia, onde o próprio dia é a janela
             if dd < hoje or aba == "diario":
                 ate += v
+    # janela toda coberta: usa a meta da própria unidade, sem a poeira de arredondar dia a dia
+    if inicio <= ini:
+        tot = (spa.get("abas", {}).get(aba, {}).get("meta") or {}).get("meta") or tot
     return round(tot, 2), round(ate, 2)
 
 
@@ -268,8 +283,8 @@ def corrigir_consolidado(c, esc, spa):
         soma[n] = soma.get(n, 0) + v
         cont[n] = cont.get(n, 0) + 1
     saz["meta_dia_por_dow"] = {n: round(soma[n] / cont[n], 2) for n in soma}
-    saz["_nota_consolidado"] = ("Forma semanal/horária = Escova (tem histórico). Meta diária = Escova + Spa "
-                                "contada só a partir da abertura do Spa (%s)." % inicio.isoformat())
+    saz["_nota_consolidado"] = ("Forma semanal/horária = Escova (tem histórico). Meta diária = Escova + Spa, "
+                                "a do Spa cheia no mês (sem ratear, decisão de 28/09/2026).")
     c["sazonalidade"] = saz
     c["dias_atipicos"] = copy.deepcopy(esc.get("dias_atipicos") or {})
     c["dias_op_mes"] = esc.get("dias_op_mes")
@@ -341,15 +356,19 @@ def anexar_lado_a_lado(c, esc, spa):
         out[aba] = {"escova": _lado(ea.get("kpis") or {}, ea.get("meta") or {}),
                     "spa": _lado(sa.get("kpis") or {}, sm),
                     "total": _lado(ca.get("kpis") or {}, ca.get("meta") or {})}
+    sup = spa.get("super_meta_mensal_valor")
+    if sup and "mensal" in out:
+        out["mensal"]["spa"]["super_meta"] = sup
+        out["mensal"]["total"]["super_meta"] = round((out["mensal"]["total"].get("meta") or 0) - (out["mensal"]["spa"].get("meta") or 0) + sup, 2)
     c["_lado_a_lado"] = out
     ini_e = (esc.get("unidade_config") or {}).get("data_inauguracao") or "2026-07-23"
-    ini_s = (spa.get("unidade_config") or {}).get("data_inauguracao") or "2026-09-25"
+    ini_s = _inauguracao_spa(spa).isoformat()
     dias = lambda i: (hoje - _d(i)).days + 1
     c["_contexto"] = {
         "escova": {"aberta_desde": ini_e, "dias_aberta": dias(ini_e)},
         "spa": {"aberta_desde": ini_s, "dias_aberta": dias(ini_s)},
         "aviso": ("Escova aberta há %d dias, Spa há %d. Comparar mês cheio de uma loja com mês parcial da outra "
-                  "inventa queda: a meta do Spa conta só a partir da abertura." % (dias(ini_e), dias(ini_s))),
+                  "inventa queda — e a meta do Spa no mês da abertura é a cheia, sem ratear." % (dias(ini_e), dias(ini_s))),
     }
     st = (esc.get("stone") or {})
     c["_frescor"] = {

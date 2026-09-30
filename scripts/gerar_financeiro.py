@@ -26,7 +26,7 @@ OUT_SPA = os.path.join(ROOT, "data", "spa", "financeiro.json")
 OUT_CONS = os.path.join(ROOT, "data", "consolidado", "financeiro.json")
 
 
-def _meta_mensal(unidade: str, padrao: float) -> float:
+def _meta_mensal(unidade: str, padrao: float, ym: str = None) -> float:
     """Meta mensal vem do config.json — fonte única.
 
     Até 14/09/2026 este número estava fixo em DOIS scripts
@@ -34,10 +34,19 @@ def _meta_mensal(unidade: str, padrao: float) -> float:
     herdou a meta da Escova e ninguém zerou; a auditoria de coerência pegou
     quando o payload do SPA aparecia marcado _pre_abertura com meta cheia.
     Duas fontes da verdade sempre divergem — agora é uma.
+
+    Mês a mês (30/09/2026): `meta_mensal_por_mes[YYYY-MM]` vence sobre
+    `meta_mensal`. Sem isso o financeiro do Spa lia a provisória de R$ 50.000
+    enquanto o painel de operação já lia R$ 20.000 (set) / R$ 25.000 (out), e o
+    consolidado mostrava meta de R$ 110.000.
     """
     try:
         with open(os.path.join(ROOT, "data", "config.json"), encoding="utf-8") as fh:
-            v = json.load(fh)["unidades"][unidade].get("meta_mensal")
+            u = json.load(fh)["unidades"][unidade]
+        ym = ym or datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).strftime("%Y-%m")
+        v = (u.get("meta_mensal_por_mes") or {}).get(ym)
+        if not isinstance(v, (int, float)):
+            v = u.get("meta_mensal")
         return float(v) if v is not None else padrao
     except Exception:
         return padrao

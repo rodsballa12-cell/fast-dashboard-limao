@@ -119,6 +119,16 @@ try:
         print(f"[meta] mes corrente {_hoje_key} · override META_MENSAL = R${META_MENSAL:.2f}")
 except Exception:
     pass
+# SUPER META do mês (acima da meta): config.unidades.<U>.super_meta_mensal_por_mes[YYYY-MM].
+# Ausente = sem super meta no mês. Não altera a meta; só aparece ao lado dela.
+SUPER_META_MENSAL = None
+try:
+    _sm = (_unit_cfg.get("super_meta_mensal_por_mes") or {}).get(datetime.now(BRT).strftime("%Y-%m"))
+    if isinstance(_sm, (int, float)):
+        SUPER_META_MENSAL = float(_sm)
+        print(f"[meta] super meta do mes = R${SUPER_META_MENSAL:.2f}")
+except Exception:
+    pass
 # Cadeiras/salas: primeiro tenta config da unidade, depois global (Escova legacy)
 CADEIRAS_FIS = _unit_cfg.get("cadeiras") or _cfg.get("cadeiras") or {"cabelo": 5, "maquiagem": 3, "unhas": 8}
 HORAS_OPERACAO_DIA = _cfg.get("horas_operacao_dia", 12)
@@ -2751,6 +2761,7 @@ def main():
             "cidade": _unidade_meta.get("cidade"),
         } if _unidade_meta else None,
         "meta_mensal_valor": META_MENSAL,
+        "super_meta_mensal_valor": SUPER_META_MENSAL,
         "dias_op_mes": dias_op_mes_real,
         "dias_atipicos": dias_atipicos,
         "sazonalidade": {
