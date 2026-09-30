@@ -169,6 +169,8 @@ gerado_por: tarefa agendada
 
 # $Agente · $data às $hora
 
+↑ [[76_Briefings_Agentes/00-INDEX|Briefings dos Agentes]]
+
 $avisoGit
 "@
 
