@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-09-30T17:15:20-03:00",
+ "gerado_em": "2026-09-30T17:32:00-03:00",
  "baseline": "2026-09-30",
  "custos_ate": "2026-09-30",
  "mes_corrente_chave": "2026-09",
@@ -9,9 +9,9 @@
  "kpis": {
   "caixa_conta": 10710.5,
   "a_receber_stone": 28184.75,
-  "resultado_mes": -192.30060545454762,
-  "resultado_mes_caixa": 6841.964394545453,
-  "receita_mes": 50244.75,
+  "resultado_mes": -7673.751704545455,
+  "resultado_mes_caixa": -569.6267045454542,
+  "receita_mes": 50743.75,
   "meta_mes": 60000.0
  },
  "meses": {
@@ -567,12 +567,12 @@
    "ano": 2026,
    "mes": 9,
    "chave": "2026-09",
-   "receita_bruta": 50244.75,
-   "receita_liquida": 46727.6175,
-   "receita_real": 50244.75,
+   "receita_bruta": 50743.75,
+   "receita_liquida": 47191.6875,
+   "receita_real": 50743.75,
    "receita_meta": 60000.0,
-   "ebitda": -192.30060545454762,
-   "margem_contribuicao": 22559.89275,
+   "ebitda": -7673.751704545455,
+   "margem_contribuicao": 22783.943750000002,
    "grupos": [
     {
      "id": "VARIAVEL",
@@ -580,8 +580,8 @@
      "linhas": [
       {
        "cat": "Comissão sobre produção",
-       "real": 17635.90725,
-       "esp": 17635.90725,
+       "real": 17811.056249999998,
+       "esp": 17811.056249999998,
        "nota": "35.1% da receita (tabela oficial do Trinks sobre serviços)",
        "prov": false,
        "esp_pct": 0.351,
@@ -589,8 +589,8 @@
       },
       {
        "cat": "Produtos e insumos (CMV)",
-       "real": 3014.685,
-       "esp": 3014.685,
+       "real": 3044.625,
+       "esp": 3044.625,
        "nota": "6.0% da receita (Fast Escova)",
        "prov": false,
        "esp_pct": 0.06,
@@ -598,16 +598,16 @@
       },
       {
        "cat": "Impostos sobre venda — Simples",
-       "real": 3517.1325,
-       "esp": 3517.1325,
+       "real": 3552.0625000000005,
+       "esp": 3552.0625000000005,
        "nota": "7% da receita · provisionado por competência",
        "prov": true,
        "esp_pct": 0.07,
        "real_pct": 0.07
       }
      ],
-     "sub_real": 24167.72475,
-     "sub_esp": 24167.72475
+     "sub_real": 24407.743749999998,
+     "sub_esp": 24407.743749999998
     },
     {
      "id": "PESSOAL",
@@ -622,14 +622,14 @@
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 1986.0654545454545,
-       "esp": 1986.0654545454545,
+       "real": 4100.295454545454,
+       "esp": 4100.295454545454,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 10600.295454545454,
+     "sub_esp": 10600.295454545454
     },
     {
      "id": "OCUPACAO",
@@ -637,21 +637,21 @@
      "linhas": [
       {
        "cat": "Aluguel + IPTU",
-       "real": 9038.26881,
-       "esp": 9038.26881,
+       "real": 9039.172727272728,
+       "esp": 9039.172727272728,
        "nota": "rateio 2 lojas",
        "prov": false
       },
       {
        "cat": "Sistemas, utilidades, seguro e outros",
-       "real": 1775.6272727272726,
-       "esp": 1775.6272727272726,
+       "real": 6888.722727272728,
+       "esp": 6888.722727272728,
        "nota": "rateio 2 lojas · inclui saídas ainda sem natureza",
        "prov": false
       }
      ],
-     "sub_real": 10813.896082727271,
-     "sub_esp": 10813.896082727271
+     "sub_real": 15927.895454545454,
+     "sub_esp": 15927.895454545454
     },
     {
      "id": "COMERCIAL",
@@ -659,15 +659,15 @@
      "linhas": [
       {
        "cat": "Mídia paga",
-       "real": 1552.231818181818,
-       "esp": 1552.231818181818,
+       "real": 2029.5045454545452,
+       "esp": 2029.5045454545452,
        "nota": "rateio · varia por fase",
        "prov": false
       },
       {
        "cat": "Beleza Boost (gestão)",
-       "real": 1900.0000000000002,
-       "esp": 1900.0000000000002,
+       "real": 1900.0,
+       "esp": 1900.0,
        "nota": "100% Fast Escova",
        "prov": false
       },
@@ -680,25 +680,25 @@
       },
       {
        "cat": "Royalty",
-       "real": 3517.1325,
-       "esp": 3517.1325,
+       "real": 3552.0625000000005,
+       "esp": 3552.0625000000005,
        "nota": "máx entre R$ 2.500 e 7% da receita · provisionado",
        "prov": true
       }
      ],
-     "sub_real": 6969.364318181819,
-     "sub_esp": 6969.364318181819
+     "sub_real": 7481.567045454545,
+     "sub_esp": 7481.567045454545
     }
    ],
-   "var_real": 24167.72475,
-   "var_esp": 24167.72475,
-   "fixo_real": 26269.325855454546,
-   "fixo_esp": 26269.325855454546,
-   "custo_real": 50437.05060545455,
-   "custo_esp": 50437.05060545455,
-   "res_real": -192.30060545454762,
-   "res_caixa": 6841.964394545453,
-   "provisoes_nao_debitadas": 7034.265
+   "var_real": 24407.743749999998,
+   "var_esp": 24407.743749999998,
+   "fixo_real": 34009.75795454545,
+   "fixo_esp": 34009.75795454545,
+   "custo_real": 58417.501704545444,
+   "custo_esp": 58417.501704545444,
+   "res_real": -7673.751704545455,
+   "res_caixa": -569.6267045454542,
+   "provisoes_nao_debitadas": 7104.125000000001
   },
   "2026-10": {
    "ano": 2026,
@@ -8240,12 +8240,12 @@
   "ano": 2026,
   "mes": 9,
   "chave": "2026-09",
-  "receita_bruta": 50244.75,
-  "receita_liquida": 46727.6175,
-  "receita_real": 50244.75,
+  "receita_bruta": 50743.75,
+  "receita_liquida": 47191.6875,
+  "receita_real": 50743.75,
   "receita_meta": 60000.0,
-  "ebitda": -192.30060545454762,
-  "margem_contribuicao": 22559.89275,
+  "ebitda": -7673.751704545455,
+  "margem_contribuicao": 22783.943750000002,
   "grupos": [
    {
     "id": "VARIAVEL",
@@ -8253,8 +8253,8 @@
     "linhas": [
      {
       "cat": "Comissão sobre produção",
-      "real": 17635.90725,
-      "esp": 17635.90725,
+      "real": 17811.056249999998,
+      "esp": 17811.056249999998,
       "nota": "35.1% da receita (tabela oficial do Trinks sobre serviços)",
       "prov": false,
       "esp_pct": 0.351,
@@ -8262,8 +8262,8 @@
      },
      {
       "cat": "Produtos e insumos (CMV)",
-      "real": 3014.685,
-      "esp": 3014.685,
+      "real": 3044.625,
+      "esp": 3044.625,
       "nota": "6.0% da receita (Fast Escova)",
       "prov": false,
       "esp_pct": 0.06,
@@ -8271,16 +8271,16 @@
      },
      {
       "cat": "Impostos sobre venda — Simples",
-      "real": 3517.1325,
-      "esp": 3517.1325,
+      "real": 3552.0625000000005,
+      "esp": 3552.0625000000005,
       "nota": "7% da receita · provisionado por competência",
       "prov": true,
       "esp_pct": 0.07,
       "real_pct": 0.07
      }
     ],
-    "sub_real": 24167.72475,
-    "sub_esp": 24167.72475
+    "sub_real": 24407.743749999998,
+    "sub_esp": 24407.743749999998
    },
    {
     "id": "PESSOAL",
@@ -8295,14 +8295,14 @@
      },
      {
       "cat": "Recepção + limpeza + encargos",
-      "real": 1986.0654545454545,
-      "esp": 1986.0654545454545,
+      "real": 4100.295454545454,
+      "esp": 4100.295454545454,
       "nota": "total pessoal do Excel menos gerente",
       "prov": false
      }
     ],
-    "sub_real": 8486.065454545454,
-    "sub_esp": 8486.065454545454
+    "sub_real": 10600.295454545454,
+    "sub_esp": 10600.295454545454
    },
    {
     "id": "OCUPACAO",
@@ -8310,21 +8310,21 @@
     "linhas": [
      {
       "cat": "Aluguel + IPTU",
-      "real": 9038.26881,
-      "esp": 9038.26881,
+      "real": 9039.172727272728,
+      "esp": 9039.172727272728,
       "nota": "rateio 2 lojas",
       "prov": false
      },
      {
       "cat": "Sistemas, utilidades, seguro e outros",
-      "real": 1775.6272727272726,
-      "esp": 1775.6272727272726,
+      "real": 6888.722727272728,
+      "esp": 6888.722727272728,
       "nota": "rateio 2 lojas · inclui saídas ainda sem natureza",
       "prov": false
      }
     ],
-    "sub_real": 10813.896082727271,
-    "sub_esp": 10813.896082727271
+    "sub_real": 15927.895454545454,
+    "sub_esp": 15927.895454545454
    },
    {
     "id": "COMERCIAL",
@@ -8332,15 +8332,15 @@
     "linhas": [
      {
       "cat": "Mídia paga",
-      "real": 1552.231818181818,
-      "esp": 1552.231818181818,
+      "real": 2029.5045454545452,
+      "esp": 2029.5045454545452,
       "nota": "rateio · varia por fase",
       "prov": false
      },
      {
       "cat": "Beleza Boost (gestão)",
-      "real": 1900.0000000000002,
-      "esp": 1900.0000000000002,
+      "real": 1900.0,
+      "esp": 1900.0,
       "nota": "100% Fast Escova",
       "prov": false
      },
@@ -8353,30 +8353,30 @@
      },
      {
       "cat": "Royalty",
-      "real": 3517.1325,
-      "esp": 3517.1325,
+      "real": 3552.0625000000005,
+      "esp": 3552.0625000000005,
       "nota": "máx entre R$ 2.500 e 7% da receita · provisionado",
       "prov": true
      }
     ],
-    "sub_real": 6969.364318181819,
-    "sub_esp": 6969.364318181819
+    "sub_real": 7481.567045454545,
+    "sub_esp": 7481.567045454545
    }
   ],
-  "var_real": 24167.72475,
-  "var_esp": 24167.72475,
-  "fixo_real": 26269.325855454546,
-  "fixo_esp": 26269.325855454546,
-  "custo_real": 50437.05060545455,
-  "custo_esp": 50437.05060545455,
-  "res_real": -192.30060545454762,
-  "res_caixa": 6841.964394545453,
-  "provisoes_nao_debitadas": 7034.265,
-  "res_esp_mesma_receita": -192.30060545454762,
+  "var_real": 24407.743749999998,
+  "var_esp": 24407.743749999998,
+  "fixo_real": 34009.75795454545,
+  "fixo_esp": 34009.75795454545,
+  "custo_real": 58417.501704545444,
+  "custo_esp": 58417.501704545444,
+  "res_real": -7673.751704545455,
+  "res_caixa": -569.6267045454542,
+  "provisoes_nao_debitadas": 7104.125000000001,
+  "res_esp_mesma_receita": -7673.751704545455,
   "res_esp_na_meta": null,
-  "be_modelo_1loja": 50615.27139779297,
-  "mc_real": 22559.89275,
-  "mc_esp": 22559.89275
+  "be_modelo_1loja": 65529.39875634961,
+  "mc_real": 22783.943750000002,
+  "mc_esp": 22783.943750000002
  },
  "premissas": {
   "comissao": 0.351,
@@ -8385,13 +8385,13 @@
   "inadimplencia": 0.0
  },
  "equilibrio": {
-  "fatura_hoje": 50244.75,
-  "custo_fixo_mes": 26269.325855454546,
+  "fatura_hoje": 50743.75,
+  "custo_fixo_mes": 34009.75795454545,
   "cenarios": [
    {
     "nome": "Projetado do Excel",
     "comissao": null,
-    "mc": 0.5189999999999999
+    "mc": 0.519
    },
    {
     "nome": "Se comissão subir para 40%",
