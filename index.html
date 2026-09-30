@@ -5973,13 +5973,20 @@ function renderMidias(){
   const gmbAcoes = gmb30 ? ((gmb30.actions_phone||0) + (gmb30.actions_directions||0)) : 0;
   const gmbRating = MID.google_business?.rating?.estrelas_media || null;
 
+  // Vaga de emprego (conversa de R$ 1-2) não é cliente: a orientação de "escalar"
+  // ou "pausar" olha o CPA de SERVIÇO (janela 30d menos as campanhas de vaga).
+  const _p30 = (M.por_periodo && M.por_periodo['30d']) || null, _vg = M.vagas_30d || null;
+  const _svcConv = (_p30 && _vg) ? (_p30.conversas_msg||0) - (_vg.conversas||0) : 0;
+  const cpaSvc = (_svcConv > 0) ? ((_p30.gasto||0) - (_vg.gasto_total||0)) / _svcConv : null;
+  const cpaDir = cpaSvc || cpaMes, cpaDirTxt = cpaSvc ? ' de serviço (sem vagas, 30d)' : '';
+
   let direcMidia;
   if(!gastoMes){
     direcMidia = `<strong>Sem investimento no mês.</strong> Se a base está crescendo só com o orgânico + Google, é sinal bom — mas revisar se vale escalar (mídia paga acelera aquisição).`;
-  } else if(cpaMes > cpaMeta*1.3){
-    direcMidia = `<strong>CPA de ${brl(cpaMes)} está caro</strong> (meta ${brl(cpaMeta)}). Pausa o pior anúncio no card abaixo (🎨 Anúncios individuais) e realoca o budget nos que puxam CPA pra baixo.`;
-  } else if(cpaMes && cpaMes <= cpaMeta*0.7){
-    direcMidia = `<strong>CPA de ${brl(cpaMes)} está ótimo</strong> (30%+ abaixo da meta). Momento pra <strong>escalar</strong> — subir 20-40% do budget dos anúncios com status "escalar" no card abaixo.`;
+  } else if(cpaDir > cpaMeta*1.3){
+    direcMidia = `<strong>CPA${cpaDirTxt} de ${brl(cpaDir)} está caro</strong> (meta ${brl(cpaMeta)}). Pausa o pior anúncio no card abaixo (🎨 Anúncios individuais) e realoca o budget nos que puxam CPA pra baixo.`;
+  } else if(cpaDir && cpaDir <= cpaMeta*0.7){
+    direcMidia = `<strong>CPA${cpaDirTxt} de ${brl(cpaDir)} está ótimo</strong> (30%+ abaixo da meta). Momento pra <strong>escalar</strong> — subir 20-40% do budget dos anúncios com status "escalar" no card abaixo.`;
   } else {
     direcMidia = `<strong>Mídia rodando na meta.</strong> Continua acompanhando CPA e frequência (se passar de 3, público cansa). Boa hora de testar novo criativo pra não estagnar.`;
   }
