@@ -1152,6 +1152,30 @@ def main():
     t = Trinks()
     # BRT global no módulo (ver definição no topo)
     hoje = datetime.now(BRT).date()
+    def _transacoes(t, ini, fim):
+        """Transacoes entre ini e fim, inclusive nas duas pontas.
+
+        O /v1/transacoes trata dataFim como EXCLUSIVO — ao contrario do
+        /v1/agendamentos, que devolve o dia pedido. Descoberto em 19/09/2026,
+        quando dataInicio = dataFim = 2026-09-19 devolveu zero transacoes com 37
+        existindo, e corrigido naquele dia em scripts/fechamento_dia.py. A
+        correcao nao chegou aqui, e este e o script que monta o painel.
+
+        O sintoma so aparece no ULTIMO dia do mes, porque e o unico dia em que
+        fim_mes == hoje: em 30/09/2026 o painel mostrou R$ 0,00 de caixa nas
+        duas lojas com atendimento acontecendo, porque os agendamentos vinham
+        pela rota inclusiva e o dinheiro pela exclusiva. E some sozinho depois,
+        quando o cache do ano e refeito no domingo e passa a suprir o dia — por
+        isso 31/08 parece normal hoje e ninguem nunca pegou o defeito.
+
+        Pedimos um dia a mais e filtramos aqui: funciona nas duas rotas sem
+        depender de adivinhar a regra de cada uma.
+        """
+        janela = {"dataInicio": ini.isoformat(), "dataFim": (fim + timedelta(days=1)).isoformat()}
+        ini_iso, fim_iso = ini.isoformat(), fim.isoformat()
+        return [x for x in t.paginate("/v1/transacoes", janela)
+                if ini_iso <= str(x.get("dataHora", ""))[:10] <= fim_iso]
+
     ini_ano = date(hoje.year, 1, 1)
     fim_ano = date(hoje.year, 12, 31)
     ini_mes = date(hoje.year, hoje.month, 1)
@@ -1229,7 +1253,7 @@ def main():
     if eh_domingo or not cache_tx_existe:
         motivo = "domingo · refresh semanal" if eh_domingo else "cache miss"
         print(f"[fetch] transacoes ANO ({motivo})...")
-        transac_ano = list(t.paginate("/v1/transacoes", {"dataInicio": ini_ano.isoformat(), "dataFim": fim_ano.isoformat()}))
+        transac_ano = _transacoes(t, ini_ano, fim_ano)
         TRANSAC_ANO_CACHE.write_text(json.dumps({
             "gerado_em": datetime.now(BRT).isoformat(timespec="seconds"),
             "payload": transac_ano,
@@ -1242,7 +1266,7 @@ def main():
         print(f"[fetch] transacoes ANO (cache local · último domingo {cache_ger})")
 
     print("[fetch] transacoes MÊS corrente (fresh)...")
-    transac_mes = list(t.paginate("/v1/transacoes", {"dataInicio": ini_mes.isoformat(), "dataFim": fim_mes.isoformat()}))
+    transac_mes = _transacoes(t, ini_mes, fim_mes)
     print(f"  {len(transac_mes)} transações do mês")
 
     # Merge: cache ano SEM mês corrente + mês corrente fresh
