@@ -328,7 +328,7 @@ def mapa_painel() -> dict:
     comp = _linha(d, "COMPETÊNCIA DO MÊS CORRENTE")
     blk = {k: _linha(d, frag, inicio=comp, fim=comp + 16) for k, frag in (
         ("alu", "Aluguel + IPTU — caixa"), ("alu_aj", "Aluguel + IPTU — ajuste"),
-        ("out", "consumo e sem natureza — caixa"), ("out_aj", "Sistemas, utilidades e outros — ajuste"),
+        ("out", "seguro e consumo — caixa"), ("out_aj", "Sistemas, utilidades e outros — ajuste"),
         ("pes", "encargos e rescisão (Escova) — caixa"), ("pes_aj", "Pessoal CLT — ajuste"),
         ("ger", "Gerente única — competência"), ("bb", "Beleza Boost — caixa"),
         ("bb_aj", "Beleza Boost Escova — ajuste"), ("bb_spa", "Beleza Boost Spa — competência"),
@@ -368,6 +368,9 @@ def formulas_mes_corrente(c, blk, pl_rec):
         }
     out["escova"]["Pessoal"] = f"=-({b['ger']}*{P}82+{b['pes']}+{b['pes_aj']})"
     out["escova"]["Beleza Boost"] = f"=-({b['bb']}+{b['bb_aj']})"
+    # royalty do Spa so a partir do mes de inicio da cobranca (Premissas B120)
+    r_spa = f"{c}{pl_rec['spa']}"
+    out["spa"]["Royalty"] = f"=IF({c}$4<{P}120,0,IF({r_spa}>0,-MAX({P}80,{r_spa}*{P}79),0))"
     out["spa"]["Pessoal"] = f"=-{b['ger']}*{P}83"
     out["spa"]["Beleza Boost"] = f"=-{b['bb_spa']}"
     return out
