@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-01T05:08:52-03:00",
+  "gerado_em": "2026-10-01T10:50:32-03:00",
   "hoje": "2026-10-01",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -263,8 +263,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 14,
-    "saldoRestante": 9986
+    "totalUtilizado": 19,
+    "saldoRestante": 9981
   },
   "metas_franqueadora": null,
   "unidade_config": {
@@ -947,9 +947,9 @@
         "clientes_unicos": 30,
         "em_atendimento": 0,
         "n_prof_ativos": 7,
-        "rs_hora_salao": 107.6,
-        "horas_operacao_periodo": 66.0,
-        "utilizacao_agregada_pct": 5.3,
+        "rs_hora_salao": 104.69,
+        "horas_operacao_periodo": 68.0,
+        "utilizacao_agregada_pct": 5.1,
         "ticket_meta": 317.37,
         "ticket_meta_periodo": 311.06,
         "ticket_atingimento_pct": 72.2,
@@ -1654,9 +1654,9 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 528.0,
+          "capacidade_horas": 542.7,
           "horas_ocupadas": 27.8,
-          "utilizacao_pct": 5.3
+          "utilizacao_pct": 5.1
         }
       },
       "densidade_hora": [
@@ -2061,7 +2061,7 @@
         "em_atendimento": 0,
         "n_prof_ativos": 0,
         "rs_hora_salao": 0.0,
-        "horas_operacao_periodo": 0.0,
+        "horas_operacao_periodo": 2.0,
         "utilizacao_agregada_pct": 0.0,
         "caixa_delta_pct": null,
         "atend_delta_pct": null,
@@ -2251,7 +2251,7 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 0.0,
+          "capacidade_horas": 14.7,
           "horas_ocupadas": 0.0,
           "utilizacao_pct": 0.0
         }
@@ -2329,7 +2329,7 @@
         "em_atendimento": 0,
         "n_prof_ativos": 0,
         "rs_hora_salao": 0.0,
-        "horas_operacao_periodo": 36.0,
+        "horas_operacao_periodo": 38.0,
         "utilizacao_agregada_pct": 0.0,
         "caixa_delta_pct": null,
         "atend_delta_pct": -100.0,
@@ -2579,7 +2579,7 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 288.0,
+          "capacidade_horas": 302.7,
           "horas_ocupadas": 0.0,
           "utilizacao_pct": 0.0
         }
@@ -2657,7 +2657,7 @@
         "em_atendimento": 0,
         "n_prof_ativos": 0,
         "rs_hora_salao": 0.0,
-        "horas_operacao_periodo": 0.0,
+        "horas_operacao_periodo": 2.0,
         "utilizacao_agregada_pct": 0.0,
         "caixa_delta_pct": null,
         "atend_delta_pct": null,
@@ -2673,7 +2673,7 @@
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "data": "2026-09-24",
-          "hora_max": 5.13,
+          "hora_max": 10.83,
           "caixa": 0.0,
           "atend_fin": 0,
           "faturamento_apurado": 0.0,
@@ -2696,8 +2696,8 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "05:08",
-          "hora_atual_num": 5.13,
+          "hora_atual_str": "10:50",
+          "hora_atual_num": 10.83,
           "pct_esperado_agora": 0.0,
           "meta_dia": 862.07,
           "meta_esperada_agora": 0.0,
@@ -2846,7 +2846,7 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 0.0,
+          "capacidade_horas": 14.7,
           "horas_ocupadas": 0.0,
           "utilizacao_pct": 0.0
         }
@@ -2909,7 +2909,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-01T05:08:52-03:00",
+    "gerado_em": "2026-10-01T10:50:32-03:00",
     "hoje": "2026-10-01",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -2956,7 +2956,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-01T05:08:52-03:00",
+    "gerado_em": "2026-10-01T10:50:33-03:00",
     "n_agendamentos": 36,
     "horas": [
       9,
