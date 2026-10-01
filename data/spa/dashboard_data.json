@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-09-30T22:00:06-03:00",
+  "gerado_em": "2026-09-30T23:20:29-03:00",
   "hoje": "2026-09-30",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -261,8 +261,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 0,
-    "saldoRestante": 10000
+    "totalUtilizado": 7,
+    "saldoRestante": 9993
   },
   "metas_franqueadora": null,
   "unidade_config": {
@@ -1727,8 +1727,8 @@
           "comissao": 297.6,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "CORPORAL": 874.0,
-            "ADICIONAIS": 118.0
+            "ADICIONAIS": 118.0,
+            "CORPORAL": 874.0
           },
           "ticket_medio_serv": 124.0
         },
@@ -2996,8 +2996,8 @@
           "comissao": 297.6,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "CORPORAL": 874.0,
-            "ADICIONAIS": 118.0
+            "ADICIONAIS": 118.0,
+            "CORPORAL": 874.0
           },
           "ticket_medio_serv": 124.0
         },
@@ -3622,8 +3622,8 @@
           "comissao": 92.1,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "CORPORAL": 248.0,
-            "ADICIONAIS": 59.0
+            "ADICIONAIS": 59.0,
+            "CORPORAL": 248.0
           },
           "ticket_medio_serv": 102.33
         },
@@ -3933,7 +3933,7 @@
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "data": "2026-09-23",
-          "hora_max": 22.0,
+          "hora_max": 23.33,
           "caixa": 0.0,
           "atend_fin": 2,
           "faturamento_apurado": 0.0,
@@ -3956,8 +3956,8 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "22:00",
-          "hora_atual_num": 22.0,
+          "hora_atual_str": "23:20",
+          "hora_atual_num": 23.33,
           "pct_esperado_agora": 100.0,
           "meta_dia": 714.29,
           "meta_esperada_agora": 714.29,
@@ -4377,7 +4377,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-09-30T22:00:06-03:00",
+    "gerado_em": "2026-09-30T23:20:29-03:00",
     "hoje": "2026-09-30",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -4528,7 +4528,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-09-30T22:00:06-03:00",
+    "gerado_em": "2026-09-30T23:20:29-03:00",
     "n_agendamentos": 36,
     "horas": [
       9,
