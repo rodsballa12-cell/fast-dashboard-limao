@@ -194,6 +194,10 @@
   .bars-hora .b{background:var(--accent-2);min-height:2px;border-radius:2px 2px 0 0;} .bars-hora .b.hi{background:var(--accent);}
   .bars-dia{display:grid;grid-template-columns:repeat(31,1fr);gap:3px;height:170px;align-items:end;padding:8px 0;border-bottom:1px solid var(--grid);}
   .bars-dia .b{background:var(--accent-2);border-radius:2px 2px 0 0;min-height:2px;} .bars-dia .b.hi{background:var(--accent);} .bars-dia .b[data-empty="1"]{background:var(--grid);}
+  /* Barras EMPILHADAS no consolidado: amarelo Escova embaixo + teal Spa em cima */
+  .b.b-stack{background:transparent !important;display:flex;flex-direction:column-reverse;overflow:hidden;}
+  .b.b-stack .b-esc, .b.b-stack .b-spa{width:100%;transition:height .3s;}
+  .b.b-stack .b-esc{border-radius:0;} .b.b-stack .b-spa{border-radius:2px 2px 0 0;}
   .xaxis-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;font-size:11px;text-align:center;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums;}
   .xaxis-hora{display:grid;grid-template-columns:repeat(13,1fr);gap:4px;font-size:10px;text-align:center;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums;}
   .xaxis-dia{display:grid;grid-template-columns:repeat(31,1fr);gap:3px;font-size:9px;text-align:center;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums;}
@@ -1257,26 +1261,69 @@ function renderTable(container_id, titulo, subtitle, headers, rows){
   document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><table class="simple"><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`;
 }
 
-function renderBarsDia(container_id, titulo, subtitle, dias_data, insight){
+// Helper: no modo consolidado, extrai o breakdown (escova + spa) de dia/dow/hora
+// via (TRINKS_ESC / TRINKS_SPA). Usado pra montar barras empilhadas por unidade.
+// Retorna {esc: valor_escova, spa: valor_spa} ou null se não disponível.
+function _consDiaBreak(aba_nome, dia_num){
+  if(!_consBreak()) return null;
+  const e = ((TRINKS_ESC.abas||{})[aba_nome]||{}).por_dia_mes || [];
+  const s = ((TRINKS_SPA.abas||{})[aba_nome]||{}).por_dia_mes || [];
+  const findV = (arr) => { const f = arr.find(x=>x.d===dia_num); return f ? (f.v||0) : 0; };
+  return {esc: findV(e), spa: findV(s)};
+}
+function _consDowBreak(aba_nome, nome_dow){
+  if(!_consBreak()) return null;
+  const e = ((TRINKS_ESC.abas||{})[aba_nome]||{}).por_dow || [];
+  const s = ((TRINKS_SPA.abas||{})[aba_nome]||{}).por_dow || [];
+  const findV = (arr) => { const f = arr.find(x=>x.nome===nome_dow); return f ? (f.v||0) : 0; };
+  return {esc: findV(e), spa: findV(s)};
+}
+// Monta HTML de barra EMPILHADA (amarelo Escova + teal SPA)
+function _barStacked(esc, spa, max, titulo){
+  const total = esc + spa;
+  const pct_total = total > 0 ? total/max*100 : 0.6;
+  const pct_esc = total > 0 ? esc/total*100 : 0;
+  return `<div class="b b-stack" style="height:${pct_total}%" title="${titulo}"><div class="b-esc" style="height:${pct_esc}%;background:${COR_ESCOVA}"></div><div class="b-spa" style="height:${100-pct_esc}%;background:${COR_SPA}"></div></div>`;
+}
+function _legendaUnidades(){
+  return `<div style="display:flex;gap:14px;justify-content:center;margin-top:6px;font-size:11px;color:var(--ink-2)">
+    <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:11px;height:11px;background:${COR_ESCOVA};border-radius:2px"></span>💇 Escova</span>
+    <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:11px;height:11px;background:${COR_SPA};border-radius:2px"></span>🧖 Spa</span>
+  </div>`;
+}
+
+function renderBarsDia(container_id, titulo, subtitle, dias_data, insight, aba_nome){
   const map={};dias_data.forEach(d=>map[d.d]={n:d.n,v:d.v});
   const max=Math.max(...dias_data.map(d=>d.v),1);
+  const stacked = aba_nome && _consBreak();
   let bars='',axis='';
   for(let d=1;d<=31;d++){
     const v=map[d]?map[d].v:0, n=map[d]?map[d].n:0;
-    bars+=`<div class="b${v===max?' hi':''}" style="height:${v>0?v/max*100:0.6}%" ${!v?'data-empty="1"':''} title="${String(d).padStart(2,'0')} · ${brl(v)} · ${n} atend"></div>`;
+    if(stacked){
+      const b = _consDiaBreak(aba_nome, d) || {esc:0, spa:0};
+      bars += _barStacked(b.esc, b.spa, max, `${String(d).padStart(2,'0')} · ${brl(v)} · ${n} atend\\nEscova R$ ${Math.round(b.esc)} · Spa R$ ${Math.round(b.spa)}`);
+    } else {
+      bars+=`<div class="b${v===max?' hi':''}" style="height:${v>0?v/max*100:0.6}%" ${!v?'data-empty="1"':''} title="${String(d).padStart(2,'0')} · ${brl(v)} · ${n} atend"></div>`;
+    }
     axis+=`<span>${String(d).padStart(2,'0')}</span>`;
   }
-  document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="bars-dia">${bars}</div><div class="xaxis-dia">${axis}</div>${insight?'<div class="insight">'+insight+'</div>':''}</div>`;
+  document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="bars-dia">${bars}</div><div class="xaxis-dia">${axis}</div>${stacked?_legendaUnidades():''}${insight?'<div class="insight">'+insight+'</div>':''}</div>`;
 }
 
-function renderBarsDow(container_id, titulo, subtitle, dow_data, insight){
+function renderBarsDow(container_id, titulo, subtitle, dow_data, insight, aba_nome){
   const max=Math.max(...dow_data.map(d=>d.v),1);
+  const stacked = aba_nome && _consBreak();
   let bars='',axis='';
   dow_data.forEach(d=>{
-    bars+=`<div class="b${d.v===max&&d.v>0?' hi':''}" style="height:${d.v>0?d.v/max*100:0.6}%" title="${d.nome}: ${brl0(d.v)} · ${d.n} atend"></div>`;
+    if(stacked){
+      const b = _consDowBreak(aba_nome, d.nome) || {esc:0, spa:0};
+      bars += _barStacked(b.esc, b.spa, max, `${d.nome}: ${brl0(d.v)} · ${d.n} atend\\nEscova R$ ${Math.round(b.esc)} · Spa R$ ${Math.round(b.spa)}`);
+    } else {
+      bars+=`<div class="b${d.v===max&&d.v>0?' hi':''}" style="height:${d.v>0?d.v/max*100:0.6}%" title="${d.nome}: ${brl0(d.v)} · ${d.n} atend"></div>`;
+    }
     axis+=`<span>${d.nome}<br><span style="opacity:.6">${brl0(d.v/1000)}k</span></span>`;
   });
-  document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="bars-dow">${bars}</div><div class="xaxis-dow">${axis}</div>${insight?'<div class="insight">'+insight+'</div>':''}</div>`;
+  document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="bars-dow">${bars}</div><div class="xaxis-dow">${axis}</div>${stacked?_legendaUnidades():''}${insight?'<div class="insight">'+insight+'</div>':''}</div>`;
 }
 
 function renderBarsHora(container_id, titulo, subtitle, hora_data, is_media, insight){
@@ -1292,18 +1339,30 @@ function renderBarsHora(container_id, titulo, subtitle, hora_data, is_media, ins
 }
 
 function renderRankingProf(container_id, titulo, subtitle, prof_list, total_n){
-  const rows=prof_list.slice(0,10).map(p=>[
-    p.nome, p.n, brl0(p.v),
-    brl(p.ticket_medio || (p.n ? p.v/p.n : 0)),
-    (p.horas_trab || 0).toFixed(1) + 'h'
-  ]);
+  // No modo consolidado, cada prof tem _unidade: 'escova' | 'spa' | 'ambas'.
+  // Prefixa o nome com um bullet colorido pra identificar a loja de origem.
+  const stacked = _consBreak();
+  const bulletCor = (u) => u==='escova' ? COR_ESCOVA : u==='spa' ? COR_SPA : '#999';
+  const bulletEmoji = (u) => u==='escova' ? '💇' : u==='spa' ? '🧖' : '🏢';
+  const rows=prof_list.slice(0,10).map(p=>{
+    let nome = p.nome;
+    if(stacked && p._unidade){
+      nome = `<span style="display:inline-block;width:10px;height:10px;background:${bulletCor(p._unidade)};border-radius:50%;margin-right:7px;vertical-align:middle" title="${p._unidade}"></span>${bulletEmoji(p._unidade)} ${p.nome}`;
+    }
+    return [
+      nome, p.n, brl0(p.v),
+      brl(p.ticket_medio || (p.n ? p.v/p.n : 0)),
+      (p.horas_trab || 0).toFixed(1) + 'h'
+    ];
+  });
   const totalBadge = (total_n && total_n > prof_list.slice(0,10).length)
     ? ` <span style="color:var(--ink-3);font-size:11px;font-weight:400">(top 10 de ${total_n})</span>`
     : '';
+  const legenda = stacked ? ` <span style="font-size:10.5px;color:var(--ink-3)">· 💇 Escova · 🧖 Spa</span>` : '';
   // B2 · "Receita serv" (não caixa) — o valor é serv_v atribuído ao prof executor do
   // agendamento. Não inclui produto/pacote da mesma comanda (esses ficam no ticket
   // médio da recepção, não atribuídos ao prof específico).
-  renderTable(container_id, titulo + totalBadge,
+  renderTable(container_id, titulo + totalBadge + legenda,
     (subtitle ? subtitle + ' · ' : '') + '<span style="color:var(--ink-3);font-size:11px">valores da coluna Receita = só serviço, sem produto/pacote da mesma comanda</span>',
     ['Profissional','Atend','Receita serv','Ticket médio','Horas trab'], rows);
 }
@@ -3355,7 +3414,7 @@ function renderMensal(data){
 
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · onde tá o R$/hora forte', 'mês · o "âncora" traz volume, a "jóia" traz margem — combine os dois em pacote', m.rentabilidade_hora || []);
 
-  renderBarsDia('per-dia','📈 Trajetória do mês · dia a dia','Onde bombou, onde travou — vê quais dias-alavanca faltam pra bater meta',m.por_dia_mes,'');
+  renderBarsDia('per-dia','📈 Trajetória do mês · dia a dia','Onde bombou, onde travou — vê quais dias-alavanca faltam pra bater meta',m.por_dia_mes,'','mensal');
   renderEscalaFluxo('per-escala-fluxo', data.densidade_dow, m.hora_media, 'mês · '+k.dias_op+'d op.');
   // UNIFICADO · Profissionais + Comissões num único card
   renderProfComissoes('per-prof', 'mês', mergeRankingProf(m.ranking_prof, m.ranking_prof_executor), m.ranking_prof_total_n, m.categoria_native, k.caixa || 0, data.unidade_config);
@@ -3387,7 +3446,7 @@ function renderSemanal(data){
   }
   // CONSOLIDAÇÃO C · Novos vs Recorr agora só em Clientes
   renderRentabilidade('per-rentabilidade', '💰 Rentabilidade · R$/hora da semana', 'onde priorizar equipe pra render mais no fim de semana', s.rentabilidade_hora || []);
-  renderBarsDow('per-dow','📊 Onde o caixa se concentra na semana','Distribuição por dia · decide onde reforçar equipe e campanha',s.por_dow,'');
+  renderBarsDow('per-dow','📊 Onde o caixa se concentra na semana','Distribuição por dia · decide onde reforçar equipe e campanha',s.por_dow,'','semanal');
   // Cruzamento Google × Faturamento por DOW: movido pra aba Mídia (renderMidiasGoogleDow)
   renderEscalaFluxo('per-escala-fluxo', data.densidade_dow, s.hora_media, 'semana · '+k.dias_op+'d op.');
   // UNIFICADO · Profissionais + Comissões num único card
@@ -4713,6 +4772,20 @@ async function load(showToast=false){
     limparPlaceholder();
     const data = await resp.json();
     TRINKS = data;
+    // Consolidado: carrega AMBOS os payloads (Escova + SPA) pra renderers
+    // conseguirem fazer barras empilhadas por unidade. Falha silenciosa não
+    // deixa os cards normais quebrarem.
+    TRINKS_ESC = null; TRINKS_SPA = null;
+    if(UNIDADE_ATIVA === 'consolidado'){
+      try {
+        const [e,s] = await Promise.all([
+          fetch('data/dashboard_data.json?_='+Date.now(), {cache:'no-store'}),
+          fetch('data/spa/dashboard_data.json?_='+Date.now(), {cache:'no-store'})
+        ]);
+        if(e.ok) TRINKS_ESC = await e.json();
+        if(s.ok) TRINKS_SPA = await s.json();
+      } catch(err){ console.warn('consol breakdown load:', err); }
+    }
     // Atualiza label do nav de período assim que TRINKS chega
     try { if(typeof atualizarNavPeriodo === 'function') atualizarNavPeriodo(); } catch(e){}
     // Verifica se cota Trinks está esgotada (arquivo separado, não sobrescreve dashboard_data.json)
@@ -4988,7 +5061,12 @@ window.refreshInteligente = refreshInteligente;
 window.reloadAllTabs = typeof reloadAllTabs !== 'undefined' ? reloadAllTabs : null;
 
 // ---------- ABA FINANCEIRO ----------
-let FIN = null, TRINKS = null;
+let FIN = null, TRINKS = null, TRINKS_ESC = null, TRINKS_SPA = null;
+// Cores oficiais por unidade (barras empilhadas no consolidado)
+const COR_ESCOVA = '#F5B800';  // amarelo
+const COR_SPA    = '#24B3A6';  // teal
+// Helper: detecta se estamos renderizando no modo consolidado com breakdown disponível
+function _consBreak(){ return UNIDADE_ATIVA === 'consolidado' && TRINKS_ESC && TRINKS_SPA; }
 
 // A receita da DRE vem sempre do Trinks, ao vivo. Os custos vêm do painel Excel,
 // que é atualizado à mão. Tudo que é definido como percentual da receita
