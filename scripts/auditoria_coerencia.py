@@ -29,7 +29,7 @@ SAÍDA
   0 = tudo bate · 1 = divergência real · 2 = não deu para avaliar
 """
 from __future__ import annotations
-import json, re, sys
+import datetime, json, re, sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -109,7 +109,23 @@ def conferir_periodos(achados, d, nome):
             vals.append((j, v))
         if not vals:
             continue
-        for (j1, v1), (j2, v2) in zip(vals, vals[1:]):
+        # Só compara janelas em que a menor cabe inteira na maior. A semana
+        # (seg-dom) começa no mês anterior nos primeiros dias do mês — em
+        # 02/10/2026 a semana tinha 28/09 a 02/10 e o mês só 01-02/10, e a regra
+        # acusava "semanal maior que mensal" como erro todo início de mês.
+        try:
+            hoje = datetime.date.fromisoformat(str(d.get("hoje"))[:10])
+            seg = hoje - datetime.timedelta(days=hoje.weekday())
+        except (TypeError, ValueError):
+            hoje = seg = None
+        v = dict(vals)
+        pares = [("diario", "semanal"), ("diario", "mensal"), ("mensal", "anual")]
+        if hoje is None or (seg.year, seg.month) == (hoje.year, hoje.month):
+            pares.append(("semanal", "mensal"))
+        if hoje is None or seg.year == hoje.year:
+            pares.append(("semanal", "anual"))
+        for j1, j2 in pares:
+            v1, v2 = v[j1], v[j2]
             if v1 - v2 > TOL:
                 achados.append(("erro",
                     f"{nome} · {campo}: {j1} ({v1}) é maior que {j2} ({v2}) — "
