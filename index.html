@@ -4777,7 +4777,10 @@ async function load(showToast=false){
     document.getElementById('loading').style.display='none';
     document.getElementById('content').style.display='';
     try{ renderScaffoldingBanner(); }catch(e){}
-    try{ renderConsolidadoPainel(); }catch(e){ console.warn('consolidado painel', e); }
+    // renderConsolidadoPainel desativado em 02/10/2026 a pedido do Rodrigo.
+    // Consolidado agora mostra os mesmos cards que Escova/SPA (dados somados).
+    // Barras empilhadas por unidade (amarelo Escova + teal SPA) vem na proxima etapa.
+    // try{ renderConsolidadoPainel(); }catch(e){ console.warn('consolidado painel', e); }
     if(showToast) toast(`✅ Dados recarregados<br><small>Snapshot de ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} BRT · idade ${ageMin} min</small>`);
   } catch(e){
     if(showToast) toast(`❌ <strong>Erro</strong> ao recarregar: ${e.message}`, true);
