@@ -22,8 +22,12 @@ O que faz, todo dia, na rotina do agente:
      despesas por competencia estimada: caixa do razao da Conta_XP no mes + os
      ajustes (linhas azuis) do bloco "COMPETENCIA DO MES EM CURSO", rateados
      por m2; comissao, royalty, CMV e Simples por regra das Premissas.
-   - a grade da DRE do mes corrente passa a ler o P&L; os meses seguintes
-     continuam na projecao.
+   - a grade da DRE do mes corrente CONTINUA NA PROJECAO ate o mes fechar
+     (Rodrigo 02/10/2026: com 2 dias de mes, o real puro zerava outubro e
+     distorcia o ano 1 e o caixa). So a receita muda: passa a ser o maior entre
+     a projecao (meta do mes x curva do Pack) e o real ja apurado no P&L.
+   - quando o mes fecha (bloco 2), a grade inteira do mes - receita e custos -
+     passa a ler o P&L, que tem o real e a competencia estimada.
 
 2. FECHAMENTO DE MES (so depois que o mes termina)
    - grava a receita real do mes no P&L 2026 (linhas de Receita bruta das duas
@@ -494,18 +498,26 @@ def main():
             for k, f in form[u].items():
                 linha = cor["pl"][u][k]
                 op("DRE", linha, c_pl, "f", f, k, cor["formula"](linha, c_pl))
-                g = cor["grid"][u][k]
-                op("DRE", g, c_gr, "f", f"=DRE!{L_pl}{linha}", k, cor["formula"](g, c_gr))
+        # grade do mes corrente: custos ficam na projecao; receita = maior entre a
+        # projecao e o real apurado. Se a celula ainda nao tem a projecao (ex.: ja
+        # aponta so para o P&L), nao inventa formula - avisa.
         for linha_gr, linha_pl in zip(dre["grid_receita"], (dre["pl_escova"], dre["pl_spa"])):
-            op("DRE", linha_gr, c_gr, "f", f"=DRE!{L_pl}{linha_pl}", "Receita bruta",
-               cor["formula"](linha_gr, c_gr))
+            atual = str(cor["formula"](linha_gr, c_gr) or "")
+            real = f"DRE!{L_pl}{linha_pl}"
+            if real in atual:
+                continue
+            if atual.startswith("=") and "Premissas" in atual:
+                op("DRE", linha_gr, c_gr, "f", f"=MAX({atual[1:]},{real})", "Receita bruta", atual)
+            else:
+                avisos.append(f"DRE {_mes_pt(mes)} linha {linha_gr}: receita da grade nao e "
+                              f"projecao ({atual[:40]}) - nao mexi; restaurar a formula do Pack")
         op("DRE", dre["pl_status"], c_pl, "txt", "EM CURSO (real + competência estimada)", "",
            val["pl_status"].get(mes))
-        op("DRE", dre["grid_status"], c_gr, "txt", "EM CURSO (real)", "Status do m",
+        op("DRE", dre["grid_status"], c_gr, "txt", "EM CURSO (proj.)", "Status do m",
            cor["formula"](dre["grid_status"], c_gr))
         if len(ops) > n_antes:
-            mudou.append(f"DRE {_mes_pt(mes)}: coluna do mes corrente passa a real "
-                         f"({len(ops) - n_antes} celulas)")
+            mudou.append(f"DRE {_mes_pt(mes)}: P&L do mes corrente com real + competencia; "
+                         f"grade segue na projecao ({len(ops) - n_antes} celulas)")
     elif not c_pl:
         avisos.append(f"o P&L 2026 nao tem coluna para {_mes_pt(mes)} - a DRE do mes corrente "
                       f"continua na projecao (precisa de bloco novo no P&L)")
@@ -541,6 +553,12 @@ def main():
             letra = get_column_letter(c_pl)
             for linha_gr, linha_pl in zip(dre["grid_receita"], (dre["pl_escova"], dre["pl_spa"])):
                 op("DRE", linha_gr, c_gr, "f", f"=DRE!{letra}{linha_pl}", "Receita bruta")
+            # mes que passou pelo "EM CURSO": o P&L tem os custos por competencia
+            # estimada; a grade, que ficou na projecao durante o mes, passa a le-los.
+            if str(val["pl_status"].get(ym) or "").upper().startswith("EM CURSO"):
+                for u in ("escova", "spa"):
+                    for k, linha in cor["pl"][u].items():
+                        op("DRE", cor["grid"][u][k], c_gr, "f", f"=DRE!{letra}{linha}", k)
             op("DRE", dre["grid_status"], c_gr, "txt", "REAL (receita)", "Status do m")
 
         # Fluxo: receita recebida real, so quando o extrato cobre o mes inteiro

@@ -206,13 +206,17 @@
       "meta_mensal_por_mes": {
         "_desc": "Override por mes especifico (formato YYYY-MM). Se presente, vence sobre meta_mensal (fallback). Ausente = usa meta_mensal.",
         "2026-09": 20000.0,
-        "2026-10": 25000.0,
+        "2026-10": 40000.0,
         "2026-11": 40000.0,
         "2026-12": 50000.0
       },
       "super_meta_mensal_por_mes": {
-        "_desc": "SUPER META do mes (acima da meta). Mesmo formato YYYY-MM. Outubro/2026: planilha Meta_Limão (Meta 2 = meta R$ 25.000; Meta 3 = super meta R$ 30.000), definido por Rodrigo em 30/09/2026.",
-        "2026-10": 30000.0
+        "_desc": "SUPER META do mes (acima da meta). Mesmo formato YYYY-MM. Outubro/2026 (revisado em 02/10/2026, planilha 'Meta Limão outubro'): Meta 1 = meta R$ 40.000 · Meta 2 = degrau intermediario R$ 50.000 (so informativo) · Meta 3 = super meta R$ 60.000 — escolha do Rodrigo. Antes (30/09) era meta 25k / super 30k. Nov/dez e jan/27+ com piso na meta de outubro (40k).",
+        "2026-10": 60000.0
+      },
+      "meta_intermediaria_por_mes": {
+        "_desc": "Degrau entre meta e super meta (Meta 2 da planilha da franqueadora). So registro: o painel ainda nao exibe.",
+        "2026-10": 50000.0
       }
     }
   },
