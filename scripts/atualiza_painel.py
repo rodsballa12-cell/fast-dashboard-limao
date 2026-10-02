@@ -224,7 +224,10 @@ def stone() -> dict | None:
             creditos[dt.strftime("%Y-%m")] += _pv(r.get("Valor"))
     if not ordem:
         return None
-    ordem.sort(key=lambda x: x[0])
+    # desempate pelos segundos: a Stone credita e varre para a Reserva no mesmo
+    # minuto, e pela data sozinha o "ultimo saldo" podia ser o de antes da
+    # varredura (R$ 52,66 contados em dobro em 30/09/2026)
+    ordem.sort(key=lambda x: (x[0], x[1].get("Horário") or ""))
     saldo_conta = _pv(ordem[-1][1].get("Saldo depois"))
 
     # O saldo aplicado sai do stone_processor: e o mesmo numero que o
