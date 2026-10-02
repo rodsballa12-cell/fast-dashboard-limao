@@ -214,7 +214,13 @@ def stone() -> dict | None:
         except (KeyError, ValueError):
             continue
         ordem.append((dt, r))
-        if (r.get("Movimenta\u00e7\u00e3o") or "").startswith("Cr"):
+        # Resgate da Reserva para a conta Stone ("Transacao" sem origem) e dinheiro
+        # da propria empresa trocando de conta, nao receita: em 04/09/2026 os
+        # R$ 28.965,12 resgatados entravam como credito e set/26 aparecia com
+        # R$ 68.250,57 liquidados em vez de R$ 39.285,45 (achado em 02/10).
+        interno = (r.get("Tipo") == "Transa\u00e7\u00e3o"
+                   and (r.get("Origem") or "Desconhecido") == "Desconhecido")
+        if (r.get("Movimenta\u00e7\u00e3o") or "").startswith("Cr") and not interno:
             creditos[dt.strftime("%Y-%m")] += _pv(r.get("Valor"))
     if not ordem:
         return None
