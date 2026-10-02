@@ -1287,8 +1287,8 @@ function _barStacked(esc, spa, max, titulo){
 }
 function _legendaUnidades(){
   return `<div style="display:flex;gap:14px;justify-content:center;margin-top:6px;font-size:11px;color:var(--ink-2)">
-    <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:11px;height:11px;background:${COR_ESCOVA};border-radius:2px"></span>💇 Escova</span>
-    <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:11px;height:11px;background:${COR_SPA};border-radius:2px"></span>🧖 Spa</span>
+    <span style="display:inline-flex;align-items:center;gap:5px">${ICO_UNIDADE_MINI.escova}Escova</span>
+    <span style="display:inline-flex;align-items:center;gap:5px">${ICO_UNIDADE_MINI.spa}Spa</span>
   </div>`;
 }
 
@@ -1340,25 +1340,18 @@ function renderBarsHora(container_id, titulo, subtitle, hora_data, is_media, ins
 
 function renderRankingProf(container_id, titulo, subtitle, prof_list, total_n){
   // No modo consolidado, cada prof tem _unidade: 'escova' | 'spa' | 'ambas'.
-  // Prefixa o nome com um bullet colorido pra identificar a loja de origem.
+  // Usa nomeComIconeUnidade pra prefixar com SVG oficial (secador amarelo / maca teal).
   const stacked = _consBreak();
-  const bulletCor = (u) => u==='escova' ? COR_ESCOVA : u==='spa' ? COR_SPA : '#999';
-  const bulletEmoji = (u) => u==='escova' ? '💇' : u==='spa' ? '🧖' : '🏢';
-  const rows=prof_list.slice(0,10).map(p=>{
-    let nome = p.nome;
-    if(stacked && p._unidade){
-      nome = `<span style="display:inline-block;width:10px;height:10px;background:${bulletCor(p._unidade)};border-radius:50%;margin-right:7px;vertical-align:middle" title="${p._unidade}"></span>${bulletEmoji(p._unidade)} ${p.nome}`;
-    }
-    return [
-      nome, p.n, brl0(p.v),
-      brl(p.ticket_medio || (p.n ? p.v/p.n : 0)),
-      (p.horas_trab || 0).toFixed(1) + 'h'
-    ];
-  });
+  const rows=prof_list.slice(0,10).map(p=>[
+    (stacked && p._unidade) ? nomeComIconeUnidade(p) : p.nome,
+    p.n, brl0(p.v),
+    brl(p.ticket_medio || (p.n ? p.v/p.n : 0)),
+    (p.horas_trab || 0).toFixed(1) + 'h'
+  ]);
   const totalBadge = (total_n && total_n > prof_list.slice(0,10).length)
     ? ` <span style="color:var(--ink-3);font-size:11px;font-weight:400">(top 10 de ${total_n})</span>`
     : '';
-  const legenda = stacked ? ` <span style="font-size:10.5px;color:var(--ink-3)">· 💇 Escova · 🧖 Spa</span>` : '';
+  const legenda = stacked ? ` <span style="font-size:10.5px;color:var(--ink-3);display:inline-flex;gap:10px;align-items:center;vertical-align:middle">· ${ICO_UNIDADE_MINI.escova}Escova · ${ICO_UNIDADE_MINI.spa}Spa</span>` : '';
   // B2 · "Receita serv" (não caixa) — o valor é serv_v atribuído ao prof executor do
   // agendamento. Não inclui produto/pacote da mesma comanda (esses ficam no ticket
   // médio da recepção, não atribuídos ao prof específico).
