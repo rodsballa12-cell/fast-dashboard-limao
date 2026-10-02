@@ -198,6 +198,90 @@ def _matchear_pix(stone_pix_list, trinks_pix_list):
                      ).format(abs(dias)),
         })
 
+    # --- PASS 4: janela larga (até 14 dias), valor exato, NOME SIMILAR, sem ambiguidade ---
+    # Caso que motivou (SPA out/26): no inicio da operacao os clientes pagavam PIX
+    # ANTES do lancamento ser feito no Trinks (gap de 8-10 dias documentado para
+    # Patricia Feruglio, Thais Lirio e outros). O pass 3 (apenas ±1 dia) nao
+    # cobre, mas o nome diz tudo quando bate junto com valor idêntico.
+    #
+    # Travas de seguranca (herdadas do pass 3, mais o nome):
+    # 1. VALOR IDENTICO (±R$ 0,01)
+    # 2. JANELA 14 DIAS (cobre gap de implementacao do SPA)
+    # 3. NOME SIMILAR >= 0.70 (SequenceMatcher) — remove acentos, caixa alta
+    # 4. SEM AMBIGUIDADE — se mais de um candidato bater, nao escolhe
+    from difflib import SequenceMatcher
+    import unicodedata as _ud
+
+    def _norm_nome(n):
+        s = _ud.normalize('NFKD', str(n or '')).encode('ascii', 'ignore').decode().lower()
+        return ' '.join(s.split())
+
+    for si, s_reg in list(_sobra_stone()):
+        if si in usados_stone:
+            continue
+        ds, vs = s_reg["data"], s_reg["valor"]
+        if not ds or vs < 1:  # ignora valores minusculos (teste R$ 0,01)
+            continue
+        nome_stone = _norm_nome(s_reg.get("origem", ""))
+        if not nome_stone:
+            continue
+
+        # candidatos Trinks: janela ampla, valor exato, nome similar
+        cands = []
+        for ti, t in _sobra_trinks():
+            if not t.get("data"): continue
+            dias_gap = (t["data"] - ds).days
+            if not (0 <= dias_gap <= 14):  # trinks lanca DEPOIS do PIX (0 a 14 dias)
+                continue
+            if abs(t["valor"] - vs) > 0.01:
+                continue
+            nome_t = _norm_nome(t.get("cliente", ""))
+            if not nome_t: continue
+            sim = SequenceMatcher(None, nome_stone, nome_t).ratio()
+            # tambem aceita quando o nome stone contem o trinks (ou vice-versa)
+            # 1a palavra bate (ex: "patricia")
+            prim_stone = nome_stone.split()[0] if nome_stone else ""
+            prim_t = nome_t.split()[0] if nome_t else ""
+            # criterio: similaridade >= 0.70 OU 1a palavra identica (nome)
+            if sim >= 0.70 or (len(prim_stone) >= 4 and prim_stone == prim_t):
+                cands.append((ti, t, sim, dias_gap))
+
+        if len(cands) != 1:
+            continue  # zero ou ambiguo
+
+        # verificar o OUTRO lado tambem: nenhum rival Stone sem par para esse Trinks
+        ti, t_reg, sim, dias = cands[0]
+        rivais = []
+        for sj, s2 in _sobra_stone():
+            if sj == si: continue
+            if not s2.get("data"): continue
+            g = (t_reg["data"] - s2["data"]).days
+            if not (0 <= g <= 14): continue
+            if abs(s2["valor"] - vs) > 0.01: continue
+            n2 = _norm_nome(s2.get("origem", ""))
+            s2sim = SequenceMatcher(None, _norm_nome(t_reg.get("cliente", "")), n2).ratio() if n2 else 0
+            prim2 = n2.split()[0] if n2 else ""
+            prim_t = _norm_nome(t_reg.get("cliente","")).split()[0] if t_reg.get("cliente") else ""
+            if s2sim >= 0.70 or (len(prim2) >= 4 and prim2 == prim_t):
+                rivais.append(sj)
+        if rivais:
+            continue  # ambiguidade do lado stone
+
+        usados_stone.add(si)
+        usados_trinks.add(ti)
+        matches.append({
+            "data": ds.isoformat(),
+            "data_trinks": t_reg["data"].isoformat(),
+            "valor": vs,
+            "cliente_trinks": t_reg["cliente"],
+            "origem_stone": s_reg["origem"],
+            "tipo": "1:1_d14_nome",
+            "defasagem_dias": dias,
+            "similaridade_nome": round(sim, 2),
+            "nota": (f"PIX recebido {dias} dia(s) ANTES do lancamento no Trinks "
+                     f"(nome similar {sim:.0%}) — padrão de implementação SPA."),
+        })
+
     # --- ÓRFÃOS finais ---
     orfaos_stone = [
         {"data": stone_pix_list[si]["data"].isoformat() if stone_pix_list[si]["data"] else None,
