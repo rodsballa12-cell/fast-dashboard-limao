@@ -491,12 +491,66 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
     # Lista vem de data/config.json > reconciliacoes_manuais.itens.
     import json as _json, os as _os
     reconc_manuais = []
+    reconc_compostas = []
     try:
         cfg_path = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "data", "config.json")
         _cfg = _json.loads(open(cfg_path, encoding="utf-8").read())
         reconc_manuais = (_cfg.get("reconciliacoes_manuais") or {}).get("itens") or []
+        reconc_compostas = (_cfg.get("reconciliacoes_compostas") or {}).get("itens") or []
     except Exception:
         reconc_manuais = []
+        reconc_compostas = []
+
+    # === RECONCILIAÇÕES COMPOSTAS: pares explícitos Stone<->Trinks ===
+    # Formato: {"stone": [{data,valor,origem_contem}], "trinks": [{data,valor,cliente_contem}], "motivo"}
+    # Remove órfãos encontrados dos dois lados ao mesmo tempo.
+    def _match_item_stone(orf, item):
+        if orf.get("data") != item.get("data"): return False
+        if abs(float(orf.get("valor", 0)) - float(item.get("valor", 0))) > 0.01: return False
+        token = (item.get("origem_contem") or "").lower().strip()
+        if token and token not in (orf.get("origem") or "").lower(): return False
+        return True
+
+    def _match_item_trinks(orf, item):
+        if orf.get("data") != item.get("data"): return False
+        if abs(float(orf.get("valor", 0)) - float(item.get("valor", 0))) > 0.01: return False
+        token = (item.get("cliente_contem") or "").lower().strip()
+        if token and token not in (orf.get("cliente") or "").lower(): return False
+        return True
+
+    orfaos_compostos_resolvidos = []
+    for comp in reconc_compostas:
+        stone_items = comp.get("stone") or []
+        trinks_items = comp.get("trinks") or []
+        # Para cada item stone, achar o 1o orfao que bate; mesmo pra trinks
+        stone_matches = []
+        for it in stone_items:
+            for i, orf in enumerate(orf_s_all):
+                if i in [m[0] for m in stone_matches]: continue
+                if _match_item_stone(orf, it):
+                    stone_matches.append((i, orf, it))
+                    break
+        trinks_matches = []
+        for it in trinks_items:
+            for i, orf in enumerate(orf_t_all):
+                if i in [m[0] for m in trinks_matches]: continue
+                if _match_item_trinks(orf, it):
+                    trinks_matches.append((i, orf, it))
+                    break
+        # So aplica se encontrou TODOS os itens dos dois lados
+        if len(stone_matches) == len(stone_items) and len(trinks_matches) == len(trinks_items):
+            orfaos_compostos_resolvidos.append({
+                "stone": [m[1] for m in stone_matches],
+                "trinks": [m[1] for m in trinks_matches],
+                "diff_esperado": comp.get("diff_esperado"),
+                "motivo": comp.get("motivo", ""),
+                "confirmado_em": comp.get("confirmado_em"),
+            })
+            # Remove das listas de orfaos (do fim pro inicio pra nao bagunçar indices)
+            for i, _, _ in sorted(stone_matches, key=lambda x: -x[0]):
+                orf_s_all.pop(i)
+            for i, _, _ in sorted(trinks_matches, key=lambda x: -x[0]):
+                orf_t_all.pop(i)
 
     def _bate_reconc(orf, reconc):
         try:
@@ -568,6 +622,8 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         "orfaos_trinks_reconciliados_n": len(orf_t_reconciliados),
         "orfaos_trinks_reconciliados_v": _r(sum(o["valor"] for o in orf_t_reconciliados)),
         "orfaos_trinks_reconciliados": orf_t_reconciliados[:50],
+        "compostos_resolvidos_n": len(orfaos_compostos_resolvidos),
+        "compostos_resolvidos": orfaos_compostos_resolvidos,
         "a_receber_d30": _r(a_receber_total),
         "matches_consolidados": len(matches_all),
     }

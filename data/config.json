@@ -443,5 +443,110 @@
       "fast_retoque": false,
       "_por_que": "Fast Retoque e servico: o Trinks grava idProfissionalQueRealizouServico (quem executou), nao quem vendeu. Os R$ 490 de comissao+bonus do retoque - 34% do total de R$ 1.440 - nao tem como ser calculados por pessoa com o dado que existe hoje."
     }
+  },
+  "reconciliacoes_compostas": {
+    "_desc": "Pares explicitos Stone<->Trinks nao resolvidos pelo matcher automatico. Util quando 1 PIX Stone cobre N servicos Trinks (ou vice-versa) com nomes/datas diferentes. Match por (data, valor, nome_contem). Sem date-strict dentro do bloco: todos os itens stone sao substituidos pelos trinks listados.",
+    "itens": [
+      {
+        "unidade": "spa",
+        "stone": [
+          {
+            "data": "2026-09-30",
+            "valor": 198.0,
+            "origem_contem": "MAGDA"
+          }
+        ],
+        "trinks": [
+          {
+            "data": "2026-09-30",
+            "valor": 99.0,
+            "cliente_contem": "Magda"
+          },
+          {
+            "data": "2026-09-30",
+            "valor": 99.9,
+            "cliente_contem": "Beatriz"
+          }
+        ],
+        "diff_esperado": -0.9,
+        "motivo": "Magda ZOBRA pagou PIX R$ 198 cobrindo seu RENOVE-SE + vale-presente para Beatriz (SPA set/26)",
+        "confirmado_em": "2026-10-02"
+      },
+      {
+        "unidade": "spa",
+        "stone": [
+          {
+            "data": "2026-09-29",
+            "valor": 200.0,
+            "origem_contem": "Elisangela"
+          }
+        ],
+        "trinks": [
+          {
+            "data": "2026-09-29",
+            "valor": 99.0,
+            "cliente_contem": "ELAINE"
+          },
+          {
+            "data": "2026-09-29",
+            "valor": 99.0,
+            "cliente_contem": "ELISANGELA"
+          }
+        ],
+        "diff_esperado": 2.0,
+        "motivo": "PIX unico de R$ 200 (Elisangela) cobrindo Elaine + Elisangela, irmas lancadas com 1 min de diferenca (SPA set/26)",
+        "confirmado_em": "2026-10-02"
+      },
+      {
+        "unidade": "spa",
+        "stone": [
+          {
+            "data": "2026-09-26",
+            "valor": 198.0,
+            "origem_contem": "ROBERTO FONTANA"
+          },
+          {
+            "data": "2026-09-26",
+            "valor": 198.0,
+            "origem_contem": "SAULO SOARES"
+          },
+          {
+            "data": "2026-09-26",
+            "valor": 198.0,
+            "origem_contem": "ART EM TUDO"
+          }
+        ],
+        "trinks": [
+          {
+            "data": "2026-09-26",
+            "valor": 99.0,
+            "cliente_contem": "Paola"
+          },
+          {
+            "data": "2026-09-26",
+            "valor": 99.9,
+            "cliente_contem": "Leticia"
+          },
+          {
+            "data": "2026-09-26",
+            "valor": 99.0,
+            "cliente_contem": "Roberto Fontana"
+          },
+          {
+            "data": "2026-09-26",
+            "valor": 99.0,
+            "cliente_contem": "Maria Beatriz"
+          },
+          {
+            "data": "2026-09-26",
+            "valor": 99.0,
+            "cliente_contem": "Jose Netto"
+          }
+        ],
+        "diff_esperado": -98.1,
+        "motivo": "Bloco 26/09 SPA: 3 pagantes PIX (Roberto Fontana CPF, Saulo Zeferino CPF, ART EM TUDO LTDA CNPJ) cobriram 5 beneficiarios Trinks R$ 99. Diff R$ 98,10 nao atribuida: possivel 1 pacote adicional pago mas nao lancado no Trinks.",
+        "confirmado_em": "2026-10-02"
+      }
+    ]
   }
 }
