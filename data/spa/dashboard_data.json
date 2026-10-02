@@ -1,6 +1,6 @@
 {
-  "gerado_em": "2026-10-01T23:10:06-03:00",
-  "hoje": "2026-10-01",
+  "gerado_em": "2026-10-02T06:35:46-03:00",
+  "hoje": "2026-10-02",
   "_unidade_ativa": "spa",
   "unidade": {
     "produto": "Ritmo",
@@ -263,8 +263,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 61,
-    "saldoRestante": 9939
+    "totalUtilizado": 66,
+    "saldoRestante": 9934
   },
   "metas_franqueadora": null,
   "unidade_config": {
@@ -690,7 +690,7 @@
       },
       "2026-W40": {
         "periodo_ini": "2026-09-28",
-        "periodo_fim": "2026-10-01",
+        "periodo_fim": "2026-10-02",
         "kpis": {
           "caixa": 703.0,
           "faturamento_apurado": 703.0,
@@ -1070,12 +1070,12 @@
         "rs_hora_salao": 100.06,
         "horas_operacao_periodo": 78.0,
         "utilizacao_agregada_pct": 4.7,
-        "ticket_meta": 296.49,
-        "ticket_meta_periodo": 292.21,
-        "ticket_atingimento_pct": 79.8,
-        "ticket_gap_por_atend": 59.99,
-        "visitas_projetadas": 462,
-        "visitas_restantes": 429,
+        "ticket_meta": 342.85,
+        "ticket_meta_periodo": 334.16,
+        "ticket_atingimento_pct": 69.0,
+        "ticket_gap_por_atend": 106.35,
+        "visitas_projetadas": 404,
+        "visitas_restantes": 371,
         "ticket_meta_status": "em_curso",
         "ticket_meta_deficit_caixa": 127195.53,
         "ticket_meta_supera_caixa": 0.0
@@ -1085,16 +1085,16 @@
         "realizado": 7804.47,
         "pct": 5.8,
         "falta": 127195.53,
-        "dias_realizados": 7,
+        "dias_realizados": 8,
         "dias_total": 98,
-        "dias_restantes": 91,
-        "necessario_dia": 1397.75,
-        "ritmo_dia": 1114.92,
-        "projecao": 109262.58,
-        "projecao_pct": 80.9,
-        "meta_ate_hoje": 9642.86,
-        "pct_ate_hoje": 80.9,
-        "saldo_ate_hoje": -1838.39
+        "dias_restantes": 90,
+        "necessario_dia": 1413.28,
+        "ritmo_dia": 975.56,
+        "projecao": 95604.76,
+        "projecao_pct": 70.8,
+        "meta_ate_hoje": 11020.41,
+        "pct_ate_hoje": 70.8,
+        "saldo_ate_hoje": -3215.94
       },
       "categorias": {
         "pacotes": {
@@ -2272,8 +2272,8 @@
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "periodo_ini": "2026-09-01",
-          "periodo_fim": "2026-09-01",
-          "janela_dias": 1,
+          "periodo_fim": "2026-09-02",
+          "janela_dias": 2,
           "caixa": 0.0,
           "atend_fin": 0,
           "faturamento_apurado": 0.0,
@@ -2283,13 +2283,15 @@
         },
         "base_comparacao": {
           "composicao_atual": [
-            "Qui"
+            "Qui",
+            "Sex"
           ],
           "composicao_anterior": [
-            "Ter"
+            "Ter",
+            "Qua"
           ],
-          "peso_semana_atual_pct": 15.4,
-          "peso_semana_anterior_pct": 15.4,
+          "peso_semana_atual_pct": 30.8,
+          "peso_semana_anterior_pct": 30.8,
           "razao_peso": 1.0,
           "comparavel": true,
           "caixa_delta_ajustado_pct": null,
@@ -2670,50 +2672,52 @@
         "rs_hora_salao": 14.65,
         "horas_operacao_periodo": 48.0,
         "utilizacao_agregada_pct": 0.5,
-        "caixa_delta_pct": null,
-        "atend_delta_pct": -40.0,
-        "cliente_dia_delta_pct": -60.0,
-        "caixa_delta_perdia_pct": null,
-        "atend_delta_perdia_pct": 20.0,
-        "cliente_dia_delta_perdia_pct": -20.0,
+        "caixa_delta_pct": -40.0,
+        "atend_delta_pct": -72.7,
+        "cliente_dia_delta_pct": -81.8,
+        "caixa_delta_perdia_pct": 80.0,
+        "atend_delta_perdia_pct": -18.2,
+        "cliente_dia_delta_perdia_pct": -45.5,
         "dias_com_movimento": {
           "atual": 1,
-          "anterior": 2
+          "anterior": 3
         },
-        "ticket_delta_pct": null,
-        "caixa_delta_bruto_pct": null,
+        "ticket_delta_pct": 229.9,
+        "caixa_delta_bruto_pct": -40.0,
         "periodo_ant_ref": {
           "periodo_ini": "2026-09-21",
-          "periodo_fim": "2026-09-24",
-          "janela_dias": 4,
+          "periodo_fim": "2026-09-25",
+          "janela_dias": 5,
           "sem_completa_fim": "2026-09-27",
-          "caixa": 0.0,
-          "atend_fin": 5,
-          "faturamento_apurado": 0.0,
-          "n_trans": 5,
-          "ticket_trans": 0.0,
-          "ticket_medio": 0.0,
-          "cliente_dia": 5,
-          "dias_op": 2
+          "caixa": 1171.97,
+          "atend_fin": 11,
+          "faturamento_apurado": 1171.97,
+          "n_trans": 16,
+          "ticket_trans": 73.25,
+          "ticket_medio": 106.54,
+          "cliente_dia": 11,
+          "dias_op": 3
         },
         "base_comparacao": {
           "composicao_atual": [
             "Seg",
             "Ter",
             "Qua",
-            "Qui"
+            "Qui",
+            "Sex"
           ],
           "composicao_anterior": [
             "Seg",
             "Ter",
             "Qua",
-            "Qui"
+            "Qui",
+            "Sex"
           ],
-          "peso_semana_atual_pct": 61.5,
-          "peso_semana_anterior_pct": 61.5,
+          "peso_semana_atual_pct": 76.9,
+          "peso_semana_anterior_pct": 76.9,
           "razao_peso": 1.0,
           "comparavel": true,
-          "caixa_delta_ajustado_pct": null,
+          "caixa_delta_ajustado_pct": -40.0,
           "dias_atipicos_na_base": {}
         },
         "ticket_meta": 371.43,
@@ -3041,17 +3045,17 @@
       ],
       "semana_anterior": {
         "periodo_ini": "2026-09-21",
-        "periodo_fim": "2026-09-24",
-        "janela_dias": 4,
+        "periodo_fim": "2026-09-25",
+        "janela_dias": 5,
         "sem_completa_fim": "2026-09-27",
-        "caixa": 0.0,
-        "atend_fin": 5,
-        "faturamento_apurado": 0.0,
-        "n_trans": 5,
-        "ticket_trans": 0.0,
-        "ticket_medio": 0.0,
-        "cliente_dia": 5,
-        "dias_op": 2
+        "caixa": 1171.97,
+        "atend_fin": 11,
+        "faturamento_apurado": 1171.97,
+        "n_trans": 16,
+        "ticket_trans": 73.25,
+        "ticket_medio": 106.54,
+        "cliente_dia": 11,
+        "dias_op": 3
       },
       "cadeiras_utilizacao": {
         "sala": {
@@ -3118,52 +3122,52 @@
     },
     "diario": {
       "kpis": {
-        "caixa": 703.0,
-        "faturamento_apurado": 703.0,
-        "receita_serv": 357.0,
-        "atend_fin": 3,
+        "caixa": 0.0,
+        "faturamento_apurado": 0.0,
+        "receita_serv": 0.0,
+        "atend_fin": 0,
         "atend_canc": 0,
-        "atend_total": 3,
-        "n_trans": 6,
-        "ticket_trans": 117.17,
-        "cliente_dia": 2,
-        "ticket_medio": 351.5,
+        "atend_total": 0,
+        "n_trans": 0,
+        "ticket_trans": 0.0,
+        "cliente_dia": 0,
+        "ticket_medio": 0.0,
         "taxa_canc": 0.0,
-        "dias_op": 1,
-        "clientes_unicos": 2,
+        "dias_op": 0,
+        "clientes_unicos": 0,
         "em_atendimento": 0,
-        "n_prof_ativos": 2,
-        "rs_hora_salao": 58.58,
-        "horas_operacao_periodo": 12.0,
-        "utilizacao_agregada_pct": 1.8,
+        "n_prof_ativos": 0,
+        "rs_hora_salao": 0.0,
+        "horas_operacao_periodo": 0.0,
+        "utilizacao_agregada_pct": 0.0,
         "caixa_delta_pct": null,
-        "atend_delta_pct": 0.0,
-        "cliente_dia_delta_pct": -33.3,
+        "atend_delta_pct": null,
+        "cliente_dia_delta_pct": null,
         "caixa_delta_perdia_pct": null,
-        "atend_delta_perdia_pct": 0.0,
-        "cliente_dia_delta_perdia_pct": -33.3,
+        "atend_delta_perdia_pct": null,
+        "cliente_dia_delta_perdia_pct": null,
         "dias_com_movimento": {
-          "atual": 1,
+          "atual": 0,
           "anterior": 1
         },
         "ticket_delta_pct": null,
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
-          "data": "2026-09-24",
-          "hora_max": 23.17,
+          "data": "2026-09-25",
+          "hora_max": 6.58,
           "caixa": 0.0,
-          "atend_fin": 3,
+          "atend_fin": 0,
           "faturamento_apurado": 0.0,
-          "cliente_dia": 3,
+          "cliente_dia": 0,
           "ticket_medio": 0.0,
           "dias_op": 1
         },
         "base_comparacao": {
           "composicao_atual": [
-            "Qui"
+            "Sex"
           ],
           "composicao_anterior": [
-            "Qui"
+            "Sex"
           ],
           "peso_semana_atual_pct": 15.4,
           "peso_semana_anterior_pct": 15.4,
@@ -3173,44 +3177,44 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "23:10",
-          "hora_atual_num": 23.17,
-          "pct_esperado_agora": 100.0,
+          "hora_atual_str": "06:35",
+          "hora_atual_num": 6.58,
+          "pct_esperado_agora": 0.0,
           "meta_dia": 862.07,
-          "meta_esperada_agora": 862.07,
-          "realizado_agora": 703.0,
-          "pace_delta": -159.07,
-          "pace_ratio_pct": 81.5,
-          "projecao_dia": 703.0,
+          "meta_esperada_agora": 0.0,
+          "realizado_agora": 0.0,
+          "pace_delta": 0.0,
+          "pace_ratio_pct": 100.0,
+          "projecao_dia": 0.0,
           "opera_hoje": true
         },
         "ticket_meta": 0.0,
-        "ticket_meta_periodo": 431.04,
+        "ticket_meta_periodo": 0.0,
         "ticket_atingimento_pct": 0.0,
         "ticket_gap_por_atend": 0.0,
-        "visitas_projetadas": 2,
+        "visitas_projetadas": 0,
         "visitas_restantes": 0,
-        "ticket_meta_status": "encerrado_deficit",
-        "ticket_meta_deficit_caixa": 159.07,
+        "ticket_meta_status": "fechado",
+        "ticket_meta_deficit_caixa": 862.07,
         "ticket_meta_supera_caixa": 0.0,
-        "dia_semana": "Qui",
-        "data": "2026-10-01"
+        "dia_semana": "Sex",
+        "data": "2026-10-02"
       },
       "meta": {
         "meta": 862.07,
-        "realizado": 703.0,
-        "pct": 81.5,
-        "falta": 159.07,
+        "realizado": 0.0,
+        "pct": 0.0,
+        "falta": 862.07,
         "dias_realizados": 1,
         "dias_total": 1,
         "dias_restantes": 0,
         "necessario_dia": 0.0,
-        "ritmo_dia": 703.0,
-        "projecao": 703.0,
-        "projecao_pct": 81.5,
+        "ritmo_dia": 0.0,
+        "projecao": 0.0,
+        "projecao_pct": 0.0,
         "meta_ate_hoje": 862.07,
-        "pct_ate_hoje": 81.5,
-        "saldo_ate_hoje": -159.07
+        "pct_ate_hoje": 0.0,
+        "saldo_ate_hoje": -862.07
       },
       "categorias": {
         "pacotes": {
@@ -3219,9 +3223,9 @@
           "pct": 0.0
         },
         "servicos": {
-          "v": 357.0,
-          "n": 3,
-          "pct": 100.0
+          "v": 0.0,
+          "n": 0,
+          "pct": 0.0
         },
         "produtos": {
           "v": 0.0,
@@ -3234,31 +3238,12 @@
           "pct": 0.0
         },
         "servicos_gerais": {
-          "v": 357.0,
-          "n": 3,
-          "pct": 100.0
+          "v": 0.0,
+          "n": 0,
+          "pct": 0.0
         }
       },
-      "categoria_native": [
-        {
-          "nome": "Reflexologia/Pes",
-          "n": 1,
-          "v": 149.0,
-          "pct_receita": 21.2
-        },
-        {
-          "nome": "Drenagem/Modeladora",
-          "n": 1,
-          "v": 149.0,
-          "pct_receita": 21.2
-        },
-        {
-          "nome": "Adicional",
-          "n": 1,
-          "v": 59.0,
-          "pct_receita": 8.4
-        }
-      ],
+      "categoria_native": [],
       "pacotes_por_categoria": {},
       "pacotes_sem_categoria_v": 0.0,
       "hora_abs": [
@@ -3284,8 +3269,8 @@
         },
         {
           "h": 12,
-          "n": 1,
-          "v": 99.0
+          "n": 0,
+          "v": 0.0
         },
         {
           "h": 13,
@@ -3294,8 +3279,8 @@
         },
         {
           "h": 14,
-          "n": 1,
-          "v": 99.0
+          "n": 0,
+          "v": 0.0
         },
         {
           "h": 15,
@@ -3314,8 +3299,8 @@
         },
         {
           "h": 18,
-          "n": 2,
-          "v": 198.0
+          "n": 0,
+          "v": 0.0
         },
         {
           "h": 19,
@@ -3324,146 +3309,27 @@
         },
         {
           "h": 20,
-          "n": 2,
-          "v": 307.0
+          "n": 0,
+          "v": 0.0
         }
       ],
-      "ranking_prof": [
-        {
-          "nome": "Monique Carvalho Da Silva",
-          "n": 2,
-          "v": 208.0,
-          "ticket_medio": 104.0,
-          "horas_trab": 1.0
-        },
-        {
-          "nome": "Marly Feitosa De Lima Ledoux",
-          "n": 1,
-          "v": 149.0,
-          "ticket_medio": 149.0,
-          "horas_trab": 0.8
-        }
-      ],
-      "ranking_prof_total_n": 2,
-      "ranking_prof_executor": [
-        {
-          "nome": "Monique Carvalho Da Silva",
-          "n_serv": 2,
-          "v": 208.0,
-          "v_via_pacote": 0.0,
-          "comissao": 62.4,
-          "taxa_efetiva": 0.3,
-          "por_cat": {
-            "ADICIONAIS": 59.0,
-            "CORPORAL": 149.0
-          },
-          "ticket_medio_serv": 104.0
-        },
-        {
-          "nome": "Marly Feitosa De Lima Ledoux",
-          "n_serv": 1,
-          "v": 149.0,
-          "v_via_pacote": 0.0,
-          "comissao": 44.7,
-          "taxa_efetiva": 0.3,
-          "por_cat": {
-            "CORPORAL": 149.0
-          },
-          "ticket_medio_serv": 149.0
-        }
-      ],
-      "ranking_serv": [
-        {
-          "nome": "REFLEXOLOGIA PODAL",
-          "n": 1,
-          "v": 149.0,
-          "min": 45
-        },
-        {
-          "nome": "RENOVE-SE EM 45",
-          "n": 1,
-          "v": 149.0,
-          "min": 45
-        },
-        {
-          "nome": "ADICIONAL PACOTE",
-          "n": 1,
-          "v": 59.0,
-          "min": 15
-        }
-      ],
+      "ranking_prof": [],
+      "ranking_prof_total_n": 0,
+      "ranking_prof_executor": [],
+      "ranking_serv": [],
       "ranking_produtos": [],
       "ranking_pacotes": [],
       "upsell_produtos": [],
       "upsell_pacotes": [],
-      "rentabilidade_hora": [
-        {
-          "nome": "ADICIONAL PACOTE",
-          "n": 1,
-          "v": 59.0,
-          "min_medio": 15,
-          "ticket": 59.0,
-          "rs_hora": 236.0,
-          "horas_total": 0.2,
-          "pct_faturamento": 16.5,
-          "confianca": "baixa",
-          "tipo": "cadeira"
-        },
-        {
-          "nome": "REFLEXOLOGIA PODAL",
-          "n": 1,
-          "v": 149.0,
-          "min_medio": 45,
-          "ticket": 149.0,
-          "rs_hora": 198.67,
-          "horas_total": 0.8,
-          "pct_faturamento": 41.7,
-          "confianca": "baixa",
-          "tipo": "cadeira"
-        },
-        {
-          "nome": "RENOVE-SE EM 45",
-          "n": 1,
-          "v": 149.0,
-          "min_medio": 45,
-          "ticket": 149.0,
-          "rs_hora": 198.67,
-          "horas_total": 0.8,
-          "pct_faturamento": 41.7,
-          "confianca": "baixa",
-          "tipo": "cadeira"
-        }
-      ],
-      "meios_pagamento": [
-        {
-          "nome": "Mastercard",
-          "n": 3,
-          "v": 406.0,
-          "pct": 57.8
-        },
-        {
-          "nome": "PIX",
-          "n": 3,
-          "v": 297.0,
-          "pct": 42.2
-        }
-      ],
-      "clientes_top": [
-        {
-          "nome": "Eloiza Santos",
-          "n": 2
-        },
-        {
-          "nome": "Daniela Andrade",
-          "n": 1
-        }
-      ],
+      "rentabilidade_hora": [],
+      "meios_pagamento": [],
+      "clientes_top": [],
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 96.0,
-          "horas_ocupadas": 1.8,
-          "utilizacao_pct": 1.8
+          "capacidade_horas": 0.0,
+          "horas_ocupadas": 0.0,
+          "utilizacao_pct": 0.0
         }
       },
       "densidade_hora": [
@@ -3505,7 +3371,7 @@
         },
         {
           "h": 17,
-          "media_simultaneos": 0.75
+          "media_simultaneos": 0.0
         },
         {
           "h": 18,
@@ -3517,15 +3383,15 @@
         },
         {
           "h": 20,
-          "media_simultaneos": 1.0
+          "media_simultaneos": 0.0
         }
       ]
     }
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-01T23:10:06-03:00",
-    "hoje": "2026-10-01",
+    "gerado_em": "2026-10-02T06:35:46-03:00",
+    "hoje": "2026-10-02",
     "retoque_atribuivel": false,
     "por_janela": {
       "dia": [],
@@ -3538,9 +3404,9 @@
     "diario": [
       {
         "tipo": "info",
-        "titulo": "Fechamento do dia",
-        "texto": "Caixa R$ 703,00 · 2 visitas · ticket R$ 351,50 · meta 82% (R$ 159,07 faltou).",
-        "acao": "Amanhã: replicar o que rodou hoje se bateu; se não, pensar no gap de fluxo (walk-in ou ticket) e ajustar a receita da recepção."
+        "titulo": "Picos previstos ainda hoje",
+        "texto": "Base semanal aponta 18h (2.0 clientes/hora), 20h (2.0 clientes/hora) como as próximas horas de fluxo.",
+        "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
       }
     ],
     "semanal": [
@@ -3603,7 +3469,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-01T23:10:06-03:00",
+    "gerado_em": "2026-10-02T06:35:47-03:00",
     "n_agendamentos": 36,
     "horas": [
       9,
