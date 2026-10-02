@@ -1216,9 +1216,26 @@ def main():
     # Se cache não existe (primeira execução), força pull do ano.
     AGEND_ANO_CACHE = DATA_UNIT / "agendamentos_ano_cache.json"
     eh_domingo = hoje.weekday() == 6
+
+    def _cache_antes_do_mes(path):
+        """True se o cache do ano foi gerado antes do 1º dia do mês corrente.
+
+        Sem isto, a virada do mês perdia os dias entre o último domingo e o fim
+        do mês anterior: eles não estavam no cache (gerado no domingo) nem no
+        "mês corrente" (que já é o mês novo). Em 01/10/2026 o painel perdeu
+        28-30/09 nas duas lojas (Spa: set de R$ 12.518 para R$ 7.101).
+        """
+        try:
+            ger = json.loads(path.read_text(encoding="utf-8")).get("gerado_em", "")[:10]
+            return ger < ini_mes.isoformat()
+        except Exception:
+            return True
+
     cache_existe = AGEND_ANO_CACHE.exists()
-    if eh_domingo or not cache_existe:
-        motivo = "domingo · refresh semanal" if eh_domingo else "cache miss"
+    virada = cache_existe and _cache_antes_do_mes(AGEND_ANO_CACHE)
+    if eh_domingo or not cache_existe or virada:
+        motivo = ("domingo · refresh semanal" if eh_domingo
+                  else "virada do mês · cache anterior ao dia 1" if virada else "cache miss")
         print(f"[fetch] agendamentos ANO ({motivo})...")
         agend_ano = list(t.paginate("/v1/agendamentos", {"dataInicio": ini_ano.isoformat(), "dataFim": fim_ano.isoformat()}))
         AGEND_ANO_CACHE.write_text(json.dumps({
@@ -1250,8 +1267,10 @@ def main():
     # === TRANSAÇÕES · mesma estratégia dos agendamentos ===
     TRANSAC_ANO_CACHE = DATA_UNIT / "transacoes_ano_cache.json"
     cache_tx_existe = TRANSAC_ANO_CACHE.exists()
-    if eh_domingo or not cache_tx_existe:
-        motivo = "domingo · refresh semanal" if eh_domingo else "cache miss"
+    virada_tx = cache_tx_existe and _cache_antes_do_mes(TRANSAC_ANO_CACHE)
+    if eh_domingo or not cache_tx_existe or virada_tx:
+        motivo = ("domingo · refresh semanal" if eh_domingo
+                  else "virada do mês · cache anterior ao dia 1" if virada_tx else "cache miss")
         print(f"[fetch] transacoes ANO ({motivo})...")
         transac_ano = _transacoes(t, ini_ano, fim_ano)
         TRANSAC_ANO_CACHE.write_text(json.dumps({
