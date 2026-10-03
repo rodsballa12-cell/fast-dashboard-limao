@@ -891,7 +891,7 @@ function renderTicketMeta(container_id, periodo_label, kpis){
   document.getElementById(container_id).innerHTML = html;
 }
 
-function renderMetaProgress(container_id, titulo, meta, subtitle){
+function renderMetaProgress(container_id, titulo, meta, subtitle, pace_intraday, curva_horaria){
   if(!meta || !meta.meta) return;
   const pct_v = Math.min(meta.pct,100);
   // Meta proporcional aos dias já corridos, na mesma competência. Comparar o
@@ -903,6 +903,76 @@ function renderMetaProgress(container_id, titulo, meta, subtitle){
   const paceCor = !temPace ? '' : (meta.pct_ate_hoje >= 100 ? 'good'
                                  : meta.pct_ate_hoje >= 80  ? 'warn' : 'crit');
   const saldo = temPace ? meta.saldo_ate_hoje : null;
+
+  // Pace intraday (so no cartao Meta Diaria quando a loja opera hoje) — unido
+  // ao card de meta a pedido de Rodrigo (antes eram cards separados).
+  let intraday_html = '';
+  if(pace_intraday && pace_intraday.opera_hoje && pace_intraday.meta_dia > 0){
+    const p = pace_intraday;
+    const real = p.realizado_agora, esperado = p.meta_esperada_agora;
+    const pct_esp = p.pct_esperado_agora, pct_real = p.meta_dia>0 ? real/p.meta_dia*100 : 0;
+    const delta = p.pace_delta, ratio = p.pace_ratio_pct, projecao = p.projecao_dia;
+    const cor = ratio>=100?'up':(ratio>=80?'warn':'dn');
+    const cor_bar = ratio>=100?'#22c55e':(ratio>=80?'#f59e0b':'#ef4444');
+    const status = ratio>=110 ? '🟢 ADIANTE' : (ratio>=90 ? '🟡 NO RITMO' : (ratio>=60 ? '🟠 ATRÁS' : '🔴 MUITO ATRÁS'));
+    const acao = ratio>=110
+      ? `<strong class="up">Ritmo excelente</strong> — projeção ${brl0(projecao)} (${(projecao/p.meta_dia*100).toFixed(0)}% da meta). Manter.`
+      : ratio>=90
+        ? `<strong>No pace</strong> — projeção ${brl0(projecao)} (${(projecao/p.meta_dia*100).toFixed(0)}% da meta). Mantendo o ritmo, bate.`
+        : ratio>=60
+          ? `<strong class="warn">Atrasado em ${brl0(-delta)}</strong>. Projeção ${brl0(projecao)}. Puxar cliente (WhatsApp/oferta) no restante do dia.`
+          : `<strong class="dn">Muito abaixo.</strong> Já são ${p.hora_atual_str} · falta ${brl0(-delta)} pra estar no pace. Projeção: ${brl0(projecao)}.`;
+    // Mini curva
+    let curva_svg = '';
+    if(curva_horaria && curva_horaria.length > 0){
+      const w = 400, h = 60, pad = 10;
+      const xs = curva_horaria.map(x => x.h);
+      const min_h = xs[0], max_h = xs[xs.length-1]+1;
+      const scale_x = (x) => pad + (x - min_h) / (max_h - min_h) * (w - 2*pad);
+      const scale_y = (y) => h - pad - (y/100) * (h - 2*pad);
+      let path = `M ${scale_x(min_h)} ${scale_y(0)}`;
+      curva_horaria.forEach(x => { path += ` L ${scale_x(x.h+1)} ${scale_y(x.pct_acum)}`; });
+      const now_x = scale_x(p.hora_atual_num);
+      const now_y_esp = scale_y(pct_esp);
+      const now_y_rl = scale_y(Math.min(pct_real, 100));
+      let marks = '';
+      for(let hm = min_h; hm <= max_h; hm += 2){
+        const x = scale_x(hm);
+        marks += `<line x1="${x}" y1="${h-pad}" x2="${x}" y2="${h-pad+3}" stroke="var(--muted)" stroke-width="1"/>`;
+        marks += `<text x="${x}" y="${h-pad+13}" fill="var(--muted)" font-size="9" text-anchor="middle">${hm}h</text>`;
+      }
+      curva_svg = `<svg viewBox="0 0 ${w} ${h+18}" width="100%" style="max-width:500px;">
+        <path d="${path}" fill="none" stroke="var(--accent)" stroke-width="1.5" opacity="0.6" stroke-dasharray="3 2"/>
+        <line x1="${now_x}" y1="${pad}" x2="${now_x}" y2="${h-pad}" stroke="${cor_bar}" stroke-width="1.5"/>
+        <circle cx="${now_x}" cy="${now_y_esp}" r="3" fill="var(--accent)" opacity="0.7"/>
+        <circle cx="${now_x}" cy="${now_y_rl}" r="5" fill="${cor_bar}" stroke="var(--surface)" stroke-width="1.5"/>
+        ${marks}
+      </svg>`;
+    }
+    intraday_html = `
+      <div style="margin-top:22px;padding-top:18px;border-top:2px dashed var(--border)">
+        <h3 style="margin:0 0 6px;font-size:15px"><span style="color:${cor_bar}">🕒</span> Pace intraday · ${p.hora_atual_str} · <span class="${cor}">${status}</span></h3>
+        <div class="sub" style="margin-bottom:10px">Curva histórica de fechamento por hora × realizado até agora.</div>
+        <div class="progress"><div class="progress-fill" style="width:${Math.min(pct_real,100)}%; background:${cor_bar};"></div></div>
+        <div class="progress-labels">
+          <span>R$ 0 · 0h</span>
+          <span class="now">▲ ${brl0(real)} · ${pct_real.toFixed(0)}% (esperado ${pct_esp.toFixed(0)}%)</span>
+          <span>${brl0(p.meta_dia)} · fim</span>
+        </div>
+        <div class="meta-row" style="margin-top:16px;">
+          <div class="meta-cell"><div class="l">Esperado às ${p.hora_atual_str}</div><div class="v">${brl0(esperado)}</div></div>
+          <div class="meta-cell"><div class="l">Delta</div><div class="v ${delta>=0?'up':'dn'}">${delta>=0?'+':'−'}${brl0(Math.abs(delta))}</div></div>
+          <div class="meta-cell"><div class="l">Ritmo vs pace</div><div class="v ${cor}">${ratio.toFixed(0)}%</div></div>
+          <div class="meta-cell"><div class="l">Projeção fim dia</div><div class="v ${projecao>=p.meta_dia?'up':(projecao>=p.meta_dia*0.8?'warn':'dn')}">${brl0(projecao)}</div></div>
+        </div>
+        ${curva_svg ? `<div style="margin-top:12px;text-align:center;background:var(--surface-2);padding:10px;border-radius:8px;">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Curva esperada (tracejado) · Agora: <span style="color:${cor_bar}">●</span> real · <span style="color:var(--accent)">●</span> esperado</div>
+          ${curva_svg}
+        </div>` : ''}
+        <div class="cap" style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;">${acao}</div>
+      </div>`;
+  }
+
   const html=`
     <section class="meta-card">
       <h2><span style="color:var(--accent)">🎯</span> ${titulo} · <span style="color:var(--accent)">${brl0(meta.meta)}</span></h2>
@@ -936,6 +1006,7 @@ function renderMetaProgress(container_id, titulo, meta, subtitle){
         <div class="meta-cell"><div class="l">Projeção %</div><div class="v ${meta.projecao_pct>=90?'good':(meta.projecao_pct>=70?'warn':'crit')}">${pct(meta.projecao_pct)}</div></div>
         <div class="meta-cell"><div class="l">Dias operados</div><div class="v">${meta.dias_realizados}/${meta.dias_total}</div></div>
       </div>
+      ${intraday_html}
     </section>`;
   document.getElementById(container_id).innerHTML=html;
 }
@@ -3459,8 +3530,10 @@ function renderDiario(data){
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
   ]);
   renderAvisoBase('per-kpis', k);
-  renderMetaProgress('per-meta','Meta Diária',d.meta,'Meta específica do dia da semana atual (peso histórico do DOW × META_MENSAL, respeitando jornada)');
-  renderPaceIntraday('per-pace', k.pace_intraday, (data.sazonalidade||{}).curva_horaria);
+  renderMetaProgress('per-meta','Meta Diária',d.meta,'Meta específica do dia da semana atual (peso histórico do DOW × META_MENSAL, respeitando jornada)', k.pace_intraday, (data.sazonalidade||{}).curva_horaria);
+  // Pace agora dentro do card Meta Diaria (fusao 03/10 a pedido do Rodrigo).
+  // Mantem container limpo pra nao renderizar card vazio.
+  const pacePane = document.getElementById('per-pace'); if(pacePane) pacePane.innerHTML = '';
   renderTicketMeta('per-ticket-meta', 'hoje', k);
   renderUtilizacao('per-utilizacao', 'hoje', k, d, data.unidade_config);
   {
