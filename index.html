@@ -532,6 +532,8 @@
       <!-- clientes-obs-alertas removido: dados atuais sem sinal relevante -->
       <div id="clientes-aniv"></div>
       <div id="clientes-churn"></div>
+      <!-- Migração cruzada Escova↔SPA (só aparece no consolidado) -->
+      <div id="clientes-migracao-cruzada"></div>
       <div id="clientes-cross-sell"></div>
       <!-- 4. QUALIDADE DE CADASTRO -->
       <div id="clientes-cadastro"></div>
@@ -3276,6 +3278,62 @@ function renderCrossSell(container_id, cs){
   });
 }
 
+// ============= MIGRAÇÃO CRUZADA ESCOVA ↔ SPA (só consolidado) =============
+// Rodrigo (03/10/2026): "preciso no consolidado algo que me ajude a migrar
+// cliente do escova pro spa e vice-versa". Dois negócios no mesmo endereço:
+// o cliente da Escova é o lead mais barato pra SPA, e vice-versa.
+function renderMigracaoCruzada(container_id, mig){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  if(!mig){ el.innerHTML = ''; return; }
+  const COR_ESC = (typeof COR_ESCOVA !== 'undefined') ? COR_ESCOVA : '#F5B800';
+  const COR_SPA = (typeof window.COR_SPA !== 'undefined') ? window.COR_SPA : '#24B3A6';
+  const waLink = tel => tel ? `<a href="https://wa.me/${tel.replace(/\D/g,'')}" target="_blank" style="color:#22c55e;text-decoration:none;font-weight:600;">📱</a>` : '<span style="color:var(--muted)">—</span>';
+  const e2s = mig.escova_para_spa || [];
+  const s2e = mig.spa_para_escova || [];
+  if(!e2s.length && !s2e.length){ el.innerHTML = ''; return; }
+  const _ico = (c) => {
+    try{ return (typeof nomeComIconeUnidade === 'function') ? nomeComIconeUnidade({...c, nome: c.nome}) : c.nome; }
+    catch(e){ return c.nome; }
+  };
+  const _row = c => `<tr>
+    <td>${_ico(c)}</td>
+    <td style="text-align:right">${c.n_visitas}</td>
+    <td style="text-align:right">${brl0(c.ltv||0)}</td>
+    <td>${c.data_aniversario_txt || c.data_aniversario || '<span style="color:var(--muted)">—</span>'}</td>
+    <td>${waLink(c.telefone)}</td>
+  </tr>`;
+  const expE2S = _expandableRows(e2s.map(_row));
+  const expS2E = _expandableRows(s2e.map(_row));
+  const bloco = (cor, titulo, desc, lista, exp, msgIdeia) => {
+    const headN = lista.length > EXP_VISIBLE ? `top ${EXP_VISIBLE} de ${lista.length}` : `${lista.length}`;
+    return `<div style="border-left:4px solid ${cor};padding:12px 14px;background:${cor}0f;border-radius:6px;margin-top:12px">
+      <div style="font-weight:800;font-size:14px;color:${cor};margin-bottom:4px">${titulo} <span style="color:var(--ink-3);font-weight:400">(${headN})</span></div>
+      <div class="cap" style="margin-bottom:8px">${desc}</div>
+      ${lista.length ? `
+        <table class="simple">
+          <thead><tr><th>Cliente</th><th style="text-align:right">Visitas</th><th style="text-align:right">LTV</th><th>Aniversário</th><th>WhatsApp</th></tr></thead>
+          <tbody>${exp.html}</tbody>
+        </table>
+        ${exp.footer}
+        <div class="insight" style="margin-top:10px;font-size:12px"><strong>Sugestão de mensagem:</strong> ${msgIdeia}</div>
+      ` : '<div style="color:var(--muted);font-size:12px;padding:8px 0">Nenhum candidato elegível no momento.</div>'}
+    </div>`;
+  };
+  el.innerHTML = `<div class="card">
+    <h2>🔀 Migração cruzada · Escova ↔ SPA <span class="hi">(${mig.n_ja_cruzam || 0} já cruzam)</span></h2>
+    <div class="cap">Cliente de uma unidade é o lead mais barato pra outra — já conhece o endereço, confia na recepção. Lista exclui quem já frequenta as duas (já migrou organicamente). Base: top LTV de cada unidade.</div>
+    ${bloco(COR_SPA, '🧖 Clientes Escova → ofereça SPA',
+            'Recorrentes da Escova (≥ 2 visitas) que ainda não experimentaram o SPA. Ordenados por LTV — começa pelas que mais gastam.',
+            e2s, expE2S,
+            '"Oi [nome]! Vi que você sempre vem fazer sua escova aqui. Que tal experimentar o SPA? Massagem relaxante ou drenagem — a cliente da casa ganha 20% off na primeira sessão. Agendo pra você?"')}
+    ${bloco(COR_ESC, '💇 Clientes SPA → ofereça Escova',
+            'Clientes do SPA (≥ 1 visita) que ainda não fizeram serviço na Escova. Massagem/estética + escova é o pacote clássico de dia-de-cuidar-de-si.',
+            s2e, expS2E,
+            '"Oi [nome]! Depois da sua [último serviço SPA], que tal fechar o dia com uma escova lavada aqui mesmo? R$ 20 off na primeira. Fica bom pra combinar com o próximo horário do SPA."')}
+  </div>`;
+}
+
 // ============= CHURN EARLY WARNING =============
 function renderChurn(container_id, churn){
   const el = document.getElementById(container_id);
@@ -3513,6 +3571,9 @@ function renderClientes(data){
   // renderObsAlertas('clientes-obs-alertas', a.obs_alertas, a.obs_agend_alertas);
   renderAniversariantes('clientes-aniv', a.aniversariantes);
   renderChurn('clientes-churn', a.churn_early);
+  // Migração cruzada só aparece quando TRINKS é consolidado
+  // (`data._consolidado === true` e a chave `migracao_cruzada` existe)
+  renderMigracaoCruzada('clientes-migracao-cruzada', data._consolidado ? a.migracao_cruzada : null);
 
   // Cruzamento Clientes × WhatsApp Automation removido a pedido (baixo signal no dia-a-dia).
   // Status do kill switch continua controlável via data/config.json → disparo_wa.ativo.

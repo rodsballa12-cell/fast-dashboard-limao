@@ -448,6 +448,72 @@ def _lado(k, m):
     }
 
 
+# ---------------------------------------------------------------------------
+# MIGRAÇÃO CRUZADA (03/10/2026 · Rodrigo)
+# "Preciso no consolidado algo que me ajude a migrar cliente do escova pro
+# spa e vice-versa." São dois negócios no mesmo endereço — o cliente da Escova
+# é o lead mais barato pro SPA e vice-versa.
+# Regras:
+#   - escova_para_spa: cliente que SÓ foi na Escova e tem base pra justificar
+#     a mensagem (>= 2 visitas · LTV > 0 · tem telefone)
+#   - spa_para_escova: cliente que SÓ foi no SPA (>= 1 visita, SPA é mais
+#     esporádico) com LTV > 0 e telefone
+#   - "ambas" sai dos dois (já migrou organicamente)
+# Match por nome normalizado (title-case strip espaço), aproximação suficiente
+# porque o Trinks exige nome completo e o top_ltv já title-case.
+# ---------------------------------------------------------------------------
+def _norm_nome(s):
+    return (s or "").strip().lower()
+
+
+def anexar_migracao_cruzada(c, esc, spa):
+    esc_top = (esc.get("abas", {}).get("anual", {}).get("top_ltv", {}) or {}).get("top") or []
+    spa_top = (spa.get("abas", {}).get("anual", {}).get("top_ltv", {}) or {}).get("top") or []
+    esc_nomes = {_norm_nome(x.get("nome")) for x in esc_top}
+    spa_nomes = {_norm_nome(x.get("nome")) for x in spa_top}
+    ambas = esc_nomes & spa_nomes
+
+    def _row(cli, origem, destino):
+        return {
+            "nome": cli.get("nome"),
+            "ltv": cli.get("v") or 0,
+            "n_visitas": cli.get("n") or 0,
+            "telefone": cli.get("telefone") or "",
+            "data_aniversario": cli.get("data_aniversario") or "",
+            "data_aniversario_txt": cli.get("data_aniversario_txt") or "",
+            "origem": origem,
+            "destino": destino,
+            "_unidade": origem,
+        }
+
+    e2s = [_row(x, "escova", "spa") for x in esc_top
+           if _norm_nome(x.get("nome")) not in ambas
+           and (x.get("n") or 0) >= 2
+           and (x.get("v") or 0) > 0]
+    s2e = [_row(x, "spa", "escova") for x in spa_top
+           if _norm_nome(x.get("nome")) not in ambas
+           and (x.get("n") or 0) >= 1
+           and (x.get("v") or 0) > 0]
+
+    e2s.sort(key=lambda z: -z["ltv"])
+    s2e.sort(key=lambda z: -z["ltv"])
+
+    anual = c.setdefault("abas", {}).setdefault("anual", {})
+    anual["migracao_cruzada"] = {
+        "escova_para_spa": e2s[:50],
+        "spa_para_escova": s2e[:50],
+        "ja_cruzam": sorted(ambas),
+        "n_ja_cruzam": len(ambas),
+        "n_candidatos_e2s": len(e2s),
+        "n_candidatos_s2e": len(s2e),
+        "nota_amostra": (
+            "Base: top_ltv de cada unidade (até 50 por lado após próximo "
+            "refresh completo). Cliente que já foi nas duas unidades sai da "
+            "lista — já migrou organicamente."
+        ),
+    }
+
+
 def anexar_lado_a_lado(c, esc, spa):
     hoje = _d(esc.get("hoje"))
     out = {}
@@ -497,6 +563,7 @@ def main():
     recalcular_derivados(consolidado)
     corrigir_consolidado(consolidado, escova, spa)
     anexar_lado_a_lado(consolidado, escova, spa)
+    anexar_migracao_cruzada(consolidado, escova, spa)
 
     consolidado["_consolidado"] = True
     consolidado["_fontes"] = ["escova", "spa"]
