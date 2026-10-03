@@ -897,9 +897,29 @@ function renderTicketMeta(container_id, periodo_label, kpis){
   document.getElementById(container_id).innerHTML = html;
 }
 
-function renderMetaProgress(container_id, titulo, meta, subtitle, pace_intraday, curva_horaria){
+function renderMetaProgress(container_id, titulo, meta, subtitle, pace_intraday, curva_horaria, aba_nome){
   if(!meta || !meta.meta) return;
   const pct_v = Math.min(meta.pct,100);
+  // Rodrigo (03/10): no consolidado, a barra Meta tambem fica empilhada
+  // Escova (amarelo) × SPA (teal). Realizado de cada unidade vem direto
+  // dos payloads TRINKS_ESC / TRINKS_SPA pela aba_nome.
+  const _stackedMeta = aba_nome && _consBreak();
+  let barFill;
+  let realEscCons = 0, realSpaCons = 0;
+  if(_stackedMeta){
+    const COR_ESC_M = (typeof COR_ESCOVA !== 'undefined') ? COR_ESCOVA : '#F5B800';
+    const COR_SPA_M = (typeof window.COR_SPA !== 'undefined') ? window.COR_SPA : '#24B3A6';
+    realEscCons = ((((TRINKS_ESC||{}).abas||{})[aba_nome]||{}).meta||{}).realizado || 0;
+    realSpaCons = ((((TRINKS_SPA||{}).abas||{})[aba_nome]||{}).meta||{}).realizado || 0;
+    const tot = realEscCons + realSpaCons;
+    const pEsc = tot > 0 ? (realEscCons / tot * 100) : 100;
+    barFill = `<div class="progress-fill" style="width:${pct_v}%;background:transparent;display:flex;overflow:hidden">
+        <div style="width:${pEsc}%;height:100%;background:${COR_ESC_M}" title="Escova: ${brl0(realEscCons)}"></div>
+        <div style="width:${100-pEsc}%;height:100%;background:${COR_SPA_M}" title="SPA: ${brl0(realSpaCons)}"></div>
+      </div>`;
+  } else {
+    barFill = `<div class="progress-fill" style="width:${pct_v}%"></div>`;
+  }
   // Meta proporcional aos dias já corridos, na mesma competência. Comparar o
   // realizado de 3 dias com a meta de 30 sempre dá ~3% e não informa nada; o
   // que informa é o realizado contra a fatia que caberia a esses 3 dias.
@@ -984,10 +1004,14 @@ function renderMetaProgress(container_id, titulo, meta, subtitle, pace_intraday,
       <h2><span style="color:var(--accent)">🎯</span> ${titulo} · <span style="color:var(--accent)">${brl0(meta.meta)}</span></h2>
       <div class="sub">${subtitle||''}</div>
       <div class="progress">
-        <div class="progress-fill" style="width:${pct_v}%"></div>
+        ${barFill}
         ${pacePos!=null?`<div class="progress-pace" style="left:${pacePos}%" title="Onde você deveria estar com ${meta.dias_realizados} de ${meta.dias_total} dias corridos"></div>`:''}
       </div>
       <div class="progress-labels"><span>R$ 0</span><span class="now">▲ ${brl0(meta.realizado)} · ${pct(meta.pct)}</span><span>${brl0(meta.meta)}</span></div>
+      ${_stackedMeta ? `<div style="display:flex;gap:14px;justify-content:center;margin-top:6px;font-size:11px;color:var(--ink-2)">
+        <span style="display:inline-flex;align-items:center;gap:5px">${ICO_UNIDADE_MINI.escova}Escova ${brl0(realEscCons)}</span>
+        <span style="display:inline-flex;align-items:center;gap:5px">${ICO_UNIDADE_MINI.spa}Spa ${brl0(realSpaCons)}</span>
+      </div>` : ''}
       ${temPace?`<div class="pace-line">
         <span>Esperado até aqui (${meta.dias_realizados} de ${meta.dias_total} dias): <b>${brl0(meta.meta_ate_hoje)}</b></span>
         <span>· Você está em <b class="${paceCor}">${pct(meta.pct_ate_hoje)}</b> do ritmo</span>
@@ -3645,7 +3669,7 @@ function renderAnual(data){
     {label:'Clientes únicos',value:k.clientes_unicos+'',foot:`${((k.cliente_dia||0)/Math.max(k.clientes_unicos,1)).toFixed(1)} visitas/cliente médio`}
   ]);
   // Âncora removida a pedido — informação estática (muda 1×/ano) não merece card fixo
-  if(a.meta && a.meta.meta) renderMetaProgress('per-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante');
+  if(a.meta && a.meta.meta) renderMetaProgress('per-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante', null, null, 'anual');
   renderTicketMeta('per-ticket-meta', 'ano', k);
   {
     const mf = data.metas_franqueadora || {};
@@ -3750,7 +3774,7 @@ function renderMensal(data){
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
   ]);
   renderAvisoBase('per-kpis', k);
-  renderMetaProgress('per-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente');
+  renderMetaProgress('per-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente', null, null, 'mensal');
   renderHeatmapMeta('per-heatmap', data.sazonalidade, m.por_dia_mes, data.hoje);
   renderTicketMeta('per-ticket-meta', 'mês', k);
   renderUtilizacao('per-utilizacao', 'mês', k, m, data.unidade_config);
@@ -3784,7 +3808,7 @@ function renderSemanal(data){
     {label:'Dias operados',value:k.dias_op+'',foot:`de ${s.meta.dias_total} da semana`}
   ]);
   renderAvisoBase('per-kpis', k);
-  renderMetaProgress('per-meta','Meta Semanal',s.meta,'Soma das metas diárias dos dias da semana (cada dia ponderado pelo peso histórico do DOW)');
+  renderMetaProgress('per-meta','Meta Semanal',s.meta,'Soma das metas diárias dos dias da semana (cada dia ponderado pelo peso histórico do DOW)', null, null, 'semanal');
   renderTicketMeta('per-ticket-meta', 'semana', k);
   // Removido renderComparacaoSemana — duplicava info que ja aparece nos KPIs
   // do topo (Faturamento com delta_pct, Visitas com delta_pct, Ticket delta).
@@ -3817,7 +3841,7 @@ function renderDiario(data){
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
   ]);
   renderAvisoBase('per-kpis', k);
-  renderMetaProgress('per-meta','Meta Diária',d.meta,'Meta específica do dia da semana atual (peso histórico do DOW × META_MENSAL, respeitando jornada)', k.pace_intraday, (data.sazonalidade||{}).curva_horaria);
+  renderMetaProgress('per-meta','Meta Diária',d.meta,'Meta específica do dia da semana atual (peso histórico do DOW × META_MENSAL, respeitando jornada)', k.pace_intraday, (data.sazonalidade||{}).curva_horaria, 'diario');
   // Pace agora dentro do card Meta Diaria (fusao 03/10 a pedido do Rodrigo).
   // Mantem container limpo pra nao renderizar card vazio.
   const pacePane = document.getElementById('per-pace'); if(pacePane) pacePane.innerHTML = '';
