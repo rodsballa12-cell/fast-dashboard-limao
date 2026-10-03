@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-03T07:03:05-03:00",
+  "gerado_em": "2026-10-03T10:12:06-03:00",
   "hoje": "2026-10-03",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -263,8 +263,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 142,
-    "saldoRestante": 9858
+    "totalUtilizado": 152,
+    "saldoRestante": 9848
   },
   "metas_franqueadora": null,
   "unidade_config": {
@@ -281,15 +281,6 @@
     "obs": "endpoint OK mas sem regras cadastradas no Trinks"
   },
   "prof_meta": {
-    "948851": {
-      "nome": "Adna Lua Neves Gomes",
-      "apelido": "Adna",
-      "funcao": "Massagista",
-      "status": "Ativo",
-      "possui_agenda": true,
-      "id_profissional": 738376,
-      "genero": "F"
-    },
     "948856": {
       "nome": "Ashley De Oliveira Costa",
       "apelido": "Ashley",
@@ -306,6 +297,15 @@
       "status": "Ativo",
       "possui_agenda": false,
       "id_profissional": 723073,
+      "genero": "F"
+    },
+    "952955": {
+      "nome": "Fabiana Leite",
+      "apelido": "Fabiana",
+      "funcao": "Massagista",
+      "status": "Ativo",
+      "possui_agenda": true,
+      "id_profissional": 740985,
       "genero": "F"
     },
     "948855": {
@@ -371,15 +371,6 @@
       "id_profissional": 693093,
       "genero": "F"
     },
-    "949376": {
-      "nome": "Rivca Essebag",
-      "apelido": "Rivca",
-      "funcao": "Massagista",
-      "status": "Ativo",
-      "possui_agenda": true,
-      "id_profissional": 222590,
-      "genero": "F"
-    },
     "941245": {
       "nome": "Rodrigo De Pinho Garcia",
       "apelido": "Rodrigo",
@@ -396,6 +387,15 @@
       "status": "Ativo",
       "possui_agenda": true,
       "id_profissional": 738385,
+      "genero": "F"
+    },
+    "951325": {
+      "nome": "Vick Ambrósio",
+      "apelido": "",
+      "funcao": "Massagista",
+      "status": "Ativo",
+      "possui_agenda": true,
+      "id_profissional": 740004,
       "genero": "F"
     }
   },
@@ -1352,7 +1352,7 @@
           "cliente": "Rosângela Pereira do Nascimento"
         }
       ],
-      "horas_desatualizado": 61.1
+      "horas_desatualizado": 64.2
     }
   },
   "auditoria_cancelados": {
@@ -1617,8 +1617,8 @@
           "clientes_unicos": 16,
           "em_atendimento": 2,
           "n_prof_ativos": 5,
-          "rs_hora_salao": 149.6,
-          "horas_operacao_periodo": 60.0,
+          "rs_hora_salao": 146.67,
+          "horas_operacao_periodo": 61.0,
           "utilizacao_agregada_pct": 2.9
         },
         "categorias": {
@@ -2173,9 +2173,9 @@
         "clientes_unicos": 45,
         "em_atendimento": 2,
         "n_prof_ativos": 9,
-        "rs_hora_salao": 176.65,
-        "horas_operacao_periodo": 90.0,
-        "utilizacao_agregada_pct": 5.8,
+        "rs_hora_salao": 174.32,
+        "horas_operacao_periodo": 91.0,
+        "utilizacao_agregada_pct": 5.7,
         "ticket_meta": 288.39,
         "ticket_meta_periodo": 292.97,
         "ticket_atingimento_pct": 117.3,
@@ -2918,25 +2918,18 @@
           "horas_trab": 1.8
         },
         {
-          "nome": "Adna Lua Neves Gomes",
-          "n": 2,
+          "nome": "Prof desligado #738376",
+          "n": 0,
           "v": 298.0,
-          "ticket_medio": 149.0,
-          "horas_trab": 1.5
+          "ticket_medio": 298.0,
+          "horas_trab": 0.0
         },
         {
-          "nome": "Prof desligado #740004",
-          "n": 0,
+          "nome": "Vick Ambrósio",
+          "n": 2,
           "v": 248.0,
-          "ticket_medio": 248.0,
-          "horas_trab": 0.0
-        },
-        {
-          "nome": "Prof desligado #740985",
-          "n": 0,
-          "v": 198.0,
-          "ticket_medio": 198.0,
-          "horas_trab": 0.0
+          "ticket_medio": 124.0,
+          "horas_trab": 1.5
         },
         {
           "nome": "Rodrigo De Pinho Garcia",
@@ -2948,19 +2941,19 @@
         {
           "nome": "Fabiana Leite",
           "n": 3,
-          "v": 0.0,
-          "ticket_medio": 0.0,
+          "v": 198.0,
+          "ticket_medio": 66.0,
           "horas_trab": 2.2
         },
         {
-          "nome": "Vick Ambrósio",
+          "nome": "Adna Lua Neves Gomes",
           "n": 2,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 1.5
         }
       ],
-      "ranking_prof_total_n": 11,
+      "ranking_prof_total_n": 10,
       "ranking_prof_executor": [
         {
           "nome": "Marly Feitosa De Lima Ledoux",
@@ -3017,7 +3010,7 @@
           "ticket_medio_serv": 124.0
         },
         {
-          "nome": "Prof desligado #740985",
+          "nome": "Fabiana Leite",
           "n_serv": 3,
           "v": 347.0,
           "v_via_pacote": 149.0,
@@ -3041,7 +3034,7 @@
           "ticket_medio_serv": 164.0
         },
         {
-          "nome": "Adna Lua Neves Gomes",
+          "nome": "Prof desligado #738376",
           "n_serv": 2,
           "v": 298.0,
           "v_via_pacote": 0.0,
@@ -3053,7 +3046,7 @@
           "ticket_medio_serv": 149.0
         },
         {
-          "nome": "Prof desligado #740004",
+          "nome": "Vick Ambrósio",
           "n_serv": 2,
           "v": 248.0,
           "v_via_pacote": 0.0,
@@ -3253,9 +3246,9 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 720.0,
+          "capacidade_horas": 729.6,
           "horas_ocupadas": 41.8,
-          "utilizacao_pct": 5.8
+          "utilizacao_pct": 5.7
         }
       },
       "densidade_hora": [
@@ -3823,9 +3816,9 @@
         "clientes_unicos": 7,
         "em_atendimento": 0,
         "n_prof_ativos": 3,
-        "rs_hora_salao": 148.29,
-        "horas_operacao_periodo": 24.0,
-        "utilizacao_agregada_pct": 3.4,
+        "rs_hora_salao": 141.23,
+        "horas_operacao_periodo": 25.0,
+        "utilizacao_agregada_pct": 3.2,
         "caixa_delta_pct": null,
         "atend_delta_pct": null,
         "cliente_dia_delta_pct": null,
@@ -4087,21 +4080,14 @@
           "horas_trab": 1.0
         },
         {
-          "nome": "Prof desligado #740985",
-          "n": 0,
-          "v": 198.0,
-          "ticket_medio": 198.0,
-          "horas_trab": 0.0
-        },
-        {
           "nome": "Fabiana Leite",
           "n": 3,
-          "v": 0.0,
-          "ticket_medio": 0.0,
+          "v": 198.0,
+          "ticket_medio": 66.0,
           "horas_trab": 2.2
         }
       ],
-      "ranking_prof_total_n": 4,
+      "ranking_prof_total_n": 3,
       "ranking_prof_executor": [
         {
           "nome": "Marly Feitosa De Lima Ledoux",
@@ -4117,7 +4103,7 @@
           "ticket_medio_serv": 121.0
         },
         {
-          "nome": "Prof desligado #740985",
+          "nome": "Fabiana Leite",
           "n_serv": 3,
           "v": 347.0,
           "v_via_pacote": 149.0,
@@ -4136,8 +4122,8 @@
           "comissao": 62.4,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "CORPORAL": 149.0,
-            "ADICIONAIS": 59.0
+            "ADICIONAIS": 59.0,
+            "CORPORAL": 149.0
           },
           "ticket_medio_serv": 104.0
         }
@@ -4252,9 +4238,9 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 192.0,
+          "capacidade_horas": 201.6,
           "horas_ocupadas": 6.5,
-          "utilizacao_pct": 3.4
+          "utilizacao_pct": 3.2
         }
       },
       "densidade_hora": [
@@ -4329,8 +4315,8 @@
         "clientes_unicos": 16,
         "em_atendimento": 2,
         "n_prof_ativos": 5,
-        "rs_hora_salao": 149.6,
-        "horas_operacao_periodo": 60.0,
+        "rs_hora_salao": 146.67,
+        "horas_operacao_periodo": 61.0,
         "utilizacao_agregada_pct": 2.9,
         "caixa_delta_pct": 63.0,
         "atend_delta_pct": -12.5,
@@ -4610,35 +4596,21 @@
           "horas_trab": 1.8
         },
         {
-          "nome": "Prof desligado #740004",
-          "n": 0,
+          "nome": "Vick Ambrósio",
+          "n": 2,
           "v": 248.0,
-          "ticket_medio": 248.0,
-          "horas_trab": 0.0
-        },
-        {
-          "nome": "Prof desligado #740985",
-          "n": 0,
-          "v": 198.0,
-          "ticket_medio": 198.0,
-          "horas_trab": 0.0
+          "ticket_medio": 124.0,
+          "horas_trab": 1.5
         },
         {
           "nome": "Fabiana Leite",
           "n": 3,
-          "v": 0.0,
-          "ticket_medio": 0.0,
+          "v": 198.0,
+          "ticket_medio": 66.0,
           "horas_trab": 2.2
-        },
-        {
-          "nome": "Vick Ambrósio",
-          "n": 2,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.5
         }
       ],
-      "ranking_prof_total_n": 7,
+      "ranking_prof_total_n": 5,
       "ranking_prof_executor": [
         {
           "nome": "Marly Feitosa De Lima Ledoux",
@@ -4668,7 +4640,7 @@
           "ticket_medio_serv": 110.67
         },
         {
-          "nome": "Prof desligado #740985",
+          "nome": "Fabiana Leite",
           "n_serv": 3,
           "v": 347.0,
           "v_via_pacote": 149.0,
@@ -4693,7 +4665,7 @@
           "ticket_medio_serv": 102.33
         },
         {
-          "nome": "Prof desligado #740004",
+          "nome": "Vick Ambrósio",
           "n_serv": 2,
           "v": 248.0,
           "v_via_pacote": 0.0,
@@ -4932,7 +4904,7 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 480.0,
+          "capacidade_horas": 489.6,
           "horas_ocupadas": 14.0,
           "utilizacao_pct": 2.9
         }
@@ -5010,11 +4982,11 @@
         "em_atendimento": 0,
         "n_prof_ativos": 0,
         "rs_hora_salao": 0.0,
-        "horas_operacao_periodo": 0.0,
+        "horas_operacao_periodo": 1.0,
         "utilizacao_agregada_pct": 0.0,
         "caixa_delta_pct": null,
-        "atend_delta_pct": null,
-        "cliente_dia_delta_pct": null,
+        "atend_delta_pct": -100.0,
+        "cliente_dia_delta_pct": -100.0,
         "caixa_delta_perdia_pct": null,
         "atend_delta_perdia_pct": null,
         "cliente_dia_delta_perdia_pct": null,
@@ -5026,11 +4998,11 @@
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "data": "2026-09-26",
-          "hora_max": 7.05,
+          "hora_max": 10.2,
           "caixa": 0.0,
-          "atend_fin": 0,
+          "atend_fin": 5,
           "faturamento_apurado": 0.0,
-          "cliente_dia": 0,
+          "cliente_dia": 5,
           "ticket_medio": 0.0,
           "dias_op": 1
         },
@@ -5049,14 +5021,14 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "07:03",
-          "hora_atual_num": 7.05,
-          "pct_esperado_agora": 0.0,
+          "hora_atual_str": "10:12",
+          "hora_atual_num": 10.2,
+          "pct_esperado_agora": 0.3,
           "meta_dia": 1379.31,
-          "meta_esperada_agora": 0.0,
+          "meta_esperada_agora": 3.59,
           "realizado_agora": 0.0,
-          "pace_delta": 0.0,
-          "pace_ratio_pct": 100.0,
+          "pace_delta": -3.59,
+          "pace_ratio_pct": 0.0,
           "projecao_dia": 0.0,
           "opera_hoje": true
         },
@@ -5199,7 +5171,7 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 0.0,
+          "capacidade_horas": 9.6,
           "horas_ocupadas": 0.0,
           "utilizacao_pct": 0.0
         }
@@ -5262,7 +5234,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-03T07:03:05-03:00",
+    "gerado_em": "2026-10-03T10:12:06-03:00",
     "hoje": "2026-10-03",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -5420,7 +5392,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-03T07:03:05-03:00",
+    "gerado_em": "2026-10-03T10:12:06-03:00",
     "n_agendamentos": 52,
     "horas": [
       9,
