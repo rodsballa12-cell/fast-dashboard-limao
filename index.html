@@ -1544,28 +1544,70 @@ function renderMeiosPagamento(container_id, titulo, subtitle, meios){
   renderTable(container_id, titulo, subtitle, ['Meio','Nº','Valor','%'], rows);
 }
 
+// ============= EXPANSÃO 15 + "ver todos" =============
+// Rodrigo (03/10/2026): nos cards de cliente, aparente só os 15 primeiros
+// e um botão de expandir pra quem quiser ver todos. Ajuda a vista não
+// afundar numa lista de 80+ nomes antes de ver os cards de baixo.
+function _expandableRows(rowsHtmlArr, totalLabel){
+  if(!rowsHtmlArr || rowsHtmlArr.length <= 15){
+    return { html: (rowsHtmlArr||[]).join(''), footer: '' };
+  }
+  const uid = 'exp_' + Math.random().toString(36).slice(2,9);
+  const html = rowsHtmlArr.map((r, i) => {
+    if(i < 15) return r;
+    // injeta classe + display:none no primeiro <tr do fragmento
+    return r.replace(/<tr(\s|>)/, `<tr class="${uid}-rest" style="display:none"$1`);
+  }).join('');
+  const total = rowsHtmlArr.length;
+  const label = totalLabel || `Ver todos (${total})`;
+  const footer = `<div style="padding:10px 0 2px;text-align:center">
+    <button type="button" class="btn-refresh" data-exp="${uid}" data-total="${total}" data-label="${label}">${label} ↓</button>
+  </div>`;
+  return { html, footer, uid };
+}
+// Delegação global: um listener resolve todos os botões data-exp="..."
+if(!window._expClickWired){
+  window._expClickWired = true;
+  document.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('button[data-exp]');
+    if(!btn) return;
+    const uid = btn.getAttribute('data-exp');
+    const label = btn.getAttribute('data-label') || 'Ver todos';
+    const rows = document.querySelectorAll('.' + uid + '-rest');
+    if(!rows.length) return;
+    const expanded = rows[0].style.display !== 'none';
+    rows.forEach(r => r.style.display = expanded ? 'none' : '');
+    btn.textContent = expanded ? (label + ' ↓') : 'Mostrar só os 15 principais ↑';
+  });
+}
+
 function renderTopClientes(container_id, titulo, subtitle, clientes, insight){
   if(!clientes || !clientes.length){
     document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div style="color:var(--ink-3);font-size:13px;padding:12px 0;">Nenhum cliente atendido neste período ainda.</div></div>`;
     return;
   }
   const waLink = tel => tel ? `<a href="https://wa.me/${tel.replace(/\D/g,'')}" target="_blank" style="color:#22c55e;text-decoration:none;font-weight:600;">📱</a>` : '<span style="color:var(--muted)">—</span>';
-  const rows = clientes.slice(0,15).map((c,i)=>`<tr>
+  const rowArr = clientes.map((c,i)=>`<tr>
     <td>${i+1}</td>
     <td>${nomeComIconeUnidade(c)}</td>
     <td style="text-align:right">${c.n}</td>
     <td style="text-align:right">${brl0(c.v||0)}</td>
     <td>${c.data_aniversario_txt || c.data_aniversario || '<span style="color:var(--muted)">—</span>'}</td>
     <td>${waLink(c.telefone)}</td>
-  </tr>`).join('');
+  </tr>`);
+  const exp = _expandableRows(rowArr, `Ver todos os ${clientes.length} clientes`);
+  const tituloFinal = clientes.length > 15
+    ? `⭐ Base fiel · top 15 por LTV <span class="hi">(de ${clientes.length})</span>`
+    : `⭐ Base fiel · top ${clientes.length} clientes por LTV`;
   document.getElementById(container_id).innerHTML=`
     <div class="card">
-      <h2>⭐ Base fiel · top ${Math.min(15, clientes.length)} clientes por LTV</h2>
+      <h2>${tituloFinal}</h2>
       <div class="cap">${subtitle} · Perder um destes machuca o LTV. Aniversário e WhatsApp direto pra facilitar contato pessoal.</div>
       <table class="simple">
         <thead><tr><th style="width:30px">#</th><th>Cliente</th><th style="text-align:right">Visitas</th><th style="text-align:right">LTV</th><th>Aniversário</th><th>WhatsApp</th></tr></thead>
-        <tbody>${rows}</tbody>
+        <tbody>${exp.html}</tbody>
       </table>
+      ${exp.footer}
       ${insight?'<div class="insight">'+insight+'</div>':''}
     </div>`;
 }
@@ -3137,21 +3179,24 @@ function renderAniversariantes(container_id, lista){
     return;
   }
   const waLink = tel => tel ? `<a href="https://wa.me/${tel.replace(/\D/g,'')}" target="_blank" style="color:#22c55e;text-decoration:none;font-weight:600;">📱 WhatsApp</a>` : '<span style="color:var(--muted)">—</span>';
-  const rows = lista.map(a => `<tr>
+  const rowArr = lista.map(a => `<tr>
     <td>${nomeComIconeUnidade(a, 'cliente')}</td>
     <td>${a.data_aniv}</td>
     <td>${a.dias === 0 ? '<strong class="up">HOJE!</strong>' : (a.dias === 1 ? '<strong>amanhã</strong>' : `em ${a.dias}d`)}</td>
     <td>${a.n_visitas}</td>
     <td>${brl0(a.ltv)}</td>
     <td>${waLink(a.telefone)}</td>
-  </tr>`).join('');
+  </tr>`);
+  const exp = _expandableRows(rowArr, `Ver todos os ${lista.length} aniversariantes`);
+  const headN = lista.length > 15 ? `top 15 de ${lista.length}` : `${lista.length} nos próximos 14 dias`;
   el.innerHTML = `<div class="card">
-    <h2>🎂 Aniversariantes próximos <span class="hi">(${lista.length} nos próximos 14 dias)</span></h2>
+    <h2>🎂 Aniversariantes próximos <span class="hi">(${headN})</span></h2>
     <div class="cap">Clientes ativos que fazem aniversário em breve. Clica no WhatsApp e manda mensagem pessoal + cortesia — retenção máxima com esforço mínimo.</div>
     <table class="simple">
       <thead><tr><th>Cliente</th><th>Data</th><th>Quando</th><th>Visitas</th><th>LTV</th><th>Contato</th></tr></thead>
-      <tbody>${rows}</tbody>
+      <tbody>${exp.html}</tbody>
     </table>
+    ${exp.footer}
   </div>`;
 }
 
@@ -3159,23 +3204,26 @@ function renderAniversariantes(container_id, lista){
 function renderCrossSell(container_id, cs){
   const el = document.getElementById(container_id);
   if(!el || !cs || !cs.top || cs.top.length === 0){ if(el) el.innerHTML = ''; return; }
-  const rows = cs.top.map(c => `<tr>
+  const rowArr = cs.top.map(c => `<tr>
     <td>${nomeComIconeUnidade(c, 'cliente')}</td>
     <td>${c.n_visitas}</td>
     <td>${brl0(c.ltv)}</td>
     <td>${(c.ja_faz || []).join(', ') || '—'}</td>
     <td><strong>${(c.recomendar || []).join(', ')}</strong></td>
-  </tr>`).join('');
+  </tr>`);
+  const exp = _expandableRows(rowArr, `Ver todos os ${cs.top.length} clientes`);
+  const headN = cs.top.length > 15 ? `top 15 de ${cs.n_clientes_com_oportunidade}` : `${cs.n_clientes_com_oportunidade} clientes`;
   el.innerHTML = `<div class="card">
     <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
-      <h2 style="margin:0">🎯 Cross-sell · oportunidades <span class="hi">(${cs.n_clientes_com_oportunidade} clientes)</span></h2>
+      <h2 style="margin:0">🎯 Cross-sell · oportunidades <span class="hi">(${headN})</span></h2>
       <button id="btn-csv-crosssell" class="btn-refresh">⬇ CSV</button>
     </div>
     <div class="cap">Clientes recorrentes (2+ visitas) que nunca fizeram serviços populares (≥30 atendimentos no ano). Ordenados por LTV — atacar de cima pra baixo.</div>
     <table class="simple">
       <thead><tr><th>Cliente</th><th>Visitas</th><th>LTV</th><th>Já faz</th><th>Recomendar</th></tr></thead>
-      <tbody>${rows}</tbody>
+      <tbody>${exp.html}</tbody>
     </table>
+    ${exp.footer}
     <div class="insight"><strong>Ação:</strong> na próxima visita de cada um do top 10, a recepção oferece 1 dos serviços recomendados com 15% off. Conversão típica: 25-35% na primeira exposição.</div>
   </div>`;
   document.getElementById('btn-csv-crosssell')?.addEventListener('click', () => {
@@ -3194,7 +3242,8 @@ function renderChurn(container_id, churn){
     return;
   }
   const waLink = tel => tel ? `<a href="https://wa.me/${tel.replace(/\D/g,'')}" target="_blank" style="color:#22c55e;text-decoration:none;font-weight:600;">📱 WhatsApp</a>` : '<span style="color:var(--muted)">—</span>';
-  const rows = (churn.top || []).map(c => {
+  const topArr = churn.top || [];
+  const rowArr = topArr.map(c => {
     const servs = (c.ultimos_servicos || []).slice(0,3);
     const servsHtml = servs.length
       ? servs.map(s => `<span style="display:inline-block;background:var(--surface-2);border-radius:4px;padding:2px 6px;font-size:11px;margin:1px 3px 1px 0;color:var(--ink-2)">${s}</span>`).join('')
@@ -3208,14 +3257,19 @@ function renderChurn(container_id, churn){
       <td style="max-width:280px">${servsHtml}</td>
       <td>${waLink(c.telefone)}</td>
     </tr>`;
-  }).join('');
+  });
+  const exp = _expandableRows(rowArr, `Ver todos os ${topArr.length} clientes`);
+  const headN = topArr.length > 15
+    ? `top 15 de ${churn.n_alerta} · LTV em risco ${brl0(churn.ltv_em_risco)}`
+    : `${churn.n_alerta} · LTV em risco ${brl0(churn.ltv_em_risco)}`;
   el.innerHTML = `<div class="card">
-    <h2>🛟 Clientes que sumiram <span class="hi">(${churn.n_alerta} · LTV em risco ${brl0(churn.ltv_em_risco)})</span></h2>
+    <h2>🛟 Clientes que sumiram <span class="hi">(${headN})</span></h2>
     <div class="cap">Já vieram 3+ vezes e não voltam há 14+ dias. Ordenados por LTV. Manda WhatsApp pessoal citando o último serviço — resgate típico 30-40%.</div>
     <table class="simple">
       <thead><tr><th>Cliente</th><th>Visitas</th><th>LTV</th><th>Última</th><th>Sem vir</th><th>Últimos serviços</th><th>Contato</th></tr></thead>
-      <tbody>${rows}</tbody>
+      <tbody>${exp.html}</tbody>
     </table>
+    ${exp.footer}
     <div class="insight"><strong>Ação sugerida:</strong> WhatsApp pros 5 primeiros hoje (não massa). Use os serviços que ela já consome pra propor a próxima — "Vi que faz tempo que você não vem fazer sua <em>[último serviço]</em>, tá com R$ 20 pra você essa semana." Retorno esperado: ${brl0(churn.ltv_em_risco * 0.35)}.</div>
   </div>`;
 }
