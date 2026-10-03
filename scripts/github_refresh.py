@@ -1052,7 +1052,7 @@ def _cli_totalpagar_no_periodo(transac, ini: date, fim: date):
     return out
 
 
-def top_ltv(agend, transac, ini: date, fim: date, limite=15, tel_map=None, aniv_map=None):
+def top_ltv(agend, transac, ini: date, fim: date, limite=50, tel_map=None, aniv_map=None):
     """B4 · LTV agora usa totalPagar (caixa) por cliente, não só receita_serv.
     tel_map/aniv_map opcionais: enriquecem cada top-cliente com telefone e
     aniversário (facilita contato direto pelo painel)."""
@@ -1843,7 +1843,9 @@ def main():
     churn = {
         "n_alerta": len(churn_candidatos),
         "ltv_em_risco": brl_round(sum(c["ltv"] for c in churn_candidatos)),
-        "top": churn_candidatos[:20],
+        # top 50: alinhado ao limite de expansao no painel (03/10 · Rodrigo).
+        # Antes era 20, mas o botao 'ver top 50' precisa de material ate 50.
+        "top": churn_candidatos[:50],
     }
 
     # === Série diária de clientes NOVOS (para o funil respeitar a competência) ===
@@ -2082,7 +2084,8 @@ def main():
     cross_sell_data = {
         "servs_populares": sorted(servs_populares, key=lambda s: -serv_pop[s]),
         "n_clientes_com_oportunidade": len(cross_sell),
-        "top": cross_sell[:20],
+        # top 50: alinhado ao limite de expansao no painel.
+        "top": cross_sell[:50],
     }
 
     # meses do ano

@@ -59,11 +59,30 @@ ARRAY_POR_INDICE = {"por_dow", "hora_media", "hora_abs", "meses", "por_dia_mes",
 ARRAY_POR_CHAVE = {
     "categoria_native":     None,   # taxonomia compartilhada, sem _unidade
     "clientes_top":         "nome",
-    "top":                  "nome",
+    "top":                  "nome",   # default; subcontextos abaixo tem chave propria
     "aniversariantes":      "cliente",
     "cross_sell":           "cliente",
     "obs_alertas":          "cliente",
     "obs_agend_alertas":    "cliente",
+}
+
+# Alguns 'top' sao de clientes (cross_sell.top / churn_early.top) e portanto
+# usam a chave 'cliente', nao 'nome'. Sem este override, o merge agrupava
+# todos no mesmo bucket "?" e sobrava 1 linha no consolidado — era por isso
+# que, em 03/10, cross_sell e churn apareciam com 1 so cliente.
+TOP_KEY_POR_PARENT = {
+    "cross_sell":   "cliente",
+    "churn_early":  "cliente",
+    "top_ltv":      "nome",
+}
+# Ordenacao especifica por caminho (lambda sobre o item). Preserva a
+# priorizacao original de cada card do backend quando o merge do consolidado
+# junta duas listas ja ordenadas.
+SORT_POR_PATH = {
+    "aniversariantes":   lambda z: (z.get("dias", 999), -(z.get("ltv") or 0)),
+    "cross_sell.top":    lambda z: -(z.get("ltv") or 0),
+    "churn_early.top":   lambda z: -(z.get("ltv") or 0),
+    "top_ltv.top":       lambda z: -(z.get("v") or 0),
 }
 
 # Rankings de profissionais — MESMA lógica de ARRAY_POR_CHAVE (agrega por nome
@@ -157,7 +176,14 @@ def merge_list(a, b, path=""):
     # Rankings de prof e agregações por chave (clientes/aniv/cross-sell/…):
     # agrega por nome e anota _unidade: 'escova' | 'spa' | 'ambas'.
     if key in ARRAY_RANKING_PROF or key in ARRAY_POR_CHAVE:
-        kname = (ARRAY_RANKING_PROF.get(key) or ARRAY_POR_CHAVE.get(key))
+        # Para 'top' aninhado em cross_sell/churn_early/top_ltv, respeita o
+        # pai pra escolher a chave de agregacao (cliente vs nome). Antes
+        # (03/10) o merge usava 'nome' sempre em 'top' — mas cross_sell.top
+        # e churn_early.top tem 'cliente', e todos caiam em k='?'.
+        if key == "top" and parent in TOP_KEY_POR_PARENT:
+            kname = TOP_KEY_POR_PARENT[parent]
+        else:
+            kname = (ARRAY_RANKING_PROF.get(key) or ARRAY_POR_CHAVE.get(key))
         if kname is None:
             # taxonomia compartilhada (categoria_native) — só soma por nome
             idx = {}
@@ -179,8 +205,19 @@ def merge_list(a, b, path=""):
         for k, v in idx.items():
             origs = origens[k]
             v["_unidade"] = "ambas" if len(origs) == 2 else origs[0]
-        sort_key = lambda z: -(z.get("v") or z.get("ltv") or 0)
-        return sorted(idx.values(), key=sort_key)
+        # Priorizacao por path respeita o criterio original do card. Fallback
+        # para o antigo (v -> ltv) em paths nao mapeados.
+        # Testamos tanto o caminho completo quanto parent+key, porque path
+        # cresce com abas.anual.* e etc.
+        sort_fn = None
+        for sp, fn in SORT_POR_PATH.items():
+            if path.endswith("." + sp) or path == sp or path.endswith(sp):
+                sort_fn = fn; break
+        if sort_fn is None and key in SORT_POR_PATH:
+            sort_fn = SORT_POR_PATH[key]
+        if sort_fn is None:
+            sort_fn = lambda z: -(z.get("v") or z.get("ltv") or 0)
+        return sorted(idx.values(), key=sort_fn)
     # Categorias top-level (pacotes/servicos/produtos) — merge por índice se dict com 'k'
     if len(a) == len(b) and all(isinstance(x, dict) for x in a) and all(isinstance(y, dict) for y in b):
         # tenta match por 'k' ou 'nome'

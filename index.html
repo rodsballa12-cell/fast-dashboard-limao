@@ -1544,24 +1544,31 @@ function renderMeiosPagamento(container_id, titulo, subtitle, meios){
   renderTable(container_id, titulo, subtitle, ['Meio','Nº','Valor','%'], rows);
 }
 
-// ============= EXPANSÃO 15 + "ver todos" =============
+// ============= EXPANSÃO 15 + "ver top 50" =============
 // Rodrigo (03/10/2026): nos cards de cliente, aparente só os 15 primeiros
-// e um botão de expandir pra quem quiser ver todos. Ajuda a vista não
-// afundar numa lista de 80+ nomes antes de ver os cards de baixo.
-function _expandableRows(rowsHtmlArr, totalLabel){
-  if(!rowsHtmlArr || rowsHtmlArr.length <= 15){
+// e um botão de expandir que mostra os top 50. Ajuda a vista não afundar
+// numa lista de 80+ nomes antes de ver os cards de baixo. 50 é teto fixo
+// porque além disso vira ruído (cliente de 1 visita ou LTV baixo entra em
+// listas que são de retenção de alto valor).
+const EXP_VISIBLE = 15;
+const EXP_MAX = 50;
+function _expandableRows(rowsHtmlArr, labelBase){
+  if(!rowsHtmlArr || rowsHtmlArr.length <= EXP_VISIBLE){
     return { html: (rowsHtmlArr||[]).join(''), footer: '' };
   }
+  const total = rowsHtmlArr.length;
+  const slice = rowsHtmlArr.slice(0, EXP_MAX);  // trunca em 50 mesmo expandido
   const uid = 'exp_' + Math.random().toString(36).slice(2,9);
-  const html = rowsHtmlArr.map((r, i) => {
-    if(i < 15) return r;
-    // injeta classe + display:none no primeiro <tr do fragmento
+  const html = slice.map((r, i) => {
+    if(i < EXP_VISIBLE) return r;
     return r.replace(/<tr(\s|>)/, `<tr class="${uid}-rest" style="display:none"$1`);
   }).join('');
-  const total = rowsHtmlArr.length;
-  const label = totalLabel || `Ver todos (${total})`;
+  const mostrados = Math.min(EXP_MAX, total);
+  const label = labelBase
+    ? `${labelBase} top ${mostrados}${total > EXP_MAX ? ` (de ${total})` : ''}`
+    : `Ver top ${mostrados}${total > EXP_MAX ? ` (de ${total})` : ''}`;
   const footer = `<div style="padding:10px 0 2px;text-align:center">
-    <button type="button" class="btn-refresh" data-exp="${uid}" data-total="${total}" data-label="${label}">${label} ↓</button>
+    <button type="button" class="btn-refresh" data-exp="${uid}" data-label="${label}">${label} ↓</button>
   </div>`;
   return { html, footer, uid };
 }
@@ -1572,12 +1579,12 @@ if(!window._expClickWired){
     const btn = ev.target.closest('button[data-exp]');
     if(!btn) return;
     const uid = btn.getAttribute('data-exp');
-    const label = btn.getAttribute('data-label') || 'Ver todos';
+    const label = btn.getAttribute('data-label') || `Ver top ${EXP_MAX}`;
     const rows = document.querySelectorAll('.' + uid + '-rest');
     if(!rows.length) return;
     const expanded = rows[0].style.display !== 'none';
     rows.forEach(r => r.style.display = expanded ? 'none' : '');
-    btn.textContent = expanded ? (label + ' ↓') : 'Mostrar só os 15 principais ↑';
+    btn.textContent = expanded ? (label + ' ↓') : `Mostrar só os ${EXP_VISIBLE} principais ↑`;
   });
 }
 
@@ -1595,9 +1602,9 @@ function renderTopClientes(container_id, titulo, subtitle, clientes, insight){
     <td>${c.data_aniversario_txt || c.data_aniversario || '<span style="color:var(--muted)">—</span>'}</td>
     <td>${waLink(c.telefone)}</td>
   </tr>`);
-  const exp = _expandableRows(rowArr, `Ver todos os ${clientes.length} clientes`);
-  const tituloFinal = clientes.length > 15
-    ? `⭐ Base fiel · top 15 por LTV <span class="hi">(de ${clientes.length})</span>`
+  const exp = _expandableRows(rowArr);
+  const tituloFinal = clientes.length > EXP_VISIBLE
+    ? `⭐ Base fiel · top ${EXP_VISIBLE} por LTV <span class="hi">(de ${clientes.length})</span>`
     : `⭐ Base fiel · top ${clientes.length} clientes por LTV`;
   document.getElementById(container_id).innerHTML=`
     <div class="card">
@@ -3223,8 +3230,8 @@ function renderAniversariantes(container_id, lista){
     <td>${brl0(a.ltv)}</td>
     <td>${waLink(a.telefone)}</td>
   </tr>`);
-  const exp = _expandableRows(rowArr, `Ver todos os ${lista.length} aniversariantes`);
-  const headN = lista.length > 15 ? `top 15 de ${lista.length}` : `${lista.length} nos próximos 14 dias`;
+  const exp = _expandableRows(rowArr);
+  const headN = lista.length > EXP_VISIBLE ? `top ${EXP_VISIBLE} de ${lista.length}` : `${lista.length} nos próximos 14 dias`;
   el.innerHTML = `<div class="card">
     <h2>🎂 Aniversariantes próximos <span class="hi">(${headN})</span></h2>
     <div class="cap">Clientes ativos que fazem aniversário em breve. Clica no WhatsApp e manda mensagem pessoal + cortesia — retenção máxima com esforço mínimo.</div>
@@ -3247,8 +3254,8 @@ function renderCrossSell(container_id, cs){
     <td>${(c.ja_faz || []).join(', ') || '—'}</td>
     <td><strong>${(c.recomendar || []).join(', ')}</strong></td>
   </tr>`);
-  const exp = _expandableRows(rowArr, `Ver todos os ${cs.top.length} clientes`);
-  const headN = cs.top.length > 15 ? `top 15 de ${cs.n_clientes_com_oportunidade}` : `${cs.n_clientes_com_oportunidade} clientes`;
+  const exp = _expandableRows(rowArr);
+  const headN = cs.top.length > EXP_VISIBLE ? `top ${EXP_VISIBLE} de ${cs.n_clientes_com_oportunidade}` : `${cs.n_clientes_com_oportunidade} clientes`;
   el.innerHTML = `<div class="card">
     <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
       <h2 style="margin:0">🎯 Cross-sell · oportunidades <span class="hi">(${headN})</span></h2>
@@ -3294,9 +3301,9 @@ function renderChurn(container_id, churn){
       <td>${waLink(c.telefone)}</td>
     </tr>`;
   });
-  const exp = _expandableRows(rowArr, `Ver todos os ${topArr.length} clientes`);
-  const headN = topArr.length > 15
-    ? `top 15 de ${churn.n_alerta} · LTV em risco ${brl0(churn.ltv_em_risco)}`
+  const exp = _expandableRows(rowArr);
+  const headN = topArr.length > EXP_VISIBLE
+    ? `top ${EXP_VISIBLE} de ${churn.n_alerta} · LTV em risco ${brl0(churn.ltv_em_risco)}`
     : `${churn.n_alerta} · LTV em risco ${brl0(churn.ltv_em_risco)}`;
   el.innerHTML = `<div class="card">
     <h2>🛟 Clientes que sumiram <span class="hi">(${headN})</span></h2>
