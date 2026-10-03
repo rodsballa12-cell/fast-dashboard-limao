@@ -7,10 +7,13 @@ name: Refresh Dashboard Data
 # Solução: 3 fires por hora (:07, :27, :47) com early-exit — se qualquer
 # um dos 3 firar, cobre a janela; os outros encerram em <10s sem tocar API.
 #
-# HORÁRIO: 6h-22h BRT, de hora em hora (03/10/2026 · Rodrigo pediu cobrir
-# o começo da manhã quando ele abre o painel). BRT é UTC-3 fixo (sem DST
-# desde 2019), então o minuto UTC = minuto BRT; só a hora desloca.
-# 6h BRT = 9h UTC · 22h BRT = 1h UTC (dia seguinte).
+# HORÁRIO (03/10/2026 · Rodrigo refinou): 3h e 10h + hourly 12h-22h BRT.
+#   - 3h BRT atualiza METAS DO DIA (meta_mes_do_ano, pesos DOW, carimbo)
+#     antes de qualquer briefing matinal — "não podemos ficar no escuro"
+#   - 10h BRT cobre o abrir do painel quando Rodrigo chega
+#   - 12h-22h BRT hourly cobre operação (abertura 11h-20h + fechamento)
+# BRT é UTC-3 fixo (sem DST desde 2019): minuto UTC = minuto BRT; só a
+# hora desloca. 3h BRT=6h UTC · 10h=13h UTC · 12-22h BRT=15-23h,0-1h UTC.
 #
 # CONSUMO API — medido, não estimado (01/09/2026):
 # O comentário anterior dizia "~20 req/execução · 11 execuções/dia · 220
@@ -28,13 +31,10 @@ name: Refresh Dashboard Data
 # abas). Reduzir isso exige mexer na análise; aqui atacamos a frequência,
 # que é o fator de maior alavancagem e o de menor risco.
 #
-# DESENHO ATUAL (03/10/2026): hourly 6h-22h BRT · recência 55 min → 17 execuções/dia
-#   17 × 27 = ~460 req/dia = ~13.800/mês (138% da cota!) — Rodrigo pediu
-#   essa frequência pra ter o painel atualizado quando abre de manhã. O
-#   early-exit por cota (6h de pausa quando Trinks avisa esgotado) protege
-#   do estouro: nos últimos ~10 dias do mês o refresh pausa até o reset.
-#   Se o estouro doer, encurtar a janela (ex.: 7h-21h = 15 fires) ou
-#   voltar a 2 fires/hora.
+# DESENHO ATUAL (03/10/2026): 3h + 10h + hourly 12h-22h BRT · recência 55 min
+#   → 13 execuções/dia · 13 × 27 = ~350/dia = ~10.500/mês (~105% da cota).
+#   Levemente acima do orçamento, mas o early-exit por cota (pausa 6h quando
+#   Trinks acusa esgotado) absorve o excedente sem precisar intervir.
 
 on:
   workflow_dispatch:
@@ -48,19 +48,19 @@ on:
     # Conferido antes de desligar o do PC: os dois produziam payload idêntico,
     # 110 chaves e mesmo tamanho. Não se perdeu nada além de duplicação.
     #
-    # Hourly 6h-22h BRT = 9h-1h UTC (17 slots/dia) · 2 fires defasados por slot
-    # (o GitHub pula fires em horário de pico) · o early-exit abaixo resolve a
+    # 13 slots/dia · 2 fires defasados por slot (:17 e :47) pra resistir aos
+    # skips do GitHub em horário de pico. O early-exit abaixo resolve a
     # duplicação em menos de 10s, sem tocar na API.
     #
-    # Faixa UTC: 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23 (BRT 6-20)
-    #          + 0,1 (BRT 21,22)
+    #   BRT  UTC   serve a
+    #   03h  06h   metas do dia atualizadas antes do primeiro briefing
+    #   10h  13h   abrir do painel quando Rodrigo chega
+    #   12h  15h   começo da operação
+    #   13h-22h  16-01h   hourly cobrindo pico e fechamento
     #
-    # Custo esperado: ~27 req por execução real · 17 × 27 = ~460/dia = ~13.800/mês,
-    # ACIMA da cota (10.000). O early-exit por cota pausa o refresh 6h quando
-    # Trinks acusa esgotamento, então nos últimos ~10 dias do mês o painel
-    # pára de atualizar sozinho até o reset. Se incomodar, reduzir a janela.
-    - cron: '17 9-23,0-1 * * *'
-    - cron: '47 9-23,0-1 * * *'
+    # Custo: ~27 req × 13 execuções = ~350/dia = ~10.500/mês contra cota 10.000.
+    - cron: '17 6,13,15-23,0-1 * * *'
+    - cron: '47 6,13,15-23,0-1 * * *'
 
 permissions:
   contents: write
