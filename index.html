@@ -540,10 +540,8 @@
       <div id="clientes-cross-sell"></div>
       <!-- 4. QUALIDADE DE CADASTRO -->
       <div id="clientes-cadastro"></div>
-      <!-- 5. SEGMENTAÇÃO · "Onde nos conheceu" aqui tambem (Rodrigo, 03/10):
-           retomada na aba Clientes porque e perfil da base. A mesma view continua
-           na aba Midia pra decisao de investimento — fontes de dado identicas. -->
-      <div id="clientes-seg-canal"></div>
+      <!-- 5. SEGMENTAÇÃO · "Onde nos conheceu" removido daqui (Rodrigo, 03/10):
+           vive so na aba Midia pra nao duplicar. -->
       <div id="clientes-seg-genero"></div>
       <!-- ÚLTIMO · Ações Recomendadas Clientes -->
       <div id="clientes-insights"></div>
@@ -3335,7 +3333,12 @@ function renderMigracaoCruzada(container_id, mig){
   if(!mig){ el.innerHTML = ''; return; }
   const COR_ESC = (typeof COR_ESCOVA !== 'undefined') ? COR_ESCOVA : '#F5B800';
   const COR_SPA = (typeof window.COR_SPA !== 'undefined') ? window.COR_SPA : '#24B3A6';
-  const waLink = tel => tel ? `<a href="https://wa.me/${tel.replace(/\D/g,'')}" target="_blank" style="color:#22c55e;text-decoration:none;font-weight:600;">📱</a>` : '<span style="color:var(--muted)">—</span>';
+  const waLink = (tel, msg) => {
+    if(!tel) return '<span style="color:var(--muted)">—</span>';
+    const num = tel.replace(/\D/g,'');
+    const q = msg ? '?text=' + encodeURIComponent(msg) : '';
+    return `<a href="https://wa.me/${num}${q}" target="_blank" style="color:#22c55e;text-decoration:none;font-weight:600;" title="WhatsApp com mensagem pronta">📱 WhatsApp</a>`;
+  };
   const e2s = mig.escova_para_spa || [];
   const s2e = mig.spa_para_escova || [];
   if(!e2s.length && !s2e.length){ el.innerHTML = ''; return; }
@@ -3343,42 +3346,91 @@ function renderMigracaoCruzada(container_id, mig){
     try{ return (typeof nomeComIconeUnidade === 'function') ? nomeComIconeUnidade({...c, nome: c.nome}) : c.nome; }
     catch(e){ return c.nome; }
   };
-  const _row = c => `<tr>
-    <td>${_ico(c)}</td>
-    <td style="text-align:right">${c.n_visitas}</td>
-    <td style="text-align:right">${brl0(c.ltv||0)}</td>
-    <td>${c.data_aniversario_txt || c.data_aniversario || '<span style="color:var(--muted)">—</span>'}</td>
-    <td>${waLink(c.telefone)}</td>
-  </tr>`;
-  const expE2S = _expandableRows(e2s.map(_row));
-  const expS2E = _expandableRows(s2e.map(_row));
-  const bloco = (cor, titulo, desc, lista, exp, msgIdeia) => {
+  const _primeiroNome = n => (n || '').split(/\s+/)[0];
+  // Mensagens prontas (recepção adapta se quiser; sem [placeholder])
+  const _msgE2S = c => `Oi ${_primeiroNome(c.nome)}! Como cliente de casa da Fast Escova, queria te convidar pra conhecer o nosso Spa aqui no Limão (mesmo endereço). 20% off na primeira sessão — massagem, drenagem, limpeza de pele. Topa agendar?`;
+  const _msgS2E = c => `Oi ${_primeiroNome(c.nome)}! Já que você frequenta o Spa aqui no Limão, que tal combinar com uma escova lavada? R$ 20 off na primeira. Fica perfeito antes ou depois da sua sessão. Agendo pra quando?`;
+  const _row = (c, msgFn) => {
+    const vis = c.n_visitas || 0;
+    const ltv = c.ltv || 0;
+    const ticket = vis > 0 ? ltv / vis : 0;
+    const vipTag = ltv >= 500 ? ' <span style="background:rgba(245,184,0,.15);color:#F5B800;font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:4px;vertical-align:middle">VIP</span>' : '';
+    return `<tr>
+      <td>${_ico(c)}${vipTag}</td>
+      <td style="text-align:right">${vis}</td>
+      <td style="text-align:right;font-weight:600">${brl0(ltv)}</td>
+      <td style="text-align:right;color:var(--muted)">${brl0(ticket)}</td>
+      <td>${c.data_aniversario_txt || c.data_aniversario || '<span style="color:var(--muted)">—</span>'}</td>
+      <td>${waLink(c.telefone, msgFn(c))}</td>
+    </tr>`;
+  };
+  const expE2S = _expandableRows(e2s.map(c => _row(c, _msgE2S)));
+  const expS2E = _expandableRows(s2e.map(c => _row(c, _msgS2E)));
+  const _ltvTotal = lista => lista.reduce((s,c)=>s+(c.ltv||0), 0);
+  const _nVip = lista => lista.filter(c => (c.ltv||0) >= 500).length;
+  const bloco = (cor, titulo, desc, lista, exp, msgIdeia, csvId) => {
     const headN = lista.length > EXP_VISIBLE ? `top ${EXP_VISIBLE} de ${lista.length}` : `${lista.length}`;
+    const vipN = _nVip(lista);
+    const ltvTotal = _ltvTotal(lista);
     return `<div style="border-left:4px solid ${cor};padding:12px 14px;background:${cor}0f;border-radius:6px;margin-top:12px">
-      <div style="font-weight:800;font-size:14px;color:${cor};margin-bottom:4px">${titulo} <span style="color:var(--ink-3);font-weight:400">(${headN})</span></div>
-      <div class="cap" style="margin-bottom:8px">${desc}</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+        <div style="font-weight:800;font-size:14px;color:${cor}">${titulo} <span style="color:var(--ink-3);font-weight:400">(${headN})</span></div>
+        ${lista.length ? `<button class="btn-refresh" id="${csvId}">⬇ CSV</button>` : ''}
+      </div>
+      <div class="cap" style="margin-bottom:6px">${desc}</div>
       ${lista.length ? `
+        <div style="font-size:11px;color:var(--ink-3);margin-bottom:8px">
+          <strong style="color:var(--ink-2)">${lista.length}</strong> candidatos ·
+          <strong style="color:${cor}">${vipN}</strong> VIPs (LTV ≥ R$ 500) ·
+          LTV total que você pode destravar: <strong>${brl0(ltvTotal)}</strong>
+        </div>
         <table class="simple">
-          <thead><tr><th>Cliente</th><th style="text-align:right">Visitas</th><th style="text-align:right">LTV</th><th>Aniversário</th><th>WhatsApp</th></tr></thead>
+          <thead><tr>
+            <th>Cliente</th>
+            <th style="text-align:right">Visitas</th>
+            <th style="text-align:right">LTV</th>
+            <th style="text-align:right">Ticket</th>
+            <th>Aniversário</th>
+            <th>WhatsApp</th>
+          </tr></thead>
           <tbody>${exp.html}</tbody>
         </table>
         ${exp.footer}
-        <div class="insight" style="margin-top:10px;font-size:12px"><strong>Sugestão de mensagem:</strong> ${msgIdeia}</div>
+        <div class="insight" style="margin-top:10px;font-size:12px"><strong>Sugestão de mensagem (clique no WhatsApp já abre com ela pronta):</strong> ${msgIdeia}</div>
       ` : '<div style="color:var(--muted);font-size:12px;padding:8px 0">Nenhum candidato elegível no momento.</div>'}
     </div>`;
   };
   el.innerHTML = `<div class="card">
-    <h2>🔀 Migração cruzada · Escova ↔ SPA <span class="hi">(${mig.n_ja_cruzam || 0} já cruzam)</span></h2>
-    <div class="cap">Cliente de uma unidade é o lead mais barato pra outra — já conhece o endereço, confia na recepção. Lista exclui quem já frequenta as duas (já migrou organicamente). Base: top LTV de cada unidade.</div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h2 style="margin:0">🔀 Migração cruzada · Escova ↔ SPA</h2>
+      <div style="font-size:12px;color:var(--ink-3)">
+        <strong style="color:var(--ink-2)">${mig.n_ja_cruzam || 0}</strong> clientes já cruzam ·
+        <strong style="color:${COR_SPA}">${e2s.length}</strong> candidatos pro SPA ·
+        <strong style="color:${COR_ESC}">${s2e.length}</strong> pra Escova
+      </div>
+    </div>
+    <div class="cap">Cliente de uma unidade é o lead mais barato pra outra — já conhece o endereço, confia na recepção. Lista exclui quem já frequenta as duas (já migrou organicamente). Base: top LTV de cada unidade. Expansível até top ${EXP_MAX}.</div>
     ${bloco(COR_SPA, '🧖 Clientes Escova → ofereça SPA',
             'Recorrentes da Escova (≥ 2 visitas) que ainda não experimentaram o SPA. Ordenados por LTV — começa pelas que mais gastam.',
             e2s, expE2S,
-            '"Oi [nome]! Vi que você sempre vem fazer sua escova aqui. Que tal experimentar o SPA? Massagem relaxante ou drenagem — a cliente da casa ganha 20% off na primeira sessão. Agendo pra você?"')}
+            '"Oi [primeiro nome]! Como cliente de casa da Fast Escova, queria te convidar pra conhecer o nosso Spa aqui no Limão. 20% off na primeira sessão — massagem, drenagem, limpeza de pele."',
+            'btn-csv-mig-e2s')}
     ${bloco(COR_ESC, '💇 Clientes SPA → ofereça Escova',
             'Clientes do SPA (≥ 1 visita) que ainda não fizeram serviço na Escova. Massagem/estética + escova é o pacote clássico de dia-de-cuidar-de-si.',
             s2e, expS2E,
-            '"Oi [nome]! Depois da sua [último serviço SPA], que tal fechar o dia com uma escova lavada aqui mesmo? R$ 20 off na primeira. Fica bom pra combinar com o próximo horário do SPA."')}
+            '"Oi [primeiro nome]! Já que você frequenta o Spa aqui no Limão, que tal combinar com uma escova lavada? R$ 20 off na primeira."',
+            'btn-csv-mig-s2e')}
   </div>`;
+  // Exportar CSV
+  const _csvRow = c => [c.nome, c.n_visitas||0, c.ltv||0, (c.n_visitas ? c.ltv/c.n_visitas : 0).toFixed(2),
+                        c.data_aniversario_txt || c.data_aniversario || '', c.telefone || ''];
+  const _header = ['Cliente','Visitas','LTV','Ticket medio','Aniversario','Telefone'];
+  document.getElementById('btn-csv-mig-e2s')?.addEventListener('click', () => {
+    csvExport('migracao-escova-para-spa.csv', _header, e2s.map(_csvRow));
+  });
+  document.getElementById('btn-csv-mig-s2e')?.addEventListener('click', () => {
+    csvExport('migracao-spa-para-escova.csv', _header, s2e.map(_csvRow));
+  });
 }
 
 // ============= CHURN EARLY WARNING =============
@@ -3630,13 +3682,8 @@ function renderClientes(data){
   // 3. Qualidade de cadastro + executor real
   renderClientesCadastro('clientes-cadastro', a.clientes_cadastro);
 
-  // 4. Segmentação — gênero + canal de aquisição (Rodrigo, 03/10: canal
-  // voltou pra ca). A mesma view segue na aba Midia pra decisao de verba.
-  // Bairros fora (endereco mal preenchido).
-  renderSegmentacao('clientes-seg-canal',
-    '📢 Onde nos conheceu · canal de aquisição',
-    'De onde os clientes vieram — perfil da base, informa comunicação e onde o boca-a-boca anda',
-    a.seg_canal, 'canal cadastrado');
+  // 4. Segmentação — só gênero fica aqui. "Onde nos conheceu" vive na
+  // aba Midia (Rodrigo, 03/10: evita duplicacao). Bairros fora.
   renderSegmentacao('clientes-seg-genero',
     '👤 Público por gênero',
     'Perfil da base — informa mix de serviços, comunicação, produtos parceiros',
