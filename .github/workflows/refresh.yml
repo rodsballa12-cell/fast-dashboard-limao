@@ -11,9 +11,9 @@ name: Refresh Dashboard Data
 #   - 3h BRT atualiza METAS DO DIA (meta_mes_do_ano, pesos DOW, carimbo)
 #     antes de qualquer briefing matinal — "não podemos ficar no escuro"
 #   - 10h BRT cobre o abrir do painel quando Rodrigo chega
-#   - 12h-22h BRT hourly cobre operação (abertura 11h-20h + fechamento)
+#   - 12h-21h BRT hourly cobre operação (abertura 11h+ até fechamento)
 # BRT é UTC-3 fixo (sem DST desde 2019): minuto UTC = minuto BRT; só a
-# hora desloca. 3h BRT=6h UTC · 10h=13h UTC · 12-22h BRT=15-23h,0-1h UTC.
+# hora desloca. 3h BRT=6h UTC · 10h=13h UTC · 12-21h BRT=15-23h,0h UTC.
 #
 # CONSUMO API — medido, não estimado (01/09/2026):
 # O comentário anterior dizia "~20 req/execução · 11 execuções/dia · 220
@@ -31,10 +31,10 @@ name: Refresh Dashboard Data
 # abas). Reduzir isso exige mexer na análise; aqui atacamos a frequência,
 # que é o fator de maior alavancagem e o de menor risco.
 #
-# DESENHO ATUAL (03/10/2026): 3h + 10h + hourly 12h-22h BRT · recência 55 min
-#   → 13 execuções/dia · 13 × 27 = ~350/dia = ~10.500/mês (~105% da cota).
-#   Levemente acima do orçamento, mas o early-exit por cota (pausa 6h quando
-#   Trinks acusa esgotado) absorve o excedente sem precisar intervir.
+# DESENHO ATUAL (03/10/2026): 3h + 10h + hourly 12h-21h BRT · recência 55 min
+#   → 12 execuções/dia · 12 × 27 = ~325/dia = ~9.700/mês (~97% da cota).
+#   Dentro do orçamento com folga mínima; o early-exit por cota protege em
+#   caso de pico eventual.
 
 on:
   workflow_dispatch:
@@ -56,11 +56,11 @@ on:
     #   03h  06h   metas do dia atualizadas antes do primeiro briefing
     #   10h  13h   abrir do painel quando Rodrigo chega
     #   12h  15h   começo da operação
-    #   13h-22h  16-01h   hourly cobrindo pico e fechamento
+    #   13h-21h  16-00h   hourly cobrindo pico e fechamento
     #
-    # Custo: ~27 req × 13 execuções = ~350/dia = ~10.500/mês contra cota 10.000.
-    - cron: '17 6,13,15-23,0-1 * * *'
-    - cron: '47 6,13,15-23,0-1 * * *'
+    # Custo: ~27 req × 12 execuções = ~325/dia = ~9.700/mês contra cota 10.000.
+    - cron: '17 6,13,15-23,0 * * *'
+    - cron: '47 6,13,15-23,0 * * *'
 
 permissions:
   contents: write
