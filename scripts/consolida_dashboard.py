@@ -109,6 +109,48 @@ def merge_dict(a, b, path=""):
 
 def merge_list(a, b, path=""):
     key = path.split(".")[-1]
+    parts = path.split(".")
+    parent = parts[-2] if len(parts) >= 2 else ""
+    # SEGMENTAÇÕES (seg_canal/seg_bairro/seg_genero) · top por nome
+    # Rodrigo (03/10): no consolidado, cada linha mostra uma barra empilhada
+    # entre Escova (amarelo) e SPA (teal). Pra isso, carregamos no item do
+    # consolidado as receitas separadas por unidade além do total somado.
+    # pct_receita é recalculado em recalcular_derivados() porque o cálculo
+    # depende do total consolidado da base (não da soma dos tops).
+    if key == "top" and parent in ("seg_canal", "seg_bairro", "seg_genero"):
+        idx = {}
+        for src_unit, items in (("escova", a or []), ("spa", b or [])):
+            for x in items:
+                k = (x.get("nome") or "?")
+                if k not in idx:
+                    idx[k] = {
+                        "nome": x.get("nome"),
+                        "n_clientes": 0,
+                        "receita": 0.0,
+                        "receita_escova": 0.0,
+                        "receita_spa": 0.0,
+                        "n_escova": 0,
+                        "n_spa": 0,
+                    }
+                r = float(x.get("receita") or 0)
+                n = int(x.get("n_clientes") or 0)
+                idx[k]["n_clientes"] += n
+                idx[k]["receita"] += r
+                if src_unit == "escova":
+                    idx[k]["receita_escova"] += r
+                    idx[k]["n_escova"] += n
+                else:
+                    idx[k]["receita_spa"] += r
+                    idx[k]["n_spa"] += n
+        for v in idx.values():
+            v["receita"] = round(v["receita"], 2)
+            v["receita_escova"] = round(v["receita_escova"], 2)
+            v["receita_spa"] = round(v["receita_spa"], 2)
+            if v["n_clientes"] > 0:
+                v["ticket_medio_cliente"] = round(v["receita"] / v["n_clientes"], 2)
+            v["_unidade"] = ("ambas" if v["n_escova"] > 0 and v["n_spa"] > 0
+                             else ("escova" if v["n_escova"] > 0 else "spa"))
+        return sorted(idx.values(), key=lambda z: -(z.get("receita") or 0))
     # Arrays por índice (dow, hora, etc.) — soma item-a-item se mesmo tamanho
     if key in ARRAY_POR_INDICE and len(a) == len(b):
         return [merge(x, y, path) for x, y in zip(a, b)]
@@ -166,6 +208,30 @@ def recalcular_derivados(d):
         for tipo, v in cat.items():
             if isinstance(v, dict) and caixa > 0:
                 v["pct"] = round((v.get("v") or 0) / caixa * 100, 1)
+        # segmentações: pct_receita, cobertura_pct, sem_dado — merge cego do
+        # NAO_SOMAR preservava os valores da Escova; aqui recalculamos sobre a
+        # base consolidada. "Está somando os percentuais" (Rodrigo, 03/10): a
+        # soma dos pct_receita do top passava a cobertura por causa disso.
+        for seg_key in ("seg_canal", "seg_bairro", "seg_genero"):
+            seg = aba.get(seg_key)
+            if not isinstance(seg, dict): continue
+            top = seg.get("top") or []
+            sem = seg.get("sem_dado") or {}
+            soma_top_r = sum((t.get("receita") or 0) for t in top)
+            sem_r = sem.get("receita") or 0
+            total_r = soma_top_r + sem_r
+            if total_r > 0:
+                for t in top:
+                    t["pct_receita"] = round((t.get("receita") or 0) / total_r * 100, 1)
+                seg["cobertura_pct"] = round(soma_top_r / total_r * 100, 1)
+            # n absolutos de sem_dado também somam dos dois (merge cego ignorou)
+            # e cobertura por N: n_com_canal / n_total
+            soma_top_n = sum((t.get("n_clientes") or 0) for t in top)
+            sem_n = sem.get("n") or 0
+            total_n = soma_top_n + sem_n
+            if total_n > 0 and total_r > 0:
+                # usa receita como medida principal (padrão original); n fica informativo
+                pass
 
 
 # ---------------------------------------------------------------------------
