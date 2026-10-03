@@ -403,7 +403,10 @@ def _fetch_campanhas(act_id: str, token: str, since: date, until: date) -> list[
             **m,
         })
     saida.sort(key=lambda x: x["gasto"], reverse=True)
-    return saida[:15]
+    # Sem corte: a tabela tem que fechar com o total do periodo (o validador confere)
+    # e o resumo por objetivo e calculado a partir desta lista. Em 90d ha mais de 15
+    # campanhas, e o corte antigo deixava R$ 910 de fora.
+    return saida
 
 
 def _fetch_adsets(act_id: str, token: str, since: date, until: date) -> list[dict[str, Any]]:
