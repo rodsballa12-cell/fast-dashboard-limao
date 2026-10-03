@@ -7,8 +7,10 @@ name: Refresh Dashboard Data
 # Solução: 3 fires por hora (:07, :27, :47) com early-exit — se qualquer
 # um dos 3 firar, cobre a janela; os outros encerram em <10s sem tocar API.
 #
-# HORÁRIO: 11h-21h BRT (14h-23h UTC + 0h UTC). BRT é UTC-3 fixo (sem DST
+# HORÁRIO: 6h-22h BRT, de hora em hora (03/10/2026 · Rodrigo pediu cobrir
+# o começo da manhã quando ele abre o painel). BRT é UTC-3 fixo (sem DST
 # desde 2019), então o minuto UTC = minuto BRT; só a hora desloca.
+# 6h BRT = 9h UTC · 22h BRT = 1h UTC (dia seguinte).
 #
 # CONSUMO API — medido, não estimado (01/09/2026):
 # O comentário anterior dizia "~20 req/execução · 11 execuções/dia · 220
@@ -26,10 +28,13 @@ name: Refresh Dashboard Data
 # abas). Reduzir isso exige mexer na análise; aqui atacamos a frequência,
 # que é o fator de maior alavancagem e o de menor risco.
 #
-# DESENHO ATUAL: janela de recência de 75 min → ~8 execuções/dia
-#   8 × 27 = ~216 req/dia = ~6.500/mês (65% da cota), com folga para os
-#   picos de cache frio. Além disso, um teto de ritmo (abaixo) corta a
-#   torneira se o consumo real furar o orçamento do mês.
+# DESENHO ATUAL (03/10/2026): hourly 6h-22h BRT · recência 55 min → 17 execuções/dia
+#   17 × 27 = ~460 req/dia = ~13.800/mês (138% da cota!) — Rodrigo pediu
+#   essa frequência pra ter o painel atualizado quando abre de manhã. O
+#   early-exit por cota (6h de pausa quando Trinks avisa esgotado) protege
+#   do estouro: nos últimos ~10 dias do mês o refresh pausa até o reset.
+#   Se o estouro doer, encurtar a janela (ex.: 7h-21h = 15 fires) ou
+#   voltar a 2 fires/hora.
 
 on:
   workflow_dispatch:
@@ -43,24 +48,19 @@ on:
     # Conferido antes de desligar o do PC: os dois produziam payload idêntico,
     # 110 chaves e mesmo tamanho. Não se perdeu nada além de duplicação.
     #
-    # 7 slots/dia, alinhados ao que cada um alimenta · 2 fires defasados por
-    # slot (o GitHub pula fires em horário de pico) · o early-exit abaixo
-    # resolve a duplicação em menos de 10s, sem tocar na API.
+    # Hourly 6h-22h BRT = 9h-1h UTC (17 slots/dia) · 2 fires defasados por slot
+    # (o GitHub pula fires em horário de pico) · o early-exit abaixo resolve a
+    # duplicação em menos de 10s, sem tocar na API.
     #
-    #   BRT  UTC   serve a
-    #   09h  12h   baseline da manhã
-    #   11h  14h   o briefing /operacao-diaria das 11h30
-    #   14h  17h   meio do dia
-    #   16h  19h   início do pico (16h-18h é onde a densidade sobe)
-    #   18h  21h   pico
-    #   20h  23h   depois do corte de entrada das 19h15 — receita do dia fechada
-    #   22h  01h   o /conselho das 22h30
+    # Faixa UTC: 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23 (BRT 6-20)
+    #          + 0,1 (BRT 21,22)
     #
-    # Custo medido: ~27 req por execução real. 7 × 27 = ~190/dia = ~5.700/mês,
-    # contra cota de 10.000. Sobra folga, e ainda assim é MENOS que os ~259/dia
-    # que os dois pipelines juntos gastavam.
-    - cron: '7 12,14,17,19,21,23,1 * * *'
-    - cron: '37 12,14,17,19,21,23,1 * * *'
+    # Custo esperado: ~27 req por execução real · 17 × 27 = ~460/dia = ~13.800/mês,
+    # ACIMA da cota (10.000). O early-exit por cota pausa o refresh 6h quando
+    # Trinks acusa esgotamento, então nos últimos ~10 dias do mês o painel
+    # pára de atualizar sozinho até o reset. Se incomodar, reduzir a janela.
+    - cron: '17 9-23,0-1 * * *'
+    - cron: '47 9-23,0-1 * * *'
 
 permissions:
   contents: write
@@ -77,7 +77,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      # Early-exit se dashboard_data.json foi atualizado nas últimas 75 min.
+      # Early-exit se dashboard_data.json foi atualizado nas últimas 55 min.
       # Aplica só a fires scheduled — dispatch manual sempre roda.
       #
       # Também faz backoff quando a cota mensal do Trinks está esgotada: sem
@@ -144,9 +144,9 @@ jobs:
           age=$((now - last_ts))
           age_min=$((age / 60))
           echo "Última atualização: ${age_min} min atrás (gerado_em ${ger:-desconhecido})"
-          if [ "$last_ts" -gt 0 ] && [ "$age" -lt 4500 ]; then
+          if [ "$last_ts" -gt 0 ] && [ "$age" -lt 3300 ]; then
             echo "skip=true" >> $GITHUB_OUTPUT
-            echo "⏭  Refresh recente (<75min) — outro cron já cobriu esta janela."
+            echo "⏭  Refresh recente (<55min) — outro cron já cobriu esta janela."
           else
             echo "skip=false" >> $GITHUB_OUTPUT
             echo "▶️  Rodando refresh (idade ${age_min} min)."
