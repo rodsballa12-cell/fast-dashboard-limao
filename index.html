@@ -4788,7 +4788,10 @@ ICO_UNIDADE_MINI.ambas = `<svg class="ico-unid" viewBox="0 0 28 14" width="28" h
 
 // Renderiza nome com ícone de unidade quando row tem _unidade (só no Consolidado)
 function nomeComIconeUnidade(item, field){
-  const u = item && item._unidade;
+  // Icone SEMPRE aparece (Rodrigo, 03/10): nos cards individuais o item nao
+  // traz _unidade — nesse caso usa UNIDADE_ATIVA. No consolidado o merge ja
+  // marcou cada linha (escova/spa/ambas).
+  const u = (item && item._unidade) || (typeof UNIDADE_ATIVA !== 'undefined' ? UNIDADE_ATIVA : null);
   const nome = (item && (item[field || 'nome'])) || '';
   if(!u || !ICO_UNIDADE_MINI[u]) return nome;
   return `<span class="nome-unid">${ICO_UNIDADE_MINI[u]}${nome}</span>`;
