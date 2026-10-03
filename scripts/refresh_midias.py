@@ -1571,7 +1571,11 @@ def _merge_unidade(base: dict[str, Any], ids: dict[str, Any], token: str, hoje: 
 
         # Breakdowns por janela (hoje/7d/mtd/90d) — reusa 30d na chave 30d
         print(f"  [Meta Ads] {act_id} — breakdowns por janela (hoje/7d/mtd/90d)")
-        breakdowns: dict[str, Any] = meta_ads.setdefault("breakdowns", {})
+        # setdefault devolve o valor existente mesmo quando e null; um `breakdowns: null`
+        # gravado por outra rotina derrubava o merge inteiro da unidade.
+        if not isinstance(meta_ads.get("breakdowns"), dict):
+            meta_ads["breakdowns"] = {}
+        breakdowns: dict[str, Any] = meta_ads["breakdowns"]
         breakdowns["_nota"] = "Breakdowns por janela agregados via /act/insights com level=campaign/adset + breakdowns age,gender / publisher_platform / region."
         # hoje = leve
         h_ini, h_fim = _janela("today", hoje)
