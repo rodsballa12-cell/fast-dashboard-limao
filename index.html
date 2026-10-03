@@ -1355,6 +1355,14 @@ function _consDowBreak(aba_nome, nome_dow){
   const findV = (arr) => { const f = arr.find(x=>x.nome===nome_dow); return f ? (f.v||0) : 0; };
   return {esc: findV(e), spa: findV(s)};
 }
+// Hora do dia (hora_abs ou hora_media) por unidade.
+function _consHoraBreak(aba_nome, h, campo){
+  if(!_consBreak()) return null;
+  const e = ((TRINKS_ESC.abas||{})[aba_nome]||{})[campo || 'hora_abs'] || [];
+  const s = ((TRINKS_SPA.abas||{})[aba_nome]||{})[campo || 'hora_abs'] || [];
+  const findV = (arr) => { const f = arr.find(x=>x.h===h); return f ? (f.n || f.media || 0) : 0; };
+  return {esc: findV(e), spa: findV(s)};
+}
 // Monta HTML de barra EMPILHADA (amarelo Escova + teal SPA)
 function _barStacked(esc, spa, max, titulo){
   const total = esc + spa;
@@ -1403,16 +1411,24 @@ function renderBarsDow(container_id, titulo, subtitle, dow_data, insight, aba_no
   document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="bars-dow">${bars}</div><div class="xaxis-dow">${axis}</div>${stacked?_legendaUnidades():''}${insight?'<div class="insight">'+insight+'</div>':''}</div>`;
 }
 
-function renderBarsHora(container_id, titulo, subtitle, hora_data, is_media, insight){
+function renderBarsHora(container_id, titulo, subtitle, hora_data, is_media, insight, aba_nome){
   const map={};hora_data.forEach(x=>map[x.h]=is_media?x.media:x.n);
   const max=Math.max(...Object.values(map),0.01);
+  const stacked = aba_nome && _consBreak();
+  const campo = is_media ? 'hora_media' : 'hora_abs';
   let bars='',axis='';
   HORAS.forEach(h=>{
     const v=map[h]||0;
-    bars+=`<div class="b${v===max&&v>0?' hi':''}" style="height:${v>0?v/max*100:0.6}%" title="${h}h: ${is_media?v.toFixed(2)+' trans/dia média':v+' trans'}"></div>`;
+    if(stacked){
+      const b = _consHoraBreak(aba_nome, h, campo) || {esc:0, spa:0};
+      const total = b.esc + b.spa;
+      bars += _barStacked(b.esc, b.spa, max, `${h}h: ${is_media?total.toFixed(2)+' trans/dia média':total+' trans'}\\nEscova ${is_media?b.esc.toFixed(2):Math.round(b.esc)} · Spa ${is_media?b.spa.toFixed(2):Math.round(b.spa)}`);
+    } else {
+      bars+=`<div class="b${v===max&&v>0?' hi':''}" style="height:${v>0?v/max*100:0.6}%" title="${h}h: ${is_media?v.toFixed(2)+' trans/dia média':v+' trans'}"></div>`;
+    }
     axis+=`<span>${h}h</span>`;
   });
-  document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="bars-hora">${bars}</div><div class="xaxis-hora">${axis}</div>${insight?'<div class="insight">'+insight+'</div>':''}</div>`;
+  document.getElementById(container_id).innerHTML=`<div class="card"><h2>${titulo}</h2><div class="cap">${subtitle}</div><div class="bars-hora">${bars}</div><div class="xaxis-hora">${axis}</div>${stacked?_legendaUnidades():''}${insight?'<div class="insight">'+insight+'</div>':''}</div>`;
 }
 
 function renderRankingProf(container_id, titulo, subtitle, prof_list, total_n){
@@ -2883,16 +2899,32 @@ function renderAncora(container_id, categoria_native, kpis){
   const ancora = top3[0];
   if(!ancora || ancora.pct_receita < 20){ if(el) el.innerHTML = ''; return; }
   const caixa_ano = (kpis||{}).caixa || 0;
+  // Rodrigo (03/10): no consolidado, cada barra fica empilhada entre Escova
+  // (amarelo) e SPA (teal). v_escova / v_spa vem do consolida_dashboard.
+  const COR_ESC_A = (typeof COR_ESCOVA !== 'undefined') ? COR_ESCOVA : '#F5B800';
+  const COR_SPA_A = (typeof window.COR_SPA !== 'undefined') ? window.COR_SPA : '#24B3A6';
+  const isStacked_a = top3.some(c => typeof c.v_escova === 'number' || typeof c.v_spa === 'number');
   const bars = top3.map((c, i) => {
-    const w = c.pct_receita;
+    const w = Math.min(100, c.pct_receita || 0);
     const cor = i === 0 ? 'var(--accent)' : (i === 1 ? 'var(--good)' : 'var(--ink-3)');
+    let interior;
+    if(isStacked_a){
+      const vE = c.v_escova || 0, vS = c.v_spa || 0, vT = vE + vS;
+      const pE = vT > 0 ? vE / vT * 100 : 100;
+      interior = `<div style="width:${w}%;height:100%;display:flex;">
+          <div style="width:${pE}%;height:100%;background:${COR_ESC_A};" title="Escova: ${brl0(vE)}"></div>
+          <div style="width:${100-pE}%;height:100%;background:${COR_SPA_A};" title="SPA: ${brl0(vS)}"></div>
+        </div>`;
+    } else {
+      interior = `<div style="background:${cor};width:${w}%;height:100%;"></div>`;
+    }
     return `<div style="margin-bottom:8px;">
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">
         <span style="font-weight:700;">${c.nome}</span>
         <span style="color:${cor};font-weight:700;">${brl0(c.v)} · ${c.pct_receita}%</span>
       </div>
       <div style="background:var(--surface-2);height:8px;border-radius:4px;overflow:hidden;">
-        <div style="background:${cor};width:${w}%;height:100%;"></div>
+        ${interior}
       </div>
     </div>`;
   }).join('');
@@ -3818,7 +3850,7 @@ function renderDiario(data){
     renderRankingProf('per-sala-prof','👥 Quem está trabalhando AGORA','Ranking do dia · ordenado por receita',d.ranking_prof, d.ranking_prof_total_n);
     const sRows=d.ranking_serv.map(s=>[s.nome,s.n,brl0(s.v)]);
     renderTable('per-sala-serv','💇 O que a loja vendeu HOJE','Serviços do dia por volume · valida mix da sala',['Serviço','Qtd','Receita'],sRows);
-    renderBarsHora('per-sala-hora','⏱ Fluxo por hora · HOJE','Onde tá vazio, onde tá cheio · decide chamar cliente pelo WhatsApp',d.hora_abs,false,'');
+    renderBarsHora('per-sala-hora','⏱ Fluxo por hora · HOJE','Onde tá vazio, onde tá cheio · decide chamar cliente pelo WhatsApp',d.hora_abs,false,'','diario');
   }
 
   // CONSOLIDAÇÃO F · Meios de pagamento agora só em Financeiro

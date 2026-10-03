@@ -185,11 +185,39 @@ def merge_list(a, b, path=""):
         else:
             kname = (ARRAY_RANKING_PROF.get(key) or ARRAY_POR_CHAVE.get(key))
         if kname is None:
-            # taxonomia compartilhada (categoria_native) — só soma por nome
+            # taxonomia compartilhada (categoria_native) — soma por nome +
+            # guarda v_escova / v_spa pra o frontend pintar barras empilhadas
+            # Esc (amarelo) × SPA (teal). Rodrigo (03/10): "aplique em todas
+            # as barras".
             idx = {}
-            for x in a + b:
-                k = x.get("nome") or "?"
-                idx[k] = merge(idx[k], x, path) if k in idx else copy.deepcopy(x)
+            for src_unit, items in (("escova", a or []), ("spa", b or [])):
+                for x in items:
+                    k = x.get("nome") or "?"
+                    if k not in idx:
+                        base = copy.deepcopy(x)
+                        base["v"] = 0.0
+                        base["n"] = 0
+                        base["v_escova"] = 0.0
+                        base["v_spa"] = 0.0
+                        base["n_escova"] = 0
+                        base["n_spa"] = 0
+                        idx[k] = base
+                    v = float(x.get("v") or 0)
+                    n = int(x.get("n") or 0)
+                    idx[k]["v"] += v
+                    idx[k]["n"] += n
+                    if src_unit == "escova":
+                        idx[k]["v_escova"] += v
+                        idx[k]["n_escova"] += n
+                    else:
+                        idx[k]["v_spa"] += v
+                        idx[k]["n_spa"] += n
+            for v in idx.values():
+                v["v"] = round(v["v"], 2)
+                v["v_escova"] = round(v["v_escova"], 2)
+                v["v_spa"] = round(v["v_spa"], 2)
+                # pct_receita precisa recalcular — merge cego preservou da Escova
+                # (sera refeito em recalcular_derivados sobre o total consolidado)
             return sorted(idx.values(), key=lambda z: -(z.get("v") or 0))
         idx = {}
         origens = {}
@@ -245,6 +273,14 @@ def recalcular_derivados(d):
         for tipo, v in cat.items():
             if isinstance(v, dict) and caixa > 0:
                 v["pct"] = round((v.get("v") or 0) / caixa * 100, 1)
+        # categoria_native: recalcular pct_receita sobre o caixa consolidado
+        # (merge cego preservava o pct da Escova — somava mas o percentual
+        # ficava subavaliado no consolidado).
+        cnat = aba.get("categoria_native") or []
+        if cnat and caixa > 0:
+            for c in cnat:
+                if isinstance(c, dict):
+                    c["pct_receita"] = round((c.get("v") or 0) / caixa * 100, 1)
         # segmentações: pct_receita, cobertura_pct, sem_dado — merge cego do
         # NAO_SOMAR preservava os valores da Escova; aqui recalculamos sobre a
         # base consolidada. "Está somando os percentuais" (Rodrigo, 03/10): a
