@@ -77,6 +77,12 @@ jobs:
         with:
           fetch-depth: 2
 
+      # Carimbo visível em BRT (o cron do GitHub é obrigatoriamente UTC;
+      # este echo prova em que hora de Brasília este fire disparou).
+      - name: Hora de disparo (BRT)
+        run: |
+          echo "⏱  Disparo: $(TZ=America/Sao_Paulo date '+%d/%m/%Y %Hh%M BRT') · event=${{ github.event_name }}"
+
       # Early-exit se dashboard_data.json foi atualizado nas últimas 55 min.
       # Aplica só a fires scheduled — dispatch manual sempre roda.
       #
