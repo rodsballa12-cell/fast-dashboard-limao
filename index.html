@@ -3090,20 +3090,61 @@ function renderClientesCadastro(container_id, cad){
     {k:'canal_aquisicao', nome:'Canal aquisição (comoNosConheceu)', ctx:'saber onde investir marketing'},
     {k:'bairro', nome:'Bairro (endereço)', ctx:'geolocalização + panfleto local'},
   ];
+  // Consolidado: cada linha mostra barra total (cobertura ponderada) +
+  // divisao empilhada Escova (amarelo) × SPA (teal) proporcional a quantos
+  // clientes de cada unidade preencheram esse campo. Rodrigo (03/10): antes
+  // o merge somava leaf-by-leaf e dava > 100%.
+  const COR_ESC = (typeof COR_ESCOVA !== 'undefined') ? COR_ESCOVA : '#F5B800';
+  const COR_SPA = (typeof window.COR_SPA !== 'undefined') ? window.COR_SPA : '#24B3A6';
+  const cobEsc = cad.cobertura_escova || null;
+  const cobSpa = cad.cobertura_spa || null;
+  const totEsc = cad.total_escova || 0;
+  const totSpa = cad.total_spa || 0;
+  const isConsolidado = cobEsc && cobSpa && totEsc > 0 && totSpa > 0;
+  function barra(c){
+    const p = Math.min(100, Math.max(0, cad.cobertura[c.k] || 0));
+    const cor = p >= 80 ? '#22c55e' : (p >= 40 ? '#f59e0b' : '#ef4444');
+    if(!isConsolidado){
+      return `<div style="height:14px;background:var(--surface-2);border-radius:4px;overflow:hidden;">
+        <div style="width:${p}%;height:100%;background:${cor};"></div>
+      </div>`;
+    }
+    // n absolutos preenchidos em cada unidade
+    const nEsc = (cobEsc[c.k] || 0) / 100 * totEsc;
+    const nSpa = (cobSpa[c.k] || 0) / 100 * totSpa;
+    const nTot = nEsc + nSpa;
+    const pEsc = nTot > 0 ? (nEsc / nTot * 100) : 50;
+    const pSpa = 100 - pEsc;
+    return `<div style="height:14px;background:var(--surface-2);border-radius:4px;overflow:hidden;position:relative;">
+        <div style="width:${p}%;height:100%;display:flex;">
+          <div style="width:${pEsc}%;height:100%;background:${COR_ESC};" title="Escova: ${(cobEsc[c.k]||0).toFixed(0)}% de ${totEsc} clientes"></div>
+          <div style="width:${pSpa}%;height:100%;background:${COR_SPA};" title="SPA: ${(cobSpa[c.k]||0).toFixed(0)}% de ${totSpa} clientes"></div>
+        </div>
+      </div>`;
+  }
   const rows = campos.map(c => {
-    const p = cad.cobertura[c.k] || 0;
+    const p = Math.min(100, cad.cobertura[c.k] || 0);
     const cor = p >= 80 ? '#22c55e' : (p >= 40 ? '#f59e0b' : '#ef4444');
     const acao = p >= 80 ? 'OK' : (p >= 40 ? 'Melhorar' : 'CADASTRAR');
+    const subEsc = isConsolidado ? ` <span style="color:${COR_ESC}">Esc ${(cobEsc[c.k]||0).toFixed(0)}%</span> · <span style="color:${COR_SPA}">Spa ${(cobSpa[c.k]||0).toFixed(0)}%</span>` : '';
     return `<div style="display:grid;grid-template-columns:180px 1fr 60px 90px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--surface-2);">
-      <div><strong>${c.nome}</strong><div style="font-size:11px;color:var(--muted)">${c.ctx}</div></div>
-      <div style="height:14px;background:var(--surface-2);border-radius:4px;overflow:hidden;"><div style="width:${p}%;height:100%;background:${cor};"></div></div>
+      <div><strong>${c.nome}</strong><div style="font-size:11px;color:var(--muted)">${c.ctx}${subEsc}</div></div>
+      ${barra(c)}
       <div style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:${cor}">${p.toFixed(0)}%</div>
       <div style="text-align:right;font-size:11px;color:${cor};font-weight:700;">${acao}</div>
     </div>`;
   }).join('');
+  const legenda = isConsolidado
+    ? `<div style="display:flex;gap:14px;font-size:11px;color:var(--muted);padding:6px 0 2px;align-items:center;">
+         <span><span style="display:inline-block;width:10px;height:10px;background:${COR_ESC};border-radius:2px;vertical-align:middle;margin-right:4px"></span>Escova (${totEsc} clientes)</span>
+         <span><span style="display:inline-block;width:10px;height:10px;background:${COR_SPA};border-radius:2px;vertical-align:middle;margin-right:4px"></span>SPA (${totSpa} clientes)</span>
+         <span style="color:var(--ink-3)">· largura = cobertura ponderada · divisão interna = origem dos cadastros preenchidos</span>
+       </div>`
+    : '';
   el.innerHTML = `<div class="card">
     <h2>🔬 Qualidade de cadastro · o que preencher no Trinks</h2>
     <div class="cap">Cobertura de cada campo na base ativa (${cad.total} clientes). Sem os dados abaixo, insights de segmentação e ações CRM ficam parciais. Meta: 80%+ em cada.</div>
+    ${legenda}
     ${rows}
     <div class="insight" style="margin-top:14px;">
       <strong>Ação recepção:</strong> na próxima visita de cada cliente, checar se telefone/data-nasc estão preenchidos. Perguntar "de onde nos conheceu?" (canal) e bairro é 20s por cliente. Em 30 dias você tem cobertura suficiente pra decidir marketing baseado em dado.

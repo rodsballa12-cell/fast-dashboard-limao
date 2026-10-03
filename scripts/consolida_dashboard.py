@@ -466,6 +466,37 @@ def _norm_nome(s):
     return (s or "").strip().lower()
 
 
+# Qualidade do cadastro (clientes_cadastro.cobertura): o merge somava
+# leaf-by-leaf (telefone 100% esc + 93% spa = 193%). Aqui recalculamos a
+# cobertura consolidada como media PONDERADA por total de clientes de cada
+# unidade, e expomos cobertura_escova / cobertura_spa pra o frontend pintar
+# a divisao nas cores das unidades.
+def anexar_cadastro_consolidado(c, esc, spa):
+    cad_esc = (esc.get("abas", {}).get("anual", {}) or {}).get("clientes_cadastro") or {}
+    cad_spa = (spa.get("abas", {}).get("anual", {}) or {}).get("clientes_cadastro") or {}
+    cob_esc = cad_esc.get("cobertura") or {}
+    cob_spa = cad_spa.get("cobertura") or {}
+    tot_esc = int(cad_esc.get("total") or 0)
+    tot_spa = int(cad_spa.get("total") or 0)
+    tot = tot_esc + tot_spa
+    if tot <= 0: return
+    campos = set(cob_esc) | set(cob_spa)
+    cob_cons = {}
+    for k in campos:
+        pe = float(cob_esc.get(k) or 0)
+        ps = float(cob_spa.get(k) or 0)
+        # ponderado: (pe * tot_esc + ps * tot_spa) / tot
+        cob_cons[k] = round((pe * tot_esc + ps * tot_spa) / tot, 1)
+    anual = c.setdefault("abas", {}).setdefault("anual", {})
+    cad_cons = anual.setdefault("clientes_cadastro", {})
+    cad_cons["cobertura"] = cob_cons
+    cad_cons["cobertura_escova"] = {k: round(float(cob_esc.get(k) or 0), 1) for k in campos}
+    cad_cons["cobertura_spa"]    = {k: round(float(cob_spa.get(k) or 0), 1) for k in campos}
+    cad_cons["total"] = tot
+    cad_cons["total_escova"] = tot_esc
+    cad_cons["total_spa"] = tot_spa
+
+
 def anexar_migracao_cruzada(c, esc, spa):
     esc_top = (esc.get("abas", {}).get("anual", {}).get("top_ltv", {}) or {}).get("top") or []
     spa_top = (spa.get("abas", {}).get("anual", {}).get("top_ltv", {}) or {}).get("top") or []
@@ -563,6 +594,7 @@ def main():
     recalcular_derivados(consolidado)
     corrigir_consolidado(consolidado, escova, spa)
     anexar_lado_a_lado(consolidado, escova, spa)
+    anexar_cadastro_consolidado(consolidado, escova, spa)
     anexar_migracao_cruzada(consolidado, escova, spa)
 
     consolidado["_consolidado"] = True
