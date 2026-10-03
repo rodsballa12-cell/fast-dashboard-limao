@@ -447,7 +447,22 @@ def corrigir_consolidado(c, esc, spa):
         real = ck.get("caixa") or 0
         rest = em.get("dias_restantes") or 0
         ritmo = (em.get("ritmo_dia") or 0) + (sm.get("ritmo_dia") or 0)
-        proj = real + ritmo * rest
+        # Projecao ponderada por DOW no consolidado (03/10): usa os mesmos
+        # pesos ja calculados na Escova (DOW e propriedade de calendario,
+        # igual pras duas unidades). Antes era `real + ritmo × rest` — linear
+        # ingenua, somando ritmos de dias atipicos como se fossem tipicos.
+        peso_real = em.get("peso_realizado")
+        peso_rest = em.get("peso_restante")
+        if peso_real and peso_real > 0 and peso_rest is not None:
+            proj = real + (real / peso_real) * peso_rest
+            metodo_proj = "ponderado"
+        else:
+            proj = real + ritmo * rest
+            metodo_proj = "linear"
+        peso_total = (peso_real or 0) + (peso_rest or 0)
+        baixa_conf = (em.get("dias_realizados") or 0) < 3 or (
+            peso_total > 0 and (peso_real / peso_total) < 0.15
+        )
         falta = meta_tot - real
         cm = ca.setdefault("meta", {})
         cm.update({
@@ -456,6 +471,10 @@ def corrigir_consolidado(c, esc, spa):
             "dias_restantes": rest, "necessario_dia": round(falta / rest, 2) if rest else 0.0,
             "ritmo_dia": round(ritmo, 2), "projecao": round(proj, 2),
             "projecao_pct": round(proj / max(meta_tot, 1) * 100, 1),
+            "projecao_metodo": metodo_proj,
+            "baixa_confianca": bool(baixa_conf),
+            "peso_realizado": peso_real,
+            "peso_restante": peso_rest,
             "meta_ate_hoje": meta_ate,
             "pct_ate_hoje": round(real / meta_ate * 100, 1) if meta_ate > 0 else None,
             "saldo_ate_hoje": round(real - meta_ate, 2),

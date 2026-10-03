@@ -995,7 +995,7 @@ def peso_janela(ini: date, fim: date, peso_dow):
     return total, dias
 
 
-def calc_meta(caixa, meta, dias_real, dias_total):
+def calc_meta(caixa, meta, dias_real, dias_total, peso_realizado=None, peso_restante=None):
     """KPIs de meta do período, com a meta proporcional aos dias já corridos.
 
     'pct' compara o realizado com a meta do período INTEIRO. No dia 3 de 30 ele
@@ -1003,22 +1003,53 @@ def calc_meta(caixa, meta, dias_real, dias_total):
     existe 'meta_ate_hoje' — a fatia da meta que caberia aos dias já corridos,
     na mesma competência. É contra ela que dá para saber se o mês está indo bem.
 
-    Setembro/2026 no dia 3: R$ 1.949 contra os R$ 6.000 esperados até aqui =
-    32,5%, e não os 3,2% que a leitura contra a meta cheia sugere.
+    Projeção ponderada por DOW (Rodrigo, 03/10):
+      - Sem peso: projeção = ritmo × dias_total · ingênua, trata todo DOW igual.
+        Sábado faz 37,6% do movimento, terça 6,2% — projetar com base em dois
+        dias de terça extrapola um sábado como se fosse igual.
+      - Com peso_realizado + peso_restante (soma do peso_dow dos dias corridos
+        e dos que faltam), a projeção vira: realizado + (realizado /
+        peso_realizado) × peso_restante · "o que já saiu por unidade de peso,
+        aplicado ao peso que ainda vem". Alinha com meta_por_data e deixa de
+        inflar projeção quando os primeiros dias caíram em DOW forte.
 
-    A mesma função serve mês, semana e ano, então a régua é a mesma nas três.
+    Também expõe `projecao_metodo` ('ponderado' | 'linear') e
+    `baixa_confianca` (dias_real < 3 ou peso_realizado baixo) para o frontend
+    marcar visualmente projeções frágeis.
     """
     pct = caixa / max(meta, 1) * 100
     falta = meta - caixa
     dias_rest = max(dias_total - dias_real, 0)
     necessario = falta / max(dias_rest, 1) if dias_rest else 0
     ritmo = caixa / max(dias_real, 1)
-    proj = ritmo * dias_total
+
+    usa_ponderado = (peso_realizado is not None and peso_realizado > 0
+                     and peso_restante is not None)
+    if usa_ponderado:
+        proj = caixa + (caixa / peso_realizado) * peso_restante
+        metodo = "ponderado"
+    else:
+        proj = ritmo * dias_total
+        metodo = "linear"
+
+    # Baixa confiança: menos de 3 dias de amostra OU peso realizado representa
+    # menos de 15% do peso total do período. Primeiros dias de mês geralmente
+    # caem em DOW fracos (segunda-terça) ou fortes (sábado) e distorcem.
+    peso_total = (peso_realizado or 0) + (peso_restante or 0)
+    pct_peso_corrido = (peso_realizado / peso_total * 100) if peso_total > 0 else None
+    baixa_confianca = dias_real < 3 or (
+        pct_peso_corrido is not None and pct_peso_corrido < 15
+    )
 
     # Meta proporcional. Sem dias corridos ou sem dias totais não há fatia a
     # cobrar, e devolver 0 aqui produziria "realizado infinitamente acima".
+    # Com peso disponível, a meta_ate_hoje usa fatia de PESO (não de dias):
+    # mais justa quando o período corrido pegou DOWs fracos ou fortes.
     if dias_real > 0 and dias_total > 0:
-        meta_ate_hoje = meta * dias_real / dias_total
+        if usa_ponderado and peso_total > 0:
+            meta_ate_hoje = meta * peso_realizado / peso_total
+        else:
+            meta_ate_hoje = meta * dias_real / dias_total
         pct_ate_hoje = round(caixa / meta_ate_hoje * 100, 1) if meta_ate_hoje > 0 else None
         saldo_ate_hoje = brl_round(caixa - meta_ate_hoje)
     else:
@@ -1030,6 +1061,10 @@ def calc_meta(caixa, meta, dias_real, dias_total):
         "dias_restantes": dias_rest, "necessario_dia": brl_round(necessario),
         "ritmo_dia": brl_round(ritmo), "projecao": brl_round(proj),
         "projecao_pct": round(proj / max(meta, 1) * 100, 1),
+        "projecao_metodo": metodo,
+        "baixa_confianca": bool(baixa_confianca),
+        "peso_realizado": round(peso_realizado, 4) if peso_realizado is not None else None,
+        "peso_restante": round(peso_restante, 4) if peso_restante is not None else None,
         "meta_ate_hoje": brl_round(meta_ate_hoje) if meta_ate_hoje is not None else None,
         "pct_ate_hoje": pct_ate_hoje,
         "saldo_ate_hoje": saldo_ate_hoje,
@@ -2346,7 +2381,25 @@ def main():
     # metas
     # Dias operacionais do mês real (respeita início do domingo)
     dias_op_mes_real = dias_operacionais_no_mes(hoje.year, hoje.month)
-    meta_mensal = calc_meta(a_mensal["kpis"]["caixa"], META_MENSAL, a_mensal["kpis"]["dias_op"], dias_op_mes_real)
+    # Pesos DOW · ponderam projeção para refletir sazonalidade real da semana.
+    # peso_realizado = soma do peso_dow dos dias ja operados (fechados);
+    # peso_restante  = soma do peso_dow dos dias que ainda vem (inclui hoje).
+    # Antes do mes abrir, peso_realizado=0 e cai para projeção linear ingênua.
+    def _peso_corridos_mes(y, m, ate_dia):
+        return sum((peso_dow.get(date(y, m, dn).weekday(), 0) or 0)
+                   for dn in range(1, ate_dia + 1)
+                   if _horas_dow_feriado(date(y, m, dn)) > 0)
+    def _peso_restantes_mes(y, m, de_dia):
+        last = monthrange(y, m)[1]
+        return sum((peso_dow.get(date(y, m, dn).weekday(), 0) or 0)
+                   for dn in range(de_dia, last + 1)
+                   if _horas_dow_feriado(date(y, m, dn)) > 0)
+    # Mes corrente: dias ja fechados = tudo ate ontem; "resto" = hoje em diante.
+    p_real_mes = _peso_corridos_mes(hoje.year, hoje.month, hoje.day - 1) if hoje.day > 1 else 0.0
+    p_rest_mes = _peso_restantes_mes(hoje.year, hoje.month, hoje.day)
+    meta_mensal = calc_meta(a_mensal["kpis"]["caixa"], META_MENSAL,
+                            a_mensal["kpis"]["dias_op"], dias_op_mes_real,
+                            peso_realizado=p_real_mes, peso_restante=p_rest_mes)
 
     # Meta do DIA: valor específico da data (respeita dow + peso da semana-do-mês).
     meta_dia_valor = meta_por_data.get(hoje, 0.0) if opera_no_dia(hoje) else 0.0
@@ -2435,8 +2488,20 @@ def main():
                     meta_sem_valor += meta_mes_d / max(dias_tipic_d, 1)
             else:
                 meta_sem_valor += meta_mes_d / max(dias_tipic_d, 1)
+    # Semana: peso ate ontem (fechados) e de hoje em diante (restantes)
+    def _peso_dias(ini_d: date, fim_d: date):
+        s = 0.0; d = ini_d
+        while d <= fim_d:
+            if opera_no_dia(d):
+                s += (peso_dow.get(d.weekday(), 0) or 0)
+            d += timedelta(days=1)
+        return s
+    ontem = hoje - timedelta(days=1)
+    p_real_sem = _peso_dias(seg, min(ontem, dom)) if ontem >= seg else 0.0
+    p_rest_sem = _peso_dias(max(hoje, seg), dom)
     meta_sem = calc_meta(a_semanal["kpis"]["caixa"], round(meta_sem_valor, 2),
-                         a_semanal["kpis"]["dias_op"], dias_op_sem_real)
+                         a_semanal["kpis"]["dias_op"], dias_op_sem_real,
+                         peso_realizado=p_real_sem, peso_restante=p_rest_sem)
 
     # META ANO: soma das metas mensais dos 12 meses. Cada mes usa
     # META_MENSAL_POR_MES[YYYY-MM] se definido; senao META_MENSAL (fallback).
@@ -2469,7 +2534,15 @@ def main():
     fim_ano_dt = date(2026, 12, 31)
     dias_op_total = _dias_op(data_abertura, fim_ano_dt)
     dias_op_realizados = _dias_op(data_abertura, min(hoje, fim_ano_dt))
-    meta_ano = calc_meta(a_anual["kpis"]["caixa"], meta_ano_valor, dias_op_realizados, dias_op_total) if meta_ano_valor > 0 else {}
+    # Anual: pesa desde abertura (ou inicio do ano, o mais tarde) ate ontem,
+    # vs hoje ate fim do ano.
+    ini_anual_eff = max(data_abertura, date(hoje.year, 1, 1))
+    p_real_ano = _peso_dias(ini_anual_eff, min(ontem, fim_ano_dt)) if ontem >= ini_anual_eff else 0.0
+    p_rest_ano = _peso_dias(max(hoje, ini_anual_eff), fim_ano_dt)
+    meta_ano = (calc_meta(a_anual["kpis"]["caixa"], meta_ano_valor,
+                          dias_op_realizados, dias_op_total,
+                          peso_realizado=p_real_ano, peso_restante=p_rest_ano)
+                if meta_ano_valor > 0 else {})
 
     # === Ticket meta OPERACIONAL: derivado da meta de caixa e das visitas projetadas ===
     # Racional: se o ritmo de visitas atual continuar até o fim do período, quanto precisa
