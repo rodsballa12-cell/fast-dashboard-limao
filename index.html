@@ -537,7 +537,10 @@
       <div id="clientes-cross-sell"></div>
       <!-- 4. QUALIDADE DE CADASTRO -->
       <div id="clientes-cadastro"></div>
-      <!-- 5. SEGMENTAÇÃO (bairros removido · canal aquisição + GMB movidos pra aba Mídia) -->
+      <!-- 5. SEGMENTAÇÃO · "Onde nos conheceu" aqui tambem (Rodrigo, 03/10):
+           retomada na aba Clientes porque e perfil da base. A mesma view continua
+           na aba Midia pra decisao de investimento — fontes de dado identicas. -->
+      <div id="clientes-seg-canal"></div>
       <div id="clientes-seg-genero"></div>
       <!-- ÚLTIMO · Ações Recomendadas Clientes -->
       <div id="clientes-insights"></div>
@@ -3583,10 +3586,13 @@ function renderClientes(data){
   // 3. Qualidade de cadastro + executor real
   renderClientesCadastro('clientes-cadastro', a.clientes_cadastro);
 
-  // 4. Segmentação — só gênero fica aqui.
-  // Bairros removido a pedido (baixo signal, endereço mal preenchido).
-  // Canal aquisição + Callout Google Meu Negócio movidos pra aba Mídia
-  // (renderMidiasCanalAquisicao) — são decisões de investimento em mídia, não de retenção.
+  // 4. Segmentação — gênero + canal de aquisição (Rodrigo, 03/10: canal
+  // voltou pra ca). A mesma view segue na aba Midia pra decisao de verba.
+  // Bairros fora (endereco mal preenchido).
+  renderSegmentacao('clientes-seg-canal',
+    '📢 Onde nos conheceu · canal de aquisição',
+    'De onde os clientes vieram — perfil da base, informa comunicação e onde o boca-a-boca anda',
+    a.seg_canal, 'canal cadastrado');
   renderSegmentacao('clientes-seg-genero',
     '👤 Público por gênero',
     'Perfil da base — informa mix de serviços, comunicação, produtos parceiros',
