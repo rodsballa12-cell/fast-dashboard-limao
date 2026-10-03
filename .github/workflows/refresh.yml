@@ -241,6 +241,14 @@ jobs:
                    data/consolidado/financeiro.json; do
             git add "$f" 2>/dev/null || true
           done
+          # version.json: carrega o SHA do commit atual + horario de deploy pra
+          # o painel detectar build novo e fazer auto-reload do navegador.
+          # Rodrigo (03/10): o cache do browser segurava o index.html antigo
+          # e cada mudanca precisava de hard refresh manual.
+          BUILD_SHA=$(git rev-parse --short=7 HEAD)
+          BUILD_TS=$(TZ=America/Sao_Paulo date -Iseconds)
+          printf '{"build":"%s","ts":"%s"}\n' "$BUILD_SHA" "$BUILD_TS" > data/version.json
+          git add data/version.json
           # Se quota_status foi limpo (arquivo removido), stage a remoção
           git add -u data/quota_status.json 2>/dev/null || true
           if git diff --cached --quiet; then

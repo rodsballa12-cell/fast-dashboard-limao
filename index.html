@@ -19,6 +19,29 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+// Auto-reload quando detectar build novo (Rodrigo, 03/10): o cache do
+// navegador segurava o index.html antigo e as mudanças de codigo nao
+// apareciam. Agora o painel busca data/version.json a cada carga; se o
+// build gravado difere do visto na ultima visita, forca reload uma vez.
+(async () => {
+  try {
+    const r = await fetch('data/version.json?_=' + Date.now(), {cache: 'no-store'});
+    if (!r.ok) return;
+    const v = await r.json();
+    const stored = localStorage.getItem('fast_build');
+    if (stored && v.build && stored !== v.build) {
+      localStorage.setItem('fast_build', v.build);
+      // reload sem usar cache; o loop e evitado porque gravamos ANTES
+      location.replace(location.pathname + '?v=' + v.build);
+      return;
+    }
+    if (v.build) localStorage.setItem('fast_build', v.build);
+    window.FAST_BUILD = v.build || '';
+    window.FAST_BUILD_TS = v.ts || '';
+  } catch (e) {}
+})();
+</script>
 <style>
   /* Fintech Modern · light-first, dark opcional via prefers-color-scheme */
   :root{
