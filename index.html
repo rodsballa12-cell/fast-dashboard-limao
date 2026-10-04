@@ -826,7 +826,7 @@ function renderPaceIntraday(container_id, pace, curva_horaria){
   document.getElementById(container_id).innerHTML = html;
 }
 
-function renderTicketMeta(container_id, periodo_label, kpis){
+function renderTicketMeta(container_id, periodo_label, kpis, aba_nome){
   if(!kpis || kpis.ticket_meta === undefined) return;
   const status = kpis.ticket_meta_status || 'em_curso';
   const alvo_rest = kpis.ticket_meta || 0;
@@ -905,6 +905,57 @@ function renderTicketMeta(container_id, periodo_label, kpis){
   // Header: alvo sempre com valor numerico (ou —), status vira tag separada
   const alvoHeader = alvo_display>0 ? `<span style="color:var(--accent)">${brl(alvo_display)}</span> / visita` : '<span style="color:var(--muted)">sem alvo</span>';
   const statusTag = header_tag ? ` · ${header_tag}` : '';
+  // No consolidado, ticket_medio e MEDIA PONDERADA por visita — Escova tem
+  // muito mais volume, entao o numero fica perto do dela e esconde o SPA.
+  // Rodrigo (03/10): 'consolidado me parece errado'. Nao e erro de calculo,
+  // e falta de contexto. Aqui, no consolidado, mostramos o breakdown por
+  // unidade logo abaixo do tile, e trocamos a acao padrao por uma leitura
+  // de MIX (SPA sobe o ticket agregado puxando mais visitas de SPA).
+  let breakdownCons = '';
+  let acaoCons = '';
+  if(aba_nome && _consBreak()){
+    const COR_ESC_T = (typeof COR_ESCOVA !== 'undefined') ? COR_ESCOVA : '#F5B800';
+    const COR_SPA_T = (typeof window.COR_SPA !== 'undefined') ? window.COR_SPA : '#24B3A6';
+    const kE = (((TRINKS_ESC||{}).abas||{})[aba_nome]||{}).kpis || {};
+    const kS = (((TRINKS_SPA||{}).abas||{})[aba_nome]||{}).kpis || {};
+    const tE = kE.ticket_medio || 0;
+    const tS = kS.ticket_medio || 0;
+    const vE = kE.cliente_dia || 0;
+    const vS = kS.cliente_dia || 0;
+    const vTot = vE + vS;
+    const pctE = vTot > 0 ? vE/vTot*100 : 0;
+    const pctS = vTot > 0 ? vS/vTot*100 : 0;
+    breakdownCons = `<div style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:12.5px">
+      <div style="color:var(--ink-3);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px">Decomposicao do ticket consolidado</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="padding:8px 10px;border-left:3px solid ${COR_ESC_T};background:${COR_ESC_T}0f;border-radius:4px">
+          <div style="font-weight:700;color:${COR_ESC_T};font-size:12px">${ICO_UNIDADE_MINI.escova} Escova</div>
+          <div style="font-size:16px;font-weight:800;margin-top:2px">${brl(tE)}<span style="font-size:10px;color:var(--ink-3);font-weight:400"> /visita</span></div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${vE} visitas · ${pctE.toFixed(0)}% do volume</div>
+        </div>
+        <div style="padding:8px 10px;border-left:3px solid ${COR_SPA_T};background:${COR_SPA_T}0f;border-radius:4px">
+          <div style="font-weight:700;color:${COR_SPA_T};font-size:12px">${ICO_UNIDADE_MINI.spa} Spa</div>
+          <div style="font-size:16px;font-weight:800;margin-top:2px">${brl(tS)}<span style="font-size:10px;color:var(--ink-3);font-weight:400"> /visita</span></div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${vS} visitas · ${pctS.toFixed(0)}% do volume</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--ink-3)">
+        Ticket consolidado <strong style="color:var(--ink-2)">${brl(real)}</strong> =
+        <strong style="color:${COR_ESC_T}">${brl(tE)}</strong> × ${pctE.toFixed(0)}% +
+        <strong style="color:${COR_SPA_T}">${brl(tS)}</strong> × ${pctS.toFixed(0)}% — media ponderada pelo volume de visitas.
+      </div>
+    </div>`;
+    // Acao especifica pra consolidado: nao e 'subir ticket', e MUDAR MIX
+    if(status === 'em_curso' && tS > tE){
+      const diff = tS - tE;
+      // Quantas visitas migrar de Esc pra SPA pra atingir alvo?
+      const alvo = alvo_rest || 0;
+      if(alvo > real && diff > 0){
+        const _migrar = Math.ceil((alvo - real) * (vE + vS) / Math.max(diff, 1));
+        acaoCons = `<strong>No consolidado, o ticket sobe por MIX, nao so por preço.</strong> Spa entrega ${brl(tS)}/visita (${(tS/Math.max(tE,1)).toFixed(1)}× Escova). Para o ticket consolidado subir de ${brl(real)} para ${brl(alvo)}, migrar ~${_migrar} visitas Escova→SPA no periodo tem mais efeito que tentar levantar ticket Escova. Use o card <em>Migracao Cruzada</em> na aba Clientes.`;
+      }
+    }
+  }
   const html = `
     <section class="meta-card">
       <h2><span style="color:var(--accent)">🎫</span> Ticket ${periodo_label} · alvo ${alvoHeader}${statusTag}</h2>
@@ -915,7 +966,8 @@ function renderTicketMeta(container_id, periodo_label, kpis){
         <div class="meta-cell"><div class="l">${gapLabel}</div><div class="v ${gapCor}">${gapVal}</div></div>
         <div class="meta-cell"><div class="l">Visitas</div><div class="v">${visitas}${vis_rest>0?` <span style="font-size:11px;color:var(--ink-3)">+${vis_rest} projet.</span>`:''}</div></div>
       </div>
-      <div class="cap" style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;">${acao}</div>
+      ${breakdownCons}
+      <div class="cap" style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;">${acaoCons || acao}</div>
     </section>`;
   document.getElementById(container_id).innerHTML = html;
 }
@@ -3694,7 +3746,7 @@ function renderAnual(data){
   ]);
   // Âncora removida a pedido — informação estática (muda 1×/ano) não merece card fixo
   if(a.meta && a.meta.meta) renderMetaProgress('per-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante', null, null, 'anual');
-  renderTicketMeta('per-ticket-meta', 'ano', k);
+  renderTicketMeta('per-ticket-meta', 'ano', k, 'anual');
   {
     const mf = data.metas_franqueadora || {};
     const mm = mf.meta_mensal_total || 60000;
@@ -3800,7 +3852,7 @@ function renderMensal(data){
   renderAvisoBase('per-kpis', k);
   renderMetaProgress('per-meta','Meta Mensal',m.meta,'Acompanhamento diário do mês corrente', null, null, 'mensal');
   renderHeatmapMeta('per-heatmap', data.sazonalidade, m.por_dia_mes, data.hoje);
-  renderTicketMeta('per-ticket-meta', 'mês', k);
+  renderTicketMeta('per-ticket-meta', 'mês', k, 'mensal');
   renderUtilizacao('per-utilizacao', 'mês', k, m, data.unidade_config);
   {
     const mf = data.metas_franqueadora || {};
@@ -3833,7 +3885,7 @@ function renderSemanal(data){
   ]);
   renderAvisoBase('per-kpis', k);
   renderMetaProgress('per-meta','Meta Semanal',s.meta,'Soma das metas diárias dos dias da semana (cada dia ponderado pelo peso histórico do DOW)', null, null, 'semanal');
-  renderTicketMeta('per-ticket-meta', 'semana', k);
+  renderTicketMeta('per-ticket-meta', 'semana', k, 'semanal');
   // Removido renderComparacaoSemana — duplicava info que ja aparece nos KPIs
   // do topo (Faturamento com delta_pct, Visitas com delta_pct, Ticket delta).
   renderUtilizacao('per-utilizacao', 'semana', k, s, data.unidade_config);
@@ -3869,7 +3921,7 @@ function renderDiario(data){
   // Pace agora dentro do card Meta Diaria (fusao 03/10 a pedido do Rodrigo).
   // Mantem container limpo pra nao renderizar card vazio.
   const pacePane = document.getElementById('per-pace'); if(pacePane) pacePane.innerHTML = '';
-  renderTicketMeta('per-ticket-meta', 'hoje', k);
+  renderTicketMeta('per-ticket-meta', 'hoje', k, 'diario');
   renderUtilizacao('per-utilizacao', 'hoje', k, d, data.unidade_config);
   {
     const mf = data.metas_franqueadora || {};
