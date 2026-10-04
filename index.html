@@ -5709,11 +5709,16 @@ function renderFinanceiro(){
   const rec_atual = kmes.caixa || 0;
   const dias_op_atual = kmes.dias_op || 0;
   const dias_op_mes = TRINKS && TRINKS.dias_op_mes ? TRINKS.dias_op_mes : 26;
-  const proj_ritmo = dias_op_atual > 0 ? (rec_atual / dias_op_atual) * dias_op_mes : 0;
   // Meta mensal ÚNICA = franqueadora Trinks (mesmo número em todos os cards)
   const tMensalM = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.meta) || {};
   const mesMetaOfi = tMensalM.meta || 60000;
   const meta_mes = mesMetaOfi;
+  // Projeção do mês: painel usa DOW ponderado (fonte certa). Se o calc_meta
+  // nao expos projecao ponderada, cai no linear simples.
+  const proj_painel_mes = tMensalM.projecao || (dias_op_atual > 0 ? (rec_atual / dias_op_atual) * dias_op_mes : 0);
+  const proj_metodo_mes = tMensalM.projecao_metodo || 'linear';
+  const proj_baixa_conf = !!tMensalM.baixa_confianca;
+  const proj_ritmo = proj_painel_mes;
 
   // Detecta se Excel já foi atualizado pro mês corrente (baseline no mês em curso)
   const mesNomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -5730,10 +5735,17 @@ function renderFinanceiro(){
   const excelDoMesCorrente = mesCorrenteData && mesCorrenteData.receita_bruta > 0;
   const excelMesLabel = mesNome;  // usamos o mês da UI se Excel tem o mês corrente
 
-  // Projeção: se Excel tem dado do mês corrente, usa receita_bruta projetada;
-  // caso contrário cai no linear pelo ritmo Trinks.
+  // Projeção: temos DUAS fontes independentes — painel (DOW ponderado,
+  // atualiza sozinho) e Excel (Rodrigo digita). Comparar as duas é o jeito
+  // de ver se o que foi projetado continua coerente com o que esta sendo
+  // realizado. proj_final usa a do PAINEL (dado vivo); proj_excel vira
+  // referencia de comparacao.
   const proj_do_excel = excelDoMesCorrente ? mesCorrenteData.receita_bruta : null;
-  const proj_final = proj_do_excel || proj_ritmo;
+  const proj_final = proj_painel_mes || proj_do_excel || proj_ritmo;
+  // Divergencia painel vs Excel: so flaga quando os dois existem
+  const divergenciaExcel = (proj_do_excel && proj_painel_mes)
+    ? ((proj_painel_mes - proj_do_excel) / proj_do_excel) : null;
+  const diverAlerta = divergenciaExcel != null && Math.abs(divergenciaExcel) > 0.15;
 
   // Custos e resultado projetados: se Excel tem mês corrente, usa dado dele
   // (real do Excel — cmv correto etc). Senão calcula
@@ -5792,8 +5804,41 @@ function renderFinanceiro(){
       ${kpiCard('k5','RESULTADO PROJETADO', brl0(res_proj), `EBITDA se fechar em ${brl0(proj_final)} · ${mesAntNome} foi ${brl0(rec_ant)}`, null)}
     </div>`;
     })()}
+    <!-- Linha 'projetado vs realizado' explicita (Rodrigo, 04/10):
+         ajuda a ver se Trinks continua em linha com o Excel. -->
+    <div style="margin-top:14px;padding:12px 14px;background:var(--surface-2);border-radius:8px">
+      <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px">Realizado × Projetado · fim de mês</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px">
+        <div style="padding:8px 10px;background:var(--surface);border-radius:6px;border-left:3px solid var(--accent)">
+          <div style="font-size:10.5px;color:var(--ink-3);font-weight:600">Realizado até hoje</div>
+          <div style="font-size:17px;font-weight:800">${brl0(rec_atual)}</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${dias_op_atual}d operados · Trinks live</div>
+        </div>
+        <div style="padding:8px 10px;background:var(--surface);border-radius:6px;border-left:3px solid var(--good)">
+          <div style="font-size:10.5px;color:var(--ink-3);font-weight:600">Projeção painel (${proj_metodo_mes === 'ponderado' ? 'DOW' : 'linear'})${proj_baixa_conf?' <span title="amostra pequena" style="color:var(--warn)">⚠</span>':''}</div>
+          <div style="font-size:17px;font-weight:800">${brl0(proj_painel_mes)}</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${proj_metodo_mes === 'ponderado' ? 'ritmo atual ponderado pelos DOW restantes' : 'ritmo atual × dias restantes'}</div>
+        </div>
+        ${proj_do_excel ? `<div style="padding:8px 10px;background:var(--surface);border-radius:6px;border-left:3px solid var(--ink-3)">
+          <div style="font-size:10.5px;color:var(--ink-3);font-weight:600">Projeção Excel</div>
+          <div style="font-size:17px;font-weight:800">${brl0(proj_do_excel)}</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">digitada em ${baselineFmt} · DRE FAST</div>
+        </div>` : `<div style="padding:8px 10px;background:var(--surface);border-radius:6px;border-left:3px solid var(--warn)">
+          <div style="font-size:10.5px;color:var(--ink-3);font-weight:600">Projeção Excel</div>
+          <div style="font-size:14px;font-weight:700;color:var(--warn)">⚠ não preenchida</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">atualize DRE do mês no painel</div>
+        </div>`}
+        <div style="padding:8px 10px;background:var(--surface);border-radius:6px;border-left:3px solid ${mesMetaOfi>0 && proj_painel_mes >= mesMetaOfi ? 'var(--good)' : 'var(--warn)'}">
+          <div style="font-size:10.5px;color:var(--ink-3);font-weight:600">Meta franqueadora</div>
+          <div style="font-size:17px;font-weight:800">${brl0(mesMetaOfi)}</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${mesMetaOfi > 0 ? ((proj_painel_mes/mesMetaOfi*100).toFixed(0) + '% projetado') : 'sem meta'}</div>
+        </div>
+      </div>
+      ${diverAlerta ? `<div style="margin-top:10px;padding:8px 10px;background:${divergenciaExcel>0?'var(--good-soft)':'var(--warn-soft)'};border-radius:6px;font-size:11.5px">
+        <strong>${divergenciaExcel > 0 ? '🔼' : '🔽'} Projeção painel ${divergenciaExcel > 0 ? 'ACIMA' : 'ABAIXO'} do Excel em ${Math.abs(divergenciaExcel*100).toFixed(0)}%</strong> (${brl0(proj_painel_mes)} vs ${brl0(proj_do_excel)}). ${divergenciaExcel > 0 ? 'Ritmo atual supera o que o Excel assumiu — atualizar o DRE com cenário mais otimista.' : 'Ritmo atual abaixo do que o Excel assume — custos continuam saindo cheios, resultado real vai pior que o DRE projeta.'}</div>` : ''}
+    </div>
     <div class="insight" style="margin-top:12px">
-      <strong>Como ler:</strong> receita ao vivo do Trinks · projetado vem do Excel · DRE detalhada abaixo compara <em>Realizado (Trinks)</em> vs <em>Projetado (Excel)</em>.
+      <strong>Como ler:</strong> <em>Realizado</em> vem do Trinks ao vivo. <em>Projeção painel</em> extrapola o ritmo pelos dias que faltam, respeitando sazonalidade DOW. <em>Projeção Excel</em> é o que Rodrigo digitou. As duas devem convergir — divergência &gt; 15% vira alerta.
     </div>
   </div>`;
 
