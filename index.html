@@ -5747,20 +5747,39 @@ function renderFinanceiro(){
     ? ((proj_painel_mes - proj_do_excel) / proj_do_excel) : null;
   const diverAlerta = divergenciaExcel != null && Math.abs(divergenciaExcel) > 0.15;
 
-  // Custos e resultado projetados: se Excel tem mês corrente, usa dado dele
-  // (real do Excel — cmv correto etc). Senão calcula
-  // aproximado pelas premissas.
+  // Custos e resultado projetados — reconstruidos sobre a projecao PAINEL,
+  // nao sobre a receita do Excel. Antes (04/10 cedo), quando o Excel tinha
+  // o mes corrente, o painel copiava res_real do Excel direto — isso achava
+  // 'resultado R$ 1.140' mesmo com projecao painel subindo pra 108k. Rodrigo:
+  // 'dados disconetados'. Agora: custo fixo vem do Excel (so varia por mes),
+  // custo variavel escala pela fracao do Excel sobre a receita_bruta
+  // digitada, aplicada ao proj_final (do painel).
   let custo_var_proj, custo_fixo, res_proj;
   if(excelDoMesCorrente){
-    custo_var_proj = mesCorrenteData.var_real;
+    const var_pct_excel = mesCorrenteData.receita_bruta > 0
+      ? (mesCorrenteData.var_real / mesCorrenteData.receita_bruta) : 0.48;
     custo_fixo = mesCorrenteData.fixo_real;
-    res_proj = mesCorrenteData.res_real;
+    custo_var_proj = proj_final * var_pct_excel;
+    res_proj = proj_final - custo_var_proj - custo_fixo;
   } else {
     const prem = FIN.premissas || {comissao:0.32, insumos:0.12, simples:0.07, inadimplencia:0};
     custo_var_proj = proj_final * (prem.comissao + prem.insumos + prem.simples + (prem.inadimplencia||0));
     custo_fixo = E.custo_fixo_mes;
     res_proj = proj_final - custo_var_proj - custo_fixo;
   }
+  // Resultado REALIZADO até hoje (não só o projetado). Rate de variaveis
+  // do mes continua a mesma; custo fixo rateia proporcional aos dias
+  // operados sobre total do mes.
+  const var_pct_atual = excelDoMesCorrente && mesCorrenteData.receita_bruta > 0
+    ? (mesCorrenteData.var_real / mesCorrenteData.receita_bruta)
+    : (() => { const p = FIN.premissas||{}; return (p.comissao||0.32)+(p.insumos||0.12)+(p.simples||0.07)+(p.inadimplencia||0); })();
+  const custo_fixo_rateio_mes = custo_fixo * (dias_op_mes > 0 ? dias_op_atual / dias_op_mes : 0);
+  const res_realizado_mes = rec_atual - rec_atual * var_pct_atual - custo_fixo_rateio_mes;
+  // Ponto de equilibrio: receita que paga o custo fixo (mc = 1 - vcost_pct)
+  const mc_pct = Math.max(0.01, 1 - var_pct_atual);
+  const pe_mes = custo_fixo > 0 ? (custo_fixo / mc_pct) : 0;
+  const pe_pct_realizado = pe_mes > 0 ? (rec_atual / pe_mes * 100) : 0;
+  const pe_pct_projetado = pe_mes > 0 ? (proj_final / pe_mes * 100) : 0;
 
   // Mês fechado pra comparação — prioridade Excel (mais preciso), fallback Trinks
   const mesAntIdx = (mesAtualIdx - 1 + 12) % 12;
@@ -5975,6 +5994,7 @@ function renderFinanceiro(){
         margem: mesMargem,
         destaque: false,
         linhas: [
+          { label: `Resultado até hoje`, valor: `<span style="color:${res_realizado_mes>=0?'var(--good)':'var(--crit)'}">${brl0(res_realizado_mes)}</span>` },
           { label: `% atingimento meta`, valor: `<span style="color:${mesAtPct>=100?'var(--good)':mesAtPct>=80?'var(--warn)':'var(--crit)'}">${mesAtPct.toFixed(0)}%</span>` },
           ...(proj_do_excel ? [{ label: `Excel projetou`, valor: `${brl0(proj_do_excel)} <span style="color:var(--ink-3);font-size:10px">(digitado em ${baselineFmt})</span>` }] : []),
         ],
@@ -6002,6 +6022,37 @@ function renderFinanceiro(){
             { label: `% da meta anual`, valor: `<span style="color:${anoAtingReal>=100?'var(--good)':anoAtingReal>=50?'var(--warn)':'var(--crit)'}">${anoAtingReal.toFixed(0)}%</span>` },
           ],
         });
+      })()}
+      ${(() => {
+        // 4o card · Ponto de equilibrio (Rodrigo, 04/10): leitura 'quanto
+        // falta pra pagar o custo fixo no mes' tambem em realizado × projetado.
+        const corPE = pe_pct_projetado >= 100 ? 'var(--good)' : (pe_pct_projetado >= 70 ? 'var(--warn)' : 'var(--crit)');
+        return `<div style="padding:16px;background:var(--surface-2);border-radius:12px;border-left:3px solid ${pe_pct_realizado >= 100 ? 'var(--good)' : 'var(--border)'}">
+          <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">⚖️ Ponto de equilíbrio</div>
+          <div style="font-size:12px;color:var(--ink-2);margin-top:2px">receita que paga o custo fixo do mês</div>
+          <div style="margin-top:10px;padding:10px;background:var(--surface);border-radius:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div>
+              <div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;font-weight:700">Realizado × PE</div>
+              <div style="font-size:17px;font-weight:800;color:${pe_pct_realizado >= 100 ? 'var(--good)' : 'var(--ink)'};line-height:1.1">${pe_pct_realizado.toFixed(0)}%</div>
+              <div style="font-size:10.5px;color:var(--ink-3)">${brl0(rec_atual)} de ${brl0(pe_mes)}</div>
+            </div>
+            <div style="border-left:1px dashed var(--border);padding-left:8px">
+              <div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;font-weight:700">Projetado × PE</div>
+              <div style="font-size:17px;font-weight:800;color:${corPE};line-height:1.1">${pe_pct_projetado.toFixed(0)}%</div>
+              <div style="font-size:10.5px;color:var(--ink-3)">${brl0(proj_final)} de ${brl0(pe_mes)}</div>
+            </div>
+            <div style="grid-column:1/-1;padding-top:4px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;font-size:11px;color:var(--ink-2)">
+              <span>Equilíbrio: <strong>${brl0(pe_mes)}/mês</strong></span>
+              <span>${pe_pct_projetado >= 100 ? '<strong style="color:var(--good)">✓ paga o fixo</strong>' : `<strong style="color:var(--warn)">falta ${brl0(Math.max(pe_mes - proj_final, 0))}</strong>`}</span>
+            </div>
+          </div>
+          <div style="margin-top:12px;font-size:11.5px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Composição</div>
+          <div style="margin-top:4px;display:grid;gap:4px;font-size:11.5px;color:var(--ink-2)">
+            <div style="display:flex;justify-content:space-between"><span>Custo fixo mensal</span><strong>${brl0(custo_fixo)}</strong></div>
+            <div style="display:flex;justify-content:space-between"><span>Margem contribuição</span><strong>${(mc_pct*100).toFixed(0)}%</strong></div>
+            <div style="display:flex;justify-content:space-between"><span>PE em dias no ritmo</span><strong>${rec_atual > 0 ? Math.ceil(pe_mes * dias_op_atual / Math.max(rec_atual,1)) : '—'}d</strong></div>
+          </div>
+        </div>`;
       })()}
       ${(() => {
         // Projetado painel vs Excel pro ANO INTEIRO (12 meses).
