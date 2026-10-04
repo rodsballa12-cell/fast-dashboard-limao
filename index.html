@@ -5911,18 +5911,48 @@ function renderFinanceiro(){
   }
 
   // Card de cenário reutilizado 3x (MÊS · ANO REAL · ANO PROJETADO)
+  // Rodrigo (04/10): cada card mostra agora REALIZADO × PROJETADO com
+  // delta claro, pra ver se o cenário continua em linha ou descolou.
   const cenarioCard = (opts) => {
     const cor = opts.res >= 0 ? 'var(--good)' : 'var(--crit)';
     const corMarg = opts.margem >= 0 ? 'var(--good)' : (opts.margem >= -15 ? 'var(--warn)' : 'var(--crit)');
     const corBorda = opts.destaque ? 'var(--accent)' : 'var(--border)';
+    // Bloco realizado × projetado — sempre no topo pra alinhamento visual
+    let rvp = '';
+    if(opts.realizado != null && opts.projetado != null){
+      const delta = opts.projetado - opts.realizado;
+      const deltaPct = opts.realizado > 0 ? (delta/opts.realizado*100) : (opts.projetado > 0 ? 100 : 0);
+      const atingPct = opts.projetado > 0 ? (opts.realizado/opts.projetado*100) : 0;
+      const corProj = atingPct >= 95 ? 'var(--good)' : (atingPct >= 70 ? 'var(--warn)' : 'var(--crit)');
+      const flagConf = opts.baixa_conf ? ' <span title="amostra pequena, projeção frágil" style="color:var(--warn);font-size:10px">⚠</span>' : '';
+      const flagMetodo = opts.metodo ? ` <span style="font-size:9.5px;color:var(--ink-3);font-weight:400">(${opts.metodo})</span>` : '';
+      rvp = `<div style="margin-top:10px;padding:10px;background:var(--surface);border-radius:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div>
+          <div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;font-weight:700">Realizado</div>
+          <div style="font-size:17px;font-weight:800;color:var(--ink);line-height:1.1">${brl0(opts.realizado)}</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${opts.realizadoNota || ''}</div>
+        </div>
+        <div style="border-left:1px dashed var(--border);padding-left:8px">
+          <div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;font-weight:700">Projetado${flagMetodo}${flagConf}</div>
+          <div style="font-size:17px;font-weight:800;color:${corProj};line-height:1.1">${brl0(opts.projetado)}</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${opts.projetadoNota || ''}</div>
+        </div>
+        <div style="grid-column:1/-1;padding-top:4px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;font-size:11px;color:var(--ink-2)">
+          <span>Atingimento: <strong style="color:${corProj}">${atingPct.toFixed(0)}%</strong></span>
+          <span>${delta>=0 ? 'Falta' : 'Supera'}: <strong style="color:${delta>=0?'var(--warn)':'var(--good)'}">${brl0(Math.abs(delta))}</strong></span>
+        </div>
+      </div>`;
+    }
     return `<div style="padding:16px;background:var(--surface-2);border-radius:12px;border-left:3px solid ${corBorda}">
       <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">${opts.tag}</div>
       <div style="font-size:12px;color:var(--ink-2);margin-top:2px">${opts.subtitulo}</div>
-      <div style="font-size:32px;font-weight:800;color:${cor};line-height:1.05;margin:10px 0 2px">${brl0(opts.res)}</div>
+      ${rvp}
+      <div style="margin-top:12px;font-size:11.5px;color:var(--ink-3);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Resultado</div>
+      <div style="font-size:28px;font-weight:800;color:${cor};line-height:1.05">${brl0(opts.res)}</div>
       <div style="font-size:11.5px;color:var(--ink-2)">${opts.res >= 0 ? 'lucro' : 'prejuízo'} · margem <span style="color:${corMarg};font-weight:700">${opts.margem.toFixed(1)}%</span></div>
-      <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);display:grid;gap:4px;font-size:11.5px;color:var(--ink-2)">
+      ${opts.linhas && opts.linhas.length ? `<div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);display:grid;gap:4px;font-size:11.5px;color:var(--ink-2)">
         ${opts.linhas.map(l => `<div style="display:flex;justify-content:space-between"><span>${l.label}</span><strong style="color:var(--ink)">${l.valor}</strong></div>`).join('')}
-      </div>
+      </div>` : ''}
     </div>`;
   };
 
@@ -5935,42 +5965,68 @@ function renderFinanceiro(){
       ${cenarioCard({
         tag: '📅 Mês corrente',
         subtitulo: `${excelMesLabel}/${anoAtual} · realizado + projeção fim mês`,
+        realizado: rec_atual,
+        realizadoNota: `${dias_op_atual}d de ${dias_op_mes} operados · Trinks live`,
+        projetado: proj_final,
+        projetadoNota: `fim do mês · meta ${brl0(mesMetaOfi)}`,
+        metodo: proj_metodo_mes === 'ponderado' ? 'DOW' : 'linear',
+        baixa_conf: proj_baixa_conf,
         res: mesRes,
         margem: mesMargem,
         destaque: false,
         linhas: [
-          { label: 'Faturado até hoje', valor: brl0(rec_atual) },
-          { label: 'Projeção fim do mês', valor: brl0(proj_final) },
-          { label: `Meta franqueadora`, valor: brl0(mesMetaOfi) },
-          { label: `% atingimento`, valor: `<span style="color:${mesAtPct>=100?'var(--good)':mesAtPct>=80?'var(--warn)':'var(--crit)'}">${mesAtPct.toFixed(0)}%</span>` },
+          { label: `% atingimento meta`, valor: `<span style="color:${mesAtPct>=100?'var(--good)':mesAtPct>=80?'var(--warn)':'var(--crit)'}">${mesAtPct.toFixed(0)}%</span>` },
+          ...(proj_do_excel ? [{ label: `Excel projetou`, valor: `${brl0(proj_do_excel)} <span style="color:var(--ink-3);font-size:10px">(digitado em ${baselineFmt})</span>` }] : []),
         ],
       })}
-      ${cenarioCard({
-        tag: '📊 Ano acumulado (real)',
-        subtitulo: `desde a abertura · ${dias_ano_ate_hoje} dias operados`,
-        res: anoResReal,
-        margem: anoMargemReal,
-        destaque: true,
-        linhas: [
-          { label: 'Faturado real', valor: brl0(anoRec) },
-          { label: 'Custo variável est.', valor: brl0(anoRec * (1 - mcAtualHero - 0)) },
-          { label: `Custo fixo (${meses_corridos.toFixed(1)} meses)`, valor: brl0(custoFixoAcumulado) },
-          { label: `% da meta anual`, valor: `<span style="color:${anoAtingReal>=100?'var(--good)':anoAtingReal>=50?'var(--warn)':'var(--crit)'}">${anoAtingReal.toFixed(0)}%</span>` },
-        ],
-      })}
-      ${cenarioCard({
-        tag: '🔮 Ano projetado',
-        subtitulo: 'se manter o ritmo atual até 31/12',
-        res: anoResProj,
-        margem: anoMargemProj,
-        destaque: false,
-        linhas: [
-          { label: 'Faturamento projetado', valor: brl0(anoProj) },
-          { label: 'Custo variável (projeção)', valor: brl0(anoProj * (1 - mcAtualHero)) },
-          { label: `Custo fixo (${meses_operados_ano.toFixed(1)} meses)`, valor: brl0(custoFixoAno) },
-          { label: `Meta franqueadora`, valor: `${brl0(anoMeta)} <span style="color:${anoProjPct>=100?'var(--good)':anoProjPct>=80?'var(--warn)':'var(--crit)'}">(${anoProjPct.toFixed(0)}%)</span>` },
-        ],
-      })}
+      ${(() => {
+        // Projetado acumulado = soma do que o Excel digitou de abertura ate HOJE,
+        // comparar com faturado real do mesmo periodo. Mostra se o DRE
+        // continua coerente com o que a loja realizou.
+        const mesesExc = Object.entries(mesesMap)
+          .filter(([k, m]) => k >= '2026-01' && k <= mesAtualISO && (m.receita_bruta||0) > 0);
+        const projExcelAcumAno = mesesExc.reduce((s, [, m]) => s + (m.receita_bruta||0), 0);
+        const projRef = projExcelAcumAno > 0 ? projExcelAcumAno : (anoRec || 0);
+        return cenarioCard({
+          tag: '📊 Ano acumulado (real)',
+          subtitulo: `desde a abertura · ${dias_ano_ate_hoje} dias operados`,
+          realizado: anoRec,
+          realizadoNota: `Trinks · soma dos meses operados`,
+          projetado: projRef,
+          projetadoNota: projExcelAcumAno > 0 ? `soma ${mesesExc.length}m do Excel (${mesesExc[0][0].slice(5,7)}-${mesesExc[mesesExc.length-1][0].slice(5,7)}/${anoAtual.toString().slice(-2)})` : 'Excel sem meses digitados · usando próprio real',
+          res: anoResReal,
+          margem: anoMargemReal,
+          destaque: true,
+          linhas: [
+            { label: `Custo fixo acumulado`, valor: brl0(custoFixoAcumulado) },
+            { label: `% da meta anual`, valor: `<span style="color:${anoAtingReal>=100?'var(--good)':anoAtingReal>=50?'var(--warn)':'var(--crit)'}">${anoAtingReal.toFixed(0)}%</span>` },
+          ],
+        });
+      })()}
+      ${(() => {
+        // Projetado painel vs Excel pro ANO INTEIRO (12 meses).
+        const projExcelAno = Object.values(mesesMap)
+          .filter(m => m.chave && m.chave >= '2026-01' && m.chave <= '2026-12')
+          .reduce((s, m) => s + (m.receita_bruta||0), 0);
+        return cenarioCard({
+          tag: '🔮 Ano projetado',
+          subtitulo: 'se manter o ritmo atual até 31/12',
+          realizado: anoRec,
+          realizadoNota: `faturado até agora · ${anoRec > 0 ? (anoRec/anoProj*100).toFixed(0)+'% da projeção' : '—'}`,
+          projetado: anoProj,
+          projetadoNota: `fim do ano · ritmo painel ${tAnoM.projecao_metodo === 'ponderado' ? '(DOW)' : '(linear)'}`,
+          metodo: tAnoM.projecao_metodo === 'ponderado' ? 'DOW' : 'linear',
+          baixa_conf: !!tAnoM.baixa_confianca,
+          res: anoResProj,
+          margem: anoMargemProj,
+          destaque: false,
+          linhas: [
+            ...(projExcelAno > 0 ? [{ label: `Excel projeta (12m)`, valor: brl0(projExcelAno) }] : []),
+            { label: `Meta franqueadora`, valor: `${brl0(anoMeta)} <span style="color:${anoProjPct>=100?'var(--good)':anoProjPct>=80?'var(--warn)':'var(--crit)'}">(${anoProjPct.toFixed(0)}%)</span>` },
+            { label: `Custo fixo (${meses_operados_ano.toFixed(1)}m)`, valor: brl0(custoFixoAno) },
+          ],
+        });
+      })()}
     </div>
 
     <!-- SITUAÇÃO DE CAIXA -->
