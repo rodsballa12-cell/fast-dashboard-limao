@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-04T18:23:03-03:00",
+  "gerado_em": "2026-10-04T21:55:51-03:00",
   "hoje": "2026-10-04",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -263,8 +263,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 235,
-    "saldoRestante": 9765
+    "totalUtilizado": 248,
+    "saldoRestante": 9752
   },
   "metas_franqueadora": null,
   "unidade_config": {
@@ -1454,7 +1454,7 @@
           "cliente": "Rosângela Pereira do Nascimento"
         }
       ],
-      "horas_desatualizado": 96.4
+      "horas_desatualizado": 100.0
     }
   },
   "auditoria_cancelados": {
@@ -3265,18 +3265,18 @@
           "horas_trab": 2.2
         },
         {
-          "nome": "Adna Lua Neves Gomes",
-          "n": 2,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.5
-        },
-        {
           "nome": "Sheila Almeida Rodrigues",
           "n": 3,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 1.8
+        },
+        {
+          "nome": "Adna Lua Neves Gomes",
+          "n": 2,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 1.5
         }
       ],
       "ranking_prof_total_n": 12,
@@ -3317,8 +3317,8 @@
           "comissao": 461.1,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "CORPORAL": 1301.0,
-            "ADICIONAIS": 236.0
+            "ADICIONAIS": 236.0,
+            "CORPORAL": 1301.0
           },
           "ticket_medio_serv": 118.23
         },
@@ -5695,7 +5695,7 @@
         "caixa_delta_bruto_pct": -100.0,
         "periodo_ant_ref": {
           "data": "2026-09-27",
-          "hora_max": 18.38,
+          "hora_max": 21.92,
           "caixa": 1417.0,
           "atend_fin": 12,
           "faturamento_apurado": 1417.0,
@@ -5718,13 +5718,13 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "18:23",
-          "hora_atual_num": 18.38,
-          "pct_esperado_agora": 67.8,
+          "hora_atual_str": "21:55",
+          "hora_atual_num": 21.92,
+          "pct_esperado_agora": 100.0,
           "meta_dia": 689.66,
-          "meta_esperada_agora": 467.91,
+          "meta_esperada_agora": 689.66,
           "realizado_agora": 0.0,
-          "pace_delta": -467.91,
+          "pace_delta": -689.66,
           "pace_ratio_pct": 0.0,
           "projecao_dia": 0.0,
           "opera_hoje": true
@@ -5935,7 +5935,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-04T18:23:03-03:00",
+    "gerado_em": "2026-10-04T21:55:51-03:00",
     "hoje": "2026-10-04",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -6019,14 +6019,8 @@
       {
         "tipo": "atencao",
         "titulo": "Ritmo abaixo do esperado",
-        "texto": "Só 0% da meta às 18h com 2h úteis restantes.",
+        "texto": "Só 0% da meta às 21h com 0h úteis restantes.",
         "acao": "Postar story/status no WhatsApp com 'últimas vagas hoje' pode gerar 2-3 walk-ins na última hora."
-      },
-      {
-        "tipo": "info",
-        "titulo": "Picos previstos ainda hoje",
-        "texto": "Base semanal aponta 19h (1.3 clientes/hora), 20h (0.8 clientes/hora) como as próximas horas de fluxo.",
-        "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
       }
     ],
     "semanal": [
@@ -6116,7 +6110,7 @@
       },
       {
         "tipo": "atencao",
-        "titulo": "Extrato Stone parado em 09-30 17:58 (4 dias atrás)",
+        "titulo": "Extrato Stone parado em 09-30 17:58 (5 dias atrás)",
         "texto": "5 PIX de R$ 614,00 são posteriores ao extrato — não dá pra dizer se caíram ou não, porque o extrato não alcança essas datas.",
         "acao": "Exportar o extrato Stone atualizado e colocar em data/stone_extrato.csv. Antes disso, não vale ligar pra cliente nenhuma."
       },
@@ -6144,7 +6138,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-04T18:23:03-03:00",
+    "gerado_em": "2026-10-04T21:55:51-03:00",
     "n_agendamentos": 76,
     "horas": [
       9,
