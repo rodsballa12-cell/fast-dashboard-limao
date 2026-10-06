@@ -47,6 +47,12 @@ IDENTIDADE = {
     "cidade", "data_inauguracao", "cor_accent", "emoji", "data_prefix",
     "trinks_estabelecimento_id", "plano", "cotaTotal", "totalUtilizado",
     "saldoRestante",
+    # Identificadores de posicao em arrays por indice. Antes (06/10) o
+    # calendario de metas no consolidado estava DESLOCADO: 'd' (dia do mes)
+    # era SOMADO (1+1=2, 2+2=4, ...) porque nao estava em IDENTIDADE nem
+    # NAO_SOMAR. Resultado: dia 02 mostrando valor do dia 01 do consolidado,
+    # dia 04 com valor do dia 02 etc. Mesma coisa pra 'h' (hora), 'dow' etc.
+    "d", "h", "dow", "nome",
 }
 
 # Chaves cujos arrays PRESERVAM ordem por índice (dow, hora, meses)
