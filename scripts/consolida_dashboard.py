@@ -460,7 +460,14 @@ def corrigir_consolidado(c, esc, spa):
             continue
         spa_tot, spa_ate = _meta_spa_efetiva(spa, aba, hoje, inicio)
         meta_tot = round((em.get("meta") or 0) + spa_tot, 2)
-        meta_ate = round((em.get("meta_ate_hoje") or 0) + spa_ate, 2)
+        # meta_ate_hoje: usa SOMA das meta_ate_hoje individuais (cada
+        # unidade ja aplicou peso DOW no seu calc_meta). _meta_spa_efetiva
+        # soma dia-a-dia de meta_por_data mas ignora hoje em curso, o que
+        # subavaliava o consolidado quando o SPA abriu no meio do periodo.
+        # Rodrigo (06/10): 'faltam as metas do spa no consolidado' —
+        # semanal consolidado dizia 1584 (so Escova) quando o SPA tinha 1281.
+        meta_ate_sm_pref = sm.get("meta_ate_hoje") if sm.get("meta_ate_hoje") is not None else spa_ate
+        meta_ate = round((em.get("meta_ate_hoje") or 0) + (meta_ate_sm_pref or 0), 2)
         real = ck.get("caixa") or 0
         rest = em.get("dias_restantes") or 0
         ritmo = (em.get("ritmo_dia") or 0) + (sm.get("ritmo_dia") or 0)
@@ -509,7 +516,23 @@ def corrigir_consolidado(c, esc, spa):
 
     mes = c["abas"]["mensal"]["meta"]
     c["meta_mensal_valor"] = mes["meta"]
-    c["metas_franqueadora"] = copy.deepcopy(esc.get("metas_franqueadora") or {})
+    # metas_franqueadora consolidada: Escova tem plano completo (serv_gerais/
+    # fast_retoque/pacotes/produtos); SPA so tem meta_mensal cheia (nao usa
+    # plano franqueadora). No consolidado, a meta do SPA cai em 'servicos_gerais'
+    # (categoria larga que faz sentido pros servicos de spa). Rodrigo (06/10):
+    # 'faltam as metas do spa no consolidado' — a meta franqueadora consolidada
+    # estava igual a da Escova (60k) ignorando os 40k do SPA.
+    mf_esc = copy.deepcopy(esc.get("metas_franqueadora") or {})
+    mf_spa_total = (spa.get("abas", {}).get("mensal", {}).get("meta") or {}).get("meta") or 0
+    cat_mes = (mf_esc.get("categorias_mensal") or {}).copy()
+    if mf_spa_total > 0:
+        cat_mes["servicos_gerais"] = round((cat_mes.get("servicos_gerais") or 0) + mf_spa_total, 2)
+        mf_esc["_spa_total_rateado"] = mf_spa_total
+        mf_esc["_spa_rateado_em"] = "servicos_gerais"
+    mf_esc["categorias_mensal"] = cat_mes
+    # meta_mensal_total agora soma Escova + SPA
+    mf_esc["meta_mensal_total"] = round(sum(cat_mes.values()), 2)
+    c["metas_franqueadora"] = mf_esc
     # a escala das categorias (meta consolidada ÷ meta Escova) sai do que o front calcula
 
 
