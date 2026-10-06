@@ -64,6 +64,12 @@ ARRAY_POR_CHAVE = {
     "cross_sell":           "cliente",
     "obs_alertas":          "cliente",
     "obs_agend_alertas":    "cliente",
+    # Rodrigo (06/10): meios_pagamento e upsell_pacotes nao estavam agregando no
+    # consolidado — cada bandeira (Mastercard, PIX, Visa) aparecia duas vezes,
+    # com os valores de cada unidade separados. Painel pegava so a 1a entrada
+    # e escondia o restante do caixa.
+    "meios_pagamento":      "nome",
+    "upsell_pacotes":       None,   # agrupa por nome, sem _unidade
 }
 
 # Alguns 'top' sao de clientes (cross_sell.top / churn_early.top) e portanto
@@ -281,6 +287,17 @@ def recalcular_derivados(d):
             for c in cnat:
                 if isinstance(c, dict):
                     c["pct_receita"] = round((c.get("v") or 0) / caixa * 100, 1)
+        # meios_pagamento: pct precisa ser recalculado sobre o total consolidado
+        # porque veio da Escova. Ordena por valor descendente.
+        meios = aba.get("meios_pagamento") or []
+        if meios:
+            total_meios = sum((m.get("v") or 0) for m in meios if isinstance(m, dict))
+            if total_meios > 0:
+                for m in meios:
+                    if isinstance(m, dict):
+                        m["pct"] = round((m.get("v") or 0) / total_meios * 100, 1)
+            # reordena por v desc (merge pode ter deixado fora de ordem)
+            meios.sort(key=lambda m: -(m.get("v") or 0))
         # segmentações: pct_receita, cobertura_pct, sem_dado — merge cego do
         # NAO_SOMAR preservava os valores da Escova; aqui recalculamos sobre a
         # base consolidada. "Está somando os percentuais" (Rodrigo, 03/10): a
@@ -447,22 +464,24 @@ def corrigir_consolidado(c, esc, spa):
         real = ck.get("caixa") or 0
         rest = em.get("dias_restantes") or 0
         ritmo = (em.get("ritmo_dia") or 0) + (sm.get("ritmo_dia") or 0)
-        # Projecao ponderada por DOW no consolidado (03/10): usa os mesmos
-        # pesos ja calculados na Escova (DOW e propriedade de calendario,
-        # igual pras duas unidades). Antes era `real + ritmo × rest` — linear
-        # ingenua, somando ritmos de dias atipicos como se fossem tipicos.
-        peso_real = em.get("peso_realizado")
-        peso_rest = em.get("peso_restante")
-        if peso_real and peso_real > 0 and peso_rest is not None:
-            proj = real + (real / peso_real) * peso_rest
-            metodo_proj = "ponderado"
-        else:
-            proj = real + ritmo * rest
-            metodo_proj = "linear"
-        peso_total = (peso_real or 0) + (peso_rest or 0)
-        baixa_conf = (em.get("dias_realizados") or 0) < 3 or (
-            peso_total > 0 and (peso_real / peso_total) < 0.15
-        )
+        # Projecao consolidada = SOMA das projeções individuais. Rodrigo
+        # (06/10): quando o consolidado recalculava com pesos da Escova em
+        # cima do caixa somado, SPA abriu ha 12 dias e Escova ha 68 — divisao
+        # distorcia tudo (anual 240k+203k=443k virava 284k no consolidado).
+        # A projecao certa e a soma, cada unidade com seu proprio ritmo e
+        # pesos. Antes: `real + (real/peso_real) × peso_rest` com pesos
+        # mistos. Agora: proj_esc + proj_spa.
+        proj_esc = em.get("projecao") or 0
+        proj_spa = sm.get("projecao") or 0
+        proj = proj_esc + proj_spa
+        metodo_e = em.get("projecao_metodo", "linear")
+        metodo_s = sm.get("projecao_metodo", "linear")
+        # Ponderado so quando AS DUAS unidades estao em modo ponderado
+        metodo_proj = "ponderado" if (metodo_e == "ponderado" and metodo_s == "ponderado") else "linear"
+        # Mantem os pesos agregados pra referencia (soma)
+        peso_real = (em.get("peso_realizado") or 0) + (sm.get("peso_realizado") or 0) or None
+        peso_rest = (em.get("peso_restante") or 0) + (sm.get("peso_restante") or 0) or None
+        baixa_conf = (em.get("baixa_confianca") or False) or (sm.get("baixa_confianca") or False)
         falta = meta_tot - real
         cm = ca.setdefault("meta", {})
         cm.update({
