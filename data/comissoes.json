@@ -1,7 +1,7 @@
 {
-  "_desc": "Regras de comissão do Trinks BackOffice · exportado de /BackOffice/ManterCadastro/Servicos em 08/09/2026. Taxa por CATEGORIA de serviço (uniforme dentro de cada categoria, não varia por profissional).",
+  "_desc": "Regras de comissão do Trinks BackOffice · exportado de /BackOffice/ManterCadastro/Servicos em 08/09/2026 (Escova) · SPA adicionado 07/10/2026. Taxa por CATEGORIA de serviço (uniforme dentro de cada categoria, não varia por profissional).",
   "fonte": "servicosDoEstabelecimento.csv (Trinks BackOffice)",
-  "atualizado_em": "2026-09-08",
+  "atualizado_em": "2026-10-07",
   "por_categoria": {
     "Escova": 0.30,
     "ESCOVA": 0.30,
@@ -16,8 +16,21 @@
     "Tratamento": 0.30,
     "TRATAMENTO": 0.30,
     "Unhas": 0.50,
-    "UNHAS": 0.50
+    "UNHAS": 0.50,
+
+    "Massagem Relaxante": 0.25,
+    "MASSAGEM RELAXANTE": 0.25,
+    "Drenagem/Modeladora": 0.25,
+    "DRENAGEM/MODELADORA": 0.25,
+    "Facial": 0.25,
+    "FACIAL": 0.25,
+    "Reflexologia/Pes": 0.25,
+    "REFLEXOLOGIA/PES": 0.25,
+    "Terapia Miofascial": 0.25,
+    "TERAPIA MIOFASCIAL": 0.25,
+    "Adicional": 0.25,
+    "ADICIONAL": 0.25
   },
   "regra_padrao_pct": 0.30,
-  "obs": "Categorias com match case-insensitive. Regra padrão 30% aplica se categoria não estiver mapeada. Cadeireleiro/manicure não muda a taxa — quem determina é o serviço."
+  "obs": "Categorias com match case-insensitive. Regra padrão 30% aplica se categoria não estiver mapeada. Cadeireleiro/manicure não muda a taxa — quem determina é o serviço. SPA uniforme 25% em todas as categorias de serviço (Rodrigo, 07/10/2026)."
 }
