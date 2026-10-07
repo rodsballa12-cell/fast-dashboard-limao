@@ -6159,20 +6159,34 @@ function renderFinanceiro(){
 
   let h='';
 
-  // ---- DRE em curso: REALIZADO (Trinks live + prorata) vs PROJETADO (Excel mês) ----
-  // Regra Rodrigo: Excel = projeção; Trinks = realizado. A cada 15 dias
-  // Rodrigo troca a projeção do Excel por realizado parcial na aba DRE.
-  const REC_PROJ = R.receita_real;                              // Excel mês inteiro
+  // ---- DRE em curso: REALIZADO (Trinks live + prorata) vs PROJETADO ----
+  // Rodrigo (07/10): o DRE nao conversava com os 3 cards de cenario porque
+  // o Projetado do DRE era o Excel do mes (ex: R\$ 100k) enquanto o Card
+  // Mes Corrente usa a projecao PAINEL ponderada por DOW (ex: R\$ 108k).
+  // Agora: Projetado DRE = proj_final (mesmo numero do card). Custos
+  // variaveis escalam pelo pct do Excel (var_real/receita_bruta) aplicado
+  // a proj_final; custos fixos ficam no valor Excel (nao variam com receita).
+  const REC_EXCEL_MES = R.receita_real;                          // Excel original (ref)
+  const REC_PROJ = proj_final || REC_EXCEL_MES;                  // projecao painel (fonte do card)
   const REC_REAL = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.kpis && TRINKS.abas.mensal.kpis.caixa) || 0;
   const DIAS_OP  = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.kpis && TRINKS.abas.mensal.kpis.dias_op) || 0;
   const DIAS_MES = (TRINKS && TRINKS.abas && TRINKS.abas.mensal && TRINKS.abas.mensal.meta && TRINKS.abas.mensal.meta.dias_total) || 30;
-  const RATIO_REC = REC_PROJ > 0 ? REC_REAL / REC_PROJ : 0;      // custos VARIÁVEIS escalam com receita
+  const RATIO_REC = REC_PROJ > 0 ? REC_REAL / REC_PROJ : 0;      // realizado como fracao da projecao
   const RATIO_DIA = DIAS_MES > 0 ? DIAS_OP / DIAS_MES : 0;       // custos FIXOS escalam com tempo
+  // Fator pra reescalar os custos variaveis do Excel pela projecao painel.
+  const RATIO_PROJ_EXCEL = REC_EXCEL_MES > 0 ? REC_PROJ / REC_EXCEL_MES : 1;
 
-  // Prorateia custos de cada grupo: VARIAVEL segue receita, FIXO segue dias
+  // Prorateia custos de cada grupo:
+  //   VARIAVEL: 'real' (Trinks) escala com receita realizada;
+  //             'esp'  (projetado) reescala pelo painel vs Excel
+  //   FIXO    : 'real' escala com dias; 'esp' fica cheio do Excel
   const scaleG = (g)=>{ if(!g || !g.linhas) return g;
-    const r = g.id === 'VARIAVEL' ? RATIO_REC : RATIO_DIA;
-    const linhas = g.linhas.map(l => ({...l, esp: l.real, real: (l.real||0) * r}));
+    const r_real = g.id === 'VARIAVEL' ? RATIO_REC : RATIO_DIA;
+    const linhas = g.linhas.map(l => {
+      const esp_base = (l.real || 0);
+      const esp_adj = g.id === 'VARIAVEL' ? esp_base * RATIO_PROJ_EXCEL : esp_base;
+      return {...l, esp: esp_adj, real: esp_base * r_real};
+    });
     return {...g, linhas,
       sub_real: linhas.reduce((a,l)=>a+(l.real||0),0),
       sub_esp:  linhas.reduce((a,l)=>a+(l.esp ||0),0)};
@@ -6227,12 +6241,22 @@ function renderFinanceiro(){
   const mcR=MC_REAL/Math.max(REC_REAL,1), mcE=MC_ESP/Math.max(REC_PROJ,1);
   const dreMesNome = nomeDe(mpKey) || 'mês corrente';
   const ritmoLbl = `dia ${DIAS_OP} de ${DIAS_MES} · ritmo esperado ${(RATIO_DIA*100).toFixed(0)}%`;
+  // Reconciliacao com os cards de cenario: mostra que PROJETADO aqui =
+  // mesmo numero do card Mes Corrente (projecao painel), e flagga o delta
+  // vs Excel pra ler lado a lado.
+  const _deltaProjExcel = REC_PROJ - REC_EXCEL_MES;
+  const _mostraReconc = Math.abs(_deltaProjExcel) > 100 && REC_EXCEL_MES > 0;
+  const reconciliacao = _mostraReconc ? `
+    <div style="margin-top:8px;padding:8px 10px;background:var(--surface-2);border-radius:6px;font-size:11.5px;color:var(--ink-2);border-left:3px solid ${_deltaProjExcel > 0 ? 'var(--good)' : 'var(--warn)'}">
+      <strong>Projetado aqui = projeção painel (${brl0(REC_PROJ)})</strong>, mesmo número usado nos cards acima. O Excel digitou <strong>${brl0(REC_EXCEL_MES)}</strong> pra este mês — delta <strong style="color:${_deltaProjExcel > 0 ? 'var(--good)' : 'var(--warn)'}">${_deltaProjExcel > 0 ? '+' : ''}${brl0(_deltaProjExcel)}</strong>. Custos variáveis foram reescalados pelo painel; fixos ficam no valor do Excel.
+    </div>` : '';
   h+=`<div class="card"><h2>📊 DRE de ${dreMesNome} — em curso</h2>
     <div class="cap">
       <strong>Realizado</strong> = faturamento Trinks ao vivo (custos variáveis escalam com receita, fixos com dias operados).<br>
-      <strong>Projetado</strong> = Excel do mês corrente. A cada 15 dias você atualiza o Excel com valores realizados; o painel absorve na próxima atualização.<br>
+      <strong>Projetado</strong> = projeção PAINEL do fim de mês (DOW ponderado) · custos variáveis reescalados pelo mesmo fator, custos fixos cheios do Excel.<br>
       Referência de ritmo: <strong>${ritmoLbl}</strong>. Na última coluna, <span class="dv-bom">verde</span> se está acima do ritmo esperado.
     </div>
+    ${reconciliacao}
 
     <div class="dre-ind">
       <div><span class="il">MARGEM DE CONTRIBUIÇÃO</span><span class="iv">${finPct(mcR)}</span><span class="ic">projetada ${finPct(mcE)}</span></div>
