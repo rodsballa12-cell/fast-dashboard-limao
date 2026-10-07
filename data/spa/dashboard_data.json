@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-06T21:35:16-03:00",
+  "gerado_em": "2026-10-06T21:55:01-03:00",
   "hoje": "2026-10-06",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -271,7 +271,7 @@
     "usa_categoria_native": true,
     "usa_metas_franqueadora": false,
     "cadeira_unica": "sala",
-    "comissao_producao_pct": 0.2,
+    "comissao_producao_pct": 0.25,
     "data_inauguracao": "2026-09-25"
   },
   "comissoes": {
@@ -1427,7 +1427,7 @@
           "cliente": "Rosângela Pereira do Nascimento"
         }
       ],
-      "horas_desatualizado": 147.6
+      "horas_desatualizado": 148.0
     }
   },
   "auditoria_cancelados": {
@@ -3385,18 +3385,18 @@
           "horas_trab": 1.5
         },
         {
-          "nome": "Rodrigo De Pinho Garcia",
-          "n": 2,
-          "v": 198.0,
-          "ticket_medio": 99.0,
-          "horas_trab": 1.5
-        },
-        {
           "nome": "Fabiana Leite",
           "n": 3,
           "v": 198.0,
           "ticket_medio": 66.0,
           "horas_trab": 2.2
+        },
+        {
+          "nome": "Rodrigo De Pinho Garcia",
+          "n": 2,
+          "v": 198.0,
+          "ticket_medio": 99.0,
+          "horas_trab": 1.5
         },
         {
           "nome": "Adna Lua Neves Gomes",
@@ -3420,8 +3420,8 @@
           "n_serv": 24,
           "v": 3106.0,
           "v_via_pacote": 298.0,
-          "comissao": 931.8,
-          "taxa_efetiva": 0.3,
+          "comissao": 905.95,
+          "taxa_efetiva": 0.2917,
           "por_cat": {
             "FACIAL": 517.0,
             "CORPORAL": 2353.0,
@@ -3434,8 +3434,8 @@
           "n_serv": 14,
           "v": 1926.0,
           "v_via_pacote": 0.0,
-          "comissao": 577.8,
-          "taxa_efetiva": 0.3,
+          "comissao": 559.9,
+          "taxa_efetiva": 0.2907,
           "por_cat": {
             "CORPORAL": 1450.0,
             "ADICIONAIS": 118.0,
@@ -3513,8 +3513,8 @@
           "comissao": 77.37,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "ADICIONAIS": 59.0,
-            "CORPORAL": 198.9
+            "CORPORAL": 198.9,
+            "ADICIONAIS": 59.0
           },
           "ticket_medio_serv": 85.97
         },
@@ -4828,8 +4828,8 @@
           "n_serv": 12,
           "v": 1408.0,
           "v_via_pacote": 298.0,
-          "comissao": 422.4,
-          "taxa_efetiva": 0.3,
+          "comissao": 414.45,
+          "taxa_efetiva": 0.2944,
           "por_cat": {
             "CORPORAL": 1072.0,
             "FACIAL": 159.0,
@@ -4855,8 +4855,8 @@
           "n_serv": 4,
           "v": 546.0,
           "v_via_pacote": 0.0,
-          "comissao": 163.8,
-          "taxa_efetiva": 0.3,
+          "comissao": 155.85,
+          "taxa_efetiva": 0.2854,
           "por_cat": {
             "FACIAL": 159.0,
             "CORPORAL": 328.0,
@@ -4896,8 +4896,8 @@
           "comissao": 77.37,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "ADICIONAIS": 59.0,
-            "CORPORAL": 198.9
+            "CORPORAL": 198.9,
+            "ADICIONAIS": 59.0
           },
           "ticket_medio_serv": 85.97
         },
@@ -5441,8 +5441,8 @@
           "n_serv": 2,
           "v": 338.0,
           "v_via_pacote": 0.0,
-          "comissao": 101.4,
-          "taxa_efetiva": 0.3,
+          "comissao": 93.45,
+          "taxa_efetiva": 0.2765,
           "por_cat": {
             "FACIAL": 159.0,
             "CORPORAL": 179.0
@@ -5749,7 +5749,7 @@
         "caixa_delta_bruto_pct": -76.2,
         "periodo_ant_ref": {
           "data": "2026-09-29",
-          "hora_max": 21.58,
+          "hora_max": 21.92,
           "caixa": 2044.0,
           "atend_fin": 3,
           "faturamento_apurado": 2044.0,
@@ -5772,8 +5772,8 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "21:35",
-          "hora_atual_num": 21.58,
+          "hora_atual_str": "21:55",
+          "hora_atual_num": 21.92,
           "pct_esperado_agora": 100.0,
           "meta_dia": 1379.31,
           "meta_esperada_agora": 1379.31,
@@ -5960,8 +5960,8 @@
           "n_serv": 2,
           "v": 338.0,
           "v_via_pacote": 0.0,
-          "comissao": 101.4,
-          "taxa_efetiva": 0.3,
+          "comissao": 93.45,
+          "taxa_efetiva": 0.2765,
           "por_cat": {
             "FACIAL": 159.0,
             "CORPORAL": 179.0
@@ -6156,7 +6156,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-06T21:35:16-03:00",
+    "gerado_em": "2026-10-06T21:55:01-03:00",
     "hoje": "2026-10-06",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -6330,7 +6330,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-06T21:35:17-03:00",
+    "gerado_em": "2026-10-06T21:55:01-03:00",
     "n_agendamentos": 76,
     "horas": [
       9,
