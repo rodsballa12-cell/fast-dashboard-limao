@@ -5838,26 +5838,17 @@ function renderFinanceiro(){
           <div style="font-size:17px;font-weight:800">${brl0(proj_painel_mes)}</div>
           <div style="font-size:10.5px;color:var(--ink-3)">${proj_metodo_mes === 'ponderado' ? 'ritmo atual ponderado pelos DOW restantes' : 'ritmo atual × dias restantes'}</div>
         </div>
-        ${proj_do_excel ? `<div style="padding:8px 10px;background:var(--surface);border-radius:6px;border-left:3px solid var(--ink-3)">
-          <div style="font-size:10.5px;color:var(--ink-3);font-weight:600">Projeção Excel</div>
-          <div style="font-size:17px;font-weight:800">${brl0(proj_do_excel)}</div>
-          <div style="font-size:10.5px;color:var(--ink-3)">digitada em ${baselineFmt} · DRE FAST</div>
-        </div>` : `<div style="padding:8px 10px;background:var(--surface);border-radius:6px;border-left:3px solid var(--warn)">
-          <div style="font-size:10.5px;color:var(--ink-3);font-weight:600">Projeção Excel</div>
-          <div style="font-size:14px;font-weight:700;color:var(--warn)">⚠ não preenchida</div>
-          <div style="font-size:10.5px;color:var(--ink-3)">atualize DRE do mês no painel</div>
-        </div>`}
         <div style="padding:8px 10px;background:var(--surface);border-radius:6px;border-left:3px solid ${mesMetaOfi>0 && proj_painel_mes >= mesMetaOfi ? 'var(--good)' : 'var(--warn)'}">
-          <div style="font-size:10.5px;color:var(--ink-3);font-weight:600">Meta franqueadora</div>
+          <div style="font-size:10.5px;color:var(--ink-3);font-weight:600">Meta franquia</div>
           <div style="font-size:17px;font-weight:800">${brl0(mesMetaOfi)}</div>
-          <div style="font-size:10.5px;color:var(--ink-3)">${mesMetaOfi > 0 ? ((proj_painel_mes/mesMetaOfi*100).toFixed(0) + '% projetado') : 'sem meta'}</div>
+          <div style="font-size:10.5px;color:var(--ink-3)">${mesMetaOfi > 0 ? ((proj_painel_mes/mesMetaOfi*100).toFixed(0) + '% projetado') : 'sem meta'} · faturamento Excel = meta mensal</div>
         </div>
       </div>
       ${diverAlerta ? `<div style="margin-top:10px;padding:8px 10px;background:${divergenciaExcel>0?'var(--good-soft)':'var(--warn-soft)'};border-radius:6px;font-size:11.5px">
-        <strong>${divergenciaExcel > 0 ? '🔼' : '🔽'} Projeção painel ${divergenciaExcel > 0 ? 'ACIMA' : 'ABAIXO'} do Excel em ${Math.abs(divergenciaExcel*100).toFixed(0)}%</strong> (${brl0(proj_painel_mes)} vs ${brl0(proj_do_excel)}). ${divergenciaExcel > 0 ? 'Ritmo atual supera o que o Excel assumiu — atualizar o DRE com cenário mais otimista.' : 'Ritmo atual abaixo do que o Excel assume — custos continuam saindo cheios, resultado real vai pior que o DRE projeta.'}</div>` : ''}
+        <strong>${divergenciaExcel > 0 ? '🔼' : '🔽'} Projeção painel ${divergenciaExcel > 0 ? 'ACIMA' : 'ABAIXO'} da meta franquia em ${Math.abs(divergenciaExcel*100).toFixed(0)}%</strong> (${brl0(proj_painel_mes)} vs ${brl0(proj_do_excel)}). ${divergenciaExcel > 0 ? 'Ritmo real está superando a meta — resultado melhor que o planejado.' : 'Ritmo real abaixo da meta — resultado abaixo do planejado se o padrão continuar.'}</div>` : ''}
     </div>
     <div class="insight" style="margin-top:12px">
-      <strong>Como ler:</strong> <em>Realizado</em> vem do Trinks ao vivo. <em>Projeção painel</em> extrapola o ritmo pelos dias que faltam, respeitando sazonalidade DOW. <em>Projeção Excel</em> é o que Rodrigo digitou. As duas devem convergir — divergência &gt; 15% vira alerta.
+      <strong>Como ler:</strong> <em>Realizado</em> = Trinks ao vivo. <em>Projeção painel</em> = extrapola o ritmo pelos dias que faltam, respeitando sazonalidade DOW — é o cenário mais provável de fechar. <em>Meta franquia</em> = o número da planilha (meta mensal da franqueadora, mesma estrutura em todas as unidades).
     </div>
   </div>`;
 
@@ -6035,7 +6026,7 @@ function renderFinanceiro(){
         linhas: [
           { label: `Resultado até hoje`, valor: `<span style="color:${res_realizado_mes>=0?'var(--good)':'var(--crit)'}">${brl0(res_realizado_mes)}</span>` },
           { label: `% atingimento meta`, valor: `<span style="color:${mesAtPct>=100?'var(--good)':mesAtPct>=80?'var(--warn)':'var(--crit)'}">${mesAtPct.toFixed(0)}%</span>` },
-          ...(proj_do_excel ? [{ label: `Excel projetou`, valor: `${brl0(proj_do_excel)} <span style="color:var(--ink-3);font-size:10px">(digitado em ${baselineFmt})</span>` }] : []),
+          ...(proj_do_excel ? [{ label: `Meta franquia (mês)`, valor: `${brl0(proj_do_excel)} <span style="color:var(--ink-3);font-size:10px">(Excel · meta mensal)</span>` }] : []),
         ],
       })}
       ${(() => {
@@ -6052,7 +6043,7 @@ function renderFinanceiro(){
           realizado: anoRec,
           realizadoNota: `Trinks · soma dos meses operados`,
           projetado: projRef,
-          projetadoNota: projExcelAcumAno > 0 ? `soma ${mesesExc.length}m do Excel (${mesesExc[0][0].slice(5,7)}-${mesesExc[mesesExc.length-1][0].slice(5,7)}/${anoAtual.toString().slice(-2)})` : 'Excel sem meses digitados · usando próprio real',
+          projetadoNota: projExcelAcumAno > 0 ? `meta franquia · ${mesesExc.length}m acumulados (${mesesExc[0][0].slice(5,7)}-${mesesExc[mesesExc.length-1][0].slice(5,7)}/${anoAtual.toString().slice(-2)})` : 'Excel sem meses · usando próprio real',
           res: anoResReal,
           margem: anoMargemReal,
           destaque: true,
@@ -6111,8 +6102,8 @@ function renderFinanceiro(){
           margem: anoMargemProj,
           destaque: false,
           linhas: [
-            ...(projExcelAno > 0 ? [{ label: `Excel projeta (12m)`, valor: brl0(projExcelAno) }] : []),
-            { label: `Meta franqueadora`, valor: `${brl0(anoMeta)} <span style="color:${anoProjPct>=100?'var(--good)':anoProjPct>=80?'var(--warn)':'var(--crit)'}">(${anoProjPct.toFixed(0)}%)</span>` },
+            ...(projExcelAno > 0 ? [{ label: `Meta franquia (12m Excel)`, valor: brl0(projExcelAno) }] : []),
+            { label: `Meta franqueadora anual`, valor: `${brl0(anoMeta)} <span style="color:${anoProjPct>=100?'var(--good)':anoProjPct>=80?'var(--warn)':'var(--crit)'}">(${anoProjPct.toFixed(0)}%)</span>` },
             { label: `Custo fixo (${meses_operados_ano.toFixed(1)}m)`, valor: brl0(custoFixoAno) },
           ],
         });
@@ -6248,12 +6239,12 @@ function renderFinanceiro(){
   const _mostraReconc = Math.abs(_deltaProjExcel) > 100 && REC_EXCEL_MES > 0;
   const reconciliacao = _mostraReconc ? `
     <div style="margin-top:8px;padding:8px 10px;background:var(--surface-2);border-radius:6px;font-size:11.5px;color:var(--ink-2);border-left:3px solid ${_deltaProjExcel > 0 ? 'var(--good)' : 'var(--warn)'}">
-      <strong>Projetado aqui = projeção painel (${brl0(REC_PROJ)})</strong>, mesmo número usado nos cards acima. O Excel digitou <strong>${brl0(REC_EXCEL_MES)}</strong> pra este mês — delta <strong style="color:${_deltaProjExcel > 0 ? 'var(--good)' : 'var(--warn)'}">${_deltaProjExcel > 0 ? '+' : ''}${brl0(_deltaProjExcel)}</strong>. Custos variáveis foram reescalados pelo painel; fixos ficam no valor do Excel.
+      <strong>Projetado aqui = projeção painel (${brl0(REC_PROJ)})</strong>, mesmo número dos cards acima. É o cenário mais provável se o ritmo atual continuar. A meta da franquia pra este mês é <strong>${brl0(REC_EXCEL_MES)}</strong> — delta <strong style="color:${_deltaProjExcel > 0 ? 'var(--good)' : 'var(--warn)'}">${_deltaProjExcel > 0 ? '+' : ''}${brl0(_deltaProjExcel)}</strong>. Custos variáveis escalam com a projeção; fixos ficam no valor da planilha.
     </div>` : '';
   h+=`<div class="card"><h2>📊 DRE de ${dreMesNome} — em curso</h2>
     <div class="cap">
       <strong>Realizado</strong> = faturamento Trinks ao vivo (custos variáveis escalam com receita, fixos com dias operados).<br>
-      <strong>Projetado</strong> = projeção PAINEL do fim de mês (DOW ponderado) · custos variáveis reescalados pelo mesmo fator, custos fixos cheios do Excel.<br>
+      <strong>Projetado</strong> = projeção do painel de vendas (DOW ponderado) · cenário mais provável se o ritmo continuar. Custos variáveis escalam proporcionalmente; custos fixos cheios do Excel.<br>
       Referência de ritmo: <strong>${ritmoLbl}</strong>. Na última coluna, <span class="dv-bom">verde</span> se está acima do ritmo esperado.
     </div>
     ${reconciliacao}
