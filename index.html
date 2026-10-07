@@ -6039,7 +6039,7 @@ function renderFinanceiro(){
         const projRef = projExcelAcumAno > 0 ? projExcelAcumAno : (anoRec || 0);
         return cenarioCard({
           tag: '📊 Ano acumulado (real)',
-          subtitulo: `desde a abertura · ${dias_ano_ate_hoje} dias operados · ${mesesCorridos.toFixed(1)} meses`,
+          subtitulo: `desde a abertura · ${tAnoM.dias_realizados || 0} dias operados · ${mesesCorridos.toFixed(1)} meses`,
           realizado: anoRec,
           realizadoNota: `Trinks · soma dos meses operados`,
           projetado: projRef,
