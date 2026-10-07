@@ -5899,22 +5899,61 @@ function renderFinanceiro(){
   const mesAtPct = mesMetaOfi > 0 ? (rec_atual/mesMetaOfi*100) : 0;
 
   // === CENÁRIO 2: ANO ACUMULADO REAL (até agora) ===
-  // Faturado real Trinks × margem Excel − custo fixo × meses já corridos
-  const dias_ano_ate_hoje = tAnoM.dias_realizados || 0;
-  const meses_corridos = Math.max(1, dias_ano_ate_hoje/30);  // aprox
-  const custoFixoAcumulado = custoFixoMes * meses_corridos;
-  const anoResReal = anoRec * mcAtualHero - custoFixoAcumulado;
+  // Rodrigo (07/10): usar os MESES DO EXCEL direto, nao proxy via
+  // dias_realizados/30. Antes: 71 dias Escova / 30 = 2,37 meses — mas a
+  // Escova abriu 23/07, hoje 07/10 = ~2,5 meses de calendario, nao 2,37.
+  // E no consolidado o calculo era pior: custo fixo cons × meses Escova
+  // (5,16m) ignorava que o SPA so comeca a pagar custo fixo em 25/09.
+  // Novo criterio: fixo_real/res_real SOMADOS dos meses do Excel desde a
+  // abertura ate o mes passado + rateio do mes corrente proporcional a
+  // dias_op_atual/dias_op_mes.
+  // Abertura mais antiga entre as unidades carregadas (23/07 Escova).
+  // Para unidades individuais, usa a propria abertura.
+  const _dataInaugFmt = (() => {
+    const info = (typeof UNIDADE_ATIVA !== 'undefined') ? CONFIG?.unidades?.[UNIDADE_ATIVA] : null;
+    if(info?.data_inauguracao) return info.data_inauguracao.slice(0,7); // YYYY-MM
+    // consolidado: usa a mais antiga entre as unidades
+    const d1 = CONFIG?.unidades?.escova?.data_inauguracao?.slice(0,7) || '2026-07';
+    const d2 = CONFIG?.unidades?.spa?.data_inauguracao?.slice(0,7) || '2026-09';
+    return d1 < d2 ? d1 : d2;
+  })();
+  const _mesesFin = FIN.meses || {};
+  const _mesesPassados = Object.entries(_mesesFin)
+    .filter(([k, m]) => k.startsWith(String(anoAtualHero)) && k >= _dataInaugFmt && k < mesAtualISO && (m.fixo_real||0) > 0);
+  const custoFixoAcumuladoExcel = _mesesPassados.reduce((s, [, m]) => s + (m.fixo_real||0), 0);
+  const resRealAcumuladoExcel = _mesesPassados.reduce((s, [, m]) => s + (m.res_real||0), 0);
+  // Mes corrente rateado por dias operados
+  const mesCorrente = _mesesFin[mesAtualISO];
+  const ratioMesCorrente = (dias_op_mes > 0 && dias_op_atual > 0) ? (dias_op_atual / dias_op_mes) : 0;
+  const custoFixoMesCorrente = (mesCorrente?.fixo_real || custoFixoMes) * ratioMesCorrente;
+  const resMesCorrente = res_realizado_mes;  // ja calculado no bloco mesEmCurso
+  const custoFixoAcumulado = custoFixoAcumuladoExcel + custoFixoMesCorrente;
+  // Resultado acumulado = soma dos res_real do Excel fechados + rateio hoje
+  const anoResReal = resRealAcumuladoExcel + resMesCorrente;
   const anoMargemReal = anoRec > 0 ? (anoResReal/anoRec*100) : 0;
   const corAnoResReal = anoResReal >= 0 ? 'var(--good)' : 'var(--crit)';
   const anoAtingReal = anoMeta > 0 ? (anoRec/anoMeta*100) : 0;
+  const mesesCorridos = _mesesPassados.length + (ratioMesCorrente > 0 ? ratioMesCorrente : 0);
+  // Projetado do Excel acumulado (soma receita_bruta dos meses passados + rateio corrente)
+  const projExcelAcumulado = _mesesPassados.reduce((s, [, m]) => s + (m.receita_bruta||0), 0)
+                           + (mesCorrente?.receita_bruta || 0) * ratioMesCorrente;
 
   // === CENÁRIO 3: ANO PROJETADO (fim de 2026) ===
-  // Loja abriu em jul/26 — não paga custo fixo os 12 meses do ano.
-  // Meses operados = dias_total (Trinks) / 30 (aprox) — cobre da abertura a 31/12.
-  const dias_total_ano = tAnoM.dias_total || 157;   // padrão Jul→Dez = ~183, mas Trinks já calcula certo
-  const meses_operados_ano = Math.max(1, dias_total_ano / 30.4);
-  const custoFixoAno = custoFixoMes * meses_operados_ano;
-  const anoResProj = anoProj * mcAtualHero - custoFixoAno;
+  // Soma meses do Excel desde a abertura = fonte unica. Antes era
+  // custoFixoMes × meses_operados (proxy) que no consolidado contava o
+  // SPA pagando fixo desde julho. Pre-abertura (aluguel maio/junho etc)
+  // nao entra no 'ano projetado' — eh custo historico, nao decisao futura.
+  const _mesesAno = Object.entries(_mesesFin)
+    .filter(([k, m]) => k.startsWith(String(anoAtualHero)) && k >= _dataInaugFmt);
+  const receitaBrutaExcelAno = _mesesAno.reduce((s, [, m]) => s + (m.receita_bruta||0), 0);
+  const custoFixoAno = _mesesAno.reduce((s, [, m]) => s + (m.fixo_real||0), 0);
+  const resRealExcelAno = _mesesAno.reduce((s, [, m]) => s + (m.res_real||0), 0);
+  const meses_operados_ano = _mesesAno.filter(([, m]) => (m.fixo_real||0) > 0).length || 1;
+  // Resultado projetado: Excel ja faz EBITDA mensal; soma e a fonte da verdade.
+  // Mas se o painel projeta receita diferente, ajusta: usa (anoProj - receitaBrutaExcelAno)
+  // marginal multiplicado por MC.
+  const dias_total_ano = tAnoM.dias_total || 157;
+  const anoResProj = resRealExcelAno + (anoProj - receitaBrutaExcelAno) * mcAtualHero;
   const anoMargemProj = anoProj > 0 ? (anoResProj/anoProj*100) : 0;
   const corResProj = anoResProj >= 0 ? 'var(--good)' : 'var(--crit)';
   const ritmoMensal = anoProj / meses_operados_ano;
@@ -6009,7 +6048,7 @@ function renderFinanceiro(){
         const projRef = projExcelAcumAno > 0 ? projExcelAcumAno : (anoRec || 0);
         return cenarioCard({
           tag: '📊 Ano acumulado (real)',
-          subtitulo: `desde a abertura · ${dias_ano_ate_hoje} dias operados`,
+          subtitulo: `desde a abertura · ${dias_ano_ate_hoje} dias operados · ${mesesCorridos.toFixed(1)} meses`,
           realizado: anoRec,
           realizadoNota: `Trinks · soma dos meses operados`,
           projetado: projRef,
@@ -6018,7 +6057,7 @@ function renderFinanceiro(){
           margem: anoMargemReal,
           destaque: true,
           linhas: [
-            { label: `Custo fixo acumulado`, valor: brl0(custoFixoAcumulado) },
+            { label: `Custo fixo acumulado`, valor: `${brl0(custoFixoAcumulado)} <span style="color:var(--ink-3);font-size:10px">(${mesesCorridos.toFixed(1)}m)</span>` },
             { label: `% da meta anual`, valor: `<span style="color:${anoAtingReal>=100?'var(--good)':anoAtingReal>=50?'var(--warn)':'var(--crit)'}">${anoAtingReal.toFixed(0)}%</span>` },
           ],
         });
