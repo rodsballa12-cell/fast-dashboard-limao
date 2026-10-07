@@ -5940,14 +5940,39 @@ function renderFinanceiro(){
   const custoFixoAno = _mesesAno.reduce((s, [, m]) => s + (m.fixo_real||0), 0);
   const resRealExcelAno = _mesesAno.reduce((s, [, m]) => s + (m.res_real||0), 0);
   const meses_operados_ano = _mesesAno.filter(([, m]) => (m.fixo_real||0) > 0).length || 1;
-  // Resultado projetado: Excel ja faz EBITDA mensal; soma e a fonte da verdade.
-  // Mas se o painel projeta receita diferente, ajusta: usa (anoProj - receitaBrutaExcelAno)
-  // marginal multiplicado por MC.
   const dias_total_ano = tAnoM.dias_total || 157;
-  const anoResProj = resRealExcelAno + (anoProj - receitaBrutaExcelAno) * mcAtualHero;
-  const anoMargemProj = anoProj > 0 ? (anoResProj/anoProj*100) : 0;
+  // Rodrigo (07/10): 'se os dados mostram que superaremos a meta da franquia,
+  // mostre levando em conta essa informacao'. Agora o cenario anual tem DOIS
+  // caminhos:
+  //   CENARIO META  = Excel digitado como esta (resRealExcelAno) · referencia
+  //   CENARIO PAINEL = meses passados pelo Excel + meses do mes corrente em
+  //                    diante escalonados pelo ratio_proj (projecao painel /
+  //                    meta Excel). Custos variaveis escalam proporcional,
+  //                    custos fixos ficam cheios.
+  const _mesesPassFin = _mesesAno.filter(([k]) => k < mesAtualISO && k >= _dataInaugFmt);
+  const _mesesFutFin = _mesesAno.filter(([k]) => k >= mesAtualISO);  // inclui o corrente
+  const resRealPassados = _mesesPassFin.reduce((s, [, m]) => s + (m.res_real||0), 0);
+  const _recExcelMes = (mesCorrente?.receita_bruta || 0);
+  const ratioProjVsMetaMes = _recExcelMes > 0 ? (proj_final / _recExcelMes) : 1;
+  // CENARIO META (Excel digitado como esta): soma crua
+  const anoResMetaFranquia = resRealExcelAno;
+  // CENARIO PAINEL (otimista se painel > meta): rateio pelo painel nos meses
+  // futuros, incluindo o corrente
+  const resFutPainel = _mesesFutFin.reduce((s, [, m]) => {
+    const rec_mes = (m.receita_bruta || 0) * ratioProjVsMetaMes;
+    const var_mes = (m.var_real || 0) * ratioProjVsMetaMes;
+    const fixo_mes = m.fixo_real || 0;
+    return s + (rec_mes - var_mes - fixo_mes);
+  }, 0);
+  const anoResProj = resRealPassados + resFutPainel;
+  // Receita total do cenario painel
+  const anoReceitaPainel = _mesesPassFin.reduce((s, [, m]) => s + (m.receita_bruta||0), 0)
+                         + _mesesFutFin.reduce((s, [, m]) => s + (m.receita_bruta||0) * ratioProjVsMetaMes, 0);
+  const anoMargemProj = anoReceitaPainel > 0 ? (anoResProj/anoReceitaPainel*100) : 0;
+  const anoMargemMetaFranquia = receitaBrutaExcelAno > 0 ? (anoResMetaFranquia/receitaBrutaExcelAno*100) : 0;
   const corResProj = anoResProj >= 0 ? 'var(--good)' : 'var(--crit)';
   const ritmoMensal = anoProj / meses_operados_ano;
+  const _deltaCenarios = anoResProj - anoResMetaFranquia;
 
   let direcFin;
   // Resultado 'estabilizado' dos ultimos meses — melhor sinal da tendencia
@@ -5955,7 +5980,9 @@ function renderFinanceiro(){
   const _ultTresFin = Object.entries(mesesMap)
     .filter(([k]) => k >= '2026-10' && k < '2027-01');
   const resUltTresFin = _ultTresFin.reduce((s, [, m]) => s + (m.res_real||0), 0);
-  if(anoResProj < 0 && resUltTresFin >= 0){
+  if(ratioProjVsMetaMes > 1.05 && anoResProj > anoResMetaFranquia){
+    direcFin = `<strong class="up">🚀 Ritmo real está ${((ratioProjVsMetaMes-1)*100).toFixed(0)}% ACIMA da meta franquia.</strong> No cenário painel (ritmo atual continua), o ano fecha em <strong class="${anoResProj>=0?'up':'dn'}">${brl0(anoResProj)}</strong> contra <strong>${brl0(anoResMetaFranquia)}</strong> do cenário meta — <strong class="up">${_deltaCenarios>=0?'+':''}${brl0(_deltaCenarios)}</strong> adicional. Faturamento painel ano: ${brl0(anoReceitaPainel)}. ${anoResProj < 0 ? 'Ainda negativo porque os meses de abertura (jul-ago Escova, set SPA) carregam prejuízo pesado.' : 'A loja supera o cenário projetado pela franquia.'}`;
+  } else if(anoResProj < 0 && resUltTresFin >= 0){
     direcFin = `<strong>Ano fecha no vermelho (${brl0(anoResProj)}) porque carrega o prejuízo dos meses de abertura</strong> — jul/ago da Escova (custo fixo integral vs receita baixa) e set do SPA (6 dias de operação). <strong class="up">Os últimos 3 meses (out-dez) já somam ${brl0(resUltTresFin)}</strong>, a tendência é positiva. O prejuízo acumulado é esperado em qualquer loja no 1º semestre pós-abertura — vira o jogo em 2027 com os 12 meses cheios no azul.`;
   } else if(anoResProj < 0){
     const gapMensal = Math.max(0, beMesUnif - ritmoMensal);
@@ -6108,9 +6135,9 @@ function renderFinanceiro(){
         const margemUltTres = recUltTres > 0 ? (resUltTres/recUltTres*100) : 0;
         return cenarioCard({
           tag: '🔮 Ano projetado',
-          subtitulo: 'se manter o ritmo atual até 31/12',
+          subtitulo: 'cenário painel (ritmo real) vs cenário meta (Excel)',
           realizado: anoRec,
-          realizadoNota: `faturado até agora · ${anoRec > 0 ? (anoRec/anoProj*100).toFixed(0)+'% da projeção' : '—'}`,
+          realizadoNota: `faturado até agora · ${anoRec > 0 ? (anoRec/anoProj*100).toFixed(0)+'% da projeção painel' : '—'}`,
           projetado: anoProj,
           projetadoNota: `fim do ano · ritmo painel ${tAnoM.projecao_metodo === 'ponderado' ? '(DOW)' : '(linear)'}`,
           metodo: tAnoM.projecao_metodo === 'ponderado' ? 'DOW' : 'linear',
@@ -6119,7 +6146,8 @@ function renderFinanceiro(){
           margem: anoMargemProj,
           destaque: false,
           linhas: [
-            ...(projExcelAno > 0 ? [{ label: `Meta franquia (12m Excel)`, valor: brl0(projExcelAno) }] : []),
+            { label: `Cenário meta (Excel) · res`, valor: `<span style="color:${anoResMetaFranquia>=0?'var(--good)':'var(--crit)'}">${brl0(anoResMetaFranquia)}</span> <span style="color:var(--ink-3);font-size:10px">(${anoMargemMetaFranquia.toFixed(1)}% margem)</span>` },
+            { label: `Cenário painel · ganho vs meta`, valor: `<span style="color:${_deltaCenarios>=0?'var(--good)':'var(--crit)'}">${_deltaCenarios>=0?'+':''}${brl0(_deltaCenarios)}</span> <span style="color:var(--ink-3);font-size:10px">(ritmo ${(ratioProjVsMetaMes*100).toFixed(0)}% da meta)</span>` },
             { label: `Meta franqueadora anual`, valor: `${brl0(anoMeta)} <span style="color:${anoProjPct>=100?'var(--good)':anoProjPct>=80?'var(--warn)':'var(--crit)'}">(${anoProjPct.toFixed(0)}%)</span>` },
             { label: `Custo fixo (${meses_operados_ano.toFixed(1)}m)`, valor: brl0(custoFixoAno) },
             ...(_ultTres.length ? [{ label: `Resultado out-dez (estabilizado)`, valor: `<span style="color:${resUltTres>=0?'var(--good)':'var(--crit)'}">${brl0(resUltTres)}</span> <span style="color:var(--ink-3);font-size:10px">(${margemUltTres.toFixed(1)}% margem)</span>` }] : []),
