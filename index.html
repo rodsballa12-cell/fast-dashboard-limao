@@ -5950,7 +5950,14 @@ function renderFinanceiro(){
   const ritmoMensal = anoProj / meses_operados_ano;
 
   let direcFin;
-  if(anoResProj < 0){
+  // Resultado 'estabilizado' dos ultimos meses — melhor sinal da tendencia
+  // que a soma do ano (que inclui prejuizo de abertura).
+  const _ultTresFin = Object.entries(mesesMap)
+    .filter(([k]) => k >= '2026-10' && k < '2027-01');
+  const resUltTresFin = _ultTresFin.reduce((s, [, m]) => s + (m.res_real||0), 0);
+  if(anoResProj < 0 && resUltTresFin >= 0){
+    direcFin = `<strong>Ano fecha no vermelho (${brl0(anoResProj)}) porque carrega o prejuízo dos meses de abertura</strong> — jul/ago da Escova (custo fixo integral vs receita baixa) e set do SPA (6 dias de operação). <strong class="up">Os últimos 3 meses (out-dez) já somam ${brl0(resUltTresFin)}</strong>, a tendência é positiva. O prejuízo acumulado é esperado em qualquer loja no 1º semestre pós-abertura — vira o jogo em 2027 com os 12 meses cheios no azul.`;
+  } else if(anoResProj < 0){
     const gapMensal = Math.max(0, beMesUnif - ritmoMensal);
     direcFin = `<strong>Projeção do ano no vermelho (${brl0(anoResProj)}).</strong> No ritmo atual, a loja fatura ~${brl0(ritmoMensal)}/mês — abaixo do ponto de equilíbrio (${brl0(beMesUnif)}/mês). Faltam <strong>${brl0(gapMensal)} de receita/mês</strong> pra virar o resultado. Alternativa: cortar custo fixo (aluguel, pessoal).`;
   } else if(anoMargemProj >= 15){
@@ -6089,6 +6096,16 @@ function renderFinanceiro(){
         const projExcelAno = Object.values(mesesMap)
           .filter(m => m.chave && m.chave >= '2026-01' && m.chave <= '2026-12')
           .reduce((s, m) => s + (m.receita_bruta||0), 0);
+        // Resultado estabilizado · ultimos 3 meses (out/nov/dez) separados
+        // dos meses de abertura (que carregam prejuizo pre-tracao).
+        // Rodrigo (07/10): 'por que a projecao do ano esta negativa?'. Soma
+        // anual inclui jul-set que foram pesados; out-dez ja viram azul.
+        const _ultTres = Object.entries(mesesMap)
+          .filter(([k]) => k >= '2026-10' && k < '2027-01')
+          .sort((a,b) => a[0].localeCompare(b[0]));
+        const resUltTres = _ultTres.reduce((s, [, m]) => s + (m.res_real||0), 0);
+        const recUltTres = _ultTres.reduce((s, [, m]) => s + (m.receita_bruta||0), 0);
+        const margemUltTres = recUltTres > 0 ? (resUltTres/recUltTres*100) : 0;
         return cenarioCard({
           tag: '🔮 Ano projetado',
           subtitulo: 'se manter o ritmo atual até 31/12',
@@ -6105,6 +6122,7 @@ function renderFinanceiro(){
             ...(projExcelAno > 0 ? [{ label: `Meta franquia (12m Excel)`, valor: brl0(projExcelAno) }] : []),
             { label: `Meta franqueadora anual`, valor: `${brl0(anoMeta)} <span style="color:${anoProjPct>=100?'var(--good)':anoProjPct>=80?'var(--warn)':'var(--crit)'}">(${anoProjPct.toFixed(0)}%)</span>` },
             { label: `Custo fixo (${meses_operados_ano.toFixed(1)}m)`, valor: brl0(custoFixoAno) },
+            ...(_ultTres.length ? [{ label: `Resultado out-dez (estabilizado)`, valor: `<span style="color:${resUltTres>=0?'var(--good)':'var(--crit)'}">${brl0(resUltTres)}</span> <span style="color:var(--ink-3);font-size:10px">(${margemUltTres.toFixed(1)}% margem)</span>` }] : []),
           ],
         });
       })()}
