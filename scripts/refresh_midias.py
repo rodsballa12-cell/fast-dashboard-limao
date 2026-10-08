@@ -75,7 +75,7 @@ def _graph_get(path: str, params: dict[str, Any], token: str) -> dict[str, Any]:
             if HAS_REQUESTS:
                 r = requests.get(url, timeout=REQ_TIMEOUT)
                 if r.status_code >= 400:
-                    raise RuntimeError(f"HTTP {r.status_code} · {r.text[:400]}")
+                    raise RuntimeError(f"HTTP {r.status_code} · {r.text[:800]}")
                 return r.json()
             req = urllib.request.Request(url, headers={"Accept": "application/json"})
             with urllib.request.urlopen(req, timeout=REQ_TIMEOUT) as resp:
@@ -257,7 +257,14 @@ def _fetch_ad_insights(act_id: str, token: str, hoje: date, now_iso: str) -> dic
         except Exception as e:
             print(f"  [WARN] Ad insights {chave} falhou: {e}", file=sys.stderr)
             saida[chave] = _row_to_periodo(None, label_final, inicio, fim, now_iso)
-            saida[chave]["_erro"] = str(e)[:200]
+            # 600, nao 200. Em 08/10/2026 a Meta devolveu um checkpoint de
+            # seguranca (codigo 190) cuja resposta traz o `checkpoint_url` — o
+            # endereco exato que o Facebook quer que a pessoa abra para
+            # destravar. O corte em 200 caracteres cortava a mensagem
+            # exatamente em cima da URL, deixando o `{"checkpoint_url":\` no
+            # arquivo e o resto no nada. A informacao mais util do erro era a
+            # unica que nao caberia.
+            saida[chave]["_erro"] = str(e)[:600]
     return saida
 
 
