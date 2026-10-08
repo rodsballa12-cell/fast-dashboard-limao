@@ -63,9 +63,10 @@ def _load_cfg():
     except Exception:
         return {}
 CFG = _load_cfg()
-# Gerente ja vem com encargos aplicados no config (salario_gerente_com_encargos
-# = fatia por unidade, ja × fator). Default 5250 = R$ 3000 bruto × 1.75 encargos.
-SALARIO_GERENTE = float(((CFG.get("pessoal_clt") or {}).get("salario_gerente_com_encargos")) or 5250)
+# Gerente eh PJ (CNPJ) · R$ 6.000/mes total rateado 50/50 entre Escova e SPA.
+# Sem encargos CLT. salario_gerente_com_encargos = fatia por unidade (R$ 3.000).
+# Nome 'com_encargos' preservado por compat (apesar de ser PJ sem encargos).
+SALARIO_GERENTE = float(((CFG.get("pessoal_clt") or {}).get("salario_gerente_com_encargos")) or 3000)
 FATOR_ENCARGOS_CLT = float(((CFG.get("pessoal_clt") or {}).get("fator_encargos_clt")) or 1.75)
 
 
@@ -223,10 +224,10 @@ def monta_mes(ws, col, ano, mes, linha_titulo, meta_mes, comissao_pct, loja_labe
                   "7% da receita · provisionado por competência", True,
                   {"esp_pct": 0.07, "real_pct": 0.07}),
          ]},
-        {"id": "PESSOAL", "titulo": "Pessoal fixo — CLT",
+        {"id": "PESSOAL", "titulo": "Pessoal fixo — CLT + PJ",
          "linhas": [
-             _row("Gerente (CLT com encargos)", SALARIO_GERENTE, SALARIO_GERENTE,
-                  f"R$ {SALARIO_GERENTE:.0f}/mês · rateio 50% da gerente única · encargos inclusos"),
+             _row("Gerente (PJ · CNPJ)", SALARIO_GERENTE, SALARIO_GERENTE,
+                  f"R$ {SALARIO_GERENTE:.0f}/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos"),
              # Recepção + limpeza: Excel deveria consolidar. Enquanto não trouxer,
              # usa fallback do config (Rodrigo, 08/10): SPA tem CLT R$ 2.700 +
              # PJ R$ 3.000 que não entravam no bloco DRE FAST SPA.
