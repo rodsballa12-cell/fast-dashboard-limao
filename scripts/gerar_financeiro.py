@@ -63,14 +63,17 @@ def _load_cfg():
     except Exception:
         return {}
 CFG = _load_cfg()
-SALARIO_GERENTE = float(((CFG.get("pessoal_clt") or {}).get("salario_gerente_com_encargos")) or 3000)
+# Gerente ja vem com encargos aplicados no config (salario_gerente_com_encargos
+# = fatia por unidade, ja × fator). Default 5250 = R$ 3000 bruto × 1.75 encargos.
+SALARIO_GERENTE = float(((CFG.get("pessoal_clt") or {}).get("salario_gerente_com_encargos")) or 5250)
+FATOR_ENCARGOS_CLT = float(((CFG.get("pessoal_clt") or {}).get("fator_encargos_clt")) or 1.75)
 
 
 def _recepcao_fallback_custo(unidade_key):
     """Fallback do custo de recepcao+limpeza quando o Excel ainda nao atualizou.
-    Rodrigo (08/10): SPA tem recepcao 1 CLT R$ 2.700 + 1 PJ R$ 3.000 = R$ 5.700/m
-    que ainda nao estava consolidado no bloco DRE FAST SPA do Excel. Enquanto
-    nao for digitado, usa o valor do config.unidades.<u>.recepcao_custo_mensal."""
+    Rodrigo (08/10): SPA tem recepcao 1 CLT R$ 2.700 bruto + 1 PJ R$ 3.000.
+    Com encargos CLT (fator 1.75): R$ 4.725 + R$ 3.000 = R$ 7.725/mes total.
+    Fallback usado enquanto o Excel SPA nao traz o custo consolidado."""
     try:
         u = (CFG.get("unidades") or {}).get(unidade_key) or {}
         r = u.get("recepcao_custo_mensal")

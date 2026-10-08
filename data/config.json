@@ -219,10 +219,12 @@
         "2026-10": 50000.0
       },
       "recepcao_custo_mensal": {
-        "_desc": "Custo mensal consolidado da recepcao/limpeza SPA quando o Excel ainda nao atualizou (fallback). CLT com encargos + PJ. Rodrigo em 08/10/2026.",
-        "clt_com_encargos": 2700,
-        "pj_mensal": 3000,
-        "total": 5700
+        "_desc": "Recepcao SPA · fallback config enquanto Excel nao traz. Rodrigo (08/10): 1 CLT R$ 2.700 bruto + 1 PJ R$ 3.000.",
+        "clt_salario_bruto": 2700.0,
+        "clt_fator_encargos": 1.75,
+        "clt_com_encargos": 4725.0,
+        "pj_mensal": 3000.0,
+        "total": 7725.0
       }
     }
   },
@@ -279,9 +281,11 @@
     ]
   },
   "pessoal_clt": {
-    "_desc": "Pessoal CLT consolidado do Excel. Gerente e 1 so rateada 50/50 entre Escova e SPA (salario total R$ 6.000 · R$ 3.000 em cada DRE). salario_gerente_com_encargos = fatia por unidade.",
-    "salario_gerente_total_mensal": 6000,
-    "salario_gerente_com_encargos": 3000
+    "_desc": "Pessoal CLT consolidado do Excel. Fator de encargos: 1.75× sobre o salário bruto (INSS 20% + FGTS 8% + férias/13º proporcional + RAT/outros). Gerente única rateada 50/50.",
+    "fator_encargos_clt": 1.75,
+    "salario_gerente_bruto": 6000.0,
+    "salario_gerente_total_com_encargos": 10500.0,
+    "salario_gerente_com_encargos": 5250.0
   },
   "metas_franqueadora": {
     "_desc": "Metas mensais oficiais fornecidas pela franqueadora, POR RECEPCIONISTA. Multiplicadas por `recepcionistas` pra chegar no total da loja. Resto (META_MENSAL - subtotal) vira 'servicos_gerais'.",
