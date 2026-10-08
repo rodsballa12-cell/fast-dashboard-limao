@@ -508,6 +508,8 @@
 
     <!-- PAINEL UNIFICADO · CONSOLIDAÇÃO A · 1 conjunto de cards, dispatch por período -->
     <div class="periodo-panel active" id="periodo-shared">
+      <!-- 🏆 BANNER DE RECORDES · aparece quando bateu top 1 em algum ranking recente -->
+      <div id="per-recordes"></div>
       <div class="audit" id="per-audit"></div>
       <!-- AÇÃO AGORA · só Diário -->
       <div id="per-pace"></div>
@@ -1475,6 +1477,88 @@ function _legendaUnidades(){
     <span style="display:inline-flex;align-items:center;gap:5px">${ICO_UNIDADE_MINI.escova}Escova</span>
     <span style="display:inline-flex;align-items:center;gap:5px">${ICO_UNIDADE_MINI.spa}Spa</span>
   </div>`;
+}
+
+// ============= RECORDES · banner "🏆 top 1 em ranking" =============
+// Rodrigo (08/10): quando a loja faz top 1 em qualquer ranking (ex: melhor
+// terça, melhor quarta, melhor dia do mês), aparece banner em destaque no
+// topo do painel. Escaneia os últimos 7 dias contra todo o histórico.
+function _detectarRecordes(data){
+  const hist = ((data||{}).historico||{}).dias || {};
+  const hoje = data?.hoje;
+  if(!hoje || !Object.keys(hist).length) return [];
+  const dowNomes = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const dowCheios = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  // Monta lista plana: {data, dow, v, n}
+  const todos = Object.entries(hist).map(([d, x]) => {
+    const v = ((x.kpis||{}).caixa) || 0;
+    const n = ((x.kpis||{}).atend_fin) || 0;
+    const dt = new Date(d + 'T12:00:00-03:00');
+    return { data: d, dow: dt.getDay(), v, n };
+  }).filter(x => x.v > 0);
+  if(todos.length < 5) return [];
+  // Últimos 7 dias (incluindo hoje)
+  const hojeDate = new Date(hoje + 'T12:00:00-03:00');
+  const h0 = new Date(hojeDate); h0.setDate(h0.getDate() - 6);
+  const recentes = todos.filter(x => new Date(x.data + 'T12:00:00-03:00') >= h0);
+  const recordes = [];
+  // Para cada dia recente, verifica se é top 1 ou top 2 no histórico (DOW ou geral)
+  recentes.forEach(r => {
+    // Top por DOW
+    const porDow = todos.filter(x => x.dow === r.dow).sort((a,b) => b.v - a.v);
+    const posDow = porDow.findIndex(x => x.data === r.data) + 1;
+    if(posDow === 1 && porDow.length >= 2){
+      recordes.push({
+        tipo: 'dow', data: r.data,
+        titulo: `🏆 Melhor ${dowCheios[r.dow]} da história`,
+        valor: r.v, atend: r.n,
+        detalhe: `R$ ${brl0(r.v)} em ${r.n} atendimentos · bateu o recorde anterior (${porDow[1]?.data.slice(-5).replace('-','/')} com R$ ${brl0(porDow[1]?.v||0)})`,
+        amostra: porDow.length,
+      });
+    }
+    // Top geral
+    const geral = todos.slice().sort((a,b) => b.v - a.v);
+    const posGeral = geral.findIndex(x => x.data === r.data) + 1;
+    if(posGeral === 1 && geral.length >= 10){
+      recordes.push({
+        tipo: 'geral', data: r.data,
+        titulo: `🚀 Melhor DIA de todos os tempos`,
+        valor: r.v, atend: r.n,
+        detalhe: `R$ ${brl0(r.v)} · recorde absoluto do histórico de ${geral.length} dias de operação`,
+        amostra: geral.length,
+      });
+    }
+  });
+  // Dedup por data+tipo
+  const seen = new Set();
+  return recordes.filter(r => {
+    const k = r.data + '|' + r.tipo;
+    if(seen.has(k)) return false;
+    seen.add(k); return true;
+  }).sort((a,b) => b.data.localeCompare(a.data));
+}
+
+function renderRecordes(container_id, data){
+  const el = document.getElementById(container_id);
+  if(!el) return;
+  const recs = _detectarRecordes(data);
+  if(!recs.length){ el.innerHTML = ''; return; }
+  const cards = recs.slice(0, 3).map(r => {
+    const dtFmt = r.data.slice(5).split('-').reverse().join('/');
+    const corTag = r.tipo === 'geral' ? 'var(--accent)' : 'var(--good)';
+    return `<div style="padding:14px 16px;background:linear-gradient(135deg,${corTag}22,${corTag}08);border:1px solid ${corTag}66;border-left:4px solid ${corTag};border-radius:10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div style="font-size:32px;line-height:1">${r.tipo === 'geral' ? '🚀' : '🏆'}</div>
+      <div style="flex:1;min-width:220px">
+        <div style="font-weight:800;font-size:15px;color:var(--ink);line-height:1.2">${r.titulo}</div>
+        <div style="font-size:12px;color:var(--ink-2);margin-top:3px;line-height:1.4">${r.detalhe}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700">${dtFmt}</div>
+        <div style="font-size:22px;font-weight:800;color:${corTag};line-height:1.1">R$ ${brl0(r.valor)}</div>
+      </div>
+    </div>`;
+  }).join('<div style="height:8px"></div>');
+  el.innerHTML = `<div style="margin-bottom:14px">${cards}</div>`;
 }
 
 function renderBarsDia(container_id, titulo, subtitle, dias_data, insight, aba_nome){
@@ -3738,6 +3822,7 @@ function renderAnual(data){
   const a=data.abas.anual;
   const k=a.kpis;
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.anual;
+  renderRecordes('per-recordes', data);
   renderKPIs('per-kpis',[
     {label:'Faturamento · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`},
@@ -3830,6 +3915,7 @@ function renderClientes(data){
 function renderMensal(data){
   const m=data.abas.mensal, k=m.kpis;
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.mensal;
+  renderRecordes('per-recordes', data);
   if(k.em_atendimento>0){document.getElementById('chip-live').style.display='';document.getElementById('chip-live').innerHTML=`<span class="dot"></span> ${k.em_atendimento} em atendim.`;document.getElementById('chip-live').className='chip live';}
   // Comissão apurada MTD — soma direto do ranking prof executor (com fator
   // de escala pra bater com caixa) usando taxa oficial de cada categoria
@@ -3876,6 +3962,7 @@ function renderMensal(data){
 
 function renderSemanal(data){
   const s=data.abas.semanal, k=s.kpis;
+  renderRecordes('per-recordes', data);
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.semanal;
   renderKPIs('per-kpis',[
     {label:'Faturamento · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
@@ -3909,6 +3996,7 @@ function renderSemanal(data){
 
 function renderDiario(data){
   const d=data.abas.diario, k=d.kpis;
+  renderRecordes('per-recordes', data);
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.diario;
   renderKPIs('per-kpis',[
     {label:'Faturamento · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
