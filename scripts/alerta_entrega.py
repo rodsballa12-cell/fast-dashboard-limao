@@ -37,6 +37,11 @@ JANELA_BASE = 14        # dias com entrega usados para a mediana
 IDADE_MAX_H = 30        # painel mais velho que isto não serve para julgar hoje
 
 
+# Quantos dias de coleta recusada antes de o silencio virar e-mail. Um dia e
+# soluco de API; dois ja e cegueira que ninguem viu.
+DIAS_CEGO_CRITICO = 2
+
+
 def brl(v):
     return "R$ " + f"{v:,.2f}".replace(",", "~").replace(".", ",").replace("~", ".")
 
@@ -64,10 +69,41 @@ def avaliar(caminho):
         bruto = erros[0]
         motivo = (bruto.split('"message":"')[-1].split('","')[0]
                   if '"message":"' in bruto else bruto)[:170]
+
+        # MAS COLETA QUE FALHA TODO DIA E OUTRA COISA.
+        # O conserto acima calou o alarme falso e, sem querer, calou o alarme.
+        # "indef" sai com codigo 2, que o workflow trata como "nao falha" — e em
+        # 06, 07 e 08/10/2026 a Meta recusou a chamada tres dias seguidos, o
+        # arquivo gravou zeros com a data de hoje, o run ficou VERDE e nenhum
+        # e-mail saiu. O detector sabia exatamente o que estava errado e disse
+        # para um log que ninguem le.
+        #
+        # Um dia de recusa pode ser soluco da API. Tres dias e cegueira. A
+        # medida honesta nao e a idade do arquivo (ele e reescrito todo dia com
+        # zeros, sempre parecendo novo) e sim ate quando a SERIE alcanca: ela só
+        # avanca quando uma coleta da certo.
+        serie_err = d.get("meta_ads", {}).get("serie_diaria_30d") or []
+        ultimo_ok = None
+        for ponto in reversed(serie_err):
+            try:
+                ultimo_ok = date.fromisoformat(str(ponto.get("data"))[:10])
+                break
+            except Exception:
+                continue
+        dias_cego = (date.today() - ultimo_ok).days if ultimo_ok else None
+
+        comum = (f"A Meta recusou a chamada: {motivo}\n"
+                 f"   Os números zerados são ausência de DADO, não ausência de entrega. "
+                 f"Não olhe para a conta de anúncio — olhe para a credencial.")
+
+        if dias_cego is not None and dias_cego >= DIAS_CEGO_CRITICO:
+            return ("critico", f"Mídia cega há {dias_cego} dias — a coleta falha desde {dm(ultimo_ok)}",
+                    comum + f"\n   O arquivo é reescrito todo dia com zeros, então parece novo. "
+                    f"O último dia que entrou de verdade foi {dm(ultimo_ok)}.")
+
         return ("indef", "A coleta falhou — não dá para avaliar a entrega",
-                f"A Meta recusou a chamada: {motivo}\n"
-                f"   Os números zerados são ausência de DADO, não ausência de entrega. "
-                f"Renove o META_ACCESS_TOKEN antes de olhar para a conta de anúncio.")
+                comum + (f"\n   Último dia bom: {dm(ultimo_ok)}. Se repetir amanhã, vira crítico."
+                         if ultimo_ok else ""))
 
     serie = d.get("meta_ads", {}).get("serie_diaria_30d") or []
     if len(serie) < 8:
