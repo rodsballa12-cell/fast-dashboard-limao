@@ -217,6 +217,12 @@
       "meta_intermediaria_por_mes": {
         "_desc": "Degrau entre meta e super meta (Meta 2 da planilha da franqueadora). So registro: o painel ainda nao exibe.",
         "2026-10": 50000.0
+      },
+      "recepcao_custo_mensal": {
+        "_desc": "Custo mensal consolidado da recepcao/limpeza SPA quando o Excel ainda nao atualizou (fallback). CLT com encargos + PJ. Rodrigo em 08/10/2026.",
+        "clt_com_encargos": 2700,
+        "pj_mensal": 3000,
+        "total": 5700
       }
     }
   },
@@ -273,8 +279,9 @@
     ]
   },
   "pessoal_clt": {
-    "_desc": "Detalhamento do pessoal CLT que hoje o Excel consolida numa linha. O 'salario_gerente_com_encargos' é subtraído do total pessoal_clt do Excel pra mostrar a gerente como linha separada na DRE.",
-    "salario_gerente_com_encargos": 6500
+    "_desc": "Pessoal CLT consolidado do Excel. Gerente e 1 so rateada 50/50 entre Escova e SPA (salario total R$ 6.000 · R$ 3.000 em cada DRE). salario_gerente_com_encargos = fatia por unidade.",
+    "salario_gerente_total_mensal": 6000,
+    "salario_gerente_com_encargos": 3000
   },
   "metas_franqueadora": {
     "_desc": "Metas mensais oficiais fornecidas pela franqueadora, POR RECEPCIONISTA. Multiplicadas por `recepcionistas` pra chegar no total da loja. Resto (META_MENSAL - subtotal) vira 'servicos_gerais'.",

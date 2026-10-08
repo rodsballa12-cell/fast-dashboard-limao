@@ -63,7 +63,24 @@ def _load_cfg():
     except Exception:
         return {}
 CFG = _load_cfg()
-SALARIO_GERENTE = float(((CFG.get("pessoal_clt") or {}).get("salario_gerente_com_encargos")) or 6500)
+SALARIO_GERENTE = float(((CFG.get("pessoal_clt") or {}).get("salario_gerente_com_encargos")) or 3000)
+
+
+def _recepcao_fallback_custo(unidade_key):
+    """Fallback do custo de recepcao+limpeza quando o Excel ainda nao atualizou.
+    Rodrigo (08/10): SPA tem recepcao 1 CLT R$ 2.700 + 1 PJ R$ 3.000 = R$ 5.700/m
+    que ainda nao estava consolidado no bloco DRE FAST SPA do Excel. Enquanto
+    nao for digitado, usa o valor do config.unidades.<u>.recepcao_custo_mensal."""
+    try:
+        u = (CFG.get("unidades") or {}).get(unidade_key) or {}
+        r = u.get("recepcao_custo_mensal")
+        if isinstance(r, dict):
+            return float(r.get("total") or 0)
+        if isinstance(r, (int, float)):
+            return float(r)
+    except Exception:
+        pass
+    return 0.0
 
 
 def _load_comissoes(dashboard_path):
@@ -206,10 +223,20 @@ def monta_mes(ws, col, ano, mes, linha_titulo, meta_mes, comissao_pct, loja_labe
         {"id": "PESSOAL", "titulo": "Pessoal fixo — CLT",
          "linhas": [
              _row("Gerente (CLT com encargos)", SALARIO_GERENTE, SALARIO_GERENTE,
-                  "salário + INSS + FGTS + férias/13º proporcional"),
-             _row("Recepção + limpeza + encargos", max(pessoal - SALARIO_GERENTE, 0),
-                  max(pessoal - SALARIO_GERENTE, 0),
-                  "total pessoal do Excel menos gerente"),
+                  f"R$ {SALARIO_GERENTE:.0f}/mês · rateio 50% da gerente única · encargos inclusos"),
+             # Recepção + limpeza: Excel deveria consolidar. Enquanto não trouxer,
+             # usa fallback do config (Rodrigo, 08/10): SPA tem CLT R$ 2.700 +
+             # PJ R$ 3.000 que não entravam no bloco DRE FAST SPA.
+             (lambda rec_exc: (
+                 _row("Recepção + limpeza + encargos",
+                      rec_exc if rec_exc > 0 else _recepcao_fallback_custo(
+                          "spa" if "SPA" in loja_label.upper() else "escova"),
+                      rec_exc if rec_exc > 0 else _recepcao_fallback_custo(
+                          "spa" if "SPA" in loja_label.upper() else "escova"),
+                      ("total pessoal do Excel menos gerente"
+                       if rec_exc > 0
+                       else f"fallback config · {('CLT + PJ' if 'SPA' in loja_label.upper() else 'CLT')}"))
+             ))(max(pessoal - SALARIO_GERENTE, 0)),
          ]},
         {"id": "OCUPACAO", "titulo": "Ocupação — rateio do imóvel",
          "linhas": [
