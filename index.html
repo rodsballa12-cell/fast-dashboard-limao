@@ -6873,6 +6873,48 @@ function renderMidias(){
     });
   })();
 
+  // --- MIDIA CEGA: zero por falta de dado nao pode parecer zero de entrega --
+  // Em 06, 07 e 08/10/2026 a Meta recusou toda chamada ("code 190 ·
+  // checkpoint de seguranca"). O arquivo foi regravado todo dia com zeros e
+  // com a data de hoje, o painel desenhou os zeros sem dizer nada, e a aba
+  // inteira parecia "midia parada". Sao coisas OPOSTAS: entrega parada pede
+  // olhar a conta de anuncio; coleta recusada pede olhar a credencial. O
+  // alerta_entrega.py ja sabia distinguir — mas falava num log que ninguem le.
+  // O painel e onde o Rodrigo olha, e ele ficava calado. Agora nao.
+  const midiaErro = (() => {
+    const pp = (M && M.por_periodo) || {};
+    for(const k of Object.keys(pp)){
+      const b = pp[k];
+      if(b && typeof b === 'object' && b._erro) return String(b._erro);
+    }
+    return null;
+  })();
+  const midiaCegoBanner = (() => {
+    if(!midiaErro) return '';
+    const serie = (M && M.serie_diaria_30d) || [];
+    let ultimoOk = null;
+    for(let i = serie.length - 1; i >= 0; i--){
+      const d = serie[i] && serie[i].data;
+      if(d){ ultimoOk = String(d).slice(0,10); break; }
+    }
+    const dm = x => x ? x.slice(8,10) + '/' + x.slice(5,7) : '—';
+    const dias = ultimoOk
+      ? Math.round((Date.now() - new Date(ultimoOk + 'T12:00:00').getTime()) / 86400000)
+      : null;
+    const esc = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const m = midiaErro.match(/"message":"([^"]+)"/);
+    const msg = esc(m ? m[1] : midiaErro.slice(0,220));
+    const checkpoint = /checkpoint/i.test(midiaErro);
+    return `<div style="margin:0 0 14px;padding:12px 14px;background:rgba(239,68,68,.12);border-left:4px solid #ef4444;border-radius:6px;font-size:12.5px;line-height:1.55;color:var(--ink-1)">
+      <strong>🛑 Mídia cega${dias != null ? ` há ${dias} dia${dias === 1 ? '' : 's'}` : ''} — os números desta aba são ausência de DADO, não ausência de entrega.</strong><br>
+      A Meta recusou a coleta: <em>${msg}</em><br>
+      Último dia que entrou de verdade: <strong>${dm(ultimoOk)}</strong>. O arquivo é regravado todo dia com zeros, por isso o relógio do topo parece novo.<br>
+      ${checkpoint
+        ? '<strong>Não é token expirado</strong> — é um aviso de segurança pendente na conta do Facebook. Entre em <strong>facebook.com</strong> no computador, resolva o aviso até o fim, e a coleta volta sozinha no próximo fire. Roteiro clique a clique: <code>docs/meta-checkpoint.md</code>.'
+        : 'Olhe para a <strong>credencial</strong>, não para a conta de anúncio. Roteiro: <code>docs/meta-token.md</code>.'}
+    </div>`;
+  })();
+
   // Aviso quando view não é Escova (algumas seções são só Escova)
   const midiaViewBadge = view === 'escova' ? '' :
     `<div style="margin:10px 0;padding:10px 14px;background:rgba(168,85,247,.10);border-left:4px solid #a855f7;border-radius:6px;font-size:12px;color:var(--ink-2)">
@@ -6935,6 +6977,7 @@ function renderMidias(){
   const nfmt = n => (n||0).toLocaleString('pt-BR');
 
   document.getElementById('midias-status').innerHTML = `<div class="card">
+    ${midiaCegoBanner}
     <h2>📣 Mídia · ano ${new Date().getFullYear()} <span style="font-weight:400;font-size:12px;color:var(--ink-3)">(acumulado desde a abertura)</span></h2>
     <div style="font-size:10.5px;color:var(--ink-3);margin-top:2px;padding:4px 8px;background:var(--surface-2);border-radius:4px;display:inline-block">
       🔍 Unidade renderizada: <strong>${(MID._debug_unidade||'?').toUpperCase()}</strong> · fonte: <code>${(MID._debug_url||'').split('/').slice(-2).join('/')}</code>
