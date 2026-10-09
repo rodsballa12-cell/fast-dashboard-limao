@@ -995,7 +995,9 @@ def peso_janela(ini: date, fim: date, peso_dow):
     return total, dias
 
 
-def calc_meta(caixa, meta, dias_real, dias_total, peso_realizado=None, peso_restante=None):
+def calc_meta(caixa, meta, dias_real, dias_total, peso_realizado=None, peso_restante=None,
+              meta_corrida=None, projecao_forcada=None, metodo_rotulo=None,
+              baixa_confianca_extra=False):
     """KPIs de meta do período, com a meta proporcional aos dias já corridos.
 
     'pct' compara o realizado com a meta do período INTEIRO. No dia 3 de 30 ele
@@ -1016,6 +1018,39 @@ def calc_meta(caixa, meta, dias_real, dias_total, peso_realizado=None, peso_rest
     Também expõe `projecao_metodo` ('ponderado' | 'linear') e
     `baixa_confianca` (dias_real < 3 ou peso_realizado baixo) para o frontend
     marcar visualmente projeções frágeis.
+
+    POR QUE `meta_corrida` EXISTE (08/10/2026)
+    O Rodrigo olhou o quadro de metas e disse "me parecem números irreais".
+    Estava certo, e eram tres defeitos distintos, cada um enganando para um
+    lado diferente:
+
+    1. O PESO DOS DIAS CORRIDOS PARAVA EM ONTEM, O CAIXA INCLUIA HOJE.
+       `peso_realizado` da semana cobria segunda a quarta; `caixa` trazia
+       quinta. Quatro dias de dinheiro divididos por tres dias de meta. Na
+       semana (3 de 7 dias) isso inflou a projecao da Escova para R$ 32.058 —
+       2,05x a melhor semana da historia da loja (R$ 15.630), exigindo
+       R$ 24.526 em sexta+sabado+domingo quando o melhor DIA de sempre foi
+       R$ 7.564. No mes (7 de 31 dias) o mesmo erro quase nao aparecia.
+
+    2. DUAS REGUAS NO MESMO PAINEL. A projecao usava `peso_dow`; o card do dia
+       e a meta do mes usavam `meta_por_data`, que carrega tambem o peso da
+       semana-do-mes. Na Escova as duas quase coincidem. No Spa nao: o
+       `peso_dow` dele e quase achatado (curva modelada, 15 dias de loja), e o
+       mes saiu em 110,1% quando a regua do proprio painel dava 97,6% — uma
+       leitura manda escalar, a outra manda socorrer.
+
+    3. `projecao_pct` E `pct_ate_hoje` ERAM O MESMO NUMERO. Nao por acaso: com
+       projecao = caixa/peso_corrido x peso_total, projecao/meta reduz
+       exatamente a caixa/meta_ate_hoje. O painel mostrava uma conta duas
+       vezes com nomes diferentes — e ver o mesmo numero em dois lugares faz
+       parecer confirmado. Agora `projecao_e_mesma_conta` diz quando e o caso.
+
+    Com `meta_corrida` (soma de `meta_por_data` dos dias ja corridos INCLUINDO
+    hoje) os dois lados da divisao passam a cobrir o mesmo conjunto de dias e a
+    usar a mesma regua. `projecao_forcada` existe para o ANO, onde nenhuma
+    media serve: a Escova saiu de R$ 731/dia em julho para R$ 2.067 em outubro,
+    e qualquer media olhando para tras de uma loja que triplicou subestima — o
+    painel dizia 68,6% do ano quando o ritmo de hoje aponta 91,5%.
     """
     pct = caixa / max(meta, 1) * 100
     falta = meta - caixa
@@ -1023,30 +1058,47 @@ def calc_meta(caixa, meta, dias_real, dias_total, peso_realizado=None, peso_rest
     necessario = falta / max(dias_rest, 1) if dias_rest else 0
     ritmo = caixa / max(dias_real, 1)
 
-    usa_ponderado = (peso_realizado is not None and peso_realizado > 0
-                     and peso_restante is not None)
-    if usa_ponderado:
+    usa_corrida = meta_corrida is not None and meta_corrida > 0
+    usa_ponderado = (not usa_corrida and peso_realizado is not None
+                     and peso_realizado > 0 and peso_restante is not None)
+    if usa_corrida:
+        # A conta honesta: "quanto do que era esperado ate agora eu fiz" x
+        # "tudo o que e esperado na janela". Mesmos dias nos dois lados.
+        proj = caixa / meta_corrida * meta
+        metodo = metodo_rotulo or "meta_por_data"
+    elif usa_ponderado:
         proj = caixa + (caixa / peso_realizado) * peso_restante
         metodo = "ponderado"
     else:
         proj = ritmo * dias_total
         metodo = "linear"
+    if projecao_forcada is not None:
+        proj = projecao_forcada
+        metodo = metodo_rotulo or "ritmo_do_mes_corrente"
 
     # Baixa confiança: menos de 3 dias de amostra OU peso realizado representa
     # menos de 15% do peso total do período. Primeiros dias de mês geralmente
     # caem em DOW fracos (segunda-terça) ou fortes (sábado) e distorcem.
     peso_total = (peso_realizado or 0) + (peso_restante or 0)
     pct_peso_corrido = (peso_realizado / peso_total * 100) if peso_total > 0 else None
-    baixa_confianca = dias_real < 3 or (
-        pct_peso_corrido is not None and pct_peso_corrido < 15
-    )
+    if usa_corrida:
+        # Menos de 15% da meta da janela ja cobrada = amostra curta demais.
+        fatia = meta_corrida / max(meta, 1) * 100
+        baixa_confianca = dias_real < 3 or fatia < 15
+    else:
+        baixa_confianca = dias_real < 3 or (
+            pct_peso_corrido is not None and pct_peso_corrido < 15
+        )
+    baixa_confianca = bool(baixa_confianca or baixa_confianca_extra)
 
     # Meta proporcional. Sem dias corridos ou sem dias totais não há fatia a
     # cobrar, e devolver 0 aqui produziria "realizado infinitamente acima".
     # Com peso disponível, a meta_ate_hoje usa fatia de PESO (não de dias):
     # mais justa quando o período corrido pegou DOWs fracos ou fortes.
     if dias_real > 0 and dias_total > 0:
-        if usa_ponderado and peso_total > 0:
+        if usa_corrida:
+            meta_ate_hoje = meta_corrida
+        elif usa_ponderado and peso_total > 0:
             meta_ate_hoje = meta * peso_realizado / peso_total
         else:
             meta_ate_hoje = meta * dias_real / dias_total
@@ -1062,6 +1114,10 @@ def calc_meta(caixa, meta, dias_real, dias_total, peso_realizado=None, peso_rest
         "ritmo_dia": brl_round(ritmo), "projecao": brl_round(proj),
         "projecao_pct": round(proj / max(meta, 1) * 100, 1),
         "projecao_metodo": metodo,
+        # Quando a projecao e so o ritmo-ate-agora aplicado a janela inteira,
+        # `projecao_pct` e `pct_ate_hoje` sao a MESMA conta. Dizer isso evita
+        # que o leitor trate os dois como confirmacao um do outro.
+        "projecao_e_mesma_conta": bool(usa_corrida and projecao_forcada is None),
         "baixa_confianca": bool(baixa_confianca),
         "peso_realizado": round(peso_realizado, 4) if peso_realizado is not None else None,
         "peso_restante": round(peso_restante, 4) if peso_restante is not None else None,
@@ -2397,9 +2453,18 @@ def main():
     # Mes corrente: dias ja fechados = tudo ate ontem; "resto" = hoje em diante.
     p_real_mes = _peso_corridos_mes(hoje.year, hoje.month, hoje.day - 1) if hoje.day > 1 else 0.0
     p_rest_mes = _peso_restantes_mes(hoje.year, hoje.month, hoje.day)
+    # A fatia da meta do mes que cabia aos dias ja corridos, HOJE INCLUIDO, na
+    # mesma regua do card do dia (`meta_por_data`, que carrega dow + peso da
+    # semana-do-mes). O `peso_dow` sozinho e outra regua: na Escova as duas
+    # quase coincidem, no Spa nao — e foi por isso que o mes do Spa aparecia em
+    # 110,1% quando a regua do proprio painel dava 97,6%.
+    meta_mes_corrida = round(sum(v for k, v in meta_por_data.items()
+                                 if k.year == hoje.year and k.month == hoje.month
+                                 and k <= hoje), 2)
     meta_mensal = calc_meta(a_mensal["kpis"]["caixa"], META_MENSAL,
                             a_mensal["kpis"]["dias_op"], dias_op_mes_real,
-                            peso_realizado=p_real_mes, peso_restante=p_rest_mes)
+                            peso_realizado=p_real_mes, peso_restante=p_rest_mes,
+                            meta_corrida=meta_mes_corrida)
 
     # Meta do DIA: valor específico da data (respeita dow + peso da semana-do-mês).
     meta_dia_valor = meta_por_data.get(hoje, 0.0) if opera_no_dia(hoje) else 0.0
@@ -2466,6 +2531,12 @@ def main():
 
     dias_op_sem_real = sum(1 for i in range(7) if opera_no_dia(seg + timedelta(days=i)))
     meta_sem_valor = 0.0
+    # ...e, no mesmo laco, a fatia que cabia aos dias JA CORRIDOS, incluindo
+    # hoje. Antes a projecao dividia o caixa de quinta pelo peso de segunda a
+    # quarta; a semana da Escova saiu projetada em R$ 32.058 contra um recorde
+    # historico de R$ 15.630. Os dois lados da divisao tem que cobrir os
+    # mesmos dias.
+    meta_sem_corrida = 0.0
     for i in range(7):
         d = seg + timedelta(days=i)
         if not opera_no_dia(d):
@@ -2474,20 +2545,20 @@ def main():
         # (respeita peso_semana_do_mes e caixa_medio_dow). Senao, rateia flat
         # pelo mes daquele dia.
         if d.year == hoje.year and d.month == hoje.month and meta_por_data.get(d, 0.0) > 0:
-            meta_sem_valor += meta_por_data[d]
+            _v = meta_por_data[d]
         else:
             meta_mes_d = _meta_mensal_do_mes(d.year, d.month)
             dias_tipic_d = _dias_op_tipicos_mes(d.year, d.month)
             # Peso por dow: se caixa_medio_dow tem info, usa proporcional; senao flat.
             _dow = d.weekday()
+            _v = meta_mes_d / max(dias_tipic_d, 1)
             if sum(caixa_medio_dow.values()) > 0:
                 total_dow_mes = sum(caixa_medio_dow[i] * _dias_op_tipicos_dow(d.year, d.month, i) for i in range(7))
                 if total_dow_mes > 0:
-                    meta_sem_valor += meta_mes_d * caixa_medio_dow[_dow] / total_dow_mes
-                else:
-                    meta_sem_valor += meta_mes_d / max(dias_tipic_d, 1)
-            else:
-                meta_sem_valor += meta_mes_d / max(dias_tipic_d, 1)
+                    _v = meta_mes_d * caixa_medio_dow[_dow] / total_dow_mes
+        meta_sem_valor += _v
+        if d <= hoje:
+            meta_sem_corrida += _v
     # Semana: peso ate ontem (fechados) e de hoje em diante (restantes)
     def _peso_dias(ini_d: date, fim_d: date):
         s = 0.0; d = ini_d
@@ -2501,7 +2572,8 @@ def main():
     p_rest_sem = _peso_dias(max(hoje, seg), dom)
     meta_sem = calc_meta(a_semanal["kpis"]["caixa"], round(meta_sem_valor, 2),
                          a_semanal["kpis"]["dias_op"], dias_op_sem_real,
-                         peso_realizado=p_real_sem, peso_restante=p_rest_sem)
+                         peso_realizado=p_real_sem, peso_restante=p_rest_sem,
+                         meta_corrida=round(meta_sem_corrida, 2))
 
     # META ANO: soma das metas mensais dos 12 meses. Cada mes usa
     # META_MENSAL_POR_MES[YYYY-MM] se definido; senao META_MENSAL (fallback).
@@ -2539,9 +2611,37 @@ def main():
     ini_anual_eff = max(data_abertura, date(hoje.year, 1, 1))
     p_real_ano = _peso_dias(ini_anual_eff, min(ontem, fim_ano_dt)) if ontem >= ini_anual_eff else 0.0
     p_rest_ano = _peso_dias(max(hoje, ini_anual_eff), fim_ano_dt)
+
+    # O ANO NAO PODE SER PROJETADO POR MEDIA — de nenhum tipo.
+    # A Escova fez R$ 731/dia em julho, R$ 1.321 em agosto, R$ 1.708 em
+    # setembro e R$ 2.067 em outubro: triplicou. Qualquer media dos dias ja
+    # corridos carrega a rampa de abertura dentro dela, e por isso o painel
+    # dizia 68,6% do ano quando o ritmo de outubro aponta 91,5%. Pior: usar a
+    # meta corrida do ano tambem nao serve, porque julho tem meta cheia de
+    # R$ 60.000 contra R$ 6.577 realizados em 9 dias de loja.
+    #
+    # A unica leitura honesta e: o que ja esta no caixa, mais o que falta de
+    # meta no ano multiplicado pelo ritmo do MES CORRENTE (o unico periodo que
+    # descreve a loja de hoje).
+    meta_ano_corrida = round(
+        sum(_meta_mes_do_ano(hoje.year, m) for m in range(1, hoje.month))
+        + meta_mes_corrida, 2)
+    _ratio_mes = ((a_mensal["kpis"]["caixa"] / meta_mes_corrida)
+                  if meta_mes_corrida > 0 else None)
+    _proj_ano = (a_anual["kpis"]["caixa"]
+                 + max(meta_ano_valor - meta_ano_corrida, 0) * _ratio_mes
+                 ) if _ratio_mes else None
+    # Loja com menos de 60 dias nao tem ritmo, tem estreia: o Spa projetava
+    # 111,1% do ano a partir de 14 dias que incluiam pacote de inauguracao.
+    _nova = bool(_data_inaug and (hoje - _data_inaug).days < 60)
     meta_ano = (calc_meta(a_anual["kpis"]["caixa"], meta_ano_valor,
                           dias_op_realizados, dias_op_total,
-                          peso_realizado=p_real_ano, peso_restante=p_rest_ano)
+                          peso_realizado=p_real_ano, peso_restante=p_rest_ano,
+                          meta_corrida=meta_ano_corrida,
+                          projecao_forcada=(brl_round(_proj_ano)
+                                            if _proj_ano is not None else None),
+                          metodo_rotulo="ritmo_do_mes_corrente",
+                          baixa_confianca_extra=_nova)
                 if meta_ano_valor > 0 else {})
 
     # === Ticket meta OPERACIONAL: derivado da meta de caixa e das visitas projetadas ===
