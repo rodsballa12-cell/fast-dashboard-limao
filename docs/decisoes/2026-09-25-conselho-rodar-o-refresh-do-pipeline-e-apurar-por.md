@@ -3,7 +3,7 @@
 **Data:** 2026-09-25 · **Hora do Conselho:** 22:30
 **Origem:** Conselho noturno · Sincronizada automaticamente pelo
 workflow `conselho_sync.yml`
-**Status inicial:** pendente (aguarda o Rodrigo aprovar)
+**Status:** aprovada pelo Rodrigo em 2026-10-09
 
 ## Em jogo
 
