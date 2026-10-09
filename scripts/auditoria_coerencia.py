@@ -247,6 +247,56 @@ def conferir_calendario_e_metas(achados, esc, spa, cons):
             achados.append(("erro", f"Meta {aba}: saldo e percentual até hoje apontam para lados opostos"))
 
 
+def conferir_conselho_sincronizado(achados):
+    """A ata foi escrita — mas o painel aprendeu?
+
+    Em 08/10/2026 o `historico_conselhos` dos tres paineis parava em 20/09,
+    dezoito dias atras, enquanto `docs/atas/` tinha onze conselhos: 14, 15,
+    16, 18, 19, 20, 21, 23, 25, 28 e 29 de setembro. **Oito dos onze nunca
+    chegaram ao artefato.**
+
+    A causa e mecanica: o `conselho_sync.yml` dispara em push para
+    `Briefings/**-conselho.md`. Quem rodou os conselhos de 21 a 29/09 gravou a
+    ata em `docs/atas/` e pulou a copia em `Briefings/` — o workflow nunca
+    foi acionado, e o painel seguiu mostrando o conselho de 20/09 como se
+    fosse o ultimo. Nada ficou vermelho. O Rodrigo abria o painel e lia uma
+    reuniao de tres semanas atras.
+
+    Mesma familia do resto deste arquivo: "a ata foi escrita" nao e "o painel
+    aprendeu", do mesmo jeito que "o detector detectou" nao e "alguem foi
+    avisado".
+    """
+    atas = sorted(x.name[:10] for x in (REPO / "docs" / "atas").glob("*-conselho.md"))
+    if not atas:
+        return
+    ultima_ata = atas[-1]
+
+    brief = {x.name[:10] for x in (REPO / "Briefings").glob("*-conselho*.md")}
+    sem_briefing = [a for a in atas if a not in brief]
+
+    mid = carregar("data/midias_sociais.json") or {}
+    hist = [h.get("data") for h in (mid.get("historico_conselhos") or [])
+            if isinstance(h, dict) and h.get("data")]
+    ultimo_painel = max(hist) if hist else None
+
+    if ultimo_painel is None:
+        achados.append(("erro",
+            f"painel sem `historico_conselhos` nenhum, e docs/atas/ tem "
+            f"{len(atas)} conselho(s) — o ultimo e de {ultima_ata}."))
+    elif ultimo_painel < ultima_ata:
+        achados.append(("erro",
+            f"o painel mostra o conselho de {ultimo_painel} como o ultimo, mas "
+            f"a ata mais nova em docs/atas/ e de {ultima_ata}. "
+            f"{len(sem_briefing)} ata(s) nunca viraram copia em Briefings/, "
+            f"entao o conselho_sync.yml nunca rodou para elas. Quem abre o "
+            f"painel esta lendo uma reuniao velha."))
+    elif sem_briefing:
+        achados.append(("aviso",
+            f"{len(sem_briefing)} ata(s) de conselho sem copia em Briefings/ "
+            f"({', '.join(sem_briefing[-4:])}{'...' if len(sem_briefing) > 4 else ''}) "
+            f"— o painel esta em dia, mas essas nao passaram pela sincronia."))
+
+
 def main() -> int:
     achados: list[tuple[str, str]] = []
 
@@ -293,6 +343,8 @@ def main() -> int:
             "Escova: bloco `balcao_vendedor` ausente ou vazio — o card "
             "\u0022Balc\u00e3o por pessoa\u0022 n\u00e3o vai renderizar e as metas nominais "
             "da recep\u00e7\u00e3o ficam sem acompanhamento."))
+
+    conferir_conselho_sincronizado(achados)
 
     conferir_frescor(achados, {
         "data/dashboard_data.json": dash["escova"],
