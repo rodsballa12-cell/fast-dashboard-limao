@@ -1151,5 +1151,29 @@
     "spa": "2026-10-08T20:44:22-03:00",
     "fonte_escova": "Meta Graph API v20.0 · refresh diario automatico · ultimo manual/curado 2026-10-08T14:24:59-03:00",
     "fonte_spa": "Meta Graph API v20.0 · refresh diario automatico · ultimo manual/curado 2026-10-08T14:21:54-03:00"
+  },
+  "funil_conversao": {
+    "apuracao_automatica": {
+      "gerado_em": "2026-10-08T21:24:06-03:00",
+      "janela": "desde a abertura de cada loja",
+      "metodo": "Receita de serviço do Trinks × fatia de clientes que disseram Instagram/Facebook em \"como nos conheceu\", dividido pela verba de mídia. Não é ROAS da Meta: a Meta não tem evento de valor nesta conta.",
+      "investimento": 11106.98,
+      "receita_atribuida_extrapolada": 34856.84,
+      "roas_extrapolado": 3.14,
+      "por_unidade": {
+        "escova": 3.96,
+        "spa": 0.32
+      },
+      "ressalvas": [
+        "Este 3.14x não descreve nenhuma das duas lojas: a Escova está em 3.96x e o Spa em 0.32x. Leia por unidade antes de decidir verba.",
+        "\"Instagram\" no Trinks não separa pago de orgânico — parte da receita atribuída pode ter vindo do perfil, não do anúncio."
+      ]
+    },
+    "roas_estimado": {
+      "valor": 3.14,
+      "calculo": "R$ 34.856,84 de receita atribuída à Meta nas duas lojas ÷ R$ 11.106,98 de verba = 3.14x.",
+      "confianca": "Escova 3.96x (cobertura 72.0%) e Spa 0.32x (cobertura 60.0%). A soma esconde a diferença — decida por loja.",
+      "_fonte": "scripts/funil_roas.py (automático)"
+    }
   }
 }

@@ -119,6 +119,21 @@ jobs:
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
         run: python scripts/refresh_midias.py
 
+      # ROAS das duas lojas, recalculado todo dia.
+      #
+      # Em 08/10/2026 o Rodrigo perguntou o ROAS da midia do Spa e nao havia:
+      # o bloco `funil_conversao` do Spa ainda dizia "ativa quando a primeira
+      # campanha rodar + Trinks SPA subir (estabelecimentoId pendente)",
+      # enquanto a campanha rodava desde 13/09 e o Trinks do Spa estava no ar
+      # desde a abertura. E o ROAS da Escova, escrito a mao, ainda era o de
+      # agosto em outubro. Numero curado envelhece calado.
+      #
+      # Roda depois da coleta (precisa do gasto fresco) e antes do commit, para
+      # o bloco viajar no mesmo push que o resto da midia.
+      - name: ROAS atribuido no balcao (Escova + SPA + Consolidado)
+        if: steps.recencia.outputs.skip != 'true'
+        run: python scripts/funil_roas.py
+
       - name: Refresh Google Business Profile
         if: steps.recencia.outputs.skip != 'true'
         # Rota Supermetrics REST API (plano Connect + GMB add-on).

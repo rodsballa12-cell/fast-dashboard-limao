@@ -5195,14 +5195,117 @@
     }
   },
   "funil_conversao": {
-    "gasto": 0,
-    "impressoes": 0,
-    "clicks": 0,
-    "conversas_msg": 0,
-    "novos_clientes_trinks": 0,
-    "cpa_msg": null,
+    "gasto": 2509.38,
+    "impressoes": 184486,
+    "clicks": 3092,
+    "conversas_msg": 407,
+    "novos_clientes_trinks": 51,
+    "cpa_msg": 6.17,
     "cac_real": null,
-    "mensagem": "Funil ativa quando primeira campanha SPA rodar + Trinks SPA subir (estabelecimentoId pendente)."
+    "apuracao_automatica": {
+      "gerado_em": "2026-10-08T21:24:06-03:00",
+      "janela": "desde a abertura (2026-09-25 a 2026-10-08 · 15 dias operados)",
+      "metodo": "Receita de serviço do Trinks × fatia de clientes que disseram Instagram/Facebook em \"como nos conheceu\", dividido pela verba de mídia. Não é ROAS da Meta: a Meta não tem evento de valor nesta conta.",
+      "investimento": 2509.38,
+      "receita_servico_total": 11251.9,
+      "atribuicao": {
+        "cobertura_pct": 60.0,
+        "respondentes": 42,
+        "receita_respondida": 6410.9,
+        "sem_resposta_clientes": 28,
+        "sem_resposta_receita": 4841.0
+      },
+      "meta_share_respondentes_pct": 7.14,
+      "receita_atribuida_medida": 377.0,
+      "receita_atribuida_extrapolada": 803.39,
+      "roas_medido": 0.15,
+      "roas_extrapolado": 0.32,
+      "confianca": "Media",
+      "cenarios": [
+        {
+          "cenario": "Piso — só o que foi medido (3 cliente(s) de 42)",
+          "receita_atribuida": 377.0,
+          "roas": 0.15
+        },
+        {
+          "cenario": "📊 Instagram + Facebook (7.14% de quem respondeu)",
+          "receita_atribuida": 803.39,
+          "roas": 0.32,
+          "recomendado": true
+        },
+        {
+          "cenario": "Teto absurdo — os 28 sem resposta todos da Meta",
+          "receita_atribuida": 5218.0,
+          "roas": 2.08
+        }
+      ],
+      "ressalvas": [
+        "\"Instagram\" no Trinks não separa pago de orgânico — parte da receita atribuída pode ter vindo do perfil, não do anúncio.",
+        "28 cliente(s) não disseram de onde vieram, carregando R$ 4.841,00. O cenário recomendado espalha esses no mesmo mix de quem respondeu.",
+        "A verba inclui campanha de vaga e post impulsionado, que nunca tentaram trazer cliente. Veja `meta_ads.vagas_30d` e `top_campanhas_30d` para separar."
+      ]
+    },
+    "janela_contadores": "desde a abertura (2026-09-25 a 2026-10-08 · 15 dias operados)",
+    "nota_cac": "Não existe CAC real: nem todo cliente novo veio de mídia e o salão não tem agendamento online que ligue o anúncio à visita. O que existe é o custo por conversa, acima, e o ROAS atribuído no balcão.",
+    "roas_estimado": {
+      "valor": 0.33,
+      "calculo": "7.50% dos 40 clientes que responderam \"como nos conheceu\" disseram Instagram ou Facebook. Aplicado à receita de serviço de R$ 10.953,90: R$ 821,54 ÷ R$ 2.509,38 investido = 0.33x.",
+      "confianca": "Media — cobertura de 58.8% das fichas. \"Instagram\" no Trinks não separa pago de orgânico — parte da receita atribuída pode ter vindo do perfil, não do anúncio.",
+      "_fonte": "scripts/funil_roas.py (automático)"
+    },
+    "cenarios_roas": [
+      {
+        "cenario": "Piso — só o que foi medido (3 cliente(s) de 40)",
+        "receita_atribuida": 377.0,
+        "roas": 0.15
+      },
+      {
+        "cenario": "📊 Instagram + Facebook (7.50% de quem respondeu)",
+        "receita_atribuida": 821.54,
+        "roas": 0.33,
+        "recomendado": true
+      },
+      {
+        "cenario": "Teto absurdo — os 28 sem resposta todos da Meta",
+        "receita_atribuida": 5218.0,
+        "roas": 2.08
+      }
+    ],
+    "atribuicao_medida": {
+      "fonte": "Trinks · campo comoNosConheceu, todos os clientes desde a abertura",
+      "coorte": 68,
+      "responderam": 40,
+      "cobertura_pct": 58.8,
+      "resumo": "40 de 68 clientes informaram o canal na recepção; 7.50% vieram de Instagram/Facebook.",
+      "mix": [
+        {
+          "canal": "Indicação Amigo",
+          "n": 15,
+          "share_pct": 37.5
+        },
+        {
+          "canal": "Passou Em Frente",
+          "n": 13,
+          "share_pct": 32.5
+        },
+        {
+          "canal": "Indicação Familiar",
+          "n": 6,
+          "share_pct": 15.0
+        },
+        {
+          "canal": "Outra Unidade",
+          "n": 3,
+          "share_pct": 7.5
+        },
+        {
+          "canal": "Instagram",
+          "n": 3,
+          "share_pct": 7.5
+        }
+      ],
+      "_fonte": "scripts/funil_roas.py (automático)"
+    }
   },
   "historico_conselhos": [
     {

@@ -297,6 +297,48 @@ def conferir_conselho_sincronizado(achados):
             f"— o painel esta em dia, mas essas nao passaram pela sincronia."))
 
 
+def conferir_funil_roas(achados):
+    """O ROAS existe, e de quando?
+
+    O bloco `funil_conversao` do Spa passou da abertura ate 08/10/2026 com
+    todos os contadores em zero e uma mensagem dizendo "ativa quando a
+    primeira campanha rodar" — a campanha rodava desde 13/09. Ninguem viu
+    porque zero nao chama atencao. O da Escova existia, mas era de agosto,
+    escrito a mao: em outubro ainda dizia 4,72x de agosto.
+
+    Agora `scripts/funil_roas.py` reescreve `apuracao_automatica` todo dia.
+    Se ele parar de rodar, isto tem que doer aqui — e o mesmo motivo das
+    outras checagens de bloco derivado deste arquivo.
+    """
+    for rel, nome in (("data/midias_sociais.json", "Escova"),
+                      ("data/spa/midias_sociais.json", "Spa"),
+                      ("data/consolidado/midias_sociais.json", "Consolidado")):
+        mid = carregar(rel)
+        if not mid:
+            continue
+        ap = ((mid.get("funil_conversao") or {}).get("apuracao_automatica") or {})
+        if not ap.get("roas_extrapolado"):
+            achados.append(("aviso",
+                f"{nome}: `funil_conversao.apuracao_automatica` ausente ou sem "
+                f"ROAS — scripts/funil_roas.py nao rodou. O card de ROAS vai "
+                f"mostrar o ultimo numero escrito a mao, que pode ser de meses atras."))
+            continue
+
+        g = str(ap.get("gerado_em") or "")[:10]
+        hoje = str((carregar("data/dashboard_data.json") or {}).get("hoje") or "")[:10]
+        if g and hoje and g < hoje:
+            achados.append(("aviso",
+                f"{nome}: o ROAS atribuido e de {g} e o painel e de {hoje} — "
+                f"a verba de hoje nao entrou nessa conta."))
+
+        cob = (ap.get("atribuicao") or {}).get("cobertura_pct")
+        if cob is not None and cob < 60:
+            achados.append(("aviso",
+                f"{nome}: so {cob}% das fichas dizem de onde o cliente veio. "
+                f"Abaixo de 60% o ROAS vira uma faixa larga em vez de um "
+                f"numero — a recepcao precisa perguntar em toda ficha nova."))
+
+
 def main() -> int:
     achados: list[tuple[str, str]] = []
 
@@ -344,6 +386,7 @@ def main() -> int:
             "\u0022Balc\u00e3o por pessoa\u0022 n\u00e3o vai renderizar e as metas nominais "
             "da recep\u00e7\u00e3o ficam sem acompanhamento."))
 
+    conferir_funil_roas(achados)
     conferir_conselho_sincronizado(achados)
 
     conferir_frescor(achados, {
