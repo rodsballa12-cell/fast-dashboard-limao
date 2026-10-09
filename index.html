@@ -20,27 +20,57 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script>
-// Auto-reload quando detectar build novo (Rodrigo, 03/10): o cache do
-// navegador segurava o index.html antigo e as mudanças de codigo nao
-// apareciam. Agora o painel busca data/version.json a cada carga; se o
-// build gravado difere do visto na ultima visita, forca reload uma vez.
-(async () => {
+// Auto-reload v2 (Rodrigo, 09/10): 'painel nao atualizou automaticamente
+// em nenhum horario'. Antes rodava SO na primeira carga; se Rodrigo deixa
+// o painel aberto a tarde toda, novos builds nao eram detectados.
+// Agora:
+//   1) check inicial no carregamento (como antes)
+//   2) POLLING a cada 90s enquanto o painel esta aberto
+//   3) check quando a aba volta a ser visivel (visibilitychange)
+//   4) reload AUTOMATICO quando detectar build novo (session_build_shown)
+//      previne loop porque gravamos o build visto ANTES do reload)
+const FAST_BUILD_CHECK_URL = 'data/version.json';
+async function _checkFastBuild() {
   try {
-    const r = await fetch('data/version.json?_=' + Date.now(), {cache: 'no-store'});
+    const r = await fetch(FAST_BUILD_CHECK_URL + '?_=' + Date.now(), {cache: 'no-store'});
     if (!r.ok) return;
     const v = await r.json();
+    if (!v.build) return;
     const stored = localStorage.getItem('fast_build');
-    if (stored && v.build && stored !== v.build) {
+    // Primeira visita: so grava, nao recarrega
+    if (!stored) {
       localStorage.setItem('fast_build', v.build);
-      // reload sem usar cache; o loop e evitado porque gravamos ANTES
-      location.replace(location.pathname + '?v=' + v.build);
+      window.FAST_BUILD = v.build;
+      window.FAST_BUILD_TS = v.ts || '';
       return;
     }
-    if (v.build) localStorage.setItem('fast_build', v.build);
-    window.FAST_BUILD = v.build || '';
+    // Build mudou: salva o novo e recarrega SEM CACHE
+    if (stored !== v.build) {
+      localStorage.setItem('fast_build', v.build);
+      // Evita loop: se ja estamos na URL com este build, para
+      try {
+        const u = new URL(location.href);
+        if (u.searchParams.get('v') === v.build) {
+          window.FAST_BUILD = v.build;
+          return;
+        }
+      } catch(e) {}
+      // Reload forcando bypass de cache
+      location.replace(location.pathname + '?v=' + encodeURIComponent(v.build));
+      return;
+    }
+    window.FAST_BUILD = v.build;
     window.FAST_BUILD_TS = v.ts || '';
   } catch (e) {}
-})();
+}
+// 1) check inicial
+_checkFastBuild();
+// 2) polling a cada 90 segundos enquanto painel aberto
+setInterval(_checkFastBuild, 90 * 1000);
+// 3) check quando a aba volta a ser visivel
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) _checkFastBuild();
+});
 </script>
 <style>
   /* Fintech Modern · light-first, dark opcional via prefers-color-scheme */
