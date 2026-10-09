@@ -422,7 +422,12 @@ def analisar(agend, transac, ini: date, fim: date):
     # essas formas so aparecem depois pra amortizar a movimentacao interna
     # (positivas = consumo de credito; negativas = credito nascendo com a venda).
     # Ignorar as duas mantem "caixa" = "Total Recebido" que o Trinks exibe.
-    FORMAS_INTERNAS = ("crédito de cliente", "credito de cliente", "pré-pago", "pre-pago", "voucher")
+    # Rodrigo (09/10): Vale-Presente tambem e movimentacao interna — o dinheiro
+    # entrou quando o vale foi vendido (via cartao/pix); hoje aparece como
+    # 'Vale-Presente' no uso, sem novo dinheiro de verdade. Antes somava e
+    # inflava o caixa do SPA (ex: R$ 99 hoje 09/10 que foi vale usado).
+    FORMAS_INTERNAS = ("crédito de cliente", "credito de cliente", "pré-pago", "pre-pago",
+                       "voucher", "vale-presente", "vale presente")
     for t in tr:
         for fp in (t.get("formasPagamentos") or []):
             v = float(fp.get("valor") or 0)
