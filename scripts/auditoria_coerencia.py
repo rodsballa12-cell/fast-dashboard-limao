@@ -266,17 +266,25 @@ def conferir_conselho_sincronizado(achados):
     aprendeu", do mesmo jeito que "o detector detectou" nao e "alguem foi
     avisado".
     """
-    atas = sorted(x.name[:10] for x in (REPO / "docs" / "atas").glob("*-conselho.md"))
+    todas = sorted((REPO / "docs" / "atas").glob("*-conselho.md"))
+    # Só conta ata de reunião de verdade (com decisões). "Não consegui rodar"
+    # não ensina nada ao painel — mas é avisado à parte, abaixo.
+    atas = [x.name[:10] for x in todas if re.search(
+        r"DECIS[OÕ]ES\s+DO\s+RODRIGO", x.read_text(encoding="utf-8", errors="replace"), re.I)]
+    falhas = [x.name[:10] for x in todas if x.name[:10] > (atas[-1] if atas else "")]
+    if falhas:
+        achados.append(("aviso",
+            f"o Conselho de {', '.join(falhas[-3:])} nao rodou (a ata so registra a falha) — "
+            f"a ultima reuniao de verdade e de {atas[-1] if atas else 'nunca'}. "
+            f"Ver _execucoes.log no vault: costuma ser git travado no PC."))
     if not atas:
         return
     ultima_ata = atas[-1]
 
-    brief = {x.name[:10] for x in (REPO / "Briefings").glob("*-conselho*.md")}
-    sem_briefing = [a for a in atas if a not in brief]
-
     mid = carregar("data/midias_sociais.json") or {}
     hist = [h.get("data") for h in (mid.get("historico_conselhos") or [])
             if isinstance(h, dict) and h.get("data")]
+    sem_briefing = [a for a in atas if a not in hist]
     ultimo_painel = max(hist) if hist else None
 
     if ultimo_painel is None:
@@ -287,14 +295,13 @@ def conferir_conselho_sincronizado(achados):
         achados.append(("erro",
             f"o painel mostra o conselho de {ultimo_painel} como o ultimo, mas "
             f"a ata mais nova em docs/atas/ e de {ultima_ata}. "
-            f"{len(sem_briefing)} ata(s) nunca viraram copia em Briefings/, "
-            f"entao o conselho_sync.yml nunca rodou para elas. Quem abre o "
+            f"{len(sem_briefing)} ata(s) nunca passaram pelo conselho_sync.yml. Quem abre o "
             f"painel esta lendo uma reuniao velha."))
     elif sem_briefing:
         achados.append(("aviso",
-            f"{len(sem_briefing)} ata(s) de conselho sem copia em Briefings/ "
+            f"{len(sem_briefing)} ata(s) de conselho que nunca entraram no painel "
             f"({', '.join(sem_briefing[-4:])}{'...' if len(sem_briefing) > 4 else ''}) "
-            f"— o painel esta em dia, mas essas nao passaram pela sincronia."))
+            f"— o painel esta em dia com a ultima, mas essas ficaram de fora."))
 
 
 def conferir_funil_roas(achados):

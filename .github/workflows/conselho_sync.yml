@@ -2,7 +2,7 @@ name: Conselho Sync (auto)
 
 # Dispara sempre que um briefing de Conselho eh commitado em Briefings/.
 # Le o markdown, extrai as 3 decisoes e aplica no dashboard (Escova + SPA
-# + Consolidado) marcando cada decisao como "aprovada". Grava ata +
+# + Consolidado) marcando cada decisao como "pendente" (o Rodrigo aprova via /sincronizar). Grava ata +
 # decisoes individuais em docs/. Se o Rodrigo mudar de ideia, rodar
 # /sincronizar manualmente sobrescreve os status.
 
@@ -12,6 +12,7 @@ on:
       - main
     paths:
       - 'Briefings/**-conselho.md'
+      - 'docs/atas/*-conselho.md'
   workflow_dispatch:
     inputs:
       briefing:
@@ -75,7 +76,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          latest="$(ls -t Briefings/*-conselho.md 2>/dev/null | head -1)"
+          latest="$(ls Briefings/*-conselho.md docs/atas/*-conselho.md 2>/dev/null | xargs -n1 basename | sort | tail -1)"
           if [ -z "$latest" ]; then
             echo "Sem briefing pra sincronizar."
             exit 0
@@ -92,8 +93,8 @@ jobs:
           {
             printf 'conselho %s: sincroniza dashboard (auto)\n\n' "$data"
             printf 'Aplicado pelo workflow conselho_sync.yml a partir de Briefings/%s-conselho.md.\n' "$data"
-            printf 'Todas as decisoes viraram recomendacao status=aprovada.\n'
-            printf 'Se algum status estiver errado, rodar /sincronizar manualmente pra sobrescrever.\n'
+            printf 'Todas as decisoes entraram como status=pendente.\n'
+            printf 'Rodar /sincronizar para aprovar, recusar ou reprogramar cada uma.\n'
           } > /tmp/commit-msg.txt
 
           git commit -F /tmp/commit-msg.txt

@@ -6686,6 +6686,39 @@
       "detalhe": "LICENSE_DATA_SOURCE_NOT_AVAILABLE reconfirmado em 05/10 — o conector Facebook Page Insights não está disponível no plano atual.",
       "acao": "Checar com o Supermetrics se é upgrade de plano ou reconexão de fonte.",
       "sev": "info"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-09-25] **Rodar o refresh do pipeline e apurar por que ficou 7 dias parado.** Em jogo: toda decisão de hoje — inclusive as duas abaixo — está sendo tomada com dado de uma semana atrás; se nada for feito, a abertura do Spa fica sem nenhum registro histórico, e esse dia não se repete. Executa: sessão do PC (só ela alcança os scripts locais), com Operação conferindo o resultado.",
+      "detalhe": "**Rodar o refresh do pipeline e apurar por que ficou 7 dias parado.** Em jogo: toda decisão de hoje — inclusive as duas abaixo — está sendo tomada com dado de uma semana atrás; se nada for feito, a abertura do Spa fica sem nenhum registro histórico, e esse dia não se repete. Executa: sessão do PC (só ela alcança os scripts locais), com Operação conferindo o resultado.",
+      "acao": "Executor a definir.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-09-25-conselho-rodar-o-refresh-do-pipeline-e-apurar-por.md",
+      "origem_conselho": "2026-09-25"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-09-25] **Cadastrar o `trinks_estabelecimento_id` do Spa.** Pendente desde 14/09; hoje é o dia em que essa lacuna custa caro — sem ela, Operação, Pessoas e Financeiro ficam cegos para o próprio dia de abertura, para sempre. Executa: Rodrigo, no painel Trinks, com Pessoas e Operação conferindo.",
+      "detalhe": "**Cadastrar o `trinks_estabelecimento_id` do Spa.** Pendente desde 14/09; hoje é o dia em que essa lacuna custa caro — sem ela, Operação, Pessoas e Financeiro ficam cegos para o próprio dia de abertura, para sempre. Executa: Rodrigo, no painel Trinks, com Pessoas e Operação conferindo.",
+      "acao": "Executor a definir.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-09-25-conselho-cadastrar-o-trinks-estabelecimento-id-do.md",
+      "origem_conselho": "2026-09-25"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-09-25] **Trocar o token da Meta** seguindo o passo a passo já pronto em `docs/meta-token.md` (~15 min, só precisa do login do Rodrigo no Business Manager). Em jogo: visibilidade da campanha paga no dia de abertura do Spa e reabertura do canal que atende os R$ 16.437 de LTV em risco no Relacionamento. Executa: Rodrigo, com Marketing e Relacionamento conferindo.",
+      "detalhe": "**Trocar o token da Meta** seguindo o passo a passo já pronto em `docs/meta-token.md` (~15 min, só precisa do login do Rodrigo no Business Manager). Em jogo: visibilidade da campanha paga no dia de abertura do Spa e reabertura do canal que atende os R$ 16.437 de LTV em risco no Relacionamento. Executa: Rodrigo, com Marketing e Relacionamento conferindo.",
+      "acao": "Executor a definir.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-09-25-conselho-trocar-o-token-da-meta-seguindo-o-passo.md",
+      "origem_conselho": "2026-09-25"
     }
   ],
   "insights_narrativa": [
@@ -7185,6 +7218,58 @@
         "Por que a agenda parou? Os seis departamentos rodaram uma vez só (15/09) e o Conselho quatro vezes em sete dias. O rastro está em _execucoes.log, no vault — só o PC alcança.",
         "As 182 conversas do Spa viram cliente? Falta o conector TRINKS_API_KEY_SPA.",
         "A margem está certa? A comissão não tem regra cadastrada no Trinks (comissoes.habilitado false); o equilíbrio de R$ 58.729 usa percentual presumido."
+      ]
+    },
+    {
+      "data": "2026-09-25",
+      "hora": "22:30",
+      "tipo": "noturno",
+      "sincronizado_em": "2026-10-09T11:25:49-03:00",
+      "sincronizado_por": "auto (workflow conselho_sync.yml)",
+      "ata": "docs/atas/2026-09-25-conselho.md",
+      "mesa": {
+        "operacao": "critico",
+        "financeiro": "critico",
+        "marketing": "critico",
+        "relacionamento": "atencao",
+        "pessoas": "critico"
+      },
+      "decisoes": [
+        {
+          "n": 1,
+          "titulo": "**Rodar o refresh do pipeline e apurar por que ficou 7 dias parado.** Em jogo: toda decisão de hoje — inclusive as duas abaixo — está sendo tomada com dado de uma semana atrás; se nada for feito, a abertura do Spa fica sem nenhum registro histórico, e esse dia não se repete. Executa: sessão do PC (só ela alcança os scripts locais), com Operação conferindo o resultado.",
+          "em_jogo": "",
+          "executor": null,
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-09-25-conselho-rodar-o-refresh-do-pipeline-e-apurar-por.md"
+        },
+        {
+          "n": 2,
+          "titulo": "**Cadastrar o `trinks_estabelecimento_id` do Spa.** Pendente desde 14/09; hoje é o dia em que essa lacuna custa caro — sem ela, Operação, Pessoas e Financeiro ficam cegos para o próprio dia de abertura, para sempre. Executa: Rodrigo, no painel Trinks, com Pessoas e Operação conferindo.",
+          "em_jogo": "",
+          "executor": null,
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-09-25-conselho-cadastrar-o-trinks-estabelecimento-id-do.md"
+        },
+        {
+          "n": 3,
+          "titulo": "**Trocar o token da Meta** seguindo o passo a passo já pronto em `docs/meta-token.md` (~15 min, só precisa do login do Rodrigo no Business Manager). Em jogo: visibilidade da campanha paga no dia de abertura do Spa e reabertura do canal que atende os R$ 16.437 de LTV em risco no Relacionamento. Executa: Rodrigo, com Marketing e Relacionamento conferindo.",
+          "em_jogo": "",
+          "executor": null,
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-09-25-conselho-trocar-o-token-da-meta-seguindo-o-passo.md"
+        }
+      ],
+      "cruzamentos_chave": [],
+      "sem_dono": [
+        "Se o acesso admin ao Business Manager da Meta (bloqueado desde 14/09) já mudou — decide se o WhatsApp desconectado é o mesmo bloqueio antigo (já decidido não perseguir, sem prazo de revisão) ou algo novo. → Rodrigo confirma direto na Meta; **não é uma decisão nova, é revisão de uma já tomada em 14/09**.",
+        "Por que o GitHub Actions ficou 7 dias inteiros sem rodar, e não só atrasado em horas como já tinha acontecido antes. → sessão do PC, único lugar que vê os logs do workflow.",
+        "Quem está de fato escalado para abrir o Spa hoje — não está em nenhum arquivo que os departamentos leem. → Rodrigo / quem montou a escala.",
+        "📌 MEMÓRIA**",
+        ""
       ]
     }
   ],

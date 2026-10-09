@@ -35,6 +35,17 @@ DATA_CONS = ROOT / "data" / "consolidado" / "midias_sociais.json"
 DECISOES_DIR = ROOT / "docs" / "decisoes"
 ATAS_DIR = ROOT / "docs" / "atas"
 
+# Nada entra no painel como aprovado sem o Rodrigo ver. O vocabulário final
+# (aprovada, executada, reprogramada, recusada) é dado por /sincronizar.
+STATUS_INICIAL = "pendente"
+
+
+def tem_decisoes(path: Path) -> bool:
+    """Ata de reunião de verdade tem a seção de decisões. Ata de 'não consegui
+    rodar' (repositório travado, por exemplo) não tem e não vira nada no painel."""
+    return bool(re.search(r"DECIS[OÕ]ES\s+DO\s+RODRIGO",
+                          path.read_text(encoding="utf-8", errors="replace"), re.IGNORECASE))
+
 
 def brt_iso() -> str:
     return datetime.now(timezone(timedelta(hours=-3))).replace(microsecond=0).isoformat()
@@ -193,7 +204,7 @@ def bloco_historico(parsed: dict, decisoes_docs: dict[int, str]) -> dict:
                 "titulo": d["titulo"],
                 "em_jogo": d["em_jogo"],
                 "executor": d["executor"],
-                "status": "aprovada",
+                "status": STATUS_INICIAL,
                 "revisao_em": None,
                 "docs_decisao": decisoes_docs.get(d["n"]),
             }
@@ -212,8 +223,8 @@ def rec_from_decisao(d: dict, docs_path: str, parsed: dict) -> dict:
         "titulo": f"[Conselho {parsed['data']}] {d['titulo']}",
         "detalhe": (d["em_jogo"] or d["texto_completo"])[:400],
         "acao": f"Executar: {d['executor']}." if d["executor"] else "Executor a definir.",
-        "status": "aprovada",
-        "aprovada_em": parsed["data"],
+        "status": STATUS_INICIAL,
+        "aprovada_em": None,
         "revisao_em": None,
         "docs_decisao": docs_path,
         "origem_conselho": parsed["data"],
@@ -259,7 +270,7 @@ def escrever_decisoes_e_ata(parsed: dict) -> dict[int, str]:
 **Data:** {data} · **Hora do Conselho:** {parsed['hora']}
 **Origem:** Conselho {parsed['tipo']} · Sincronizada automaticamente pelo
 workflow `conselho_sync.yml`
-**Status inicial:** aprovada (modo auto — Rodrigo não desabilitou)
+**Status inicial:** pendente (aguarda o Rodrigo aprovar)
 
 ## Em jogo
 
@@ -296,7 +307,7 @@ _(em branco até a revisão)_
             f"| {cargo.capitalize()} | {cor} |" for cargo, cor in parsed["mesa"].items()
         ) or "| — | — |"
         dec_lines = "\n".join(
-            f"| {d['n']} | {d['titulo']} | aprovada (auto) | [{docs_map[d['n']].split('/')[-1]}]({os.path.relpath(docs_map[d['n']], 'docs/atas')}) |"
+            f"| {d['n']} | {d['titulo']} | pendente | [{docs_map[d['n']].split('/')[-1]}]({os.path.relpath(docs_map[d['n']], 'docs/atas')}) |"
             for d in parsed["decisoes"]
         )
         cruz = "\n".join(f"- {c}" for c in parsed["cruzamentos_chave"]) or "_(sem cruzamentos capturados)_"
@@ -328,8 +339,8 @@ _(em branco até a revisão)_
 
 ## Como intervir
 
-Se alguma decisão foi tomada erroneamente como aprovada, rode
-`/sincronizar` manualmente pra corrigir os status.
+As decisões entram como pendentes. Rode `/sincronizar` para o Rodrigo
+aprovar, recusar ou reprogramar cada uma.
 
 ## Resultado
 
@@ -377,10 +388,15 @@ def main() -> int:
     args = ap.parse_args()
 
     if args.auto_latest:
-        candidatos = sorted(BRIEFINGS_DIR.glob("*-conselho.md"), reverse=True)
+        # A tarefa do PC grava só em docs/atas/; Briefings/ é o caminho antigo.
+        # Vale o mais recente dos dois (nome começa pela data).
+        candidatos = sorted(
+            [*BRIEFINGS_DIR.glob("*-conselho.md"), *ATAS_DIR.glob("*-conselho.md")],
+            key=lambda x: x.name, reverse=True)
+        candidatos = [c for c in candidatos if tem_decisoes(c)]
         if not candidatos:
-            print("ERRO: nenhum briefing em Briefings/", file=sys.stderr)
-            return 1
+            print("Nenhuma ata com decisões em Briefings/ nem docs/atas/ — nada a sincronizar.")
+            return 0
         briefing = candidatos[0]
     elif args.briefing:
         briefing = Path(args.briefing)
