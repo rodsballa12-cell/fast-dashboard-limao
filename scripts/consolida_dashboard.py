@@ -391,9 +391,13 @@ def _meta_spa_efetiva(spa, aba, hoje, inicio):
         dd = _d(ds)
         if ini <= dd <= fim and dd >= inicio:
             tot += v
-            # mesma régua do Escova: "dias realizados" não inclui o dia corrente,
-            # exceto na aba do dia, onde o próprio dia é a janela
-            if dd < hoje or aba == "diario":
+            # HOJE CONTA. A regua antiga da Escova excluia o dia corrente do
+            # lado da meta e o incluia no lado do caixa — quatro dias de
+            # dinheiro divididos pela meta de tres. Corrigido no
+            # github_refresh em 08/10/2026; aqui ficou a ultima copia do erro,
+            # alimentando a coluna do Spa no cartao lado-a-lado (projetava
+            # R$ 5.400 quando a conta certa dava R$ 4.274).
+            if dd <= hoje:
                 ate += v
     # janela toda coberta: usa a meta da própria unidade, sem a poeira de arredondar dia a dia
     if inicio <= ini:
@@ -489,11 +493,25 @@ def corrigir_consolidado(c, esc, spa):
         proj = proj_esc + proj_spa
         metodo_e = em.get("projecao_metodo", "linear")
         metodo_s = sm.get("projecao_metodo", "linear")
-        # Ponderado so quando AS DUAS unidades estao em modo ponderado
-        metodo_proj = "ponderado" if (metodo_e == "ponderado" and metodo_s == "ponderado") else "linear"
-        # Mantem os pesos agregados pra referencia (soma)
-        peso_real = (em.get("peso_realizado") or 0) + (sm.get("peso_realizado") or 0) or None
-        peso_rest = (em.get("peso_restante") or 0) + (sm.get("peso_restante") or 0) or None
+        # O metodo do consolidado so e o das unidades quando AS DUAS usam o
+        # mesmo. Senao e mistura, e dizer qual foi seria mentira.
+        metodo_proj = metodo_e if metodo_e == metodo_s else "misto"
+        # PESO NAO E SOMAVEL — mesma licao de `dias_op`.
+        # Somar o peso das duas lojas dava `peso_realizado: 2.0` e
+        # `peso_restante: 1.2781`, numeros que nao sao fracao de nada. Eles
+        # nao entram em conta nenhuma aqui (a projecao e a soma das duas
+        # projecoes), mas o painel os usava para escrever "cobrindo X% do peso
+        # do periodo" na nota de baixa confianca — e esse X saia errado. Campo
+        # que nao descreve nada vira null.
+        peso_real = peso_rest = None
+        # NO CONSOLIDADO OS DOIS PERCENTUAIS NUNCA SAO A MESMA CONTA.
+        # A projecao daqui e a SOMA de duas projecoes, cada loja no seu
+        # proprio ritmo; `pct_ate_hoje` e uma divisao so, sobre o caixa
+        # somado. Com a Escova a 192% e o Spa a 47% na semana, a soma das
+        # projecoes da 127% da meta enquanto o ritmo somado da 107% — numeros
+        # diferentes, e os dois verdadeiros. Dizer que sao a mesma conta seria
+        # esconder justamente a informacao util.
+        mesma_conta = False
         baixa_conf = (em.get("baixa_confianca") or False) or (sm.get("baixa_confianca") or False)
         falta = meta_tot - real
         cm = ca.setdefault("meta", {})
@@ -504,6 +522,7 @@ def corrigir_consolidado(c, esc, spa):
             "ritmo_dia": round(ritmo, 2), "projecao": round(proj, 2),
             "projecao_pct": round(proj / max(meta_tot, 1) * 100, 1),
             "projecao_metodo": metodo_proj,
+            "projecao_e_mesma_conta": mesma_conta,
             "baixa_confianca": bool(baixa_conf),
             "peso_realizado": peso_real,
             "peso_restante": peso_rest,
@@ -658,7 +677,26 @@ def anexar_lado_a_lado(c, esc, spa):
         spa_tot, spa_ate = _meta_spa_efetiva(spa, aba, hoje, _inicio_spa(spa))
         sm = dict(sa.get("meta") or {}); sm["meta"] = spa_tot; sm["meta_ate_hoje"] = spa_ate
         sm["pct_ate_hoje"] = round((sa.get("kpis", {}).get("caixa") or 0) / spa_ate * 100, 1) if spa_ate else None
-        sm["projecao"] = round((sa.get("kpis", {}).get("caixa") or 0) + (sm.get("ritmo_dia") or 0) * (ea.get("meta", {}).get("dias_restantes") or 0), 2)
+        # A coluna do Spa no cartao lado-a-lado refazia a projecao como
+        # `caixa + ritmo_dia x dias_restantes` — linear, tratando terca igual a
+        # sabado, e contradizendo a conta que a propria unidade usa. Aqui a
+        # meta do Spa e a EFETIVA da janela (contada so depois da abertura),
+        # entao a projecao tem que ser a mesma divisao sobre essa meta: o que
+        # ja se fez contra o que era esperado ate agora, aplicado a janela
+        # inteira.
+        # ...SALVO quando a meta efetiva e a propria meta da unidade (janela
+        # inteira depois da abertura, e o ano todo). Ai a unidade ja fez a
+        # conta certa e refazer so estraga: no ano ela projeta pelo ritmo do
+        # mes corrente (R$ 139.209 no Spa) e a razao do ano daria R$ 110.701,
+        # porque o ano carrega a meta cheia de setembro contra 6 dias de loja.
+        _sm_orig = sa.get("meta") or {}
+        _cx_spa = sa.get("kpis", {}).get("caixa") or 0
+        _igual = (_sm_orig.get("meta") == spa_tot
+                  and _sm_orig.get("meta_ate_hoje") == spa_ate)
+        if _igual or not spa_ate:
+            sm["projecao"] = _sm_orig.get("projecao")
+        else:
+            sm["projecao"] = round(_cx_spa / spa_ate * spa_tot, 2)
         sm["dias_total"] = (ea.get("meta") or {}).get("dias_total")  # um calendário só
         out[aba] = {"escova": _lado(ea.get("kpis") or {}, ea.get("meta") or {}),
                     "spa": _lado(sa.get("kpis") or {}, sm),

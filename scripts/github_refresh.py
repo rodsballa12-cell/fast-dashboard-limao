@@ -1090,6 +1090,11 @@ def calc_meta(caixa, meta, dias_real, dias_total, peso_realizado=None, peso_rest
             pct_peso_corrido is not None and pct_peso_corrido < 15
         )
     baixa_confianca = bool(baixa_confianca or baixa_confianca_extra)
+    # Janela sem dias restantes nao esta sendo projetada: a "projecao" E o
+    # realizado. Marcar o dia fechado como "projecao fragil" era ruido fixo em
+    # todo cartao de Meta Diaria.
+    if dias_rest == 0:
+        baixa_confianca = False
 
     # Meta proporcional. Sem dias corridos ou sem dias totais não há fatia a
     # cobrar, e devolver 0 aqui produziria "realizado infinitamente acima".
