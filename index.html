@@ -5136,41 +5136,51 @@ function renderStone(data){
   </div>`;
 
   // AS DUAS PONTAS DO MESMO DINHEIRO · pedido do Rodrigo em 10/10.
-  // Os dois números já existiam, mas em cards distantes: o "a receber" no topo e
-  // o saldo da Reserva lá embaixo. Separados, escondiam que são o mesmo dinheiro
-  // em dois momentos — o que está na fila cai e é varrido 100% pra Reserva.
-  // A varredura ser integral não é suposição: no acumulado entraram R$ 78.515,18
-  // e foram varridos R$ 78.475,18. A diferença de R$ 40,00 é um único PIX pago
-  // direto em 01/08, o que faz da varredura 99,95% do que entra.
+  // CARTÃO: O QUE FALTA CAIR vs O QUE JÁ CAIU.
+  // A primeira versão deste card mostrava o MESMO número nos dois lados — "a receber"
+  // e "vai 100% pra Reserva" eram ambos R$ 34.054, porque a fila inteira vai mesmo
+  // pra Reserva. Dois quadros com o valor repetido não informam nada. Corrigido em
+  // 10/10 a pedido do Rodrigo: um lado é o cartão que ainda NÃO está disponível, o
+  // outro é o cartão que JÁ entrou no extrato e foi varrido pra Reserva.
   const custo_antec_evitado = (antec && antec.total && antec.total.custo_antecipacao) || 0;
   const reserva_hoje = (ap && ap.saldo_aplicado) || 0;
+  const cartao_caido = (flu && flu.entradas_cartao_liq) || 0;
   const cron = (antec && antec.cronograma_liberacao) || [];
   const ultima_lib = cron.length ? cron[cron.length - 1].data : null;
   const ultima_lib_br = ultima_lib ? ultima_lib.split('-').reverse().slice(0,2).join('/') : null;
-  const bloco_par = aReceber > 0 ? `<div class="card" style="border-left:3px solid var(--accent-2);">
-    <h2>💰 As duas pontas do mesmo dinheiro</h2>
-    <div class="cap">O que está na fila de liberação e o que ele vira quando cai. É o mesmo dinheiro em dois momentos: cada crédito que entra na Stone é varrido <strong>integralmente</strong> pra Reserva.</div>
+  const n_receb = ((s.recebiveis_cartao || []).length) || 0;
+  const cartao_total = cartao_caido + aReceber;
+  const pct_caido = cartao_total > 0 ? (cartao_caido / cartao_total * 100) : 0;
+  const ult_sangria = (ap && ap.ultimo_resgate) ? ap.ultimo_resgate.split('-').reverse().slice(0,2).join('/') : null;
+  const bloco_par = (aReceber > 0 || cartao_caido > 0) ? `<div class="card" style="border-left:3px solid var(--accent-2);">
+    <h2>💳 Cartão · o que falta cair e o que já caiu</h2>
+    <div class="cap">Das vendas no cartão, quanto a Stone ainda não liberou e quanto já entrou no extrato — e esse que entrou foi varrido <strong>integralmente</strong> pra Reserva.</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px">
 
       <div style="padding:14px 16px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--good)">
-        <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase;letter-spacing:.06em">⏳ A receber · não antecipei</div>
+        <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase;letter-spacing:.06em">⏳ Ainda não disponível</div>
         <div style="font-size:30px;font-weight:800;color:var(--ink);margin:4px 0;line-height:1.1">${brl0(aReceber)}</div>
         <div style="font-size:11.5px;color:var(--ink-2);line-height:1.5">
-          Cai sozinho${ultima_lib_br ? `, o último lote em <strong>${ultima_lib_br}</strong>` : ''}.<br>
-          ${custo_antec_evitado > 0 ? `Esperar em vez de antecipar <strong>economiza ${brl0(custo_antec_evitado)}</strong> de taxa.` : ''}
+          Vendido no cartão, a Stone ainda não liberou.<br>
+          Cai sozinho${ultima_lib_br ? `, o último lote em <strong>${ultima_lib_br}</strong>` : ''}${custo_antec_evitado > 0 ? ` — antecipar custaria <strong>${brl0(custo_antec_evitado)}</strong>` : ''}.
         </div>
       </div>
 
       <div style="padding:14px 16px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--accent)">
-        <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.06em">🏦 Vai 100% pra Reserva</div>
-        <div style="font-size:30px;font-weight:800;color:var(--ink);margin:4px 0;line-height:1.1">${brl0(aReceber)}</div>
+        <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.06em">🏦 Já caiu e foi pra Reserva</div>
+        <div style="font-size:30px;font-weight:800;color:var(--ink);margin:4px 0;line-height:1.1">${brl0(cartao_caido)}</div>
         <div style="font-size:11.5px;color:var(--ink-2);line-height:1.5">
-          Reserva hoje <strong>${brl0(reserva_hoje)}</strong>.<br>
-          Quando a fila cair: <strong style="color:var(--accent)">${brl0(reserva_hoje + aReceber)}</strong>, antes de sangria.
+          ${n_receb ? `${n_receb} créditos de cartão já liberados` : 'Créditos de cartão já liberados'}, varridos pra Reserva.<br>
+          Reserva hoje <strong>${brl0(reserva_hoje)}</strong>${reserva_hoje === 0 && ult_sangria ? ` — zerada na sangria de <strong>${ult_sangria}</strong>` : ''}.
         </div>
       </div>
 
     </div>
+    ${cartao_total > 0 ? `<div class="cap" style="margin-top:10px;font-size:11.5px;">
+      Somando os dois: <strong>${brl0(cartao_total)}</strong> de cartão no período, dos quais
+      <strong>${pct_caido.toFixed(0)}%</strong> já virou dinheiro na conta.
+      O que já caiu não está parado na Reserva — parte dele já saiu nas sangrias pro banco principal.
+    </div>` : ''}
   </div>` : '';
 
   // bloco_alerta absorvido no bloco_hero. Antecipação vira card DEDICADO (bloco_antecipacao).
