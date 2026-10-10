@@ -740,7 +740,22 @@ const brl0=v=>brl(v,0);
 const pct=v=>(v||0).toFixed(1)+'%';
 const cls=(v,threshold_up=0)=>v>threshold_up?'up':(v<0?'dn':'neu');
 const fmtDelta=(a,b)=>{if(!b)return 'novo';const p=(a/b-1)*100;const s=p>=0?'+':'';return `<span class="${cls(p)}">${s}${p.toFixed(1)}%</span>`;};
-const fmtDate=iso=>{const d=new Date(iso);return d.toLocaleDateString('pt-BR');};
+// Toda data do painel sai em DIA/MÊS por aqui. Dois defeitos que as formas
+// antigas tinham, e que esta evita:
+//  · new Date('2026-10-10') é meia-noite UTC, que em Brasília cai no dia 09 —
+//    a data aparecia um dia antes. Por isso a string ISO é lida por regex, sem
+//    passar por Date; só cai no Date quando recebe timestamp ou objeto.
+//  · o atalho .slice(-5).replace('-','/'), usado em 16 lugares, devolvia
+//    MÊS/DIA: 4 de setembro virava "09/04", que se lê como 9 de abril.
+const fmtDate=x=>{
+  if(!x) return '';
+  if(typeof x==='string'){
+    const m=x.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if(m) return `${m[3]}/${m[2]}`;
+  }
+  const d=x instanceof Date?x:new Date(x);
+  return isNaN(d.getTime())?'':d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+};
 
 function el(html){const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild;}
 
@@ -1552,7 +1567,7 @@ function _detectarRecordes(data, periodo){
         tipo: 'dow', data: alvo.data,
         titulo: `🏆 Melhor ${dowCheios[alvo.dow]} da história`,
         valor: alvo.v, atend: alvo.n,
-        detalhe: `R$ ${brl0(alvo.v)} em ${alvo.n} atendimentos · bateu o recorde anterior (${porDow[1]?.data.slice(-5).replace('-','/')} com R$ ${brl0(porDow[1]?.v||0)})`,
+        detalhe: `R$ ${brl0(alvo.v)} em ${alvo.n} atendimentos · bateu o recorde anterior (${fmtDate(porDow[1]?.data)} com R$ ${brl0(porDow[1]?.v||0)})`,
       });
     }
     const geral = todos.slice().sort((a,b) => b.v - a.v);
@@ -1579,9 +1594,9 @@ function _detectarRecordes(data, periodo){
     const pos = ord.findIndex(x => x.k === atual.k) + 1;
     if(pos === 1 && semanas.length >= 2){
       const ant = ord[1];
-      const antFmt = ant ? `(${ant.ini.slice(-5).replace('-','/')}-${ant.fim.slice(-5).replace('-','/')} com R$ ${brl0(ant.v)})` : '';
+      const antFmt = ant ? `(${fmtDate(ant.ini)}-${fmtDate(ant.fim)} com R$ ${brl0(ant.v)})` : '';
       recordes.push({
-        tipo: 'semana', data: `${atual.ini.slice(-5).replace('-','/')}-${atual.fim.slice(-5).replace('-','/')}`,
+        tipo: 'semana', data: `${fmtDate(atual.ini)}-${fmtDate(atual.fim)}`,
         titulo: `🏆 Melhor SEMANA da história`,
         valor: atual.v, atend: 0,
         detalhe: `R$ ${brl0(atual.v)} · bateu o recorde anterior ${antFmt}`,
@@ -3765,7 +3780,7 @@ function renderChurn(container_id, churn){
       <td>${nomeComIconeUnidade(c, 'cliente')}</td>
       <td>${c.n_visitas}</td>
       <td>${brl0(c.ltv)}</td>
-      <td>${c.ultima_visita.slice(-5).replace('-','/')}</td>
+      <td>${fmtDate(c.ultima_visita)}</td>
       <td><span class="dn">${c.dias_sem_vir}d</span></td>
       <td style="max-width:280px">${servsHtml}</td>
       <td>${waLink(c.telefone)}</td>
@@ -3800,7 +3815,7 @@ function renderComparacaoSemana(container_id, atual, anterior){
   const cor_c = delta_caixa >= 0 ? 'up' : 'dn';
   el.innerHTML = `<div class="card">
     <h2>📈 Semana × Semana anterior</h2>
-    <div class="cap">Comparação com ${anterior.periodo_ini.slice(-5).replace('-','/')} — ${anterior.periodo_fim.slice(-5).replace('-','/')}</div>
+    <div class="cap">Comparação com ${fmtDate(anterior.periodo_ini)} — ${fmtDate(anterior.periodo_fim)}</div>
     <div class="categ-grid" style="grid-template-columns:repeat(4,1fr)">
       ${tile('','Faturamento esta semana', brl0(atual.caixa), `<span class="${cor_c}">${sinal_c}${brl0(delta_caixa)}</span> vs anterior`)}
       ${tile('c2','Média/dia atual', brl0(media_atu), `<span class="${cor_c}">${sinal_c}${delta_media_pct.toFixed(0)}%</span> vs anterior (${brl0(media_ant)}/dia)`)}
@@ -4233,7 +4248,7 @@ function periodoLabel(per, id){
   }
   if(per === 'semanal'){
     const h = TRINKS.historico.semanas[id];
-    return h ? (fmtDate(h.periodo_ini).slice(0,5) + '–' + fmtDate(h.periodo_fim).slice(0,5)) : id;
+    return h ? (fmtDate(h.periodo_ini) + '–' + fmtDate(h.periodo_fim)) : id;
   }
   if(per === 'diario') return fmtDate(id);
   return id;
@@ -4535,7 +4550,7 @@ function renderAuditoria(data){
   });
   const rowsLista = listaOrd.map(x => {
     const dt = new Date(x.data);
-    const dtStr = isNaN(dt.getTime()) ? x.data.slice(0,10) : dt.toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo'});
+    const dtStr = isNaN(dt.getTime()) ? fmtDate(x.data) : dt.toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit', timeZone:'America/Sao_Paulo'});
     const flags = [];
     if(x.match_por_nome) flags.push(`<span class="dn">🚨 Stone: ${x.stone_match_nomes.join('; ')}</span>`);
     else if(x.stone_match_n > 0) flags.push(`<span style="color:var(--warn);font-weight:700">↔ Stone: ${x.stone_match_nomes.slice(0,2).join('; ')}${x.stone_match_nomes.length>2?'…':''}</span>`);
@@ -4611,7 +4626,7 @@ function renderStone(data){
       </p></div>`;
     return;
   }
-  if(subEl) subEl.textContent = `${s.periodo_ini?.slice(5).replace('-','/')} — ${s.periodo_fim?.slice(5).replace('-','/')}`;
+  if(subEl) subEl.textContent = `${fmtDate(s.periodo_ini)} — ${fmtDate(s.periodo_fim)}`;
 
   // Alerta de cobertura parcial (loja abriu 23/07 · se ini > 23/07, tem gap)
   const auditEl = document.getElementById('stone-audit');
@@ -4636,8 +4651,8 @@ function renderStone(data){
     }
   } else if(auditEl && s.periodo_ini && s.periodo_ini > '2026-07-23'){
     // Prioridade 2: cobertura parcial de dias iniciais
-    const ini_br = s.periodo_ini.slice(-5).replace('-','/');
-    const fim_br = s.periodo_fim.slice(-5).replace('-','/');
+    const ini_br = fmtDate(s.periodo_ini);
+    const fim_br = fmtDate(s.periodo_fim);
     const dias_gap = Math.round((new Date(s.periodo_ini) - new Date('2026-07-23'))/(1000*60*60*24));
     auditEl.innerHTML = `<div>⚠️</div><div style="color:var(--warn);"><strong>Cobertura parcial:</strong> CSV Stone cobre ${ini_br} → ${fim_br}. Loja abriu 23/07/2026 — <strong>faltam ${dias_gap} dias</strong>. Baixe CSV com período estendido para reconciliação completa.</div>`;
   }
@@ -4748,7 +4763,7 @@ function renderStone(data){
   // Cards órfãos detalhados
   let bloco_orf_stone = '';
   if(nc.orfaos_stone && nc.orfaos_stone.length){
-    const rows = nc.orfaos_stone.map(o=>`<tr><td>${(o.data||'').slice(-5).replace('-','/')}</td><td>${brl0(o.valor)}</td><td>${(o.origem||'?').substr(0,40)}</td></tr>`).join('');
+    const rows = nc.orfaos_stone.map(o=>`<tr><td>${fmtDate(o.data||'')}</td><td>${brl0(o.valor)}</td><td>${(o.origem||'?').substr(0,40)}</td></tr>`).join('');
     bloco_orf_stone = `<div class="card" style="border-left:3px solid var(--warn);">
       <h2>🟡 PIX Stone SEM correspondente no Trinks · ${nc.orfaos_stone_n} pgtos</h2>
       <div class="cap">Dinheiro entrou na conta Stone, mas a venda não foi lançada no Trinks — DRE fica furado se não corrigir</div>
@@ -4759,7 +4774,7 @@ function renderStone(data){
 
   let bloco_orf_trinks = '';
   if(nc.orfaos_trinks && nc.orfaos_trinks.length){
-    const rows = nc.orfaos_trinks.map(o=>`<tr><td>${(o.data||'').slice(-5).replace('-','/')}</td><td>${brl0(o.valor)}</td><td>${o.cliente||'?'}</td></tr>`).join('');
+    const rows = nc.orfaos_trinks.map(o=>`<tr><td>${fmtDate(o.data||'')}</td><td>${brl0(o.valor)}</td><td>${o.cliente||'?'}</td></tr>`).join('');
     bloco_orf_trinks = `<div class="card" style="border-left:3px solid var(--crit);">
       <h2>🔴 PIX Trinks SEM entrada na Stone · ${nc.orfaos_trinks_n} pgtos</h2>
       <div class="cap">Sistema marca como recebido, mas o PIX ainda não caiu na Stone — cliente pode ter enviado errado ou não pagou</div>
@@ -4799,7 +4814,7 @@ function renderStone(data){
     if(csvDefasado){
       return `<div class="card">
         <h2>${nome_bonito}<span class="hi">${sub}</span></h2>
-        <div class="cap">${d.periodo_ini?.slice(5).replace('-','/')} — ${d.periodo_fim?.slice(5).replace('-','/')}</div>
+        <div class="cap">${fmtDate(d.periodo_ini)} — ${fmtDate(d.periodo_fim)}</div>
         <div style="padding:20px;background:var(--surface-2);border-radius:10px;text-align:center;margin-top:12px">
           <div style="font-size:32px;margin-bottom:8px">🕓</div>
           <div style="font-size:14px;color:var(--ink-2);font-weight:600;margin-bottom:4px">CSV Stone ainda não tem o dia de hoje</div>
@@ -4810,7 +4825,7 @@ function renderStone(data){
 
     return `<div class="card">
       <h2>${nome_bonito}<span class="hi">${sub}</span></h2>
-      <div class="cap">${d.periodo_ini?.slice(5).replace('-','/')} — ${d.periodo_fim?.slice(5).replace('-','/')} · ${din.n + d.pix.stone_n + d.cartao.trinks_n} transações no período</div>
+      <div class="cap">${fmtDate(d.periodo_ini)} — ${fmtDate(d.periodo_fim)} · ${din.n + d.pix.stone_n + d.cartao.trinks_n} transações no período</div>
 
       <!-- HERO: dinheiro que caiu -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
@@ -4912,7 +4927,7 @@ function renderStone(data){
   // ============ SEÇÃO 3: FLUXO CAIXA + RECEBÍVEIS ============
   const bloco_fluxo = `<div class="card">
     <h2>💰 Fluxo de caixa Stone · consolidado</h2>
-    <div class="cap">Movimentações totais do extrato ${s.periodo_ini?.slice(5).replace('-','/')} — ${s.periodo_fim?.slice(5).replace('-','/')}</div>
+    <div class="cap">Movimentações totais do extrato ${fmtDate(s.periodo_ini)} — ${fmtDate(s.periodo_fim)}</div>
     <table class="simple">
       <thead><tr><th>Item</th><th>Valor</th></tr></thead>
       <tbody>
@@ -4928,7 +4943,7 @@ function renderStone(data){
 
   let bloco_receb = '';
   if(s.recebiveis_cartao && s.recebiveis_cartao.length){
-    const rows = s.recebiveis_cartao.map(r=>`<tr><td>${(r.data||'').slice(-5).replace('-','/')}</td><td>${brl0(r.valor)}</td></tr>`).join('');
+    const rows = s.recebiveis_cartao.map(r=>`<tr><td>${fmtDate(r.data||'')}</td><td>${brl0(r.valor)}</td></tr>`).join('');
     const tot = s.recebiveis_cartao.reduce((s,r)=>s+r.valor,0);
     // CONSOLIDAÇÃO M · lista bruta útil só p/ conferência contábil → collapsed
     bloco_receb = `<div class="card">
@@ -4968,7 +4983,7 @@ function renderStone(data){
         <summary style="cursor:pointer;color:var(--accent);font-size:13px;">Ver ${din_mes.transacoes.length} transações em dinheiro do mês</summary>
         <table class="simple" style="margin-top:8px;">
           <thead><tr><th>Data</th><th>Cliente</th><th>Valor</th></tr></thead>
-          <tbody>${din_mes.transacoes.map(t=>`<tr><td>${(t.data||'').slice(-5).replace('-','/')}</td><td>${t.cliente||'?'}</td><td>${brl0(t.valor)}</td></tr>`).join('')}</tbody>
+          <tbody>${din_mes.transacoes.map(t=>`<tr><td>${fmtDate(t.data||'')}</td><td>${t.cliente||'?'}</td><td>${brl0(t.valor)}</td></tr>`).join('')}</tbody>
         </table>
       </details>` : ''}
       <div class="insight">
@@ -4983,7 +4998,7 @@ function renderStone(data){
   if(ap){
     const mov_rows = (ap.ultimos_movs || []).map(m => {
       const g = m.resgate || 0;
-      return `<tr><td>${(m.data||'').slice(-5).replace('-','/')}</td><td class="up">${brl0(m.aporte)}</td><td class="${g?'dn':'neu'}">${g?'−'+brl0(g):'—'}</td><td class="neu">${brl0(m.transf_recebida||0)}</td><td><strong>${brl0(m.saldo_aplicado_acum)}</strong></td></tr>`;
+      return `<tr><td>${fmtDate(m.data||'')}</td><td class="up">${brl0(m.aporte)}</td><td class="${g?'dn':'neu'}">${g?'−'+brl0(g):'—'}</td><td class="neu">${brl0(m.transf_recebida||0)}</td><td><strong>${brl0(m.saldo_aplicado_acum)}</strong></td></tr>`;
     }).join('');
 
     // Ficha do produto (config). A meta de acúmulo saiu: a Stone é conta de
@@ -4996,7 +5011,7 @@ function renderStone(data){
     // Não há extrato da Reserva para conferir o saldo oficial — por isso o
     // NÃO VEJO explícito, em vez de um número que parece conferido.
     const rend30 = ap.rendimento_30d_est || 0;
-    const conf_app = (ap.ultima_conferencia_app||'').split('-').reverse().join('/');
+    const conf_app = fmtDate(ap.ultima_conferencia_app||'');
     const dias_conf = ap.ultima_conferencia_app
       ? Math.round((Date.now() - new Date(ap.ultima_conferencia_app+'T12:00:00').getTime())/86400000)
       : null;
@@ -5027,7 +5042,7 @@ function renderStone(data){
         </div>
         ${(ap.resgates_n||0) > 0 ? `
         <div class="cap" style="margin-top:8px;">
-          🔻 <strong>${brl0(ap.total_resgates_periodo)}</strong> já resgatados da reserva em ${ap.resgates_n} ${ap.resgates_n>1?'sangrias':'sangria'}${ap.ultimo_resgate?` · última em ${ap.ultimo_resgate.split('-').reverse().join('/')}`:''}.
+          🔻 <strong>${brl0(ap.total_resgates_periodo)}</strong> já resgatados da reserva em ${ap.resgates_n} ${ap.resgates_n>1?'sangrias':'sangria'}${ap.ultimo_resgate?` · última em ${fmtDate(ap.ultimo_resgate)}`:''}.
           Esse dinheiro saiu da Stone e não conta mais aqui — confira no extrato do banco de destino.
           ${(ap.rendimento_realizado||0) > 0 ? `Dentro dele voltaram <strong>${brl0(ap.rendimento_realizado)}</strong> de rendimento, que é o que a Reserva de fato pagou no período.` : ''}
         </div>` : ''}
@@ -5047,7 +5062,7 @@ function renderStone(data){
   let bloco_gap = '';
   if(gap && gap.vendas_trinks_apos_n > 0){
     const rows = gap.vendas_apos_lista.map(v =>
-      `<tr><td>${(v.data||'').slice(-5).replace('-','/')}</td><td>${v.meio}</td><td>${brl0(v.valor)}</td><td>${v.cliente||'?'}</td></tr>`
+      `<tr><td>${fmtDate(v.data||'')}</td><td>${v.meio}</td><td>${brl0(v.valor)}</td><td>${v.cliente||'?'}</td></tr>`
     ).join('');
     bloco_gap = `
       <div class="card" style="border-left:3px solid var(--warn);">
@@ -5150,8 +5165,8 @@ function renderStone(data){
   const rend_realizado = (ap && ap.rendimento_realizado) || 0;
   const cron = (antec && antec.cronograma_liberacao) || [];
   const ultima_lib = cron.length ? cron[cron.length - 1].data : null;
-  const ultima_lib_br = ultima_lib ? ultima_lib.split('-').reverse().slice(0,2).join('/') : null;
-  const ult_sangria = (ap && ap.ultimo_resgate) ? ap.ultimo_resgate.split('-').reverse().slice(0,2).join('/') : null;
+  const ultima_lib_br = ultima_lib ? fmtDate(ultima_lib) : null;
+  const ult_sangria = (ap && ap.ultimo_resgate) ? fmtDate(ap.ultimo_resgate) : null;
   const bloco_par = (aReceber > 0 || reserva_hoje > 0) ? `<div class="card" style="border-left:3px solid var(--accent-2);">
     <h2>💰 Onde está o dinheiro que não está na conta</h2>
     <div class="cap">Dois lugares diferentes: parado nas operadoras de cartão, esperando liberação, e aplicado na Reserva Stone. O primeiro vira o segundo conforme cai.</div>
@@ -5348,7 +5363,7 @@ function atualizarHeaderUnidade(){
       sub.textContent = 'FAST Limão · Escova + SPA consolidados';
     } else {
       const dInaug = info.data_inauguracao;
-      const dTxt = dInaug ? dInaug.split('-').reverse().join('/') : '?';
+      const dTxt = dInaug ? fmtDate(dInaug) : '?';
       const id = info.trinks_estabelecimento_id;
       sub.textContent = `${info.cidade || ''} · ${id ? 'id '+id : 'sem id Trinks ainda'} · abertura ${dTxt}`;
     }
@@ -5367,7 +5382,7 @@ function renderPlaceholderUnidade(){
     const hoje = new Date();
     const alvo = new Date(dInaug + 'T00:00:00');
     const dias = Math.ceil((alvo - hoje) / (1000*60*60*24));
-    const dTxt = dInaug.split('-').reverse().join('/');
+    const dTxt = fmtDate(dInaug);
     if(dias > 0){
       countdownHtml = `<div class="countdown"><strong>${dias} ${dias===1?'dia':'dias'}</strong>até a inauguração em <strong style="font-size:14px;color:var(--ink)">${dTxt}</strong></div>`;
     } else {
@@ -5436,7 +5451,7 @@ function renderScaffoldingBanner(){
     msg = `<strong>📊 Consolidado · preview</strong> — mostrando somente os números da <strong>Escova</strong> por enquanto. Quando as conexões da SPA subirem, o consolidado passa a somar as duas unidades automaticamente.`;
   } else {
     const dInaug = info.data_inauguracao;
-    const dTxt = dInaug ? dInaug.split('-').reverse().join('/') : '';
+    const dTxt = dInaug ? fmtDate(dInaug) : '';
     const ico = ICO_UNIDADE_MINI[UNIDADE_ATIVA] || '';
     msg = `<strong>${ico} ${info.tipo||'SPA'} · preview</strong> — usando <strong>estrutura + números da Escova</strong> como scaffolding. Dados reais da SPA entram quando o Trinks da unidade for conectado${dTxt?` (inauguração ${dTxt})`:''}.`;
   }
@@ -5822,7 +5837,7 @@ function renderFinanceiro(){
   if(FIN._pre_abertura){
     const info = unidadeInfo(UNIDADE_ATIVA);
     const dInaug = FIN._data_inauguracao || info.data_inauguracao || '';
-    const dTxt = dInaug ? dInaug.split('-').reverse().join('/') : '?';
+    const dTxt = dInaug ? fmtDate(dInaug) : '?';
     const hoje = new Date();
     const dAlvo = dInaug ? new Date(dInaug + 'T00:00:00-03:00') : null;
     const dDias = dAlvo ? Math.max(0, Math.ceil((dAlvo - hoje)/86400000)) : null;
@@ -5977,7 +5992,7 @@ function renderFinanceiro(){
   const mesAtualISO = `${anoAtual}-${String(mesAtualIdx+1).padStart(2,'0')}`;
 
   const baselineIso = FIN.baseline || '';
-  const baselineFmt = baselineIso.split('-').reverse().slice(0,2).join('/') || '?';
+  const baselineFmt = fmtDate(baselineIso) || '?';
   // Excel do mês corrente = tem entrada em meses[YYYY-MM] com receita > 0
   const mesCorrenteData = (FIN.meses || {})[mesAtualISO];
   const excelDoMesCorrente = mesCorrenteData && mesCorrenteData.receita_bruta > 0;
@@ -6430,7 +6445,7 @@ function renderFinanceiro(){
       <strong>👉 Direcionamento:</strong> ${direcFin}
     </div>
     <div style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:11px;color:var(--ink-3);line-height:1.55">
-      🔎 <strong>Auditoria dos números:</strong> Faturamento sempre do TRINKS (real + projeção pelo ritmo). Custos vêm do Excel: variável = ${((1-mcAtualHero)*100).toFixed(1)}% da receita, fixo = ${brl0(custoFixoMes)}/mês × <strong>${meses_operados_ano.toFixed(1)} meses operados</strong> (loja abriu em ${(CONFIG?.unidades?.escova?.data_inauguracao || '2026-07-23').split('-').reverse().join('/')} — não paga 12 meses). Ponto de equilíbrio = custo_fixo ÷ margem_contribuição. Meta franqueadora = ${brl0(mesMetaOfi)}/mês × ${meses_operados_ano.toFixed(1)} meses = ${brl0(anoMeta)}.
+      🔎 <strong>Auditoria dos números:</strong> Faturamento sempre do TRINKS (real + projeção pelo ritmo). Custos vêm do Excel: variável = ${((1-mcAtualHero)*100).toFixed(1)}% da receita, fixo = ${brl0(custoFixoMes)}/mês × <strong>${meses_operados_ano.toFixed(1)} meses operados</strong> (loja abriu em ${fmtDate(CONFIG?.unidades?.escova?.data_inauguracao || '2026-07-23')} — não paga 12 meses). Ponto de equilíbrio = custo_fixo ÷ margem_contribuição. Meta franqueadora = ${brl0(mesMetaOfi)}/mês × ${meses_operados_ano.toFixed(1)} meses = ${brl0(anoMeta)}.
     </div>
   </div>`;
 
@@ -6677,7 +6692,7 @@ function renderFinanceiro(){
   // ---- quando o dinheiro entra (só se temos recebimento medido) ----
   if(C && C.linhas && C.linhas.length){
     h+=`<div class="card"><h2>⏱️ Quando o dinheiro entra</h2>
-      <div class="cap">Medido no extrato da Stone${C.medido_ate ? ` até ${new Date(C.medido_ate+'T12:00:00').toLocaleDateString('pt-BR')}` : ''}</div>
+      <div class="cap">Medido no extrato da Stone${C.medido_ate ? ` até ${fmtDate(C.medido_ate)}` : ''}</div>
       <table class="simple"><thead><tr><th>Forma de recebimento</th><th>Valor</th><th>% do total</th><th>Cai quando</th><th>Evidência</th></tr></thead><tbody>
       ${C.linhas.map(l=>`<tr><td>${l.forma}</td><td>${brl(l.valor)}</td><td>${finPct(l.pct)}</td><td><strong>${l.prazo}</strong></td><td style="text-align:left;font-size:11.5px;color:var(--ink-2)">${l.evidencia||''}</td></tr>`).join('')}
       <tr><td><strong>Total das formas medidas</strong></td><td><strong>${brl(C.total_formas)}</strong></td><td><strong>100,0%</strong></td><td colspan="2" style="text-align:left;font-size:11.5px;color:var(--ink-3)">${FIN.recebimento ? `contra ${brl(rec)} de receita — diferença de ${brl(C.total_formas-rec)}, a conferir na extração completa` : `bate com a coluna <strong>Realizado</strong> do fluxo de caixa: é o mesmo caixa do mês até agora no Trinks. A coluna Projetado (${brl(rec)}) é o mês inteiro no Excel.`}</td></tr>
@@ -6693,7 +6708,7 @@ function renderFinanceiro(){
   if(decisoesEl){
     if(FIN.decisoes && FIN.decisoes.length){
       decisoesEl.innerHTML=`<div class="card"><h2>🧭 Pontos para decisão</h2>
-        <div class="cap">Em ordem de impacto · atualizado em ${new Date(FIN.gerado_em).toLocaleDateString('pt-BR')}</div>
+        <div class="cap">Em ordem de impacto · atualizado em ${fmtDate(FIN.gerado_em)}</div>
         ${FIN.decisoes.map(d=>`<div class="dec-item ${d.sev}">
           <div class="dt"><span class="num">${d.p}</span> ${sev[d.sev]||''} ${d.titulo}</div>
           <div class="dd">${d.detalhe}</div>
@@ -6939,7 +6954,7 @@ function renderMidiasPlanoAcao(container_id, insights){
 
 function renderMidias(){
   if(!MID) return;
-  const gerado = new Date(MID.gerado_em).toLocaleDateString('pt-BR') + ' ' + new Date(MID.gerado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const gerado = fmtDate(MID.gerado_em) + ' ' + new Date(MID.gerado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   // Vista vem do seletor de unidade do header (Escova / SPA / Consolidado)
   const view = (typeof UNIDADE_ATIVA !== 'undefined') ? UNIDADE_ATIVA : 'escova';
   // MID ja vem da unidade ativa via fetchUnidade (data/[prefix]midias_sociais.json).
@@ -7930,7 +7945,7 @@ function renderMidias(){
             <div style="display:flex;gap:8px;font-size:11.5px">
               <span style="color:${revColor(r.estrelas)};font-weight:700">${starStr(r.estrelas)}</span>
               <span style="color:var(--ink-2);font-weight:600">${r.nome}</span>
-              <span style="color:var(--ink-3);margin-left:auto">${r.data.split('-').reverse().slice(0,2).join('/')}</span>
+              <span style="color:var(--ink-3);margin-left:auto">${fmtDate(r.data)}</span>
               ${r.respondida?'<span style="color:#22c55e;font-size:10px">✓ respondida</span>':'<span style="color:#ef4444;font-size:10px">⚠ pendente</span>'}
             </div>
             ${r.comment?`<div style="font-size:11px;color:var(--ink-3);margin-top:4px;font-style:italic">"${r.comment.slice(0,120)}${r.comment.length>120?'...':''}"</div>`:''}
@@ -8191,7 +8206,7 @@ function renderMidias(){
             <th style="text-align:right;padding:6px">Atendimentos</th>
           </tr></thead>
           <tbody>${rows.map(r=>`<tr style="border-bottom:1px solid var(--surface-2)">
-            <td style="padding:6px">${r.data.split('-').reverse().slice(0,2).join('/')}</td>
+            <td style="padding:6px">${fmtDate(r.data)}</td>
             <td style="text-align:right;padding:6px">${r.gmb || '—'}</td>
             <td style="text-align:right;padding:6px">${r.ig || '—'}</td>
             <td style="text-align:right;padding:6px;font-weight:${r.novos>0?700:400}">${r.novos || '—'}</td>
@@ -8727,7 +8742,7 @@ function renderMidias(){
          fonte:'🟢 Trinks · primeira visita na janela', medido:trOk,
          taxa_da_anterior_pct: pSel.conversas_msg ? tr.novos/pSel.conversas_msg*100 : null,
          mensagem: trOk ? 'Conta quem pisou na loja pela primeira vez dentro desta janela — não é "cadastrado no período". Inclui quem veio por outro canal.'
-                        : `Trinks só tem dado até ${new Date(tr.ultimo+'T12:00').toLocaleDateString('pt-BR')} — faltam ${tr.falta} dia(s) desta janela. Número incompleto.`},
+                        : `Trinks só tem dado até ${fmtDate(tr.ultimo)} — faltam ${tr.falta} dia(s) desta janela. Número incompleto.`},
         {ordem:8, nome:'Atendimentos na primeira visita', valor:tr.atend, unidade:'atendimentos',
          fonte:'🟢 Trinks', medido:trOk,
          taxa_da_anterior_pct: tr.novos ? tr.atend/tr.novos*100 : null,
@@ -8765,11 +8780,11 @@ function renderMidias(){
 
     const avisoTrinks = !novosDia
       ? `<div style="margin-top:12px;padding:10px 12px;background:rgba(245,158,11,.10);border-left:3px solid #f59e0b;border-radius:6px;font-size:11.5px;color:var(--ink-2)">⏳ A série diária de clientes novos ainda não veio do Trinks nesta carga. As etapas 1 a 6 (Meta) estão corretas para a janela; as do Trinks aparecem na próxima atualização do painel.</div>`
-      : (!trOk ? `<div style="margin-top:12px;padding:10px 12px;background:rgba(245,158,11,.10);border-left:3px solid #f59e0b;border-radius:6px;font-size:11.5px;color:var(--ink-2)">⚠️ O Trinks tem dado até <strong>${new Date(tr.ultimo+'T12:00').toLocaleDateString('pt-BR')}</strong> e esta janela vai até <strong>${new Date(pSel.fim+'T12:00').toLocaleDateString('pt-BR')}</strong>. As etapas 7 a 10 estão incompletas em ${tr.falta} dia(s) e o ROAS da janela fica de fora — seria dividir receita parcial por gasto completo.</div>` : '');
+      : (!trOk ? `<div style="margin-top:12px;padding:10px 12px;background:rgba(245,158,11,.10);border-left:3px solid #f59e0b;border-radius:6px;font-size:11.5px;color:var(--ink-2)">⚠️ O Trinks tem dado até <strong>${fmtDate(tr.ultimo)}</strong> e esta janela vai até <strong>${fmtDate(pSel.fim)}</strong>. As etapas 7 a 10 estão incompletas em ${tr.falta} dia(s) e o ROAS da janela fica de fora — seria dividir receita parcial por gasto completo.</div>` : '');
 
     funilBox.innerHTML = `<section class="card" style="border-left:4px solid #a855f7">
       <h2>🎯 Funil de conversão · ${pSel.label} · Meta → WhatsApp → Visita → Cliente</h2>
-      <div class="cap">${new Date(pSel.inicio+'T12:00').toLocaleDateString('pt-BR')} a ${new Date(pSel.fim+'T12:00').toLocaleDateString('pt-BR')} · ${dias} dia(s) · a mesma janela dos KPIs acima. 🟢 medido · 🟡 estimado.
+      <div class="cap">${fmtDate(pSel.inicio)} a ${fmtDate(pSel.fim)} · ${dias} dia(s) · a mesma janela dos KPIs acima. 🟢 medido · 🟡 estimado.
         ${funil.modelo_negocio ? `<br><em>${funil.modelo_negocio}</em>` : ''}</div>
       ${avisoTrinks}
 
