@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-10T08:04:59-03:00",
+  "gerado_em": "2026-10-10T08:54:06-03:00",
   "hoje": "2026-10-10",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -270,8 +270,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 622,
-    "saldoRestante": 9378
+    "totalUtilizado": 629,
+    "saldoRestante": 9371
   },
   "metas_franqueadora": null,
   "unidade_config": {
@@ -1326,11 +1326,15 @@
       "rendimento_estimado_r": 0.0,
       "rendimento_periodo_r": 0.0,
       "saldo_com_rendimento_estimado": 0.0,
+      "rendimento_realizado": 0.0,
+      "taxa_medida_mes_pct": 1.13,
+      "taxa_origem": "estimada por CDI ~14,5% a.a. — nenhuma sangria para medir ainda",
+      "sangrias_medidas": 0,
       "rendimento_30d_est": 0.0,
       "saldo_oficial_disponivel": false,
       "historico_dias": 0,
       "ultimos_movs": [],
-      "obs": "Saldo = varreduras acumuladas menos resgates — é o PRINCIPAL aplicado, não o saldo oficial. O rendimento não aparece no extrato da conta: o que o painel mostra é estimativa por CDI ~14,5% a.a. apropriada dia a dia. Não há extrato da Reserva para conferir.",
+      "obs": "Saldo = varreduras menos resgates, onde o resgate saca do principal e o excedente é rendimento que saiu. 'Realizado' é medido no extrato; a projeção usa a taxa líquida medida nas sangrias, não a premissa de CDI — a sangria de 10/10 mostrou que o CDI cheio errava por ~4x.",
       "rendimento_previsto_30d": 159.2,
       "produto": "CDB Stone 100% CDI",
       "resgate": "imediato",
@@ -1636,7 +1640,7 @@
           "cliente": "Rosângela Pereira do Nascimento"
         }
       ],
-      "horas_desatualizado": 230.1
+      "horas_desatualizado": 230.9
     }
   },
   "auditoria_cancelados": {
@@ -3785,11 +3789,11 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Adna Lua Neves Gomes",
-          "n": 2,
+          "nome": "Sheila Almeida Rodrigues",
+          "n": 3,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 1.5
+          "horas_trab": 1.8
         },
         {
           "nome": "Ligia Maria Caviccchioli",
@@ -3799,18 +3803,18 @@
           "horas_trab": 0.8
         },
         {
-          "nome": "Sheila Almeida Rodrigues",
-          "n": 3,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.8
-        },
-        {
           "nome": "Edilene Lima De Oliveira",
           "n": 2,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 0.5
+        },
+        {
+          "nome": "Adna Lua Neves Gomes",
+          "n": 2,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 1.5
         }
       ],
       "ranking_prof_total_n": 16,
@@ -5335,18 +5339,18 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Sheila Almeida Rodrigues",
-          "n": 3,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.8
-        },
-        {
           "nome": "Edilene Lima De Oliveira",
           "n": 2,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 0.5
+        },
+        {
+          "nome": "Sheila Almeida Rodrigues",
+          "n": 3,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 1.8
         },
         {
           "nome": "Ligia Maria Caviccchioli",
@@ -6477,7 +6481,7 @@
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "data": "2026-10-03",
-          "hora_max": 8.07,
+          "hora_max": 8.9,
           "caixa": 0.0,
           "atend_fin": 0,
           "faturamento_apurado": 0.0,
@@ -6500,8 +6504,8 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "08:04",
-          "hora_atual_num": 8.07,
+          "hora_atual_str": "08:54",
+          "hora_atual_num": 8.9,
           "pct_esperado_agora": 0.0,
           "meta_dia": 1373.29,
           "meta_esperada_agora": 0.0,
@@ -6718,7 +6722,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-10T08:04:59-03:00",
+    "gerado_em": "2026-10-10T08:54:06-03:00",
     "hoje": "2026-10-10",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -6904,7 +6908,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-10T08:04:59-03:00",
+    "gerado_em": "2026-10-10T08:54:06-03:00",
     "n_agendamentos": 76,
     "horas": [
       9,
