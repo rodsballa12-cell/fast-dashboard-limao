@@ -660,37 +660,79 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         if x["data"]: resgates_dia[x["data"]] += x["valor"]
 
     tot_resgates = sum(x["valor"] for x in resgates_aplicacao)
-    saldo_reserva = tot_saidas - tot_resgates
 
     dias_ord = sorted(set(list(aportes_dia.keys()) + list(transfer_recebidas_dia.keys())
                           + list(resgates_dia.keys())))
-    historico = []
-    saldo_acum = 0
-    for d in dias_ord:
-        s = aportes_dia.get(d, 0)
-        r = transfer_recebidas_dia.get(d, 0)
-        g = resgates_dia.get(d, 0)
-        saldo_acum += s - g
-        historico.append({
-            "data": d.isoformat(),
-            "aporte": _r(s),
-            "resgate": _r(g),
-            "transf_recebida": _r(r),
-            "saldo_aplicado_acum": _r(saldo_acum),
-        })
 
-    # Rendimento estimado: CDI ~14,5% a.a. ≈ 1,13% a.m., apropriado dia a dia sobre o
-    # saldo efetivamente aplicado naquele dia. A versão anterior ponderava só os aportes
-    # pelo tempo, o que ignorava resgates e passou a superestimar assim que houve um.
+    # O resgate pode sair MAIOR que o principal, e foi o que aconteceu em 10/10:
+    # voltaram R$ 49.591,42 contra R$ 49.510,06 varridos. A diferença não é erro de
+    # conta — é o rendimento, que fica invisível dentro da Reserva e só aparece
+    # quando o dinheiro volta. A versão anterior fazia saldo = varreduras - resgates
+    # e teria mostrado uma reserva de -R$ 81,36 no painel.
     #
-    # Duas janelas, porque um resgate separa dois dinheiros diferentes:
-    #  · período  = tudo desde o início do extrato (inclui juros de dinheiro já sacado)
-    #  · atual    = só depois do último resgate, que é o que ainda está rendendo
-    # Sem essa separação, o "saldo + rendimento" somaria a um saldo de R$ 7 mil os juros
-    # de um saldo de R$ 29 mil que já foi para a XP.
-    CDI_DIA_PCT = 1.13 / 30
-    ultimo_resgate_d = max((d for d, v in resgates_dia.items() if v > 0), default=None)
+    # Modelo certo: o resgate saca do principal até zerá-lo; o que passa disso é
+    # RENDIMENTO REALIZADO — medido, não estimado. É a única leitura de rendimento
+    # que existe, porque não há extrato da Reserva.
+    historico = []
+    principal = 0.0
+    rendimento_realizado = 0.0
+    janelas_medidas = []   # (R$ x dias da janela, rendimento líquido que saiu nela)
+    por_dia = {}           # só os dias com movimento, para o histórico do painel
+    if dias_ord:
+        soma_rs_dias_janela = 0.0
+        d = dias_ord[0]
+        while d <= hoje:
+            s = aportes_dia.get(d, 0)
+            g = resgates_dia.get(d, 0)
+            principal += s
+            rend_do_dia = 0.0
+            if g > 0:
+                # Fecha a janela com os saldos de fim de dia ANTERIORES a este resgate:
+                # é o R$ x dias que de fato rendeu o que está voltando agora.
+                do_principal = min(g, principal)
+                principal -= do_principal
+                rend_do_dia = g - do_principal          # excedente = rendimento que saiu
+                rendimento_realizado += rend_do_dia
+                if soma_rs_dias_janela > 0 and rend_do_dia > 0:
+                    janelas_medidas.append((soma_rs_dias_janela, rend_do_dia))
+                soma_rs_dias_janela = 0.0
+            else:
+                soma_rs_dias_janela += principal        # saldo de fim de dia
+            if s or g or transfer_recebidas_dia.get(d, 0):
+                por_dia[d] = {
+                    "data": d.isoformat(),
+                    "aporte": _r(s),
+                    "resgate": _r(g),
+                    "rendimento_realizado": _r(rend_do_dia),
+                    "transf_recebida": _r(transfer_recebidas_dia.get(d, 0)),
+                    "saldo_aplicado_acum": _r(principal),
+                }
+            d += timedelta(days=1)
+    historico = [por_dia[k] for k in sorted(por_dia)]
+    saldo_reserva = principal
 
+    # TAXA MEDIDA. A premissa anterior era CDI ~14,5% a.a. (1,13%/mês) e a sangria de
+    # 10/10 mostrou que ela errava por ~4x: estimava R$ 339,87 de rendimento onde
+    # entraram R$ 81,36. Parte da diferença é imposto — IOF morde o rendimento de
+    # aplicação resgatada antes de 30 dias (aqui o dinheiro tinha 17 dias médios) e
+    # o IR é 22,5% abaixo de 180 dias. Pelo modelo, IOF + IR levariam os R$ 339,87
+    # para ~R$ 151, ainda o dobro do que entrou: o resto não dá para separar, porque
+    # o extrato traz um número só, sem decomposição.
+    # Então a projeção passa a usar a taxa LÍQUIDA medida — o que de fato chega na
+    # empresa — e cai para o CDI apenas enquanto não houver nenhuma medição.
+    CDI_DIA_PCT_FALLBACK = 1.13 / 30
+    if janelas_medidas:
+        tot_rs_dias = sum(w for w, _ in janelas_medidas)
+        tot_rend = sum(r for _, r in janelas_medidas)
+        taxa_dia_pct = (tot_rend / tot_rs_dias * 100) if tot_rs_dias > 0 else 0.0
+        taxa_origem = "medida nas sangrias do próprio extrato"
+    else:
+        taxa_dia_pct = CDI_DIA_PCT_FALLBACK
+        taxa_origem = "estimada por CDI ~14,5% a.a. — nenhuma sangria para medir ainda"
+
+    # Rendimento ainda dentro da Reserva, sobre o saldo que sobrou depois do último
+    # resgate (o anterior já saiu e está contado em rendimento_realizado).
+    ultimo_resgate_d = max((d for d, v in resgates_dia.items() if v > 0), default=None)
     saldo_dia_acum = 0.0
     soma_saldo_dias_atual = 0.0
     rendimento_periodo_r = 0.0
@@ -699,10 +741,11 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         d = dias_ord[0]
         while d <= hoje:
             saldo_dia_acum += aportes_dia.get(d, 0) - resgates_dia.get(d, 0)
-            rendimento_periodo_r += saldo_dia_acum * CDI_DIA_PCT / 100
+            if saldo_dia_acum < 0: saldo_dia_acum = 0.0
+            rendimento_periodo_r += saldo_dia_acum * taxa_dia_pct / 100
             if ultimo_resgate_d is None or d > ultimo_resgate_d:
                 soma_saldo_dias_atual += saldo_dia_acum
-                rendimento_atual_r += saldo_dia_acum * CDI_DIA_PCT / 100
+                rendimento_atual_r += saldo_dia_acum * taxa_dia_pct / 100
             d += timedelta(days=1)
 
     # "dias médios" = quantos dias o saldo ATUAL equivale a ter ficado aplicado
@@ -722,24 +765,24 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         "rendimento_estimado_r": _r(rendimento_estimado_r),
         "rendimento_periodo_r": _r(rendimento_periodo_r),
         "saldo_com_rendimento_estimado": _r(saldo_reserva + rendimento_estimado_r),
-        # Projeção dos próximos 30 dias sobre o saldo de HOJE. Substitui o campo
-        # rendimento_previsto_30d do config, que guardava a leitura do app: ela
-        # envelhece calada. A de 23/08 valia R$ 159,20 sobre um saldo de
-        # R$ 18.287,48 e seguia no ar com o saldo já em R$ 49 mil — errada por
-        # 3,5x, e exibida como se fosse número do app, de agora.
-        "rendimento_30d_est": _r(saldo_reserva * 1.13 / 100),
-        # O saldo oficial da Reserva (principal + rendimento acumulado) não é
-        # legível: o extrato que chega é o da CONTA, e quando a varredura sai
-        # ele perde a pista do dinheiro. Confirmado nos 643 lançamentos — seis
-        # tipos, nenhum de rendimento, coluna Descrição vazia em todas as linhas.
-        # Pelo PROTOCOLO, isso é NÃO VEJO, e o painel precisa dizer.
+        # MEDIDO, não estimado: o que o resgate trouxe acima do principal varrido.
+        # Única leitura real de rendimento que existe, já líquida de IOF e IR.
+        "rendimento_realizado": _r(rendimento_realizado),
+        "taxa_medida_mes_pct": round(taxa_dia_pct * 30, 3),
+        "taxa_origem": taxa_origem,
+        "sangrias_medidas": len(janelas_medidas),
+        # Projeção dos próximos 30 dias sobre o saldo de HOJE, pela taxa acima.
+        "rendimento_30d_est": _r(saldo_reserva * taxa_dia_pct * 30 / 100),
+        # O saldo oficial da Reserva segue ilegível no dia a dia: o extrato que chega
+        # é o da CONTA. A diferença é que agora, a cada sangria, o rendimento aparece
+        # de uma vez — é o único momento em que a Reserva se revela.
         "saldo_oficial_disponivel": False,
         "historico_dias": len(historico),
         "ultimos_movs": historico[-10:],
-        "obs": ("Saldo = varreduras acumuladas menos resgates — é o PRINCIPAL aplicado, "
-                "não o saldo oficial. O rendimento não aparece no extrato da conta: o que "
-                "o painel mostra é estimativa por CDI ~14,5% a.a. apropriada dia a dia. "
-                "Não há extrato da Reserva para conferir."),
+        "obs": ("Saldo = varreduras menos resgates, onde o resgate saca do principal e o "
+                "excedente é rendimento que saiu. 'Realizado' é medido no extrato; a "
+                "projeção usa a taxa líquida medida nas sangrias, não a premissa de CDI "
+                "— a sangria de 10/10 mostrou que o CDI cheio errava por ~4x."),
     }
     if aplicacao_reserva["ultimo_resgate"]:
         aplicacao_reserva["ultimo_resgate"] = aplicacao_reserva["ultimo_resgate"].isoformat()
