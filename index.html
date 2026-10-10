@@ -4990,16 +4990,31 @@ function renderStone(data){
     // passagem — o caixa é varrido pra reserva, rende alguns dias e sai numa
     // sangria pro banco principal. "% de uma meta" sobre saldo em trânsito não
     // media nada e só empurrava o número pra baixo a cada sangria.
-    const rend30 = ap.rendimento_previsto_30d || 0;
+    // O rendimento de 30d vem da NOSSA projeção sobre o saldo de hoje, não mais
+    // da leitura do app guardada no config: aquela envelhecia calada (a de 23/08
+    // seguiu no ar por 48 dias, errada por 3,5x depois que o saldo triplicou).
+    // Não há extrato da Reserva para conferir o saldo oficial — por isso o
+    // NÃO VEJO explícito, em vez de um número que parece conferido.
+    const rend30 = ap.rendimento_30d_est || 0;
     const conf_app = (ap.ultima_conferencia_app||'').split('-').reverse().join('/');
+    const dias_conf = ap.ultima_conferencia_app
+      ? Math.round((Date.now() - new Date(ap.ultima_conferencia_app+'T12:00:00').getTime())/86400000)
+      : null;
     const bloco_meta = `
       <div style="margin-top:14px;padding:12px 14px;background:var(--surface-2);border-radius:8px;
                   display:flex;flex-wrap:wrap;gap:10px 22px;align-items:baseline;">
         <strong>${ap.produto||'CDB Stone'}</strong>
         <span style="color:var(--muted);font-size:12px;">resgate ${ap.resgate||'imediato'}</span>
-        ${rend30 > 0 ? `<span style="font-size:12px;">Rendimento previsto 30d (app): <span class="up"><strong>+${brl0(rend30)}</strong></span></span>` : ''}
-        ${conf_app ? `<span style="color:var(--muted);font-size:12px;margin-left:auto;">Conferido no app ${conf_app}</span>` : ''}
-      </div>`;
+        ${rend30 > 0 ? `<span style="font-size:12px;">Rendimento dos próximos 30d, <em>estimado</em>: <span class="up"><strong>+${brl0(rend30)}</strong></span></span>` : ''}
+        ${conf_app ? `<span style="color:var(--muted);font-size:12px;margin-left:auto;">Última conferência no app ${conf_app}${dias_conf!=null?` · há ${dias_conf} d`:''}</span>` : ''}
+      </div>
+      ${ap.saldo_oficial_disponivel === false ? `
+      <div class="cap" style="margin-top:6px;font-size:11px;">
+        <strong>NÃO VEJO:</strong> o saldo oficial da Reserva, com o rendimento já creditado.
+        O extrato que chega é o da conta — quando a varredura sai, ele perde a pista do dinheiro,
+        e não há extrato da Reserva. O que está acima é o <strong>principal aplicado</strong>
+        (varreduras menos resgates) mais um rendimento <strong>estimado</strong> por CDI.
+      </div>` : ''}`;
 
     bloco_aplicacao = `
       <div class="card" style="border-left:3px solid var(--good);">

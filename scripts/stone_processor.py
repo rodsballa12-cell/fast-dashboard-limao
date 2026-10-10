@@ -722,11 +722,24 @@ def processar_stone_csv(csv_path: Path, transacoes_trinks: list, hoje: date | No
         "rendimento_estimado_r": _r(rendimento_estimado_r),
         "rendimento_periodo_r": _r(rendimento_periodo_r),
         "saldo_com_rendimento_estimado": _r(saldo_reserva + rendimento_estimado_r),
+        # Projeção dos próximos 30 dias sobre o saldo de HOJE. Substitui o campo
+        # rendimento_previsto_30d do config, que guardava a leitura do app: ela
+        # envelhece calada. A de 23/08 valia R$ 159,20 sobre um saldo de
+        # R$ 18.287,48 e seguia no ar com o saldo já em R$ 49 mil — errada por
+        # 3,5x, e exibida como se fosse número do app, de agora.
+        "rendimento_30d_est": _r(saldo_reserva * 1.13 / 100),
+        # O saldo oficial da Reserva (principal + rendimento acumulado) não é
+        # legível: o extrato que chega é o da CONTA, e quando a varredura sai
+        # ele perde a pista do dinheiro. Confirmado nos 643 lançamentos — seis
+        # tipos, nenhum de rendimento, coluna Descrição vazia em todas as linhas.
+        # Pelo PROTOCOLO, isso é NÃO VEJO, e o painel precisa dizer.
+        "saldo_oficial_disponivel": False,
         "historico_dias": len(historico),
         "ultimos_movs": historico[-10:],
-        "obs": ("Saldo = varreduras acumuladas menos resgates. Rendimento estimado usa "
-                "CDI ~14,5% a.a. apropriado dia a dia sobre o saldo do dia — é estimativa, "
-                "o valor oficial é o do app Stone."),
+        "obs": ("Saldo = varreduras acumuladas menos resgates — é o PRINCIPAL aplicado, "
+                "não o saldo oficial. O rendimento não aparece no extrato da conta: o que "
+                "o painel mostra é estimativa por CDI ~14,5% a.a. apropriada dia a dia. "
+                "Não há extrato da Reserva para conferir."),
     }
     if aplicacao_reserva["ultimo_resgate"]:
         aplicacao_reserva["ultimo_resgate"] = aplicacao_reserva["ultimo_resgate"].isoformat()
