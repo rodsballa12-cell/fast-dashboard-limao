@@ -5010,26 +5010,26 @@ function renderStone(data){
       </div>
       ${ap.saldo_oficial_disponivel === false ? `
       <div class="cap" style="margin-top:6px;font-size:11px;">
-        <strong>NÃO VEJO:</strong> o saldo oficial da Reserva, com o rendimento já creditado.
-        O extrato que chega é o da conta — quando a varredura sai, ele perde a pista do dinheiro,
-        e não há extrato da Reserva. O que está acima é o <strong>principal aplicado</strong>
-        (varreduras menos resgates) mais um rendimento <strong>estimado</strong> por CDI.
+        <strong>NÃO VEJO</strong> o saldo da Reserva no dia a dia: o extrato que chega é o da conta,
+        e quando a varredura sai ele perde a pista do dinheiro. O rendimento só se revela
+        <strong>na sangria</strong>, quando volta junto com o principal — é de lá que vem o
+        "realizado" acima, e é a única leitura real que existe.
       </div>` : ''}`;
 
     bloco_aplicacao = `
       <div class="card" style="border-left:3px solid var(--good);">
-        <h2>🏦 Reserva Stone · caixa protegido rendendo CDI</h2>
-        <div class="cap">Todo dinheiro que cai na Stone é varrido automaticamente pra reserva. O saldo é o acumulado das varreduras <strong>menos as sangrias já feitas</strong> pro banco principal. Resgate imediato, rendendo 100% do CDI (~14,5% a.a.).</div>
+        <h2>🏦 Reserva Stone · caixa protegido</h2>
+        <div class="cap">Todo dinheiro que cai na Stone é varrido automaticamente pra reserva. O saldo é o acumulado das varreduras <strong>menos as sangrias já feitas</strong> pro banco principal, e o resgate é imediato. ${(ap.sangrias_medidas||0) > 0 ? `Rendimento <strong>medido</strong> nas sangrias: <strong>${(ap.taxa_medida_mes_pct||0).toFixed(3)}%/mês</strong> líquido de IOF e IR — não os 1,13%/mês do CDI cheio.` : `Rendimento ainda sem medição — projetado por CDI.`}</div>
         <div class="categ-grid">
           ${tile('c3','Saldo aplicado',brl0(ap.saldo_aplicado),`${brl0(ap.total_aportes_periodo)} varridos − ${brl0(ap.total_resgates_periodo||0)} sangrados`)}
-          ${tile('','Rendimento estim. (CDI)',brl0(ap.rendimento_estimado_r),`${ap.rendimento_estimado_pct}% · saldo atual há ${ap.dias_medio_aporte} d`)}
-          ${tile('c2','Saldo + rendimento estim.',brl0(ap.saldo_com_rendimento_estimado),`estimativa 14,5% a.a. CDI`)}
+          ${tile('c2','Rendimento realizado',brl0(ap.rendimento_realizado||0),`medido${(ap.sangrias_medidas||0)>0?` em ${ap.sangrias_medidas} ${ap.sangrias_medidas>1?'sangrias':'sangria'}`:''} · já na conta`)}
+          ${tile('','Rendendo agora (est.)',brl0(ap.rendimento_estimado_r),`${ap.rendimento_estimado_pct}% · ${(ap.taxa_medida_mes_pct||0).toFixed(3)}%/mês · saldo há ${ap.dias_medio_aporte} d`)}
         </div>
         ${(ap.resgates_n||0) > 0 ? `
         <div class="cap" style="margin-top:8px;">
           🔻 <strong>${brl0(ap.total_resgates_periodo)}</strong> já resgatados da reserva em ${ap.resgates_n} ${ap.resgates_n>1?'sangrias':'sangria'}${ap.ultimo_resgate?` · última em ${ap.ultimo_resgate.split('-').reverse().join('/')}`:''}.
           Esse dinheiro saiu da Stone e não conta mais aqui — confira no extrato do banco de destino.
-          No período todo a reserva rendeu ${brl0(ap.rendimento_periodo_r||0)} estimados, incluindo o que já foi sacado.
+          ${(ap.rendimento_realizado||0) > 0 ? `Dentro dele voltaram <strong>${brl0(ap.rendimento_realizado)}</strong> de rendimento, que é o que a Reserva de fato pagou no período.` : ''}
         </div>` : ''}
         ${bloco_meta}
         ${mov_rows ? `
