@@ -5135,8 +5135,46 @@ function renderStone(data){
     </div>
   </div>`;
 
+  // AS DUAS PONTAS DO MESMO DINHEIRO · pedido do Rodrigo em 10/10.
+  // Os dois números já existiam, mas em cards distantes: o "a receber" no topo e
+  // o saldo da Reserva lá embaixo. Separados, escondiam que são o mesmo dinheiro
+  // em dois momentos — o que está na fila cai e é varrido 100% pra Reserva.
+  // A varredura ser integral não é suposição: no acumulado entraram R$ 78.515,18
+  // e foram varridos R$ 78.475,18. A diferença de R$ 40,00 é um único PIX pago
+  // direto em 01/08, o que faz da varredura 99,95% do que entra.
+  const custo_antec_evitado = (antec && antec.total && antec.total.custo_antecipacao) || 0;
+  const reserva_hoje = (ap && ap.saldo_aplicado) || 0;
+  const cron = (antec && antec.cronograma_liberacao) || [];
+  const ultima_lib = cron.length ? cron[cron.length - 1].data : null;
+  const ultima_lib_br = ultima_lib ? ultima_lib.split('-').reverse().slice(0,2).join('/') : null;
+  const bloco_par = aReceber > 0 ? `<div class="card" style="border-left:3px solid var(--accent-2);">
+    <h2>💰 As duas pontas do mesmo dinheiro</h2>
+    <div class="cap">O que está na fila de liberação e o que ele vira quando cai. É o mesmo dinheiro em dois momentos: cada crédito que entra na Stone é varrido <strong>integralmente</strong> pra Reserva.</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px">
+
+      <div style="padding:14px 16px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--good)">
+        <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase;letter-spacing:.06em">⏳ A receber · não antecipei</div>
+        <div style="font-size:30px;font-weight:800;color:var(--ink);margin:4px 0;line-height:1.1">${brl0(aReceber)}</div>
+        <div style="font-size:11.5px;color:var(--ink-2);line-height:1.5">
+          Cai sozinho${ultima_lib_br ? `, o último lote em <strong>${ultima_lib_br}</strong>` : ''}.<br>
+          ${custo_antec_evitado > 0 ? `Esperar em vez de antecipar <strong>economiza ${brl0(custo_antec_evitado)}</strong> de taxa.` : ''}
+        </div>
+      </div>
+
+      <div style="padding:14px 16px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--accent)">
+        <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.06em">🏦 Vai 100% pra Reserva</div>
+        <div style="font-size:30px;font-weight:800;color:var(--ink);margin:4px 0;line-height:1.1">${brl0(aReceber)}</div>
+        <div style="font-size:11.5px;color:var(--ink-2);line-height:1.5">
+          Reserva hoje <strong>${brl0(reserva_hoje)}</strong>.<br>
+          Quando a fila cair: <strong style="color:var(--accent)">${brl0(reserva_hoje + aReceber)}</strong>, antes de sangria.
+        </div>
+      </div>
+
+    </div>
+  </div>` : '';
+
   // bloco_alerta absorvido no bloco_hero. Antecipação vira card DEDICADO (bloco_antecipacao).
-  el.innerHTML = bloco_hero + bloco_gap + bloco_orf_stone + bloco_orf_trinks + bloco_antecipacao + bloco_periodos + bloco_dinheiro + bloco_aplicacao + bloco_fluxo + bloco_receb;
+  el.innerHTML = bloco_hero + bloco_par + bloco_gap + bloco_orf_stone + bloco_orf_trinks + bloco_antecipacao + bloco_periodos + bloco_dinheiro + bloco_aplicacao + bloco_fluxo + bloco_receb;
 
   // CONSOLIDAÇÃO K · handler do seletor Stone por período
   document.querySelectorAll('.stone-per-btn').forEach(btn => {
