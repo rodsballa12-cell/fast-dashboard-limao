@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-10T06:24:35-03:00",
+  "gerado_em": "2026-10-10T08:04:52-03:00",
   "hoje": "2026-10-10",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -306,8 +306,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 1812,
-    "saldoRestante": 8188
+    "totalUtilizado": 1831,
+    "saldoRestante": 8169
   },
   "metas_franqueadora": {
     "recepcionistas": 2,
@@ -2385,6 +2385,8 @@
       "rendimento_estimado_r": 339.87,
       "rendimento_periodo_r": 541.34,
       "saldo_com_rendimento_estimado": 49849.93,
+      "rendimento_30d_est": 559.46,
+      "saldo_oficial_disponivel": false,
       "historico_dias": 70,
       "ultimos_movs": [
         {
@@ -2458,7 +2460,7 @@
           "saldo_aplicado_acum": 49510.06
         }
       ],
-      "obs": "Saldo = varreduras acumuladas menos resgates. Rendimento estimado usa CDI ~14,5% a.a. apropriado dia a dia sobre o saldo do dia — é estimativa, o valor oficial é o do app Stone.",
+      "obs": "Saldo = varreduras acumuladas menos resgates — é o PRINCIPAL aplicado, não o saldo oficial. O rendimento não aparece no extrato da conta: o que o painel mostra é estimativa por CDI ~14,5% a.a. apropriada dia a dia. Não há extrato da Reserva para conferir.",
       "rendimento_previsto_30d": 159.2,
       "produto": "CDB Stone 100% CDI",
       "resgate": "imediato",
@@ -2506,7 +2508,7 @@
           "cliente": "TAIS CRISTINA LEITE CABRAL"
         }
       ],
-      "horas_desatualizado": 12.9
+      "horas_desatualizado": 14.6
     }
   },
   "auditoria_cancelados": {
@@ -4961,15 +4963,15 @@
           "receita_serv": 8191.0,
           "atend_fin": 135,
           "atend_canc": 6,
-          "atend_total": 141,
+          "atend_total": 143,
           "n_trans": 81,
           "ticket_trans": 131.53,
           "cliente_dia": 80,
           "ticket_medio": 133.18,
-          "taxa_canc": 4.3,
+          "taxa_canc": 4.2,
           "dias_op": 5,
           "clientes_unicos": 75,
-          "em_atendimento": 0,
+          "em_atendimento": 2,
           "n_prof_ativos": 14,
           "rs_hora_salao": 177.57,
           "horas_operacao_periodo": 60.0,
@@ -5017,6 +5019,55 @@
       }
     },
     "dias": {
+      "2026-10-10": {
+        "kpis": {
+          "caixa": 0.0,
+          "faturamento_apurado": 0.0,
+          "receita_serv": 0.0,
+          "atend_fin": 0,
+          "atend_canc": 0,
+          "atend_total": 2,
+          "n_trans": 0,
+          "ticket_trans": 0.0,
+          "cliente_dia": 0,
+          "ticket_medio": 0.0,
+          "taxa_canc": 0.0,
+          "dias_op": 0,
+          "clientes_unicos": 0,
+          "em_atendimento": 2,
+          "n_prof_ativos": 0,
+          "rs_hora_salao": 0.0,
+          "horas_operacao_periodo": 0.0,
+          "utilizacao_agregada_pct": 0.0
+        },
+        "categorias": {
+          "pacotes": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "produtos": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "fast_retoque": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          },
+          "servicos_gerais": {
+            "v": 0.0,
+            "n": 0,
+            "pct": 0.0
+          }
+        }
+      },
       "2026-10-09": {
         "kpis": {
           "caixa": 3082.0,
@@ -7722,7 +7773,7 @@
         "receita_serv": 102380.1,
         "atend_fin": 1609,
         "atend_canc": 87,
-        "atend_total": 1699,
+        "atend_total": 1701,
         "n_trans": 988,
         "ticket_trans": 119.86,
         "cliente_dia": 956,
@@ -7730,7 +7781,7 @@
         "taxa_canc": 5.1,
         "dias_op": 72,
         "clientes_unicos": 563,
-        "em_atendimento": 2,
+        "em_atendimento": 4,
         "n_prof_ativos": 33,
         "rs_hora_salao": 139.97,
         "horas_operacao_periodo": 846.0,
@@ -7916,7 +7967,7 @@
           "clientes_unicos": 130,
           "n_trans": 147,
           "ticket_trans": 133.73,
-          "taxa_canc": 6.5,
+          "taxa_canc": 6.4,
           "categorias": {
             "pacotes": {
               "v": 4266.0,
@@ -8970,11 +9021,18 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Vanessa Nascimento D Silva",
-          "n": 4,
+          "nome": "Eliana Sampaio Cerqueira",
+          "n": 1,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 2.0
+          "horas_trab": 0.5
+        },
+        {
+          "nome": "Jeniffer Roberta De Oliveira Felix",
+          "n": 17,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 9.2
         },
         {
           "nome": "Sandra Margarete Da Silva",
@@ -8991,11 +9049,11 @@
           "horas_trab": 0.8
         },
         {
-          "nome": "Julia Kathleen Souza Da Silva",
-          "n": 11,
+          "nome": "Cacilda Guimarães",
+          "n": 3,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 5.5
+          "horas_trab": 1.5
         },
         {
           "nome": "Aline Dos Santos Gonzaga",
@@ -9005,53 +9063,11 @@
           "horas_trab": 1.6
         },
         {
-          "nome": "Cacilda Guimarães",
-          "n": 3,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.5
-        },
-        {
-          "nome": "Giovanna Guedes Da Silva",
-          "n": 65,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 35.1
-        },
-        {
-          "nome": "Lidiane Quiteria Da Silva",
-          "n": 9,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 5.2
-        },
-        {
-          "nome": "Jeniffer Roberta De Oliveira Felix",
-          "n": 17,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 9.2
-        },
-        {
-          "nome": "Eliana Sampaio Cerqueira",
-          "n": 1,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 0.5
-        },
-        {
           "nome": "Bianca Doria Araujo Santos",
           "n": 8,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 4.9
-        },
-        {
-          "nome": "Kimberly Soares Vasconcelos",
-          "n": 4,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.8
         },
         {
           "nome": "Gabriela Cristina Da Silva",
@@ -9061,11 +9077,32 @@
           "horas_trab": 51.6
         },
         {
-          "nome": "Niedja Rafaelle Leite Nunes",
+          "nome": "Vanessa Nascimento D Silva",
           "n": 4,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 2.4
+          "horas_trab": 2.0
+        },
+        {
+          "nome": "Giovanna Guedes Da Silva",
+          "n": 65,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 35.1
+        },
+        {
+          "nome": "Julia Kathleen Souza Da Silva",
+          "n": 11,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 5.5
+        },
+        {
+          "nome": "Lidiane Quiteria Da Silva",
+          "n": 9,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 5.2
         },
         {
           "nome": "Patricia Helena Ferreira",
@@ -9073,6 +9110,20 @@
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 6.3
+        },
+        {
+          "nome": "Niedja Rafaelle Leite Nunes",
+          "n": 4,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 2.4
+        },
+        {
+          "nome": "Kimberly Soares Vasconcelos",
+          "n": 4,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 1.8
         }
       ],
       "ranking_prof_total_n": 48,
@@ -12909,15 +12960,15 @@
         "receita_serv": 14730.0,
         "atend_fin": 246,
         "atend_canc": 17,
-        "atend_total": 263,
+        "atend_total": 265,
         "n_trans": 147,
         "ticket_trans": 133.73,
         "cliente_dia": 145,
         "ticket_medio": 135.57,
-        "taxa_canc": 6.5,
+        "taxa_canc": 6.4,
         "dias_op": 8,
         "clientes_unicos": 130,
-        "em_atendimento": 0,
+        "em_atendimento": 2,
         "n_prof_ativos": 15,
         "rs_hora_salao": 192.73,
         "horas_operacao_periodo": 102.0,
@@ -13605,8 +13656,8 @@
           "comissao": 696.3,
           "taxa_efetiva": 0.3084,
           "por_cat": {
-            "TRATAMENTO": 496.0,
             "RETOQUE": 189.0,
+            "TRATAMENTO": 496.0,
             "ESCOVA": 1573.0
           },
           "ticket_medio_serv": 98.17
@@ -13645,8 +13696,8 @@
           "comissao": 531.6,
           "taxa_efetiva": 0.323,
           "por_cat": {
-            "TRATAMENTO": 387.0,
             "RETOQUE": 378.0,
+            "TRATAMENTO": 387.0,
             "ESCOVA": 792.0,
             "PENTEADOS": 89.0
           },
@@ -13674,8 +13725,8 @@
           "taxa_efetiva": 0.3146,
           "por_cat": {
             "ESCOVA": 1019.0,
-            "TRATAMENTO": 89.0,
-            "RETOQUE": 189.0
+            "RETOQUE": 189.0,
+            "TRATAMENTO": 89.0
           },
           "ticket_medio_serv": 99.77
         },
@@ -13751,9 +13802,9 @@
           "comissao": 299.7,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "TRATAMENTO": 164.0,
+            "MAKE": 439.0,
             "ESCOVA": 396.0,
-            "MAKE": 439.0
+            "TRATAMENTO": 164.0
           },
           "ticket_medio_serv": 76.85
         },
@@ -14116,15 +14167,15 @@
         "receita_serv": 8191.0,
         "atend_fin": 135,
         "atend_canc": 6,
-        "atend_total": 141,
+        "atend_total": 143,
         "n_trans": 81,
         "ticket_trans": 131.53,
         "cliente_dia": 80,
         "ticket_medio": 133.18,
-        "taxa_canc": 4.3,
+        "taxa_canc": 4.2,
         "dias_op": 5,
         "clientes_unicos": 75,
-        "em_atendimento": 0,
+        "em_atendimento": 2,
         "n_prof_ativos": 14,
         "rs_hora_salao": 177.57,
         "horas_operacao_periodo": 60.0,
@@ -14520,8 +14571,8 @@
           "comissao": 448.5,
           "taxa_efetiva": 0.3276,
           "por_cat": {
-            "TRATAMENTO": 288.0,
             "RETOQUE": 378.0,
+            "TRATAMENTO": 288.0,
             "ESCOVA": 614.0,
             "PENTEADOS": 89.0
           },
@@ -14575,8 +14626,8 @@
           "comissao": 310.2,
           "taxa_efetiva": 0.3195,
           "por_cat": {
-            "TRATAMENTO": 208.0,
             "RETOQUE": 189.0,
+            "TRATAMENTO": 208.0,
             "ESCOVA": 574.0
           },
           "ticket_medio_serv": 97.1
@@ -14663,9 +14714,9 @@
           "comissao": 80.4,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "TRATAMENTO": 119.0,
+            "MAKE": 60.0,
             "ESCOVA": 89.0,
-            "MAKE": 60.0
+            "TRATAMENTO": 119.0
           },
           "ticket_medio_serv": 67.0
         },
@@ -15241,7 +15292,7 @@
         "receita_serv": 0.0,
         "atend_fin": 0,
         "atend_canc": 0,
-        "atend_total": 0,
+        "atend_total": 2,
         "n_trans": 0,
         "ticket_trans": 0.0,
         "cliente_dia": 0,
@@ -15249,7 +15300,7 @@
         "taxa_canc": 0.0,
         "dias_op": 0,
         "clientes_unicos": 0,
-        "em_atendimento": 0,
+        "em_atendimento": 2,
         "n_prof_ativos": 0,
         "rs_hora_salao": 0.0,
         "horas_operacao_periodo": 0.0,
@@ -15268,7 +15319,7 @@
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "data": "2026-10-03",
-          "hora_max": 6.4,
+          "hora_max": 8.07,
           "caixa": 0.0,
           "atend_fin": 0,
           "faturamento_apurado": 0.0,
@@ -15291,14 +15342,14 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "06:24",
-          "hora_atual_num": 6.4,
+          "hora_atual_str": "08:04",
+          "hora_atual_num": 8.07,
           "pct_esperado_agora": 0.0,
           "meta_dia": 4084.3,
-          "meta_esperada_agora": 0.0,
+          "meta_esperada_agora": 1.09,
           "realizado_agora": 0.0,
-          "pace_delta": 0.0,
-          "pace_ratio_pct": 100.0,
+          "pace_delta": -1.09,
+          "pace_ratio_pct": 0.0,
           "projecao_dia": 0.0,
           "opera_hoje": true
         },
@@ -15521,7 +15572,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-10T06:24:35-03:00",
+    "gerado_em": "2026-10-10T08:04:52-03:00",
     "hoje": "2026-10-10",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -15956,7 +16007,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-10T06:24:41-03:00",
+    "gerado_em": "2026-10-10T08:04:59-03:00",
     "n_agendamentos": 1477,
     "horas": [
       9,
