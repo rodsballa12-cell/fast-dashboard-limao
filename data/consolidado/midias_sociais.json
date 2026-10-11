@@ -1056,6 +1056,61 @@
         "📌 MEMÓRIA**",
         ""
       ]
+    },
+    {
+      "data": "2026-10-09",
+      "hora": "22:30",
+      "tipo": "noturno",
+      "sincronizado_em": "2026-10-11T15:57:01-03:00",
+      "sincronizado_por": "auto (workflow conselho_sync.yml)",
+      "ata": "docs/atas/2026-10-09-conselho.md",
+      "mesa": {
+        "operacao": "critico",
+        "financeiro": "atencao",
+        "marketing": "critico",
+        "relacionamento": "atencao",
+        "pessoas": "atencao"
+      },
+      "decisoes": [
+        {
+          "n": 1,
+          "titulo": "Aprovar contato manual da recepção (ligação/WhatsApp pessoal) para os 89 clientes em risco de churn, priorizando os maiores LTV, e dizer se a fila automática de 20/09 (R$ 16.862 aprovados, nunca ligados) fica formalmente substituída pelo botão manual do painel (decisão de 14/09) ou se ainda vale perseguir",
+          "em_jogo": "R$ 25.428 de LTV parado + R$ 1.307 de presentes de aniversário vencendo (6 já passaram, mais 2 em 10/10)",
+          "executor": "Relacionamento, com a recepção",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-09-conselho-aprovar-contato-manual-da-recepcao-ligac.md"
+        },
+        {
+          "n": 2,
+          "titulo": "Autorizar quem tiver acesso à sessão do PC a checar por que o GitHub Actions do refresh (Trinks + Stone + Meta Ads) parou há 7-9 dias, e corrigir os dois scripts que travam por acentuação/emoji no terminal (`auditoria_coerencia.py` e `densidade_dow.py` — saída UTF-8 resolve os dois)",
+          "em_jogo": "não é um valor único — é a confiabilidade de toda decisão desta mesa, incluindo os itens 1 e 3 de hoje; a auditoria já achou uma divergência real que ninguém consegue ler",
+          "executor": "você ou quem tiver acesso ao PC — nenhuma das seis cadeiras tem essa chave",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-09-conselho-autorizar-quem-tiver-acesso-a-sessao-do.md"
+        },
+        {
+          "n": 3,
+          "titulo": "Corrigir o caixa e o a-receber do Spa no `financeiro.json` (hoje mostra zero nos dois campos) usando o valor real do extrato Stone (R$ 8.435,50 a receber)",
+          "em_jogo": "R$ 8.435,50 que não aparecem na leitura de caixa do Spa hoje",
+          "executor": "Financeiro, confirmando com quem alimenta a planilha",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-09-conselho-corrigir-o-caixa-e-o-a-receber-do-spa-no.md"
+        }
+      ],
+      "cruzamentos_chave": [
+        "Não são 6 achados, é 1 causa com 6 sintomas — de novo. Operação, Financeiro,",
+        "Eu mesmo tentei rodar `scripts/auditoria_coerencia.py` agora: ele ENCONTROU",
+        "Cadeia causal confirmada (não é nova, mas hoje tem número): Pessoas diz que",
+        "Achado novo do Financeiro: o `financeiro.json` do Spa mostra caixa R$ 0,00 e"
+      ],
+      "sem_dono": [
+        "Por que o refresh automático parou há 7-9 dias — nenhuma das seis cadeiras",
+        "Qual é exatamente a divergência que a auditoria de coerência achou hoje —",
+        "Se o Trinks do Spa já está de fato plugado no funil de mídia — o"
+      ]
     }
   ],
   "recomendacoes": [
@@ -1157,6 +1212,39 @@
       "revisao_em": null,
       "docs_decisao": "docs/decisoes/2026-09-25-conselho-trocar-o-token-da-meta-seguindo-o-passo.md",
       "origem_conselho": "2026-09-25"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-09] Aprovar contato manual da recepção (ligação/WhatsApp pessoal) para os 89 clientes em risco de churn, priorizando os maiores LTV, e dizer se a fila automática de 20/09 (R$ 16.862 aprovados, nunca ligados) fica formalmente substituída pelo botão manual do painel (decisão de 14/09) ou se ainda vale perseguir",
+      "detalhe": "R$ 25.428 de LTV parado + R$ 1.307 de presentes de aniversário vencendo (6 já passaram, mais 2 em 10/10)",
+      "acao": "Executar: Relacionamento, com a recepção.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-09-conselho-aprovar-contato-manual-da-recepcao-ligac.md",
+      "origem_conselho": "2026-10-09"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-09] Autorizar quem tiver acesso à sessão do PC a checar por que o GitHub Actions do refresh (Trinks + Stone + Meta Ads) parou há 7-9 dias, e corrigir os dois scripts que travam por acentuação/emoji no terminal (`auditoria_coerencia.py` e `densidade_dow.py` — saída UTF-8 resolve os dois)",
+      "detalhe": "não é um valor único — é a confiabilidade de toda decisão desta mesa, incluindo os itens 1 e 3 de hoje; a auditoria já achou uma divergência real que ninguém consegue ler",
+      "acao": "Executar: você ou quem tiver acesso ao PC — nenhuma das seis cadeiras tem essa chave.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-09-conselho-autorizar-quem-tiver-acesso-a-sessao-do.md",
+      "origem_conselho": "2026-10-09"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-09] Corrigir o caixa e o a-receber do Spa no `financeiro.json` (hoje mostra zero nos dois campos) usando o valor real do extrato Stone (R$ 8.435,50 a receber)",
+      "detalhe": "R$ 8.435,50 que não aparecem na leitura de caixa do Spa hoje",
+      "acao": "Executar: Financeiro, confirmando com quem alimenta a planilha.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-09-conselho-corrigir-o-caixa-e-o-a-receber-do-spa-no.md",
+      "origem_conselho": "2026-10-09"
     }
   ],
   "kpi_estrela": {
