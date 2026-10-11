@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-11T15:16:43-03:00",
+  "gerado_em": "2026-10-11T19:04:27-03:00",
   "hoje": "2026-10-11",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -276,8 +276,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 786,
-    "saldoRestante": 9214
+    "totalUtilizado": 799,
+    "saldoRestante": 9201
   },
   "metas_franqueadora": null,
   "unidade_config": {
@@ -1695,7 +1695,7 @@
           "cliente": "Eloiza Santos"
         }
       ],
-      "horas_desatualizado": 261.3
+      "horas_desatualizado": 265.1
     }
   },
   "auditoria_cancelados": {
@@ -6760,7 +6760,7 @@
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "data": "2026-10-04",
-          "hora_max": 15.27,
+          "hora_max": 19.07,
           "caixa": 0.0,
           "atend_fin": 0,
           "faturamento_apurado": 0.0,
@@ -6783,15 +6783,15 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "15:16",
-          "hora_atual_num": 15.27,
-          "pct_esperado_agora": 30.1,
+          "hora_atual_str": "19:04",
+          "hora_atual_num": 19.07,
+          "pct_esperado_agora": 78.8,
           "meta_dia": 680.81,
-          "meta_esperada_agora": 204.83,
+          "meta_esperada_agora": 536.34,
           "realizado_agora": 208.0,
-          "pace_delta": 3.17,
-          "pace_ratio_pct": 101.5,
-          "projecao_dia": 691.34,
+          "pace_delta": -328.34,
+          "pace_ratio_pct": 38.8,
+          "projecao_dia": 264.03,
           "opera_hoje": true
         },
         "ticket_meta": 0.0,
@@ -7136,7 +7136,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-11T15:16:43-03:00",
+    "gerado_em": "2026-10-11T19:04:27-03:00",
     "hoje": "2026-10-11",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -7197,14 +7197,8 @@
       {
         "tipo": "atencao",
         "titulo": "Ritmo abaixo do esperado",
-        "texto": "Só 31% da meta às 15h com 5h úteis restantes.",
+        "texto": "Só 31% da meta às 19h com 1h úteis restantes.",
         "acao": "Postar story/status no WhatsApp com 'últimas vagas hoje' pode gerar 2-3 walk-ins na última hora."
-      },
-      {
-        "tipo": "info",
-        "titulo": "Picos previstos ainda hoje",
-        "texto": "Base semanal aponta 18h (0.9 clientes/hora), 19h (0.9 clientes/hora) como as próximas horas de fluxo.",
-        "acao": "Deixar equipe pronta nessas horas — sem pausa para almoço/lanche dentro dessas janelas."
       },
       {
         "tipo": "oportunidade",
@@ -7328,7 +7322,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-11T15:16:43-03:00",
+    "gerado_em": "2026-10-11T19:04:27-03:00",
     "n_agendamentos": 118,
     "horas": [
       9,
