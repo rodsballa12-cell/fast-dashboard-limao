@@ -26,6 +26,14 @@ CLI:
   python scripts/refresh_google.py --unidade escova
   python scripts/refresh_google.py --dry-run
 
+Rotina diaria do Claude (sem chave de API): a sessao busca os dados pelo
+Supermetrics MCP (Performance + ReviewsTotals, GMB), grava num JSON
+{"performance": [[header],[linha]...], "reviews": [[header],[total, media]]}
+e roda `python scripts/refresh_google.py --de-arquivo <json>`. NAO escrever
+script avulso: este modo corta os dias finais que o Google ainda nao fechou
+(zeros de atraso, nao de movimento), grava `dados_ate` e carimba a fonte.
+Se a leitura vier de "copia guardada" (nota do MCP), refaca com datas custom.
+
 Falha graciosa: unidade sem `google_business_location_id` no config pula
 silenciosamente (SPA ainda nao criou o GBP — brief entregue ao Marketing).
 """
@@ -42,8 +50,7 @@ from typing import Any
 try:
     import requests
 except ImportError:
-    print("ERRO: requests nao instalado. `pip install requests`")
-    sys.exit(1)
+    requests = None  # so e necessario fora do modo --de-arquivo
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -128,6 +135,7 @@ def _fetch_performance(loc_id: str, api_key: str, team_id: str) -> list[dict]:
         "actions_website": int(r[5] or 0),
         "actions_phone": int(r[6] or 0),
         "actions_directions": int(r[7] or 0),  # driving_directions -> directions
+        "actions_messages": int(r[8] or 0) if len(r) > 8 else 0,
     } for r in rows]
 
 
@@ -148,9 +156,44 @@ def _fetch_reviews(loc_id: str, api_key: str, team_id: str) -> dict:
     }
 
 
+def _ler_entrada(entrada: dict) -> tuple[list[dict], dict]:
+    """Converte o formato do Supermetrics MCP (header + linhas) no do script."""
+    perf = entrada.get("performance") or []
+    serie = [{
+        "data": r[0],
+        "views_total": int(r[1] or 0), "views_maps": int(r[2] or 0),
+        "views_search": int(r[3] or 0), "actions_total": int(r[4] or 0),
+        "actions_website": int(r[5] or 0), "actions_phone": int(r[6] or 0),
+        "actions_directions": int(r[7] or 0),
+        "actions_messages": int(r[8] or 0) if len(r) > 8 else 0,
+    } for r in perf[1:]]
+    rev = entrada.get("reviews") or []
+    reviews = {}
+    if len(rev) >= 2:
+        reviews = {"reviews_total": int(rev[1][0] or 0),
+                   "estrelas_media": round(float(rev[1][1] or 0), 1)}
+    return serie, reviews
+
+
 # ---------------------------------------------------------------------------
 # Merge no arquivo
 # ---------------------------------------------------------------------------
+
+def _cortar_atraso(serie: list[dict]) -> tuple[list[dict], int]:
+    """Tira do fim da serie os dias que o Google ainda nao fechou.
+
+    Em 11/10/2026 o Google devolveu 09/10, 10/10 e 11/10 zerados e 08/10 sem
+    nenhuma visualizacao na busca. Nao era queda de movimento, era atraso, mas
+    foi gravado como se fosse dado — e a loja nunca tem busca zerada. Regra:
+    enquanto o ultimo dia tiver ZERO visualizacoes na busca, ele sai. Dia sem
+    dado vira ausente (NAO VEJO), nunca zero. Retorna (serie, dias_cortados).
+    """
+    corte = 0
+    while serie and serie[-1]["views_search"] == 0:
+        serie = serie[:-1]
+        corte += 1
+    return serie, corte
+
 
 def _agregar_kpis(serie: list[dict]) -> dict:
     if not serie: return {}
@@ -165,6 +208,7 @@ def _agregar_kpis(serie: list[dict]) -> dict:
         "actions_phone": s("actions_phone"),
         "actions_directions": s("actions_directions"),
         "actions_website": s("actions_website"),
+        "actions_messages": s("actions_messages"),
         "taxa_conversao_pct": round(acoes/max(views,1)*100, 2),
     }
 
@@ -176,6 +220,12 @@ def _merge(base: dict, serie: list[dict], reviews: dict, loc_id: str,
     resumo = {}
 
     if serie:
+        serie, cortados = _cortar_atraso(serie)
+        if cortados:
+            print(f"  [aviso] {cortados} dia(s) finais sem fechamento do Google descartados")
+        resumo["dias_descartados"] = cortados
+    if serie:
+        gb["dados_ate"] = serie[-1]["data"]
         gb["serie_diaria_30d"] = serie
         gb["kpis_30d"] = _agregar_kpis(serie)
         resumo["views_30d"] = gb["kpis_30d"]["views_total"]
@@ -192,7 +242,9 @@ def _merge(base: dict, serie: list[dict], reviews: dict, loc_id: str,
         gb["conta_id"] = loc_id
         if loc_nome:
             gb["nome"] = loc_nome
-        gb["_fonte_refresh"] = "Supermetrics REST API · refresh diario automatico"
+        gb["_fonte_refresh"] = ("Claude Code Remote (Routine) + Supermetrics MCP · diário automático"
+                                if os.environ.get("GBP_FONTE") == "mcp"
+                                else "Supermetrics REST API · refresh diario automatico")
 
     return base, resumo
 
@@ -226,12 +278,27 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Refresh GBP via Supermetrics")
     ap.add_argument("--unidade", choices=list(UNIDADES), help="Rodar so uma")
     ap.add_argument("--dry-run", action="store_true", help="Nao grava")
+    ap.add_argument("--de-arquivo", metavar="JSON",
+                    help="Em vez da API, le {'performance': [[header],[linha]...], "
+                         "'reviews': [[header],[total, media]]} — usado pela rotina "
+                         "diaria do Claude, que busca via Supermetrics MCP")
     args = ap.parse_args()
 
     api_key = os.environ.get("SUPERMETRICS_API_KEY")
-    if not api_key:
+    entrada = None
+    if args.de_arquivo:
+        with open(args.de_arquivo, encoding="utf-8") as f:
+            entrada = json.load(f)
+        os.environ["GBP_FONTE"] = "mcp"
+        if not args.unidade:
+            args.unidade = "escova"  # o MCP e consultado por conta; Spa nao tem GBP ainda
+    elif not api_key:
         print("ERRO: SUPERMETRICS_API_KEY nao definido")
         return 1
+    elif requests is None:
+        print("ERRO: requests nao instalado. `pip install requests`")
+        return 1
+    api_key = api_key or ""
     team_id = os.environ.get("SUPERMETRICS_TEAM_ID", DEFAULT_TEAM_ID)
 
     cfg = _load_cfg()
@@ -264,8 +331,11 @@ def main() -> int:
             continue
 
         print(f"  location: {loc_id}")
-        serie = _fetch_performance(loc_id, api_key, team_id)
-        reviews = _fetch_reviews(loc_id, api_key, team_id)
+        if entrada is not None:
+            serie, reviews = _ler_entrada(entrada)
+        else:
+            serie = _fetch_performance(loc_id, api_key, team_id)
+            reviews = _fetch_reviews(loc_id, api_key, team_id)
 
         if not serie and not reviews:
             print(f"  ↳ Supermetrics nao devolveu dados — arquivo preservado")
