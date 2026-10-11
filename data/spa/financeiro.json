@@ -1,7 +1,7 @@
 {
- "gerado_em": "2026-10-02T11:53:13-03:00",
- "baseline": "2026-10-02",
- "custos_ate": "2026-10-02",
+ "gerado_em": "2026-10-11T15:50:10-03:00",
+ "baseline": "2026-10-11",
+ "custos_ate": "2026-10-11",
  "mes_corrente_chave": "2026-10",
  "mes_principal_chave": "2026-10",
  "mes_fechado_chave": "2026-09",
@@ -23,7 +23,7 @@
    "receita_liquida": 0.0,
    "receita_real": 0.0,
    "receita_meta": 40000.0,
-   "ebitda": -11753.83,
+   "ebitda": -1028.83,
    "margem_contribuicao": 0.0,
    "grupos": [
     {
@@ -34,9 +34,9 @@
        "cat": "Comissão sobre produção",
        "real": 0.0,
        "esp": 0.0,
-       "nota": "30.0% da receita (tabela oficial do Trinks sobre serviços)",
+       "nota": "25.0% da receita (tabela oficial do Trinks sobre serviços)",
        "prov": false,
-       "esp_pct": 0.3,
+       "esp_pct": 0.25,
        "real_delta_pct": 0.0
       },
       {
@@ -63,20 +63,20 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
+       "cat": "Recepção + limpeza + encargos",
        "real": 7725.0,
        "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "nota": "fallback config · CLT + PJ",
        "prov": false
       }
      ],
@@ -148,7 +148,7 @@
    "fixo_esp": 11753.83,
    "custo_real": 11753.83,
    "custo_esp": 11753.83,
-   "res_real": -11753.83,
+   "res_real": -1028.83,
    "res_caixa": -1028.83,
    "provisoes_nao_debitadas": 0.0
   },
@@ -160,7 +160,7 @@
    "receita_liquida": 0.0,
    "receita_real": 0.0,
    "receita_meta": 40000.0,
-   "ebitda": -12078.36,
+   "ebitda": -1353.36,
    "margem_contribuicao": 0.0,
    "grupos": [
     {
@@ -171,9 +171,9 @@
        "cat": "Comissão sobre produção",
        "real": 0.0,
        "esp": 0.0,
-       "nota": "30.0% da receita (tabela oficial do Trinks sobre serviços)",
+       "nota": "25.0% da receita (tabela oficial do Trinks sobre serviços)",
        "prov": false,
-       "esp_pct": 0.3,
+       "esp_pct": 0.25,
        "real_delta_pct": 0.0
       },
       {
@@ -200,20 +200,20 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
+       "cat": "Recepção + limpeza + encargos",
        "real": 7725.0,
        "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "nota": "fallback config · CLT + PJ",
        "prov": false
       }
      ],
@@ -285,7 +285,7 @@
    "fixo_esp": 12078.36,
    "custo_real": 12078.36,
    "custo_esp": 12078.36,
-   "res_real": -12078.36,
+   "res_real": -1353.36,
    "res_caixa": -1353.36,
    "provisoes_nao_debitadas": 0.0
   },
@@ -297,7 +297,7 @@
    "receita_liquida": 0.0,
    "receita_real": 0.0,
    "receita_meta": 40000.0,
-   "ebitda": -22567.43,
+   "ebitda": -11842.426363636363,
    "margem_contribuicao": 0.0,
    "grupos": [
     {
@@ -308,9 +308,9 @@
        "cat": "Comissão sobre produção",
        "real": 0.0,
        "esp": 0.0,
-       "nota": "30.0% da receita (tabela oficial do Trinks sobre serviços)",
+       "nota": "25.0% da receita (tabela oficial do Trinks sobre serviços)",
        "prov": false,
-       "esp_pct": 0.3,
+       "esp_pct": 0.25,
        "real_delta_pct": 0.0
       },
       {
@@ -337,20 +337,20 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
+       "cat": "Recepção + limpeza + encargos",
        "real": 7725.0,
        "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "nota": "fallback config · CLT + PJ",
        "prov": false
       }
      ],
@@ -418,11 +418,11 @@
    ],
    "var_real": 0.0,
    "var_esp": 0.0,
-   "fixo_real": 22567.43,
-   "fixo_esp": 22567.43,
-   "custo_real": 22567.43,
-   "custo_esp": 22567.43,
-   "res_real": -22567.43,
+   "fixo_real": 22567.42636363636,
+   "fixo_esp": 22567.42636363636,
+   "custo_real": 22567.42636363636,
+   "custo_esp": 22567.42636363636,
+   "res_real": -11842.426363636363,
    "res_caixa": -11842.426363636363,
    "provisoes_nao_debitadas": 0.0
   },
@@ -434,7 +434,7 @@
    "receita_liquida": 0.0,
    "receita_real": 0.0,
    "receita_meta": 40000.0,
-   "ebitda": -23954.18,
+   "ebitda": -13229.17909090909,
    "margem_contribuicao": 0.0,
    "grupos": [
     {
@@ -445,9 +445,9 @@
        "cat": "Comissão sobre produção",
        "real": 0.0,
        "esp": 0.0,
-       "nota": "30.0% da receita (tabela oficial do Trinks sobre serviços)",
+       "nota": "25.0% da receita (tabela oficial do Trinks sobre serviços)",
        "prov": false,
-       "esp_pct": 0.3,
+       "esp_pct": 0.25,
        "real_delta_pct": 0.0
       },
       {
@@ -474,20 +474,20 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
+       "cat": "Recepção + limpeza + encargos",
        "real": 7725.0,
        "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "nota": "fallback config · CLT + PJ",
        "prov": false
       }
      ],
@@ -555,11 +555,11 @@
    ],
    "var_real": 0.0,
    "var_esp": 0.0,
-   "fixo_real": 23954.18,
-   "fixo_esp": 23954.18,
-   "custo_real": 23954.18,
-   "custo_esp": 23954.18,
-   "res_real": -23954.18,
+   "fixo_real": 23954.179090909092,
+   "fixo_esp": 23954.179090909092,
+   "custo_real": 23954.179090909092,
+   "custo_esp": 23954.179090909092,
+   "res_real": -13229.17909090909,
    "res_caixa": -13229.17909090909,
    "provisoes_nao_debitadas": 0.0
   },
@@ -571,7 +571,7 @@
    "receita_liquida": 11475.6141,
    "receita_real": 12339.37,
    "receita_meta": 40000.0,
-   "ebitda": -20098.21,
+   "ebitda": -12918.668400000002,
    "margem_contribuicao": 8390.7716,
    "grupos": [
     {
@@ -611,25 +611,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 545.454545454545,
+       "esp": 545.454545454545,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 3545.454545454545,
+     "sub_esp": 3545.454545454545
     },
     {
      "id": "OCUPACAO",
@@ -692,11 +692,11 @@
    ],
    "var_real": 3948.5984000000003,
    "var_esp": 3948.5984000000003,
-   "fixo_real": 28488.99,
-   "fixo_esp": 28488.99,
-   "custo_real": 32437.58,
-   "custo_esp": 32437.58,
-   "res_real": -20098.21,
+   "fixo_real": 21309.44,
+   "fixo_esp": 21309.44,
+   "custo_real": 25258.038399999998,
+   "custo_esp": 25258.038399999998,
+   "res_real": -12918.668400000002,
    "res_caixa": -12054.912500000002,
    "provisoes_nao_debitadas": 863.7559000000001
   },
@@ -708,7 +708,7 @@
    "receita_liquida": 37200.0,
    "receita_real": 40000.0,
    "receita_meta": 40000.0,
-   "ebitda": -6203.66,
+   "ebitda": -1900.4376627272723,
    "margem_contribuicao": 21200.0,
    "grupos": [
     {
@@ -748,25 +748,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -829,11 +829,11 @@
    ],
    "var_real": 16000.0,
    "var_esp": 16000.0,
-   "fixo_real": 30203.66,
-   "fixo_esp": 30203.66,
-   "custo_real": 46203.66,
-   "custo_esp": 46203.66,
-   "res_real": -6203.66,
+   "fixo_real": 25900.437662727272,
+   "fixo_esp": 25900.437662727272,
+   "custo_real": 41900.43766272727,
+   "custo_esp": 41900.43766272727,
+   "res_real": -1900.4376627272723,
    "res_caixa": 3699.5623372727287,
    "provisoes_nao_debitadas": 5600.000000000001
   },
@@ -845,7 +845,7 @@
    "receita_liquida": 37200.0,
    "receita_real": 40000.0,
    "receita_meta": 40000.0,
-   "ebitda": -6203.66,
+   "ebitda": -1900.4376627272723,
    "margem_contribuicao": 21200.0,
    "grupos": [
     {
@@ -885,25 +885,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -966,11 +966,11 @@
    ],
    "var_real": 16000.0,
    "var_esp": 16000.0,
-   "fixo_real": 30203.66,
-   "fixo_esp": 30203.66,
-   "custo_real": 46203.66,
-   "custo_esp": 46203.66,
-   "res_real": -6203.66,
+   "fixo_real": 25900.437662727272,
+   "fixo_esp": 25900.437662727272,
+   "custo_real": 41900.43766272727,
+   "custo_esp": 41900.43766272727,
+   "res_real": -1900.4376627272723,
    "res_caixa": 3699.5623372727287,
    "provisoes_nao_debitadas": 5600.000000000001
   },
@@ -982,7 +982,7 @@
    "receita_liquida": 46500.0,
    "receita_real": 50000.0,
    "receita_meta": 40000.0,
-   "ebitda": -1353.66,
+   "ebitda": 2949.5623372727277,
    "margem_contribuicao": 26500.0,
    "grupos": [
     {
@@ -1022,25 +1022,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -1103,11 +1103,11 @@
    ],
    "var_real": 20000.0,
    "var_esp": 20000.0,
-   "fixo_real": 31353.66,
-   "fixo_esp": 31353.66,
-   "custo_real": 51353.66,
-   "custo_esp": 51353.66,
-   "res_real": -1353.66,
+   "fixo_real": 27050.437662727272,
+   "fixo_esp": 27050.437662727272,
+   "custo_real": 47050.43766272727,
+   "custo_esp": 47050.43766272727,
+   "res_real": 2949.5623372727277,
    "res_caixa": 9949.562337272728,
    "provisoes_nao_debitadas": 7000.000000000001
   },
@@ -1119,7 +1119,7 @@
    "receita_liquida": 46500.0,
    "receita_real": 50000.0,
    "receita_meta": 40000.0,
-   "ebitda": -1353.66,
+   "ebitda": 2949.5623372727277,
    "margem_contribuicao": 26500.0,
    "grupos": [
     {
@@ -1159,25 +1159,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -1240,11 +1240,11 @@
    ],
    "var_real": 20000.0,
    "var_esp": 20000.0,
-   "fixo_real": 31353.66,
-   "fixo_esp": 31353.66,
-   "custo_real": 51353.66,
-   "custo_esp": 51353.66,
-   "res_real": -1353.66,
+   "fixo_real": 27050.437662727272,
+   "fixo_esp": 27050.437662727272,
+   "custo_real": 47050.43766272727,
+   "custo_esp": 47050.43766272727,
+   "res_real": 2949.5623372727277,
    "res_caixa": 9949.562337272728,
    "provisoes_nao_debitadas": 7000.000000000001
   },
@@ -1256,7 +1256,7 @@
    "receita_liquida": 46500.0,
    "receita_real": 50000.0,
    "receita_meta": 40000.0,
-   "ebitda": -1353.66,
+   "ebitda": 2949.5623372727277,
    "margem_contribuicao": 26500.0,
    "grupos": [
     {
@@ -1296,25 +1296,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -1377,11 +1377,11 @@
    ],
    "var_real": 20000.0,
    "var_esp": 20000.0,
-   "fixo_real": 31353.66,
-   "fixo_esp": 31353.66,
-   "custo_real": 51353.66,
-   "custo_esp": 51353.66,
-   "res_real": -1353.66,
+   "fixo_real": 27050.437662727272,
+   "fixo_esp": 27050.437662727272,
+   "custo_real": 47050.43766272727,
+   "custo_esp": 47050.43766272727,
+   "res_real": 2949.5623372727277,
    "res_caixa": 9949.562337272728,
    "provisoes_nao_debitadas": 7000.000000000001
   },
@@ -1393,7 +1393,7 @@
    "receita_liquida": 46500.0,
    "receita_real": 50000.0,
    "receita_meta": 40000.0,
-   "ebitda": -1353.66,
+   "ebitda": 2949.5623372727277,
    "margem_contribuicao": 26500.0,
    "grupos": [
     {
@@ -1433,25 +1433,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -1514,11 +1514,11 @@
    ],
    "var_real": 20000.0,
    "var_esp": 20000.0,
-   "fixo_real": 31353.66,
-   "fixo_esp": 31353.66,
-   "custo_real": 51353.66,
-   "custo_esp": 51353.66,
-   "res_real": -1353.66,
+   "fixo_real": 27050.437662727272,
+   "fixo_esp": 27050.437662727272,
+   "custo_real": 47050.43766272727,
+   "custo_esp": 47050.43766272727,
+   "res_real": 2949.5623372727277,
    "res_caixa": 9949.562337272728,
    "provisoes_nao_debitadas": 7000.000000000001
   },
@@ -1530,7 +1530,7 @@
    "receita_liquida": 46500.0,
    "receita_real": 50000.0,
    "receita_meta": 40000.0,
-   "ebitda": -1353.66,
+   "ebitda": 2949.5623372727277,
    "margem_contribuicao": 26500.0,
    "grupos": [
     {
@@ -1570,25 +1570,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -1651,11 +1651,11 @@
    ],
    "var_real": 20000.0,
    "var_esp": 20000.0,
-   "fixo_real": 31353.66,
-   "fixo_esp": 31353.66,
-   "custo_real": 51353.66,
-   "custo_esp": 51353.66,
-   "res_real": -1353.66,
+   "fixo_real": 27050.437662727272,
+   "fixo_esp": 27050.437662727272,
+   "custo_real": 47050.43766272727,
+   "custo_esp": 47050.43766272727,
+   "res_real": 2949.5623372727277,
    "res_caixa": 9949.562337272728,
    "provisoes_nao_debitadas": 7000.000000000001
   },
@@ -1667,7 +1667,7 @@
    "receita_liquida": 52028.31067362507,
    "receita_real": 55944.42007916674,
    "receita_meta": 40000.0,
-   "ebitda": 1529.38,
+   "ebitda": 5832.606075668598,
    "margem_contribuicao": 29650.542641958375,
    "grupos": [
     {
@@ -1707,25 +1707,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -1788,11 +1788,11 @@
    ],
    "var_real": 22377.768031666696,
    "var_esp": 22377.768031666696,
-   "fixo_real": 32037.27,
-   "fixo_esp": 32037.27,
-   "custo_real": 54415.04,
-   "custo_esp": 54415.04,
-   "res_real": 1529.38,
+   "fixo_real": 27734.045971831445,
+   "fixo_esp": 27734.045971831445,
+   "custo_real": 50111.81400349814,
+   "custo_esp": 50111.81400349814,
+   "res_real": 5832.606075668598,
    "res_caixa": 13664.824886751943,
    "provisoes_nao_debitadas": 7832.218811083344
   },
@@ -1804,7 +1804,7 @@
    "receita_liquida": 61135.15286120006,
    "receita_real": 65736.72350666673,
    "receita_meta": 40000.0,
-   "ebitda": 6278.64,
+   "ebitda": 10581.873238006094,
    "margem_contribuicao": 34840.46345853337,
    "grupos": [
     {
@@ -1844,25 +1844,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -1925,11 +1925,11 @@
    ],
    "var_real": 26294.689402666692,
    "var_esp": 26294.689402666692,
-   "fixo_real": 33163.39,
-   "fixo_esp": 33163.39,
-   "custo_real": 59458.08,
-   "custo_esp": 59458.08,
-   "res_real": 6278.64,
+   "fixo_real": 28860.160865993945,
+   "fixo_esp": 28860.160865993945,
+   "custo_real": 55154.85026866064,
+   "custo_esp": 55154.85026866064,
+   "res_real": 10581.873238006094,
    "res_caixa": 19785.014528939435,
    "provisoes_nao_debitadas": 9203.141290933343
   },
@@ -1941,7 +1941,7 @@
    "receita_liquida": 71543.08037955382,
    "receita_real": 76928.04341887508,
    "receita_meta": 40000.0,
-   "ebitda": 11706.43,
+   "ebitda": 16009.663395427135,
    "margem_contribuicao": 40771.863012003785,
    "grupos": [
     {
@@ -1981,25 +1981,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -2062,11 +2062,11 @@
    ],
    "var_real": 30771.217367550034,
    "var_esp": 30771.217367550034,
-   "fixo_real": 34450.39,
-   "fixo_esp": 34450.39,
-   "custo_real": 65221.61,
-   "custo_esp": 65221.61,
-   "res_real": 11706.43,
+   "fixo_real": 30147.162655897908,
+   "fixo_esp": 30147.162655897908,
+   "custo_real": 60918.38002344794,
+   "custo_esp": 60918.38002344794,
+   "res_real": 16009.663395427135,
    "res_caixa": 26779.589474069646,
    "provisoes_nao_debitadas": 10769.926078642513
   },
@@ -2078,7 +2078,7 @@
    "receita_liquida": 83421.24187296633,
    "receita_real": 89700.26007845842,
    "receita_meta": 40000.0,
-   "ebitda": 17900.96,
+   "ebitda": 22204.18847532506,
    "margem_contribuicao": 47541.13784158296,
    "grupos": [
     {
@@ -2118,25 +2118,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -2199,11 +2199,11 @@
    ],
    "var_real": 35880.104031383366,
    "var_esp": 35880.104031383366,
-   "fixo_real": 35919.19,
-   "fixo_esp": 35919.19,
-   "custo_real": 71799.3,
-   "custo_esp": 71799.3,
-   "res_real": 17900.96,
+   "fixo_real": 31615.967571749992,
+   "fixo_esp": 31615.967571749992,
+   "custo_real": 67496.07160313336,
+   "custo_esp": 67496.07160313336,
+   "res_real": 22204.18847532506,
    "res_caixa": 34762.22488630924,
    "provisoes_nao_debitadas": 12558.03641098418
   },
@@ -2215,7 +2215,7 @@
    "receita_liquida": 92552.35009484498,
    "receita_real": 99518.65601596235,
    "receita_meta": 40000.0,
-   "ebitda": 22662.89,
+   "ebitda": 26966.11050501446,
    "margem_contribuicao": 52744.88768846004,
    "grupos": [
     {
@@ -2255,25 +2255,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -2336,11 +2336,11 @@
    ],
    "var_real": 39807.46240638494,
    "var_esp": 39807.46240638494,
-   "fixo_real": 37048.31,
-   "fixo_esp": 37048.31,
-   "custo_real": 76855.77,
-   "custo_esp": 76855.77,
-   "res_real": 22662.89,
+   "fixo_real": 32745.083104562942,
+   "fixo_esp": 32745.083104562942,
+   "custo_real": 72552.54551094788,
+   "custo_esp": 72552.54551094788,
+   "res_real": 26966.11050501446,
    "res_caixa": 40898.72234724919,
    "provisoes_nao_debitadas": 13932.61184223473
   },
@@ -2352,7 +2352,7 @@
    "receita_liquida": 102388.0160342286,
    "receita_real": 110094.64089702,
    "receita_meta": 40000.0,
-   "ebitda": 27792.24,
+   "ebitda": 32095.463172327425,
    "margem_contribuicao": 58350.1596754206,
    "grupos": [
     {
@@ -2392,25 +2392,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -2473,11 +2473,11 @@
    ],
    "var_real": 44037.856358808,
    "var_esp": 44037.856358808,
-   "fixo_real": 38264.55,
-   "fixo_esp": 38264.55,
-   "custo_real": 82302.4,
-   "custo_esp": 82302.4,
-   "res_real": 27792.24,
+   "fixo_real": 33961.32136588458,
+   "fixo_esp": 33961.32136588458,
+   "custo_real": 77999.17772469258,
+   "custo_esp": 77999.17772469258,
+   "res_real": 32095.463172327425,
    "res_caixa": 47508.71289791023,
    "provisoes_nao_debitadas": 15413.249725582802
   },
@@ -2489,7 +2489,7 @@
    "receita_liquida": 107507.41683594004,
    "receita_real": 115599.372941871,
    "receita_meta": 40000.0,
-   "ebitda": 30462.03,
+   "ebitda": 34765.25821408017,
    "margem_contribuicao": 61267.66765919163,
    "grupos": [
     {
@@ -2529,25 +2529,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -2610,11 +2610,11 @@
    ],
    "var_real": 46239.7491767484,
    "var_esp": 46239.7491767484,
-   "fixo_real": 38897.59,
-   "fixo_esp": 38897.59,
-   "custo_real": 85137.34,
-   "custo_esp": 85137.34,
-   "res_real": 30462.03,
+   "fixo_real": 34594.365551042436,
+   "fixo_esp": 34594.365551042436,
+   "custo_real": 80834.11472779085,
+   "custo_esp": 80834.11472779085,
+   "res_real": 34765.25821408017,
    "res_caixa": 50949.17042594211,
    "provisoes_nao_debitadas": 16183.912211861942
   },
@@ -2626,7 +2626,7 @@
    "receita_liquida": 112882.78767773652,
    "receita_real": 121379.341588964,
    "receita_meta": 40000.0,
-   "ebitda": 33265.32,
+   "ebitda": 37568.543007920256,
    "margem_contribuicao": 64331.05104215091,
    "grupos": [
     {
@@ -2666,25 +2666,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -2747,11 +2747,11 @@
    ],
    "var_real": 48551.7366355856,
    "var_esp": 48551.7366355856,
-   "fixo_real": 39562.29,
-   "fixo_esp": 39562.29,
-   "custo_real": 88114.02,
-   "custo_esp": 88114.02,
-   "res_real": 33265.32,
+   "fixo_real": 35259.06194545813,
+   "fixo_esp": 35259.06194545813,
+   "custo_real": 83810.79858104372,
+   "custo_esp": 83810.79858104372,
+   "res_real": 37568.543007920256,
    "res_caixa": 54561.65083037522,
    "provisoes_nao_debitadas": 16993.10782245496
   },
@@ -2763,7 +2763,7 @@
    "receita_liquida": 118526.92706162408,
    "receita_real": 127448.308668413,
    "receita_meta": 40000.0,
-   "ebitda": 36208.77,
+   "ebitda": 40511.99204145302,
    "margem_contribuicao": 67547.60359425888,
    "grupos": [
     {
@@ -2803,25 +2803,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -2884,11 +2884,11 @@
    ],
    "var_real": 50979.323467365204,
    "var_esp": 50979.323467365204,
-   "fixo_real": 40260.22,
-   "fixo_esp": 40260.22,
-   "custo_real": 91239.54,
-   "custo_esp": 91239.54,
-   "res_real": 36208.77,
+   "fixo_real": 35956.99315959477,
+   "fixo_esp": 35956.99315959477,
+   "custo_real": 86936.31662695998,
+   "custo_esp": 86936.31662695998,
+   "res_real": 40511.99204145302,
    "res_caixa": 58354.75525503085,
    "provisoes_nao_debitadas": 17842.763213577822
   },
@@ -2900,7 +2900,7 @@
    "receita_liquida": 124453.2734147047,
    "receita_real": 133820.724101833,
    "receita_meta": 40000.0,
-   "ebitda": 39299.38,
+   "ebitda": 43602.61352666174,
    "margem_contribuicao": 70924.9837739715,
    "grupos": [
     {
@@ -2940,25 +2940,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -3021,11 +3021,11 @@
    ],
    "var_real": 53528.2896407332,
    "var_esp": 53528.2896407332,
-   "fixo_real": 40993.05,
-   "fixo_esp": 40993.05,
-   "custo_real": 94521.34,
-   "custo_esp": 94521.34,
-   "res_real": 39299.38,
+   "fixo_real": 36689.820934438074,
+   "fixo_esp": 36689.820934438074,
+   "custo_real": 90218.11057517127,
+   "custo_esp": 90218.11057517127,
+   "res_real": 43602.61352666174,
    "res_caixa": 62337.514900918366,
    "provisoes_nao_debitadas": 18734.901374256624
   },
@@ -3037,7 +3037,7 @@
    "receita_liquida": 130675.93708544024,
    "receita_real": 140511.760306925,
    "receita_meta": 40000.0,
-   "ebitda": 42544.54,
+   "ebitda": 46847.76608613135,
    "margem_contribuicao": 74471.23296267024,
    "grupos": [
     {
@@ -3077,25 +3077,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -3158,11 +3158,11 @@
    ],
    "var_real": 56204.704122769996,
    "var_esp": 56204.704122769996,
-   "fixo_real": 41762.52,
-   "fixo_esp": 41762.52,
-   "custo_real": 97967.22,
-   "custo_esp": 97967.22,
-   "res_real": 42544.54,
+   "fixo_real": 37459.290098023645,
+   "fixo_esp": 37459.290098023645,
+   "custo_real": 93663.99422079364,
+   "custo_esp": 93663.99422079364,
+   "res_real": 46847.76608613135,
    "res_caixa": 66519.41252910085,
    "provisoes_nao_debitadas": 19671.6464429695
   },
@@ -3174,7 +3174,7 @@
    "receita_liquida": 137209.73393971202,
    "receita_real": 147537.348322271,
    "receita_meta": 40000.0,
-   "ebitda": 45951.95,
+   "ebitda": 50255.176273574165,
    "margem_contribuicao": 78194.79461080363,
    "grupos": [
     {
@@ -3214,25 +3214,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -3295,11 +3295,11 @@
    ],
    "var_real": 59014.9393289084,
    "var_esp": 59014.9393289084,
-   "fixo_real": 42570.46,
-   "fixo_esp": 42570.46,
-   "custo_real": 101585.4,
-   "custo_esp": 101585.4,
-   "res_real": 45951.95,
+   "fixo_real": 38267.23271978844,
+   "fixo_esp": 38267.23271978844,
+   "custo_real": 97282.17204869684,
+   "custo_esp": 97282.17204869684,
+   "res_real": 50255.176273574165,
    "res_caixa": 70910.4050386921,
    "provisoes_nao_debitadas": 20655.22876511794
   },
@@ -3311,7 +3311,7 @@
    "receita_liquida": 144070.22063669807,
    "receita_real": 154914.215738385,
    "receita_meta": 40000.0,
-   "ebitda": 49529.73,
+   "ebitda": 53832.95697038946,
    "margem_contribuicao": 82104.53434134406,
    "grupos": [
     {
@@ -3351,25 +3351,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -3432,11 +3432,11 @@
    ],
    "var_real": 61965.68629535401,
    "var_esp": 61965.68629535401,
-   "fixo_real": 43418.8,
-   "fixo_esp": 43418.8,
-   "custo_real": 105384.49,
-   "custo_esp": 105384.49,
-   "res_real": 49529.73,
+   "fixo_real": 39115.57247264155,
+   "fixo_esp": 39115.57247264155,
+   "custo_real": 101081.25876799556,
+   "custo_esp": 101081.25876799556,
+   "res_real": 53832.95697038946,
    "res_caixa": 75520.94717376336,
    "provisoes_nao_debitadas": 21687.990203373905
   },
@@ -3448,7 +3448,7 @@
    "receita_liquida": 151273.73166853274,
    "receita_real": 162659.926525304,
    "receita_meta": 40000.0,
-   "ebitda": 53286.4,
+   "ebitda": 57589.62670204517,
    "margem_contribuicao": 86209.76105841112,
    "grupos": [
     {
@@ -3488,25 +3488,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -3569,11 +3569,11 @@
    ],
    "var_real": 65063.9706101216,
    "var_esp": 65063.9706101216,
-   "fixo_real": 44309.56,
-   "fixo_esp": 44309.56,
-   "custo_real": 109373.53,
-   "custo_esp": 109373.53,
-   "res_real": 53286.4,
+   "fixo_real": 40006.32921313723,
+   "fixo_esp": 40006.32921313723,
+   "custo_real": 105070.29982325883,
+   "custo_esp": 105070.29982325883,
+   "res_real": 57589.62670204517,
    "res_caixa": 80362.01641558773,
    "provisoes_nao_debitadas": 22772.38971354256
   },
@@ -3585,7 +3585,7 @@
    "receita_liquida": 158837.41825195917,
    "receita_real": 170792.922851569,
    "receita_meta": 40000.0,
-   "ebitda": 57230.9,
+   "ebitda": 61534.129920283696,
    "margem_contribuicao": 90520.24911133158,
    "grupos": [
     {
@@ -3625,25 +3625,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -3706,11 +3706,11 @@
    ],
    "var_real": 68317.1691406276,
    "var_esp": 68317.1691406276,
-   "fixo_real": 45244.85,
-   "fixo_esp": 45244.85,
-   "custo_real": 113562.02,
-   "custo_esp": 113562.02,
-   "res_real": 57230.9,
+   "fixo_real": 40941.62379065771,
+   "fixo_esp": 40941.62379065771,
+   "custo_real": 109258.79293128531,
+   "custo_esp": 109258.79293128531,
+   "res_real": 61534.129920283696,
    "res_caixa": 85445.13911950335,
    "provisoes_nao_debitadas": 23911.00919921966
   },
@@ -3722,7 +3722,7 @@
    "receita_liquida": 166779.2891645567,
    "receita_real": 179332.568994147,
    "receita_meta": 40000.0,
-   "ebitda": 61372.63,
+   "ebitda": 65675.85829943402,
    "margem_contribuicao": 95046.26156689791,
    "grupos": [
     {
@@ -3762,25 +3762,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -3843,11 +3843,11 @@
    ],
    "var_real": 71733.0275976588,
    "var_esp": 71733.0275976588,
-   "fixo_real": 46226.91,
-   "fixo_esp": 46226.91,
-   "custo_real": 117959.94,
-   "custo_esp": 117959.94,
-   "res_real": 61372.63,
+   "fixo_real": 41923.68309705418,
+   "fixo_esp": 41923.68309705418,
+   "custo_real": 113656.71069471298,
+   "custo_esp": 113656.71069471298,
+   "res_real": 65675.85829943402,
    "res_caixa": 90782.4179586146,
    "provisoes_nao_debitadas": 25106.559659180584
   },
@@ -3859,7 +3859,7 @@
    "receita_liquida": 168447.08205620278,
    "receita_real": 181125.894684089,
    "receita_meta": 40000.0,
-   "ebitda": 62242.39,
+   "ebitda": 66545.6212590559,
    "margem_contribuicao": 95996.72418256718,
    "grupos": [
     {
@@ -3899,25 +3899,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -3980,11 +3980,11 @@
    ],
    "var_real": 72450.3578736356,
    "var_esp": 72450.3578736356,
-   "fixo_real": 46433.14,
-   "fixo_esp": 46433.14,
-   "custo_real": 118883.5,
-   "custo_esp": 118883.5,
-   "res_real": 62242.39,
+   "fixo_real": 42129.915551397506,
+   "fixo_esp": 42129.915551397506,
+   "custo_real": 114580.27342503311,
+   "custo_esp": 114580.27342503311,
+   "res_real": 66545.6212590559,
    "res_caixa": 91903.24651482837,
    "provisoes_nao_debitadas": 25357.625255772462
   },
@@ -3996,7 +3996,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -4036,25 +4036,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -4117,11 +4117,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -4133,7 +4133,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -4173,25 +4173,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -4254,11 +4254,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -4270,7 +4270,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -4310,25 +4310,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -4391,11 +4391,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -4407,7 +4407,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -4447,25 +4447,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -4528,11 +4528,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -4544,7 +4544,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -4584,25 +4584,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -4665,11 +4665,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -4681,7 +4681,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -4721,25 +4721,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -4802,11 +4802,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -4818,7 +4818,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -4858,25 +4858,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -4939,11 +4939,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -4955,7 +4955,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -4995,25 +4995,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -5076,11 +5076,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -5092,7 +5092,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -5132,25 +5132,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -5213,11 +5213,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -5229,7 +5229,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -5269,25 +5269,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -5350,11 +5350,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -5366,7 +5366,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -5406,25 +5406,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -5487,11 +5487,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -5503,7 +5503,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -5543,25 +5543,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -5624,11 +5624,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -5640,7 +5640,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -5680,25 +5680,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -5761,11 +5761,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -5777,7 +5777,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -5817,25 +5817,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -5898,11 +5898,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -5914,7 +5914,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -5954,25 +5954,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -6035,11 +6035,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -6051,7 +6051,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -6091,25 +6091,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -6172,11 +6172,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -6188,7 +6188,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -6228,25 +6228,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -6309,11 +6309,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -6325,7 +6325,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -6365,25 +6365,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -6446,11 +6446,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -6462,7 +6462,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -6502,25 +6502,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -6583,11 +6583,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -6599,7 +6599,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -6639,25 +6639,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -6720,11 +6720,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -6736,7 +6736,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -6776,25 +6776,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -6857,11 +6857,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -6873,7 +6873,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -6913,25 +6913,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -6994,11 +6994,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -7010,7 +7010,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -7050,25 +7050,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -7131,11 +7131,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -7147,7 +7147,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -7187,25 +7187,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -7268,11 +7268,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -7284,7 +7284,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -7324,25 +7324,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -7405,11 +7405,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -7421,7 +7421,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -7461,25 +7461,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -7542,11 +7542,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -7558,7 +7558,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -7598,25 +7598,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -7679,11 +7679,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -7695,7 +7695,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -7735,25 +7735,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -7816,11 +7816,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -7832,7 +7832,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -7872,25 +7872,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -7953,11 +7953,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -7969,7 +7969,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -8009,25 +8009,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -8090,11 +8090,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   },
@@ -8106,7 +8106,7 @@
    "receita_liquida": 169288.83,
    "receita_real": 182031.0,
    "receita_meta": 40000.0,
-   "ebitda": 62681.37,
+   "ebitda": 66984.59733727272,
    "margem_contribuicao": 96476.43,
    "grupos": [
     {
@@ -8146,25 +8146,25 @@
     },
     {
      "id": "PESSOAL",
-     "titulo": "Pessoal fixo — CLT",
+     "titulo": "Pessoal fixo — CLT + PJ",
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
        "real": 3000.0,
        "esp": 3000.0,
-       "nota": "PJ · R$ 3000/mes · metade da gerente R$ 6000 total · sem encargos CLT",
+       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
        "prov": false
       },
       {
-       "cat": "Recepção + limpeza (CLT + PJ)",
-       "real": 7725.0,
-       "esp": 7725.0,
-       "nota": "CLT R$ 2.700 × 1.75 encargos = R$ 4.725 + PJ R$ 3.000 sem encargos = R$ 7725/mes",
+       "cat": "Recepção + limpeza + encargos",
+       "real": 3421.773745454544,
+       "esp": 3421.773745454544,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 10725.0,
-     "sub_esp": 10725.0
+     "sub_real": 6421.773745454544,
+     "sub_esp": 6421.773745454544
     },
     {
      "id": "OCUPACAO",
@@ -8227,11 +8227,11 @@
    ],
    "var_real": 72812.4,
    "var_esp": 72812.4,
-   "fixo_real": 46537.23,
-   "fixo_esp": 46537.23,
-   "custo_real": 119349.63,
-   "custo_esp": 119349.63,
-   "res_real": 62681.37,
+   "fixo_real": 42234.002662727275,
+   "fixo_esp": 42234.002662727275,
+   "custo_real": 115046.40266272727,
+   "custo_esp": 115046.40266272727,
+   "res_real": 66984.59733727272,
    "res_caixa": 92468.93733727271,
    "provisoes_nao_debitadas": 25484.340000000004
   }
@@ -8284,25 +8284,25 @@
    },
    {
     "id": "PESSOAL",
-    "titulo": "Pessoal fixo — CLT",
+    "titulo": "Pessoal fixo — CLT + PJ",
     "linhas": [
      {
-      "cat": "Gerente (CLT com encargos)",
-      "real": 6500.0,
-      "esp": 6500.0,
-      "nota": "salário + INSS + FGTS + férias/13º proporcional",
+      "cat": "Gerente (PJ · CNPJ)",
+      "real": 3000.0,
+      "esp": 3000.0,
+      "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
       "prov": false
      },
      {
       "cat": "Recepção + limpeza + encargos",
-      "real": 0,
-      "esp": 0,
+      "real": 3421.773745454544,
+      "esp": 3421.773745454544,
       "nota": "total pessoal do Excel menos gerente",
       "prov": false
      }
     ],
-    "sub_real": 6500.0,
-    "sub_esp": 6500.0
+    "sub_real": 6421.773745454544,
+    "sub_esp": 6421.773745454544
    },
    {
     "id": "OCUPACAO",
@@ -8365,16 +8365,16 @@
   ],
   "var_real": 16000.0,
   "var_esp": 16000.0,
-  "fixo_real": 25978.66391727273,
-  "fixo_esp": 25978.66391727273,
-  "custo_real": 41978.66391727273,
-  "custo_esp": 41978.66391727273,
+  "fixo_real": 25900.437662727272,
+  "fixo_esp": 25900.437662727272,
+  "custo_real": 41900.43766272727,
+  "custo_esp": 41900.43766272727,
   "res_real": -1900.4376627272723,
   "res_caixa": 3699.5623372727287,
   "provisoes_nao_debitadas": 5600.000000000001,
   "res_esp_mesma_receita": -1900.4376627272723,
   "res_esp_na_meta": null,
-  "be_modelo_1loja": 43297.77319545455,
+  "be_modelo_1loja": 43167.396104545456,
   "mc_real": 21200.0,
   "mc_esp": 21200.0
  },
@@ -8386,7 +8386,7 @@
  },
  "equilibrio": {
   "fatura_hoje": 40000.0,
-  "custo_fixo_mes": 25978.66391727273,
+  "custo_fixo_mes": 25900.437662727272,
   "cenarios": [
    {
     "nome": "Projetado do Excel",
