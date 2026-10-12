@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-12T15:58:08-03:00",
+  "gerado_em": "2026-10-12T18:46:05-03:00",
   "hoje": "2026-10-12",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -276,8 +276,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 864,
-    "saldoRestante": 9136
+    "totalUtilizado": 871,
+    "saldoRestante": 9129
   },
   "metas_franqueadora": null,
   "unidade_config": {
@@ -1704,7 +1704,7 @@
           "cliente": "Caroline Sant'Ana Fernandes"
         }
       ],
-      "horas_desatualizado": 286.0
+      "horas_desatualizado": 288.8
     }
   },
   "auditoria_cancelados": {
@@ -6681,26 +6681,26 @@
         "rs_hora_salao": 152.0,
         "horas_operacao_periodo": 6.0,
         "utilizacao_agregada_pct": 17.2,
-        "caixa_delta_pct": 338.5,
-        "atend_delta_pct": 333.3,
-        "cliente_dia_delta_pct": 250.0,
-        "caixa_delta_perdia_pct": 338.5,
-        "atend_delta_perdia_pct": 333.3,
-        "cliente_dia_delta_perdia_pct": 250.0,
+        "caixa_delta_pct": 135.7,
+        "atend_delta_pct": 225.0,
+        "cliente_dia_delta_pct": 133.3,
+        "caixa_delta_perdia_pct": 135.7,
+        "atend_delta_perdia_pct": 225.0,
+        "cliente_dia_delta_perdia_pct": 133.3,
         "dias_com_movimento": {
           "atual": 1,
           "anterior": 1
         },
-        "ticket_delta_pct": 25.3,
-        "caixa_delta_bruto_pct": 338.5,
+        "ticket_delta_pct": 1.0,
+        "caixa_delta_bruto_pct": 135.7,
         "periodo_ant_ref": {
           "data": "2026-10-05",
-          "hora_max": 15.97,
-          "caixa": 208.0,
-          "atend_fin": 3,
-          "faturamento_apurado": 208.0,
-          "cliente_dia": 2,
-          "ticket_medio": 104.0,
+          "hora_max": 18.77,
+          "caixa": 387.0,
+          "atend_fin": 4,
+          "faturamento_apurado": 387.0,
+          "cliente_dia": 3,
+          "ticket_medio": 129.0,
           "dias_op": 1
         },
         "base_comparacao": {
@@ -6714,19 +6714,19 @@
           "peso_semana_anterior_pct": 8.0,
           "razao_peso": 1.0,
           "comparavel": true,
-          "caixa_delta_ajustado_pct": 338.5,
+          "caixa_delta_ajustado_pct": 135.7,
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "15:58",
-          "hora_atual_num": 15.97,
-          "pct_esperado_agora": 43.4,
+          "hora_atual_str": "18:46",
+          "hora_atual_num": 18.77,
+          "pct_esperado_agora": 74.9,
           "meta_dia": 695.94,
-          "meta_esperada_agora": 301.81,
+          "meta_esperada_agora": 521.12,
           "realizado_agora": 912.0,
-          "pace_delta": 610.19,
-          "pace_ratio_pct": 302.2,
-          "projecao_dia": 2103.0,
+          "pace_delta": 390.88,
+          "pace_ratio_pct": 175.0,
+          "projecao_dia": 1217.95,
           "opera_hoje": true
         },
         "ticket_meta": 0.0,
@@ -7193,7 +7193,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-12T15:58:08-03:00",
+    "gerado_em": "2026-10-12T18:46:05-03:00",
     "hoje": "2026-10-12",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -7373,7 +7373,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-12T15:58:08-03:00",
+    "gerado_em": "2026-10-12T18:46:05-03:00",
     "n_agendamentos": 118,
     "horas": [
       9,
