@@ -1,0 +1,141 @@
+name: Watchdog · pipeline local
+
+# Vigia se o PC do Rodrigo esta commitando atas. Se nao houver commit de 'ata:'
+# nas ultimas 24h, o pipeline local travou — abre issue (que vira email pro
+# Rodrigo via GitHub app no celular). Resolve a classe de bug observada em
+# 11-13/10 (git pull falhando silenciosamente por 2 dias sem alerta).
+
+on:
+  schedule:
+    # 2x/dia: 09h e 15h BRT (= 12h e 18h UTC). Cedo o bastante pra Rodrigo
+    # agir ANTES do Conselho das 22h30. Nao tao cedo que acorde com alerta.
+    - cron: '0 12,18 * * *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 100  # precisa historia pra conferir ultima ata
+
+      - name: Verificar frescor das atas
+        id: freshness
+        run: |
+          # Hora atual UTC
+          AGORA=$(date -u +%s)
+          LIMITE_HORAS=24
+
+          # Procurar ultimo commit com 'ata:' no titulo (vem do rodar_agente.ps1)
+          ULT_COMMIT=$(git log --all --format='%ct|%s' | grep -i '^[0-9]*|ata:' | head -1 || echo '')
+          if [ -z "$ULT_COMMIT" ]; then
+            echo "status=critico" >> $GITHUB_OUTPUT
+            echo "motivo=nenhuma ata encontrada no historico" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          TS=$(echo "$ULT_COMMIT" | cut -d'|' -f1)
+          MSG=$(echo "$ULT_COMMIT" | cut -d'|' -f2-)
+          HORAS=$(( (AGORA - TS) / 3600 ))
+
+          echo "ultimo_commit=$MSG" >> $GITHUB_OUTPUT
+          echo "horas=$HORAS" >> $GITHUB_OUTPUT
+
+          if [ "$HORAS" -ge "$LIMITE_HORAS" ]; then
+            echo "status=alerta" >> $GITHUB_OUTPUT
+            echo "motivo=ultima ata ha ${HORAS}h (>${LIMITE_HORAS}h)" >> $GITHUB_OUTPUT
+          else
+            echo "status=ok" >> $GITHUB_OUTPUT
+            echo "motivo=ultima ata ha ${HORAS}h" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Verificar frescor dos dashboards
+        id: dashboards
+        run: |
+          AGORA=$(date -u +%s)
+          # financeiro.json tem baseline em formato YYYY-MM-DD
+          BASELINE=$(python -c "import json; print(json.load(open('data/financeiro.json'))['baseline'])")
+          BASELINE_TS=$(python -c "from datetime import datetime; print(int(datetime.strptime('$BASELINE', '%Y-%m-%d').timestamp()))")
+          HORAS_DRE=$(( (AGORA - BASELINE_TS) / 3600 ))
+          echo "dre_horas=$HORAS_DRE" >> $GITHUB_OUTPUT
+          echo "dre_baseline=$BASELINE" >> $GITHUB_OUTPUT
+
+          # dashboard_data.json tem gerado_em com timezone BRT
+          GERADO=$(python -c "import json; print(json.load(open('data/dashboard_data.json'))['gerado_em'])")
+          GERADO_TS=$(python -c "from datetime import datetime; print(int(datetime.fromisoformat('$GERADO').timestamp()))")
+          HORAS_DASH=$(( (AGORA - GERADO_TS) / 3600 ))
+          echo "dash_horas=$HORAS_DASH" >> $GITHUB_OUTPUT
+          echo "dash_gerado=$GERADO" >> $GITHUB_OUTPUT
+
+      - name: Abrir/atualizar issue se tem problema
+        if: steps.freshness.outputs.status != 'ok' || steps.dashboards.outputs.dre_horas > 48 || steps.dashboards.outputs.dash_horas > 6
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const titulo = '🚨 Watchdog: pipeline FAST com problema';
+            const horasAta = '${{ steps.freshness.outputs.horas }}' || '?';
+            const motivoAta = '${{ steps.freshness.outputs.motivo }}';
+            const dreHoras = '${{ steps.dashboards.outputs.dre_horas }}';
+            const dreBaseline = '${{ steps.dashboards.outputs.dre_baseline }}';
+            const dashHoras = '${{ steps.dashboards.outputs.dash_horas }}';
+            const dashGerado = '${{ steps.dashboards.outputs.dash_gerado }}';
+
+            const corpo = [
+              '## Pipeline FAST sem atividade',
+              '',
+              `- Última **ata do agente** (PC local): há **${horasAta}h** · ${motivoAta}`,
+              `- Última **DRE/financeiro.json**: baseline ${dreBaseline} · ${dreHoras}h atrás`,
+              `- Último **dashboard_data.json**: ${dashGerado} · ${dashHoras}h atrás`,
+              '',
+              '### Checklist de troubleshooting',
+              '- [ ] PC do Rodrigo ligado?',
+              '- [ ] 7 Tasks `\\FAST\\*` habilitadas no Task Scheduler?',
+              '- [ ] `git status` do repo local tem unstaged changes bloqueando `pull --rebase`?',
+              '- [ ] Log `_execucoes.log` no vault tem erros recentes?',
+              '',
+              '_Issue criado automaticamente pelo workflow `watchdog.yml`._',
+            ].join('\n');
+
+            // Procura issue aberto existente pra atualizar
+            const abertos = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'watchdog',
+            });
+            if (abertos.data.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: abertos.data[0].number,
+                body: corpo,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: titulo, body: corpo, labels: ['watchdog'],
+              });
+            }
+
+      - name: Fechar issue se tudo OK
+        if: steps.freshness.outputs.status == 'ok' && steps.dashboards.outputs.dre_horas <= 48 && steps.dashboards.outputs.dash_horas <= 6
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const abertos = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'watchdog',
+            });
+            for (const issue of abertos.data) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: issue.number,
+                body: '✅ Pipeline voltou. Fechando automaticamente.',
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: issue.number, state: 'closed',
+              });
+            }

@@ -72,9 +72,25 @@ Registrar "Inicio."
 
 # Traz o que as rotinas da nuvem publicaram desde a ultima execucao.
 # Se falhar (sem rede, conflito), segue com o dado local e avisa no briefing.
+# Stash + pull --rebase + stash pop: resolve a classe inteira de bugs
+# "cannot pull with rebase: You have unstaged changes" que travou o pipeline
+# de 11 a 13/10/2026 (um .pyc auto-gerado deixava o git sempre "sujo"). Com
+# o stash o pull nunca mais trava por unstaged, independente do arquivo.
 $avisoGit = ""
+$tinhaMudanca = $false
+$statusAntes = (& git -C $Projeto status --porcelain 2>&1 | Out-String).Trim()
+if ($statusAntes) {
+  $tinhaMudanca = $true
+  if (-not (Git-Passo "guardar mudancas locais antes do pull" @("stash","push","-u","-m","rodar_agente auto-stash"))) {
+    $avisoGit = "> [!warning] Nao consegui guardar as mudancas locais antes do pull — segui mesmo assim.`n"
+  }
+}
 if (-not (Git-Passo "atualizar o repositorio antes de rodar" @("pull","--rebase"))) {
   $avisoGit = "> [!warning] Nao consegui atualizar o repositorio. Os numeros podem estar atrasados.`n"
+}
+if ($tinhaMudanca) {
+  # Restaurar o stash. Se der conflito, mantem o stash pra Rodrigo olhar.
+  Git-Passo "restaurar mudancas locais apos pull" @("stash","pop") | Out-Null
 }
 
 # --- Reserva Stone no Excel -------------------------------------------------
@@ -159,6 +175,32 @@ if (-not $claude) {
     if (Test-Path $p) { $claude = $p; break }
   }
 }
+# Smoke test: valida que o claude CLI responde (sessao autenticada). Sem
+# isso, se o login caiu, o /conselho e /publicar falham silenciosamente no
+# fim do dia e Rodrigo so descobre no dia seguinte.
+if ($claude) {
+  $anterior = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $smokeJob = Start-Job -ScriptBlock { param($cli) & $cli -p "diga apenas: ok" 2>&1 } -ArgumentList $claude
+    $pronto = Wait-Job $smokeJob -Timeout 20
+    if ($pronto) {
+      $smokeOut = (Receive-Job $smokeJob -ErrorAction SilentlyContinue | Out-String).Trim()
+      if ($smokeOut -match "ok") {
+        Registrar "Smoke test claude CLI: ok"
+      } else {
+        Registrar "ALERTA: smoke test claude CLI respondeu diferente de 'ok' (sessao pode ter caido): $($smokeOut.Substring(0, [Math]::Min(100, $smokeOut.Length)))"
+      }
+    } else {
+      Stop-Job $smokeJob -ErrorAction SilentlyContinue
+      Registrar "ALERTA: smoke test claude CLI timeout 20s — sessao pode ter caido"
+    }
+    Remove-Job $smokeJob -Force -ErrorAction SilentlyContinue
+  } catch {
+    Registrar ("Smoke test claude CLI falhou: " + $_.Exception.Message)
+  } finally { $ErrorActionPreference = $anterior }
+}
+
 if (-not $claude) {
   Registrar "FALHOU: nao encontrei o comando 'claude' no PATH nem nos caminhos conhecidos."
   [System.IO.File]::WriteAllText($arquivo,

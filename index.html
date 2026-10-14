@@ -5566,6 +5566,28 @@ async function load(showToast=false){
     else if(ageMin<=65){chipAge.className='chip fresh';chipAge.innerHTML=`<span class="dot"></span> há ${ageMin} min`;}
     else if(ageMin<=180){chipAge.className='chip stale';chipAge.innerHTML=`<span class="dot"></span> há ${ageMin} min · próximo refresh em breve`;}
     else{chipAge.className='chip stale';chipAge.innerHTML=`<span class="dot"></span> há ${Math.floor(ageMin/60)}h${ageMin%60}m ⚠️ desatualizado`;}
+
+    // Saude das APIs: le cota_status.json. Se cota Trinks < 20% ou DRE > 48h,
+    // avisa no proprio chip de idade. Zero credencial — tudo via fetch dos JSONs.
+    try {
+      const cotaResp = await fetchUnidade('cota_status.json').catch(()=>null);
+      const cota = cotaResp && typeof cotaResp === 'object' ? cotaResp : null;
+      const dreBaseline = data.financeiro && data.financeiro.baseline;
+      let dreHoras = null;
+      if (dreBaseline) {
+        const bDate = new Date(dreBaseline + 'T00:00:00');
+        dreHoras = Math.floor((Date.now() - bDate.getTime()) / 3600000);
+      }
+      const avisos = [];
+      if (cota && cota.nivel === 'critico') avisos.push(`🔴 Cota Trinks ${cota.pct_restante}%`);
+      else if (cota && cota.nivel === 'alerta') avisos.push(`🟠 Cota Trinks ${cota.pct_restante}%`);
+      if (dreHoras !== null && dreHoras > 48) avisos.push(`🟠 DRE ${Math.floor(dreHoras/24)}d velho`);
+      if (avisos.length) {
+        chipAge.className = 'chip stale';
+        chipAge.innerHTML += ` · ${avisos.join(' · ')}`;
+      }
+    } catch(e) { /* saude e opcional, nunca derruba o painel */ }
+
     document.getElementById('loading').style.display='none';
     document.getElementById('content').style.display='';
     try{ renderScaffoldingBanner(); }catch(e){}

@@ -2703,6 +2703,34 @@ def main():
 
     cota_final = t.consumo()
 
+    # ==== MONITOR COTA TRINKS: alerta se < 20% restante ====
+    # Trinks tem 10k req/mes. 429 persistente mata o pipeline inteiro silenciosamente.
+    # Grava cota_status.json que o watchdog e o painel leem. Flag 'critico' quando
+    # saldoRestante/cotaTotal < 20%. Permite agir ANTES de bater o teto.
+    try:
+        _cota_total = int(cota_final.get("cotaTotal") or 0)
+        _cota_saldo = int(cota_final.get("saldoRestante") or 0)
+        _cota_pct = (_cota_saldo / max(_cota_total, 1)) * 100
+        if _cota_pct < 10: _nivel = "critico"
+        elif _cota_pct < 20: _nivel = "alerta"
+        else: _nivel = "ok"
+        _status_file = DATA_UNIT / "cota_status.json"
+        _status_file.parent.mkdir(parents=True, exist_ok=True)
+        _status_file.write_text(json.dumps({
+            "unidade": UNIT,
+            "plano": cota_final.get("plano"),
+            "total": _cota_total,
+            "usado": int(cota_final.get("totalUtilizado") or 0),
+            "saldo": _cota_saldo,
+            "pct_restante": round(_cota_pct, 2),
+            "nivel": _nivel,
+            "gerado_em": datetime.now(BRT).isoformat(timespec="seconds"),
+        }, ensure_ascii=False, indent=2), encoding="utf-8")
+        if _nivel != "ok":
+            print(f"[cota] {_nivel.upper()}: {_cota_pct:.1f}% restante ({_cota_saldo}/{_cota_total}) · ver {_status_file.name}")
+    except Exception as _e:
+        print(f"[cota] erro ao gravar status: {_e}")
+
     # ==== STONE reconciliação (se CSV existe) ====
     stone_data = None
     try:
