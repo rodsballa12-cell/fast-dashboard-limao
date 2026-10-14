@@ -5439,11 +5439,17 @@ async function switchUnidade(nova){
   await reloadAllTabs(false);
 }
 
-// Banner exibido no topo da aba ativa quando os dados vieram da Escova
-// como scaffolding (SPA/Consolidado ainda sem payload próprio).
+// Banner "SPA preview / scaffolding" exibido quando os dados vieram da Escova
+// (SPA/Consolidado ainda sem payload próprio).
+// Rodrigo (14/10): SPA ja tem Trinks conectado desde 25/09 — banner sumiu.
+// Agora so aparece se o payload DE FATO estiver vazio: _mock=true OU caixa anual = 0.
 function renderScaffoldingBanner(){
   document.querySelectorAll('.scaffolding-banner').forEach(e => e.remove());
-  if(!UNIDADE_SCAFFOLDING || UNIDADE_ATIVA === 'escova') return;
+  if(UNIDADE_ATIVA === 'escova') return;
+  // Verifica se tem dado real · se sim, nao mostra banner
+  const payloadReal = TRINKS && !TRINKS._mock
+    && ((TRINKS.abas?.anual?.kpis?.caixa || 0) > 0 || !UNIDADE_SCAFFOLDING);
+  if(payloadReal) return;
   const info = unidadeInfo(UNIDADE_ATIVA);
   const cor = { spa: '#24B3A6', consolidado: '#0A0A0A' }[UNIDADE_ATIVA] || 'var(--accent)';
   let msg;
