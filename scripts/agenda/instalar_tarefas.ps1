@@ -75,11 +75,16 @@ foreach ($t in $tarefas) {
                "-Agente $($t.Agente) -Projeto `"$Projeto`"" +
                $(if ($t.Publicar) { " -Publicar" } else { "" }))
   $gatilho = New-ScheduledTaskTrigger -Daily -At $t.Hora
-  # StartWhenAvailable: recupera a execução se o PC estava desligado.
-  # DontStopIfGoingOnBatches / AllowStartIfOnBatteries: notebook não deve pular.
+  # StartWhenAvailable: recupera a execucao se o PC estava desligado.
+  # DontStopIfGoingOnBatches / AllowStartIfOnBatteries: notebook nao deve pular.
+  # RestartCount/RestartInterval: se a tarefa FALHAR (nao se pular), retenta
+  # 3 vezes a cada 5 min — cobre perfil que subiu com atraso, OneDrive travado,
+  # etc. Nao retenta se o script devolver codigo 0. Observado 14/10/2026:
+  # PC bootou 07:23, Memoria 07:30 nao disparou (perfil ainda carregando).
   $config = New-ScheduledTaskSettingsSet -StartWhenAvailable `
     -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries `
-    -ExecutionTimeLimit (New-TimeSpan -Minutes 20)
+    -ExecutionTimeLimit (New-TimeSpan -Minutes 20) `
+    -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 5)
 
   Register-ScheduledTask -TaskName $t.Nome -Action $acao -Trigger $gatilho `
     -Settings $config -Description "Cargo $($t.Agente) — $($t.Porque)" -Force | Out-Null
