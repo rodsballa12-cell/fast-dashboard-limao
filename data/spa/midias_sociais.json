@@ -5187,6 +5187,39 @@
       "revisao_em": null,
       "docs_decisao": "docs/decisoes/2026-10-09-conselho-corrigir-o-caixa-e-o-a-receber-do-spa-no.md",
       "origem_conselho": "2026-10-09"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-11] **Carteira de churn + WhatsApp Cloud**",
+      "detalhe": "R$ 31.844 de 111 clientes, crescendo ~R$ 700/dia",
+      "acao": "Executar: Relacionamento toca manualmente pelo painel enquanto você decide se busca acesso admin no Meta Business Manager (pedido pela 3ª vez desde 14/09).",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-11-conselho-carteira-de-churn-whatsapp-cloud.md",
+      "origem_conselho": "2026-10-11"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-11] **Responsável fixo para os conectores do Spa** (Stone e Meta Ads, parados há 11 dias, depois do Trinks ter ficado cego quase um mês até 09/10)",
+      "detalhe": "Spa já está -R$ 12.919 no mês parcial e opera sem visão de mídia nem conciliação",
+      "acao": "Executar: sessão técnica + Financeiro.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-11-conselho-responsavel-fixo-para-os-conectores-do-s.md",
+      "origem_conselho": "2026-10-11"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-11] **Fechar com Resultado as 3 decisões de 09/10 e nomear quem corrige o desvio de tabela (18/09)**",
+      "detalhe": "~R$ 1.500/semana, mais a credibilidade de qualquer decisão futura",
+      "acao": "Executar: Memória registra depois que você confirmar o que foi feito.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-11-conselho-fechar-com-resultado-as-3-decisoes-de-09.md",
+      "origem_conselho": "2026-10-11"
     }
   ],
   "insights_narrativa": [
@@ -5638,6 +5671,59 @@
         "Por que o refresh automático parou há 7-9 dias — nenhuma das seis cadeiras",
         "Qual é exatamente a divergência que a auditoria de coerência achou hoje —",
         "Se o Trinks do Spa já está de fato plugado no funil de mídia — o"
+      ]
+    },
+    {
+      "data": "2026-10-11",
+      "hora": "22:30",
+      "tipo": "noturno",
+      "sincronizado_em": "2026-10-13T21:53:56-03:00",
+      "sincronizado_por": "auto (workflow conselho_sync.yml)",
+      "ata": "docs/atas/2026-10-11-conselho.md",
+      "mesa": {
+        "operacao": "ok",
+        "financeiro": "atencao",
+        "marketing": "atencao",
+        "relacionamento": "critico",
+        "pessoas": "ok"
+      },
+      "decisoes": [
+        {
+          "n": 1,
+          "titulo": "**Carteira de churn + WhatsApp Cloud**",
+          "em_jogo": "R$ 31.844 de 111 clientes, crescendo ~R$ 700/dia",
+          "executor": "Relacionamento toca manualmente pelo painel enquanto você decide se busca acesso admin no Meta Business Manager (pedido pela 3ª vez desde 14/09)",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-11-conselho-carteira-de-churn-whatsapp-cloud.md"
+        },
+        {
+          "n": 2,
+          "titulo": "**Responsável fixo para os conectores do Spa** (Stone e Meta Ads, parados há 11 dias, depois do Trinks ter ficado cego quase um mês até 09/10)",
+          "em_jogo": "Spa já está -R$ 12.919 no mês parcial e opera sem visão de mídia nem conciliação",
+          "executor": "sessão técnica + Financeiro",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-11-conselho-responsavel-fixo-para-os-conectores-do-s.md"
+        },
+        {
+          "n": 3,
+          "titulo": "**Fechar com Resultado as 3 decisões de 09/10 e nomear quem corrige o desvio de tabela (18/09)**",
+          "em_jogo": "~R$ 1.500/semana, mais a credibilidade de qualquer decisão futura",
+          "executor": "Memória registra depois que você confirmar o que foi feito",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-11-conselho-fechar-com-resultado-as-3-decisoes-de-09.md"
+        }
+      ],
+      "cruzamentos_chave": [],
+      "sem_dono": [
+        "Ticket baixo de sábado: foi desconto fora da tabela? → Marketing × Operação, pendente.",
+        "As 103 conversas de outubro viraram agendamento de fato? → Operação, pendente.",
+        "Alguém usou o botão manual de WhatsApp para algum dos 111 em risco? → Operação, pendente.",
+        "Escala por dia×hora cruzada com a equipe real — não rodou hoje (bloqueio técnico), fica para a próxima leitura.",
+        "📌 MEMÓRIA**",
+        ""
       ]
     }
   ]
