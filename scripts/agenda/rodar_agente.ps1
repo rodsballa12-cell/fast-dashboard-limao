@@ -119,6 +119,37 @@ function Frescos-Para-Excel {
 }
 Frescos-Para-Excel
 
+# --- DRE/financeiro.json atualizado a partir do Excel ---------------------
+# atualiza_painel.py grava no Excel; gerar_financeiro.py le o Excel e produz
+# data/financeiro.json + data/spa/financeiro.json + data/consolidado/financeiro.json
+# que o painel online le na aba Financeiro. Sem este passo o DRE no painel so
+# atualiza quando o Rodrigo roda manualmente — baseline fica dias defasada.
+# Pedido do Rodrigo em 13/10/2026 apos o briefing dele mostrar baseline 11/10.
+function DRE-Para-JSON {
+  $anterior = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $py = (Get-Command python -ErrorAction SilentlyContinue).Source
+    if (-not $py) { Registrar "DRE para JSON: python nao encontrado, pulei."; return }
+    # PYTHONUTF8=1 evita UnicodeDecodeError cp1252 em open() sem encoding.
+    $envAntes = $env:PYTHONUTF8
+    $env:PYTHONUTF8 = "1"
+    try {
+      $saidaPy = (& $py (Join-Path $Projeto "scripts\gerar_financeiro.py") 2>&1 | Out-String).Trim()
+      if ($LASTEXITCODE -ne 0) { Registrar "FALHOU: DRE para JSON (codigo $LASTEXITCODE). $saidaPy" }
+      else {
+        # Pegar so as 3 linhas-chave do gerar_financeiro (uma por unidade) pra nao poluir o log.
+        $resumo = ($saidaPy -split "`r?`n" | Where-Object { $_ -match "gerado|principal" } | Select-Object -First 6) -join " | "
+        if (-not $resumo) { $resumo = "ok" }
+        Registrar "DRE para JSON: $resumo"
+      }
+    } finally { $env:PYTHONUTF8 = $envAntes }
+  } catch {
+    Registrar ("FALHOU: DRE para JSON. " + $_.Exception.Message)
+  } finally { $ErrorActionPreference = $anterior }
+}
+DRE-Para-JSON
+
 # 'claude' pode nao estar no PATH de uma tarefa agendada.
 $claude = (Get-Command claude -ErrorAction SilentlyContinue).Source
 if (-not $claude) {
