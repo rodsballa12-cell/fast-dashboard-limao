@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-14T02:00:23-03:00",
+  "gerado_em": "2026-10-14T08:41:52-03:00",
   "hoje": "2026-10-14",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -288,8 +288,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 955,
-    "saldoRestante": 9045
+    "totalUtilizado": 967,
+    "saldoRestante": 9033
   },
   "metas_franqueadora": null,
   "unidade_config": {
@@ -1709,7 +1709,7 @@
           "cliente": "Ricardo Moura Caires Costa"
         }
       ],
-      "horas_desatualizado": 320.0
+      "horas_desatualizado": 326.7
     }
   },
   "auditoria_cancelados": {
@@ -5819,8 +5819,8 @@
           "comissao": 779.2,
           "taxa_efetiva": 0.2955,
           "por_cat": {
-            "ADICIONAIS": 354.0,
             "CORPORAL": 2045.0,
+            "ADICIONAIS": 354.0,
             "FACIAL": 238.0
           },
           "ticket_medio_serv": 114.65
@@ -6515,8 +6515,8 @@
           "comissao": 154.5,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "ADICIONAIS": 118.0,
-            "CORPORAL": 397.0
+            "CORPORAL": 397.0,
+            "ADICIONAIS": 118.0
           },
           "ticket_medio_serv": 103.0
         },
@@ -6866,7 +6866,7 @@
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "data": "2026-10-07",
-          "hora_max": 2.0,
+          "hora_max": 8.68,
           "caixa": 0.0,
           "atend_fin": 0,
           "faturamento_apurado": 0.0,
@@ -6889,8 +6889,8 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "02:00",
-          "hora_atual_num": 2.0,
+          "hora_atual_str": "08:41",
+          "hora_atual_num": 8.68,
           "pct_esperado_agora": 0.0,
           "meta_dia": 983.21,
           "meta_esperada_agora": 0.0,
@@ -7107,7 +7107,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-14T02:00:23-03:00",
+    "gerado_em": "2026-10-14T08:41:52-03:00",
     "hoje": "2026-10-14",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -7281,7 +7281,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-14T02:00:23-03:00",
+    "gerado_em": "2026-10-14T08:41:52-03:00",
     "n_agendamentos": 118,
     "horas": [
       9,
