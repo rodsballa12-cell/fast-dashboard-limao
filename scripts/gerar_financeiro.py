@@ -228,19 +228,24 @@ def monta_mes(ws, col, ano, mes, linha_titulo, meta_mes, comissao_pct, loja_labe
          "linhas": [
              _row("Gerente (PJ · CNPJ)", SALARIO_GERENTE, SALARIO_GERENTE,
                   f"R$ {SALARIO_GERENTE:.0f}/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos"),
-             # Recepção + limpeza: Excel deveria consolidar. Enquanto não trouxer,
-             # usa fallback do config (Rodrigo, 08/10): SPA tem CLT R$ 2.700 +
-             # PJ R$ 3.000 que não entravam no bloco DRE FAST SPA.
-             (lambda rec_exc: (
-                 _row("Recepção + limpeza + encargos",
-                      rec_exc if rec_exc > 0 else _recepcao_fallback_custo(
-                          "spa" if "SPA" in loja_label.upper() else "escova"),
-                      rec_exc if rec_exc > 0 else _recepcao_fallback_custo(
-                          "spa" if "SPA" in loja_label.upper() else "escova"),
-                      ("total pessoal do Excel menos gerente"
-                       if rec_exc > 0
-                       else f"fallback config · {('CLT + PJ' if 'SPA' in loja_label.upper() else 'CLT')}"))
-             ))(max(pessoal - SALARIO_GERENTE, 0)),
+             # Recepcao + limpeza: Excel deveria consolidar, mas as vezes digita
+             # abaixo do real (SPA out/26: Excel R$ 3.421 vs config R$ 7.725 = 1
+             # CLT 2700×1.75 + 1 PJ 3000, confirmado por Rodrigo 15/10/2026).
+             # Agora: usa max(Excel, config) e sinaliza no help do DRE quando o
+             # Excel esta sub, para o painel nao mentir sobre o pessoal fixo.
+             (lambda rec_exc, unid_key: (
+                 (lambda fb: _row(
+                     "Recepção + limpeza + encargos",
+                     max(rec_exc, fb),
+                     max(rec_exc, fb),
+                     (f"Excel R$ {rec_exc:,.0f} · ⚠ abaixo do config R$ {fb:,.0f} (1 CLT R$ 2.700×1,75 + 1 PJ R$ 3.000). Painel usa o maior para nao subcontar."
+                      if (rec_exc > 0 and fb > 0 and rec_exc < fb * 0.9)
+                      else ("total pessoal do Excel menos gerente"
+                            if rec_exc > 0
+                            else f"fallback config · {('CLT + PJ' if unid_key == 'spa' else 'CLT')}"))
+                 ))(_recepcao_fallback_custo(unid_key))
+             ))(max(pessoal - SALARIO_GERENTE, 0),
+                "spa" if "SPA" in loja_label.upper() else "escova"),
          ]},
         {"id": "OCUPACAO", "titulo": "Ocupação — rateio do imóvel",
          "linhas": [

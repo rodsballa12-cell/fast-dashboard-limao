@@ -6156,7 +6156,7 @@ function renderFinanceiro(){
   const beBarReal     = `<div class="be-bar"><span style="width:${(bePercReal*100).toFixed(1)}%"></span></div>`
     + `<div class="be-leg">${finPct(bePercReal)} percorrido · equilíbrio em ${brl0(beMes)}/mês</div>`;
 
-  // === HERO leigo-friendly · Financeiro · 3 cenários alinhados com Trinks ===
+  // === HERO leigo-friendly · Financeiro · 4 cenarios alinhados com Trinks ===
   // Fonte ÚNICA de faturamento e meta: TRINKS (real + projeção).
   // Excel só entra pra custos (% comissão/insumos/Simples/inadimplência + fixo).
   const anoAtualHero = new Date().getFullYear();
@@ -6332,7 +6332,7 @@ function renderFinanceiro(){
 
   const bloco_hero_fin = `<div class="card">
     <h2>💰 Financeiro · ano ${anoAtualHero} <span style="font-weight:400;font-size:12px;color:var(--ink-3)">(fonte única: faturamento Trinks + custos Excel)</span></h2>
-    <div class="cap">3 cenários alinhados: como estamos NO MÊS, como está o ACUMULADO desde a abertura, e onde CHEGAMOS no fim do ano se manter o ritmo.</div>
+    <div class="cap">4 cenários alinhados: como estamos NO MÊS, como está o ACUMULADO desde a abertura, o PONTO DE EQUILÍBRIO e onde CHEGAMOS no fim do ano se manter o ritmo.</div>
 
     <!-- 3 CENÁRIOS -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:14px">
@@ -6461,6 +6461,31 @@ function renderFinanceiro(){
           <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${brl0(k.a_receber_stone)}</div>
           <div style="font-size:11px;color:var(--ink-2)">cartão de crédito, cai em ~30d · mesmo número da aba Stone</div>
         </div>
+        ${(() => {
+          // Dois relogios de atraso: DRE (Excel digitado) e Stone (extrato CSV). Sem
+          // mostrar os dois lado a lado, o painel esconde quando o Stone esta
+          // defasado em relacao ao DRE. CLAUDE.md: 'antes de repetir um alarme do
+          // painel, confira ate quando vai a fonte que o gerou'.
+          const stoneFim = (TRINKS && TRINKS.stone && TRINKS.stone.periodo_fim) || null;
+          if(!stoneFim) return '';
+          const stoneFmt = fmtDate(stoneFim);
+          // Gap em dias (data iso → epoch dias)
+          const diffDias = baselineIso && stoneFim
+            ? Math.round((new Date(baselineIso) - new Date(stoneFim)) / 86400000)
+            : null;
+          const alerta = diffDias != null && diffDias > 7;
+          const corBorda = alerta ? 'var(--warn)' : 'var(--ink-3)';
+          const corLabel = alerta ? 'var(--warn)' : 'var(--ink-2)';
+          const sinal = diffDias != null && diffDias !== 0 ? ` · Δ ${diffDias}d` : '';
+          const alertaTxt = alerta ? ' ⚠ extrato atrasado' : '';
+          return `
+        <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${corBorda}">
+          <div style="font-size:11px;color:${corLabel};font-weight:800;text-transform:uppercase">⏱️ Relógios de atraso</div>
+          <div style="font-size:13.5px;font-weight:700;color:var(--ink);margin:4px 0 2px">DRE até ${baselineFmt}</div>
+          <div style="font-size:13.5px;font-weight:700;color:var(--ink)">Stone até ${stoneFmt}${sinal}${alertaTxt}</div>
+          <div style="font-size:10.5px;color:var(--ink-3);margin-top:4px">dois carimbos que avançam separados — comparar antes de alarme</div>
+        </div>`;
+        })()}
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${ritmoMensal >= beMesUnif ? 'var(--good)' : 'var(--warn)'}">
           <div style="font-size:11px;color:${ritmoMensal >= beMesUnif ? 'var(--good)' : 'var(--warn)'};font-weight:800;text-transform:uppercase">⚖️ Ponto de equilíbrio · mensal</div>
           <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${ritmoMensal >= beMesUnif ? '✓ batido no ritmo' : brl0(Math.max(beMesUnif-ritmoMensal,0)) + '/mês faltam'}</div>
@@ -9031,10 +9056,16 @@ function renderConsolidadoMidias(){
   </section>`;
   const alvo = document.getElementById('midias-status');
   if(alvo) alvo.insertAdjacentHTML('beforebegin', html);
-  // rotular o que é só da Escova (Google Meu Negócio ainda não existe para o Spa)
-  document.querySelectorAll('#tab-midias h2, #tab-midias h3').forEach(h => {
-    if(/Google Meu Neg/i.test(h.textContent) && !h.querySelector('.so-escova')) h.insertAdjacentHTML('beforeend', ' <span class="so-escova" style="font-size:10.5px;font-weight:700;background:var(--warn-soft);color:var(--warn);padding:2px 8px;border-radius:999px;margin-left:6px">só Escova</span>');
-  });
+  // Antes 15/10/2026 o GBP do SPA ainda nao existia e esta rotina marcava toda
+  // secao com "Google Meu Negocio" como "so Escova". Hoje SPA tem GBP ativo e o
+  // consolidado soma os dois — a badge so continua fazendo sentido se um dos
+  // lados estiver desconectado.
+  const gbpSoEscova = UNIDADE_ATIVA === 'escova' && !(MID && MID.google_business && MID.google_business.detalhes_por_unidade && MID.google_business.detalhes_por_unidade.spa);
+  if(gbpSoEscova){
+    document.querySelectorAll('#tab-midias h2, #tab-midias h3').forEach(h => {
+      if(/Google Meu Neg/i.test(h.textContent) && !h.querySelector('.so-escova')) h.insertAdjacentHTML('beforeend', ' <span class="so-escova" style="font-size:10.5px;font-weight:700;background:var(--warn-soft);color:var(--warn);padding:2px 8px;border-radius:999px;margin-left:6px">só Escova</span>');
+    });
+  }
 }
 
 async function loadMidias(){

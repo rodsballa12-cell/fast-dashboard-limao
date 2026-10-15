@@ -257,7 +257,15 @@ def merge_list(a, b, path=""):
             sort_fn = SORT_POR_PATH[key]
         if sort_fn is None:
             sort_fn = lambda z: -(z.get("v") or z.get("ltv") or 0)
-        return sorted(idx.values(), key=sort_fn)
+        resultado = sorted(idx.values(), key=sort_fn)
+        # Cards de clientes do painel (top_ltv/cross_sell/churn_early) sempre
+        # mostram top-50. Sem corte, o consolidado vinha com ate 100 itens
+        # (50 Escova + 50 SPA deduplicados) — Rodrigo ve lista inchada e o
+        # frontend corta na renderizacao, mas o payload fica desnecessariamente
+        # grande. Mantem o corte em paridade com Escova/SPA individualmente.
+        if parent in TOP_KEY_POR_PARENT and key == "top":
+            resultado = resultado[:50]
+        return resultado
     # Categorias top-level (pacotes/servicos/produtos) — merge por índice se dict com 'k'
     if len(a) == len(b) and all(isinstance(x, dict) for x in a) and all(isinstance(y, dict) for y in b):
         # tenta match por 'k' ou 'nome'
@@ -434,14 +442,85 @@ def _ticket_meta(k, meta, dias_rest, ritmo_vis):
     k["ticket_meta_supera_caixa"] = round(max(-falta_caixa, 0), 2)
 
 
+def corrigir_historico_consolidado(c, esc, spa):
+    """Reaplica NAO_SOMAR + recalc em cada entrada de historico.dias e
+    historico.semanas do consolidado. Sem isto, o merge cego carrega
+    dias_op=2 (soma 1+1), ticket_medio herdado da Escova, ticket_trans
+    e rs_hora_salao somados. Resultado: paineis de serie historica do
+    consolidado mentem ticket medio e produtividade por hora.
+
+    A regra e identica a corrigir_consolidado() para abas.*.kpis — so
+    aplicada tambem aqui, por entrada de dia/semana.
+    """
+    def _recalc(k, kpis_esc, kpis_spa):
+        if not isinstance(k, dict):
+            return
+        # dias_op = calendario comum, nao soma dos dois calendarios.
+        de = (kpis_esc or {}).get("dias_op") or 0
+        ds = (kpis_spa or {}).get("dias_op") or 0
+        if de or ds:
+            k["dias_op"] = max(de, ds)
+        caixa = k.get("caixa") or 0
+        cliente_dia = k.get("cliente_dia") or 0
+        n_trans = k.get("n_trans") or 0
+        horas = k.get("horas_operacao_periodo") or 0
+        atend_total = k.get("atend_total") or 0
+        atend_canc = k.get("atend_canc") or 0
+        if cliente_dia > 0:
+            k["ticket_medio"] = round(caixa / cliente_dia, 2)
+        if n_trans > 0:
+            k["ticket_trans"] = round(caixa / n_trans, 2)
+        if horas > 0:
+            k["rs_hora_salao"] = round(caixa / horas, 2)
+        if atend_total > 0:
+            k["taxa_canc"] = round(atend_canc / atend_total * 100, 1)
+
+    cons_hist = c.get("historico") or {}
+    esc_hist = esc.get("historico") or {}
+    spa_hist = spa.get("historico") or {}
+
+    cons_dias = cons_hist.get("dias") or {}
+    esc_dias = esc_hist.get("dias") or {}
+    spa_dias = spa_hist.get("dias") or {}
+    for data, bloco in cons_dias.items():
+        ek = (esc_dias.get(data) or {}).get("kpis") or {}
+        sk = (spa_dias.get(data) or {}).get("kpis") or {}
+        _recalc(bloco.get("kpis"), ek, sk)
+
+    cons_sem = cons_hist.get("semanas") or {}
+    esc_sem = esc_hist.get("semanas") or {}
+    spa_sem = spa_hist.get("semanas") or {}
+    for semana, bloco in cons_sem.items():
+        ek = (esc_sem.get(semana) or {}).get("kpis") or {}
+        sk = (spa_sem.get(semana) or {}).get("kpis") or {}
+        _recalc(bloco.get("kpis"), ek, sk)
+
+
 def corrigir_consolidado(c, esc, spa):
     hoje = _d(esc.get("hoje") or date.today().isoformat())
     inicio = _inicio_spa(spa)
     esc_saz, spa_saz = esc.get("sazonalidade") or {}, spa.get("sazonalidade") or {}
 
-    # -- sazonalidade: forma (dia da semana, hora, semanas) é a do Escova, que
-    #    tem histórico; a meta diária é Escova + Spa depois da abertura.
+    # -- sazonalidade: hora (dia da semana × hora) ainda e a do Escova (SPA so
+    #    tem 21 dias). Mas peso_dow do consolidado passa a ser PONDERADO pela
+    #    receita anual de cada unidade, nao mais copia da Escova. Antes, o
+    #    consolidado dizia Sabado 36,3% (puro Escova); SPA tem Sab 33,4%.
     saz = copy.deepcopy(esc_saz)
+    esc_pw = esc_saz.get("peso_dow") or {}
+    spa_pw = spa_saz.get("peso_dow") or {}
+    rec_esc = ((esc.get("abas", {}).get("anual", {}) or {}).get("kpis") or {}).get("caixa") or 0
+    rec_spa = ((spa.get("abas", {}).get("anual", {}) or {}).get("kpis") or {}).get("caixa") or 0
+    tot_rec = rec_esc + rec_spa
+    if tot_rec > 0 and spa_pw:
+        peso_pond = {}
+        for n in set(esc_pw.keys()) | set(spa_pw.keys()):
+            pe, ps = (esc_pw.get(n) or 0), (spa_pw.get(n) or 0)
+            peso_pond[n] = round((pe * rec_esc + ps * rec_spa) / tot_rec, 2)
+        saz["peso_dow"] = peso_pond
+        saz["_peso_dow_origem"] = (
+            f"ponderado por receita anual: Escova R$ {rec_esc:,.0f} ({rec_esc/tot_rec*100:.1f}%) + "
+            f"SPA R$ {rec_spa:,.0f} ({rec_spa/tot_rec*100:.1f}%). Antes era copia da Escova."
+        )
     mp = {}
     for ds, v in (esc_saz.get("meta_por_data") or {}).items():
         mp[ds] = round(v + (((spa_saz.get("meta_por_data") or {}).get(ds) or 0) if _d(ds) >= inicio else 0), 2)
@@ -453,8 +532,9 @@ def corrigir_consolidado(c, esc, spa):
         soma[n] = soma.get(n, 0) + v
         cont[n] = cont.get(n, 0) + 1
     saz["meta_dia_por_dow"] = {n: round(soma[n] / cont[n], 2) for n in soma}
-    saz["_nota_consolidado"] = ("Forma semanal/horária = Escova (tem histórico). Meta diária = Escova + Spa, "
-                                "a do Spa cheia no mês (sem ratear, decisão de 28/09/2026).")
+    saz["_nota_consolidado"] = ("Forma horária (hora × dia) = Escova (tem histórico). peso_dow = ponderado por "
+                                "receita anual das duas lojas. Meta diária = Escova + Spa, a do Spa cheia no mês "
+                                "(sem ratear, decisão de 28/09/2026).")
     c["sazonalidade"] = saz
     c["dias_atipicos"] = copy.deepcopy(esc.get("dias_atipicos") or {})
     c["dias_op_mes"] = esc.get("dias_op_mes")
@@ -734,6 +814,7 @@ def main():
     consolidado = merge(escova, spa)
     recalcular_derivados(consolidado)
     corrigir_consolidado(consolidado, escova, spa)
+    corrigir_historico_consolidado(consolidado, escova, spa)
     anexar_lado_a_lado(consolidado, escova, spa)
     anexar_cadastro_consolidado(consolidado, escova, spa)
     anexar_migracao_cruzada(consolidado, escova, spa)
