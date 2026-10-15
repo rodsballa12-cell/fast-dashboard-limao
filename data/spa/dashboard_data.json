@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-15T18:28:44-03:00",
+  "gerado_em": "2026-10-15T19:58:09-03:00",
   "hoje": "2026-10-15",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -300,8 +300,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 1086,
-    "saldoRestante": 8914
+    "totalUtilizado": 1094,
+    "saldoRestante": 8906
   },
   "metas_franqueadora": null,
   "unidade_config": {
@@ -1784,17 +1784,17 @@
           "cliente": "Thais Galvão"
         }
       ],
-      "horas_desatualizado": 360.5
+      "horas_desatualizado": 362.0
     }
   },
   "auditoria_cancelados": {
-    "n_com_valor": 11,
-    "v_total": 1409.0,
+    "n_com_valor": 12,
+    "v_total": 1529.0,
     "excluidos_inauguracao_n": 0,
     "excluidos_inauguracao_v": 0.0,
     "data_corte": "2026-07-23",
     "resumo_risco": {
-      "ok": 5,
+      "ok": 6,
       "atencao": 6
     },
     "por_profissional": [
@@ -1802,6 +1802,11 @@
         "nome": "—",
         "n": 6,
         "v": 844.0
+      },
+      {
+        "nome": "Fabiana Leite",
+        "n": 2,
+        "v": 269.0
       },
       {
         "nome": "Sarah Barbosa Carmelita",
@@ -1812,11 +1817,6 @@
         "nome": "Marly Feitosa de Lima Ledoux ",
         "n": 2,
         "v": 208.0
-      },
-      {
-        "nome": "Fabiana Leite",
-        "n": 1,
-        "v": 149.0
       }
     ],
     "por_servico": [
@@ -1824,6 +1824,11 @@
         "nome": "RENOVE-SE EM 45",
         "n": 9,
         "v": 1291.0
+      },
+      {
+        "nome": "TP - MASSAGEM RENOVE-SE EM 45 - RELAXANTE",
+        "n": 1,
+        "v": 120.0
       },
       {
         "nome": "VENTOSATERAPIA",
@@ -1837,6 +1842,24 @@
       }
     ],
     "lista": [
+      {
+        "id": 538014195,
+        "data": "2026-10-15T18:57:00",
+        "valor": 120.0,
+        "profissional": "Fabiana Leite",
+        "cliente": "Ricardo Moura Caires Costa",
+        "servico": "TP - MASSAGEM RENOVE-SE EM 45 - RELAXANTE",
+        "sem_prof": false,
+        "valor_atipico": false,
+        "valor_zero": false,
+        "preco_ref": null,
+        "stone_match_n": 0,
+        "stone_match_nomes": [],
+        "match_por_nome": false,
+        "risco": "ok",
+        "obs_cliente": "",
+        "obs_estabelecimento": ""
+      },
       {
         "id": 534750259,
         "data": "2026-10-03T16:58:00",
@@ -2254,20 +2277,20 @@
           "faturamento_apurado": 3235.0,
           "receita_serv": 2738.0,
           "atend_fin": 26,
-          "atend_canc": 0,
-          "atend_total": 26,
+          "atend_canc": 1,
+          "atend_total": 28,
           "n_trans": 22,
           "ticket_trans": 147.05,
           "cliente_dia": 15,
           "ticket_medio": 215.67,
-          "taxa_canc": 0.0,
+          "taxa_canc": 3.6,
           "dias_op": 4,
           "clientes_unicos": 14,
-          "em_atendimento": 0,
+          "em_atendimento": 1,
           "n_prof_ativos": 6,
-          "rs_hora_salao": 81.97,
-          "horas_operacao_periodo": 39.0,
-          "utilizacao_agregada_pct": 5.2
+          "rs_hora_salao": 78.97,
+          "horas_operacao_periodo": 41.0,
+          "utilizacao_agregada_pct": 5.0
         },
         "categorias": {
           "pacotes": {
@@ -2317,20 +2340,20 @@
           "faturamento_apurado": 596.0,
           "receita_serv": 149.0,
           "atend_fin": 1,
-          "atend_canc": 0,
-          "atend_total": 1,
+          "atend_canc": 1,
+          "atend_total": 3,
           "n_trans": 4,
           "ticket_trans": 149.0,
           "cliente_dia": 1,
           "ticket_medio": 596.0,
-          "taxa_canc": 0.0,
+          "taxa_canc": 33.3,
           "dias_op": 1,
           "clientes_unicos": 1,
-          "em_atendimento": 0,
+          "em_atendimento": 1,
           "n_prof_ativos": 1,
-          "rs_hora_salao": 62.96,
-          "horas_operacao_periodo": 9.0,
-          "utilizacao_agregada_pct": 1.0
+          "rs_hora_salao": 54.35,
+          "horas_operacao_periodo": 11.0,
+          "utilizacao_agregada_pct": 0.9
         },
         "categorias": {
           "pacotes": {
@@ -3398,19 +3421,19 @@
         "faturamento_apurado": 24911.37,
         "receita_serv": 16191.8,
         "atend_fin": 141,
-        "atend_canc": 11,
-        "atend_total": 155,
+        "atend_canc": 12,
+        "atend_total": 157,
         "n_trans": 171,
         "ticket_trans": 145.68,
         "cliente_dia": 107,
         "ticket_medio": 232.82,
-        "taxa_canc": 7.1,
+        "taxa_canc": 7.6,
         "dias_op": 22,
         "clientes_unicos": 95,
-        "em_atendimento": 3,
+        "em_atendimento": 4,
         "n_prof_ativos": 12,
-        "rs_hora_salao": 110.49,
-        "horas_operacao_periodo": 225.0,
+        "rs_hora_salao": 109.76,
+        "horas_operacao_periodo": 227.0,
         "utilizacao_agregada_pct": 5.3,
         "ticket_meta": 319.1,
         "ticket_meta_periodo": 300.6,
@@ -3517,7 +3540,7 @@
           "clientes_unicos": 60,
           "n_trans": 98,
           "ticket_trans": 132.33,
-          "taxa_canc": 5.9,
+          "taxa_canc": 6.8,
           "categorias": {
             "pacotes": {
               "v": 2980.0,
@@ -4645,7 +4668,7 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 1803.7,
+          "capacidade_horas": 1815.7,
           "horas_ocupadas": 96.0,
           "utilizacao_pct": 5.3
         }
@@ -5437,20 +5460,20 @@
         "faturamento_apurado": 12968.0,
         "receita_serv": 9798.8,
         "atend_fin": 94,
-        "atend_canc": 6,
-        "atend_total": 101,
+        "atend_canc": 7,
+        "atend_total": 103,
         "n_trans": 98,
         "ticket_trans": 132.33,
         "cliente_dia": 67,
         "ticket_medio": 193.55,
-        "taxa_canc": 5.9,
+        "taxa_canc": 6.8,
         "dias_op": 14,
         "clientes_unicos": 60,
-        "em_atendimento": 1,
+        "em_atendimento": 2,
         "n_prof_ativos": 9,
-        "rs_hora_salao": 81.32,
-        "horas_operacao_periodo": 159.0,
-        "utilizacao_agregada_pct": 4.8,
+        "rs_hora_salao": 80.56,
+        "horas_operacao_periodo": 161.0,
+        "utilizacao_agregada_pct": 4.7,
         "caixa_delta_pct": null,
         "atend_delta_pct": null,
         "cliente_dia_delta_pct": null,
@@ -6316,9 +6339,9 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 1275.7,
+          "capacidade_horas": 1287.7,
           "horas_ocupadas": 60.8,
-          "utilizacao_pct": 4.8
+          "utilizacao_pct": 4.7
         }
       },
       "densidade_hora": [
@@ -6382,20 +6405,20 @@
         "faturamento_apurado": 3235.0,
         "receita_serv": 2738.0,
         "atend_fin": 26,
-        "atend_canc": 0,
-        "atend_total": 26,
+        "atend_canc": 1,
+        "atend_total": 28,
         "n_trans": 22,
         "ticket_trans": 147.05,
         "cliente_dia": 15,
         "ticket_medio": 215.67,
-        "taxa_canc": 0.0,
+        "taxa_canc": 3.6,
         "dias_op": 4,
         "clientes_unicos": 14,
-        "em_atendimento": 0,
+        "em_atendimento": 1,
         "n_prof_ativos": 6,
-        "rs_hora_salao": 81.97,
-        "horas_operacao_periodo": 39.0,
-        "utilizacao_agregada_pct": 5.2,
+        "rs_hora_salao": 78.97,
+        "horas_operacao_periodo": 41.0,
+        "utilizacao_agregada_pct": 5.0,
         "caixa_delta_pct": 77.1,
         "atend_delta_pct": 23.8,
         "cliente_dia_delta_pct": -11.8,
@@ -7062,9 +7085,9 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 315.7,
+          "capacidade_horas": 327.7,
           "horas_ocupadas": 16.5,
-          "utilizacao_pct": 5.2
+          "utilizacao_pct": 5.0
         }
       },
       "densidade_hora": [
@@ -7128,40 +7151,40 @@
         "faturamento_apurado": 596.0,
         "receita_serv": 149.0,
         "atend_fin": 1,
-        "atend_canc": 0,
-        "atend_total": 1,
+        "atend_canc": 1,
+        "atend_total": 3,
         "n_trans": 4,
         "ticket_trans": 149.0,
         "cliente_dia": 1,
         "ticket_medio": 596.0,
-        "taxa_canc": 0.0,
+        "taxa_canc": 33.3,
         "dias_op": 1,
         "clientes_unicos": 1,
-        "em_atendimento": 0,
+        "em_atendimento": 1,
         "n_prof_ativos": 1,
-        "rs_hora_salao": 62.96,
-        "horas_operacao_periodo": 9.0,
-        "utilizacao_agregada_pct": 1.0,
-        "caixa_delta_pct": 24.9,
-        "atend_delta_pct": -75.0,
-        "cliente_dia_delta_pct": -75.0,
-        "caixa_delta_perdia_pct": 24.9,
-        "atend_delta_perdia_pct": -75.0,
-        "cliente_dia_delta_perdia_pct": -75.0,
+        "rs_hora_salao": 54.35,
+        "horas_operacao_periodo": 11.0,
+        "utilizacao_agregada_pct": 0.9,
+        "caixa_delta_pct": -34.1,
+        "atend_delta_pct": -88.9,
+        "cliente_dia_delta_pct": -87.5,
+        "caixa_delta_perdia_pct": -34.1,
+        "atend_delta_perdia_pct": -88.9,
+        "cliente_dia_delta_perdia_pct": -87.5,
         "dias_com_movimento": {
           "atual": 1,
           "anterior": 1
         },
-        "ticket_delta_pct": 399.8,
-        "caixa_delta_bruto_pct": 24.9,
+        "ticket_delta_pct": 427.4,
+        "caixa_delta_bruto_pct": -34.1,
         "periodo_ant_ref": {
           "data": "2026-10-08",
-          "hora_max": 18.47,
-          "caixa": 477.0,
-          "atend_fin": 4,
-          "faturamento_apurado": 477.0,
-          "cliente_dia": 4,
-          "ticket_medio": 119.25,
+          "hora_max": 19.97,
+          "caixa": 904.0,
+          "atend_fin": 9,
+          "faturamento_apurado": 904.0,
+          "cliente_dia": 8,
+          "ticket_medio": 113.0,
           "dias_op": 1
         },
         "base_comparacao": {
@@ -7175,19 +7198,19 @@
           "peso_semana_anterior_pct": 7.9,
           "razao_peso": 1.0,
           "comparavel": true,
-          "caixa_delta_ajustado_pct": 24.9,
+          "caixa_delta_ajustado_pct": -34.1,
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "18:28",
-          "hora_atual_num": 18.47,
-          "pct_esperado_agora": 70.0,
+          "hora_atual_str": "19:58",
+          "hora_atual_num": 19.97,
+          "pct_esperado_agora": 90.1,
           "meta_dia": 687.1,
-          "meta_esperada_agora": 480.92,
+          "meta_esperada_agora": 619.17,
           "realizado_agora": 596.0,
-          "pace_delta": 115.08,
-          "pace_ratio_pct": 123.9,
-          "projecao_dia": 851.51,
+          "pace_delta": -23.17,
+          "pace_ratio_pct": 96.3,
+          "projecao_dia": 661.39,
           "opera_hoje": true
         },
         "ticket_meta": 0.0,
@@ -7400,9 +7423,9 @@
       "cadeiras_utilizacao": {
         "sala": {
           "n_cadeiras": 8,
-          "capacidade_horas": 75.7,
+          "capacidade_horas": 87.7,
           "horas_ocupadas": 0.8,
-          "utilizacao_pct": 1.0
+          "utilizacao_pct": 0.9
         }
       },
       "densidade_hora": [
@@ -7463,7 +7486,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-15T18:28:44-03:00",
+    "gerado_em": "2026-10-15T19:58:09-03:00",
     "hoje": "2026-10-15",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -7569,7 +7592,7 @@
       {
         "tipo": "oportunidade",
         "titulo": "Ocupação geral do salão: 5%",
-        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 81,32.",
+        "texto": "Muito espaço físico ocioso. Rs/hora salão: R$ 80,56.",
         "acao": "Investir em captação pra encher os slots vazios — sem obra, sem contratar."
       }
     ],
@@ -7595,7 +7618,7 @@
       {
         "tipo": "info",
         "titulo": "Ocupação geral do salão: 5% (ano)",
-        "texto": "R$/hora média do salão: R$ 110,49. Muito espaço pra crescer usando as cadeiras que já existem.",
+        "texto": "R$/hora média do salão: R$ 109,76. Muito espaço pra crescer usando as cadeiras que já existem.",
         "acao": "Foco em marketing local e programas de indicação — evitar investir em mais cadeira/reforma até estar consistentemente acima de 60%."
       }
     ],
@@ -7636,7 +7659,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-15T18:28:44-03:00",
+    "gerado_em": "2026-10-15T19:58:09-03:00",
     "n_agendamentos": 118,
     "horas": [
       9,
