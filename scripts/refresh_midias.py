@@ -1895,8 +1895,72 @@ def _build_consolidado(escova: dict[str, Any], spa: dict[str, Any]) -> dict[str,
         "posts_30d": int(n(e_fp.get("posts_30d")) + n(s_fp.get("posts_30d"))),
     }
 
-    # Google Business: so Escova (SPA sem GBP conectado)
-    cons_gb = escova.get("google_business") or {}
+    # Google Business: soma Escova + SPA (ambos conectados desde 15/10/2026).
+    # Antes da ativacao do GBP SPA, o consolidado herdava so Escova — hoje isso
+    # subcontaria views/acoes/reviews. Fallback preserva Escova sozinha se o
+    # SPA perder a conexao, e vice-versa.
+    e_gb = escova.get("google_business") or {}
+    s_gb = spa.get("google_business") or {}
+    if e_gb.get("conectado") and s_gb.get("conectado"):
+        e_k = e_gb.get("kpis_30d") or {}
+        s_k = s_gb.get("kpis_30d") or {}
+        views = int(n(e_k.get("views_total")) + n(s_k.get("views_total")))
+        acoes = int(n(e_k.get("actions_total")) + n(s_k.get("actions_total")))
+        cons_kpis = {
+            "views_total":      views,
+            "views_maps":       int(n(e_k.get("views_maps"))     + n(s_k.get("views_maps"))),
+            "views_search":     int(n(e_k.get("views_search"))   + n(s_k.get("views_search"))),
+            "actions_total":    acoes,
+            "actions_phone":    int(n(e_k.get("actions_phone"))    + n(s_k.get("actions_phone"))),
+            "actions_directions": int(n(e_k.get("actions_directions")) + n(s_k.get("actions_directions"))),
+            "actions_website":  int(n(e_k.get("actions_website"))  + n(s_k.get("actions_website"))),
+            "actions_messages": int(n(e_k.get("actions_messages")) + n(s_k.get("actions_messages"))),
+            "taxa_conversao_pct": round(acoes / views * 100, 1) if views else 0,
+        }
+        # Rating: media ponderada por review count. Simples copia inflaria a
+        # loja menor ou puxaria a maior pra baixo sem motivo.
+        e_r = e_gb.get("rating") or {}
+        s_r = s_gb.get("rating") or {}
+        e_rev, s_rev = int(n(e_r.get("reviews_total"))), int(n(s_r.get("reviews_total")))
+        total_rev = e_rev + s_rev
+        if total_rev > 0:
+            media_pond = (n(e_r.get("estrelas_media")) * e_rev + n(s_r.get("estrelas_media")) * s_rev) / total_rev
+        else:
+            media_pond = 0
+        cons_rating = {
+            "reviews_total": total_rev,
+            "estrelas_media": round(media_pond, 1),
+        }
+        # Serie diaria: soma por data (uniao de datas; dias so em um lado
+        # entram com o valor do outro = 0).
+        serie_map = {}
+        for d in (e_gb.get("serie_diaria_30d") or []):
+            serie_map[d["data"]] = {k: int(n(d.get(k))) for k in d if k != "data"}
+        for d in (s_gb.get("serie_diaria_30d") or []):
+            dst = serie_map.setdefault(d["data"], {})
+            for k, v in d.items():
+                if k == "data":
+                    continue
+                dst[k] = int(n(dst.get(k)) + n(v))
+        cons_serie = [{"data": dt, **vals} for dt, vals in sorted(serie_map.items())]
+
+        cons_gb = {
+            "nome": "Fast Escova + Fast Spa Limão",
+            "conectado": True,
+            "conectado_em": _now_brt_iso()[:10],
+            "dados_ate": min(e_gb.get("dados_ate") or "9999", s_gb.get("dados_ate") or "9999"),
+            "kpis_30d": cons_kpis,
+            "rating": cons_rating,
+            "serie_diaria_30d": cons_serie,
+            "detalhes_por_unidade": {
+                "escova": {"nome": e_gb.get("nome"), "views_30d": e_k.get("views_total"), "reviews": e_r.get("reviews_total"), "estrelas": e_r.get("estrelas_media")},
+                "spa":    {"nome": s_gb.get("nome"), "views_30d": s_k.get("views_total"), "reviews": s_r.get("reviews_total"), "estrelas": s_r.get("estrelas_media")},
+            },
+            "_fonte_refresh": "consolidado · soma Escova+SPA (views/acoes somados, estrelas ponderadas por review count)",
+        }
+    else:
+        # Fallback: um dos lados nao conectado → usa o que esta conectado.
+        cons_gb = e_gb if e_gb.get("conectado") else s_gb
 
     # --- KPI-estrela e reguas do Consolidado -------------------------------
     # O card principal da aba Midias le MID.kpi_estrela para escrever a linha
