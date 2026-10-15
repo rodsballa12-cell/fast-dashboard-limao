@@ -280,20 +280,39 @@ def monta_mes(ws, col, ano, mes, linha_titulo, meta_mes, comissao_pct, loja_labe
     real_total = var_real + fixo_real
     prov = sum(l["real"] for g in grupos for l in g["linhas"] if l["prov"])
 
+    # EBITDA vem do Excel direto, mas quando o fallback max(Excel, config) sobe a
+    # linha Recepcao, o EBITDA do Excel fica velho (foi calculado com Recepcao
+    # subcontada). Delta_fallback = quanto a linha Recepcao foi aumentada pelo
+    # fallback; subtraimos do EBITDA para o painel ficar consistente. 15/10/2026.
+    delta_fallback_recepcao = 0.0
+    for lin in gi["PESSOAL"]["linhas"]:
+        if "ecep" in lin.get("cat", "") and "⚠" in (lin.get("nota") or ""):
+            # extrai o valor Excel original da nota ("Excel R$ 3,421 · ⚠ abaixo
+            # do config R$ 7,725")
+            import re
+            m_excel = re.search(r"Excel R\$ ([\d,]+)", lin.get("nota", ""))
+            if m_excel:
+                excel_val = float(m_excel.group(1).replace(",", ""))
+                delta_fallback_recepcao = max(lin["real"] - excel_val, 0)
+            break
+    ebitda_ajustado = ebitda - delta_fallback_recepcao
+
     return {
         "ano": ano, "mes": mes, "chave": f"{ano}-{mes:02d}",
         "receita_bruta": receita_bruta,
         "receita_liquida": receita_liquida,
         "receita_real": receita_bruta,
         "receita_meta": meta_mes,
-        "ebitda": ebitda,
+        "ebitda": ebitda_ajustado,
+        "ebitda_excel_bruto": ebitda,
+        "delta_fallback_recepcao": delta_fallback_recepcao,
         "margem_contribuicao": v["margem_contribuicao"],
         "grupos": grupos,
         "var_real": var_real, "var_esp": var_real,
         "fixo_real": fixo_real, "fixo_esp": fixo_real,
         "custo_real": real_total, "custo_esp": real_total,
-        "res_real": ebitda,
-        "res_caixa": ebitda + prov,
+        "res_real": ebitda_ajustado,
+        "res_caixa": ebitda_ajustado + prov,
         "provisoes_nao_debitadas": prov,
     }
 
