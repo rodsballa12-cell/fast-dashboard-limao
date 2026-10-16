@@ -144,6 +144,17 @@ Consulta o que performou na semana passada. Verifica datas comerciais
 3–4 reels + 15–20 stories. Cada peça: formato · brief de imagem · copy ·
 CTA. Sinaliza aprovações necessárias (foto de cliente, preço).
 
+**Foto nas peças** (calendário, brief de imagem, qualquer criativo):
+foto que não seja da própria loja **não leva rosto**. Pode: recorte fechado
+de mão no ombro ou nas costas, detalhe (óleo, toalha, pedras, pés), cabelo
+em movimento sem mostrar o rosto, ambiente (maca, luz da janela, plantas,
+recepção). Não pode: rosto de frente com olhos fechados, retrato de modelo
+olhando para a câmera, sorriso genérico de banco de imagem, "antes e depois"
+que não seja cliente real. Motivo: rosto de banco de imagem ou de IA parece
+artificial, e a marca vende ser do bairro, prática e real (Rodrigo reprovou as
+fotos de modelo em 14/09/2026). Foto de cliente só com autorização de uso de
+imagem assinada. O brief de imagem do calendário já nasce dentro desta regra.
+
 **Consultor WA** (mensagem de cliente colada):
 Extrai nome e contexto. Busca no HubSpot via Supermetrics. Se encontrou:
 traz histórico (última visita, ticket médio, serviço favorito) e sugere
