@@ -268,8 +268,11 @@ Copy-Item -Path $arquivo -Destination $ata -Force
 
 # Falha aqui nunca derruba o briefing: ele ja esta salvo no vault. Mas agora
 # cada passo diz em qual ponto parou, no log.
+# --autostash: DRE-Para-JSON reescreve os tres financeiro.json a cada rodada
+# (o gerado_em muda mesmo sem novidade), entao a arvore chega suja neste pull
+# e ele falhava com "unstaged changes" desde 13/10/2026.
 $rel = "docs/atas/$data-$Agente.md"
-if ((Git-Passo "pull antes de publicar" @("pull","--rebase")) -and
+if ((Git-Passo "pull antes de publicar" @("pull","--rebase","--autostash")) -and
     (Git-Passo "add da ata" @("add","--",$rel))) {
 
   $ErrorActionPreference = "Continue"
