@@ -82,6 +82,14 @@ explicitamente quando não conseguir avaliar algum:
 | **Venda sem par na Stone** | `stone.nao_conciliado.orfaos_trinks_v` | o sistema viu, o banco não |
 | **Cobrança sem par no Trinks** | `stone.nao_conciliado.orfaos_stone_v` | o banco cobrou, o sistema não sabe do quê |
 
+**Monitor de encargos (pedido do Rodrigo em 15/10/2026).** Em todo parecer de
+fechamento de mês, a partir de out/26, cite `monitor_encargos` no
+`data/consolidado/financeiro.json`: `fator_observado` do mês fechado contra
+`fator_em_uso` (1,75). O objetivo é achar a alíquota de encargos real da
+equipe CLT; só vale em mês fechado e com a equipe estável, e o caixa de um mês
+traz parte do anterior. Depois de 3 meses fechados, proponha ao Rodrigo o fator
+a usar. Não troque o fator sozinho.
+
 **Separe risco de atraso.** Recebível a caminho não é dinheiro sumido — em
 14/09 o total de R$ 22,7 mil foi lido como perda quando R$ 21,1 mil eram
 prazo normal de cartão e só R$ 1,6 mil eram órfãos de verdade. **Sempre abra o

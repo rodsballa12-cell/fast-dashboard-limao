@@ -68,20 +68,27 @@ CFG = _load_cfg()
 # Nome 'com_encargos' preservado por compat (apesar de ser PJ sem encargos).
 SALARIO_GERENTE = float(((CFG.get("pessoal_clt") or {}).get("salario_gerente_com_encargos")) or 3000)
 FATOR_ENCARGOS_CLT = float(((CFG.get("pessoal_clt") or {}).get("fator_encargos_clt")) or 1.75)
+# Parte da gerente de cada loja: lida da planilha (Premissas B118 x rateio m2 B82/B83)
+# em main(); sem planilha cai para metade do valor do config.
+GERENTE_UNIDADE = {}
 
 
 def _recepcao_fallback_custo(unidade_key):
-    """Fallback do custo de recepcao+limpeza quando o Excel ainda nao atualizou.
-    Rodrigo (08/10): SPA tem recepcao 1 CLT R$ 2.700 bruto + 1 PJ R$ 3.000.
-    Com encargos CLT (fator 1.75): R$ 4.725 + R$ 3.000 = R$ 7.725/mes total.
-    Fallback usado enquanto o Excel SPA nao traz o custo consolidado."""
+    """Custo mensal da equipe (recepcao + metade da faxineira) segundo o config.
+    Rodrigo (15/10): SPA 1 CLT R$ 2.700 + 1 PJ R$ 3.000; Escova 2 CLT (R$ 2.200 e
+    R$ 2.300); faxineira CLT R$ 2.300 dividida pelos 2 negocios. CLT x 1,75."""
     try:
         u = (CFG.get("unidades") or {}).get(unidade_key) or {}
         r = u.get("recepcao_custo_mensal")
+        base = 0.0
         if isinstance(r, dict):
-            return float(r.get("total") or 0)
-        if isinstance(r, (int, float)):
-            return float(r)
+            base = float(r.get("total") or 0)
+        elif isinstance(r, (int, float)):
+            base = float(r)
+        if base <= 0:
+            return 0.0
+        fx = (CFG.get("pessoal_clt") or {}).get("faxineira") or {}
+        return base + float(fx.get("custo_por_unidade") or 0)
     except Exception:
         pass
     return 0.0
@@ -210,6 +217,28 @@ def monta_mes(ws, col, ano, mes, linha_titulo, meta_mes, comissao_pct, loja_labe
         if extra: d.update(extra)
         return d
 
+    # Equipe de recepção + faxineira: a planilha digita abaixo do real nos meses
+    # projetados (SPA out/26: Excel R$ 3.422 vs equipe informada R$ 9.738). A
+    # equipe do config vale só de out/26 em diante; mês anterior é o realizado
+    # do Excel (o ajuste de 15/10 chegou a inflar o Spa de ago e set).
+    unid_key = "spa" if "SPA" in loja_label.upper() else "escova"
+    gerente_un = GERENTE_UNIDADE.get(unid_key, SALARIO_GERENTE)
+    equipe_excel = max(pessoal - gerente_un, 0)
+    equipe_config = _recepcao_fallback_custo(unid_key)
+    if (ano, mes) >= (2026, 10) and equipe_config > 0:
+        gerente_painel = gerente_un
+        equipe_painel = max(equipe_excel, equipe_config)
+        if equipe_excel < equipe_config * 0.9:
+            nota_equipe = (f"Excel R$ {equipe_excel:,.0f} · abaixo da equipe informada por Rodrigo "
+                           f"(R$ {equipe_config:,.0f}, com encargos 1,75 e metade da faxineira). Painel usa o maior.")
+        else:
+            nota_equipe = "total pessoal do Excel menos gerente"
+    else:
+        gerente_painel = min(gerente_un, pessoal)
+        equipe_painel = max(pessoal - gerente_painel, 0)
+        nota_equipe = "total pessoal do Excel menos gerente"
+    delta_fallback_recepcao = max(gerente_painel + equipe_painel - pessoal, 0)
+
     rec = receita_bruta
     grupos = [
         {"id": "VARIAVEL", "titulo": "Custos variáveis — acompanham a venda",
@@ -226,26 +255,9 @@ def monta_mes(ws, col, ano, mes, linha_titulo, meta_mes, comissao_pct, loja_labe
          ]},
         {"id": "PESSOAL", "titulo": "Pessoal fixo — CLT + PJ",
          "linhas": [
-             _row("Gerente (PJ · CNPJ)", SALARIO_GERENTE, SALARIO_GERENTE,
-                  f"R$ {SALARIO_GERENTE:.0f}/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos"),
-             # Recepcao + limpeza: Excel deveria consolidar, mas as vezes digita
-             # abaixo do real (SPA out/26: Excel R$ 3.421 vs config R$ 7.725 = 1
-             # CLT 2700×1.75 + 1 PJ 3000, confirmado por Rodrigo 15/10/2026).
-             # Agora: usa max(Excel, config) e sinaliza no help do DRE quando o
-             # Excel esta sub, para o painel nao mentir sobre o pessoal fixo.
-             (lambda rec_exc, unid_key: (
-                 (lambda fb: _row(
-                     "Recepção + limpeza + encargos",
-                     max(rec_exc, fb),
-                     max(rec_exc, fb),
-                     (f"Excel R$ {rec_exc:,.0f} · ⚠ abaixo do config R$ {fb:,.0f} (1 CLT R$ 2.700×1,75 + 1 PJ R$ 3.000). Painel usa o maior para nao subcontar."
-                      if (rec_exc > 0 and fb > 0 and rec_exc < fb * 0.9)
-                      else ("total pessoal do Excel menos gerente"
-                            if rec_exc > 0
-                            else f"fallback config · {('CLT + PJ' if unid_key == 'spa' else 'CLT')}"))
-                 ))(_recepcao_fallback_custo(unid_key))
-             ))(max(pessoal - SALARIO_GERENTE, 0),
-                "spa" if "SPA" in loja_label.upper() else "escova"),
+             _row("Gerente (PJ · CNPJ)", gerente_painel, gerente_painel,
+                  f"R$ {gerente_painel:,.0f}/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos"),
+             _row("Recepção + limpeza + encargos", equipe_painel, equipe_painel, nota_equipe),
          ]},
         {"id": "OCUPACAO", "titulo": "Ocupação — rateio do imóvel",
          "linhas": [
@@ -280,21 +292,8 @@ def monta_mes(ws, col, ano, mes, linha_titulo, meta_mes, comissao_pct, loja_labe
     real_total = var_real + fixo_real
     prov = sum(l["real"] for g in grupos for l in g["linhas"] if l["prov"])
 
-    # EBITDA vem do Excel direto, mas quando o fallback max(Excel, config) sobe a
-    # linha Recepcao, o EBITDA do Excel fica velho (foi calculado com Recepcao
-    # subcontada). Delta_fallback = quanto a linha Recepcao foi aumentada pelo
-    # fallback; subtraimos do EBITDA para o painel ficar consistente. 15/10/2026.
-    delta_fallback_recepcao = 0.0
-    for lin in gi["PESSOAL"]["linhas"]:
-        if "ecep" in lin.get("cat", "") and "⚠" in (lin.get("nota") or ""):
-            # extrai o valor Excel original da nota ("Excel R$ 3,421 · ⚠ abaixo
-            # do config R$ 7,725")
-            import re
-            m_excel = re.search(r"Excel R\$ ([\d,]+)", lin.get("nota", ""))
-            if m_excel:
-                excel_val = float(m_excel.group(1).replace(",", ""))
-                delta_fallback_recepcao = max(lin["real"] - excel_val, 0)
-            break
+    # Quando a equipe do config sobe o pessoal acima do Excel, o EBITDA do Excel
+    # fica velho; desce junto o mesmo valor (delta calculado acima).
     ebitda_ajustado = ebitda - delta_fallback_recepcao
 
     return {
@@ -470,6 +469,51 @@ def _detectar_titulo(ws, chaves_norm):
     return None
 
 
+def _monitor_encargos(wb):
+    """Fator de encargos CLT observado no caixa, mês a mês (monitoramento pedido
+    por Rodrigo em 15/10/2026). Caixa de folha CLT + encargos + VR/VT + transporte
+    (fora rescisão) dividido pelo salário bruto CLT da equipe informada. Só vale
+    como medida em mês fechado com equipe estável (de out/26 em diante); o caixa
+    de um mês traz parte do anterior (encargos pagos no dia 4), então olhe a média."""
+    import collections
+    try:
+        ws = wb["Conta_XP"]
+    except KeyError:
+        return None
+    cats = {"OPEX (Folha CLT)", "OPEX (Encargos — folha CLT)", "OPEX (VR/VT)", "OPEX (Ajuda de custo — transporte)"}
+    por_mes = collections.defaultdict(float)
+    for r in range(16, ws.max_row + 1):
+        d, val, cat = ws.cell(r, 1).value, ws.cell(r, 4).value, ws.cell(r, 7).value
+        if isinstance(d, (datetime.datetime, datetime.date)) and isinstance(val, (int, float)) and val < 0 and cat in cats:
+            por_mes[f"{d.year}-{d.month:02d}"] += -val
+    u = CFG.get("unidades") or {}
+    brutos = (sum((u.get("escova", {}).get("recepcao_custo_mensal") or {}).get("clt_salarios_brutos") or [])
+              + float((u.get("spa", {}).get("recepcao_custo_mensal") or {}).get("clt_salario_bruto") or 0)
+              + float(((CFG.get("pessoal_clt") or {}).get("faxineira") or {}).get("salario_bruto") or 0))
+    hoje = datetime.date.today()
+    chave_hoje = f"{hoje.year}-{hoje.month:02d}"
+    meses = {}
+    for k in sorted(por_mes):
+        if k < "2026-09":
+            continue
+        estavel = k >= "2026-10"
+        meses[k] = {
+            "caixa_folha_clt": round(por_mes[k], 2),
+            "salario_bruto_clt_equipe": brutos if estavel else None,
+            "fator_observado": round(por_mes[k] / brutos, 3) if (estavel and brutos) else None,
+            "mes_fechado": k < chave_hoje,
+            "equipe_estavel": estavel,
+        }
+    return {
+        "fator_em_uso": FATOR_ENCARGOS_CLT,
+        "salario_bruto_clt_equipe": brutos,
+        "meses": meses,
+        "leitura": ("fator_observado = caixa de folha CLT (folha + encargos + VR/VT + transporte, sem rescisão) "
+                    "÷ salário bruto CLT da equipe. Comparar com fator_em_uso só em mês fechado. "
+                    "Caixa de um mês inclui parte do anterior."),
+    }
+
+
 def main():
     if not os.path.exists(PAINEL):
         print(f"❌ Painel não encontrado: {PAINEL}"); sys.exit(1)
@@ -477,6 +521,16 @@ def main():
     if "DRE" not in wb.sheetnames:
         print(f"❌ Aba 'DRE' não existe. Disponíveis: {wb.sheetnames}"); sys.exit(1)
     ws = wb["DRE"]
+
+    try:
+        pr = wb["Premissas"]
+        g_total, r_esc, r_spa = (num(pr["B118"].value), num(pr["B82"].value), num(pr["B83"].value))
+        if g_total > 0 and r_esc > 0 and r_spa > 0:
+            GERENTE_UNIDADE["escova"] = round(g_total * r_esc, 2)
+            GERENTE_UNIDADE["spa"] = round(g_total * r_spa, 2)
+            print(f"[dre] gerente R$ {g_total:,.0f} · Escova {GERENTE_UNIDADE['escova']:,.2f} · SPA {GERENTE_UNIDADE['spa']:,.2f}")
+    except KeyError:
+        pass
 
     cols_meses = detectar_meses(ws)
     if not cols_meses:
@@ -561,6 +615,8 @@ def main():
                         a_receber_stone=d_escova["kpis"]["a_receber_stone"])
     d_cons["premissas"]["comissao"] = (round(sum(m["grupos"][0]["linhas"][0]["real"] for m in [meses_cons.get(d_cons["mes_principal_chave"])] if m) / max(d_cons["resultado"]["receita_real"], 1), 4)
                                        if d_cons.get("mes_principal_chave") in meses_cons else d_escova["premissas"]["comissao"])
+
+    d_cons["monitor_encargos"] = _monitor_encargos(wb)
 
     for path, payload, tag in [
         (OUT_ESCOVA, d_escova, "escova"),

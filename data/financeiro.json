@@ -1,7 +1,7 @@
 {
- "gerado_em": "2026-10-15T17:46:59-03:00",
- "baseline": "2026-10-15",
- "custos_ate": "2026-10-15",
+ "gerado_em": "2026-10-16T09:00:14-03:00",
+ "baseline": "2026-10-16",
+ "custos_ate": "2026-10-16",
  "mes_corrente_chave": "2026-10",
  "mes_principal_chave": "2026-10",
  "mes_fechado_chave": "2026-09",
@@ -9,8 +9,8 @@
  "kpis": {
   "caixa_conta": 52629.51,
   "a_receber_stone": 33758.81,
-  "resultado_mes": 3040.0384627272724,
-  "resultado_mes_caixa": 11440.038462727272,
+  "resultado_mes": -1088.6688099999992,
+  "resultado_mes_caixa": 7311.331190000001,
   "receita_mes": 60000.0,
   "meta_mes": 60000.0
  },
@@ -38,7 +38,7 @@
        "esp": 0.0,
        "nota": "37.1% da receita (tabela oficial do Trinks sobre serviços)",
        "prov": false,
-       "esp_pct": 0.3709,
+       "esp_pct": 0.371,
        "real_delta_pct": 0.0
       },
       {
@@ -69,21 +69,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 0.0,
+       "esp": 0.0,
+       "nota": "R$ 0/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 0,
-       "esp": 0,
-       "nota": "fallback config · CLT",
+       "real": 0.0,
+       "esp": 0.0,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 3000.0,
-     "sub_esp": 3000.0
+     "sub_real": 0.0,
+     "sub_esp": 0.0
     },
     {
      "id": "OCUPACAO",
@@ -146,10 +146,10 @@
    ],
    "var_real": 0.0,
    "var_esp": 0.0,
-   "fixo_real": 3857.35,
-   "fixo_esp": 3857.35,
-   "custo_real": 3857.35,
-   "custo_esp": 3857.35,
+   "fixo_real": 857.35,
+   "fixo_esp": 857.35,
+   "custo_real": 857.35,
+   "custo_esp": 857.35,
    "res_real": -857.35,
    "res_caixa": -857.35,
    "provisoes_nao_debitadas": 0.0
@@ -177,7 +177,7 @@
        "esp": 0.0,
        "nota": "37.1% da receita (tabela oficial do Trinks sobre serviços)",
        "prov": false,
-       "esp_pct": 0.3709,
+       "esp_pct": 0.371,
        "real_delta_pct": 0.0
       },
       {
@@ -208,21 +208,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 0.0,
+       "esp": 0.0,
+       "nota": "R$ 0/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 0,
-       "esp": 0,
-       "nota": "fallback config · CLT",
+       "real": 0.0,
+       "esp": 0.0,
+       "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 3000.0,
-     "sub_esp": 3000.0
+     "sub_real": 0.0,
+     "sub_esp": 0.0
     },
     {
      "id": "OCUPACAO",
@@ -285,10 +285,10 @@
    ],
    "var_real": 0.0,
    "var_esp": 0.0,
-   "fixo_real": 7625.79,
-   "fixo_esp": 7625.79,
-   "custo_real": 7625.79,
-   "custo_esp": 7625.79,
+   "fixo_real": 4625.79,
+   "fixo_esp": 4625.79,
+   "custo_real": 4625.79,
+   "custo_esp": 4625.79,
    "res_real": -4625.79,
    "res_caixa": -3027.79,
    "provisoes_nao_debitadas": 1598.0
@@ -303,7 +303,7 @@
    "receita_meta": 60000.0,
    "ebitda": -27198.263636363637,
    "ebitda_excel_bruto": -27198.263636363637,
-   "delta_fallback_recepcao": 0.0,
+   "delta_fallback_recepcao": 9.094947017729282e-13,
    "margem_contribuicao": 1315.62,
    "grupos": [
     {
@@ -347,21 +347,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 4323.69,
-       "esp": 4323.69,
+       "real": 4596.42,
+       "esp": 4596.42,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 7323.69,
-     "sub_esp": 7323.69
+     "sub_real": 7323.6900000000005,
+     "sub_esp": 7323.6900000000005
     },
     {
      "id": "OCUPACAO",
@@ -486,15 +486,15 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 11794.43,
-       "esp": 11794.43,
+       "real": 12067.16,
+       "esp": 12067.16,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
@@ -579,8 +579,8 @@
    "receita_liquida": 47649.2475,
    "receita_real": 51235.75,
    "receita_meta": 60000.0,
-   "ebitda": -1096.507795454545,
-   "ebitda_excel_bruto": -1096.507795454545,
+   "ebitda": -869.2350681818207,
+   "ebitda_excel_bruto": -869.2350681818207,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 26078.99675,
    "grupos": [
@@ -625,21 +625,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 9168.395454545454,
-       "esp": 9168.395454545454,
+       "real": 9213.852727272728,
+       "esp": 9213.852727272728,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 12168.395454545454,
-     "sub_esp": 12168.395454545454
+     "sub_real": 11941.122727272728,
+     "sub_esp": 11941.122727272728
     },
     {
      "id": "OCUPACAO",
@@ -702,12 +702,12 @@
    ],
    "var_real": 21570.25075,
    "var_esp": 21570.25075,
-   "fixo_real": 30762.007045454546,
-   "fixo_esp": 30762.007045454546,
-   "custo_real": 52332.25779545454,
-   "custo_esp": 52332.25779545454,
-   "res_real": -1096.507795454545,
-   "res_caixa": 6076.497204545456,
+   "fixo_real": 30534.73431818182,
+   "fixo_esp": 30534.73431818182,
+   "custo_real": 52104.98506818182,
+   "custo_esp": 52104.98506818182,
+   "res_real": -869.2350681818207,
+   "res_caixa": 6303.76993181818,
    "provisoes_nao_debitadas": 7173.005000000001
   },
   "2026-10": {
@@ -718,8 +718,8 @@
    "receita_liquida": 55800.0,
    "receita_real": 60000.0,
    "receita_meta": 60000.0,
-   "ebitda": 3040.0384627272724,
-   "ebitda_excel_bruto": 3040.0384627272724,
+   "ebitda": -1088.6688099999992,
+   "ebitda_excel_bruto": -1088.6688099999992,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 26940.0,
    "grupos": [
@@ -764,21 +764,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -841,12 +841,12 @@
    ],
    "var_real": 28860.0,
    "var_esp": 28860.0,
-   "fixo_real": 28099.961537272728,
-   "fixo_esp": 28099.961537272728,
-   "custo_real": 56959.96153727273,
-   "custo_esp": 56959.96153727273,
-   "res_real": 3040.0384627272724,
-   "res_caixa": 11440.038462727272,
+   "fixo_real": 32228.66881,
+   "fixo_esp": 32228.66881,
+   "custo_real": 61088.66881,
+   "custo_esp": 61088.66881,
+   "res_real": -1088.6688099999992,
+   "res_caixa": 7311.331190000001,
    "provisoes_nao_debitadas": 8400.0
   },
   "2026-11": {
@@ -857,8 +857,8 @@
    "receita_liquida": 55800.0,
    "receita_real": 60000.0,
    "receita_meta": 60000.0,
-   "ebitda": 3040.0384627272724,
-   "ebitda_excel_bruto": 3040.0384627272724,
+   "ebitda": -1088.6688099999992,
+   "ebitda_excel_bruto": -1088.6688099999992,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 26940.0,
    "grupos": [
@@ -903,21 +903,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -980,12 +980,12 @@
    ],
    "var_real": 28860.0,
    "var_esp": 28860.0,
-   "fixo_real": 28099.961537272728,
-   "fixo_esp": 28099.961537272728,
-   "custo_real": 56959.96153727273,
-   "custo_esp": 56959.96153727273,
-   "res_real": 3040.0384627272724,
-   "res_caixa": 11440.038462727272,
+   "fixo_real": 32228.66881,
+   "fixo_esp": 32228.66881,
+   "custo_real": 61088.66881,
+   "custo_esp": 61088.66881,
+   "res_real": -1088.6688099999992,
+   "res_caixa": 7311.331190000001,
    "provisoes_nao_debitadas": 8400.0
   },
   "2026-12": {
@@ -996,8 +996,8 @@
    "receita_liquida": 55800.0,
    "receita_real": 60000.0,
    "receita_meta": 60000.0,
-   "ebitda": 3040.0384627272724,
-   "ebitda_excel_bruto": 3040.0384627272724,
+   "ebitda": -1088.6688099999992,
+   "ebitda_excel_bruto": -1088.6688099999992,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 26940.0,
    "grupos": [
@@ -1042,21 +1042,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -1119,12 +1119,12 @@
    ],
    "var_real": 28860.0,
    "var_esp": 28860.0,
-   "fixo_real": 28099.961537272728,
-   "fixo_esp": 28099.961537272728,
-   "custo_real": 56959.96153727273,
-   "custo_esp": 56959.96153727273,
-   "res_real": 3040.0384627272724,
-   "res_caixa": 11440.038462727272,
+   "fixo_real": 32228.66881,
+   "fixo_esp": 32228.66881,
+   "custo_real": 61088.66881,
+   "custo_esp": 61088.66881,
+   "res_real": -1088.6688099999992,
+   "res_caixa": 7311.331190000001,
    "provisoes_nao_debitadas": 8400.0
   },
   "2027-01": {
@@ -1135,8 +1135,8 @@
    "receita_liquida": 56471.564613647475,
    "receita_real": 60722.11248779298,
    "receita_meta": 60000.0,
-   "ebitda": 3331.771907795639,
-   "ebitda_excel_bruto": 3331.771907795639,
+   "ebitda": -796.9353649316326,
+   "ebitda_excel_bruto": -796.9353649316326,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 27264.228507019052,
    "grupos": [
@@ -1181,21 +1181,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -1258,12 +1258,12 @@
    ],
    "var_real": 29207.336106628423,
    "var_esp": 29207.336106628423,
-   "fixo_real": 28183.00447336892,
-   "fixo_esp": 28183.00447336892,
-   "custo_real": 57390.34057999734,
-   "custo_esp": 57390.34057999734,
-   "res_real": 3331.771907795639,
-   "res_caixa": 11832.867656086657,
+   "fixo_real": 32311.711746096193,
+   "fixo_esp": 32311.711746096193,
+   "custo_real": 61519.047852724616,
+   "custo_esp": 61519.047852724616,
+   "res_real": -796.9353649316326,
+   "res_caixa": 7704.160383359385,
    "provisoes_nao_debitadas": 8501.095748291018
   },
   "2027-02": {
@@ -1274,8 +1274,8 @@
    "receita_liquida": 60706.93195967105,
    "receita_real": 65276.27092437747,
    "receita_meta": 60000.0,
-   "ebitda": 5171.651916175775,
-   "ebitda_excel_bruto": 5171.651916175775,
+   "ebitda": 1042.9446434485035,
+   "ebitda_excel_bruto": 1042.9446434485035,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 29309.045645045488,
    "grupos": [
@@ -1320,21 +1320,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -1397,12 +1397,12 @@
    ],
    "var_real": 31397.88631462556,
    "var_esp": 31397.88631462556,
-   "fixo_real": 28706.732693576138,
-   "fixo_esp": 28706.732693576138,
-   "custo_real": 60104.6190082017,
-   "custo_esp": 60104.6190082017,
-   "res_real": 5171.651916175775,
-   "res_caixa": 14310.329845588622,
+   "fixo_real": 32835.43996630341,
+   "fixo_esp": 32835.43996630341,
+   "custo_real": 64233.32628092897,
+   "custo_esp": 64233.32628092897,
+   "res_real": 1042.9446434485035,
+   "res_caixa": 10181.62257286135,
    "provisoes_nao_debitadas": 9138.677929412846
   },
   "2027-03": {
@@ -1413,8 +1413,8 @@
    "receita_liquida": 65259.951856646345,
    "receita_real": 70171.99124370575,
    "receita_meta": 60000.0,
-   "ebitda": 6825.896551558028,
-   "ebitda_excel_bruto": 6825.896551558028,
+   "ebitda": 2697.1892788307523,
+   "ebitda_excel_bruto": 2697.1892788307523,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 31507.224068423886,
    "grupos": [
@@ -1459,21 +1459,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -1536,12 +1536,12 @@
    ],
    "var_real": 33752.727788222466,
    "var_esp": 33752.727788222466,
-   "fixo_real": 29593.36690392526,
-   "fixo_esp": 29593.36690392526,
-   "custo_real": 63346.09469214773,
-   "custo_esp": 63346.09469214773,
-   "res_real": 6825.896551558028,
-   "res_caixa": 16649.97532567683,
+   "fixo_real": 33722.07417665253,
+   "fixo_esp": 33722.07417665253,
+   "custo_real": 67474.80196487499,
+   "custo_esp": 67474.80196487499,
+   "res_real": 2697.1892788307523,
+   "res_caixa": 12521.268052949557,
    "provisoes_nao_debitadas": 9824.078774118805
   },
   "2027-04": {
@@ -1552,8 +1552,8 @@
    "receita_liquida": 70154.4482458948,
    "receita_real": 75434.89058698366,
    "receita_meta": 60000.0,
-   "ebitda": 8952.107886242298,
-   "ebitda_excel_bruto": 8952.107886242298,
+   "ebitda": 4823.400613515023,
+   "ebitda_excel_bruto": 4823.400613515023,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 33870.26587355566,
    "grupos": [
@@ -1598,21 +1598,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -1675,12 +1675,12 @@
    ],
    "var_real": 36284.18237233914,
    "var_esp": 36284.18237233914,
-   "fixo_real": 30198.600328402223,
-   "fixo_esp": 30198.600328402223,
-   "custo_real": 66482.78270074137,
-   "custo_esp": 66482.78270074137,
-   "res_real": 8952.107886242298,
-   "res_caixa": 19512.992568420013,
+   "fixo_real": 34327.30760112949,
+   "fixo_esp": 34327.30760112949,
+   "custo_real": 70611.48997346863,
+   "custo_esp": 70611.48997346863,
+   "res_real": 4823.400613515023,
+   "res_caixa": 15384.285295692736,
    "provisoes_nao_debitadas": 10560.884682177713
   },
   "2027-05": {
@@ -1691,8 +1691,8 @@
    "receita_liquida": 75416.03186433691,
    "receita_real": 81092.50738100742,
    "receita_meta": 60000.0,
-   "ebitda": 11237.785071027905,
-   "ebitda_excel_bruto": 11237.785071027905,
+   "ebitda": 7109.07779830063,
+   "ebitda_excel_bruto": 7109.07779830063,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 36410.53581407234,
    "grupos": [
@@ -1737,21 +1737,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -1814,12 +1814,12 @@
    ],
    "var_real": 39005.49605026457,
    "var_esp": 39005.49605026457,
-   "fixo_real": 30849.226259714953,
-   "fixo_esp": 30849.226259714953,
-   "custo_real": 69854.72230997952,
-   "custo_esp": 69854.72230997952,
-   "res_real": 11237.785071027905,
-   "res_caixa": 22590.736104368945,
+   "fixo_real": 34977.93353244223,
+   "fixo_esp": 34977.93353244223,
+   "custo_real": 73983.4295827068,
+   "custo_esp": 73983.4295827068,
+   "res_real": 7109.07779830063,
+   "res_caixa": 18462.02883164167,
    "provisoes_nao_debitadas": 11352.95103334104
   },
   "2027-06": {
@@ -1830,8 +1830,8 @@
    "receita_liquida": 81072.23425416184,
    "receita_real": 87174.44543458262,
    "receita_meta": 60000.0,
-   "ebitda": 13694.88804467229,
-   "ebitda_excel_bruto": 13694.88804467229,
+   "ebitda": 9566.180771945015,
+   "ebitda_excel_bruto": 9566.180771945015,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 39141.32600012761,
    "grupos": [
@@ -1876,21 +1876,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -1953,12 +1953,12 @@
    ],
    "var_real": 41930.90825403424,
    "var_esp": 41930.90825403424,
-   "fixo_real": 31548.6491358761,
-   "fixo_esp": 31548.6491358761,
-   "custo_real": 73479.55738991035,
-   "custo_esp": 73479.55738991035,
-   "res_real": 13694.88804467229,
-   "res_caixa": 25899.31040551386,
+   "fixo_real": 35677.35640860337,
+   "fixo_esp": 35677.35640860337,
+   "custo_real": 77608.26466263761,
+   "custo_esp": 77608.26466263761,
+   "res_real": 9566.180771945015,
+   "res_caixa": 21770.603132786586,
    "provisoes_nao_debitadas": 12204.422360841569
   },
   "2027-07": {
@@ -1969,8 +1969,8 @@
    "receita_liquida": 87152.65182322463,
    "receita_real": 93712.52884217702,
    "receita_meta": 60000.0,
-   "ebitda": 16336.273741340417,
-   "ebitda_excel_bruto": 16336.273741340417,
+   "ebitda": 12207.566468613142,
+   "ebitda_excel_bruto": 12207.566468613142,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 42076.92545013748,
    "grupos": [
@@ -2015,21 +2015,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -2092,12 +2092,12 @@
    ],
    "var_real": 45075.72637308714,
    "var_esp": 45075.72637308714,
-   "fixo_real": 32300.528727749457,
-   "fixo_esp": 32300.528727749457,
-   "custo_real": 77376.2551008366,
-   "custo_esp": 77376.2551008366,
-   "res_real": 16336.273741340417,
-   "res_caixa": 29456.027779245203,
+   "fixo_real": 36429.23600047673,
+   "fixo_esp": 36429.23600047673,
+   "custo_real": 81504.96237356387,
+   "custo_esp": 81504.96237356387,
+   "res_real": 12207.566468613142,
+   "res_caixa": 25327.320506517928,
    "provisoes_nao_debitadas": 13119.754037904784
   },
   "2027-08": {
@@ -2108,8 +2108,8 @@
    "receita_liquida": 90900.21585162275,
    "receita_real": 97742.16758239006,
    "receita_meta": 60000.0,
-   "ebitda": 17369.19284733154,
-   "ebitda_excel_bruto": 17369.19284733154,
+   "ebitda": 13240.485574604267,
+   "ebitda_excel_bruto": 13240.485574604267,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 43886.23324449314,
    "grupos": [
@@ -2154,21 +2154,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -2231,12 +2231,12 @@
    ],
    "var_real": 47013.98260712961,
    "var_esp": 47013.98260712961,
-   "fixo_real": 33358.992127928905,
-   "fixo_esp": 33358.992127928905,
-   "custo_real": 80372.97473505852,
-   "custo_esp": 80372.97473505852,
-   "res_real": 17369.19284733154,
-   "res_caixa": 31053.09630886615,
+   "fixo_real": 37487.69940065617,
+   "fixo_esp": 37487.69940065617,
+   "custo_real": 84501.68200778578,
+   "custo_esp": 84501.68200778578,
+   "res_real": 13240.485574604267,
+   "res_caixa": 26924.389036138877,
    "provisoes_nao_debitadas": 13683.90346153461
   },
   "2027-09": {
@@ -2247,8 +2247,8 @@
    "receita_liquida": 94808.92513324243,
    "receita_real": 101945.08078843272,
    "receita_meta": 60000.0,
-   "ebitda": 19067.16978257278,
-   "ebitda_excel_bruto": 19067.16978257278,
+   "ebitda": 14938.462509845507,
+   "ebitda_excel_bruto": 14938.462509845507,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 45773.3412740063,
    "grupos": [
@@ -2293,21 +2293,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -2370,12 +2370,12 @@
    ],
    "var_real": 49035.58385923613,
    "var_esp": 49035.58385923613,
-   "fixo_real": 33842.32714662381,
-   "fixo_esp": 33842.32714662381,
-   "custo_real": 82877.91100585993,
-   "custo_esp": 82877.91100585993,
-   "res_real": 19067.16978257278,
-   "res_caixa": 33339.48109295336,
+   "fixo_real": 37971.03441935108,
+   "fixo_esp": 37971.03441935108,
+   "custo_real": 87006.61827858721,
+   "custo_esp": 87006.61827858721,
+   "res_real": 14938.462509845507,
+   "res_caixa": 29210.773820226088,
    "provisoes_nao_debitadas": 14272.311310380583
   },
   "2027-10": {
@@ -2386,8 +2386,8 @@
    "receita_liquida": 98885.70891397238,
    "receita_real": 106328.7192623359,
    "receita_meta": 60000.0,
-   "ebitda": 20838.15972602965,
-   "ebitda_excel_bruto": 20838.15972602965,
+   "ebitda": 16709.45245330238,
+   "ebitda_excel_bruto": 16709.45245330238,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 47741.594948788814,
    "grupos": [
@@ -2432,21 +2432,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -2509,12 +2509,12 @@
    ],
    "var_real": 51144.11396518357,
    "var_esp": 51144.11396518357,
-   "fixo_real": 34346.44557112268,
-   "fixo_esp": 34346.44557112268,
-   "custo_real": 85490.55953630625,
-   "custo_esp": 85490.55953630625,
-   "res_real": 20838.15972602965,
-   "res_caixa": 35724.180422756675,
+   "fixo_real": 38475.15284384995,
+   "fixo_esp": 38475.15284384995,
+   "custo_real": 89619.26680903352,
+   "custo_esp": 89619.26680903352,
+   "res_real": 16709.45245330238,
+   "res_caixa": 31595.473150029407,
    "provisoes_nao_debitadas": 14886.020696727028
   },
   "2027-11": {
@@ -2525,8 +2525,8 @@
    "receita_liquida": 103137.79439727272,
    "receita_real": 110900.85419061584,
    "receita_meta": 60000.0,
-   "ebitda": 22685.302237054748,
-   "ebitda_excel_bruto": 22685.302237054748,
+   "ebitda": 18556.594964327473,
+   "ebitda_excel_bruto": 18556.594964327473,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 49794.483531586506,
    "grupos": [
@@ -2571,21 +2571,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -2648,12 +2648,12 @@
    ],
    "var_real": 53343.31086568622,
    "var_esp": 53343.31086568622,
-   "fixo_real": 34872.24108787486,
-   "fixo_esp": 34872.24108787486,
-   "custo_real": 88215.55195356108,
-   "custo_esp": 88215.55195356108,
-   "res_real": 22685.302237054748,
-   "res_caixa": 38211.421823740966,
+   "fixo_real": 39000.94836060214,
+   "fixo_esp": 39000.94836060214,
+   "custo_real": 92344.25922628836,
+   "custo_esp": 92344.25922628836,
+   "res_real": 18556.594964327473,
+   "res_caixa": 34082.71455101369,
    "provisoes_nao_debitadas": 15526.119586686218
   },
   "2027-12": {
@@ -2664,8 +2664,8 @@
    "receita_liquida": 107572.71955635605,
    "receita_real": 115669.59092081296,
    "receita_meta": 60000.0,
-   "ebitda": 24611.87187605439,
-   "ebitda_excel_bruto": 24611.87187605439,
+   "ebitda": 20483.164603327117,
+   "ebitda_excel_bruto": 20483.164603327117,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 51935.64632344502,
    "grupos": [
@@ -2710,21 +2710,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -2787,12 +2787,12 @@
    ],
    "var_real": 55637.07323291103,
    "var_esp": 55637.07323291103,
-   "fixo_real": 35420.645811847535,
-   "fixo_esp": 35420.645811847535,
-   "custo_real": 91057.71904475856,
-   "custo_esp": 91057.71904475856,
-   "res_real": 24611.87187605439,
-   "res_caixa": 40805.61460496821,
+   "fixo_real": 39549.35308457481,
+   "fixo_esp": 39549.35308457481,
+   "custo_real": 95186.42631748584,
+   "custo_esp": 95186.42631748584,
+   "res_real": 20483.164603327117,
+   "res_caixa": 36676.90733224093,
    "provisoes_nao_debitadas": 16193.742728913816
   },
   "2028-01": {
@@ -2803,8 +2803,8 @@
    "receita_liquida": 112198.34649727901,
    "receita_real": 120643.38333040754,
    "receita_meta": 60000.0,
-   "ebitda": 26621.284009530602,
-   "ebitda_excel_bruto": 26621.284009530602,
+   "ebitda": 22492.57673680333,
+   "ebitda_excel_bruto": 22492.57673680333,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 54168.87911535299,
    "grupos": [
@@ -2849,21 +2849,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -2926,12 +2926,12 @@
    ],
    "var_real": 58029.46738192602,
    "var_esp": 58029.46738192602,
-   "fixo_real": 35992.631938950915,
-   "fixo_esp": 35992.631938950915,
-   "custo_real": 94022.09932087694,
-   "custo_esp": 94022.09932087694,
-   "res_real": 26621.284009530602,
-   "res_caixa": 43511.35767578766,
+   "fixo_real": 40121.33921167819,
+   "fixo_esp": 40121.33921167819,
+   "custo_real": 98150.80659360421,
+   "custo_esp": 98150.80659360421,
+   "res_real": 22492.57673680333,
+   "res_caixa": 39382.65040306038,
    "provisoes_nao_debitadas": 16890.073666257056
   },
   "2028-02": {
@@ -2942,8 +2942,8 @@
    "receita_liquida": 117022.87539666232,
    "receita_real": 125831.0488136154,
    "receita_meta": 60000.0,
-   "ebitda": 28717.100864746568,
-   "ebitda_excel_bruto": 28717.100864746568,
+   "ebitda": 24588.393592019296,
+   "ebitda_excel_bruto": 24588.393592019296,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 56498.14091731331,
    "grupos": [
@@ -2988,21 +2988,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -3065,12 +3065,12 @@
    ],
    "var_real": 60524.734479349005,
    "var_esp": 60524.734479349005,
-   "fixo_real": 36589.21346951982,
-   "fixo_esp": 36589.21346951982,
-   "custo_real": 97113.94794886882,
-   "custo_esp": 97113.94794886882,
-   "res_real": 28717.100864746568,
-   "res_caixa": 46333.44769865273,
+   "fixo_real": 40717.92074224709,
+   "fixo_esp": 40717.92074224709,
+   "custo_real": 101242.6552215961,
+   "custo_esp": 101242.6552215961,
+   "res_real": 24588.393592019296,
+   "res_caixa": 42204.740425925454,
    "provisoes_nao_debitadas": 17616.34683390616
   },
   "2028-03": {
@@ -3081,8 +3081,8 @@
    "receita_liquida": 122054.85903871858,
    "receita_real": 131241.78391260063,
    "receita_meta": 60000.0,
-   "ebitda": 30903.03784473661,
-   "ebitda_excel_bruto": 30903.03784473661,
+   "ebitda": 26774.330572009334,
+   "ebitda_excel_bruto": 26774.330572009334,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 58927.56097675768,
    "grupos": [
@@ -3127,21 +3127,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -3204,12 +3204,12 @@
    ],
    "var_real": 63127.2980619609,
    "var_esp": 63127.2980619609,
-   "fixo_real": 37211.44800590312,
-   "fixo_esp": 37211.44800590312,
-   "custo_real": 100338.74606786402,
-   "custo_esp": 100338.74606786402,
-   "res_real": 30903.03784473661,
-   "res_caixa": 49276.8875925007,
+   "fixo_real": 41340.155278630395,
+   "fixo_esp": 41340.155278630395,
+   "custo_real": 104467.4533405913,
+   "custo_esp": 104467.4533405913,
+   "res_real": 26774.330572009334,
+   "res_caixa": 45148.180319773426,
    "provisoes_nao_debitadas": 18373.84974776409
   },
   "2028-04": {
@@ -3220,8 +3220,8 @@
    "receita_liquida": 127303.2179773833,
    "receita_real": 136885.18062084226,
    "receita_meta": 60000.0,
-   "ebitda": 33182.970114866235,
-   "ebitda_excel_bruto": 33182.970114866235,
+   "ebitda": 29054.262842138964,
+   "ebitda_excel_bruto": 29054.262842138964,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 61461.446098758184,
    "grupos": [
@@ -3266,21 +3266,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -3343,12 +3343,12 @@
    ],
    "var_real": 65841.77187862512,
    "var_esp": 65841.77187862512,
-   "fixo_real": 37860.43862735091,
-   "fixo_esp": 37860.43862735091,
-   "custo_real": 103702.21050597602,
-   "custo_esp": 103702.21050597602,
-   "res_real": 33182.970114866235,
-   "res_caixa": 52346.89540178415,
+   "fixo_real": 41989.145900078176,
+   "fixo_esp": 41989.145900078176,
+   "custo_real": 107830.9177787033,
+   "custo_esp": 107830.9177787033,
+   "res_real": 29054.262842138964,
+   "res_caixa": 48218.188129056885,
    "provisoes_nao_debitadas": 19163.925286917918
   },
   "2028-05": {
@@ -3359,8 +3359,8 @@
    "receita_liquida": 132777.25635041125,
    "receita_real": 142771.24338753897,
    "receita_meta": 60000.0,
-   "ebitda": 35560.9394726117,
-   "ebitda_excel_bruto": 35560.9394726117,
+   "ebitda": 31432.232199884435,
+   "ebitda_excel_bruto": 31432.232199884435,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 64104.28828100501,
    "grupos": [
@@ -3405,21 +3405,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -3482,12 +3482,12 @@
    ],
    "var_real": 68672.96806940624,
    "var_esp": 68672.96806940624,
-   "fixo_real": 38537.335845521025,
-   "fixo_esp": 38537.335845521025,
-   "custo_real": 107210.30391492727,
-   "custo_esp": 107210.30391492727,
-   "res_real": 35560.9394726117,
-   "res_caixa": 55548.91354686716,
+   "fixo_real": 42666.0431182483,
+   "fixo_esp": 42666.0431182483,
+   "custo_real": 111339.01118765454,
+   "custo_esp": 111339.01118765454,
+   "res_real": 31432.232199884435,
+   "res_caixa": 51420.20627413989,
    "provisoes_nao_debitadas": 19987.974074255457
   },
   "2028-06": {
@@ -3498,8 +3498,8 @@
    "receita_liquida": 138486.6783734786,
    "receita_real": 148910.4068532028,
    "receita_meta": 60000.0,
-   "ebitda": 38041.16151273988,
-   "ebitda_excel_bruto": 38041.16151273988,
+   "ebitda": 33912.45424001261,
+   "ebitda_excel_bruto": 33912.45424001261,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 66860.77267708805,
    "grupos": [
@@ -3544,21 +3544,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -3621,12 +3621,12 @@
    ],
    "var_real": 71625.90569639053,
    "var_esp": 71625.90569639053,
-   "fixo_real": 39243.339644072366,
-   "fixo_esp": 39243.339644072366,
-   "custo_real": 110869.24534046289,
-   "custo_esp": 110869.24534046289,
-   "res_real": 38041.16151273988,
-   "res_caixa": 58888.618472188275,
+   "fixo_real": 43372.046916799634,
+   "fixo_esp": 43372.046916799634,
+   "custo_real": 114997.95261319017,
+   "custo_esp": 114997.95261319017,
+   "res_real": 33912.45424001261,
+   "res_caixa": 54759.911199461,
    "provisoes_nao_debitadas": 20847.45695944839
   },
   "2028-07": {
@@ -3637,8 +3637,8 @@
    "receita_liquida": 144441.60554353838,
    "receita_real": 155313.55434789072,
    "receita_meta": 60000.0,
-   "ebitda": 40628.03310059381,
-   "ebitda_excel_bruto": 40628.03310059381,
+   "ebitda": 36499.325827866545,
+   "ebitda_excel_bruto": 36499.325827866545,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 69735.78590220294,
    "grupos": [
@@ -3683,21 +3683,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -3760,12 +3760,12 @@
    ],
    "var_real": 74705.81964133543,
    "var_esp": 74705.81964133543,
-   "fixo_real": 39979.701605961476,
-   "fixo_esp": 39979.701605961476,
-   "custo_real": 114685.52124729691,
-   "custo_esp": 114685.52124729691,
-   "res_real": 40628.03310059381,
-   "res_caixa": 62371.93070929851,
+   "fixo_real": 44108.40887868875,
+   "fixo_esp": 44108.40887868875,
+   "custo_real": 118814.22852002419,
+   "custo_esp": 118814.22852002419,
+   "res_real": 36499.325827866545,
+   "res_caixa": 58243.22343657125,
    "provisoes_nao_debitadas": 21743.8976087047
   },
   "2028-08": {
@@ -3776,8 +3776,8 @@
    "receita_liquida": 145886.02159897354,
    "receita_real": 156866.6898913694,
    "receita_meta": 60000.0,
-   "ebitda": 41255.4998601592,
-   "ebitda_excel_bruto": 41255.4998601592,
+   "ebitda": 37126.792587431926,
+   "ebitda_excel_bruto": 37126.792587431926,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 70433.14376122487,
    "grupos": [
@@ -3822,21 +3822,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -3899,12 +3899,12 @@
    ],
    "var_real": 75452.87783774867,
    "var_esp": 75452.87783774867,
-   "fixo_real": 40158.31219346153,
-   "fixo_esp": 40158.31219346153,
-   "custo_real": 115611.1900312102,
-   "custo_esp": 115611.1900312102,
-   "res_real": 41255.4998601592,
-   "res_caixa": 63216.836444950924,
+   "fixo_real": 44287.0194661888,
+   "fixo_esp": 44287.0194661888,
+   "custo_real": 119739.89730393747,
+   "custo_esp": 119739.89730393747,
+   "res_real": 37126.792587431926,
+   "res_caixa": 59088.12917222365,
    "provisoes_nao_debitadas": 21961.33658479172
   },
   "2028-09": {
@@ -3915,8 +3915,8 @@
    "receita_liquida": 147344.88181496345,
    "receita_real": 158435.3567902833,
    "receita_meta": 60000.0,
-   "ebitda": 41889.24128732039,
-   "ebitda_excel_bruto": 41889.24128732039,
+   "ebitda": 37760.53401459312,
+   "ebitda_excel_bruto": 37760.53401459312,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 71137.47519883719,
    "grupos": [
@@ -3961,21 +3961,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -4038,12 +4038,12 @@
    ],
    "var_real": 76207.40661612626,
    "var_esp": 76207.40661612626,
-   "fixo_real": 40338.708886836626,
-   "fixo_esp": 40338.708886836626,
-   "custo_real": 116546.11550296289,
-   "custo_esp": 116546.11550296289,
-   "res_real": 41889.24128732039,
-   "res_caixa": 64070.19123796005,
+   "fixo_real": 44467.4161595639,
+   "fixo_esp": 44467.4161595639,
+   "custo_real": 120674.82277569016,
+   "custo_esp": 120674.82277569016,
+   "res_real": 37760.53401459312,
+   "res_caixa": 59941.48396523278,
    "provisoes_nao_debitadas": 22180.94995063966
   },
   "2028-10": {
@@ -4054,8 +4054,8 @@
    "receita_liquida": 148818.3306331128,
    "receita_real": 160019.7103581858,
    "receita_meta": 60000.0,
-   "ebitda": 42529.32012875304,
-   "ebitda_excel_bruto": 42529.32012875304,
+   "ebitda": 38400.612856025764,
+   "ebitda_excel_bruto": 38400.612856025764,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 71848.84995082545,
    "grupos": [
@@ -4100,21 +4100,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -4177,12 +4177,12 @@
    ],
    "var_real": 76969.48068228738,
    "var_esp": 76969.48068228738,
-   "fixo_real": 40520.90954714541,
-   "fixo_esp": 40520.90954714541,
-   "custo_real": 117490.39022943279,
-   "custo_esp": 117490.39022943279,
-   "res_real": 42529.32012875304,
-   "res_caixa": 64932.07957889905,
+   "fixo_real": 44649.61681987268,
+   "fixo_esp": 44649.61681987268,
+   "custo_real": 121619.09750216006,
+   "custo_esp": 121619.09750216006,
+   "res_real": 38400.612856025764,
+   "res_caixa": 60803.372306171776,
    "provisoes_nao_debitadas": 22402.759450146015
   },
   "2028-11": {
@@ -4193,8 +4193,8 @@
    "receita_liquida": 150306.5139394437,
    "receita_real": 161619.90746176743,
    "receita_meta": 60000.0,
-   "ebitda": 43175.7997586,
-   "ebitda_excel_bruto": 43175.7997586,
+   "ebitda": 39047.09248587273,
+   "ebitda_excel_bruto": 39047.09248587273,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 72567.33845033358,
    "grupos": [
@@ -4239,21 +4239,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -4316,12 +4316,12 @@
    ],
    "var_real": 77739.17548911013,
    "var_esp": 77739.17548911013,
-   "fixo_real": 40704.9322140573,
-   "fixo_esp": 40704.9322140573,
-   "custo_real": 118444.10770316742,
-   "custo_esp": 118444.10770316742,
-   "res_real": 43175.7997586,
-   "res_caixa": 65802.58680324744,
+   "fixo_real": 44833.639486784574,
+   "fixo_esp": 44833.639486784574,
+   "custo_real": 122572.8149758947,
+   "custo_esp": 122572.8149758947,
+   "res_real": 39047.09248587273,
+   "res_caixa": 61673.87953052018,
    "provisoes_nao_debitadas": 22626.787044647444
   },
   "2028-12": {
@@ -4332,8 +4332,8 @@
    "receita_liquida": 151809.57907883817,
    "receita_real": 163236.10653638514,
    "receita_meta": 60000.0,
-   "ebitda": 43828.74418474555,
-   "ebitda_excel_bruto": 43828.74418474555,
+   "ebitda": 39700.03691201828,
+   "ebitda_excel_bruto": 39700.03691201828,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 73293.01183483693,
    "grupos": [
@@ -4378,21 +4378,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -4455,12 +4455,12 @@
    ],
    "var_real": 78516.56724400124,
    "var_esp": 78516.56724400124,
-   "fixo_real": 40890.79510763834,
-   "fixo_esp": 40890.79510763834,
-   "custo_real": 119407.36235163957,
-   "custo_esp": 119407.36235163957,
-   "res_real": 43828.74418474555,
-   "res_caixa": 66681.79909983947,
+   "fixo_real": 45019.50238036561,
+   "fixo_esp": 45019.50238036561,
+   "custo_real": 123536.06962436685,
+   "custo_esp": 123536.06962436685,
+   "res_real": 39700.03691201828,
+   "res_caixa": 62553.09182711221,
    "provisoes_nao_debitadas": 22853.054915093922
   },
   "2029-01": {
@@ -4471,8 +4471,8 @@
    "receita_liquida": 153327.67486962638,
    "receita_real": 164868.4676017488,
    "receita_meta": 60000.0,
-   "ebitda": 44488.21805515248,
-   "ebitda_excel_bruto": 44488.21805515248,
+   "ebitda": 40359.510782425205,
+   "ebitda_excel_bruto": 40359.510782425205,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 74025.94195318522,
    "grupos": [
@@ -4517,21 +4517,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -4594,12 +4594,12 @@
    ],
    "var_real": 79301.73291644116,
    "var_esp": 79301.73291644116,
-   "fixo_real": 41078.51663015516,
-   "fixo_esp": 41078.51663015516,
-   "custo_real": 120380.24954659631,
-   "custo_esp": 120380.24954659631,
-   "res_real": 44488.21805515248,
-   "res_caixa": 67569.8035193973,
+   "fixo_real": 45207.223902882426,
+   "fixo_esp": 45207.223902882426,
+   "custo_real": 124508.95681932359,
+   "custo_esp": 124508.95681932359,
+   "res_real": 40359.510782425205,
+   "res_caixa": 63441.09624667004,
    "provisoes_nao_debitadas": 23081.585464244832
   },
   "2029-02": {
@@ -4610,8 +4610,8 @@
    "receita_liquida": 154860.95161832278,
    "receita_real": 166517.15227776644,
    "receita_meta": 60000.0,
-   "ebitda": 45154.28666426361,
-   "ebitda_excel_bruto": 45154.28666426361,
+   "ebitda": 41025.57939153633,
+   "ebitda_excel_bruto": 41025.57939153633,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 74766.20137271714,
    "grupos": [
@@ -4656,21 +4656,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -4733,12 +4733,12 @@
    ],
    "var_real": 80094.75024560565,
    "var_esp": 80094.75024560565,
-   "fixo_real": 41268.11536789718,
-   "fixo_esp": 41268.11536789718,
-   "custo_real": 121362.86561350283,
-   "custo_esp": 121362.86561350283,
-   "res_real": 45154.28666426361,
-   "res_caixa": 68466.68798315091,
+   "fixo_real": 45396.82264062446,
+   "fixo_esp": 45396.82264062446,
+   "custo_real": 125491.5728862301,
+   "custo_esp": 125491.5728862301,
+   "res_real": 41025.57939153633,
+   "res_caixa": 64337.98071042364,
    "provisoes_nao_debitadas": 23312.401318887303
   },
   "2029-03": {
@@ -4749,8 +4749,8 @@
    "receita_liquida": 156409.56113450663,
    "receita_real": 168182.32380054475,
    "receita_meta": 60000.0,
-   "ebitda": 45827.01595946605,
-   "ebitda_excel_bruto": 45827.01595946605,
+   "ebitda": 41698.30868673878,
+   "ebitda_excel_bruto": 41698.30868673878,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 75513.86338644462,
    "grupos": [
@@ -4795,21 +4795,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -4872,12 +4872,12 @@
    ],
    "var_real": 80895.69774806203,
    "var_esp": 80895.69774806203,
-   "fixo_real": 41459.610093016694,
-   "fixo_esp": 41459.610093016694,
-   "custo_real": 122355.30784107873,
-   "custo_esp": 122355.30784107873,
-   "res_real": 45827.01595946605,
-   "res_caixa": 69372.54129154232,
+   "fixo_real": 45588.31736574396,
+   "fixo_esp": 45588.31736574396,
+   "custo_real": 126484.01511380599,
+   "custo_esp": 126484.01511380599,
+   "res_real": 41698.30868673878,
+   "res_caixa": 65243.83401881505,
    "provisoes_nao_debitadas": 23545.525332076268
   },
   "2029-04": {
@@ -4888,8 +4888,8 @@
    "receita_liquida": 157973.65674585153,
    "receita_real": 169864.14703855003,
    "receita_meta": 60000.0,
-   "ebitda": 46506.472547620186,
-   "ebitda_excel_bruto": 46506.472547620186,
+   "ebitda": 42377.76527489291,
+   "ebitda_excel_bruto": 42377.76527489291,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 76269.00202030898,
    "grupos": [
@@ -4934,21 +4934,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -5011,12 +5011,12 @@
    ],
    "var_real": 81704.65472554255,
    "var_esp": 81704.65472554255,
-   "fixo_real": 41653.0197653873,
-   "fixo_esp": 41653.0197653873,
-   "custo_real": 123357.67449092984,
-   "custo_esp": 123357.67449092984,
-   "res_real": 46506.472547620186,
-   "res_caixa": 70287.45313301719,
+   "fixo_real": 45781.72703811457,
+   "fixo_esp": 45781.72703811457,
+   "custo_real": 127486.38176365712,
+   "custo_esp": 127486.38176365712,
+   "res_real": 42377.76527489291,
+   "res_caixa": 66158.74586028991,
    "provisoes_nao_debitadas": 23780.980585397007
   },
   "2029-05": {
@@ -5027,8 +5027,8 @@
    "receita_liquida": 159553.39331331017,
    "receita_real": 171562.78850893566,
    "receita_meta": 60000.0,
-   "ebitda": 47192.72370165595,
-   "ebitda_excel_bruto": 47192.72370165595,
+   "ebitda": 43064.016428928684,
+   "ebitda_excel_bruto": 43064.016428928684,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 77031.6920405121,
    "grupos": [
@@ -5073,21 +5073,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -5150,12 +5150,12 @@
    ],
    "var_real": 82521.70127279805,
    "var_esp": 82521.70127279805,
-   "fixo_real": 41848.36353448164,
-   "fixo_esp": 41848.36353448164,
-   "custo_real": 124370.06480727969,
-   "custo_esp": 124370.06480727969,
-   "res_real": 47192.72370165595,
-   "res_caixa": 71211.51409290695,
+   "fixo_real": 45977.07080720892,
+   "fixo_esp": 45977.07080720892,
+   "custo_real": 128498.77208000697,
+   "custo_esp": 128498.77208000697,
+   "res_real": 43064.016428928684,
+   "res_caixa": 67082.80682017969,
    "provisoes_nao_debitadas": 24018.790391250994
   },
   "2029-06": {
@@ -5166,8 +5166,8 @@
    "receita_liquida": 161148.927246443,
    "receita_real": 173278.41639402474,
    "receita_meta": 60000.0,
-   "ebitda": 47885.837367231936,
-   "ebitda_excel_bruto": 47885.837367231936,
+   "ebitda": 43757.13009450467,
+   "ebitda_excel_bruto": 43757.13009450467,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 77802.0089609171,
    "grupos": [
@@ -5212,21 +5212,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -5289,12 +5289,12 @@
    ],
    "var_real": 83346.9182855259,
    "var_esp": 83346.9182855259,
-   "fixo_real": 42045.66074126689,
-   "fixo_esp": 42045.66074126689,
-   "custo_real": 125392.57902679278,
-   "custo_esp": 125392.57902679278,
-   "res_real": 47885.837367231936,
-   "res_caixa": 72144.8156623954,
+   "fixo_real": 46174.368013994164,
+   "fixo_esp": 46174.368013994164,
+   "custo_real": 129521.28629952006,
+   "custo_esp": 129521.28629952006,
+   "res_real": 43757.13009450467,
+   "res_caixa": 68016.10838966814,
    "provisoes_nao_debitadas": 24258.978295163466
   },
   "2029-07": {
@@ -5305,8 +5305,8 @@
    "receita_liquida": 162760.416518907,
    "receita_real": 175011.20055796453,
    "receita_meta": 60000.0,
-   "ebitda": 48585.88216946363,
-   "ebitda_excel_bruto": 48585.88216946363,
+   "ebitda": 44457.17489673635,
+   "ebitda_excel_bruto": 44457.17489673635,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 78580.02905052608,
    "grupos": [
@@ -5351,21 +5351,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -5428,12 +5428,12 @@
    ],
    "var_real": 84180.38746838094,
    "var_esp": 84180.38746838094,
-   "fixo_real": 42244.930920119965,
-   "fixo_esp": 42244.930920119965,
-   "custo_real": 126425.3183885009,
-   "custo_esp": 126425.3183885009,
-   "res_real": 48585.88216946363,
-   "res_caixa": 73087.45024757867,
+   "fixo_real": 46373.63819284724,
+   "fixo_esp": 46373.63819284724,
+   "custo_real": 130554.02566122818,
+   "custo_esp": 130554.02566122818,
+   "res_real": 44457.17489673635,
+   "res_caixa": 68958.7429748514,
    "provisoes_nao_debitadas": 24501.568078115037
   },
   "2029-08": {
@@ -5444,8 +5444,8 @@
    "receita_liquida": 164388.0206840965,
    "receita_real": 176761.3125635446,
    "receita_meta": 60000.0,
-   "ebitda": 49292.927419717984,
-   "ebitda_excel_bruto": 49292.927419717984,
+   "ebitda": 45164.220146990716,
+   "ebitda_excel_bruto": 45164.220146990716,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 79365.82934103154,
    "grupos": [
@@ -5490,21 +5490,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -5567,12 +5567,12 @@
    ],
    "var_real": 85022.19134306496,
    "var_esp": 85022.19134306496,
-   "fixo_real": 42446.19380076168,
-   "fixo_esp": 42446.19380076168,
-   "custo_real": 127468.38514382663,
-   "custo_esp": 127468.38514382663,
-   "res_real": 49292.927419717984,
-   "res_caixa": 74039.51117861422,
+   "fixo_real": 46574.901073488945,
+   "fixo_esp": 46574.901073488945,
+   "custo_real": 131597.0924165539,
+   "custo_esp": 131597.0924165539,
+   "res_real": 45164.220146990716,
+   "res_caixa": 69910.80390588696,
    "provisoes_nao_debitadas": 24746.583758896246
   },
   "2029-09": {
@@ -5583,8 +5583,8 @@
    "receita_liquida": 166031.90089093722,
    "receita_real": 178528.9256891798,
    "receita_meta": 60000.0,
-   "ebitda": 50007.04312247459,
-   "ebitda_excel_bruto": 50007.04312247459,
+   "ebitda": 45878.33584974732,
+   "ebitda_excel_bruto": 45878.33584974732,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80159.48763444173,
    "grupos": [
@@ -5629,21 +5629,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -5706,12 +5706,12 @@
    ],
    "var_real": 85872.41325649548,
    "var_esp": 85872.41325649548,
-   "fixo_real": 42649.46931020972,
-   "fixo_esp": 42649.46931020972,
-   "custo_real": 128521.8825667052,
-   "custo_esp": 128521.8825667052,
-   "res_real": 50007.04312247459,
-   "res_caixa": 75001.09271895976,
+   "fixo_real": 46778.176582937,
+   "fixo_esp": 46778.176582937,
+   "custo_real": 132650.58983943248,
+   "custo_esp": 132650.58983943248,
+   "res_real": 45878.33584974732,
+   "res_caixa": 70872.38544623248,
    "provisoes_nao_debitadas": 24994.049596485173
   },
   "2029-10": {
@@ -5722,8 +5722,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -5768,21 +5768,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -5845,12 +5845,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2029-11": {
@@ -5861,8 +5861,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -5907,21 +5907,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -5984,12 +5984,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2029-12": {
@@ -6000,8 +6000,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -6046,21 +6046,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -6123,12 +6123,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2030-01": {
@@ -6139,8 +6139,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -6185,21 +6185,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -6262,12 +6262,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2030-02": {
@@ -6278,8 +6278,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -6324,21 +6324,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -6401,12 +6401,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2030-03": {
@@ -6417,8 +6417,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -6463,21 +6463,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -6540,12 +6540,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2030-04": {
@@ -6556,8 +6556,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -6602,21 +6602,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -6679,12 +6679,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2030-05": {
@@ -6695,8 +6695,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -6741,21 +6741,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -6818,12 +6818,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2030-06": {
@@ -6834,8 +6834,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -6880,21 +6880,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -6957,12 +6957,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2030-07": {
@@ -6973,8 +6973,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -7019,21 +7019,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -7096,12 +7096,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2030-08": {
@@ -7112,8 +7112,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -7158,21 +7158,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -7235,12 +7235,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2030-09": {
@@ -7251,8 +7251,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -7297,21 +7297,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -7374,12 +7374,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2030-10": {
@@ -7390,8 +7390,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -7436,21 +7436,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -7513,12 +7513,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2030-11": {
@@ -7529,8 +7529,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -7575,21 +7575,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -7652,12 +7652,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2030-12": {
@@ -7668,8 +7668,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -7714,21 +7714,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -7791,12 +7791,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2031-01": {
@@ -7807,8 +7807,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -7853,21 +7853,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -7930,12 +7930,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2031-02": {
@@ -7946,8 +7946,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -7992,21 +7992,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -8069,12 +8069,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2031-03": {
@@ -8085,8 +8085,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -8131,21 +8131,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -8208,12 +8208,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   },
   "2031-04": {
@@ -8224,8 +8224,8 @@
    "receita_liquida": 166545.17227795642,
    "receita_real": 179080.83040640474,
    "receita_meta": 60000.0,
-   "ebitda": 50230.01262823348,
-   "ebitda_excel_bruto": 50230.01262823348,
+   "ebitda": 46101.305355506214,
+   "ebitda_excel_bruto": 46101.305355506214,
    "delta_fallback_recepcao": 0.0,
    "margem_contribuicao": 80407.29285247574,
    "grupos": [
@@ -8270,21 +8270,21 @@
      "linhas": [
       {
        "cat": "Gerente (PJ · CNPJ)",
-       "real": 3000.0,
-       "esp": 3000.0,
-       "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+       "real": 2727.27,
+       "esp": 2727.27,
+       "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
        "prov": false
       },
       {
        "cat": "Recepção + limpeza + encargos",
-       "real": 5486.0654545454545,
-       "esp": 5486.0654545454545,
+       "real": 9887.502727272727,
+       "esp": 9887.502727272727,
        "nota": "total pessoal do Excel menos gerente",
        "prov": false
       }
      ],
-     "sub_real": 8486.065454545454,
-     "sub_esp": 8486.065454545454
+     "sub_real": 12614.772727272728,
+     "sub_esp": 12614.772727272728
     },
     {
      "id": "OCUPACAO",
@@ -8347,12 +8347,12 @@
    ],
    "var_real": 86137.87942548067,
    "var_esp": 86137.87942548067,
-   "fixo_real": 42712.93835269059,
-   "fixo_esp": 42712.93835269059,
-   "custo_real": 128850.81777817126,
-   "custo_esp": 128850.81777817126,
-   "res_real": 50230.01262823348,
-   "res_caixa": 75301.32888513015,
+   "fixo_real": 46841.64562541786,
+   "fixo_esp": 46841.64562541786,
+   "custo_real": 132979.52505089855,
+   "custo_esp": 132979.52505089855,
+   "res_real": 46101.305355506214,
+   "res_caixa": 71172.62161240287,
    "provisoes_nao_debitadas": 25071.316256896665
   }
  },
@@ -8364,8 +8364,8 @@
   "receita_liquida": 55800.0,
   "receita_real": 60000.0,
   "receita_meta": 60000.0,
-  "ebitda": 3040.0384627272724,
-  "ebitda_excel_bruto": 3040.0384627272724,
+  "ebitda": -1088.6688099999992,
+  "ebitda_excel_bruto": -1088.6688099999992,
   "delta_fallback_recepcao": 0.0,
   "margem_contribuicao": 26940.0,
   "grupos": [
@@ -8410,21 +8410,21 @@
     "linhas": [
      {
       "cat": "Gerente (PJ · CNPJ)",
-      "real": 3000.0,
-      "esp": 3000.0,
-      "nota": "R$ 3000/mês · metade da gerente única PJ (R$ 6.000 total) · sem encargos",
+      "real": 2727.27,
+      "esp": 2727.27,
+      "nota": "R$ 2,727/mês · parte da gerente única PJ (R$ 6.000 no total, rateio por m² da planilha) · sem encargos",
       "prov": false
      },
      {
       "cat": "Recepção + limpeza + encargos",
-      "real": 5486.0654545454545,
-      "esp": 5486.0654545454545,
+      "real": 9887.502727272727,
+      "esp": 9887.502727272727,
       "nota": "total pessoal do Excel menos gerente",
       "prov": false
      }
     ],
-    "sub_real": 8486.065454545454,
-    "sub_esp": 8486.065454545454
+    "sub_real": 12614.772727272728,
+    "sub_esp": 12614.772727272728
    },
    {
     "id": "OCUPACAO",
@@ -8487,16 +8487,16 @@
   ],
   "var_real": 28860.0,
   "var_esp": 28860.0,
-  "fixo_real": 28099.961537272728,
-  "fixo_esp": 28099.961537272728,
-  "custo_real": 56959.96153727273,
-  "custo_esp": 56959.96153727273,
-  "res_real": 3040.0384627272724,
-  "res_caixa": 11440.038462727272,
+  "fixo_real": 32228.66881,
+  "fixo_esp": 32228.66881,
+  "custo_real": 61088.66881,
+  "custo_esp": 61088.66881,
+  "res_real": -1088.6688099999992,
+  "res_caixa": 7311.331190000001,
   "provisoes_nao_debitadas": 8400.0,
-  "res_esp_mesma_receita": 3040.0384627272724,
+  "res_esp_mesma_receita": -1088.6688099999992,
   "res_esp_na_meta": null,
-  "be_modelo_1loja": 54142.507778945524,
+  "be_modelo_1loja": 62097.62776493256,
   "mc_real": 26940.0,
   "mc_esp": 26940.0
  },
@@ -8508,7 +8508,7 @@
  },
  "equilibrio": {
   "fatura_hoje": 60000.0,
-  "custo_fixo_mes": 28099.961537272728,
+  "custo_fixo_mes": 32228.66881,
   "cenarios": [
    {
     "nome": "Projetado do Excel",

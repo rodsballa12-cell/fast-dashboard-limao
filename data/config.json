@@ -44,6 +44,14 @@
         "_2026-07_nota": "Pro-rata 9 dias (23-31/jul = 9 dias apos a inauguracao em 23/07/2026). Decisao Rodrigo 15/10/2026: nao cobrar meta cheia de mes em que a loja nem existia. 60000 x 9/31 = 17419,35.",
         "2026-08": 60000.0,
         "2026-09": 60000.0
+      },
+      "recepcao_custo_mensal": {
+        "_desc": "Recepcao Escova · equipe informada por Rodrigo em 15/10/2026: 2 recepcionistas CLT (R$ 2.200 e R$ 2.300 brutos) × 1,75 de encargos = R$ 7.875/mes. A faxineira (CLT R$ 2.300, custo dividido pelos 2 negocios) entra a parte, em pessoal_clt.faxineira. Gerente tambem a parte (pessoal_clt).",
+        "clt_salarios_brutos": [2200.0, 2300.0],
+        "clt_fator_encargos": 1.75,
+        "clt_com_encargos": 7875.0,
+        "pj_mensal": 0.0,
+        "total": 7875.0
       }
     },
     "spa": {
@@ -292,7 +300,13 @@
     "fator_encargos_clt": 1.75,
     "gerente_pj_total": 6000.0,
     "salario_gerente_com_encargos": 3000.0,
-    "_nota_gerente": "Gerente eh PJ · R$ 6.000/mes · rateado 50/50"
+    "_nota_gerente": "Gerente eh PJ · R$ 6.000/mes (confirmado por Rodrigo em 15/10/2026), custo dividido pelos 2 negocios. Planilha ajustada de 6.500 para 6.000 (Premissas B118) em 15/10/2026 e o painel le a parte de cada loja de la (rateio por m2). O razao registra parcelas de R$ 3.250 — pagamento real acima do contrato.",
+    "faxineira": {
+      "_desc": "Faxineira CLT R$ 2.300 bruto, custo dividido 50/50 pelos 2 negocios (informado por Rodrigo em 15/10/2026). Com encargos 1,75 = R$ 4.025/mes, R$ 2.012,50 por unidade.",
+      "salario_bruto": 2300.0,
+      "com_encargos": 4025.0,
+      "custo_por_unidade": 2012.5
+    }
   },
   "metas_franqueadora": {
     "_desc": "Metas mensais oficiais fornecidas pela franqueadora, POR RECEPCIONISTA. Multiplicadas por `recepcionistas` pra chegar no total da loja. Resto (META_MENSAL - subtotal) vira 'servicos_gerais'.",
