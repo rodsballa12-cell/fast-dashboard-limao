@@ -5496,6 +5496,39 @@
       "revisao_em": null,
       "docs_decisao": "docs/decisoes/2026-10-11-conselho-fechar-com-resultado-as-3-decisoes-de-09.md",
       "origem_conselho": "2026-10-11"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-16] **Spa: parar de operar às cegas**",
+      "detalhe": "**~R$ 11 mil de faturamento abaixo da meta do mês** (R$ 28,7 mil contra R$ 40 mil no ritmo atual) e R$ 13,4 mil de vendas do Spa sem conferência na Stone",
+      "acao": "Executar: você + sessão técnica, depois Marketing e Financeiro.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-16-conselho-spa-parar-de-operar-as-cegas.md",
+      "origem_conselho": "2026-10-16"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-16] **Clientes sumindo: manual de vez, com dono e meta**",
+      "detalhe": "**R$ 34.762** de histórico de compra de 121 clientes em alerta (eram 111 / R$ 31.844 em 11/10: +10 clientes, +R$ 2.918, ~R$ 580/dia). O que se perde de verdade é a próxima visita: uma visita de cada ≈ **R$ 14,8 mil** (121 × R$ 122)",
+      "acao": "Executar: Relacionamento monta a lista dos 20 maiores; a recepção chama.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-16-conselho-clientes-sumindo-manual-de-vez-com-dono.md",
+      "origem_conselho": "2026-10-16"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-16] **Religar a empresa digital no PC**",
+      "detalhe": "não há cifra única, é a vigilância diária inteira. O que já custou: 5 dias sem Conselho, 15 atas de falha empilhadas no PC (nenhuma com análise de verdade), e as decisões de 11/10 sem ninguém ter olhado",
+      "acao": "Executar: você (login) e sessão técnica (commit).",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-16-conselho-religar-a-empresa-digital-no-pc.md",
+      "origem_conselho": "2026-10-16"
     }
   ],
   "insights_narrativa": [
@@ -6000,6 +6033,69 @@
         "Escala por dia×hora cruzada com a equipe real — não rodou hoje (bloqueio técnico), fica para a próxima leitura.",
         "📌 MEMÓRIA**",
         ""
+      ]
+    },
+    {
+      "data": "2026-10-16",
+      "hora": "09:30",
+      "tipo": "matinal",
+      "sincronizado_em": "2026-10-16T09:31:20-03:00",
+      "sincronizado_por": "auto (workflow conselho_sync.yml)",
+      "ata": "docs/atas/2026-10-16-conselho.md",
+      "mesa": {
+        "operacao": "ok",
+        "financeiro": "atencao",
+        "marketing": "atencao",
+        "relacionamento": "atencao",
+        "pessoas": "ok"
+      },
+      "decisoes": [
+        {
+          "n": 1,
+          "titulo": "**Spa: parar de operar às cegas**",
+          "em_jogo": "**~R$ 11 mil de faturamento abaixo da meta do mês** (R$ 28,7 mil contra R$ 40 mil no ritmo atual) e R$ 13,4 mil de vendas do Spa sem conferência na Stone",
+          "executor": "você + sessão técnica, depois Marketing e Financeiro",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-16-conselho-spa-parar-de-operar-as-cegas.md"
+        },
+        {
+          "n": 2,
+          "titulo": "**Clientes sumindo: manual de vez, com dono e meta**",
+          "em_jogo": "**R$ 34.762** de histórico de compra de 121 clientes em alerta (eram 111 / R$ 31.844 em 11/10: +10 clientes, +R$ 2.918, ~R$ 580/dia). O que se perde de verdade é a próxima visita: uma visita de cada ≈ **R$ 14,8 mil** (121 × R$ 122)",
+          "executor": "Relacionamento monta a lista dos 20 maiores; a recepção chama",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-16-conselho-clientes-sumindo-manual-de-vez-com-dono.md"
+        },
+        {
+          "n": 3,
+          "titulo": "**Religar a empresa digital no PC**",
+          "em_jogo": "não há cifra única, é a vigilância diária inteira. O que já custou: 5 dias sem Conselho, 15 atas de falha empilhadas no PC (nenhuma com análise de verdade), e as decisões de 11/10 sem ninguém ter olhado",
+          "executor": "você (login) e sessão técnica (commit)",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-16-conselho-religar-a-empresa-digital-no-pc.md"
+        }
+      ],
+      "cruzamentos_chave": [],
+      "sem_dono": [
+        "A verba do Spa está rodando? → Gerenciador de Anúncios do Spa. Sem esse acesso nenhuma cadeira responde.",
+        "Por que o COMBO SEMANAL (R$ 16/dia) e a vaga de escovista (R$ 6/dia, 35 dias) não entregam? → Marketing precisa do Gerenciador (aprovação ou entrega do anúncio).",
+        "A diferença de preço de R$ 3.180 é combo ou desconto de balcão? → Operação.",
+        "Alguém usou o botão 📱 com os 121 em risco? → Operação/recepção (pendente desde 11/10).",
+        "O caixa de R$ 52,6 mil é o rodapé da Conta XP na planilha: até que data? → Financeiro (a conta XP recebe aporte de sócio).",
+        "As 11 cancelações (R$ 655) de uma profissional cujo nome vem corrompido (\"�\") são de quem? → Operação, cadastro do Trinks.",
+        "Cancelamento de unhas (43% do valor cancelado desde 23/07: R$ 2.333 de R$ 5.430, 13 só de uma manicure) é escala ou pessoa? → Operação (grade de horários). Período diferente da receita (unhas = 32% em outubro), então é só indicativo.",
+        "25 das 29 decisões em `docs/decisoes/` estão sem Resultado.** Como o Conselho não rodou de 12 a 15/10, as 3 de 11/10 e as 3 de 09/10 seguem sem revisão. O desvio de tabela (18/09) está há 28 dias sem dono.",
+        "Eco:** o Spa travar sozinho é a 3ª vez (Trinks do Spa 14/09–09/10; Stone e mídia desde 30/09). A opção \"buscar acesso admin no Meta\" reabre uma decisão recusada em 14/09.",
+        "Nota velha:** `2026-09-30-meta-spa-outubro-25k-super-30k.md` diz R$ 25 mil / R$ 30 mil. O painel usa R$ 40 mil / R$ 60 mil desde 02/10 (planilha \"Meta Limão outubro\", escolha sua). Quem ler a nota acha o Spa em 52%, quem ler o painel acha 32%. Falta registrar a revisão (preciso do seu OK).",
+        "Mesma família do aprendizado de 08/10 (*alarme honesto mas mudo*):** as tarefas falharam dizendo a verdade (nas atas e no registro das execuções) e ninguém foi avisado por 4 dias. O conserto é aviso ativo quando o login cair.",
+        "Lição de 16/09 (*premissa que ninguém conferiu*):** o DRE de outubro foi reescrito ontem (CLT, gerente, faxineira) e nenhuma cadeira conferiu o resultado. Por isso não repito o \"−R$ 9,6 mil\" do consolidado como achado: ele é a conta com receita igual à meta.",
+        "Monitor de encargos (pedido de 15/10):** sem leitura válida ainda. Setembro: equipe não estável e sem salário bruto registrado; outubro: mês aberto (caixa de folha R$ 806 contra R$ 9.500 brutos, fator 0,085, ignorar). Fator em uso 1,75; 0 de 3 meses fechados.",
+        "A comissão de 35,1% do DRE é o realizado de setembro (Rodrigo confirmou que todos são comissionados). A regra continua não cadastrada no Trinks, e a ficha de Pessoas ainda cita 32%, que está velha.",
+        "",
+        "Decisões acima ainda não foram aprovadas. Depois do martelo: Memória registra em `docs/decisoes/` com data de revisão, e a cópia vai para `Briefings/2026-10-16-conselho.md` no repositório (isso dispara a sincronização automática do painel, por isso só depois).*"
       ]
     }
   ]
