@@ -1,5 +1,11 @@
 # Conselho 2026-10-16 · Decisão #2 · **Clientes sumindo: manual de vez, com dono e meta**
 
+**SUPERADA em 16/10/2026** — mesma decisão do mesmo Conselho, já aprovada por
+Rodrigo e registrada em
+[[2026-10-16-conselho-clientes-sumindo-canal-manual-com-dono]]. Este arquivo é
+o registro automático que ficou pendente antes da aprovação; mantido por
+histórico, sem ação própria.
+
 **Data:** 2026-10-16 · **Hora do Conselho:** 09:30
 **Origem:** Conselho matinal · Sincronizada automaticamente pelo
 workflow `conselho_sync.yml`
