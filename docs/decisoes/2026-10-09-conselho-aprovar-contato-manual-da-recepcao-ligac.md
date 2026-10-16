@@ -1,5 +1,10 @@
 # Conselho 2026-10-09 · Decisão #1 · Aprovar contato manual da recepção (ligação/WhatsApp pessoal) para os 89 clientes em risco de churn, priorizando os maiores LTV, e dizer se a fila automática de 20/09 (R$ 16.862 aprovados, nunca ligados) fica formalmente substituída pelo botão manual do painel (decisão de 14/09) ou se ainda vale perseguir
 
+**SUPERADA em 16/10/2026** — incorporada à decisão de 16/10 sobre clientes sumindo,
+[[2026-10-16-conselho-clientes-sumindo-canal-manual-com-dono]], aprovada por Rodrigo com dono (gerente da loja) e meta
+(10 chamadas por dia). Este arquivo é o registro automático; mantido por
+histórico, sem ação própria.
+
 **Data:** 2026-10-09 · **Hora do Conselho:** 22:30
 **Origem:** Conselho noturno · Sincronizada automaticamente pelo
 workflow `conselho_sync.yml`

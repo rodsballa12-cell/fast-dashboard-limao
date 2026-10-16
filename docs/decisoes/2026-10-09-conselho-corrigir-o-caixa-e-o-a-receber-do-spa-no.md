@@ -1,5 +1,10 @@
 # Conselho 2026-10-09 · Decisão #3 · Corrigir o caixa e o a-receber do Spa no `financeiro.json` (hoje mostra zero nos dois campos) usando o valor real do extrato Stone (R$ 8.435,50 a receber)
 
+**APROVADA em 16/10/2026** — Rodrigo escolheu corrigir **na planilha do DRE**, não
+no arquivo do painel. Executor: Rodrigo, orientado pelo Financeiro. Valor de
+referência: R$ 8.435,50 a receber do Spa, do extrato Stone de 30/09. Ainda não
+executada. Revisar em 2026-10-23.
+
 **Data:** 2026-10-09 · **Hora do Conselho:** 22:30
 **Origem:** Conselho noturno · Sincronizada automaticamente pelo
 workflow `conselho_sync.yml`

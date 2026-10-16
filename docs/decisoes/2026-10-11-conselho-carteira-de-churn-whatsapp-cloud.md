@@ -1,5 +1,10 @@
 # Conselho 2026-10-11 · Decisão #1 · **Carteira de churn + WhatsApp Cloud**
 
+**SUPERADA em 16/10/2026** — incorporada à decisão de 16/10 sobre clientes sumindo,
+[[2026-10-16-conselho-clientes-sumindo-canal-manual-com-dono]], aprovada por Rodrigo com dono (gerente da loja) e meta
+(10 chamadas por dia). Este arquivo é o registro automático; mantido por
+histórico, sem ação própria.
+
 **Data:** 2026-10-11 · **Hora do Conselho:** 22:30
 **Origem:** Conselho noturno · Sincronizada automaticamente pelo
 workflow `conselho_sync.yml`

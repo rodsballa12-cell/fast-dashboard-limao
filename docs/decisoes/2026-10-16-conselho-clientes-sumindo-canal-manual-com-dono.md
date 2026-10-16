@@ -15,6 +15,13 @@ O canal é o botão 📱 do painel (decisão vigente de 14/09). Falta dono e met
 Rodrigo nomeia quem da recepção chama e quantos clientes por dia, começando
 pelos de maior valor. Relacionamento monta a lista dos 20 maiores.
 
+## Complemento de 16/10 (tarde)
+Rodrigo definiu dono e meta: **gerente da loja** é o dono, e a meta é de **10
+chamadas por dia**, começando pelos clientes de maior valor. A lista dos 20 maiores
+(rascunho com mensagem pronta; nada foi enviado) está no Obsidian, em
+`02-PROJETOS/Franquia_FAST_Limao/Lista_Recepcao_Clientes_Sumindo_2026-10-16.md`.
+O texto da mensagem ainda precisa da aprovação dele antes do primeiro envio.
+
 ## Alternativas descartadas
 - Buscar acesso admin no Meta Business Manager para religar o WhatsApp Cloud:
   já recusado em 14/09 ("não configurar no curto prazo"); não foi reaberto.
