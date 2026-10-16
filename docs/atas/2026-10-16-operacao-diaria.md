@@ -1,30 +1,31 @@
 ---
 agente: operacao-diaria
 data: 2026-10-16
-hora: 09:29
+hora: 11:30
 gerado_por: tarefa agendada
 ---
 
-# operacao-diaria · 2026-10-16 às 09:29
+# operacao-diaria · 2026-10-16 às 11:30
 
 ↑ [[76_Briefings_Agentes/00-INDEX|Briefings dos Agentes]]
 
-Li só o painel da Escova. Spa e consolidado ficaram de fora porque você não pediu.
+🥂 **ESCOVA · 16/10 (sexta) · dado de 11:17**
 
-🥂 ESCOVA · sexta 16/10 · dado de 08:13
+🔴 **EXIGE AÇÃO HOJE**
+- Nada exige ação hoje. A manhã está fraca, mas são só 11h17 e a entrada de cliente novo vai até 19h15.
 
-🔴 EXIGE AÇÃO HOJE
-   • Nada exige ação hoje. O alerta de "9 PIX sem confirmação, R$ 882" **não é dinheiro sumido**. O extrato da Stone só vai até 09/10 e há 77 vendas do Trinks depois dessa data (R$ 9.410), então o painel está comparando contra um banco atrasado. Carregar o extrato novo resolve.
+📊 **O DIA**
+- R$ 96 (2 clientes) de uma meta de R$ 2.335. Às 11h17 já era para ter R$ 232, então estamos em 41% do ritmo. Se continuar assim, o dia fecha perto de R$ 970.
+- Na sexta passada (09/10), à mesma hora, havia R$ 820 (7 atendimentos), e o dia fechou em R$ 2.776. Hoje está R$ 724 abaixo daquele ponto. Ontem (quinta) fechou em R$ 1.825.
+- A semana projeta R$ 9.092, 76% da meta. Faltam R$ 2.650 por dia nos 2 dias que restam, o sábado inclusive. O sábado é o dia que mais pesa (cerca de 38% da semana), então ele decide se a semana recupera.
 
-📊 O DIA
-   • O dado é das 08:13, antes da loja abrir. Ainda não há realizado de hoje. A meta de hoje é **R$ 2.481**, e a sexta anterior (09/10) fez R$ 2.776, que seria 112% da meta de hoje.
-   • Ontem (quinta 14/10) fez R$ 520 de uma meta de R$ 893 (58%), mas quinta 15/10 fez R$ 1.825 para meta de R$ 1.348 (135%, 19 atendimentos). A semana está irregular, mas a quinta ficou acima.
-   • No mês, o painel mostra R$ 29.242 de R$ 60.000 (48,7%), com projeção de ~R$ 66 mil. Não consegui conferir a conta de dias desse bloco, então trate a projeção com cautela.
+👀 **VIGIAR**
+- O movimento mais fraco da semana foi na terça e na quarta (R$ 1.178 e R$ 520). O mês ainda projeta R$ 66.636, 111% da meta, mas a semana corrente está 54% abaixo da anterior (R$ 954 por dia contra R$ 2.070). Se o sábado vier fraco, o mês perde folga.
+- 36 serviços estão sendo cobrados fora da tabela. Em setembro eram 31, então piorou.
+- 121 clientes que vinham sempre sumiram, o que representa R$ 34,8 mil de valor ao longo do tempo. A ação é com o Relacionamento, então só registro aqui.
+- O extrato da Stone só vai até 08h11. A venda de R$ 96 das 10h46 ainda não apareceu nele, e isso é atraso do extrato, não dinheiro faltando.
+- Consultas ao Trinks: 6.358 de 10.000 restantes. Está tranquilo.
 
-👀 VIGIAR
-   • **Clientes que sumiram:** 121 clientes (R$ 34,8 mil de valor ao longo da vida) não voltam há mais de 14 dias. O painel estima R$ 12,2 mil de resgate possível. Posso preparar a lista, mas não disparo mensagem sem a sua aprovação.
-   • **Auditoria de cancelados:** 20 casos para revisar e 10 em atenção. Não consegui comparar com o padrão anterior.
-   • **Preços fora da tabela:** 36 serviços, contra 31 em set/2026. Subiu, então vale ficar de olho.
-   • **Consultas ao Trinks:** sobram 6.409 das 10.000 do mês, sem risco.
+**SPA:** ainda sem dado real.
 
-Se o Trinks não atualizar até o meio-dia, o dado de hoje ainda será o das 08:13 e o painel vai parecer parado.
+Observação: os textos de alerta do painel dizem "Sex rende 19× menos que Qui". Isso compara um dia que ainda não começou com um dia fechado, então não serve de leitura.
