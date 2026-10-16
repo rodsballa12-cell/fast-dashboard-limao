@@ -1,7 +1,7 @@
 # FAST Limão · o que qualquer sessão precisa saber antes de mexer
 
 Rodrigo Garcia é dono de duas lojas — **FAST Escova Limão** (aberta em 23/07/2026)
-e **FAST Spa Limão** (inaugura 25/09/2026). Ele **não é programador**. Fale em
+e **FAST Spa Limão** (aberta em 24/09/2026). Ele **não é programador**. Fale em
 reais, clientes e dias; nunca em nome de função ou nome de arquivo sem dizer o
 que a coisa faz.
 
