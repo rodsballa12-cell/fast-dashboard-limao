@@ -1239,6 +1239,65 @@
         "",
         "Decisões acima ainda não foram aprovadas. Depois do martelo: Memória registra em `docs/decisoes/` com data de revisão, e a cópia vai para `Briefings/2026-10-16-conselho.md` no repositório (isso dispara a sincronização automática do painel, por isso só depois).*"
       ]
+    },
+    {
+      "data": "2026-10-17",
+      "hora": "11:55",
+      "tipo": "matinal",
+      "sincronizado_em": "2026-10-17T12:01:15-03:00",
+      "sincronizado_por": "auto (workflow conselho_sync.yml)",
+      "ata": "docs/atas/2026-10-17-conselho.md",
+      "mesa": {
+        "operacao": "critico",
+        "financeiro": "atencao",
+        "marketing": "atencao",
+        "relacionamento": "atencao",
+        "pessoas": "ok"
+      },
+      "decisoes": [
+        {
+          "n": 1,
+          "titulo": "**Clientes sumindo: nomear quem da recepção usa o botão 📱, com meta por dia.** - Em jogo: **≈ R$ 16 mil**, que é 133 clientes × R$ 122 de ticket, uma visita cada. É teto, não previsão. - Se nada for feito: a lista segue crescendo (+22 em 6 dias). Hoje há 3 aniversariantes e 12 nos próximos 7 dias. Está pendente desde 11/10. - Executa: Relacionamento monta a lista das 20 maiores e a recepção chama.",
+          "em_jogo": "",
+          "executor": null,
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-17-conselho-clientes-sumindo-nomear-quem-da-recepcao.md"
+        },
+        {
+          "n": 2,
+          "titulo": "**Spa: exportar o extrato Stone do Spa e decidir a verba de mídia dos 15 dias que restam.** - Em jogo: **≈ R$ 12,8 mil** abaixo da meta, mais R$ 13,3 mil de vendas sem conferência. - Se nada for feito: o Spa fecha a ~68% e continua sem conciliação. - Executa: você exporta o extrato. O Marketing só mexe em verba com \"aprovado + nome da campanha + valor por dia\". - Pedir acesso de administrador no Meta já foi recusado em 14/09.",
+          "em_jogo": "",
+          "executor": null,
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-17-conselho-spa-exportar-o-extrato-stone-do-spa-e-de.md"
+        },
+        {
+          "n": 3,
+          "titulo": "**Preço fora da tabela: nomear um dono e uma régua de desconto.** - Em jogo: **R$ 3.180** de diferença, valor da ata de 16/10 que não recalculei. Ainda não sei se é combo ou desconto de balcão. - Piorou: são 36 de 59 serviços fora da tabela, contra 31 de 58 em setembro. - Se nada for feito: a margem segue invisível. A decisão de 18/09 foi aprovada no automático, sem responsável e sem resultado há 29 dias. - Executa: a Operação alinha o balcão e o Financeiro mede.",
+          "em_jogo": "",
+          "executor": null,
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-17-conselho-preco-fora-da-tabela-nomear-um-dono-e-um.md"
+        }
+      ],
+      "cruzamentos_chave": [],
+      "sem_dono": [
+        "Excel do DRE:** a pasta do OneDrive está fora da área liberada nesta sessão. O \"baseline 17/10\" é só a data da regeneração e só o valor a receber da Stone mudou. A idade real do Excel eu **não vejo**. O mesmo vale para o caixa de R$ 52,6 mil (até que data?). → Financeiro ou você.",
+        "133 hoje contra 121 ontem:** mudou o critério ou entraram 12 clientes em um dia? → Relacionamento.",
+        "COMBO SEMANAL** sem gasto de 10 a 16/10, com R$ 16/dia reservados, e **vaga de escovista** sem gasto há 36 dias. Juntos ≈ R$ 154 por semana parados, e só o Gerenciador de Anúncios explica. → Marketing.",
+        "Alguém usou o 📱 desde 11/10?** → recepção.",
+        "12 cancelamentos (R$ 844) sem profissional** no Trinks. → Operação.",
+        "As tarefas agendadas do PC voltaram?** O registro fica no vault, fora do meu alcance. Aqui é a decisão #3 de ontem. → você.",
+        "Defeitos do painel viram tarefa de código.** Não alterei nada hoje.",
+        "Erro que já custou antes:** alarme de extrato atrasado lido como pagamento sumido (15/09 e 18/09). Hoje a conferência evitou o terceiro.",
+        "Canal de clientes:** o WhatsApp automático foi descartado em 14/09. Em ago/2026, portão humano em rotina diária fez 7 de 9 pedidos morrerem sem resposta. Por isso a decisão 1 pede responsável fixo com meta, não aprovação por tarefa.",
+        "Desvio de tabela:** sem responsável desde 18/09 e hoje pior.",
+        "Pendências de ontem sem martelo:** as 3 decisões de 16/10 e 25 de 29 decisões sem resultado. A nota da meta do Spa de 30/09 (R$ 25 mil / R$ 30 mil) segue contradizendo a de 02/10 (R$ 40 mil / R$ 60 mil).",
+        "Monitor de encargos:** sem leitura válida. Setembro não tem salário bruto registrado e outubro ainda está aberto. São 0 de 3 meses fechados."
+      ]
     }
   ],
   "recomendacoes": [
@@ -1439,6 +1498,39 @@
       "revisao_em": null,
       "docs_decisao": "docs/decisoes/2026-10-16-conselho-religar-a-empresa-digital-no-pc.md",
       "origem_conselho": "2026-10-16"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-17] **Clientes sumindo: nomear quem da recepção usa o botão 📱, com meta por dia.** - Em jogo: **≈ R$ 16 mil**, que é 133 clientes × R$ 122 de ticket, uma visita cada. É teto, não previsão. - Se nada for feito: a lista segue crescendo (+22 em 6 dias). Hoje há 3 aniversariantes e 12 nos próximos 7 dias. Está pendente desde 11/10. - Executa: Relacionamento monta a lista das 20 maiores e a recepção chama.",
+      "detalhe": "**Clientes sumindo: nomear quem da recepção usa o botão 📱, com meta por dia.** - Em jogo: **≈ R$ 16 mil**, que é 133 clientes × R$ 122 de ticket, uma visita cada. É teto, não previsão. - Se nada for feito: a lista segue crescendo (+22 em 6 dias). Hoje há 3 aniversariantes e 12 nos próximos 7 dias. Está pendente desde 11/10. - Executa: Relacionamento monta a lista das 20 maiores e a recepção chama.",
+      "acao": "Executor a definir.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-17-conselho-clientes-sumindo-nomear-quem-da-recepcao.md",
+      "origem_conselho": "2026-10-17"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-17] **Spa: exportar o extrato Stone do Spa e decidir a verba de mídia dos 15 dias que restam.** - Em jogo: **≈ R$ 12,8 mil** abaixo da meta, mais R$ 13,3 mil de vendas sem conferência. - Se nada for feito: o Spa fecha a ~68% e continua sem conciliação. - Executa: você exporta o extrato. O Marketing só mexe em verba com \"aprovado + nome da campanha + valor por dia\". - Pedir acesso de administrador no Meta já foi recusado em 14/09.",
+      "detalhe": "**Spa: exportar o extrato Stone do Spa e decidir a verba de mídia dos 15 dias que restam.** - Em jogo: **≈ R$ 12,8 mil** abaixo da meta, mais R$ 13,3 mil de vendas sem conferência. - Se nada for feito: o Spa fecha a ~68% e continua sem conciliação. - Executa: você exporta o extrato. O Marketing só mexe em verba com \"aprovado + nome da campanha + valor por dia\". - Pedir acesso de administrador no M",
+      "acao": "Executor a definir.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-17-conselho-spa-exportar-o-extrato-stone-do-spa-e-de.md",
+      "origem_conselho": "2026-10-17"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-17] **Preço fora da tabela: nomear um dono e uma régua de desconto.** - Em jogo: **R$ 3.180** de diferença, valor da ata de 16/10 que não recalculei. Ainda não sei se é combo ou desconto de balcão. - Piorou: são 36 de 59 serviços fora da tabela, contra 31 de 58 em setembro. - Se nada for feito: a margem segue invisível. A decisão de 18/09 foi aprovada no automático, sem responsável e sem resultado há 29 dias. - Executa: a Operação alinha o balcão e o Financeiro mede.",
+      "detalhe": "**Preço fora da tabela: nomear um dono e uma régua de desconto.** - Em jogo: **R$ 3.180** de diferença, valor da ata de 16/10 que não recalculei. Ainda não sei se é combo ou desconto de balcão. - Piorou: são 36 de 59 serviços fora da tabela, contra 31 de 58 em setembro. - Se nada for feito: a margem segue invisível. A decisão de 18/09 foi aprovada no automático, sem responsável e sem resultado há ",
+      "acao": "Executor a definir.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-17-conselho-preco-fora-da-tabela-nomear-um-dono-e-um.md",
+      "origem_conselho": "2026-10-17"
     }
   ],
   "kpi_estrela": {
