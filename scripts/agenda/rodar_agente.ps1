@@ -166,6 +166,31 @@ function DRE-Para-JSON {
 }
 DRE-Para-JSON
 
+# --- Comissoes: Trinks x Pix pagos -----------------------------------------
+# Confere a comissao devida (Trinks, taxa por categoria) contra os Pix de
+# comissao do razao, por profissional e quinzena fechada, e grava a aba
+# "11 Comissoes x Trinks" no arquivo de pendencias do OneDrive. So regrava
+# quando o resultado muda; pula se o arquivo estiver aberto. O resultado NAO
+# vai para o repositorio (publico). Pedido do Rodrigo em 16/10/2026.
+function Comissoes-Trinks {
+  $anterior = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $py = (Get-Command python -ErrorAction SilentlyContinue).Source
+    if (-not $py) { Registrar "Comissoes x Trinks: python nao encontrado, pulei."; return }
+    $envAntes = $env:PYTHONUTF8
+    $env:PYTHONUTF8 = "1"
+    try {
+      $saidaPy = (& $py (Join-Path $Projeto "scripts\conciliacao_comissoes.py") 2>&1 | Out-String).Trim()
+      if ($LASTEXITCODE -ne 0) { Registrar "FALHOU: Comissoes x Trinks (codigo $LASTEXITCODE). $saidaPy" }
+      else { Registrar $saidaPy }
+    } finally { $env:PYTHONUTF8 = $envAntes }
+  } catch {
+    Registrar ("FALHOU: Comissoes x Trinks. " + $_.Exception.Message)
+  } finally { $ErrorActionPreference = $anterior }
+}
+Comissoes-Trinks
+
 # 'claude' pode nao estar no PATH de uma tarefa agendada.
 $claude = (Get-Command claude -ErrorAction SilentlyContinue).Source
 if (-not $claude) {
