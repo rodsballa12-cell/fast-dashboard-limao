@@ -822,6 +822,26 @@ def main():
     consolidado["_consolidado"] = True
     consolidado["_fontes"] = ["escova", "spa"]
 
+    # TAXA PLANA NAO EXISTE NA HOLDING.
+    # O merge trouxe `comissao_producao_pct: 0.25` do Spa, e o card de
+    # Profissionais passou a anunciar "taxa plana da unidade (25%)" no
+    # consolidado — enquanto a coluna de comissao somava R$ 59.018 sobre
+    # R$ 161.289, que e 36,59%. O cartao se contradizia: a legenda dizia 25%,
+    # o dinheiro dizia 36,6%. Foi assim que o Rodrigo perguntou, em 18/10/2026,
+    # "por que a comissao do Spa esta acima de 36%" — nao estava: o Spa esta em
+    # 25,00% em todas as janelas, e os 36,6% eram as DUAS lojas somadas.
+    #
+    # Taxa plana e propriedade de uma loja (a Escova nem tem; o Spa tem 25%).
+    # Somadas, o que existe e uma media ponderada pelo mix — que o card calcula
+    # sozinho a partir do data/comissoes.json quando nao ha taxa plana. Zerar
+    # aqui e o que faz o consolidado mostrar a taxa de verdade.
+    uc = consolidado.get("unidade_config")
+    if isinstance(uc, dict):
+        uc["comissao_producao_pct"] = None
+        uc["_nota_comissao"] = ("Sem taxa plana: a holding soma duas estruturas "
+                                "diferentes (Escova por categoria, Spa 25%). O "
+                                "painel pondera pelo mix real.")
+
     os.makedirs(DST_DIR, exist_ok=True)
     with open(DST, "w") as f:
         json.dump(consolidado, f, indent=2, ensure_ascii=False)
