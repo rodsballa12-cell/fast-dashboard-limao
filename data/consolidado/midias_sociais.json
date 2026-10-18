@@ -1298,6 +1298,64 @@
         "Pendências de ontem sem martelo:** as 3 decisões de 16/10 e 25 de 29 decisões sem resultado. A nota da meta do Spa de 30/09 (R$ 25 mil / R$ 30 mil) segue contradizendo a de 02/10 (R$ 40 mil / R$ 60 mil).",
         "Monitor de encargos:** sem leitura válida. Setembro não tem salário bruto registrado e outubro ainda está aberto. São 0 de 3 meses fechados."
       ]
+    },
+    {
+      "data": "2026-10-17",
+      "hora": "22:30",
+      "tipo": "noturno",
+      "sincronizado_em": "2026-10-18T07:50:01-03:00",
+      "sincronizado_por": "auto (workflow conselho_sync.yml)",
+      "ata": "docs/atas/2026-10-17-conselho.md",
+      "mesa": {
+        "operacao": "atencao",
+        "financeiro": "critico",
+        "marketing": "atencao",
+        "relacionamento": "critico",
+        "pessoas": "ok"
+      },
+      "decisoes": [
+        {
+          "n": 1,
+          "titulo": "**Spa: a verba e o extrato, agora com dono e prazo — não mais uma decisão**",
+          "em_jogo": "**R$ 15.865 de prejuízo projetado em outubro**, mais R$ 13,3 mil de vendas sem conferência",
+          "executor": "você exporta o extrato; o Marketing só mexe em verba com \"aprovado + nome da campanha + valor por dia\"",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-17-conselho-spa-a-verba-e-o-extrato-agora-com-dono-e.md"
+        },
+        {
+          "n": 2,
+          "titulo": "**Escova: mexer no mix do sábado, não na verba**",
+          "em_jogo": "**R$ 1.977/mês** só em trazer o ticket de sábado ao do mês, sem um cliente a mais, e R$ 7,6 mil/mês se o ticket parar de cair",
+          "executor": "Operação / gerente, que já é a dona nomeada do preço desde 16/10",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-17-conselho-escova-mexer-no-mix-do-sabado-nao-na-ver.md"
+        },
+        {
+          "n": 3,
+          "titulo": "**Caixa: R$ 1.436,61 na conta contra R$ 32.229 de custo fixo no mês**",
+          "em_jogo": "**1,3 dia** de custo fixo em conta, com R$ 35.734 a receber da Stone",
+          "executor": "você com o Financeiro; o gatilho acordado é **abaixo de R$ 1.000 na conta, a gente conversa**",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-10-17-conselho-caixa-r-143661-na-conta-contra-r-32229-d.md"
+        }
+      ],
+      "cruzamentos_chave": [],
+      "sem_dono": [
+        "Extrato Stone do Spa: 30/09, 17 dias. As 17 vendas \"sem conferência\" (R$ 2.364) são **posteriores** ao extrato — não é dinheiro sumido. O risco real dentro da janela coberta é R$ 99 + R$ 398. → você exporta.",
+        "Caixa e a-receber do Spa continuam R$ 0,00 no DRE (decisão de 09/10 #3, nove dias). Sem isso não dá para dizer se o caixa do Spa cobre o custo fixo dele. → sessão do PC.",
+        "O Spa retém cliente? Dos 64 clientes do mês, só **17 são recorrentes**. O alarme de churn do Spa marca zero porque a série é curta — está cego, não limpo. → Relacionamento.",
+        "A pergunta \"como nos conheceu\" no Spa segue em 58,8% (caiu para 55,9% em 18/10). Enquanto 4 de cada 10 fichas ficarem em branco, o ROAS do Spa é uma faixa, não um número. → recepção do Spa.",
+        "Quatro itens do Spa decididos entre 08 e 17/10, nenhum executado:** verba de mídia, extrato Stone, caixa no DRE, pergunta na recepção. Decisão que volta três vezes não é decisão pendente — é mecanismo que falta.",
+        "O desvio de tabela é achado de 18/09**, redecidido em 11/10, dono nomeado em 16/10. Um mês para chegar a um nome. *(Ver O QUE MUDOU DEPOIS: o número era artefato.)*",
+        "O que funcionou:** a gerente cobrada em dobro foi corrigida em menos de dez dias, e a correção mudou a leitura das duas lojas. O conserto piorou o número, e foi o certo.",
+        "A antecipação da Stone foi cancelada em 20/09.** Não reabrir sem ler.",
+        "solta a gerente** daquele item e fecha a pergunta sem dono de 16/10",
+        "A folga de outubro não é R$ 5.624; é R$ 775.** E dá nome econômico ao",
+        "Fica aberto, e é da planilha:** levar a provisão de comissão da Escova de"
+      ]
     }
   ],
   "recomendacoes": [
@@ -1530,6 +1588,39 @@
       "aprovada_em": null,
       "revisao_em": null,
       "docs_decisao": "docs/decisoes/2026-10-17-conselho-preco-fora-da-tabela-nomear-um-dono-e-um.md",
+      "origem_conselho": "2026-10-17"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-17] **Spa: a verba e o extrato, agora com dono e prazo — não mais uma decisão**",
+      "detalhe": "**R$ 15.865 de prejuízo projetado em outubro**, mais R$ 13,3 mil de vendas sem conferência",
+      "acao": "Executar: você exporta o extrato; o Marketing só mexe em verba com \"aprovado + nome da campanha + valor por dia\".",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-17-conselho-spa-a-verba-e-o-extrato-agora-com-dono-e.md",
+      "origem_conselho": "2026-10-17"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-17] **Escova: mexer no mix do sábado, não na verba**",
+      "detalhe": "**R$ 1.977/mês** só em trazer o ticket de sábado ao do mês, sem um cliente a mais, e R$ 7,6 mil/mês se o ticket parar de cair",
+      "acao": "Executar: Operação / gerente, que já é a dona nomeada do preço desde 16/10.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-17-conselho-escova-mexer-no-mix-do-sabado-nao-na-ver.md",
+      "origem_conselho": "2026-10-17"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-10-17] **Caixa: R$ 1.436,61 na conta contra R$ 32.229 de custo fixo no mês**",
+      "detalhe": "**1,3 dia** de custo fixo em conta, com R$ 35.734 a receber da Stone",
+      "acao": "Executar: você com o Financeiro; o gatilho acordado é **abaixo de R$ 1.000 na conta, a gente conversa**.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-10-17-conselho-caixa-r-143661-na-conta-contra-r-32229-d.md",
       "origem_conselho": "2026-10-17"
     }
   ],
