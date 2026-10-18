@@ -54,11 +54,24 @@ ARQUIVOS = [
 
 
 def js_seguro(texto: str) -> str:
-    """Escapa o que pode quebrar um literal dentro de <script>."""
+    """Escapa o que pode quebrar um literal dentro de <script> — ou a publicacao.
+
+    O U+FFFD (o losango com interrogacao) entrou na lista em 17/10/2026. Um
+    parecer curado trazia a frase "As 11 cancelacoes de uma profissional cujo
+    nome vem corrompido (...)" com o caractere corrompido CITADO dentro do
+    texto — uso legitimo, o parecer esta descrevendo o defeito. Mas o servico
+    de Artifact recusa publicar um arquivo que contenha U+FFFD, presumindo
+    que seja edicao perdida, e o painel inteiro ficou sem publicar por causa
+    de uma frase.
+
+    Escapar resolve os dois lados: os bytes do arquivo nao tem mais o
+    caractere, e o JSON.parse do navegador devolve ele igual na tela.
+    """
     return (
         texto.replace("</", "<\\/")
         .replace(" ", "\\u2028")
         .replace(" ", "\\u2029")
+        .replace("�", "\\ufffd")
     )
 
 
