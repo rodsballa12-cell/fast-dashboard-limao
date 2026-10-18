@@ -350,6 +350,17 @@ class Trinks:
 def brl_round(v): return round(float(v or 0), 2)
 
 
+# Categorias de servico que apareceram sem taxa de comissao cadastrada e
+# cairam na regra padrao. Preenchido por `_taxa_cat` dentro de `analisar()`,
+# lido por `main()` ao montar o payload. Ver o comentario em `_taxa_cat`.
+CATS_SEM_TAXA: dict[str, str] = {}
+# A regra padrao que o `_taxa_cat` aplica quando a categoria nao esta mapeada.
+# Tambem de modulo, e pelo mesmo motivo: quem escreve e `analisar()`, quem le
+# e `main()`. O scripts/checa_nomes.py pegou este aqui — era o SEGUNDO erro de
+# escopo do mesmo conserto, e o refresh teria quebrado de novo.
+TAXA_PADRAO: list[float] = [0.30]
+
+
 def analisar(agend, transac, ini: date, fim: date):
     """Retorna dict com kpis, categorias, hora_abs, dow, ranking_prof, ranking_serv, meios_pagamento, por_dia_mes, rentabilidade_hora, clientes_top."""
     ag = [a for a in agend if a.get("dataHoraInicio") and ini <= parse_trinks_dt(a["dataHoraInicio"]).date() <= fim]
@@ -630,6 +641,7 @@ def analisar(agend, transac, ini: date, fim: date):
         _cfg = json.loads((REPO_ROOT / "data" / "comissoes.json").read_text(encoding="utf-8"))
         cfg_com["por_categoria"] = {k.lower().strip(): v for k, v in (_cfg.get("por_categoria") or {}).items()}
         cfg_com["regra_padrao_pct"] = _cfg.get("regra_padrao_pct", 0.30)
+        TAXA_PADRAO[0] = cfg_com["regra_padrao_pct"]
     except Exception as e:
         print(f"[analisar] aviso: comissoes.json indisponível ({e}); comissao usara 30% flat")
 
@@ -646,12 +658,15 @@ def analisar(agend, transac, ini: date, fim: date):
     # quando "Maquiagem" esta mapeada a 40%.
     # O fallback continua — melhor uma taxa plausivel que zero — mas agora
     # deixa rastro no payload, e a auditoria cobra.
-    cats_sem_taxa = {}
-
+    # CATS_SEM_TAXA e de modulo de proposito: `analisar()` roda uma vez por
+    # janela (dia, semana, mes, ano) e `main()` monta o payload depois. Um dict
+    # local morreria no fim de cada chamada — e foi exatamente esse o erro de
+    # 18/10/2026, que derrubou o refresh com NameError. De modulo, ele junta o
+    # que faltou em todas as janelas, que e o que a auditoria quer ver.
     def _taxa_cat(nome_cat):
         chave = (nome_cat or "").lower().strip()
         if chave and chave not in cfg_com["por_categoria"]:
-            cats_sem_taxa[chave] = (nome_cat or "").strip()
+            CATS_SEM_TAXA[chave] = (nome_cat or "").strip()
         return cfg_com["por_categoria"].get(chave, cfg_com["regra_padrao_pct"])
 
     exec_via_pacote_v = defaultdict(float)  # rastreia quanto veio de pacote
@@ -3091,8 +3106,8 @@ def main():
             "data_inauguracao": _unit_cfg.get("data_inauguracao"),
         },
         "comissoes": dict(comissoes_data, **{
-            "categorias_sem_taxa": sorted(cats_sem_taxa.values()),
-            "regra_padrao_pct": cfg_com["regra_padrao_pct"],
+            "categorias_sem_taxa": sorted(CATS_SEM_TAXA.values()),
+            "regra_padrao_pct": TAXA_PADRAO[0],
             "taxa_fonte": "data/comissoes.json",
         }),
         "prof_meta": {str(k): v for k, v in prof_meta_global.items()},
