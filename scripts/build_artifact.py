@@ -50,6 +50,20 @@ ARQUIVOS = [
     ("data/consolidado/dashboard_data.json", False),
     ("data/consolidado/financeiro.json", False),
     ("data/consolidado/midias_sociais.json", False),
+    # TAXA DE COMISSAO — fonte unica das tres unidades (18/10/2026).
+    # O Rodrigo perguntou por que a comissao por profissional nao aparece. No
+    # GitHub Pages ela aparece: taxa efetiva 37,8%, R$ 13.376 no mes, Regina
+    # com R$ 1.576. No artefato, nao — e a culpa era deste arquivo faltar na
+    # lista. Em 08/10 eu fiz o shim devolver 404 para qualquer `data/*.json`
+    # desconhecido (antes a CSP rejeitava a promessa e a tela congelava
+    # calada). Certo para o Spa e o quota_status; errado aqui, porque
+    # `comissoes.json` nunca foi embutido: o card caia em "Aguardando
+    # data/comissoes.json" e a coluna Comissao ficava vazia.
+    #
+    # Nao e por unidade: o painel busca `data/comissoes.json` para as tres
+    # (o arquivo tem as categorias do Spa desde 07/10). O shim corta a query
+    # string, entao o `?_=` de cache-busting do loader nao atrapalha.
+    ("data/comissoes.json", False),
 ]
 
 
