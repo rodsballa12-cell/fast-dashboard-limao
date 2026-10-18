@@ -66,7 +66,16 @@ STONE_CSV = DATA_UNIT / "stone_extrato.csv"
 # TTLs de cache (economia de API)
 TTL_PROF_HORAS = 24 * 7   # profs quase nunca mudam
 TTL_CLI_LISTA_HORAS = 24  # lista básica de clientes (só id/nome/tel) — 1×/dia suficiente
-TTL_CATALOGO_HORAS = 24 * 7  # serviços/produtos catálogo mudam raro
+# CATALOGO: 24h, nao 7 dias (18/10/2026).
+# "Catalogo muda raro" era verdade enquanto ninguem estava corrigindo preco.
+# Em 18/10 o Rodrigo foi atualizar cinco cadastros no Trinks e eu nao tinha
+# como conferir: o cache da Escova era de 15/10 e so releria em 22/10. Tive de
+# apagar os arquivos de cache a mao e disparar a rotina — duas vezes no mesmo
+# dia. Conferencia que depende de alguem lembrar de limpar cache nao e
+# conferencia.
+# Custa duas chamadas por dia (cota de 10.000/mes, uso em ~1.500) e faz
+# qualquer mudanca de preco aparecer no painel no dia seguinte.
+TTL_CATALOGO_HORAS = 24
 TTL_AGEND_DET_HORAS = 72     # detalhe cancelado (quem/quando) não muda após 3d
 
 # TIMEZONE: todo o pipeline opera em Brasília (UTC-3, sem DST desde 2019).
