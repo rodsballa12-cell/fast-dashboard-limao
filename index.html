@@ -6630,8 +6630,26 @@ function renderFinanceiro(){
   //   VARIAVEL: 'real' (Trinks) escala com receita realizada;
   //             'esp'  (projetado) reescala pelo painel vs Excel
   //   FIXO    : 'real' escala com dias; 'esp' fica cheio do Excel
+  // CUSTO VARIAVEL TEM QUE MANTER O PERCENTUAL. Conserto de 18/10/2026.
+  // A coluna "realizado" escalava o custo variavel por RATIO_REC
+  // (= realizado / PROJECAO) e depois a coluna % dividia por REC_REAL. O
+  // REC_REAL se cancela e o que sobra e `linha do Excel / projecao` — um
+  // numero que nao e percentual de nada.
+  //
+  // O estrago, medido em 18/10 com a premissa de comissao de cada loja:
+  //   Spa     premissa 25,0%  → o card mostrava 37,16%  (projecao R$ 26.907
+  //                             abaixo dos R$ 40.000 do Excel: inflava)
+  //   Escova  premissa 35,1%  → o card mostrava 32,26%  (projecao R$ 65.290
+  //                             acima dos R$ 60.000: deflacionava)
+  // Foi assim que o Rodrigo perguntou "por que a comissao do Spa esta acima
+  // de 36%?" — a comissao real do Spa e 25,00% exatos.
+  //
+  // Custo variavel e percentual da receita por definicao: escala pela receita
+  // da PROPRIA coluna contra a receita do Excel, e o percentual se conserva.
+  // Fixo continua escalando por dias corridos, que e o certo para ele.
+  const RATIO_REC_EXCEL = REC_EXCEL_MES > 0 ? REC_REAL / REC_EXCEL_MES : 0;
   const scaleG = (g)=>{ if(!g || !g.linhas) return g;
-    const r_real = g.id === 'VARIAVEL' ? RATIO_REC : RATIO_DIA;
+    const r_real = g.id === 'VARIAVEL' ? RATIO_REC_EXCEL : RATIO_DIA;
     const linhas = g.linhas.map(l => {
       const esp_base = (l.real || 0);
       const esp_adj = g.id === 'VARIAVEL' ? esp_base * RATIO_PROJ_EXCEL : esp_base;
