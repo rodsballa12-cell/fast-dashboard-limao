@@ -383,6 +383,50 @@ def conferir_preco_realizado(achados):
                 f"mostra desconto que nao existe."))
 
 
+def conferir_taxa_comissao(achados):
+    """Categoria sem taxa cadastrada cai no padrao de 30% em silencio.
+
+    Em 18/10/2026 o Spa aparecia com taxa efetiva de 29,64% contra 25% da
+    DRE. A leitura obvia — "a comissao do Spa esta acima do provisionado" —
+    estava errada: 92,8% da base executada dele cai em CORPORAL e ADICIONAIS,
+    dois nomes que nao existem no comissoes.json, e o fallback de 30% inflou a
+    conta em R$ 605 no mes. O proprio arquivo diz "SPA uniforme 25% em todas as
+    categorias". ADICIONAIS vs "Adicional": uma letra.
+
+    Na Escova o desvio e real (UNHAS pesa 39% da base a 50%), mas MAKE cai nos
+    30% quando "Maquiagem" esta mapeada a 40% — para o outro lado.
+
+    Comissao paga gente. Numero errado aqui nao e card feio, e folha errada.
+    """
+    for rel, nome in (("data/dashboard_data.json", "Escova"),
+                      ("data/spa/dashboard_data.json", "Spa")):
+        d = carregar(rel)
+        if not d:
+            continue
+        com = d.get("comissoes") or {}
+        faltam = com.get("categorias_sem_taxa") or []
+        if not faltam:
+            continue
+        # Quanto da base executada do mes esta nessas categorias
+        ex = ((d.get("abas") or {}).get("mensal") or {}).get("ranking_prof_executor") or []
+        base = sem = 0.0
+        alvo = {str(x).strip().lower() for x in faltam}
+        for p in ex:
+            for cat, v in (p.get("por_cat") or {}).items():
+                base += v
+                if str(cat).strip().lower() in alvo:
+                    sem += v
+        pct = (sem / base * 100) if base else 0
+        tipo = "erro" if pct >= 50 else "aviso"
+        achados.append((tipo,
+            f"{nome}: {len(faltam)} categoria(s) de servico sem taxa de comissao "
+            f"cadastrada ({', '.join(faltam[:4])}) — caem no padrao de "
+            f"{(com.get('regra_padrao_pct') or 0.30) * 100:.0f}%. Sao "
+            f"{brl(sem)} de {brl(base)} da base executada do mes ({pct:.1f}%). "
+            f"Enquanto nao entrarem no data/comissoes.json, a comissao por "
+            f"profissional e a taxa efetiva estao erradas — e comissao paga gente."))
+
+
 def main() -> int:
     achados: list[tuple[str, str]] = []
 
@@ -430,6 +474,7 @@ def main() -> int:
             "\u0022Balc\u00e3o por pessoa\u0022 n\u00e3o vai renderizar e as metas nominais "
             "da recep\u00e7\u00e3o ficam sem acompanhamento."))
 
+    conferir_taxa_comissao(achados)
     conferir_preco_realizado(achados)
     conferir_funil_roas(achados)
     conferir_conselho_sincronizado(achados)

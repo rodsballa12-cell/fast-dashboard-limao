@@ -633,8 +633,26 @@ def analisar(agend, transac, ini: date, fim: date):
     except Exception as e:
         print(f"[analisar] aviso: comissoes.json indisponível ({e}); comissao usara 30% flat")
 
+    # CATEGORIA SEM TAXA CAI NO PADRAO DE 30% — E NINGUEM FICA SABENDO.
+    # Em 18/10/2026 o Spa aparecia com taxa efetiva de 29,64% contra 25% da
+    # DRE, e a conversa ja ia para "a comissao do Spa esta mais alta do que a
+    # DRE provisiona". Nao estava: 92,8% da base executada do Spa cai em
+    # CORPORAL (R$ 10.618) e ADICIONAIS (R$ 1.477), dois nomes que nao existem
+    # no comissoes.json — e o fallback de 30% subiu a conta em R$ 605 no mes.
+    # O proprio arquivo diz "SPA uniforme 25% em todas as categorias".
+    # ADICIONAIS e o caso mais cruel: a tabela tem "Adicional", no singular.
+    # Uma letra.
+    # Na Escova o erro vai para o outro lado: MAKE (R$ 2.072) cai nos 30%
+    # quando "Maquiagem" esta mapeada a 40%.
+    # O fallback continua — melhor uma taxa plausivel que zero — mas agora
+    # deixa rastro no payload, e a auditoria cobra.
+    cats_sem_taxa = {}
+
     def _taxa_cat(nome_cat):
-        return cfg_com["por_categoria"].get((nome_cat or "").lower().strip(), cfg_com["regra_padrao_pct"])
+        chave = (nome_cat or "").lower().strip()
+        if chave and chave not in cfg_com["por_categoria"]:
+            cats_sem_taxa[chave] = (nome_cat or "").strip()
+        return cfg_com["por_categoria"].get(chave, cfg_com["regra_padrao_pct"])
 
     exec_via_pacote_v = defaultdict(float)  # rastreia quanto veio de pacote
     exec_por_cat = defaultdict(lambda: defaultdict(float))  # {nome_exec: {cat: v}}
@@ -3072,7 +3090,11 @@ def main():
             "comissao_producao_pct": _unit_cfg.get("comissao_producao_pct"),
             "data_inauguracao": _unit_cfg.get("data_inauguracao"),
         },
-        "comissoes": comissoes_data,
+        "comissoes": dict(comissoes_data, **{
+            "categorias_sem_taxa": sorted(cats_sem_taxa.values()),
+            "regra_padrao_pct": cfg_com["regra_padrao_pct"],
+            "taxa_fonte": "data/comissoes.json",
+        }),
         "prof_meta": {str(k): v for k, v in prof_meta_global.items()},
         "catalogo_servicos": {
             "n_total": len(tabela_precos),
