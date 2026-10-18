@@ -817,8 +817,47 @@
     ],
     "n_com_desvio": 37,
     "preco_realizado": {
-      "gerado_em": "2026-10-18T07:06:21-03:00",
+      "gerado_em": "2026-10-18T07:14:29-03:00",
       "janela": "mensal",
+      "acoes": [
+        {
+          "tipo": "desconto",
+          "servico": "DESIGN SOBRANCELHAS",
+          "de": 57.29,
+          "para": 60.0,
+          "o_que_fazer": "Cobrar R$ 60,00 — está saindo a R$ 57,29",
+          "por_que": "24 sessões, e nenhum pacote explica",
+          "vale": 65.0
+        },
+        {
+          "tipo": "cadastro",
+          "servico": "PÉS E MÃOS",
+          "de": 83.0,
+          "para": 96.0,
+          "o_que_fazer": "Atualizar no Trinks: R$ 83,00 → R$ 96,00",
+          "por_que": "você já cobra R$ 96,00; o cadastro é que está atrás",
+          "vale": 0.0
+        },
+        {
+          "tipo": "cadastro",
+          "servico": "FAST ESCOVA - MODELADA",
+          "de": 99.0,
+          "para": 109.0,
+          "o_que_fazer": "Atualizar no Trinks: R$ 99,00 → R$ 109,00",
+          "por_que": "você já cobra R$ 109,00; o cadastro é que está atrás",
+          "vale": 0.0
+        },
+        {
+          "tipo": "cadastro",
+          "servico": "FAST HIDRATAÇÃO - FAST MASK",
+          "de": 39.5,
+          "para": 89.0,
+          "o_que_fazer": "Atualizar no Trinks: R$ 39,50 → R$ 89,00",
+          "por_que": "você já cobra R$ 81,38; o cadastro é que está atrás",
+          "vale": 0.0
+        }
+      ],
+      "deixado_na_mesa_pct": 0.19,
       "metodo": "Cruza a tabela da franqueadora, o preço cadastrado no Trinks e o que REALMENTE saiu (receita ÷ sessões). Quando o médio só fecha com um número inteiro de sessões a zero e a loja vendeu pacote no período, é resgate — a cliente já pagou — e não desconto. É inferência aritmética: o painel não enxerga transação a transação.",
       "sessoes": 464,
       "receita_servico": 29241.0,

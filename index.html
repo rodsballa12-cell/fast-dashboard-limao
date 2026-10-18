@@ -3154,56 +3154,87 @@ function renderDesvioTabela(container_id, cat){
   // coisas; quando o bloco existe, ele manda.
   const pr = c.preco_realizado;
   if(pr && (pr.itens||[]).length){
+    // DIRETO AO PONTO (18/10/2026, pedido do Rodrigo).
+    // A primeira versao deste card abria com tres metricas e uma tabela de 14
+    // servicos com um paragrafo embaixo de cada. Informacao correta e decisao
+    // nenhuma: "R$ 74,55 por sessao" nao manda ninguem fazer nada.
+    // Agora a ordem e: veredito → o que fazer → uma linha de contexto →
+    // detalhe recolhido. `scripts/preco_praticado.py` ja entrega a lista de
+    // acoes pronta, com "de → para".
+    const ICO = {desconto:'🔻', cadastro:'🏷️', conferir:'❓'};
+    // Vírgula, não ponto: "0.19%" num painel em reais lê como erro de digitação.
+    const pc = v => (v == null ? '—' : String(v).replace('.', ',') + '%');
+    const acoes = pr.acoes || [];
+    const mesa = pr.deixado_na_mesa_real || 0;
+    const pctMesa = pr.deixado_na_mesa_pct;
+    const grave = pctMesa != null && pctMesa >= 1;
+    const cor = mesa <= 0 ? 'var(--good)' : (grave ? 'var(--crit)' : 'var(--warn)');
+    const soft = mesa <= 0 ? 'var(--good-soft)' : (grave ? 'var(--crit-soft)' : 'var(--warn-soft)');
+    const veredito = mesa <= 0
+      ? `<strong>Sim.</strong> Nenhum desconto que um pacote não explique, em ${pr.sessoes} sessões.`
+      : (grave
+          ? `<strong>Não.</strong> ${brl(mesa)} de desconto sem explicação — ${pc(pctMesa)} da receita do período.`
+          : `<strong>Sim, quase tudo.</strong> Só ${brl(mesa)} de desconto sem explicação em ${pr.sessoes} sessões (${pc(pctMesa)} da receita).`);
+
+    const linhas = acoes.map(a => `<tr>
+        <td style="white-space:nowrap;font-size:16px;vertical-align:top;padding-right:2px">${ICO[a.tipo]||'•'}</td>
+        <td style="vertical-align:top">
+          <div style="font-weight:700;font-size:13.5px">${a.o_que_fazer}</div>
+          <div style="font-size:12px;color:var(--ink-2);margin-top:2px">${a.servico} — ${a.por_que}</div>
+        </td>
+        <td style="text-align:right;vertical-align:top;white-space:nowrap;font-weight:700;color:${a.vale>0?'var(--crit)':'var(--ink-3)'}">${a.vale>0?brl(a.vale):'—'}</td>
+      </tr>`).join('');
+
     const CL = {
-      resgate_de_pacote:      {ico:'📦', cor:'var(--ink-3)', nome:'resgate de pacote'},
+      resgate_de_pacote:      {ico:'📦', cor:'var(--ink-3)', nome:'pacote já pago'},
       cadastro_desatualizado: {ico:'🏷️', cor:'var(--warn)',  nome:'cadastro velho'},
-      desvio_real:            {ico:'🔻', cor:'var(--crit)',  nome:'desvio real'},
+      desvio_real:            {ico:'🔻', cor:'var(--crit)',  nome:'desconto real'},
       aderente:               {ico:'✅', cor:'var(--good)',  nome:'na tabela'},
-      sem_tabela:             {ico:'❔', cor:'var(--ink-3)', nome:'sem preço no catálogo'},
+      sem_tabela:             {ico:'❔', cor:'var(--ink-3)', nome:'sem preço'},
     };
     const ordem = ['desvio_real','cadastro_desatualizado','resgate_de_pacote','aderente','sem_tabela'];
-    const itens = (pr.itens||[]).slice().sort((a,b)=>
-      (ordem.indexOf(a.classe)-ordem.indexOf(b.classe)) || ((b.n||0)-(a.n||0)));
-    const cel = (l,v,sub,cor) => `<div class="meta-cell"><div class="l">${l}</div>`
-      + `<div class="v"${cor?` style="color:${cor}"`:''}>${v}</div>`
-      + (sub?`<div style="font-size:11px;color:var(--ink-3);margin-top:4px;line-height:1.4">${sub}</div>`:'')
-      + `</div>`;
-    const rows = itens.map(i => {
-      const k = CL[i.classe] || CL.aderente;
-      const num = x => (x==null ? '—' : brl(x));
-      return `<tr>
-        <td>${i.servico}</td>
-        <td style="text-align:right">${i.n}</td>
-        <td style="text-align:right">${num(i.tabela)}</td>
-        <td style="text-align:right;color:var(--ink-3)">${num(i.cadastrado)}</td>
-        <td style="text-align:right;font-weight:700">${num(i.cobrado_medio)}</td>
-        <td style="color:${k.cor};font-weight:600;white-space:nowrap">${k.ico} ${k.nome}</td>
-      </tr>
-      <tr><td colspan="6" style="padding:0 8px 10px;border-bottom:1px solid var(--grid);font-size:11.5px;color:var(--ink-2);line-height:1.5">${i.leitura||''}</td></tr>`;
-    }).join('');
-    const semDesvio = !pr.n_desvio_real;
+    const det = (pr.itens||[]).slice().sort((a,b)=>
+        (ordem.indexOf(a.classe)-ordem.indexOf(b.classe)) || ((b.n||0)-(a.n||0)))
+      .map(i => {
+        const k = CL[i.classe] || CL.aderente;
+        const num = x => (x==null ? '—' : brl(x));
+        return `<tr>
+          <td>${i.servico}</td>
+          <td style="text-align:right">${i.n}</td>
+          <td style="text-align:right">${num(i.tabela)}</td>
+          <td style="text-align:right;color:var(--ink-3)">${num(i.cadastrado)}</td>
+          <td style="text-align:right;font-weight:700">${num(i.cobrado_medio)}</td>
+          <td style="color:${k.cor};font-weight:600;white-space:nowrap">${k.ico} ${k.nome}</td>
+        </tr>`;
+      }).join('');
+
     el.innerHTML = `<div class="card">
-      <h2>📐 Preço praticado vs tabela <span class="hi">${pr.janela} · ${pr.sessoes} sessões</span></h2>
-      <div class="cap">Três preços, não dois: o da <strong>tabela</strong> da franqueadora, o <strong>cadastrado</strong> no Trinks e o que <strong>saiu de verdade</strong>. É o terceiro que diz se houve desconto.</div>
-      <div class="meta-row" style="grid-template-columns:repeat(3,1fr)">
-        ${cel('Por sessão, com o pacote de volta', brl(pr.por_sessao_com_pacote),
-              `${brl(pr.receita_servico)} de serviço + ${brl(pr.receita_pacote)} de pacote`)}
-        ${cel('Sessões já pagas em pacote', `${pr.resgate_sessoes_estimadas} <span style="font-size:14px;font-weight:400">(${pr.resgate_pct_das_sessoes}%)</span>`,
-              'entraram valendo zero porque a cliente pagou antes — ocupam cadeira, não geram receita no mês')}
-        ${cel('Deixado na mesa de verdade', brl(pr.deixado_na_mesa_real),
-              semDesvio ? 'nenhum serviço com desconto que um pacote não explique'
-                        : `${pr.n_desvio_real} serviço(s) com desvio que nenhum pacote explica`,
-              semDesvio ? 'var(--good)' : 'var(--crit)')}
+      <h2>📐 Estou cobrando certo? <span class="hi">${pr.sessoes} sessões no mês</span></h2>
+
+      <div style="margin:10px 0 16px;padding:14px 16px;background:${soft};border-left:4px solid ${cor};border-radius:8px;font-size:14.5px;line-height:1.5;color:var(--ink)">
+        ${mesa <= 0 ? '✅' : (grave ? '🛑' : '⚠️')} ${veredito}
       </div>
-      ${pr.n_cadastro_desatualizado ? `<div class="dre-alerta"><strong>🏷️ ${pr.n_cadastro_desatualizado} serviço(s) com o cadastro velho no Trinks.</strong> Estão sendo cobrados ACIMA do que está registrado — o preço de dentro do sistema é que está atrasado, não o atendimento. Enquanto não atualizar, este card acusa desconto que não existe.</div>` : ''}
-      ${pr.ressalva ? `<div class="dre-alerta"><strong>⚠️ ${pr.ressalva}</strong></div>` : ''}
-      <div style="overflow-x:auto;margin-top:14px">
-        <table class="simple">
-          <thead><tr><th>Serviço</th><th>Sessões</th><th>Tabela</th><th>Cadastrado</th><th>Cobrado</th><th>Leitura</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
+
+      ${acoes.length ? `
+      <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:700;margin-bottom:6px">O que fazer — ${acoes.length} ${acoes.length===1?'item':'itens'}</div>
+      <table class="simple" style="margin-bottom:14px"><tbody>${linhas}</tbody></table>`
+      : `<div class="insight" style="margin-bottom:14px">✅ Nada a fazer no preço.</div>`}
+
+      <div style="font-size:12.5px;color:var(--ink-2);line-height:1.55;padding:11px 14px;background:var(--surface-2);border-radius:8px">
+        <strong>${pr.resgate_sessoes_estimadas} das ${pr.sessoes} sessões (${pc(pr.resgate_pct_das_sessoes)}) foram pacote já pago</strong> — a cliente pagou antes, a sessão entra valendo zero. Ocupa cadeira e não gera receita no mês. É isso que derruba o preço médio, não desconto.
+        ${pr.ressalva ? `<br><br>⚠️ ${pr.ressalva}` : ''}
       </div>
-      <div class="fin-fonte">${pr.metodo} · apurado ${pr.gerado_em ? pr.gerado_em.slice(8,10)+'/'+pr.gerado_em.slice(5,7)+' '+pr.gerado_em.slice(11,16) : '—'}</div>
+
+      <details style="margin-top:12px">
+        <summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2);font-weight:600">ver os ${(pr.itens||[]).length} serviços, um por um</summary>
+        <div style="overflow-x:auto;margin-top:10px">
+          <table class="simple">
+            <thead><tr><th>Serviço</th><th>Sessões</th><th>Tabela</th><th>Cadastrado</th><th>Cobrado</th><th></th></tr></thead>
+            <tbody>${det}</tbody>
+          </table>
+        </div>
+        <div class="fin-fonte">${pr.metodo}</div>
+      </details>
     </div>`;
     return;
   }

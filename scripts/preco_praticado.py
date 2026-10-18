@@ -170,9 +170,61 @@ def apurar(dash):
                 })
         itens.append(item)
 
+    # AS ACOES, JA PRONTAS.
+    # O card antigo (e o meu primeiro) mostrava 14 servicos e deixava o leitor
+    # deduzir o que fazer. Quem decide precisa de duas coisas: o que arrumar e
+    # quanto vale. A lista sai daqui montada, com "de → para" onde couber.
+    acoes = []
+    for i in itens:
+        if i["classe"] == "cadastro_desatualizado":
+            # Dois casos bem diferentes dentro da mesma classe.
+            # (a) cadastro abaixo da tabela e cobrando a tabela → e so acertar
+            #     o cadastro, o atendimento esta certo.
+            # (b) cobrando ACIMA da tabela da franqueadora → nao da para
+            #     "atualizar para R$ 59" quando o cadastro JA e R$ 59. Ou o
+            #     preco subiu e ninguem registrou, ou o servico esta sendo
+            #     confundido com outro. No Spa a LIBERACAO MIOFASCIAL (tabela
+            #     R$ 59) sai a R$ 89, e existe uma TERAPIA LIBERACAO MIOFASCIAL
+            #     de R$ 179. Isso e conferir, nao atualizar.
+            acima_da_tabela = (i["cobrado_medio"] or 0) > (i["tabela"] or 0) * 1.03
+            if acima_da_tabela and abs((i["cadastrado"] or 0) - (i["tabela"] or 0)) < 0.01:
+                acoes.append({
+                    "tipo": "conferir", "servico": i["servico"],
+                    "de": i["tabela"], "para": i["cobrado_medio"],
+                    "o_que_fazer": (f"Conferir: sai a {brl(i['cobrado_medio'])} com "
+                                    f"tabela de {brl(i['tabela'])}"),
+                    "por_que": ("o preço subiu e ninguém registrou, ou está sendo "
+                                "lançado no serviço errado"),
+                    "vale": 0.0,
+                })
+            else:
+                acoes.append({
+                    "tipo": "cadastro", "servico": i["servico"],
+                    "de": i["cadastrado"], "para": i["tabela"],
+                    "o_que_fazer": (f"Atualizar no Trinks: {brl(i['cadastrado'])} → "
+                                    f"{brl(i['tabela'])}"),
+                    "por_que": (f"você já cobra {brl(i['cobrado_medio'])}; o cadastro é "
+                                f"que está atrás"),
+                    "vale": 0.0,
+                })
+        elif i["classe"] == "desvio_real":
+            acoes.append({
+                "tipo": "desconto", "servico": i["servico"],
+                "de": i["cobrado_medio"], "para": i["tabela"],
+                "o_que_fazer": (f"Cobrar {brl(i['tabela'])} — está saindo a "
+                                f"{brl(i['cobrado_medio'])}"),
+                "por_que": f"{i['n']} sessões, e nenhum pacote explica",
+                "vale": i["deixado_na_mesa"],
+            })
+    acoes.sort(key=lambda a: (-a["vale"], a["tipo"]))
+
+    receita_periodo = serv_v + pac_v
     return {
         "gerado_em": datetime.now(BRT).isoformat(timespec="seconds"),
         "janela": JANELA,
+        "acoes": acoes,
+        "deixado_na_mesa_pct": (round(mesa_tot / receita_periodo * 100, 2)
+                                if receita_periodo else None),
         "metodo": ("Cruza a tabela da franqueadora, o preço cadastrado no Trinks e "
                    "o que REALMENTE saiu (receita ÷ sessões). Quando o médio só "
                    "fecha com um número inteiro de sessões a zero e a loja vendeu "
