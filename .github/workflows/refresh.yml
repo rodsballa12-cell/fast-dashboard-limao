@@ -214,6 +214,25 @@ jobs:
           # conferia a Escova.
           python scripts/densidade_dow.py --gravar --unidade consolidado || true
 
+      # Tabela x cadastrado x COBRADO, nas tres unidades.
+      #
+      # Em 18/09 o card "Preco praticado vs tabela" acusou 36 servicos fora da
+      # tabela. O achado foi redecidido em 11/10 e em 16/10 ganhou dono: a
+      # gerente da loja. Um mes cobrando de alguem um numero que media outra
+      # coisa — o card comparava a tabela da franqueadora com o preco
+      # CADASTRADO no Trinks e nunca olhava quanto saiu de verdade.
+      #
+      # Quando a cliente compra "4 MAOS + 2 PES" por R$ 306, o dinheiro entra
+      # como pacote e cada sessao resgatada entra no ranking valendo zero. O
+      # medio da mao cai para R$ 35 e o card le desconto de 34%. Este passo
+      # separa resgate de desconto.
+      #
+      # Depois da consolidacao, como a densidade: o payload da holding e
+      # regerado antes e perderia o bloco.
+      - name: Preco cobrado vs tabela (Escova + SPA + Consolidado)
+        continue-on-error: true
+        run: python scripts/preco_praticado.py || true
+
       - name: Commit e push
         if: steps.recency.outputs.skip != 'true'
         run: |

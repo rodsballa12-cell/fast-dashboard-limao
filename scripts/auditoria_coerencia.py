@@ -346,6 +346,43 @@ def conferir_funil_roas(achados):
                 f"numero — a recepcao precisa perguntar em toda ficha nova."))
 
 
+def conferir_preco_realizado(achados):
+    """O card de preco voltou a comparar com o que foi cobrado?
+
+    O card antigo comparava a tabela da franqueadora com o preco CADASTRADO no
+    Trinks e nunca olhava quanto saiu. Em 18/09 ele acusou "36 servicos fora da
+    tabela"; o achado foi redecidido em 11/10 e em 16/10 ganhou dono — a gerente
+    da loja. Um mes cobrando de alguem um numero que media pacote sendo
+    consumido. Se `scripts/preco_praticado.py` parar de rodar, o card volta a
+    acusar desconto inexistente e a conversa comeca de novo.
+    """
+    for rel, nome in (("data/dashboard_data.json", "Escova"),
+                      ("data/spa/dashboard_data.json", "Spa"),
+                      ("data/consolidado/dashboard_data.json", "Consolidado")):
+        d = carregar(rel)
+        if not d:
+            continue
+        pr = ((d.get("catalogo_servicos") or {}).get("preco_realizado") or {})
+        if not pr.get("itens"):
+            achados.append(("aviso",
+                f"{nome}: `catalogo_servicos.preco_realizado` ausente — "
+                f"scripts/preco_praticado.py nao rodou. O card de preco volta a "
+                f"comparar com o cadastro em vez do que foi cobrado, e passa a "
+                f"acusar resgate de pacote como desconto."))
+            continue
+        g = str(pr.get("gerado_em") or "")[:10]
+        hoje = str(d.get("hoje") or "")[:10]
+        if g and hoje and g < hoje:
+            achados.append(("aviso",
+                f"{nome}: a apuracao de preco e de {g} e o painel e de {hoje}."))
+        n_cad = pr.get("n_cadastro_desatualizado") or 0
+        if n_cad:
+            achados.append(("aviso",
+                f"{nome}: {n_cad} servico(s) cobrados ACIMA do preco cadastrado no "
+                f"Trinks — o cadastro esta velho. Enquanto nao atualizar, o card "
+                f"mostra desconto que nao existe."))
+
+
 def main() -> int:
     achados: list[tuple[str, str]] = []
 
@@ -393,6 +430,7 @@ def main() -> int:
             "\u0022Balc\u00e3o por pessoa\u0022 n\u00e3o vai renderizar e as metas nominais "
             "da recep\u00e7\u00e3o ficam sem acompanhamento."))
 
+    conferir_preco_realizado(achados)
     conferir_funil_roas(achados)
     conferir_conselho_sincronizado(achados)
 

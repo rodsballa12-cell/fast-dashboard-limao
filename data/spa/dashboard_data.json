@@ -559,7 +559,170 @@
         "sinal": "ok"
       }
     ],
-    "n_com_desvio": 13
+    "n_com_desvio": 13,
+    "preco_realizado": {
+      "gerado_em": "2026-10-18T07:06:21-03:00",
+      "janela": "mensal",
+      "metodo": "Cruza a tabela da franqueadora, o preço cadastrado no Trinks e o que REALMENTE saiu (receita ÷ sessões). Quando o médio só fecha com um número inteiro de sessões a zero e a loja vendeu pacote no período, é resgate — a cliente já pagou — e não desconto. É inferência aritmética: o painel não enxerga transação a transação.",
+      "sessoes": 106,
+      "receita_servico": 11388.8,
+      "receita_pacote": 4470.0,
+      "por_sessao_sem_pacote": 107.44,
+      "por_sessao_com_pacote": 149.61,
+      "resgate_sessoes_estimadas": 18,
+      "resgate_pct_das_sessoes": 17.0,
+      "deixado_na_mesa_real": 0.0,
+      "n_cadastro_desatualizado": 1,
+      "n_desvio_real": 0,
+      "n_sem_tabela": 0,
+      "itens": [
+        {
+          "servico": "RENOVE-SE EM 45",
+          "n": 64,
+          "tabela": 149.0,
+          "cadastrado": 149.0,
+          "cobrado_medio": 107.06,
+          "sessoes_a_zero_estimadas": 18.0,
+          "deixado_na_mesa": 0.0,
+          "classe": "resgate_de_pacote",
+          "cobrado_nas_pagas": 149.0,
+          "desvio_real_pct": 0.0,
+          "leitura": "18 de 64 sessões entraram a zero — já pagas em pacote. As 46 cobradas saíram a R$ 149,00, o preço da casa. Não é desconto."
+        },
+        {
+          "servico": "TERAPIA LIBERAÇÃO MIOFASCIAL",
+          "n": 6,
+          "tabela": 179.0,
+          "cadastrado": 179.0,
+          "cobrado_medio": 179.0,
+          "sessoes_a_zero_estimadas": 0.0,
+          "deixado_na_mesa": 0.0,
+          "classe": "aderente",
+          "desvio_real_pct": 0.0,
+          "leitura": "Cobrado a R$ 179,00 — na tabela."
+        },
+        {
+          "servico": "FAST ALIVIO NEURO RELAX",
+          "n": 3,
+          "tabela": 149.0,
+          "cadastrado": 149.0,
+          "cobrado_medio": 149.0,
+          "sessoes_a_zero_estimadas": 0.0,
+          "deixado_na_mesa": 0.0,
+          "classe": "aderente",
+          "desvio_real_pct": 0.0,
+          "leitura": "Cobrado a R$ 149,00 — na tabela."
+        },
+        {
+          "servico": "VENTOSATERAPIA",
+          "n": 7,
+          "tabela": 59.0,
+          "cadastrado": 59.0,
+          "cobrado_medio": 59.0,
+          "sessoes_a_zero_estimadas": 0.0,
+          "deixado_na_mesa": 0.0,
+          "classe": "aderente",
+          "desvio_real_pct": 0.0,
+          "leitura": "Cobrado a R$ 59,00 — na tabela."
+        },
+        {
+          "servico": "LIMPEZA DE PELE SUPER VIP + SPA DOS LABIOS",
+          "n": 2,
+          "tabela": 199.0,
+          "cadastrado": 199.0,
+          "cobrado_medio": 199.0,
+          "sessoes_a_zero_estimadas": 0.0,
+          "deixado_na_mesa": 0.0,
+          "classe": "aderente",
+          "desvio_real_pct": 0.0,
+          "leitura": "Cobrado a R$ 199,00 — na tabela."
+        },
+        {
+          "servico": "LIBERAÇÃO MIOFASCIAL",
+          "n": 4,
+          "tabela": 59.0,
+          "cadastrado": 59.0,
+          "cobrado_medio": 89.0,
+          "sessoes_a_zero_estimadas": -2.0,
+          "deixado_na_mesa": 0.0,
+          "classe": "cadastro_desatualizado",
+          "desvio_real_pct": 50.8,
+          "leitura": "Cobrado a R$ 89,00 com cadastro de R$ 59,00 — o cadastro no Trinks está velho, não o atendimento. Contra a tabela de R$ 59,00: +50.8%."
+        },
+        {
+          "servico": "LIMPEZA DE PELE CASUAL",
+          "n": 2,
+          "tabela": 159.0,
+          "cadastrado": 159.0,
+          "cobrado_medio": 159.0,
+          "sessoes_a_zero_estimadas": 0.0,
+          "deixado_na_mesa": 0.0,
+          "classe": "aderente",
+          "desvio_real_pct": 0.0,
+          "leitura": "Cobrado a R$ 159,00 — na tabela."
+        },
+        {
+          "servico": "REFLEXOLOGIA PODAL",
+          "n": 2,
+          "tabela": 149.0,
+          "cadastrado": 149.0,
+          "cobrado_medio": 149.0,
+          "sessoes_a_zero_estimadas": 0.0,
+          "deixado_na_mesa": 0.0,
+          "classe": "aderente",
+          "desvio_real_pct": 0.0,
+          "leitura": "Cobrado a R$ 149,00 — na tabela."
+        },
+        {
+          "servico": "PEDRAS QUENTES",
+          "n": 4,
+          "tabela": 59.0,
+          "cadastrado": 59.0,
+          "cobrado_medio": 59.0,
+          "sessoes_a_zero_estimadas": 0.0,
+          "deixado_na_mesa": 0.0,
+          "classe": "aderente",
+          "desvio_real_pct": 0.0,
+          "leitura": "Cobrado a R$ 59,00 — na tabela."
+        },
+        {
+          "servico": "ADICIONAL PACOTE",
+          "n": 4,
+          "tabela": 59.0,
+          "cadastrado": 59.0,
+          "cobrado_medio": 59.0,
+          "sessoes_a_zero_estimadas": 0.0,
+          "deixado_na_mesa": 0.0,
+          "classe": "aderente",
+          "desvio_real_pct": 0.0,
+          "leitura": "Cobrado a R$ 59,00 — na tabela."
+        },
+        {
+          "servico": "FAST SPA CASUAL",
+          "n": 1,
+          "tabela": 179.0,
+          "cadastrado": 179.0,
+          "cobrado_medio": 179.0,
+          "sessoes_a_zero_estimadas": 0.0,
+          "deixado_na_mesa": 0.0,
+          "classe": "aderente",
+          "desvio_real_pct": 0.0,
+          "leitura": "Cobrado a R$ 179,00 — na tabela."
+        },
+        {
+          "servico": "REVITALIZAÇÃO FACIAL (NÃO INJETÁVEL)",
+          "n": 2,
+          "tabela": 79.0,
+          "cadastrado": 79.0,
+          "cobrado_medio": 79.0,
+          "sessoes_a_zero_estimadas": 0.0,
+          "deixado_na_mesa": 0.0,
+          "classe": "aderente",
+          "desvio_real_pct": 0.0,
+          "leitura": "Cobrado a R$ 79,00 — na tabela."
+        }
+      ]
+    }
   },
   "catalogo_produtos": {
     "n_total": 41,

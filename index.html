@@ -3142,6 +3142,72 @@ function renderDesvioTabela(container_id, cat){
   const el = document.getElementById(container_id);
   if(!el) return;
   const c = cat || {};
+
+  // LEITURA NOVA (18/10/2026): tabela × cadastrado × COBRADO.
+  // O card antigo comparava a tabela da franqueadora com o preco cadastrado no
+  // Trinks e nunca olhava quanto saiu de verdade. Em 18/09 ele acusou "36
+  // servicos fora da tabela"; o achado foi redecidido em 11/10 e em 16/10
+  // ganhou dono — a gerente da loja. Um mes cobrando de alguem um numero que
+  // media pacote sendo consumido: quando a cliente compra "4 MAOS + 2 PES", o
+  // dinheiro entra como pacote e cada sessao resgatada entra aqui valendo
+  // zero, derrubando o medio. `scripts/preco_praticado.py` separa as duas
+  // coisas; quando o bloco existe, ele manda.
+  const pr = c.preco_realizado;
+  if(pr && (pr.itens||[]).length){
+    const CL = {
+      resgate_de_pacote:      {ico:'📦', cor:'var(--ink-3)', nome:'resgate de pacote'},
+      cadastro_desatualizado: {ico:'🏷️', cor:'var(--warn)',  nome:'cadastro velho'},
+      desvio_real:            {ico:'🔻', cor:'var(--crit)',  nome:'desvio real'},
+      aderente:               {ico:'✅', cor:'var(--good)',  nome:'na tabela'},
+      sem_tabela:             {ico:'❔', cor:'var(--ink-3)', nome:'sem preço no catálogo'},
+    };
+    const ordem = ['desvio_real','cadastro_desatualizado','resgate_de_pacote','aderente','sem_tabela'];
+    const itens = (pr.itens||[]).slice().sort((a,b)=>
+      (ordem.indexOf(a.classe)-ordem.indexOf(b.classe)) || ((b.n||0)-(a.n||0)));
+    const cel = (l,v,sub,cor) => `<div class="meta-cell"><div class="l">${l}</div>`
+      + `<div class="v"${cor?` style="color:${cor}"`:''}>${v}</div>`
+      + (sub?`<div style="font-size:11px;color:var(--ink-3);margin-top:4px;line-height:1.4">${sub}</div>`:'')
+      + `</div>`;
+    const rows = itens.map(i => {
+      const k = CL[i.classe] || CL.aderente;
+      const num = x => (x==null ? '—' : brl(x));
+      return `<tr>
+        <td>${i.servico}</td>
+        <td style="text-align:right">${i.n}</td>
+        <td style="text-align:right">${num(i.tabela)}</td>
+        <td style="text-align:right;color:var(--ink-3)">${num(i.cadastrado)}</td>
+        <td style="text-align:right;font-weight:700">${num(i.cobrado_medio)}</td>
+        <td style="color:${k.cor};font-weight:600;white-space:nowrap">${k.ico} ${k.nome}</td>
+      </tr>
+      <tr><td colspan="6" style="padding:0 8px 10px;border-bottom:1px solid var(--grid);font-size:11.5px;color:var(--ink-2);line-height:1.5">${i.leitura||''}</td></tr>`;
+    }).join('');
+    const semDesvio = !pr.n_desvio_real;
+    el.innerHTML = `<div class="card">
+      <h2>📐 Preço praticado vs tabela <span class="hi">${pr.janela} · ${pr.sessoes} sessões</span></h2>
+      <div class="cap">Três preços, não dois: o da <strong>tabela</strong> da franqueadora, o <strong>cadastrado</strong> no Trinks e o que <strong>saiu de verdade</strong>. É o terceiro que diz se houve desconto.</div>
+      <div class="meta-row" style="grid-template-columns:repeat(3,1fr)">
+        ${cel('Por sessão, com o pacote de volta', brl(pr.por_sessao_com_pacote),
+              `${brl(pr.receita_servico)} de serviço + ${brl(pr.receita_pacote)} de pacote`)}
+        ${cel('Sessões já pagas em pacote', `${pr.resgate_sessoes_estimadas} <span style="font-size:14px;font-weight:400">(${pr.resgate_pct_das_sessoes}%)</span>`,
+              'entraram valendo zero porque a cliente pagou antes — ocupam cadeira, não geram receita no mês')}
+        ${cel('Deixado na mesa de verdade', brl(pr.deixado_na_mesa_real),
+              semDesvio ? 'nenhum serviço com desconto que um pacote não explique'
+                        : `${pr.n_desvio_real} serviço(s) com desvio que nenhum pacote explica`,
+              semDesvio ? 'var(--good)' : 'var(--crit)')}
+      </div>
+      ${pr.n_cadastro_desatualizado ? `<div class="dre-alerta"><strong>🏷️ ${pr.n_cadastro_desatualizado} serviço(s) com o cadastro velho no Trinks.</strong> Estão sendo cobrados ACIMA do que está registrado — o preço de dentro do sistema é que está atrasado, não o atendimento. Enquanto não atualizar, este card acusa desconto que não existe.</div>` : ''}
+      ${pr.ressalva ? `<div class="dre-alerta"><strong>⚠️ ${pr.ressalva}</strong></div>` : ''}
+      <div style="overflow-x:auto;margin-top:14px">
+        <table class="simple">
+          <thead><tr><th>Serviço</th><th>Sessões</th><th>Tabela</th><th>Cadastrado</th><th>Cobrado</th><th>Leitura</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <div class="fin-fonte">${pr.metodo} · apurado ${pr.gerado_em ? pr.gerado_em.slice(8,10)+'/'+pr.gerado_em.slice(5,7)+' '+pr.gerado_em.slice(11,16) : '—'}</div>
+    </div>`;
+    return;
+  }
+
   if(!c.n_total){
     el.innerHTML = `<div class="card">
       <h2>📐 Preço praticado vs tabela</h2>
