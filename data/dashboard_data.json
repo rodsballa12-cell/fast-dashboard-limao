@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-18T06:24:29-03:00",
+  "gerado_em": "2026-10-18T07:47:28-03:00",
   "hoje": "2026-10-18",
   "_unidade_ativa": "escova",
   "unidade": {
@@ -312,8 +312,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 4176,
-    "saldoRestante": 5824
+    "totalUtilizado": 4256,
+    "saldoRestante": 5744
   },
   "metas_franqueadora": {
     "recepcionistas": 2,
@@ -342,7 +342,10 @@
     "habilitado": false,
     "n_regras": 0,
     "regras": [],
-    "obs": "endpoint OK mas sem regras cadastradas no Trinks"
+    "obs": "endpoint OK mas sem regras cadastradas no Trinks",
+    "categorias_sem_taxa": [],
+    "regra_padrao_pct": 0.3,
+    "taxa_fonte": "data/comissoes.json"
   },
   "prof_meta": {
     "930860": {
@@ -817,7 +820,7 @@
     ],
     "n_com_desvio": 37,
     "preco_realizado": {
-      "gerado_em": "2026-10-18T07:14:29-03:00",
+      "gerado_em": "2026-10-18T07:47:46-03:00",
       "janela": "mensal",
       "acoes": [
         {
@@ -3204,7 +3207,7 @@
           "cliente": "Jessica Sobral Andrade"
         }
       ],
-      "horas_desatualizado": 46.2
+      "horas_desatualizado": 47.6
     }
   },
   "auditoria_cancelados": {
@@ -9866,14 +9869,14 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Prof desligado #707880",
+          "nome": "Prof desligado #38018",
           "n": 0,
           "v": 535.0,
           "ticket_medio": 535.0,
           "horas_trab": 0.0
         },
         {
-          "nome": "Prof desligado #38018",
+          "nome": "Prof desligado #707880",
           "n": 0,
           "v": 535.0,
           "ticket_medio": 535.0,
@@ -9943,14 +9946,14 @@
           "horas_trab": 2.0
         },
         {
-          "nome": "Prof desligado #609387",
+          "nome": "Prof desligado #518669",
           "n": 0,
           "v": 79.0,
           "ticket_medio": 79.0,
           "horas_trab": 0.0
         },
         {
-          "nome": "Prof desligado #518669",
+          "nome": "Prof desligado #609387",
           "n": 0,
           "v": 79.0,
           "ticket_medio": 79.0,
@@ -9971,39 +9974,11 @@
           "horas_trab": 0.0
         },
         {
-          "nome": "Cacilda Guimarães",
-          "n": 3,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.5
-        },
-        {
           "nome": "Bianca Doria Araujo Santos",
           "n": 8,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 4.9
-        },
-        {
-          "nome": "Gabriela Cristina Da Silva",
-          "n": 85,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 51.6
-        },
-        {
-          "nome": "Jeniffer Roberta De Oliveira Felix",
-          "n": 17,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 9.2
-        },
-        {
-          "nome": "Lidiane Quiteria Da Silva",
-          "n": 9,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 5.2
         },
         {
           "nome": "Kimberly Soares Vasconcelos",
@@ -10013,18 +9988,32 @@
           "horas_trab": 1.8
         },
         {
-          "nome": "Giovanna Guedes Da Silva",
-          "n": 65,
+          "nome": "Cacilda Guimarães",
+          "n": 3,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 35.1
+          "horas_trab": 1.5
         },
         {
-          "nome": "Patricia Helena Ferreira",
-          "n": 12,
+          "nome": "Lidiane Quiteria Da Silva",
+          "n": 9,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 6.3
+          "horas_trab": 5.2
+        },
+        {
+          "nome": "Jeniffer Roberta De Oliveira Felix",
+          "n": 17,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 9.2
+        },
+        {
+          "nome": "Gabriela Cristina Da Silva",
+          "n": 85,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 51.6
         },
         {
           "nome": "Eliana Sampaio Cerqueira",
@@ -10041,25 +10030,18 @@
           "horas_trab": 5.5
         },
         {
-          "nome": "Claudia Cabral Pereira",
-          "n": 1,
+          "nome": "Patricia Helena Ferreira",
+          "n": 12,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 0.8
+          "horas_trab": 6.3
         },
         {
-          "nome": "Aline Dos Santos Gonzaga",
-          "n": 4,
+          "nome": "Sandra Margarete Da Silva",
+          "n": 6,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 1.6
-        },
-        {
-          "nome": "Vanessa Nascimento D Silva",
-          "n": 4,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 2.0
+          "horas_trab": 3.5
         },
         {
           "nome": "Niedja Rafaelle Leite Nunes",
@@ -10069,11 +10051,32 @@
           "horas_trab": 2.4
         },
         {
-          "nome": "Sandra Margarete Da Silva",
-          "n": 6,
+          "nome": "Vanessa Nascimento D Silva",
+          "n": 4,
           "v": 0.0,
           "ticket_medio": 0.0,
-          "horas_trab": 3.5
+          "horas_trab": 2.0
+        },
+        {
+          "nome": "Aline Dos Santos Gonzaga",
+          "n": 4,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 1.6
+        },
+        {
+          "nome": "Claudia Cabral Pereira",
+          "n": 1,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 0.8
+        },
+        {
+          "nome": "Giovanna Guedes Da Silva",
+          "n": 65,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 35.1
         }
       ],
       "ranking_prof_total_n": 49,
@@ -10083,11 +10086,11 @@
           "n_serv": 207,
           "v": 17011.0,
           "v_via_pacote": 1517.0,
-          "comissao": 5177.9,
-          "taxa_efetiva": 0.3044,
+          "comissao": 5638.8,
+          "taxa_efetiva": 0.3315,
           "por_cat": {
-            "TRATAMENTO": 2865.0,
             "ESCOVA": 7750.0,
+            "TRATAMENTO": 2865.0,
             "MAKE": 4609.0,
             "PENTEADOS": 1041.0,
             "RETOQUE": 746.0
@@ -10102,8 +10105,8 @@
           "comissao": 5095.3,
           "taxa_efetiva": 0.3126,
           "por_cat": {
-            "TRATAMENTO": 2181.34,
             "ESCOVA": 11293.66,
+            "TRATAMENTO": 2181.34,
             "RETOQUE": 2059.0,
             "PENTEADOS": 764.0
           },
@@ -10118,8 +10121,8 @@
           "taxa_efetiva": 0.3171,
           "por_cat": {
             "ESCOVA": 7826.6,
-            "TRATAMENTO": 1864.5,
             "RETOQUE": 2059.0,
+            "TRATAMENTO": 1864.5,
             "PENTEADOS": 267.0
           },
           "ticket_medio_serv": 94.62
@@ -10153,8 +10156,8 @@
           "n_serv": 115,
           "v": 9741.0,
           "v_via_pacote": 1199.0,
-          "comissao": 3092.4,
-          "taxa_efetiva": 0.3175,
+          "comissao": 3107.3,
+          "taxa_efetiva": 0.319,
           "por_cat": {
             "ESCOVA": 5780.0,
             "TRATAMENTO": 2111.0,
@@ -10180,8 +10183,8 @@
           "n_serv": 92,
           "v": 6687.0,
           "v_via_pacote": 297.0,
-          "comissao": 2022.7,
-          "taxa_efetiva": 0.3025,
+          "comissao": 2292.9,
+          "taxa_efetiva": 0.3429,
           "por_cat": {
             "ESCOVA": 3382.5,
             "MAKE": 2702.0,
@@ -10222,8 +10225,8 @@
           "n_serv": 62,
           "v": 5260.0,
           "v_via_pacote": 1060.0,
-          "comissao": 1578.0,
-          "taxa_efetiva": 0.3,
+          "comissao": 1609.8,
+          "taxa_efetiva": 0.306,
           "por_cat": {
             "ESCOVA": 3939.0,
             "TRATAMENTO": 1003.0,
@@ -10236,11 +10239,11 @@
           "n_serv": 63,
           "v": 5189.0,
           "v_via_pacote": 346.0,
-          "comissao": 1575.6,
-          "taxa_efetiva": 0.3036,
+          "comissao": 1660.6,
+          "taxa_efetiva": 0.32,
           "por_cat": {
-            "ESCOVA": 3168.0,
             "TRATAMENTO": 982.0,
+            "ESCOVA": 3168.0,
             "MAKE": 850.0,
             "RETOQUE": 189.0
           },
@@ -10263,8 +10266,8 @@
           "n_serv": 65,
           "v": 4274.0,
           "v_via_pacote": 53.0,
-          "comissao": 1578.0,
-          "taxa_efetiva": 0.3692,
+          "comissao": 1760.0,
+          "taxa_efetiva": 0.4118,
           "por_cat": {
             "UNHAS": 1479.0,
             "ESCOVA": 667.5,
@@ -10278,8 +10281,8 @@
           "n_serv": 59,
           "v": 4147.0,
           "v_via_pacote": 390.0,
-          "comissao": 1649.5,
-          "taxa_efetiva": 0.3978,
+          "comissao": 1672.0,
+          "taxa_efetiva": 0.4032,
           "por_cat": {
             "UNHAS": 2027.0,
             "ESCOVA": 1682.0,
@@ -10319,8 +10322,8 @@
           "n_serv": 15,
           "v": 973.0,
           "v_via_pacote": 314.0,
-          "comissao": 353.5,
-          "taxa_efetiva": 0.3633,
+          "comissao": 372.5,
+          "taxa_efetiva": 0.3828,
           "por_cat": {
             "UNHAS": 308.0,
             "TRATAMENTO": 297.0,
@@ -10349,8 +10352,8 @@
           "comissao": 169.8,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "TRATAMENTO": 398.0,
-            "ESCOVA": 168.0
+            "ESCOVA": 168.0,
+            "TRATAMENTO": 398.0
           },
           "ticket_medio_serv": 141.5
         },
@@ -10359,8 +10362,8 @@
           "n_serv": 8,
           "v": 535.0,
           "v_via_pacote": 0.0,
-          "comissao": 160.5,
-          "taxa_efetiva": 0.3,
+          "comissao": 172.5,
+          "taxa_efetiva": 0.3224,
           "por_cat": {
             "ESCOVA": 375.5,
             "MAKE": 120.0,
@@ -10373,12 +10376,12 @@
           "n_serv": 9,
           "v": 535.0,
           "v_via_pacote": 0.0,
-          "comissao": 160.5,
-          "taxa_efetiva": 0.3,
+          "comissao": 172.5,
+          "taxa_efetiva": 0.3224,
           "por_cat": {
-            "MAKE": 120.0,
+            "ESCOVA": 336.0,
             "TRATAMENTO": 79.0,
-            "ESCOVA": 336.0
+            "MAKE": 120.0
           },
           "ticket_medio_serv": 59.44
         },
@@ -10413,11 +10416,11 @@
           "n_serv": 3,
           "v": 278.0,
           "v_via_pacote": 0.0,
-          "comissao": 83.4,
-          "taxa_efetiva": 0.3,
+          "comissao": 89.4,
+          "taxa_efetiva": 0.3216,
           "por_cat": {
-            "MAKE": 60.0,
-            "ESCOVA": 218.0
+            "ESCOVA": 218.0,
+            "MAKE": 60.0
           },
           "ticket_medio_serv": 92.67
         },
@@ -10429,8 +10432,8 @@
           "comissao": 71.1,
           "taxa_efetiva": 0.3,
           "por_cat": {
-            "TRATAMENTO": 39.5,
-            "ESCOVA": 197.5
+            "ESCOVA": 197.5,
+            "TRATAMENTO": 39.5
           },
           "ticket_medio_serv": 59.25
         },
@@ -14751,8 +14754,8 @@
           "n_serv": 46,
           "v": 3824.0,
           "v_via_pacote": 971.0,
-          "comissao": 1147.2,
-          "taxa_efetiva": 0.3,
+          "comissao": 1163.1,
+          "taxa_efetiva": 0.3042,
           "por_cat": {
             "ESCOVA": 2860.0,
             "TRATAMENTO": 805.0,
@@ -14765,8 +14768,8 @@
           "n_serv": 51,
           "v": 3717.0,
           "v_via_pacote": 390.0,
-          "comissao": 1470.1,
-          "taxa_efetiva": 0.3955,
+          "comissao": 1492.6,
+          "taxa_efetiva": 0.4016,
           "por_cat": {
             "ESCOVA": 1593.0,
             "MAKE": 225.0,
@@ -14780,8 +14783,8 @@
           "n_serv": 43,
           "v": 3376.0,
           "v_via_pacote": 257.0,
-          "comissao": 1031.7,
-          "taxa_efetiva": 0.3056,
+          "comissao": 1110.7,
+          "taxa_efetiva": 0.329,
           "por_cat": {
             "ESCOVA": 1852.0,
             "MAKE": 790.0,
@@ -14885,8 +14888,8 @@
           "n_serv": 15,
           "v": 1208.0,
           "v_via_pacote": 208.0,
-          "comissao": 362.4,
-          "taxa_efetiva": 0.3,
+          "comissao": 427.2,
+          "taxa_efetiva": 0.3536,
           "por_cat": {
             "MAKE": 648.0,
             "ESCOVA": 396.0,
@@ -14899,8 +14902,8 @@
           "n_serv": 15,
           "v": 973.0,
           "v_via_pacote": 314.0,
-          "comissao": 353.5,
-          "taxa_efetiva": 0.3633,
+          "comissao": 372.5,
+          "taxa_efetiva": 0.3828,
           "por_cat": {
             "UNHAS": 308.0,
             "TRATAMENTO": 297.0,
@@ -14914,8 +14917,8 @@
           "n_serv": 7,
           "v": 634.0,
           "v_via_pacote": 89.0,
-          "comissao": 190.2,
-          "taxa_efetiva": 0.3,
+          "comissao": 196.2,
+          "taxa_efetiva": 0.3095,
           "por_cat": {
             "ESCOVA": 445.0,
             "PENTEADOS": 129.0,
@@ -15735,8 +15738,8 @@
           "n_serv": 25,
           "v": 1879.0,
           "v_via_pacote": 195.0,
-          "comissao": 716.7,
-          "taxa_efetiva": 0.3814,
+          "comissao": 722.7,
+          "taxa_efetiva": 0.3846,
           "por_cat": {
             "ESCOVA": 930.0,
             "MAKE": 60.0,
@@ -15750,8 +15753,8 @@
           "n_serv": 17,
           "v": 1441.0,
           "v_via_pacote": 0.0,
-          "comissao": 451.2,
-          "taxa_efetiva": 0.3131,
+          "comissao": 488.2,
+          "taxa_efetiva": 0.3388,
           "por_cat": {
             "ESCOVA": 793.0,
             "MAKE": 370.0,
@@ -15853,8 +15856,8 @@
           "n_serv": 5,
           "v": 308.0,
           "v_via_pacote": 53.0,
-          "comissao": 124.2,
-          "taxa_efetiva": 0.4032,
+          "comissao": 130.2,
+          "taxa_efetiva": 0.4227,
           "por_cat": {
             "UNHAS": 159.0,
             "TRATAMENTO": 89.0,
@@ -16480,7 +16483,7 @@
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "data": "2026-10-11",
-          "hora_max": 6.4,
+          "hora_max": 7.78,
           "caixa": 0.0,
           "atend_fin": 0,
           "faturamento_apurado": 0.0,
@@ -16510,8 +16513,8 @@
           }
         },
         "pace_intraday": {
-          "hora_atual_str": "06:24",
-          "hora_atual_num": 6.4,
+          "hora_atual_str": "07:47",
+          "hora_atual_num": 7.78,
           "pct_esperado_agora": 0.0,
           "meta_dia": 1153.68,
           "meta_esperada_agora": 0.0,
@@ -16740,7 +16743,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-18T06:24:29-03:00",
+    "gerado_em": "2026-10-18T07:47:28-03:00",
     "hoje": "2026-10-18",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -17187,7 +17190,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-18T06:24:47-03:00",
+    "gerado_em": "2026-10-18T07:47:46-03:00",
     "n_agendamentos": 1830,
     "horas": [
       9,

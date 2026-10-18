@@ -1,5 +1,5 @@
 {
-  "gerado_em": "2026-10-18T06:24:46-03:00",
+  "gerado_em": "2026-10-18T07:47:46-03:00",
   "hoje": "2026-10-18",
   "_unidade_ativa": "spa",
   "unidade": {
@@ -306,8 +306,8 @@
   "cota_api": {
     "plano": "Plano Padrao",
     "cotaTotal": 10000,
-    "totalUtilizado": 1392,
-    "saldoRestante": 8608
+    "totalUtilizado": 1409,
+    "saldoRestante": 8591
   },
   "metas_franqueadora": null,
   "unidade_config": {
@@ -321,7 +321,10 @@
     "habilitado": false,
     "n_regras": 0,
     "regras": [],
-    "obs": "endpoint OK mas sem regras cadastradas no Trinks"
+    "obs": "endpoint OK mas sem regras cadastradas no Trinks",
+    "categorias_sem_taxa": [],
+    "regra_padrao_pct": 0.3,
+    "taxa_fonte": "data/comissoes.json"
   },
   "prof_meta": {
     "948856": {
@@ -561,7 +564,7 @@
     ],
     "n_com_desvio": 13,
     "preco_realizado": {
-      "gerado_em": "2026-10-18T07:14:29-03:00",
+      "gerado_em": "2026-10-18T07:47:46-03:00",
       "janela": "mensal",
       "acoes": [
         {
@@ -2057,7 +2060,7 @@
           "cliente": "Gabriel Martins"
         }
       ],
-      "horas_desatualizado": 420.4
+      "horas_desatualizado": 421.8
     }
   },
   "auditoria_cancelados": {
@@ -4718,18 +4721,18 @@
           "horas_trab": 1.5
         },
         {
-          "nome": "Sheila Almeida Rodrigues",
-          "n": 3,
-          "v": 0.0,
-          "ticket_medio": 0.0,
-          "horas_trab": 1.8
-        },
-        {
           "nome": "Adna Lua Neves Gomes",
           "n": 2,
           "v": 0.0,
           "ticket_medio": 0.0,
           "horas_trab": 1.5
+        },
+        {
+          "nome": "Sheila Almeida Rodrigues",
+          "n": 3,
+          "v": 0.0,
+          "ticket_medio": 0.0,
+          "horas_trab": 1.8
         }
       ],
       "ranking_prof_total_n": 16,
@@ -4739,8 +4742,8 @@
           "n_serv": 41,
           "v": 5169.0,
           "v_via_pacote": 447.0,
-          "comissao": 1520.9,
-          "taxa_efetiva": 0.2942,
+          "comissao": 1292.25,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "FACIAL": 596.0,
             "CORPORAL": 3922.0,
@@ -4753,8 +4756,8 @@
           "n_serv": 30,
           "v": 4100.0,
           "v_via_pacote": 0.0,
-          "comissao": 1202.15,
-          "taxa_efetiva": 0.2932,
+          "comissao": 1025.0,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 3248.0,
             "ADICIONAIS": 295.0,
@@ -4767,11 +4770,11 @@
           "n_serv": 22,
           "v": 2569.9,
           "v_via_pacote": 149.0,
-          "comissao": 770.97,
-          "taxa_efetiva": 0.3,
+          "comissao": 642.48,
+          "taxa_efetiva": 0.25,
           "por_cat": {
-            "ADICIONAIS": 354.0,
-            "CORPORAL": 2215.9
+            "CORPORAL": 2215.9,
+            "ADICIONAIS": 354.0
           },
           "ticket_medio_serv": 116.81
         },
@@ -4780,8 +4783,8 @@
           "n_serv": 19,
           "v": 2491.0,
           "v_via_pacote": 745.0,
-          "comissao": 733.4,
-          "taxa_efetiva": 0.2944,
+          "comissao": 622.75,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 2095.0,
             "ADICIONAIS": 118.0,
@@ -4794,11 +4797,11 @@
           "n_serv": 19,
           "v": 2321.0,
           "v_via_pacote": 298.0,
-          "comissao": 696.3,
-          "taxa_efetiva": 0.3,
+          "comissao": 580.25,
+          "taxa_efetiva": 0.25,
           "por_cat": {
-            "ADICIONAIS": 295.0,
-            "CORPORAL": 2026.0
+            "CORPORAL": 2026.0,
+            "ADICIONAIS": 295.0
           },
           "ticket_medio_serv": 122.16
         },
@@ -4807,8 +4810,8 @@
           "n_serv": 7,
           "v": 983.0,
           "v_via_pacote": 0.0,
-          "comissao": 294.9,
-          "taxa_efetiva": 0.3,
+          "comissao": 245.75,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 924.0,
             "ADICIONAIS": 59.0
@@ -4820,8 +4823,8 @@
           "n_serv": 3,
           "v": 357.0,
           "v_via_pacote": 0.0,
-          "comissao": 104.15,
-          "taxa_efetiva": 0.2917,
+          "comissao": 89.25,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 298.0,
             "FACIAL": 59.0
@@ -4833,8 +4836,8 @@
           "n_serv": 2,
           "v": 298.0,
           "v_via_pacote": 0.0,
-          "comissao": 89.4,
-          "taxa_efetiva": 0.3,
+          "comissao": 74.5,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 298.0
           },
@@ -4845,8 +4848,8 @@
           "n_serv": 3,
           "v": 257.9,
           "v_via_pacote": 0.0,
-          "comissao": 77.37,
-          "taxa_efetiva": 0.3,
+          "comissao": 64.47,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 198.9,
             "ADICIONAIS": 59.0
@@ -4858,8 +4861,8 @@
           "n_serv": 2,
           "v": 248.0,
           "v_via_pacote": 0.0,
-          "comissao": 74.4,
-          "taxa_efetiva": 0.3,
+          "comissao": 62.0,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 248.0
           },
@@ -4870,8 +4873,8 @@
           "n_serv": 2,
           "v": 198.0,
           "v_via_pacote": 0.0,
-          "comissao": 59.4,
-          "taxa_efetiva": 0.3,
+          "comissao": 49.5,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 198.0
           },
@@ -4882,8 +4885,8 @@
           "n_serv": 1,
           "v": 149.0,
           "v_via_pacote": 0.0,
-          "comissao": 44.7,
-          "taxa_efetiva": 0.3,
+          "comissao": 37.25,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 149.0
           },
@@ -4894,8 +4897,8 @@
           "n_serv": 1,
           "v": 100.0,
           "v_via_pacote": 0.0,
-          "comissao": 30.0,
-          "taxa_efetiva": 0.3,
+          "comissao": 25.0,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 100.0
           },
@@ -6566,8 +6569,8 @@
           "n_serv": 29,
           "v": 3471.0,
           "v_via_pacote": 447.0,
-          "comissao": 1029.4,
-          "taxa_efetiva": 0.2966,
+          "comissao": 867.75,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 2641.0,
             "ADICIONAIS": 592.0,
@@ -6580,8 +6583,8 @@
           "n_serv": 20,
           "v": 2720.0,
           "v_via_pacote": 0.0,
-          "comissao": 798.1,
-          "taxa_efetiva": 0.2934,
+          "comissao": 680.0,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "FACIAL": 358.0,
             "CORPORAL": 2126.0,
@@ -6594,8 +6597,8 @@
           "n_serv": 19,
           "v": 2491.0,
           "v_via_pacote": 745.0,
-          "comissao": 733.4,
-          "taxa_efetiva": 0.2944,
+          "comissao": 622.75,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 2095.0,
             "ADICIONAIS": 118.0,
@@ -6608,8 +6611,8 @@
           "n_serv": 14,
           "v": 1577.9,
           "v_via_pacote": 149.0,
-          "comissao": 473.37,
-          "taxa_efetiva": 0.3,
+          "comissao": 394.48,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 1341.9,
             "ADICIONAIS": 236.0
@@ -6621,8 +6624,8 @@
           "n_serv": 11,
           "v": 1249.0,
           "v_via_pacote": 298.0,
-          "comissao": 374.7,
-          "taxa_efetiva": 0.3,
+          "comissao": 312.25,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 1072.0,
             "ADICIONAIS": 177.0
@@ -6634,8 +6637,8 @@
           "n_serv": 5,
           "v": 655.0,
           "v_via_pacote": 0.0,
-          "comissao": 196.5,
-          "taxa_efetiva": 0.3,
+          "comissao": 163.75,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 596.0,
             "ADICIONAIS": 59.0
@@ -6647,8 +6650,8 @@
           "n_serv": 3,
           "v": 357.0,
           "v_via_pacote": 0.0,
-          "comissao": 104.15,
-          "taxa_efetiva": 0.2917,
+          "comissao": 89.25,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 298.0,
             "FACIAL": 59.0
@@ -6660,8 +6663,8 @@
           "n_serv": 3,
           "v": 257.9,
           "v_via_pacote": 0.0,
-          "comissao": 77.37,
-          "taxa_efetiva": 0.3,
+          "comissao": 64.47,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 198.9,
             "ADICIONAIS": 59.0
@@ -6673,8 +6676,8 @@
           "n_serv": 1,
           "v": 149.0,
           "v_via_pacote": 0.0,
-          "comissao": 44.7,
-          "taxa_efetiva": 0.3,
+          "comissao": 37.25,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 149.0
           },
@@ -6685,8 +6688,8 @@
           "n_serv": 1,
           "v": 100.0,
           "v_via_pacote": 0.0,
-          "comissao": 30.0,
-          "taxa_efetiva": 0.3,
+          "comissao": 25.0,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 100.0
           },
@@ -7306,8 +7309,8 @@
           "n_serv": 10,
           "v": 1390.0,
           "v_via_pacote": 0.0,
-          "comissao": 407.05,
-          "taxa_efetiva": 0.2928,
+          "comissao": 347.5,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "FACIAL": 199.0,
             "CORPORAL": 1073.0,
@@ -7320,8 +7323,8 @@
           "n_serv": 11,
           "v": 1349.0,
           "v_via_pacote": 149.0,
-          "comissao": 404.7,
-          "taxa_efetiva": 0.3,
+          "comissao": 337.25,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 993.0,
             "ADICIONAIS": 356.0
@@ -7333,8 +7336,8 @@
           "n_serv": 7,
           "v": 943.0,
           "v_via_pacote": 447.0,
-          "comissao": 272.95,
-          "taxa_efetiva": 0.2894,
+          "comissao": 235.75,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 626.0,
             "ADICIONAIS": 118.0,
@@ -7347,8 +7350,8 @@
           "n_serv": 7,
           "v": 724.0,
           "v_via_pacote": 149.0,
-          "comissao": 217.2,
-          "taxa_efetiva": 0.3,
+          "comissao": 181.0,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 547.0,
             "ADICIONAIS": 177.0
@@ -7360,8 +7363,8 @@
           "n_serv": 2,
           "v": 328.0,
           "v_via_pacote": 0.0,
-          "comissao": 98.4,
-          "taxa_efetiva": 0.3,
+          "comissao": 82.0,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 328.0
           },
@@ -7372,8 +7375,8 @@
           "n_serv": 2,
           "v": 298.0,
           "v_via_pacote": 0.0,
-          "comissao": 89.4,
-          "taxa_efetiva": 0.3,
+          "comissao": 74.5,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 298.0
           },
@@ -7384,8 +7387,8 @@
           "n_serv": 1,
           "v": 100.0,
           "v_via_pacote": 0.0,
-          "comissao": 30.0,
-          "taxa_efetiva": 0.3,
+          "comissao": 25.0,
+          "taxa_efetiva": 0.25,
           "por_cat": {
             "CORPORAL": 100.0
           },
@@ -7821,7 +7824,7 @@
         "caixa_delta_bruto_pct": null,
         "periodo_ant_ref": {
           "data": "2026-10-11",
-          "hora_max": 6.4,
+          "hora_max": 7.78,
           "caixa": 0.0,
           "atend_fin": 0,
           "faturamento_apurado": 0.0,
@@ -7844,8 +7847,8 @@
           "dias_atipicos_na_base": {}
         },
         "pace_intraday": {
-          "hora_atual_str": "06:24",
-          "hora_atual_num": 6.4,
+          "hora_atual_str": "07:47",
+          "hora_atual_num": 7.78,
           "pct_esperado_agora": 0.0,
           "meta_dia": 670.46,
           "meta_esperada_agora": 0.0,
@@ -8062,7 +8065,7 @@
   },
   "balcao_vendedor": {
     "_desc": "Quem vendeu cada pacote e cada produto, do campo IdProfissionalQueRealizouAVenda do Trinks. Fast Retoque NÃO entra: é serviço, e o Trinks só grava quem executou, não quem vendeu.",
-    "gerado_em": "2026-10-18T06:24:46-03:00",
+    "gerado_em": "2026-10-18T07:47:46-03:00",
     "hoje": "2026-10-18",
     "retoque_atribuivel": false,
     "por_janela": {
@@ -8272,7 +8275,7 @@
   },
   "densidade_dow": {
     "_desc": "Atendimentos simultâneos por dia da semana × hora, calculado dos agendamentos brutos. A densidade agregada (abas.*.densidade_hora) mistura os dias e não serve para decidir escala: em 14/09/2026 ela dizia pico de 1,67, enquanto sábado às 17h tinha 3,90 e terça 1,01.",
-    "gerado_em": "2026-10-18T06:24:47-03:00",
+    "gerado_em": "2026-10-18T07:47:46-03:00",
     "n_agendamentos": 158,
     "horas": [
       9,
