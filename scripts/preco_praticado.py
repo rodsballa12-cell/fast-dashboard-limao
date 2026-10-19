@@ -92,6 +92,18 @@ def apurar(dash):
 
     tab = {norm(x.get("servico")): x for x in (cs.get("desvio_tabela") or [])}
     pac_v = float((cat.get("pacotes") or {}).get("v") or 0)
+
+    # O NOME DO PACOTE VENDIDO E PROVA, E O TESTE DO INTEIRO E FRAGIL.
+    # Em 19/10/2026 o cadastro da MAO mudou de R$ 48 para R$ 50,50 no Trinks.
+    # O mes passou a misturar sessoes cobradas nos dois precos, o resto do
+    # medio deixou de cair perto de um inteiro, e a MAO pulou de "resgate de
+    # pacote" para "desvio real de R$ 1.870" — numa loja que vendeu 8x
+    # "4 MAOS + 2 PES" e 1x "5 MAOS + 5 PES" no mesmo mes. Um numero assim
+    # manda o dono atras da gerente, que foi exatamente o erro que custou um
+    # mes aqui.
+    # Se o servico aparece no nome de um pacote vendido no periodo, o medio
+    # baixo tem explicacao sem precisar de aritmetica redonda.
+    nomes_pac = " | ".join(norm(x.get("nome")) for x in (aba.get("ranking_pacotes") or []))
     serv_v = float((cat.get("servicos") or {}).get("v") or 0)
     serv_n = int((cat.get("servicos") or {}).get("n") or 0)
 
@@ -127,19 +139,55 @@ def apurar(dash):
             "deixado_na_mesa": 0.0,
         }
 
-        if zeros is not None and zeros >= MIN_ZEROS and perto_inteiro and pac_v > 0:
+        acima = cadast > 0 and cobrado > cadast * 1.03
+        abaixo = cadast > 0 and cobrado < cadast * 0.97
+        no_pacote = bool(nomes_pac and norm(x.get("nome")) and norm(x.get("nome")) in nomes_pac)
+
+        if acima:
+            # Cobrando mais do que esta registrado. Se o cobrado chega na
+            # tabela, o atrasado e o cadastro; se passa da tabela, e conferir.
+            if tabela > 0 and cobrado <= tabela * 1.03:
+                n_cadastro += 1
+                item.update({
+                    "classe": "cadastro_desatualizado",
+                    "desvio_real_pct": round((cobrado / tabela - 1) * 100, 1) if tabela else None,
+                    "leitura": (f"Cobrado a {brl(cobrado)} com cadastro de {brl(cadast)} — "
+                                f"o cadastro no Trinks está velho, não o atendimento. "
+                                f"Contra a tabela de {brl(tabela)}: "
+                                f"{(cobrado / tabela - 1) * 100:+.1f}%."),
+                })
+            else:
+                n_cadastro += 1
+                item.update({
+                    "classe": "cadastro_desatualizado",
+                    "desvio_real_pct": round((cobrado / tabela - 1) * 100, 1) if tabela else None,
+                    "leitura": (f"Cobrado a {brl(cobrado)} — acima da tabela de "
+                                f"{brl(tabela)} e do cadastro de {brl(cadast)}. "
+                                f"Ou o preço subiu e ninguém registrou, ou está "
+                                f"sendo lançado no serviço errado."),
+                })
+        elif abaixo and pac_v > 0 and (no_pacote
+                                       or (zeros is not None and zeros >= MIN_ZEROS
+                                           and perto_inteiro)):
             # As sessoes que foram pagas sairam no preco cadastrado, redondo.
-            n_pagas = round(pagas)
+            redondo = (zeros is not None and zeros >= MIN_ZEROS and perto_inteiro)
             item.update({
                 "classe": "resgate_de_pacote",
                 "cobrado_nas_pagas": round(cadast, 2),
                 "desvio_real_pct": round((cadast / tabela - 1) * 100, 1) if tabela else None,
-                "leitura": (f"{round(zeros)} de {nq} sessões entraram a zero — já pagas em "
-                            f"pacote. As {n_pagas} cobradas saíram a {brl(cadast)}, o preço "
-                            f"da casa. Não é desconto."),
+                "leitura": (
+                    (f"{round(zeros)} de {nq} sessões entraram a zero — já pagas em "
+                     f"pacote. As {round(pagas)} cobradas saíram a {brl(cadast)}, o preço "
+                     f"da casa. Não é desconto.")
+                    if redondo else
+                    (f"Este serviço entra nos pacotes vendidos no mês, e parte das "
+                     f"{nq} sessões foi resgate — a cliente pagou antes e a sessão "
+                     f"entra valendo zero. Não é desconto. A conta não fecha num "
+                     f"número redondo porque o preço cadastrado mudou no meio do "
+                     f"período.")),
             })
-            zeros_tot += round(zeros)
-        elif zeros is not None and zeros <= -1 and perto_inteiro:
+            zeros_tot += round(zeros) if redondo else 0
+        elif False:  # ramo antigo, substituido pelo `acima` acima
             n_cadastro += 1
             item.update({
                 "classe": "cadastro_desatualizado",

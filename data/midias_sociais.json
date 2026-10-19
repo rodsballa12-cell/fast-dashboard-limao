@@ -6381,50 +6381,50 @@
     "nota_setembro": "Os números deste funil são de agosto fechado e seguem válidos como referência. Setembro só terá leitura de ROAS quando houver mês suficiente no Trinks; até lá, a régua é o CPA de conversa.",
     "modelo_negocio": "Walk-in / sem hora marcada. Não há agendamento, logo não há no-show nem reserva prendendo o cliente entre a conversa e a visita — o intervalo entre as duas é vazio, e é onde a operação perde gente.",
     "apuracao_automatica": {
-      "gerado_em": "2026-10-19T13:58:08-03:00",
+      "gerado_em": "2026-10-19T17:16:34-03:00",
       "janela": "desde a abertura (2026-07-23 a 2026-10-19 · 82 dias operados)",
       "metodo": "Receita de serviço do Trinks × fatia de clientes que disseram Instagram/Facebook em \"como nos conheceu\", dividido pela verba de mídia. Não é ROAS da Meta: a Meta não tem evento de valor nesta conta.",
       "investimento": 8695.93,
-      "receita_servico_total": 118472.1,
+      "receita_servico_total": 118750.1,
       "atribuicao": {
-        "cobertura_pct": 72.4,
-        "respondentes": 448,
-        "receita_respondida": 81524.0,
-        "sem_resposta_clientes": 171,
-        "sem_resposta_receita": 36948.1
+        "cobertura_pct": 72.3,
+        "respondentes": 449,
+        "receita_respondida": 81613.0,
+        "sem_resposta_clientes": 172,
+        "sem_resposta_receita": 37137.1
       },
-      "meta_share_respondentes_pct": 33.26,
+      "meta_share_respondentes_pct": 33.18,
       "receita_atribuida_medida": 27335.0,
-      "receita_atribuida_extrapolada": 39403.82,
+      "receita_atribuida_extrapolada": 39401.28,
       "roas_medido": 3.14,
       "roas_extrapolado": 4.53,
       "confianca": "Alta",
       "cenarios": [
         {
-          "cenario": "Piso — só o que foi medido (149 cliente(s) de 448)",
+          "cenario": "Piso — só o que foi medido (149 cliente(s) de 449)",
           "receita_atribuida": 27335.0,
           "roas": 3.14
         },
         {
-          "cenario": "📊 Instagram + Facebook (33.26% de quem respondeu)",
-          "receita_atribuida": 39403.82,
+          "cenario": "📊 Instagram + Facebook (33.18% de quem respondeu)",
+          "receita_atribuida": 39401.28,
           "roas": 4.53,
           "recomendado": true
         },
         {
-          "cenario": "Digital amplo (44.87%)",
-          "receita_atribuida": 53158.43,
+          "cenario": "Digital amplo (44.77%)",
+          "receita_atribuida": 53164.42,
           "roas": 6.11
         },
         {
-          "cenario": "Teto absurdo — os 171 sem resposta todos da Meta",
-          "receita_atribuida": 64283.1,
-          "roas": 7.39
+          "cenario": "Teto absurdo — os 172 sem resposta todos da Meta",
+          "receita_atribuida": 64472.1,
+          "roas": 7.41
         }
       ],
       "ressalvas": [
         "\"Instagram\" no Trinks não separa pago de orgânico — parte da receita atribuída pode ter vindo do perfil, não do anúncio.",
-        "171 cliente(s) não disseram de onde vieram, carregando R$ 36.948,10. O cenário recomendado espalha esses no mesmo mix de quem respondeu.",
+        "172 cliente(s) não disseram de onde vieram, carregando R$ 37.137,10. O cenário recomendado espalha esses no mesmo mix de quem respondeu.",
         "A verba inclui campanha de vaga e post impulsionado, que nunca tentaram trazer cliente. Veja `meta_ads.vagas_30d` e `top_campanhas_30d` para separar."
       ]
     }

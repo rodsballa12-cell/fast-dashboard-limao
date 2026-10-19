@@ -814,18 +814,9 @@
     ],
     "n_com_desvio": 37,
     "preco_realizado": {
-      "gerado_em": "2026-10-19T15:51:36-03:00",
+      "gerado_em": "2026-10-19T17:18:14-03:00",
       "janela": "mensal",
       "acoes": [
-        {
-          "tipo": "desconto",
-          "servico": "MÃOS",
-          "de": 36.0,
-          "para": 53.0,
-          "o_que_fazer": "Cobrar R$ 53,00 — está saindo a R$ 36,00",
-          "por_que": "110 sessões, e nenhum pacote explica",
-          "vale": 1870.0
-        },
         {
           "tipo": "desconto",
           "servico": "DESIGN SOBRANCELHAS",
@@ -834,6 +825,15 @@
           "o_que_fazer": "Cobrar R$ 60,00 — está saindo a R$ 57,29",
           "por_que": "24 sessões, e nenhum pacote explica",
           "vale": 65.0
+        },
+        {
+          "tipo": "cadastro",
+          "servico": "PÉS E MÃOS",
+          "de": 83.0,
+          "para": 96.0,
+          "o_que_fazer": "Atualizar no Trinks: R$ 83,00 → R$ 96,00",
+          "por_que": "você já cobra R$ 96,00; o cadastro é que está atrás",
+          "vale": 0.0
         },
         {
           "tipo": "cadastro",
@@ -852,9 +852,18 @@
           "o_que_fazer": "Atualizar no Trinks: R$ 39,50 → R$ 89,00",
           "por_que": "você já cobra R$ 81,38; o cadastro é que está atrás",
           "vale": 0.0
+        },
+        {
+          "tipo": "cadastro",
+          "servico": "FAST MAKE VIP",
+          "de": 149.5,
+          "para": 189.0,
+          "o_que_fazer": "Atualizar no Trinks: R$ 149,50 → R$ 189,00",
+          "por_que": "você já cobra R$ 189,00; o cadastro é que está atrás",
+          "vale": 0.0
         }
       ],
-      "deixado_na_mesa_pct": 5.31,
+      "deixado_na_mesa_pct": 0.18,
       "metodo": "Cruza a tabela da franqueadora, o preço cadastrado no Trinks e o que REALMENTE saiu (receita ÷ sessões). Quando o médio só fecha com um número inteiro de sessões a zero e a loja vendeu pacote no período, é resgate — a cliente já pagou — e não desconto. É inferência aritmética: o painel não enxerga transação a transação.",
       "sessoes": 485,
       "receita_servico": 31100.0,
@@ -863,9 +872,9 @@
       "por_sessao_com_pacote": 75.15,
       "resgate_sessoes_estimadas": 27,
       "resgate_pct_das_sessoes": 5.6,
-      "deixado_na_mesa_real": 1935.0,
-      "n_cadastro_desatualizado": 2,
-      "n_desvio_real": 2,
+      "deixado_na_mesa_real": 65.0,
+      "n_cadastro_desatualizado": 4,
+      "n_desvio_real": 1,
       "n_sem_tabela": 3,
       "itens": [
         {
@@ -889,9 +898,9 @@
           "cobrado_medio": 96.0,
           "sessoes_a_zero_estimadas": -8.5,
           "deixado_na_mesa": 0.0,
-          "classe": "aderente",
+          "classe": "cadastro_desatualizado",
           "desvio_real_pct": 0.0,
-          "leitura": "Cobrado a R$ 96,00 — na tabela."
+          "leitura": "Cobrado a R$ 96,00 com cadastro de R$ 83,00 — o cadastro no Trinks está velho, não o atendimento. Contra a tabela de R$ 96,00: +0.0%."
         },
         {
           "servico": "MÃOS",
@@ -900,10 +909,11 @@
           "cadastrado": 50.5,
           "cobrado_medio": 36.0,
           "sessoes_a_zero_estimadas": 31.6,
-          "deixado_na_mesa": 1870.0,
-          "classe": "desvio_real",
-          "desvio_real_pct": -32.1,
-          "leitura": "Cobrado a R$ 36,00 contra tabela de R$ 53,00 (-32.1%) em 110 sessões, e nenhum pacote explica. Deixado na mesa: R$ 1.870,00."
+          "deixado_na_mesa": 0.0,
+          "classe": "resgate_de_pacote",
+          "cobrado_nas_pagas": 50.5,
+          "desvio_real_pct": -4.7,
+          "leitura": "Este serviço entra nos pacotes vendidos no mês, e parte das 110 sessões foi resgate — a cliente pagou antes e a sessão entra valendo zero. Não é desconto. A conta não fecha num número redondo porque o preço cadastrado mudou no meio do período."
         },
         {
           "servico": "FAST ESCOVA - MODELADA",
@@ -1001,9 +1011,9 @@
           "cobrado_medio": 189.0,
           "sessoes_a_zero_estimadas": -0.5,
           "deixado_na_mesa": 0.0,
-          "classe": "aderente",
+          "classe": "cadastro_desatualizado",
           "desvio_real_pct": 0.0,
-          "leitura": "Cobrado a R$ 189,00 — na tabela."
+          "leitura": "Cobrado a R$ 189,00 com cadastro de R$ 149,50 — o cadastro no Trinks está velho, não o atendimento. Contra a tabela de R$ 189,00: +0.0%."
         }
       ]
     }
