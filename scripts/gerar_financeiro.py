@@ -447,9 +447,27 @@ def _ler_caixa(wb):
             continue
         if not cc and rot.startswith("conta corrente xp"):
             cc = float(v)
-        if not reserva and rot.startswith("stone"):
+        if not reserva and rot.startswith("stone — reserva"):
             reserva = float(v)
     return round(cc, 2), round(reserva, 2)
+
+
+def _ler_caixa_spa(wb):
+    """Conta Stone do Spa: fim do bloco "STONE SPA" da Conta_XP (stone_spa_razao.py).
+    Desde 20/10/2026 o Spa gere o próprio caixa nessa conta (decisão do Rodrigo).
+    Devolve (saldo da conta, Reserva, "dd/mm/aaaa hh:mm") ou None sem o bloco."""
+    ws = wb["Conta_XP"]
+    conta = reserva = ate = None
+    for r in range(1, ws.max_row + 1):
+        rot = _norm_txt(ws.cell(r, 1).value)
+        v = ws.cell(r, 5).value
+        if rot.startswith("saldo da conta stone spa") and isinstance(v, (int, float)):
+            conta, ate = float(v), str(ws.cell(r, 2).value or "").removeprefix("em ").strip()
+        elif rot.startswith("reserva stone do spa") and isinstance(v, (int, float)):
+            reserva = float(v)
+    if conta is None:
+        return None
+    return round(conta, 2), round(reserva or 0.0, 2), ate
 
 
 def _detectar_titulo(ws, chaves_norm):
@@ -619,10 +637,19 @@ def main():
     # saldo dela aparece inteiro na Escova. Separar por loja não é possível com
     # uma conta só -- e dizer "R$ 0,00" fazia o card afirmar que o Spa está sem
     # dinheiro. Mesma família do rótulo que contradizia a própria coluna.
+    # Desde 20/10/2026 o Spa tem caixa próprio: a conta Stone do Spa recebe e
+    # paga comissões, recepção e Beleza Boost do Spa (bloco STONE SPA da Conta_XP).
+    # Mesmo critério da Escova: só a conta, a Reserva Stone fica à parte.
+    spa_cx = _ler_caixa_spa(wb)
+    if spa_cx:
+        caixa_spa = spa_cx[0]
+        obs_spa = (f"conta Stone do Spa · extrato até {spa_cx[2]} · "
+                   f"Reserva Stone R$ {spa_cx[1]:,.2f} à parte").replace(",", "X").replace(".", ",").replace("X", ".")
+    else:
+        caixa_spa, obs_spa = None, "bloco STONE SPA ainda não gravado na Conta_XP"
     d_spa = _empacotar(meses_spa, "FAST SPA LIMÃO", META_MES_SPA,
-                       caixa_conta=None, a_receber_stone=a_receber_spa,
-                       caixa_conta_obs="conta corrente única da holding — o saldo "
-                                       "aparece na Escova e não se separa por loja",
+                       caixa_conta=caixa_spa, a_receber_stone=a_receber_spa,
+                       caixa_conta_obs=obs_spa,
                        a_receber_ate=a_receber_spa_ate)
     # Pré-abertura é uma data, não um estado fixo: o Spa abriu em 25/09/2026 e a
     # marca continuava ligada, com número real no payload — a auditoria de
@@ -639,7 +666,8 @@ def main():
     # Escova, e a holding reportava R$ 8.435,50 a menos). O caixa, sim, é o da
     # conta única -- não é soma, é a mesma conta.
     d_cons = _empacotar(meses_cons, "FAST LIMÃO CONSOLIDADO", META_MES_ESCOVA + META_MES_SPA,
-                        caixa_conta=d_escova["kpis"]["caixa_conta"],
+                        caixa_conta=round(caixa_cc + (caixa_spa or 0.0), 2),
+                        caixa_conta_obs=(f"conta XP + conta Stone do Spa" if caixa_spa is not None else None),
                         a_receber_stone=round(a_receber + a_receber_spa, 2),
                         a_receber_ate=min([d for d in (a_receber_ate, a_receber_spa_ate) if d] or [None])
                                       if (a_receber_ate or a_receber_spa_ate) else None)

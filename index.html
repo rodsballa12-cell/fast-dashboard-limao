@@ -6551,7 +6551,7 @@ function renderFinanceiro(){
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--accent)">
           <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase">💵 Caixa em conta</div>
           <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${k.caixa_conta==null?'—':brl0(k.caixa_conta)}</div>
-          <div style="font-size:11px;color:var(--ink-2)">${k.caixa_conta==null?(k.caixa_conta_obs||'não separável por loja'):`conta corrente da PJ · posição ${baselineFmt}`}</div>
+          <div style="font-size:11px;color:var(--ink-2)">${k.caixa_conta==null?(k.caixa_conta_obs||'não separável por loja'):(k.caixa_conta_obs||`conta corrente da PJ · posição ${baselineFmt}`)}</div>
         </div>
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--good)">
           <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase">📥 A receber Stone</div>
@@ -6813,7 +6813,7 @@ function renderFinanceiro(){
         <td class="${RES_REAL<0?'val-neg':''}">${brl(RES_REAL)}</td><td class="pc${RES_REAL<0?' val-neg':''}">${finPct(prR(RES_REAL))}</td>
         <td class="${RES_ESP<0?'val-neg':''}">${brl(RES_ESP)}</td><td class="pc${RES_ESP<0?' val-neg':''}">${finPct(prP(RES_ESP))}</td>
         <td>—</td></tr>
-      <tr class="dre-memo"><td>Caixa em conta<span class="dre-n">só conta corrente da PJ, sem a reserva Stone</span></td>
+      <tr class="dre-memo"><td>Caixa em conta<span class="dre-n">${k.caixa_conta_obs||'só conta corrente da PJ, sem a reserva Stone'}</span></td>
         <td>${brl(k.caixa_conta)}</td><td class="pc"></td><td colspan="3"></td></tr>
       </tbody></table></div>
 
