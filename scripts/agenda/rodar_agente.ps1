@@ -114,6 +114,31 @@ function Stone-Para-Excel {
 }
 Stone-Para-Excel
 
+# --- Conta Stone do Spa no Excel ---------------------------------------------
+# O Spa recebe e paga pela propria conta Stone (decisao do Rodrigo em 20/10/2026:
+# caixa de cada negocio separado). Refaz a aba "Conta_Stone_Spa" (livro-caixa
+# classificado) a partir de data/spa/stone_extrato.csv e o rodape da Conta_XP
+# passa a ler o total dela. So grava quando o extrato muda; pula se a planilha
+# estiver aberta. Falha aqui nunca derruba o cargo.
+function StoneSpa-Para-Excel {
+  $anterior = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $py = (Get-Command python -ErrorAction SilentlyContinue).Source
+    if (-not $py) { Registrar "Conta Stone Spa no Excel: python nao encontrado, pulei."; return }
+    $envAntes = $env:PYTHONUTF8
+    $env:PYTHONUTF8 = "1"
+    try {
+      $saidaPy = (& $py (Join-Path $Projeto "scripts\stone_spa_excel.py") 2>&1 | Out-String).Trim()
+      if ($LASTEXITCODE -ne 0) { Registrar "FALHOU: Conta Stone Spa no Excel (codigo $LASTEXITCODE). $saidaPy" }
+      else { Registrar $saidaPy }
+    } finally { $env:PYTHONUTF8 = $envAntes }
+  } catch {
+    Registrar ("FALHOU: Conta Stone Spa no Excel. " + $_.Exception.Message)
+  } finally { $ErrorActionPreference = $anterior }
+}
+StoneSpa-Para-Excel
+
 # --- Dados frescos na DRE e no Fluxo ----------------------------------------
 # Leva a receita apurada do Trinks e o que a Stone liquidou para o bloco
 # MES EM CURSO da DRE e para o bloco DADOS FRESCOS do Fluxo de Caixa, e fecha
