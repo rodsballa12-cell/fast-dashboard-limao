@@ -366,7 +366,8 @@ def _consolidar_mes(m_esc, m_spa):
     }
 
 
-def _empacotar(meses, loja_label, meta_mes, caixa_conta=0.0, a_receber_stone=0.0):
+def _empacotar(meses, loja_label, meta_mes, caixa_conta=0.0, a_receber_stone=0.0,
+               caixa_conta_obs=None, a_receber_ate=None):
     hoje = datetime.date.today()
     chave_hoje = f"{hoje.year}-{hoje.month:02d}"
     principal = meses.get(chave_hoje)
@@ -398,7 +399,11 @@ def _empacotar(meses, loja_label, meta_mes, caixa_conta=0.0, a_receber_stone=0.0
         "loja": loja_label,
         "kpis": {
             "caixa_conta": caixa_conta,
+            # None = nao separavel por loja (ha UMA conta corrente da holding).
+            # Zero aqui mentia: dizia que o Spa nao tem dinheiro.
+            "caixa_conta_obs": caixa_conta_obs,
             "a_receber_stone": a_receber_stone,
+            "a_receber_ate": a_receber_ate,
             "resultado_mes": principal["res_real"],
             "resultado_mes_caixa": principal["res_caixa"],
             "receita_mes": principal["receita_bruta"],
@@ -589,16 +594,36 @@ def main():
     # Caixa lido do rodapé da Conta_XP pelo rótulo (antes: fixo no código com os valores de 28/08).
     # A comissão NÃO é mais sobrescrita pela taxa ponderada: a DRE já traz a real/revisada.
     caixa_cc, reserva_stone = _ler_caixa(wb)
-    # "a receber" é o que a Stone ainda vai liquidar (vem do extrato processado), não a Reserva aplicada
-    try:
-        with open(dash_escova, encoding="utf-8") as fh:
-            a_receber = float(((json.load(fh).get("stone") or {}).get("nao_conciliado") or {}).get("a_receber_d30") or 0.0)
-    except (OSError, ValueError):
-        a_receber = 0.0
-    d_escova = _empacotar(meses_escova, "FAST ESCOVA LIMÃO", META_MES_ESCOVA,
-                          caixa_conta=caixa_cc, a_receber_stone=round(a_receber, 2))
 
-    d_spa = _empacotar(meses_spa, "FAST SPA LIMÃO", META_MES_SPA)
+    # "a receber" é o que a Stone ainda vai liquidar (vem do extrato processado),
+    # não a Reserva aplicada. Cada loja tem o SEU extrato: até 20/10/2026 só o da
+    # Escova era lido, e o Spa saía com R$ 0,00 no DRE -- o que o painel já
+    # desmentia na mesma tela, porque o card lê o extrato direto. Zero não era
+    # conta vazia, era número que ninguém foi buscar.
+    def _a_receber(caminho):
+        try:
+            with open(caminho, encoding="utf-8") as fh:
+                nc = ((json.load(fh).get("stone") or {}).get("nao_conciliado") or {})
+            return round(float(nc.get("a_receber_d30") or 0.0), 2), nc.get("extrato_cobre_ate")
+        except (OSError, ValueError):
+            return 0.0, None
+
+    a_receber, a_receber_ate = _a_receber(dash_escova)
+    a_receber_spa, a_receber_spa_ate = _a_receber(dash_spa)
+
+    d_escova = _empacotar(meses_escova, "FAST ESCOVA LIMÃO", META_MES_ESCOVA,
+                          caixa_conta=caixa_cc, a_receber_stone=a_receber,
+                          a_receber_ate=a_receber_ate)
+
+    # Caixa do Spa é None, não zero: existe UMA conta corrente da holding, e o
+    # saldo dela aparece inteiro na Escova. Separar por loja não é possível com
+    # uma conta só -- e dizer "R$ 0,00" fazia o card afirmar que o Spa está sem
+    # dinheiro. Mesma família do rótulo que contradizia a própria coluna.
+    d_spa = _empacotar(meses_spa, "FAST SPA LIMÃO", META_MES_SPA,
+                       caixa_conta=None, a_receber_stone=a_receber_spa,
+                       caixa_conta_obs="conta corrente única da holding — o saldo "
+                                       "aparece na Escova e não se separa por loja",
+                       a_receber_ate=a_receber_spa_ate)
     # Pré-abertura é uma data, não um estado fixo: o Spa abriu em 25/09/2026 e a
     # marca continuava ligada, com número real no payload — a auditoria de
     # coerência acusava a contradição (30/09).
@@ -610,9 +635,14 @@ def main():
     d_spa["_fonte_receita"] = ("Painel: receita real do Trinks nos meses fechados e projeção da DRE nos demais."
                                if _aberta else "Projeção Excel (Rodrigo) — Spa ainda não abriu.")
 
+    # O a-receber do consolidado é a soma dos dois extratos (antes vinha só da
+    # Escova, e a holding reportava R$ 8.435,50 a menos). O caixa, sim, é o da
+    # conta única -- não é soma, é a mesma conta.
     d_cons = _empacotar(meses_cons, "FAST LIMÃO CONSOLIDADO", META_MES_ESCOVA + META_MES_SPA,
                         caixa_conta=d_escova["kpis"]["caixa_conta"],
-                        a_receber_stone=d_escova["kpis"]["a_receber_stone"])
+                        a_receber_stone=round(a_receber + a_receber_spa, 2),
+                        a_receber_ate=min([d for d in (a_receber_ate, a_receber_spa_ate) if d] or [None])
+                                      if (a_receber_ate or a_receber_spa_ate) else None)
     d_cons["premissas"]["comissao"] = (round(sum(m["grupos"][0]["linhas"][0]["real"] for m in [meses_cons.get(d_cons["mes_principal_chave"])] if m) / max(d_cons["resultado"]["receita_real"], 1), 4)
                                        if d_cons.get("mes_principal_chave") in meses_cons else d_escova["premissas"]["comissao"])
 

@@ -346,6 +346,54 @@ def conferir_funil_roas(achados):
                 f"numero — a recepcao precisa perguntar em toda ficha nova."))
 
 
+def conferir_caixa_a_receber(achados):
+    """O a-receber do DRE bate com o extrato da propria loja?
+
+    Ate 20/10/2026 o gerar_financeiro.py lia o a-receber SO do extrato da
+    Escova. O Spa saia com R$ 0,00 no DRE enquanto o card da mesma tela
+    mostrava R$ 8.435,50 -- porque o card le o extrato direto e o DRE lia uma
+    copia que ninguem preencheu. O consolidado reportava R$ 8.435,50 a menos
+    que a soma das duas lojas. Zero nao era conta vazia: era numero que
+    ninguem foi buscar. Esta conferencia existe para que nao volte calado.
+
+    E o caixa em conta nao e zero no Spa, e None: ha UMA conta corrente da
+    holding, e o saldo dela aparece inteiro na Escova. "R$ 0,00" fazia o card
+    afirmar que a loja esta sem dinheiro.
+    """
+    ar = {}
+    for rel, fin, nome in (("data/dashboard_data.json", "data/financeiro.json", "Escova"),
+                           ("data/spa/dashboard_data.json", "data/spa/financeiro.json", "Spa")):
+        d, f = carregar(rel), carregar(fin)
+        if not d or not f:
+            continue
+        nc = ((d.get("stone") or {}).get("nao_conciliado") or {})
+        extrato = round(float(nc.get("a_receber_d30") or 0.0), 2)
+        ar[nome] = extrato
+        dre = float((f.get("kpis") or {}).get("a_receber_stone") or 0.0)
+        if abs(extrato - dre) > 1.0:
+            achados.append(("erro",
+                f"{nome}: o DRE diz R$ {dre:,.2f} a receber da Stone e o extrato "
+                f"da propria loja diz R$ {extrato:,.2f}. O card e o DRE vao "
+                f"mostrar numeros diferentes na mesma tela."))
+        caixa = (f.get("kpis") or {}).get("caixa_conta")
+        if nome == "Spa" and caixa == 0:
+            achados.append(("erro",
+                "Spa: caixa em conta esta R$ 0,00 no DRE. Nao e conta vazia: ha "
+                "uma conta corrente unica da holding, e o saldo aparece na "
+                "Escova. O campo tem de ser nulo, com a observacao -- zero diz "
+                "que a loja esta sem dinheiro."))
+
+    fc = carregar("data/consolidado/financeiro.json")
+    if fc and len(ar) == 2:
+        soma = round(sum(ar.values()), 2)
+        dre_c = float((fc.get("kpis") or {}).get("a_receber_stone") or 0.0)
+        if abs(soma - dre_c) > 1.0:
+            achados.append(("erro",
+                f"Consolidado: a-receber da holding diz R$ {dre_c:,.2f} e as duas "
+                f"lojas somam R$ {soma:,.2f} (Escova R$ {ar['Escova']:,.2f} + Spa "
+                f"R$ {ar['Spa']:,.2f})."))
+
+
 def conferir_preco_realizado(achados):
     """O card de preco voltou a comparar com o que foi cobrado?
 
@@ -476,6 +524,7 @@ def main() -> int:
 
     conferir_taxa_comissao(achados)
     conferir_preco_realizado(achados)
+    conferir_caixa_a_receber(achados)
     conferir_funil_roas(achados)
     conferir_conselho_sincronizado(achados)
 

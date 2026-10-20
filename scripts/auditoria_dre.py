@@ -234,11 +234,27 @@ def main() -> int:
         meta = float(d["resultado"].get("receita_meta") or 0)
         m = ((dash.get("abas") or {}).get("mensal") or {}).get("meta") or {}
         real, proj = float(m.get("realizado") or 0), float(m.get("projecao") or 0)
-        if abs(rec_dre - meta) < TOL:
-            rep.aviso(f"{nome} · receita",
-                      f"a DRE do mes corrente usa a META ({brl(meta)}) como receita, nao o "
-                      f"realizado ({brl(real)}) nem a projecao ({brl(proj)}). Todo percentual "
-                      f"da coluna projetada e percentual da meta.")
+        # A coluna do mes corrente no Excel ser a META e escolha legitima: e
+        # coluna de alvo, nao de previsao. E o PAINEL nao a copia -- desde
+        # 07/10 o card "RESULTADO PROJETADO" reconstroi o resultado sobre a
+        # projecao do painel (proj_final), mantendo o percentual de custo
+        # variavel que o Excel declara. Entao isto NAO e erro: e a distancia
+        # entre o alvo e o ritmo, que e informacao, e vale dizer em reais.
+        if abs(rec_dre - meta) < TOL and proj > 0:
+            var_pct = (float(d["resultado"]["var_real"]) / rec_dre) if rec_dre else 0.0
+            fixo = float(d["resultado"]["fixo_real"])
+            eb_excel = float(d["resultado"]["ebitda"])
+            eb_ritmo = proj - proj * var_pct - fixo
+            gap = eb_excel - eb_ritmo
+            if abs(gap) < TOL:
+                continue
+            onde_f = f"{nome} · alvo x ritmo"
+            msg = (f"a coluna de outubro no Excel e a META ({brl(meta)}) e o ritmo "
+                   f"projeta {brl(proj)} (realizado {brl(real)}). O EBITDA da planilha "
+                   f"e {brl(eb_excel)}; no ritmo da {brl(eb_ritmo)} — "
+                   f"{brl(abs(gap))} de diferenca. O painel ja mostra o segundo "
+                   f"numero no card RESULTADO PROJETADO; o Excel guarda o alvo.")
+            (rep.aviso if abs(gap) >= 5000 else rep.ok)(onde_f, msg)
 
     # ---- G. caixa e inadimplencia ----------------------------------------
     for rel_fin, nome in (("data/financeiro.json", "Escova"), ("data/spa/financeiro.json", "Spa")):

@@ -6550,13 +6550,13 @@ function renderFinanceiro(){
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--accent)">
           <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase">💵 Caixa em conta</div>
-          <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${brl0(k.caixa_conta)}</div>
-          <div style="font-size:11px;color:var(--ink-2)">conta corrente da PJ · posição ${baselineFmt}</div>
+          <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${k.caixa_conta==null?'—':brl0(k.caixa_conta)}</div>
+          <div style="font-size:11px;color:var(--ink-2)">${k.caixa_conta==null?(k.caixa_conta_obs||'não separável por loja'):`conta corrente da PJ · posição ${baselineFmt}`}</div>
         </div>
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--good)">
           <div style="font-size:11px;color:var(--good);font-weight:800;text-transform:uppercase">📥 A receber Stone</div>
           <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${brl0(k.a_receber_stone)}</div>
-          <div style="font-size:11px;color:var(--ink-2)">cartão de crédito, cai em ~30d · mesmo número da aba Stone</div>
+          <div style="font-size:11px;color:var(--ink-2)">cartão de crédito, cai em ~30d · mesmo número da aba Stone${k.a_receber_ate?` · extrato até ${fmtDate(k.a_receber_ate)}`:''}</div>
         </div>
         ${(() => {
           // Dois relogios de atraso: DRE (Excel digitado) e Stone (extrato CSV). Sem
@@ -6775,7 +6775,9 @@ function renderFinanceiro(){
       : ((FIN.recebimento && FIN.recebimento.ciclo_medio) || 1.0);
     const pctCredito = (C && C.linhas) ? C.linhas.filter(l=>l.grupo==='crédito').reduce((a,l)=>a+l.pct,0) : 0;
     const giro        = ritmoDia * ciclo;
-    const autonomia   = queima < 0 ? k.caixa_conta / Math.max(queimaDia, 1) : null;
+    // Sem caixa separavel por loja (conta unica da holding) nao existe autonomia
+    // da unidade: dividir zero por queima dava "0 dias", que lia como falencia.
+    const autonomia   = (queima < 0 && k.caixa_conta != null) ? k.caixa_conta / Math.max(queimaDia, 1) : null;
     const proj_saidas = VAR_ESP + FIXO_ESP - (R.provisoes_nao_debitadas || 0);
     const proj_queima = REC_PROJ - proj_saidas;
 
@@ -6785,7 +6787,7 @@ function renderFinanceiro(){
         <div class="${queima<0?'neg':''}"><span class="il">QUEIMA DO MÊS ATÉ HOJE</span><span class="iv">${brl0(queima)}</span><span class="ic">${brl0(-queimaDia)} por dia operado</span></div>
         <div><span class="il">ENTRA POR DIA</span><span class="iv">${brl0(ritmoDia)}</span><span class="ic">precisaria ${brl0(precisaDia)}/dia pra empatar — falta ${brl0(Math.max(precisaDia-ritmoDia,0))}</span></div>
         <div><span class="il">CICLO DE RECEBIMENTO</span><span class="iv">${ciclo.toFixed(1).replace('.',',')} dias</span><span class="ic">${pctCredito>0.05?`${finPct(pctCredito)} da receita é crédito e segura o caixa`:'Stone liquida D+1'} · ${brl0(giro)} presos em trânsito${k.a_receber_stone?` · Stone mostra ${brl0(k.a_receber_stone)} a receber`:''}</span></div>
-        <div class="${autonomia!==null && autonomia<30?'neg':''}"><span class="il">AUTONOMIA DA CONTA</span><span class="iv">${autonomia===null?'—':Math.round(autonomia)+' dias'}</span><span class="ic">${brl0(k.caixa_conta)} na conta ÷ queima diária · reserva Stone à parte</span></div>
+        <div class="${autonomia!==null && autonomia<30?'neg':''}"><span class="il">AUTONOMIA DA CONTA</span><span class="iv">${autonomia===null?'—':Math.round(autonomia)+' dias'}</span><span class="ic">${k.caixa_conta==null?(k.caixa_conta_obs||'caixa não separável por loja'):`${brl0(k.caixa_conta)} na conta ÷ queima diária · reserva Stone à parte`}</span></div>
       </div>
 
       <div class="dre-wrap"><table class="dre">
