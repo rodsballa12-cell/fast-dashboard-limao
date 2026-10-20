@@ -66,7 +66,7 @@ jobs:
           if [ -n "$BRIEFING_INPUT" ]; then
             python scripts/sync_conselho.py "$BRIEFING_INPUT"
           else
-            python scripts/sync_conselho.py --auto-latest
+            python scripts/sync_conselho.py --pendentes
           fi
 
       - name: Commit e push

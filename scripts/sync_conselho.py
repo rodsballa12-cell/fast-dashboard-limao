@@ -376,6 +376,11 @@ def aplicar_json(path: Path, parsed: dict, docs_map: dict[int, str], is_escova: 
         return f"SKIP {path.name} · ja sincronizado ({parsed['data']} {parsed['hora']})"
 
     hc.append(bloco_historico(parsed, docs_map))
+    # Ordem cronologica: historico_conselhos e lido como linha do tempo, e
+    # append cego bastava enquanto cada conselho entrava no dia dele. Quando a
+    # fila de atas atrasadas foi aplicada (20/10/2026), doze reunioes de 15/09 a
+    # 08/10 entraram DEPOIS da de 20/10 e a linha do tempo saiu embaralhada.
+    hc.sort(key=lambda h: (str(h.get("data") or ""), str(h.get("hora") or "")))
     d["historico_conselhos"] = hc
 
     # recomendações "aprovadas" — 1 por decisão
@@ -388,11 +393,94 @@ def aplicar_json(path: Path, parsed: dict, docs_map: dict[int, str], is_escova: 
     return f"OK   {path.name} · +{len(parsed['decisoes'])} recomendacoes · +1 historico"
 
 
+def sincronizar_um(briefing: Path) -> int:
+    """Aplica UM briefing. Devolve 0 em sucesso, >0 em erro."""
+    print(f"[sync_conselho] lendo {briefing.relative_to(ROOT)}")
+    parsed = parse_briefing(briefing)
+    if not parsed["data"] or not parsed["decisoes"]:
+        print(f"ERRO: briefing sem data ou decisoes parseaveis "
+              f"(data={parsed['data']}, decisoes={len(parsed['decisoes'])})", file=sys.stderr)
+        return 4
+
+    print(f"  data={parsed['data']} hora={parsed['hora']} tipo={parsed['tipo']}")
+    print(f"  mesa={parsed['mesa']}")
+    print(f"  decisoes={len(parsed['decisoes'])}: {[d['titulo'][:40] for d in parsed['decisoes']]}")
+
+    docs_map = escrever_decisoes_e_ata(parsed)
+    print(f"  docs/decisoes: {list(docs_map.values())}")
+    print(f"  docs/atas: docs/atas/{parsed['data']}-conselho.md")
+
+    for path, is_escova in [(DATA_ESCOVA, True), (DATA_SPA, False), (DATA_CONS, False)]:
+        print(" ", aplicar_json(path, parsed, docs_map, is_escova))
+    return 0
+
+
+def atas_com_decisoes() -> list[Path]:
+    """Toda ata de reuniao de verdade, dos dois caminhos, em ordem de data."""
+    todas = [*BRIEFINGS_DIR.glob("*-conselho.md"), *ATAS_DIR.glob("*-conselho.md")]
+    return sorted((c for c in todas if tem_decisoes(c)), key=lambda x: x.name)
+
+
+def datas_no_painel() -> set[str]:
+    """Datas que estao nas TRES unidades. Uma data presente so em parte delas
+    conta como pendente -- foi o que aconteceu em 20/10/2026, quando a saida do
+    script foi para um `head` e o SIGPIPE matou a rodada no meio: 15/09 entrou
+    na Escova e nao no Spa nem no consolidado. A fila tem de ver isso como
+    trabalho a fazer, nao como feito. O `aplicar_json` ja pula por arquivo, logo
+    reprocessar nao duplica nada."""
+    conjuntos = []
+    for path in (DATA_ESCOVA, DATA_SPA, DATA_CONS):
+        if not path.exists():
+            continue
+        d = load_json(path)
+        conjuntos.append({h.get("data") for h in (d.get("historico_conselhos") or []) if h.get("data")})
+    return set.intersection(*conjuntos) if conjuntos else set()
+
+
+def sincronizar_pendentes() -> int:
+    """Aplica TODA ata que nunca entrou no painel, da mais antiga para a mais nova.
+
+    O `--auto-latest` processa so a mais recente. Quando o PC ficou fora de 12 a
+    16/10/2026, as atas daqueles dias nunca tiveram uma rodada propria, e as
+    rodadas seguintes so olhavam a mais nova -- doze reunioes de 15/09 a 08/10
+    ficaram orfas por desenho. A auditoria_coerencia.py avisava, e o aviso nao
+    tinha como ser atendido: nao existia comando para a fila.
+
+    Ordem cronologica importa: `historico_conselhos` e lido como linha do tempo.
+    Decisao entra como `pendente`, igual a qualquer outra -- varias dessas ja
+    foram superadas por decisoes posteriores, e e o /sincronizar que fecha cada
+    uma. Idempotente duas vezes: a decisao que ja tem arquivo nao e reescrita (o
+    registro de aprovacao sobrevive) e a ata ja no painel e pulada.
+    """
+    ja = datas_no_painel()
+    fila = [c for c in atas_com_decisoes() if c.name[:10] not in ja]
+    if not fila:
+        print("[sync_conselho] nenhuma ata pendente — o painel esta em dia.")
+        return 0
+    print(f"[sync_conselho] {len(fila)} ata(s) fora do painel, da mais antiga para a mais nova:")
+    for c in fila:
+        print(f"   · {c.name[:10]}  {c.relative_to(ROOT)}")
+    print()
+    falhas = []
+    for c in fila:
+        if sincronizar_um(c) != 0:
+            falhas.append(c.name)
+        print()
+    print(f"[sync_conselho] {len(fila) - len(falhas)} aplicada(s), {len(falhas)} com erro de leitura"
+          + (f": {falhas}" if falhas else "."))
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("briefing", nargs="?", help="Path do briefing (Briefings/AAAA-MM-DD-conselho.md)")
     ap.add_argument("--auto-latest", action="store_true", help="Pega o briefing mais recente em Briefings/")
+    ap.add_argument("--pendentes", action="store_true",
+                    help="Aplica TODA ata que nunca entrou no painel, em ordem cronologica")
     args = ap.parse_args()
+
+    if args.pendentes:
+        return sincronizar_pendentes()
 
     if args.auto_latest:
         # A tarefa do PC grava só em docs/atas/; Briefings/ é o caminho antigo.
@@ -417,24 +505,7 @@ def main() -> int:
         print(f"ERRO: briefing nao encontrado: {briefing}", file=sys.stderr)
         return 3
 
-    print(f"[sync_conselho] lendo {briefing.relative_to(ROOT)}")
-    parsed = parse_briefing(briefing)
-    if not parsed["data"] or not parsed["decisoes"]:
-        print(f"ERRO: briefing sem data ou decisoes parseaveis (data={parsed['data']}, decisoes={len(parsed['decisoes'])})", file=sys.stderr)
-        return 4
-
-    print(f"  data={parsed['data']} hora={parsed['hora']} tipo={parsed['tipo']}")
-    print(f"  mesa={parsed['mesa']}")
-    print(f"  decisoes={len(parsed['decisoes'])}: {[d['titulo'][:40] for d in parsed['decisoes']]}")
-
-    docs_map = escrever_decisoes_e_ata(parsed)
-    print(f"  docs/decisoes: {list(docs_map.values())}")
-    print(f"  docs/atas: docs/atas/{parsed['data']}-conselho.md")
-
-    for path, is_escova in [(DATA_ESCOVA, True), (DATA_SPA, False), (DATA_CONS, False)]:
-        print(" ", aplicar_json(path, parsed, docs_map, is_escova))
-
-    return 0
+    return sincronizar_um(briefing)
 
 
 if __name__ == "__main__":
