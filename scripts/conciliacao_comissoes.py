@@ -132,10 +132,27 @@ def pagos_razao():
         a, b, _c, v, _e, _f, g = row
         if isinstance(a, dt.datetime) and isinstance(v, (int, float)) and v < 0 and str(g).startswith("OPEX (Comiss"):
             pagos[norm(b)].append((a.date(), round(-v, 2)))
+    # O Spa também paga comissão DIRETO da conta Stone (visto em 20/10/2026). Entram os
+    # Pix de saída da Stone do Spa para pessoas — só contam para quem tem produção no
+    # Trinks (o casamento por nome descarta salários e transferências para a própria empresa).
+    import csv
+    spa = RAIZ / "data" / "spa" / "stone_extrato.csv"
+    if spa.exists():
+        with spa.open(encoding="utf-8") as fh:
+            for lin in csv.DictReader(fh):
+                if lin.get("Tipo") != "Pix" or lin.get("Movimentação") != "Débito":
+                    continue
+                if "SIIBELLO" in (lin.get("Destino") or "").upper():
+                    continue
+                v = float(lin["Valor"].replace(".", "").replace(",", "."))
+                d = dt.datetime.strptime(lin["Data"][:10], "%d/%m/%Y").date()
+                pagos["stone:" + norm(lin.get("Destino"))].append((d, round(-v, 2)))
     return pagos
 
 
 def casar(nome_pix: str, devidos, aliases) -> str | None:
+    stone = nome_pix.startswith("stone:")
+    nome_pix = nome_pix.removeprefix("stone:")
     if nome_pix in aliases:
         return norm(aliases[nome_pix])
     tp = nome_pix.split()
@@ -143,7 +160,7 @@ def casar(nome_pix: str, devidos, aliases) -> str | None:
         tt = kt.split()
         if tp and tt and tp[0] == tt[0] and (tp[-1] == tt[-1] or (len(tp) > 1 and len(tt) > 1 and tp[1] == tt[1])):
             return kt
-    return None
+    return "__descartar__" if stone else None
 
 
 def conciliar():
@@ -155,6 +172,8 @@ def conciliar():
     por = collections.defaultdict(list)
     for kp, ps in pagos.items():
         alvo = casar(kp, dev, aliases) or kp
+        if alvo == "__descartar__":   # Pix da Stone do Spa para quem não tem produção (salário etc.)
+            continue
         if alvo not in nomes:
             nomes[alvo] = kp.title()
         por[alvo].extend(ps)
