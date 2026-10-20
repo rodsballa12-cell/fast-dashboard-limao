@@ -39,10 +39,13 @@ Custo fixo R$ 32.228,67 · insumos 6% · Simples 7% · projeção de outubro R$ 
 | **38,31%** (ano, hoje) | 48,69% | R$ 66.171,43 | −R$ 3.014,67 | **−R$ 161,12** |
 | 38,99% (outubro) | 48,01% | R$ 67.129,07 | −R$ 3.422,67 | −R$ 608,97 |
 
-### Recomendação: 38,31%
+### APROVADO pelo Rodrigo em 20/10 às 11:52: **38,31%**
 
 Mesma regra de 18/10 — a taxa do ano, base mais larga —, só com o número de
 hoje. Custa **R$ 528/mês** na meta de R$ 60 mil contra os 37,43% atuais.
+
+**Este é o único item deste arquivo que ainda precisa ser executado.** Os outros
+dois estão aqui só como registro do que já foi feito na nuvem.
 
 E muda a leitura do mês: com 37,43% a Escova atravessa o equilíbrio em outubro
 por R$ 418; com 38,31% ela fica **R$ 161 abaixo**. É o fio da navalha dos dois

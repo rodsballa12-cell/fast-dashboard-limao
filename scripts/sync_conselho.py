@@ -312,6 +312,13 @@ _(em branco até a revisão)_
         )
         cruz = "\n".join(f"- {c}" for c in parsed["cruzamentos_chave"]) or "_(sem cruzamentos capturados)_"
         sem = "\n".join(f"- {s}" for s in parsed["sem_dono"]) or "_(sem perguntas sem dono capturadas)_"
+        # O titulo da secao de decisoes e LITERAL de proposito: a
+        # auditoria_coerencia.py reconhece ata de reuniao de verdade procurando
+        # "DECISOES DO RODRIGO". Enquanto esta ata dizia so "## Decisoes", toda
+        # ata que o proprio sync escrevia ficava invisivel para o detector, que
+        # passava a avisar que o Conselho daquele dia "nao rodou" -- logo depois
+        # de ter sincronizado as decisoes dele. O detector acusava a ausencia da
+        # reuniao que ele mesmo acabara de registrar.
         ata_content = f"""# Ata · Conselho FAST Limão · {data} {parsed['hora']}
 
 **Tipo:** {parsed['tipo']}
@@ -323,7 +330,7 @@ _(em branco até a revisão)_
 |---|---|
 {mesa_lines}
 
-## Decisões
+## 🎯 DECISÕES DO RODRIGO
 
 | # | Título | Status | Decisão individual |
 |---|---|---|---|
