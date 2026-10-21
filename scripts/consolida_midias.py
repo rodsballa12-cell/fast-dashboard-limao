@@ -57,6 +57,26 @@ def razao(gasto, conv):
     return r2(gasto / conv) if conv else None
 
 
+def recalcula_vagas(m):
+    """Os números de `vagas_30d` saem das campanhas '[VAGA ...]' da própria janela 30d.
+
+    O bloco era digitado à mão e envelheceu: no Spa a janela parou em 29/09 e dava
+    303 conversas de vaga num mês com 176 no total, o que zerava o CPA de serviço
+    do card. Os textos (situação, lacuna de medição) continuam sendo de pessoa.
+    """
+    p30 = (m.get("por_periodo") or {}).get("30d") or {}
+    camp = [c for c in (m.get("top_campanhas_30d") or []) if "VAGA" in (c.get("nome") or "").upper()]
+    vg = m.get("vagas_30d")
+    if not p30 or not isinstance(vg, dict):
+        return False
+    g = r2(sum(c.get("gasto") or 0 for c in camp))
+    cv = sum(c.get("conversas_msg") or 0 for c in camp)
+    vg.update(janela=f"{p30['inicio']} a {p30['fim']}", gasto_total=g, conversas=cv, cpa_msg=razao(g, cv),
+              campanhas=len(camp), share_da_verba_pct=r2(g / p30["gasto"] * 100) if p30.get("gasto") else 0.0,
+              _origem="calculado de top_campanhas_30d (nome com VAGA) por scripts/consolida_midias.py")
+    return True
+
+
 def por_loja(m):
     """Janelas da loja + serviço × vaga (a vaga só existe em 30d)."""
     pp = m.get("por_periodo") or {}
@@ -85,6 +105,9 @@ def main():
     S = json.loads(SPA.read_text(encoding="utf-8"))
     C = json.loads(DST.read_text(encoding="utf-8")) if DST.exists() else {}
     em, sm = E["meta_ads"], S["meta_ads"]
+    for caminho, dados, m in ((ESC, E, em), (SPA, S, sm)):
+        if recalcula_vagas(m):
+            caminho.write_text(json.dumps(dados, ensure_ascii=False, indent=2), encoding="utf-8")
 
     pp = {k: somar_periodo(k, em["por_periodo"][k], sm["por_periodo"][k]) for k in JANELAS}
     for k in JANELAS:
