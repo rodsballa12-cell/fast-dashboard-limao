@@ -21,6 +21,10 @@ termo técnico no relatório final. Fale em reais, em clientes e em dias.
 | `data/dashboard_data.json` | Escova — operação completa |
 | `data/spa/dashboard_data.json` | Spa — pode estar em estado-zero antes de 25/09/2026 |
 | `data/consolidado/dashboard_data.json` | as duas somadas |
+| `sults_limao.json` (só no PC, ver `.claude/skills/SULTS.md`) | chamados da franqueadora esperando resposta da loja, checklists |
+
+Item de `chamados_urgentes` entra em **"exige ação hoje"**, com o que a
+franqueadora pediu e há quantos dias.
 
 Você **lê** esses arquivos. Não roda script, não chama API, não altera nada.
 Se o dado estiver velho, o certo é avisar — não é ir buscar.

@@ -212,6 +212,32 @@ function Comissoes-Trinks {
 }
 Comissoes-Trinks
 
+# --- SULTS (franqueadora): chamados, pedidos, comunicados, checklists --------
+# So leitura (GET) e so das lojas Limao: o token enxerga a rede inteira, o
+# script filtra e descarta o resto. O resultado NAO vai para o repositorio
+# (publico): fica em OneDrive\Franquia - FAST\Claude\SULTS\sults_limao.json.
+# --se-velho 180: as sete rodadas do dia nao precisam repetir a leitura (cada
+# uma leva ~1 minuto pelo limite de 2 consultas/s). Codigo 3 = pulado, nao e
+# falha. Pedido do Rodrigo em 21/10/2026.
+function SULTS-Leitura {
+  $anterior = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $py = (Get-Command python -ErrorAction SilentlyContinue).Source
+    if (-not $py) { Registrar "SULTS: python nao encontrado, pulei."; return }
+    $envAntes = $env:PYTHONUTF8
+    $env:PYTHONUTF8 = "1"
+    try {
+      $saidaPy = (& $py (Join-Path $Projeto "scripts\sults_leitura.py") --se-velho 180 2>&1 | Out-String).Trim()
+      if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 3) { Registrar "FALHOU: SULTS (codigo $LASTEXITCODE). $saidaPy" }
+      else { Registrar $saidaPy }
+    } finally { $env:PYTHONUTF8 = $envAntes }
+  } catch {
+    Registrar ("FALHOU: SULTS. " + $_.Exception.Message)
+  } finally { $ErrorActionPreference = $anterior }
+}
+SULTS-Leitura
+
 # 'claude' pode nao estar no PATH de uma tarefa agendada.
 $claude = (Get-Command claude -ErrorAction SilentlyContinue).Source
 if (-not $claude) {

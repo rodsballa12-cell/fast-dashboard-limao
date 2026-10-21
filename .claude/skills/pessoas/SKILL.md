@@ -20,6 +20,7 @@ por melhor que a mídia esteja.
 | → `comissoes` | regras de comissão do Trinks |
 | → `metas_franqueadora` | metas de recepção definidas pela franqueadora |
 | `data/prof_overrides.json` | ajustes manuais de meta |
+| `sults_limao.json` (só no PC, ver `.claude/skills/SULTS.md`) | chamados de RH, Documentos e Jurídico com a franqueadora: contratos e dados de salário/comissão da rede que a loja pediu |
 
 **Sua área no painel:** ver `.claude/skills/PAINEL.md`, seção **👥 Pessoas** — a lista de cards pelos quais você responde. O mapa é o dono da divisão; não duplique a lista aqui.
 

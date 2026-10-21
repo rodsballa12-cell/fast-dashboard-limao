@@ -39,6 +39,11 @@ bloqueio. Cadeira vazia é informação, não ausência.
 A Memória fala **por último**, depois de ver os outros cinco — ela existe para
 dizer se a conclusão do dia já foi tentada antes.
 
+**Pendência com a franqueadora** não é de nenhum departamento sozinho: confira
+`chamados_urgentes` em `sults_limao.json` (ver `.claude/skills/SULTS.md`). Um
+chamado em que a franqueadora espera resposta da loja entra nas decisões da
+noite, com o que ela pediu e há quantos dias.
+
 ### Passo 2 — rotear os `NÃO VEJO`
 
 Junte todos os campos `NÃO VEJO` dos seis pareceres e case cada pergunta com

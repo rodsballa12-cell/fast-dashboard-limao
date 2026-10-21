@@ -33,6 +33,7 @@ Excel (mão)   ──► gerar_financeiro.py ─► data/financeiro.json
 Stone (CSV)   ──► stone_processor.py ──► bloco `stone` do dashboard
 Meta Graph    ──► refresh_midias.py ──► data/midias_sociais.json
 XP (CSV)      ──► extrato_xp.py ─────► conferência do custo real (não entra no painel)
+SULTS (API)   ──► sults_leitura.py ──► OneDrive\...\SULTS\sults_limao.json (só PC, fora do repo)
 ```
 
 **Receita vem do Trinks. Custo vem do Excel. Conciliação vem da Stone.** A conta

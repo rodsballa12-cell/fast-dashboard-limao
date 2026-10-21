@@ -49,6 +49,11 @@ O painel tem **dois pipelines distintos** — confundi-los leva a alarmes falsos
 os dados de Meta continuam chegando pelo pipeline direto. São caminhos
 independentes — uma falha num não cega o outro.
 
+**Comunicados da franqueadora** (campanha, estoque, lançamento) também chegam
+pela leitura diária do SULTS, em `sults_limao.json` (só no PC, ver
+`.claude/skills/SULTS.md`): `novo` diz o que apareceu desde ontem e
+`nao_abriram` diz quem da loja ainda não abriu.
+
 ### Arquivos de dados
 
 | Arquivo / fonte | O que tem |

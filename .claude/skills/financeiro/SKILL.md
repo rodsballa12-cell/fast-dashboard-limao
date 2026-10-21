@@ -19,6 +19,7 @@ equilíbrio e dinheiro que entrou de fato na conta.
 | `data/spa/financeiro.json` | mesma estrutura para o Spa |
 | `data/consolidado/financeiro.json` | as duas somadas |
 | `data/dashboard_data.json` → `stone` | recebíveis, conciliação, antecipação |
+| `sults_limao.json` (só no PC, ver `.claude/skills/SULTS.md`) | compras na franqueadora por mês e fornecedor; comunicados de boleto/royalty não abertos |
 
 **Sua área no painel:** ver `.claude/skills/PAINEL.md`, seção **💰 Financeiro** — a lista de cards pelos quais você responde. O mapa é o dono da divisão; não duplique a lista aqui.
 
