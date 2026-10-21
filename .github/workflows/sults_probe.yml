@@ -1,0 +1,44 @@
+name: SULTS · sonda de leitura
+
+# Confere o que a credencial do SULTS alcança, de dentro do Actions — que é o
+# único lugar onde o secret e a rede existem ao mesmo tempo. A sessão da nuvem
+# não lê secret (só se usa, não se lê) e nem resolve api.sults.com.br.
+#
+# Só GET. Não escreve no SULTS, não grava nada no repositório, não imprime
+# nenhum valor de token. O que vai para o log é: nome do secret, código HTTP,
+# contagem de registros e NOMES de campo — nunca o conteúdo de um registro,
+# porque chamado e checklist carregam nome de pessoa e o log fica guardado
+# no GitHub.
+#
+# Manual de propósito: sonda não precisa de cron.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sonda:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Cada nome plausível é repassado explicitamente: secret que o workflow
+      # não cita não chega no processo. Secret que não existe vira string
+      # vazia, sem erro — e é assim que a sonda descobre qual deles existe.
+      - name: Rodar a sonda
+        env:
+          SULTS_API_TOKEN:    ${{ secrets.SULTS_API_TOKEN }}
+          SULTS_TOKEN:        ${{ secrets.SULTS_TOKEN }}
+          SULTS_API_KEY:      ${{ secrets.SULTS_API_KEY }}
+          SULTS_KEY:          ${{ secrets.SULTS_KEY }}
+          SULTS_AUTH_TOKEN:   ${{ secrets.SULTS_AUTH_TOKEN }}
+          SULTS_BEARER:       ${{ secrets.SULTS_BEARER }}
+          SULTS_ACCESS_TOKEN: ${{ secrets.SULTS_ACCESS_TOKEN }}
+          SULTS:              ${{ secrets.SULTS }}
+        run: python scripts/sults_probe.py
