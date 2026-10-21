@@ -72,25 +72,21 @@ Registrar "Inicio."
 
 # Traz o que as rotinas da nuvem publicaram desde a ultima execucao.
 # Se falhar (sem rede, conflito), segue com o dado local e avisa no briefing.
-# Stash + pull --rebase + stash pop: resolve a classe inteira de bugs
-# "cannot pull with rebase: You have unstaged changes" que travou o pipeline
-# de 11 a 13/10/2026 (um .pyc auto-gerado deixava o git sempre "sujo"). Com
-# o stash o pull nunca mais trava por unstaged, independente do arquivo.
+# pull --rebase --autostash: guarda e devolve as mudancas locais numa operacao
+# so. Antes eram tres passos (stash, pull, pop) e as rotinas das 09h disparam
+# juntas quando o PC acorda: uma mexia na arvore entre o stash e o pull da
+# outra e o pull falhava com "cannot pull with rebase: You have unstaged
+# changes" (13/10, 15/10, 16/10, 18/10 e 20/10/2026). Se ainda assim falhar,
+# espera um pouco e tenta de novo uma vez, que e o caso de outra rotina
+# estar com o git ocupado.
 $avisoGit = ""
-$tinhaMudanca = $false
-$statusAntes = (& git -C $Projeto status --porcelain 2>&1 | Out-String).Trim()
-if ($statusAntes) {
-  $tinhaMudanca = $true
-  if (-not (Git-Passo "guardar mudancas locais antes do pull" @("stash","push","-u","-m","rodar_agente auto-stash"))) {
-    $avisoGit = "> [!warning] Nao consegui guardar as mudancas locais antes do pull — segui mesmo assim.`n"
-  }
+$atualizou = Git-Passo "atualizar o repositorio antes de rodar" @("pull","--rebase","--autostash")
+if (-not $atualizou) {
+  Start-Sleep -Seconds (15 + (Get-Random -Maximum 20))
+  $atualizou = Git-Passo "atualizar o repositorio antes de rodar (2a tentativa)" @("pull","--rebase","--autostash")
 }
-if (-not (Git-Passo "atualizar o repositorio antes de rodar" @("pull","--rebase"))) {
+if (-not $atualizou) {
   $avisoGit = "> [!warning] Nao consegui atualizar o repositorio. Os numeros podem estar atrasados.`n"
-}
-if ($tinhaMudanca) {
-  # Restaurar o stash. Se der conflito, mantem o stash pra Rodrigo olhar.
-  Git-Passo "restaurar mudancas locais apos pull" @("stash","pop") | Out-Null
 }
 
 # --- Reserva Stone no Excel -------------------------------------------------
