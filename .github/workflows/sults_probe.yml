@@ -24,6 +24,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Abrir cofre (dados criptografados)
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python3 -m pip install -q cryptography 2>/dev/null || python3 -m pip install -q --break-system-packages cryptography && python3 scripts/cofre.py abrir
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'

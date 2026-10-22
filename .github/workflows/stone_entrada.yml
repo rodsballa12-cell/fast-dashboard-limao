@@ -12,12 +12,11 @@ name: Stone · extrato novo entra somando
 # daquela pasta.
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'data/stone_entrada/**.csv'
-      - 'data/stone_entrada/**.CSV'
+  # 21/10/2026 (cofre): o gatilho por push foi DESLIGADO. Subir o CSV pela
+  # pasta data/stone_entrada no github.com deixava o extrato bruto publico no
+  # historico do repositorio. Agora o extrato entra pelo PC:
+  #   python scripts/stone_local.py caminho/do/extrato.csv
+  # Este workflow fica so para disparo manual.
   workflow_dispatch:
 
 permissions:
@@ -36,6 +35,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
+
+      - name: Abrir cofre (dados criptografados)
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python3 -m pip install -q cryptography 2>/dev/null || python3 -m pip install -q --break-system-packages cryptography && python3 scripts/cofre.py abrir
 
       - name: Pular se o commit e do proprio robo
         id: guard
@@ -73,13 +78,19 @@ jobs:
           resumo="$(sed -nE 's/^RESUMO=(.*)$/\1/p' /tmp/saida.txt | head -1)"
           echo "resumo=${resumo}" >> "$GITHUB_OUTPUT"
 
+      - name: Fechar cofre (criptografa antes do commit)
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python3 -m pip install -q cryptography 2>/dev/null || python3 -m pip install -q --break-system-packages cryptography && python3 scripts/cofre.py fechar
+
       - name: Commitar
         if: steps.guard.outputs.skip == 'false'
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A data/stone_extrato.csv data/stone_entrada
+          git add -A data/stone_extrato.csv.enc data/stone_entrada
           if git diff --cached --quiet; then
             echo "Nada mudou — nenhum arquivo aproveitado."
             exit 0

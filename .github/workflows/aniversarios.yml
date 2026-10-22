@@ -17,6 +17,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Abrir cofre (dados criptografados)
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python3 -m pip install -q cryptography 2>/dev/null || python3 -m pip install -q --break-system-packages cryptography && python3 scripts/cofre.py abrir
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -25,11 +31,17 @@ jobs:
         id: fila
         run: python scripts/aniversario_fila.py
 
+      - name: Fechar cofre (criptografa antes do commit)
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python3 -m pip install -q cryptography 2>/dev/null || python3 -m pip install -q --break-system-packages cryptography && python3 scripts/cofre.py fechar
+
       - name: Commit fila
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/aniversarios_fila.json 2>/dev/null || true
+          git add data/aniversarios_fila.json.enc 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "Sem mudanças na fila"
           else

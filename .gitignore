@@ -1,2 +1,35 @@
 __pycache__/
 *.pyc
+
+# marketing: area de trabalho temporaria
+scripts/marketing/_work/
+scripts/marketing/pecas_*.py
+
+# ── Cofre (21/10/2026) ───────────────────────────────────────────────
+# O repositório é PÚBLICO (GitHub Pages). Dado de cliente e financeiro só
+# entra no git criptografado (*.enc) — ver scripts/cofre.py.
+.cofre/
+data/dashboard_data.json
+data/spa/dashboard_data.json
+data/consolidado/dashboard_data.json
+data/financeiro.json
+data/spa/financeiro.json
+data/consolidado/financeiro.json
+data/wa_fila.json
+data/wa_historico.json
+data/aniversarios_fila.json
+data/clientes_detalhes.json
+data/spa/clientes_detalhes.json
+data/clientes_lista_cache.json
+data/spa/clientes_lista_cache.json
+data/agend_detail_cache.json
+data/spa/agend_detail_cache.json
+data/agendamentos_ano_cache.json
+data/spa/agendamentos_ano_cache.json
+data/transacoes_ano_cache.json
+data/spa/transacoes_ano_cache.json
+data/stone_extrato.csv
+data/spa/stone_extrato.csv
+data/hubspot_import_clientes.csv
+data/stone_entrada/*.csv
+data/stone_entrada/*.CSV

@@ -36,6 +36,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Abrir cofre (dados criptografados)
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python3 -m pip install -q cryptography 2>/dev/null || python3 -m pip install -q --break-system-packages cryptography && python3 scripts/cofre.py abrir
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -53,6 +59,12 @@ jobs:
           WA_FORCA_HORARIO: ${{ inputs.forcar_horario && '1' || '' }}
         run: python scripts/wa_dispatch.py
 
+      - name: Fechar cofre (criptografa antes do commit)
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python3 -m pip install -q cryptography 2>/dev/null || python3 -m pip install -q --break-system-packages cryptography && python3 scripts/cofre.py fechar
+
       - name: Commit fila e histórico
         # O histórico PRECISA voltar para o repo: é ele que alimenta o cooldown.
         # Sem esse commit, todo dia seria "primeira vez" para todo mundo.
@@ -68,7 +80,7 @@ jobs:
           # disco do runner e descartada sem nunca ser commitada — o arquivo no
           # repo ficou congelado em 04/09 por 10 dias.
           # Um arquivo por vez, como ja e feito no midias_refresh.yml.
-          for f in data/wa_fila.json data/wa_historico.json; do
+          for f in data/wa_fila.json.enc data/wa_historico.json.enc; do
             git add "$f" 2>/dev/null || true
           done
           if git diff --cached --quiet; then

@@ -1,5 +1,22 @@
 # FAST Limão · o que qualquer sessão precisa saber antes de mexer
 
+## 🔒 Cofre de dados (desde 21/10/2026) — LER ANTES DE MEXER EM data/
+
+O repositório é **público** (GitHub Pages). Dado de cliente (CPF, telefone,
+nascimento, endereço) e financeiro só entra no git **criptografado** (`*.enc`).
+Os arquivos normais continuam existindo no PC e nas Actions, mas estão no
+`.gitignore`. Lista e detalhes: `scripts/cofre.py`.
+
+- **Depois de `git pull`**: `python scripts/cofre.py abrir` (senão os scripts
+  locais leem dado velho).
+- **Antes de commitar dado**: `python scripts/cofre.py fechar` e `git add` dos
+  `.enc` — nunca do arquivo normal.
+- **Extrato Stone**: `python scripts/stone_local.py <csv>` (não suba CSV pelo github.com).
+- Chaves: `.cofre/chaves.env` no PC e GitHub Secrets `FAST_COFRE_CHAVE` /
+  `FAST_PAINEL_SENHA`. **Nunca** commitar, colar em chat ou em ata.
+- Arquivo novo com dado pessoal? Inclua em `PAINEL`/`CACHE` no `cofre.py`, no
+  `.gitignore` e (se o painel lê) no regex de `cofre-painel.js`.
+
 Rodrigo Garcia é dono de duas lojas — **FAST Escova Limão** (aberta em 23/07/2026)
 e **FAST Spa Limão** (aberta em 24/09/2026). Ele **não é programador**. Fale em
 reais, clientes e dias; nunca em nome de função ou nome de arquivo sem dizer o

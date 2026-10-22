@@ -129,7 +129,8 @@ Ao Rodrigo confirmar:
    - decisao 2: [titulo] · [status]
    ...
    ```
-4. `git push origin main`
+4. Antes do push: `python scripts/cofre.py fechar` e `git add` dos `data/**/*.enc` alterados
+   (nunca do JSON normal — ele está no .gitignore desde 21/10/2026). Depois `git push origin main`
 5. Confirmar ao Rodrigo com o hash do commit + link do dashboard
 
 ### Passo 6 — devolver o parecer curto

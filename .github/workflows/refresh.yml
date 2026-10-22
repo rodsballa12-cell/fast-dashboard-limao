@@ -84,6 +84,12 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Abrir cofre (dados criptografados)
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python3 -m pip install -q cryptography 2>/dev/null || python3 -m pip install -q --break-system-packages cryptography && python3 scripts/cofre.py abrir
+
       # Carimbo visível em BRT (o cron do GitHub é obrigatoriamente UTC;
       # este echo prova em que hora de Brasília este fire disparou).
       - name: Hora de disparo (BRT)
@@ -233,6 +239,12 @@ jobs:
         continue-on-error: true
         run: python scripts/preco_praticado.py || true
 
+      - name: Fechar cofre (criptografa antes do commit)
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python3 -m pip install -q cryptography 2>/dev/null || python3 -m pip install -q --break-system-packages cryptography && python3 scripts/cofre.py fechar
+
       - name: Commit e push
         if: steps.recency.outputs.skip != 'true'
         run: |
@@ -244,27 +256,27 @@ jobs:
           # apesar do dashboard ter dados novos.
           # Fix: adicionar cada arquivo individualmente (o `|| true` só cobre o
           # próprio git add, não os outros).
-          for f in data/dashboard_data.json \
-                   data/clientes_detalhes.json \
+          for f in data/dashboard_data.json.enc \
+                   data/clientes_detalhes.json.enc \
                    data/profissionais_cache.json \
-                   data/clientes_lista_cache.json \
+                   data/clientes_lista_cache.json.enc \
                    data/servicos_cache.json \
-                   data/agend_detail_cache.json \
-                   data/agendamentos_ano_cache.json \
-                   data/transacoes_ano_cache.json \
+                   data/agend_detail_cache.json.enc \
+                   data/agendamentos_ano_cache.json.enc \
+                   data/transacoes_ano_cache.json.enc \
                    data/quota_status.json \
-                   data/spa/dashboard_data.json \
-                   data/spa/financeiro.json \
-                   data/spa/clientes_detalhes.json \
+                   data/spa/dashboard_data.json.enc \
+                   data/spa/financeiro.json.enc \
+                   data/spa/clientes_detalhes.json.enc \
                    data/spa/profissionais_cache.json \
-                   data/spa/clientes_lista_cache.json \
+                   data/spa/clientes_lista_cache.json.enc \
                    data/spa/servicos_cache.json \
-                   data/spa/agend_detail_cache.json \
-                   data/spa/agendamentos_ano_cache.json \
-                   data/spa/transacoes_ano_cache.json \
+                   data/spa/agend_detail_cache.json.enc \
+                   data/spa/agendamentos_ano_cache.json.enc \
+                   data/spa/transacoes_ano_cache.json.enc \
                    data/spa/quota_status.json \
-                   data/consolidado/dashboard_data.json \
-                   data/consolidado/financeiro.json; do
+                   data/consolidado/dashboard_data.json.enc \
+                   data/consolidado/financeiro.json.enc; do
             git add "$f" 2>/dev/null || true
           done
           # version.json: carrega o SHA do commit atual + horario de deploy pra
@@ -279,7 +291,7 @@ jobs:
           git add -u data/quota_status.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "Sem mudanças nos dados"
-          elif git diff --cached --quiet -- data/dashboard_data.json; then
+          elif git diff --cached --quiet -- data/dashboard_data.json.enc; then
             # Nada mudou no dashboard: o script saiu pela porta da cota esgotada
             # e só reescreveu quota_status.json. Rotular isso de "refresh" faz o
             # git log parecer saudável enquanto o painel está congelado.

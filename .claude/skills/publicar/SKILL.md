@@ -25,6 +25,7 @@ o Rodrigo abre o antigo pelo link que já tinha, e ninguém percebe por dias.
 
 ```bash
 git pull --rebase origin main
+python3 scripts/cofre.py abrir   # dados chegam criptografados desde 21/10/2026
 python3 scripts/auditoria_coerencia.py
 ```
 
