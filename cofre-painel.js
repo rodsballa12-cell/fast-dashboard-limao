@@ -61,6 +61,25 @@
       .then(function (buf) { return new TextDecoder().decode(buf); });
   }
 
+  // Um aviso por sessao, visivel na tela. Console sozinho nao serve: quem le o
+  // painel no celular nunca abre console.
+  var jaAvisou = false;
+  window.fastCofreIncompleto = false;
+  function avisarCofreAberto(arquivo) {
+    window.fastCofreIncompleto = true;
+    console.warn('[cofre] ' + arquivo + ' lido SEM criptografia: o .enc nao existe. Rode `python scripts/cofre.py migrar` no PC.');
+    if (jaAvisou) return;
+    jaAvisou = true;
+    function montar() {
+      var b = document.createElement('div');
+      b.setAttribute('style', 'position:fixed;left:0;right:0;top:0;z-index:2147483646;background:#b45309;color:#fff;font:600 12.5px system-ui,-apple-system,sans-serif;padding:8px 14px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.3)');
+      b.textContent = '\u26A0\uFE0F Cofre nao fechado \u2014 o painel esta lendo os dados sem criptografia. Rode a migracao no PC: python scripts/cofre.py migrar';
+      b.addEventListener('click', function () { b.remove(); });
+      document.body.appendChild(b);
+    }
+    if (document.body) montar(); else document.addEventListener('DOMContentLoaded', montar);
+  }
+
   window.fetch = function (entrada, init) {
     var url = typeof entrada === 'string' ? entrada : (entrada && entrada.url) || '';
     var u;
@@ -69,7 +88,26 @@
     if (!m || !SENSIVEIS.test(m[1])) return origFetch(entrada, init);
 
     return origFetch(u.pathname + '.enc' + u.search, init).then(function (r) {
-      if (!r.ok) return r;  // 404 continua 404: o fallback de unidade do painel segue funcionando
+      // Cofre AINDA NAO FECHADO: o .enc nao existe, mas o arquivo em texto
+      // puro existe. Em 22/10/2026 o codigo do cofre entrou no repositorio
+      // (commit abba1e8) sem que a migracao `cofre.py migrar` tivesse rodado:
+      // nenhum .enc foi gerado e nenhum .json foi tirado do git. Resultado --
+      // toda leitura sensivel virava 404 e o painel ficava fora do ar, com os
+      // dados intactos no repositorio ao lado. A fechadura entrou antes do
+      // conteudo do cofre.
+      //
+      // Entao: .enc ausente cai de volta no arquivo original, e AVISA. Nao e
+      // brecha -- enquanto o .enc nao existe o texto puro esta publico de
+      // qualquer jeito, e assim que a migracao rodar o original deixa de ser
+      // servido e este caminho morre sozinho. O que nao se admite e cair
+      // calado: bloco que some tem de doer.
+      if (r.status === 404) {
+        return origFetch(entrada, init).then(function (claro) {
+          if (claro.ok) avisarCofreAberto(m[1]);
+          return claro;
+        });
+      }
+      if (!r.ok) return r;
       return r.json().then(function (env) {
         function tentar(n) {
           return obterSenha().then(function (senha) {
