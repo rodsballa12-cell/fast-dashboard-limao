@@ -55,8 +55,17 @@ def _carregar_chaves():
 
 
 def _chave(rel):
+    """A chave, venha ela do .cofre/chaves.env ou de um GitHub Secret.
+
+    O .strip() nao e detalhe: sem ele os dois caminhos discordavam. A leitura
+    do arquivo ja limpava o valor (`v.strip()` em _carregar_chaves), a do
+    ambiente nao -- entao um espaco ou quebra de linha sobrando no campo do
+    Secret dava uma chave diferente da do PC. Em 22/10/2026 isso derrubou o
+    refresh duas vezes seguidas com InvalidTag, com a senha certa colada no
+    lugar certo: o que nao batia era um caractere invisivel no fim.
+    """
     nome = "FAST_PAINEL_SENHA" if rel in PAINEL else "FAST_COFRE_CHAVE"
-    valor = os.environ.get(nome, "")
+    valor = os.environ.get(nome, "").strip()
     if not valor:
         sys.exit(f"[cofre] ERRO: falta {nome} (GitHub Secret ou .cofre/chaves.env).")
     return valor
@@ -103,7 +112,22 @@ def abrir():
             (RAIZ / rel).write_bytes(decifrar(enc.read_bytes(), _chave(rel)))
             n += 1
         except Exception as exc:
-            sys.exit(f"[cofre] ERRO ao abrir {rel}: chave errada ou arquivo corrompido ({type(exc).__name__}).")
+            # Mensagem que diz o que fazer. "InvalidTag" sozinho nao ensina
+            # nada a quem nao escreveu isto: e so o AES dizendo que a senha
+            # nao abre o arquivo. Os numeros abaixo descrevem a chave sem
+            # revelar nada dela -- o log do Actions fica guardado no GitHub.
+            nome = "FAST_PAINEL_SENHA" if rel in PAINEL else "FAST_COFRE_CHAVE"
+            bruto = os.environ.get(nome, "")
+            pista = ""
+            if bruto and bruto != bruto.strip():
+                pista = (f"\n   PISTA: o valor de {nome} tem espaco ou quebra de linha "
+                         f"sobrando ({len(bruto)} caracteres, {len(bruto.strip())} sem as bordas). "
+                         f"Reco­lado sem o excesso resolve.")
+            sys.exit(f"[cofre] ERRO ao abrir {rel}: a chave {nome} nao abre este arquivo "
+                     f"({type(exc).__name__}).\n"
+                     f"   A chave tem {len(bruto.strip())} caractere(s). Confira se e a MESMA "
+                     f"que cifrou: depois de trocar a senha, o .enc e o Secret tem de ser "
+                     f"atualizados juntos.{pista}")
     print(f"[cofre] {n} arquivo(s) aberto(s).")
 
 
