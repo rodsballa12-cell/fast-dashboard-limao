@@ -1,0 +1,44 @@
+name: Cofre · as chaves estão nos Secrets?
+
+# Pre-voo da migração do cofre. Depois que `cofre.py migrar` rodar, todo
+# refresh chama `cofre.py abrir`, que EXIGE as duas chaves. Sem elas nos
+# Secrets o refresh passa a falhar e o painel congela — exatamente o erro
+# de 22/10, quando a fechadura entrou antes do conteúdo do cofre.
+#
+# Só olha se a chave existe e quantos caracteres tem. NUNCA imprime o valor,
+# nem um pedaço: o log do Actions fica guardado no GitHub.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Conferir as duas chaves
+        env:
+          FAST_COFRE_CHAVE:  ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: |
+          falta=0
+          for nome in FAST_COFRE_CHAVE FAST_PAINEL_SENHA; do
+            valor="${!nome}"
+            if [ -z "$valor" ]; then
+              echo "🛑 $nome — NAO CADASTRADO"
+              falta=1
+            else
+              echo "✅ $nome — presente, ${#valor} caracteres"
+            fi
+          done
+          echo
+          if [ "$falta" = "1" ]; then
+            echo "A migracao NAO deve rodar ainda: o refresh seguinte falharia"
+            echo "e o painel congelaria. Cadastre em Settings > Secrets and"
+            echo "variables > Actions, com exatamente os mesmos valores do"
+            echo "arquivo .cofre/chaves.env do PC."
+            exit 1
+          fi
+          echo "As duas chaves estao nos Secrets. A migracao pode rodar."
