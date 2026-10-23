@@ -272,3 +272,32 @@ jobs:
             exit 1
           fi
           exit 0
+
+      # Carimbo de saude — SEMPRE, inclusive quando algo acima falhou.
+      #
+      # Existe porque falha silenciosa e a doenca cronica deste repositorio:
+      # sete dos quinze aprendizados em docs/aprendizados/ sao a mesma coisa.
+      # As midias do Spa ficaram 42h paradas sem ninguem saber, e o vigia que
+      # havia contava commits com `ata:` no nome -- entao 21 atas que diziam
+      # "Credit balance is too low" passaram por saudaveis.
+      #
+      # `if: always()` e o ponto todo: quem so carimba quando da certo nao
+      # registra justamente o que interessa. E o push leva SO o saude.json,
+      # para nao depender do commit principal, que pode nem ter acontecido.
+      - name: Carimbar saude
+        if: always()
+        run: |
+          python scripts/saude.py carimbar midias \
+            "${{ job.status == 'success' && 'ok' || 'falha' }}" \
+            "${{ job.status }} · run ${{ github.run_number }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/saude.json
+          git diff --cached --quiet && exit 0
+          git commit -m "saude: midias ${{ job.status }}"
+          for t in 1 2 3; do
+            git push && exit 0
+            git pull --rebase --autostash origin main || true
+            sleep $((t * 4))
+          done
+          echo "::warning::Nao consegui empurrar o carimbo de saude."

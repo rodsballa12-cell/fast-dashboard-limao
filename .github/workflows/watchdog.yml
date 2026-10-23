@@ -39,7 +39,21 @@ jobs:
           LIMITE_HORAS=24
 
           # Procurar ultimo commit com 'ata:' no titulo (vem do rodar_agente.ps1)
-          ULT_COMMIT=$(git log --all --format='%ct|%s' | grep -i '^[0-9]*|ata:' | head -1 || echo '')
+          # CONTEUDO, nao carimbo. Ate 23/10/2026 esta linha procurava o
+          # ultimo commit com `ata:` no nome -- e as 21 atas que diziam
+          # "Credit balance is too low" contavam como saudaveis, sete dias
+          # seguidos. Agora so vale ata com parecer de verdade dentro.
+          ULT_COMMIT=''
+          for sha_ts in $(git log --all --format='%H|%ct' -- docs/atas | head -40); do
+            sha=${sha_ts%%|*}; ts=${sha_ts##*|}
+            arqs=$(git show --name-only --format='' "$sha" -- docs/atas | grep '\.md$' || true)
+            for arq in $arqs; do
+              corpo=$(git show "$sha:$arq" 2>/dev/null || true)
+              echo "$corpo" | grep -qiE 'credit balance|too low|rate limit' && continue
+              [ "$(echo "$corpo" | wc -c)" -lt 400 ] && continue
+              ULT_COMMIT="$ts|$(basename "$arq")"; break 2
+            done
+          done
           if [ -z "$ULT_COMMIT" ]; then
             echo "status=critico" >> $GITHUB_OUTPUT
             echo "motivo=nenhuma ata encontrada no historico" >> $GITHUB_OUTPUT
@@ -78,6 +92,14 @@ jobs:
           HORAS_DASH=$(( (AGORA - GERADO_TS) / 3600 ))
           echo "dash_horas=$HORAS_DASH" >> $GITHUB_OUTPUT
           echo "dash_gerado=$GERADO" >> $GITHUB_OUTPUT
+
+      - name: Verificar saude das automacoes e frescor das midias
+        id: saude
+        continue-on-error: true
+        run: |
+          set +e
+          python3 scripts/saude.py conferir
+          echo "saude_rc=$?" >> $GITHUB_OUTPUT
 
       - name: Abrir/atualizar issue se tem problema
         if: steps.freshness.outputs.status != 'ok' || steps.dashboards.outputs.dre_horas > 48 || steps.dashboards.outputs.dash_horas > 6

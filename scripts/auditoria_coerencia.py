@@ -394,6 +394,87 @@ def conferir_caixa_a_receber(achados):
                 f"R$ {ar['Spa']:,.2f})."))
 
 
+def conferir_saude_automacoes(achados):
+    """As automacoes carimbaram que funcionaram, e isso bate com os arquivos?
+
+    Existe porque o vigia antigo media CARIMBO, nao CONTEUDO. Ele contava
+    commits com `ata:` no nome, entao as 21 atas que diziam "Credit balance is
+    too low" passaram por saudaveis durante sete dias. E as midias nao eram
+    vigiadas por ninguem: ficaram 42 horas paradas e o alarme que existia
+    (um issue no GitHub) toca numa sala onde o Rodrigo nao entra.
+
+    Aqui a conferencia e dupla, e e a dupla que importa:
+      1. o que `scripts/saude.py` julga (ultimo SUCESSO, nao ultimo toque)
+      2. a data dentro de cada arquivo, por unidade -- porque ja aconteceu de
+         a Escova atualizar e o Spa nao, no mesmo commit
+    """
+    import subprocess
+    try:
+        r = subprocess.run([sys.executable, str(REPO / "scripts" / "saude.py"), "conferir"],
+                           capture_output=True, text=True, timeout=60)
+        if r.returncode == 1:
+            for linha in r.stdout.splitlines():
+                if linha.strip().startswith(("🛑", "⚠️")):
+                    achados.append(("aviso", f"Saude: {linha.strip()[2:].strip()}"))
+    except Exception as exc:
+        achados.append(("aviso", f"Saude: nao consegui rodar scripts/saude.py ({type(exc).__name__})."))
+
+    # As tres unidades, uma a uma. O consolidado some do radar quando so se
+    # olha a Escova -- e foi exatamente o que aconteceu em 21-23/10.
+    from datetime import datetime, timedelta, timezone
+    agora = datetime.now(timezone(timedelta(hours=-3)))
+    for rel, nome, limite in (
+            ("data/midias_sociais.json",             "Midias Escova",      36),
+            ("data/spa/midias_sociais.json",         "Midias Spa",         36),
+            ("data/consolidado/midias_sociais.json", "Midias Consolidado", 36)):
+        d = carregar(rel)
+        if not d:
+            achados.append(("aviso", f"{nome}: arquivo ausente."))
+            continue
+        g = d.get("gerado_em")
+        try:
+            h = (agora - datetime.fromisoformat(g)).total_seconds() / 3600
+        except Exception:
+            achados.append(("aviso", f"{nome}: sem data de geracao legivel ({g!r})."))
+            continue
+        if h > limite:
+            achados.append(("aviso",
+                f"{nome}: {h:.0f}h sem atualizar (limite {limite}h). "
+                f"Uma unidade parada e as outras frescas e o sinal de rodada pela metade."))
+
+
+def conferir_atas_vazias(achados):
+    """Ata existe != reuniao aconteceu.
+
+    Entre 18 e 22/10/2026, 28 pareceres dos cargos foram commitados com uma
+    linha so: "Credit balance is too low". O erro da API virou o texto da ata,
+    o script tratou como parecer valido e deu commit. Sete dias assim, sem um
+    alarme -- porque todo mundo media que o commit existiu.
+    """
+    import re
+    from datetime import date, timedelta
+    pasta = REPO / "docs" / "atas"
+    if not pasta.exists():
+        return
+    limite = (date.today() - timedelta(days=2)).isoformat()
+    vazias = []
+    for f in sorted(pasta.glob("*.md")):
+        if f.name[:10] < limite:
+            continue
+        t = f.read_text(encoding="utf-8", errors="replace")
+        # Erro de credencial, ou ata que nao tem corpo nenhum depois do cabecalho.
+        corpo = re.sub(r"^---.*?---", "", t, flags=re.S).strip()
+        corpo = re.sub(r"^#.*$|^↑.*$", "", corpo, flags=re.M).strip()
+        if re.search(r"credit balance|too low|quota|rate limit", t, re.I) or len(corpo) < 120:
+            vazias.append(f.name[:-3])
+    if vazias:
+        achados.append(("erro",
+            f"{len(vazias)} ata(s) dos ultimos 2 dias sem parecer de verdade "
+            f"({', '.join(vazias[:4])}{'...' if len(vazias) > 4 else ''}). "
+            f"O cargo rodou e nao produziu nada -- credencial, permissao de "
+            f"escrita ou limite de uso."))
+
+
 def conferir_preco_realizado(achados):
     """O card de preco voltou a comparar com o que foi cobrado?
 
@@ -525,6 +606,8 @@ def main() -> int:
     conferir_taxa_comissao(achados)
     conferir_preco_realizado(achados)
     conferir_caixa_a_receber(achados)
+    conferir_saude_automacoes(achados)
+    conferir_atas_vazias(achados)
     conferir_funil_roas(achados)
     conferir_conselho_sincronizado(achados)
 

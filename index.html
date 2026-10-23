@@ -443,6 +443,11 @@ document.addEventListener('visibilitychange', () => {
 </style>
 </head>
 <body>
+<!-- Faixa de saude das automacoes: preenchida por renderSaude() a partir de
+     data/saude.json. Fica ANTES do wrap, no topo absoluto, porque o alarme
+     que aparece onde a pessoa ja esta olhando e a unica diferenca entre
+     detectar e descobrir dias depois. -->
+<div id="saude-faixa"></div>
 <div class="wrap">
   <header>
     <div class="brand">
@@ -5706,6 +5711,10 @@ async function load(showToast=false){
     else document.getElementById('loading').innerHTML=`<div style="color:var(--crit)">❌ Erro ao carregar dados: ${e.message}<br><small>Tenta recarregar a página em 1 min.</small></div>`;
   } finally {
     if(btn){btn.disabled=false;btn.textContent='🔄 Atualizar dados';}
+    // A saude roda SEMPRE, inclusive quando o load acima falhou -- e
+    // principalmente ai. Quando o painel nao consegue carregar, a faixa e a
+    // unica coisa que explica por que, em vez de deixar a tela em branco.
+    try{ carregarSaude(); }catch(e){ console.warn('saude', e); }
   }
 }
 
@@ -7153,6 +7162,63 @@ function renderMidiasPlanoAcao(container_id, insights){
     <div class="cap" style="margin-top:6px">Consolidado: direcionamentos estratégicos + alertas do backend + recomendações do gerente. Priorizado por urgência real — não por ordem de origem.</div>
     ${seccoes}
   </div>`;
+}
+
+// ---- Saude das automacoes -------------------------------------------------
+// O painel pergunta "quando foi a ultima vez que isso funcionou de verdade?" e
+// mostra a resposta no topo quando ela e ruim. Le data/saude.json, que cada
+// workflow carimba ao terminar -- inclusive quando falha.
+//
+// Mede o ultimo SUCESSO, nao o ultimo toque. Uma automacao que falha de hora
+// em hora carimba sempre; se o criterio fosse "carimbou hoje", ela pareceria
+// saudavel. Foi assim que 21 atas dizendo "Credit balance is too low" passaram
+// por boas durante sete dias.
+let SAUDE = null;
+
+async function carregarSaude(){
+  try {
+    const r = await fetch('data/saude.json?_=' + Date.now(), {cache:'no-store'});
+    SAUDE = r.ok ? await r.json() : null;
+  } catch(e){ SAUDE = null; }
+  renderSaude();
+}
+
+function renderSaude(){
+  const el = document.getElementById('saude-faixa');
+  if(!el) return;
+  el.innerHTML = '';
+  if(!SAUDE || !SAUDE.automacoes) return;
+
+  const agora = new Date();
+  // Mesmos limites do scripts/saude.py. Mudou la, muda aqui -- e a auditoria
+  // de coerencia confere que os dois concordam.
+  const LIM = {
+    refresh:  {h:3,  rot:'Painel (Trinks)',       madrugadaOk:true},
+    midias:   {h:30, rot:'Mídias (Meta)',         madrugadaOk:false},
+    conselho: {h:30, rot:'Conselho da noite',     madrugadaOk:false},
+    cargos:   {h:30, rot:'Pareceres dos cargos',  madrugadaOk:false},
+    stone:    {h:72, rot:'Extrato Stone',         madrugadaOk:false},
+  };
+  const horaBRT = Number(new Intl.DateTimeFormat('pt-BR',{hour:'2-digit',hour12:false,timeZone:'America/Sao_Paulo'}).format(agora));
+  const fechada = horaBRT < 9 || horaBRT >= 22;
+
+  const ruins = [];
+  for(const [nome, cfg] of Object.entries(LIM)){
+    const a = SAUDE.automacoes[nome];
+    if(!a) continue;                        // nunca carimbou: nao inventa alarme
+    if(cfg.madrugadaOk && fechada) continue; // loja fechada, nada a buscar
+    const base = a.ultimo_ok ? new Date(a.ultimo_ok) : null;
+    if(!base){ ruins.push(`${cfg.rot} nunca terminou bem`); continue; }
+    const h = (agora - base) / 36e5;
+    if(h > cfg.h) ruins.push(`${cfg.rot} sem atualizar há ${Math.round(h)}h`);
+    else if(a.resultado === 'falha') ruins.push(`${cfg.rot}: última tentativa falhou`);
+  }
+  if(!ruins.length) return;
+
+  el.innerHTML = `<div style="background:#b45309;color:#fff;font:600 12.5px system-ui,-apple-system,sans-serif;padding:9px 14px;text-align:center;line-height:1.5;cursor:pointer" title="Clique para dispensar até recarregar">
+      ⚠️ ${ruins.join(' · ')}
+    </div>`;
+  el.firstElementChild.addEventListener('click', () => { el.innerHTML = ''; });
 }
 
 function renderMidias(){
