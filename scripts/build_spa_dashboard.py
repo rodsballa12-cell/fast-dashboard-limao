@@ -83,20 +83,36 @@ def _meta_anual_spa() -> float:
     return round(mensal * meses, 2)
 
 
-def _meta_mensal_spa() -> float:
+def _meta_mensal_spa(ym: str = None) -> float:
     """Meta mensal do SPA — do config.json, fonte única.
 
     Estava fixa em 60000 aqui enquanto o financeiro já lia 15000 do config:
     metade do conserto de 14/09/2026 passou batido, e por um dia o painel do
     SPA mostrou meta diferente do DRE do SPA. Duas fontes da verdade divergem
     sempre — inclusive quando uma delas acabou de ser corrigida.
+
+    E divergiram de novo. Em 30/09/2026 nasceu `meta_mensal_por_mes[YYYY-MM]`,
+    que vence sobre `meta_mensal`. O financeiro do Spa aprendeu a ler (ver
+    `build_spa_financeiro._meta_mensal`); esta função aqui não. Resultado: de
+    30/09 a 23/10/2026 o painel do Spa mostrou a provisória de R$ 50.000
+    enquanto o DRE do mesmo Spa mostrava os R$ 40.000 de outubro. Vinte e três
+    dias dizendo que a loja estava em 37% da meta quando estava em 46%.
+
+    A lição é a mesma de 14/09, e é por isso que ela está escrita duas vezes:
+    **campo novo de configuração tem mais de um leitor.** Quem cria o override
+    precisa procurar todos — `grep -rn meta_mensal scripts/`.
     """
     import json as _json, os as _os
+    from datetime import datetime as _dt, timezone as _tz, timedelta as _td
     try:
         caminho = _os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                                 "data", "config.json")
         with open(caminho, encoding="utf-8") as fh:
-            v = _json.load(fh)["unidades"]["spa"].get("meta_mensal")
+            u = _json.load(fh)["unidades"]["spa"]
+        ym = ym or _dt.now(_tz(_td(hours=-3))).strftime("%Y-%m")
+        v = (u.get("meta_mensal_por_mes") or {}).get(ym)
+        if not isinstance(v, (int, float)):
+            v = u.get("meta_mensal")
         return float(v) if v is not None else 20000.0
     except Exception:
         return 20000.0

@@ -29,4 +29,9 @@ Spa faturando ao menos R$ 40.000 em outubro. Em 15/10 estava em R$ 12.968
 2026-11-02 (fechamento de outubro; definir novembro)
 
 ## Resultado
-_(em branco até a revisão — preencher com o que aconteceu de verdade)_
+
+**CONFIRMADA em 23/10/2026.** O Rodrigo reafirmou a escolha ao responder o Conselho de 23/10: meta de outubro **R$ 40.000**, super meta **R$ 60.000**.
+
+Aplicado no mesmo dia: o painel do Spa lia a provisoria de R$ 50.000 porque `build_spa_dashboard._meta_mensal_spa()` nao conhecia o override mes a mes que nasceu em 30/09 — so o DRE conhecia. De 30/09 a 23/10 o painel disse que o Spa estava em 37% da meta quando estava em 46%. Os dois leitores agora leem o mesmo campo.
+
+_Fechada na varredura de 23/10/2026, com o conserto no mesmo commit._

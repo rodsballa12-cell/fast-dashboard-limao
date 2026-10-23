@@ -34,5 +34,26 @@ foram chamados e quantos voltaram em 7 dias.
 ## Revisar em
 2026-10-23
 
+## Andamento · 23/10/2026 (revisão do dia)
+
+**Ainda ABERTA.** A revisão caiu hoje e chegou sem uma única ligação registrada
+— foi a 12ª vez que este pedido foi à mesa.
+
+O que destravou hoje: o Rodrigo pediu os textos ("me traga os textos e
+reforçarei"). Estão em `docs/textos/2026-10-23-sumidos-whatsapp.md`, em três
+versões, porque a lista de 140 não é um grupo só — a fiel de 24 visitas e a
+cliente de uma visita não recebem a mesma mensagem.
+
+**Nada foi enviado.** Falta a aprovação dele dos textos.
+
+O que esta decisão aprendeu nas 12 voltas: ela nunca teve o mesmo tamanho duas
+vezes. O "em jogo" já foi apresentado como R$ 14.055 (resgate estimado),
+R$ 17.000 (uma visita de cada) e R$ 45.372 (histórico gasto pelos 140).
+**Pedido que muda de tamanho cada vez que é apresentado é reapresentado, não
+executado.** Da próxima vez: um número, e o mesmo.
+
+Falta também o registro — nome, grupo, respondeu, marcou, reclamou. Sem isso o
+Conselho de novembro vai dizer "não sei" outra vez.
+
 ## Resultado
 _(em branco até a revisão — preencher com o que aconteceu de verdade)_

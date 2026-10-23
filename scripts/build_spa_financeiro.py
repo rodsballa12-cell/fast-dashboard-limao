@@ -110,7 +110,7 @@ def main():
 
     # Meta franqueadora preservada em todos os meses
     for k, m in (payload.get("meses") or {}).items():
-        m["receita_meta"] = _meta_mensal("spa", META_MES_SPA, k[:7])  # set 20k · out 25k · nov 40k · dez 50k
+        m["receita_meta"] = _meta_mensal("spa", META_MES_SPA, k[:7])  # set 20k · out 40k (Rodrigo, 02/10 e confirmado 23/10) · nov 40k · dez 50k
     payload["kpis"]["meta_mes"] = META_MES_SPA
     payload["resultado"]["receita_meta"] = META_MES_SPA
 

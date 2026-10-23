@@ -29,7 +29,8 @@ SAÍDA
   0 = tudo bate · 1 = divergência real · 2 = não deu para avaliar
 """
 from __future__ import annotations
-import datetime, json, re, sys
+import datetime
+import pathlib, json, re, sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -502,6 +503,42 @@ def conferir_decisoes_sem_desfecho(achados):
             f"do zero dois meses depois."))
 
 
+def conferir_override_tem_todos_os_leitores(achados):
+    """Campo que vence sobre outro foi ensinado a TODOS os leitores do antigo?
+
+    Em 30/09/2026 nasceu `meta_mensal_por_mes[YYYY-MM]`, que vence sobre
+    `meta_mensal`. O DRE do Spa aprendeu a ler; o painel do Spa nao. Por 23 dias
+    as duas telas mostraram metas diferentes para o mesmo mes -- R$ 50.000 contra
+    R$ 40.000 -- e a decisao "religar a verba do Spa" voltou quatro vezes a mesa
+    sem ninguem conseguir dizer de quanto era o buraco.
+
+    Nao e conferencia de dado, e de codigo: quem le o campo antigo tem de
+    conhecer o override. Ver docs/aprendizados/campo-novo-de-config-tem-mais-de-um-leitor.md
+
+    Para somar um par novo, basta acrescentar em PARES: (campo antigo, override).
+    """
+    PARES = [("meta_mensal", "meta_mensal_por_mes"),
+             ("super_meta_mensal", "super_meta_mensal_por_mes")]
+    raiz = pathlib.Path(__file__).resolve().parent
+    for antigo, override in PARES:
+        for py in sorted(raiz.glob("*.py")):
+            if py.name == pathlib.Path(__file__).name:
+                continue
+            try:
+                src = py.read_text(encoding="utf-8", errors="replace")
+            except Exception:
+                continue
+            # le o campo antigo de um dicionario de config?
+            le_antigo = (f'get("{antigo}")' in src or f"get('{antigo}')" in src
+                         or f'["{antigo}"]' in src)
+            if le_antigo and override not in src:
+                achados.append(("erro",
+                    f"{py.name} le `{antigo}` e nao conhece `{override}`. O override "
+                    f"nasceu para vencer sobre ele: este leitor vai mostrar numero "
+                    f"diferente dos que ja aprenderam. Foi exatamente o que escondeu "
+                    f"a meta do Spa por 23 dias."))
+
+
 def conferir_preco_realizado(achados):
     """O card de preco voltou a comparar com o que foi cobrado?
 
@@ -636,6 +673,7 @@ def main() -> int:
     conferir_saude_automacoes(achados)
     conferir_atas_vazias(achados)
     conferir_decisoes_sem_desfecho(achados)
+    conferir_override_tem_todos_os_leitores(achados)
     conferir_funil_roas(achados)
     conferir_conselho_sincronizado(achados)
 
