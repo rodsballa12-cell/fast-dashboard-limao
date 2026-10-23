@@ -5713,6 +5713,24 @@ async function load(showToast=false){
   } catch(e){
     if(showToast) toast(`❌ <strong>Erro</strong> ao recarregar: ${e.message}`, true);
     else document.getElementById('loading').innerHTML=`<div style="color:var(--crit)">❌ Erro ao carregar dados: ${e.message}<br><small>Tenta recarregar a página em 1 min.</small></div>`;
+    // O cabecalho mentia quando o corpo falhava. Em 23/10/2026 a aba do SPA
+    // deu 404 e o topo seguiu mostrando "Dados de 23/10, 18:46 · ha 12 min" --
+    // numero da aba ANTERIOR, que carregou. Quem bate o olho le a hora e
+    // acredita, porque hora fresca no topo e o sinal de que esta tudo bem.
+    //
+    // Mesma familia do resto do dia: a tela informando um estado que nao e o
+    // dela. Se o corpo nao carregou, o topo nao tem o que dizer.
+    try {
+      var rotulo = (typeof unidadeInfo === 'function'
+        ? (unidadeInfo(UNIDADE_ATIVA).nome || UNIDADE_ATIVA) : UNIDADE_ATIVA);
+      var up = document.getElementById('chip-updated');
+      if (up) { up.className = 'chip stale';
+                up.innerHTML = '<span class="dot"></span> ' + rotulo + ' nao carregou'; }
+      ['chip-age','chip-cota','chip-live'].forEach(function(id){
+        var c = document.getElementById(id);
+        if (c) { c.style.display = 'none'; }
+      });
+    } catch(_){}
   } finally {
     if(btn){btn.disabled=false;btn.textContent='🔄 Atualizar dados';}
     // A saude roda SEMPRE, inclusive quando o load acima falhou -- e
