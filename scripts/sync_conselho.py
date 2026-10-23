@@ -133,14 +133,23 @@ def parse_briefing(path: Path) -> dict:
     )
     if dec_sec:
         bloco = dec_sec.group(2)
-        # Aceita "1." ou "1)" no início da linha
-        for m in re.finditer(r"^\s*(\d+)[.)]\s*(.+?)(?=\n\s*\d+[.)]|\n\s*$|\Z)", bloco, re.DOTALL | re.MULTILINE):
+        # Aceita "1." · "1)" · "**1." · "- 1." — o negrito e o travessao entraram
+        # nas atas sem ninguem avisar o parser. Em 22/10/2026 a ata trazia
+        # "**1. Aprovar o texto da mensagem...**" e esta linha achou ZERO
+        # decisoes, enquanto `tem_decisoes()` (que so olha o titulo da secao)
+        # dizia que havia. O sync anunciou sucesso e nao escreveu nada, e o
+        # painel passou tres dias mostrando a reuniao de 20/10 como a ultima.
+        #
+        # Os dois tem de concordar: enquanto um disser "tem decisao" e o outro
+        # achar zero, toda ata com formato novo vira silencio.
+        DEC = r"^\s*(?:[-*+]\s*)?\*{0,2}\s*(\d+)[.)]\s*(.+?)(?=\n\s*(?:[-*+]\s*)?\*{0,2}\s*\d+[.)]|\n\s*$|\Z)"
+        for m in re.finditer(DEC, bloco, re.DOTALL | re.MULTILINE):
             n = int(m.group(1))
             texto_raw = m.group(2).strip().replace("\n", " ")
             texto_raw = re.sub(r"\s+", " ", texto_raw)
             # Título é o que vem antes do primeiro "·"
             partes = [p.strip() for p in texto_raw.split("·")]
-            titulo = partes[0]
+            titulo = partes[0].strip("* ").strip()
             em_jogo = ""
             executor = None
             for p in partes[1:]:
@@ -468,7 +477,12 @@ def sincronizar_pendentes() -> int:
         print()
     print(f"[sync_conselho] {len(fila) - len(falhas)} aplicada(s), {len(falhas)} com erro de leitura"
           + (f": {falhas}" if falhas else "."))
-    return 0
+    # Devolvia 0 mesmo com falha, e quem chamava lia isso como sucesso. Em
+    # 23/10/2026 a rodada do workflow anunciou "sincroniza dashboard (auto)"
+    # tendo aplicado ZERO atas. Ata que nao entrou e falha, e falha tem de
+    # subir -- senao o unico alarme que existia (a auditoria) fica discutindo
+    # com um commit que diz o contrario.
+    return 1 if falhas else 0
 
 
 def main() -> int:
