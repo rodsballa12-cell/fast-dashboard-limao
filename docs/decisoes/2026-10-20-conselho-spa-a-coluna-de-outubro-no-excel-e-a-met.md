@@ -31,4 +31,10 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+**EXECUTADA em 23/10/2026.** Nao havia erro na planilha: a coluna do mes corrente e coluna de ALVO, e o painel ja reconstruia o resultado sobre a projecao desde 07/10. O conserto foi no auditor, que lia a celula do Excel e falava como se fosse o painel.
+
+Prova no histórico:
+
+- `74a2aa3` — conselho 2026-10-20 11:30 · caixa e a-receber do Spa, por loja
+
+_Fechada na varredura de 23/10/2026, com evidência no próprio repositório. Se o desfecho não confere, corrija aqui — este campo é a memória, e memória errada custa mais que memória vazia._

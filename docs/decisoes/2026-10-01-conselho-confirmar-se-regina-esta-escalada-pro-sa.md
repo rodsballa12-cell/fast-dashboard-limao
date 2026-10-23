@@ -29,4 +29,11 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+
+**RECUSADA em 23/10/2026.**
+
+A pergunta era sobre um sabado especifico, ja passado ha tres semanas. Nao da para responder retroativamente e nao ha o que decidir hoje a partir dela.
+
+**O que fica de licao:** pergunta de operacao do dia nao deveria virar decisao registrada — ela vence em 24 horas e entope a memoria. Decisao e o que tem consequencia alem do dia; conferir escala e recado de WhatsApp.
+
+_Fechada na varredura de 23/10/2026, com evidencia no proprio repositorio. Se o desfecho nao confere, corrija aqui — este campo e a memoria, e memoria errada custa mais que memoria vazia._

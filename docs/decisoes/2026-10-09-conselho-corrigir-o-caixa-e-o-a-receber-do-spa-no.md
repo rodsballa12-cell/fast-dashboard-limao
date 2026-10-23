@@ -34,4 +34,11 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+**EXECUTADA em 23/10/2026.** O Spa deixou de aparecer com caixa e a-receber zerados: o script passou a ler o extrato de cada loja, e depois descobriu-se que o Spa tem conta Stone propria. Aberta 11 dias.
+
+Prova no histórico:
+
+- `74a2aa3` — conselho 2026-10-20 11:30 · caixa e a-receber do Spa, por loja
+- `9de9239` — painel: Spa com caixa proprio (conta Stone do Spa), consolidado = XP + Stone Spa
+
+_Fechada na varredura de 23/10/2026, com evidência no próprio repositório. Se o desfecho não confere, corrija aqui — este campo é a memória, e memória errada custa mais que memória vazia._

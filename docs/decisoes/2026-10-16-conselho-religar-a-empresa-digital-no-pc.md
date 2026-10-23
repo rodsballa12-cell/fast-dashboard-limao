@@ -29,4 +29,6 @@ verdade, e atas chegando ao repositório.
 2026-10-19
 
 ## Resultado
-_(em branco até a revisão — preencher com o que aconteceu de verdade)_
+**EXECUTADA em 23/10/2026.** Religada em 22/10. A causa nao era a que se supunha: o login do PC tinha voltado como 'Anthropic Console account - API usage billing' em vez da assinatura Max, e cobrava de uma conta de API com saldo zero. Resolvido com /login na opcao 1. Custou 28 pareceres vazios entre 18 e 22/10.
+
+_Fechada na varredura de 23/10/2026, com evidência no próprio repositório. Se o desfecho não confere, corrija aqui — este campo é a memória, e memória errada custa mais que memória vazia._

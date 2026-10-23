@@ -36,4 +36,6 @@ em 7 dias operados.
 2026-11-02 (fechamento de outubro; definir novembro)
 
 ## Resultado
-_(em branco até a revisão — preencher com o que aconteceu de verdade)_
+**SUPERADA em 23/10/2026.** Substituida em 02/10 pela meta de R$ 40.000 com super meta de R$ 60.000 (ver 2026-10-02-meta-spa-outubro-40k-super-60k.md).
+
+_Fechada na varredura de 23/10/2026, com evidência no próprio repositório. Se o desfecho não confere, corrija aqui — este campo é a memória, e memória errada custa mais que memória vazia._

@@ -29,4 +29,9 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+
+**EXECUTADA em 23/10/2026.**
+
+Os dois pipelines rodam. O do painel entregou `refresh: dashboard 23/10 06:43 BRT` (`6c333ac`) e o de midias `refresh midias: 23/10 06:41 BRT` (`80db435`), ambos pela nuvem, sem ninguem ligar o PC. Em 23/10 as 15 rotinas ganharam teto de tempo e substituicao de rodada travada (`5fc5446`) e um lugar que responde 'isso ainda funciona?' no topo do painel (`24b285f`) — o motivo pelo qual este pedido voltou oito vezes era justamente a falha que nao avisava.
+
+_Fechada na varredura de 23/10/2026, com evidencia no proprio repositorio. Se o desfecho nao confere, corrija aqui — este campo e a memoria, e memoria errada custa mais que memoria vazia._

@@ -29,4 +29,6 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+**SUPERADA em 23/10/2026.** Cancelada em 20/09, antes de executar (ver 2026-09-20-conselho-cancelar-a-antecipacao-da-stone-marcada.md).
+
+_Fechada na varredura de 23/10/2026, com evidência no próprio repositório. Se o desfecho não confere, corrija aqui — este campo é a memória, e memória errada custa mais que memória vazia._

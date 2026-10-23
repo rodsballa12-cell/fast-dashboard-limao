@@ -29,4 +29,10 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+**EXECUTADA em 23/10/2026.** O extrato do Spa saiu de 30/09 e passou a cobrir ate 19/10.
+
+Prova no histórico:
+
+- `3281285` — stone spa: extrato ate 19/10 + comissoes pagas pela Stone do Spa na conferencia
+
+_Fechada na varredura de 23/10/2026, com evidência no próprio repositório. Se o desfecho não confere, corrija aqui — este campo é a memória, e memória errada custa mais que memória vazia._

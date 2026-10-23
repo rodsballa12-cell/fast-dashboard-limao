@@ -31,4 +31,11 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+**EXECUTADA em 23/10/2026.** Mesma correcao da decisao de 09/10, concluida no mesmo dia em que foi retomada.
+
+Prova no histórico:
+
+- `74a2aa3` — conselho 2026-10-20 11:30 · caixa e a-receber do Spa, por loja
+- `9de9239` — painel: Spa com caixa proprio (conta Stone do Spa), consolidado = XP + Stone Spa
+
+_Fechada na varredura de 23/10/2026, com evidência no próprio repositório. Se o desfecho não confere, corrija aqui — este campo é a memória, e memória errada custa mais que memória vazia._

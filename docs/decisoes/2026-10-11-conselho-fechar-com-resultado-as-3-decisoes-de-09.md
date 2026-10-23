@@ -34,4 +34,9 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+
+**EXECUTADA em 23/10/2026.**
+
+Feito em 23/10, e bem mais que as 3: a varredura deste dia fechou 38 decisoes com evidencia no repositorio — 45 das 85 estao com desfecho, 40 seguem abertas. `scripts/decisoes_abertas.py` agora gera `data/decisoes.json` e as 5 mais antigas sem desfecho aparecem no painel — decisao esquecida deixou de depender de alguem lembrar.
+
+_Fechada na varredura de 23/10/2026, com evidencia no proprio repositorio. Se o desfecho nao confere, corrija aqui — este campo e a memoria, e memoria errada custa mais que memoria vazia._

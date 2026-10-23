@@ -29,4 +29,6 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+**EXECUTADA em 23/10/2026.** O token foi trocado e as midias voltaram a atualizar; em 23/10/2026 as tres unidades estao frescas, puxadas pela Meta Graph API.
+
+_Fechada na varredura de 23/10/2026, com evidência no próprio repositório. Se o desfecho não confere, corrija aqui — este campo é a memória, e memória errada custa mais que memória vazia._

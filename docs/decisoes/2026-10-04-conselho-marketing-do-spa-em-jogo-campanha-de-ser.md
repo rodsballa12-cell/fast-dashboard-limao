@@ -29,4 +29,9 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+
+**SUPERADA em 23/10/2026.**
+
+Retomada em 17/10 pela decisao 'Spa: a verba e o extrato, agora com dono e prazo' (`2026-10-17-conselho-spa-a-verba-e-o-extrato-agora-com-dono-e.md`), que e a que vale. A parte do extrato foi resolvida; a da verba segue aberta e depende de autorizacao com nome da campanha e valor diario.
+
+_Fechada na varredura de 23/10/2026, com evidencia no proprio repositorio. Se o desfecho nao confere, corrija aqui — este campo e a memoria, e memoria errada custa mais que memoria vazia._

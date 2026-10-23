@@ -29,4 +29,9 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+
+**EXECUTADA em 23/10/2026.**
+
+A auditoria roda. `scripts/auditoria_coerencia.py` virou passo obrigatorio depois de qualquer mexida em dado (esta no CLAUDE.md) e em 23/10 passou a conferir tambem se as automacoes carimbaram sucesso, se alguma ata chegou vazia e se decisao antiga ficou sem desfecho (`24b285f`). Foi ela que achou as 12 atas orfas corrigidas em `a2df220`.
+
+_Fechada na varredura de 23/10/2026, com evidencia no proprio repositorio. Se o desfecho nao confere, corrija aqui — este campo e a memoria, e memoria errada custa mais que memoria vazia._

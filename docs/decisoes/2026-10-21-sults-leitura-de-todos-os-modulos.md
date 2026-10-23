@@ -40,4 +40,10 @@ falso (chamado velho, pedido "Aguardando" que já foi entregue)?
 
 ## Resultado
 
-_(em branco até a revisão)_
+**EXECUTADA em 23/10/2026.** A leitura diaria do SULTS entrou: chamados, compras, comunicados e checklists das duas lojas, so GET, gravando fora do repositorio.
+
+Prova no histórico:
+
+- `5872286` — SULTS: leitura diaria so do Limao para os agentes
+
+_Fechada na varredura de 23/10/2026, com evidência no próprio repositório. Se o desfecho não confere, corrija aqui — este campo é a memória, e memória errada custa mais que memória vazia._

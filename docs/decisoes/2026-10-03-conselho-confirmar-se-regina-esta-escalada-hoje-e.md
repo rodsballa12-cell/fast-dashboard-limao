@@ -29,4 +29,9 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+
+**RECUSADA em 23/10/2026.**
+
+Mesma pergunta de 01/10, sobre um sabado ja passado. Vencida pelo tempo, sem o que decidir hoje. Ver a licao registrada na de 01/10.
+
+_Fechada na varredura de 23/10/2026, com evidencia no proprio repositorio. Se o desfecho nao confere, corrija aqui — este campo e a memoria, e memoria errada custa mais que memoria vazia._

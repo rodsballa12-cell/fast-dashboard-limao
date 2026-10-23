@@ -29,4 +29,10 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+**EXECUTADA em 23/10/2026.** O estabelecimento 282163 do Spa foi cadastrado no config.json e o painel do Spa passou a receber dado real.
+
+Prova no histórico:
+
+- `61736b6` — config: cadastra trinks_estabelecimento_id da SPA (282163)
+
+_Fechada na varredura de 23/10/2026, com evidência no próprio repositório. Se o desfecho não confere, corrija aqui — este campo é a memória, e memória errada custa mais que memória vazia._

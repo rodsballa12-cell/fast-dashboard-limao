@@ -29,4 +29,9 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+
+**EXECUTADA em 23/10/2026.**
+
+O Spa passou a ter caixa proprio, lido da conta Stone do Spa, e o consolidado virou XP + Stone do Spa (`9de9239`); a conferencia do a-receber por loja esta em `74a2aa3`. O extrato do Spa cobre ate 19/10.
+
+_Fechada na varredura de 23/10/2026, com evidencia no proprio repositorio. Se o desfecho nao confere, corrija aqui — este campo e a memoria, e memoria errada custa mais que memoria vazia._

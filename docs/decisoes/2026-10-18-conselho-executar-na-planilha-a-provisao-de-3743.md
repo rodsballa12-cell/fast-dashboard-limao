@@ -29,4 +29,10 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+**SUPERADA em 23/10/2026.** Substituida dois dias depois pela provisao de 38,31%: a taxa executada do ano andou 0,88 ponto nesse intervalo. A parte do caixa do Spa foi resolvida junto.
+
+Prova no histórico:
+
+- `0ec943a` — dre: provisao de comissao da Escova a 38,31%
+
+_Fechada na varredura de 23/10/2026, com evidência no próprio repositório. Se o desfecho não confere, corrija aqui — este campo é a memória, e memória errada custa mais que memória vazia._
