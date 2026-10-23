@@ -38,9 +38,21 @@ pior que painel velho: o velho pelo menos avisa a idade.
 python3 scripts/build_artifact.py /tmp/painel.html
 ```
 
-O script embute os quatro JSON que o `index.html` busca em runtime — a CSP do
+O script embute os JSON que o `index.html` busca em runtime — a CSP do
 Artifact bloqueia fetch externo, e sem embutir as abas Financeiro e Mídias
 abrem **vazias, sem erro visível**, porque os loaders engolem a falha.
+
+**São três unidades, não uma.** O seletor Escova / Spa / Consolidado é uma
+promessa: toda aba que ele mostra tem de abrir. Em 23/10/2026 o artefato no ar
+tinha sido publicado sem os arquivos do Spa, e o Rodrigo levou
+`Erro ao carregar dados: HTTP 404` no celular **toda vez que trocava de
+unidade** — por dois dias, sem ninguém saber.
+
+A causa foi o passo 1 pulado: desde 21/10 o dado sensível só existe em texto
+puro depois de `cofre.py abrir`, e o build tratava arquivo ausente como
+"opcional, tudo bem". Agora ele **recusa** — se o `.enc` está ali e o texto
+puro não, ele diz que o cofre está fechado e para. Se o build reclamar de
+cofre, não insista: abra e rode de novo.
 
 Confira na saída do script os dois `gerado_em` que ele imprime. Se algum for de
 ontem, diga isso ao Rodrigo **antes** de publicar.

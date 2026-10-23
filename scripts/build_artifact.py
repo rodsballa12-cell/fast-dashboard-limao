@@ -98,6 +98,19 @@ def main() -> int:
     for rel, obrigatorio in ARQUIVOS:
         caminho = REPO / rel
         if not caminho.exists():
+            # COFRE FECHADO != ARQUIVO INEXISTENTE. Desde 21/10/2026 o dado
+            # sensivel so vive em texto puro depois de `cofre.py abrir`. Quem
+            # publica sem abrir ve "ausente (ok — opcional)" e segue em frente;
+            # o shim passa a devolver 404 para aquele caminho, e o Rodrigo leva
+            # um "Erro ao carregar dados: HTTP 404" no celular toda vez que
+            # troca de unidade. Foi o que aconteceu em 23/10/2026: o artefato
+            # publicado em 22/10 nao tinha os arquivos do Spa.
+            #
+            # O .enc ao lado e a prova de que o arquivo EXISTE e so nao foi
+            # aberto. Isso e erro, opcional ou nao.
+            if (REPO / (rel + ".enc")).exists():
+                faltando.append(f"{rel} (o .enc esta ali — o cofre esta FECHADO)")
+                continue
             if obrigatorio:
                 faltando.append(rel)
             else:
@@ -108,8 +121,27 @@ def main() -> int:
         print(f"[build] {rel}: {caminho.stat().st_size:,} bytes embutidos")
 
     if faltando:
-        print(f"[build] ERRO: arquivos obrigatórios ausentes: {', '.join(faltando)}")
+        print("[build] ERRO: arquivos obrigatórios ausentes:")
+        for f in faltando:
+            print(f"           · {f}")
+        if any("cofre" in f for f in faltando):
+            print("[build] Rode  python scripts/cofre.py abrir  e tente de novo.")
         return 1
+
+    # O seletor de unidade e uma promessa: toda aba que ele mostra tem de
+    # abrir. Unidade sem dashboard embutido vira 404 na cara de quem clica,
+    # e o shim nao tem como adivinhar. Avisar antes de publicar e barato;
+    # descobrir pelo celular custou o dia 23/10/2026.
+    sem_dados = [u for u, rel in (("Escova", "data/dashboard_data.json"),
+                                  ("Spa", "data/spa/dashboard_data.json"),
+                                  ("Consolidado", "data/consolidado/dashboard_data.json"))
+                 if not embutidos.get(rel)]
+    if sem_dados:
+        print(f"[build] ERRO: o seletor mostra {', '.join(sem_dados)}, mas nao ha dado "
+              f"embutido para {'essa unidade' if len(sem_dados) == 1 else 'essas unidades'}.")
+        print("[build] Trocar de unidade no artefato daria HTTP 404. Nao publique assim.")
+        return 1
+    print(f"[build] as 3 unidades tem dashboard embutido — o seletor funciona.")
 
     title = re.search(r"<title>.*?</title>", src, re.S)
     style = re.search(r"<style>.*?</style>", src, re.S)
