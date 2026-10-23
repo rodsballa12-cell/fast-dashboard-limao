@@ -552,6 +552,10 @@ document.addEventListener('visibilitychange', () => {
       <div id="per-pace"></div>
       <!-- 1. CONTEXTO -->
       <div id="per-kpis"></div>
+      <!-- Decisoes sem desfecho. Fica aqui, depois dos KPIs, porque a
+           nao-execucao custa mais caro que o dado velho e nao tinha onde
+           aparecer. Ver scripts/decisoes_abertas.py. -->
+      <div id="per-decisoes"></div>
       <div id="per-ancora"></div>
       <!-- Meta + Ticket alvo + Detalhamento por categoria expostos direto (sem retrair) -->
       <div id="per-meta"></div>
@@ -5715,6 +5719,7 @@ async function load(showToast=false){
     // principalmente ai. Quando o painel nao consegue carregar, a faixa e a
     // unica coisa que explica por que, em vez de deixar a tela em branco.
     try{ carregarSaude(); }catch(e){ console.warn('saude', e); }
+    try{ carregarDecisoes(); }catch(e){ console.warn('decisoes', e); }
   }
 }
 
@@ -7219,6 +7224,59 @@ function renderSaude(){
       ⚠️ ${ruins.join(' · ')}
     </div>`;
   el.firstElementChild.addEventListener('click', () => { el.innerHTML = ''; });
+}
+
+// ---- Decisoes sem desfecho ------------------------------------------------
+// A quarta peca de saude: as tres primeiras cuidam de "a maquina parou", esta
+// cuida de "a maquina avisou e nada aconteceu".
+//
+// Nao e lista de tarefas. E um espelho: mostra ha quanto tempo cada decisao
+// esta sem desfecho REGISTRADO, ordenada por dinheiro em jogo. Quem julga se
+// foi feita e o Rodrigo -- o painel so para de deixar isso invisivel.
+let DECISOES = null;
+
+async function carregarDecisoes(){
+  try {
+    const r = await fetch('data/decisoes.json?_=' + Date.now(), {cache:'no-store'});
+    DECISOES = r.ok ? await r.json() : null;
+  } catch(e){ DECISOES = null; }
+  renderDecisoes();
+}
+
+function renderDecisoes(){
+  const el = document.getElementById('per-decisoes');
+  if(!el) return;
+  el.innerHTML = '';
+  if(!DECISOES || !DECISOES.n_abertas) return;
+
+  const brlv = v => 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const linhas = (DECISOES.destaque || []).map(d => {
+    // Vermelho a partir de 30 dias: um mes sem desfecho nao e demora, e
+    // abandono. Abaixo disso, so cinza -- decisao recente em aberto e normal.
+    const cor = d.dias >= 30 ? 'var(--crit)' : d.dias >= 14 ? '#b45309' : 'var(--ink-3)';
+    const jogo = d.valor ? brlv(d.valor) : (d.em_jogo || '');
+    return `<tr style="border-top:1px solid var(--border)">
+      <td style="padding:7px 8px;text-align:right;font-weight:700;color:${cor};white-space:nowrap">${d.dias}d</td>
+      <td style="padding:7px 8px">${d.titulo}${d.executor ? `<div style="font-size:10.5px;color:var(--ink-3)">executa: ${d.executor}</div>` : ''}</td>
+      <td style="padding:7px 8px;text-align:right;white-space:nowrap;font-weight:600">${jogo}</td>
+    </tr>`;
+  }).join('');
+
+  const resto = DECISOES.n_abertas - (DECISOES.destaque || []).length;
+  el.innerHTML = `<div class="card" style="border-left:4px solid #b45309">
+    <h2>🕰️ Decisões sem desfecho</h2>
+    <div class="cap"><strong>${DECISOES.n_abertas}</strong> decisões sem resultado registrado · ${DECISOES.n_fechadas} fechadas em toda a história · a mais antiga tem <strong>${DECISOES.mais_antiga_dias} dias</strong></div>
+    <div style="overflow-x:auto;margin-top:10px"><table style="width:100%;font-size:13px;border-collapse:collapse">
+      <thead><tr style="color:var(--ink-2);font-size:11px;text-transform:uppercase">
+        <th style="text-align:right;padding:4px 8px">Aberta há</th>
+        <th style="text-align:left;padding:4px 8px">Decisão</th>
+        <th style="text-align:right;padding:4px 8px">Em jogo</th>
+      </tr></thead>
+      <tbody>${linhas}</tbody>
+    </table></div>
+    ${resto > 0 ? `<div class="cap" style="margin-top:8px">e mais ${resto} sem desfecho registrado, em <code>docs/decisoes/</code>.</div>` : ''}
+    <div class="cap" style="margin-top:8px">Decisão fecha quando alguém escreve o desfecho no campo <strong>Resultado</strong> do arquivo dela — deu certo, não deu, ou foi abandonada. As três contam. <strong>Decisão sem desfecho é retomada do zero dois meses depois:</strong> a de clientes sumidos foi tomada quatro vezes.</div>
+  </div>`;
 }
 
 function renderMidias(){

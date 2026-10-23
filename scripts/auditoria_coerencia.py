@@ -475,6 +475,33 @@ def conferir_atas_vazias(achados):
             f"escrita ou limite de uso."))
 
 
+def conferir_decisoes_sem_desfecho(achados):
+    """O bloco que o painel le existe, e alguem esta fechando o ciclo?
+
+    Duas conferencias diferentes:
+      1. o derivado sobreviveu (regra da casa: bloco que some nao avisa)
+      2. ha decisao muito velha sem desfecho -- o sintoma que esta peca mede
+
+    O numero de corte e 60 dias porque e o prazo que a propria casa usa: "decisao
+    que nao vira nota e decisao que vai ser retomada do zero daqui a dois meses".
+    """
+    d = carregar("data/decisoes.json")
+    if not d:
+        achados.append(("aviso",
+            "data/decisoes.json ausente — o card de decisoes sem desfecho nao "
+            "desenha. Rode scripts/decisoes_abertas.py."))
+        return
+    g = str(d.get("gerado_em") or "")[:10]
+    hoje = datetime.date.today().isoformat()
+    if g and g < hoje:
+        achados.append(("aviso", f"Decisoes: o bloco e de {g} e hoje e {hoje}."))
+    if (d.get("mais_antiga_dias") or 0) >= 60:
+        achados.append(("aviso",
+            f"{d['n_abertas']} decisao(oes) sem desfecho registrado, a mais antiga "
+            f"ha {d['mais_antiga_dias']} dias. Decisao que nao vira nota e retomada "
+            f"do zero dois meses depois."))
+
+
 def conferir_preco_realizado(achados):
     """O card de preco voltou a comparar com o que foi cobrado?
 
@@ -608,6 +635,7 @@ def main() -> int:
     conferir_caixa_a_receber(achados)
     conferir_saude_automacoes(achados)
     conferir_atas_vazias(achados)
+    conferir_decisoes_sem_desfecho(achados)
     conferir_funil_roas(achados)
     conferir_conselho_sincronizado(achados)
 

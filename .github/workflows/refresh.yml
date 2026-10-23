@@ -319,6 +319,14 @@ jobs:
           echo "::error::Nao consegui empurrar depois de 3 tentativas."
           exit 1
 
+      # Decisoes sem desfecho (a quarta peca de saude). Roda junto do
+      # refresh porque arquivo que depende de alguem lembrar de regerar
+      # envelhece calado -- que e a doenca que este conjunto trata.
+      - name: Decisoes sem desfecho
+        if: steps.recency.outputs.skip != 'true'
+        continue-on-error: true
+        run: python scripts/decisoes_abertas.py
+
       # Carimbo de saude — SEMPRE, inclusive quando algo acima falhou.
       #
       # Existe porque falha silenciosa e a doenca cronica deste repositorio:
@@ -338,7 +346,7 @@ jobs:
             "${{ job.status }} · run ${{ github.run_number }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/saude.json
+          git add data/saude.json data/decisoes.json
           git diff --cached --quiet && exit 0
           git commit -m "saude: refresh ${{ job.status }}"
           for t in 1 2 3; do

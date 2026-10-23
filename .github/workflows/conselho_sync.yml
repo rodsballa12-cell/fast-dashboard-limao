@@ -90,7 +90,8 @@ jobs:
           fi
           data="$(basename "$latest" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}')"
 
-          git add data/midias_sociais.json data/spa/midias_sociais.json data/consolidado/midias_sociais.json docs/atas docs/decisoes 2>/dev/null || true
+          python scripts/decisoes_abertas.py || true
+          git add data/midias_sociais.json data/spa/midias_sociais.json data/consolidado/midias_sociais.json docs/atas docs/decisoes data/decisoes.json 2>/dev/null || true
 
           if git diff --cached --quiet; then
             echo "Sem mudancas - briefing ja estava sincronizado (idempotente)."
