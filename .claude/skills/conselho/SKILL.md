@@ -123,6 +123,34 @@ sábado às 9h já tem quase dois atendimentos rodando.
 Isto entra na ata quando a janela **semana** ou **mês** manda. No fechamento
 de um dia comum, só cite se algo mudou de padrão.
 
+### Passo 6 — as decisões que ninguém fechou
+
+Rode `python3 scripts/decisoes_abertas.py conselho` e **leia em voz alta na
+ata**. Isto saiu do painel em 23/10/2026 a pedido do Rodrigo: um card de cinco
+linhas ao lado dos KPIs virava paisagem em três dias. O lugar disto é aqui,
+detalhado, porque o que esta fila precisa não é de lembrete — é de alguém
+lendo caso a caso.
+
+A saída vem em três blocos, e cada um pede uma coisa diferente de você:
+
+| Bloco | O que fazer com ele |
+|---|---|
+| **⏰ Revisão vencida** | a decisão marcou data e a data passou. Diga o que aconteceu, ou que ninguém sabe. Não deixe passar em silêncio |
+| **🔁 Parecem o mesmo pedido** | **confira os dois arquivos.** Se for mesmo repetição, a posterior vence e a anterior fecha como `SUPERADA`. A comparação é automática e erra às vezes |
+| **📋 Abertas, sem repetição** | por dinheiro e depois idade. Traga para a ata só o que muda a noite de hoje |
+
+**Nunca despeje a lista inteira na ata.** Quarenta cartões não é um relatório,
+é a mesma fila com outra capa. O que vai para a ata:
+
+1. **Todas** as de revisão vencida (são poucas, e cada uma é uma promessa quebrada).
+2. **Todas** as suspeitas de repetição (fechar uma leva dez segundos e limpa a fila).
+3. Das demais, **só as que o dia de hoje tocou** — se o Financeiro falou de caixa,
+   a decisão de caixa entra; se ninguém falou de comissão, a de comissão não entra.
+
+E a regra que vale mais que as três: **decisão repetida não é decisão esquecida,
+é decisão que nunca teve dono.** Quando aparecer uma repetição, a pergunta certa
+não é "por que não fizeram?" — é "quem exatamente ia fazer, e ele soube?".
+
 ### Passo 6 — decidir o que vai para o Rodrigo
 
 No máximo **três decisões**. Conselho que entrega dez itens não decidiu nada,
@@ -166,6 +194,11 @@ SITUAÇÃO DA MESA
 
 🕳️ PERGUNTAS SEM DONO
 • <o que ninguém pôde responder, e qual conector falta>
+
+🕰️ DECISÕES SEM DESFECHO — <n> abertas · mais antiga há <n> dias
+   ⏰ revisão vencida: <todas, uma linha cada, com o que se sabe>
+   🔁 parecem repetição: <cada par, e qual das duas vence>
+   📋 tocadas pelo dia de hoje: <só essas>
 
 📌 MEMÓRIA
 <já tentamos algo parecido? deu o quê?>
