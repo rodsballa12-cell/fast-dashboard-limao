@@ -83,24 +83,39 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          latest="$(ls Briefings/*-conselho.md docs/atas/*-conselho.md 2>/dev/null | xargs -n1 basename | sort | tail -1)"
+          # caminho de verdade, nao "Briefings/" chutado: a ata pode ter vindo
+          # de docs/atas, e commit que mente sobre a origem atrapalha quem audita
+          origem="$(ls Briefings/*-conselho.md docs/atas/*-conselho.md 2>/dev/null | sort -t/ -k2 | tail -1)"
+          latest="$(basename "${origem:-}")"
           if [ -z "$latest" ]; then
             echo "Sem briefing pra sincronizar."
             exit 0
           fi
           data="$(basename "$latest" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}')"
 
-          python scripts/decisoes_abertas.py || true
-          git add data/midias_sociais.json data/spa/midias_sociais.json data/consolidado/midias_sociais.json docs/atas docs/decisoes data/decisoes.json 2>/dev/null || true
+          # A ORDEM AQUI IMPORTA, e custou o dia 23/10/2026.
+          #
+          # `decisoes_abertas.py` carimba `gerado_em` com a hora atual, entao
+          # data/decisoes.json muda em TODA rodada. Com ele adicionado antes
+          # da conferencia, `git diff --cached --quiet` nunca mais ficou vazio:
+          # a rodada que nao sincronizou nada mesmo assim commitava, com a
+          # mensagem "sincroniza dashboard (auto)". Um arquivo que muda sozinho
+          # desarmou o unico guarda que sabia dizer "nao havia o que fazer".
+          #
+          # Primeiro o que o sync DE FATO escreve; so depois o derivado.
+          git add data/midias_sociais.json data/spa/midias_sociais.json data/consolidado/midias_sociais.json docs/atas docs/decisoes 2>/dev/null || true
 
           if git diff --cached --quiet; then
             echo "Sem mudancas - briefing ja estava sincronizado (idempotente)."
             exit 0
           fi
 
+          python scripts/decisoes_abertas.py || true
+          git add data/decisoes.json 2>/dev/null || true
+
           {
             printf 'conselho %s: sincroniza dashboard (auto)\n\n' "$data"
-            printf 'Aplicado pelo workflow conselho_sync.yml a partir de Briefings/%s-conselho.md.\n' "$data"
+            printf 'Aplicado pelo workflow conselho_sync.yml a partir de %s.\n' "$origem"
             printf 'Todas as decisoes entraram como status=pendente.\n'
             printf 'Rodar /sincronizar para aprovar, recusar ou reprogramar cada uma.\n'
           } > /tmp/commit-msg.txt
