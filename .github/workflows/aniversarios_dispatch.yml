@@ -19,6 +19,7 @@ jobs:
       github.event.issue.state == 'open' &&
       (startsWith(github.event.comment.body, 'approve') || startsWith(github.event.comment.body, 'skip'))
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 

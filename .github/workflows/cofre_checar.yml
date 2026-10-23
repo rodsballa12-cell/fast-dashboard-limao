@@ -17,6 +17,7 @@ permissions:
 jobs:
   checar:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Conferir as duas chaves
         env:
