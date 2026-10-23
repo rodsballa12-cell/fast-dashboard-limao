@@ -489,8 +489,9 @@ def conferir_decisoes_sem_desfecho(achados):
     d = carregar("data/decisoes.json")
     if not d:
         achados.append(("aviso",
-            "data/decisoes.json ausente — o card de decisoes sem desfecho nao "
-            "desenha. Rode scripts/decisoes_abertas.py."))
+            "data/decisoes.json ausente — o /conselho le este arquivo para a secao "
+            "de decisoes sem desfecho (saiu do painel em 23/10/2026). "
+            "Rode scripts/decisoes_abertas.py."))
         return
     g = str(d.get("gerado_em") or "")[:10]
     hoje = datetime.date.today().isoformat()
