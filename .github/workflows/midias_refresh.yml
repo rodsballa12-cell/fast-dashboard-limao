@@ -121,6 +121,7 @@ jobs:
           fi
 
       - name: Refresh midias Meta (Escova + SPA)
+        id: coleta
         if: steps.recencia.outputs.skip != 'true'
         env:
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
@@ -226,6 +227,7 @@ jobs:
       # deu pra avaliar (serie curta demais — normal no SPA antes de 25/09,
       # entao so avisa, nao falha).
       - name: Alerta de parada de entrega (Escova + SPA)
+        id: entrega
         if: always()
         run: |
           falhou=0
@@ -261,6 +263,7 @@ jobs:
       # Roda depois do commit, como o alerta de entrega: conferencia nunca deve
       # impedir o dado de ser salvo.
       - name: Auditoria de coerencia (unidades · periodos · zero-state)
+        id: auditoria
         if: always()
         run: |
           set +e
@@ -287,14 +290,36 @@ jobs:
       - name: Carimbar saude
         if: always()
         run: |
-          python scripts/saude.py carimbar midias \
-            "${{ job.status == 'success' && 'ok' || 'falha' }}" \
-            "${{ job.status }} · run ${{ github.run_number }}"
+          # O carimbo responde "a MIDIA chegou?", nao "a rodada ficou verde?".
+          #
+          # Em 23/10/2026 a rodada 90 ficou vermelha e a faixa passou a dizer
+          # "Midias: nunca terminou bem" -- com as tres unidades atualizadas no
+          # mesmo dia. O que derrubou foi a auditoria, no ultimo passo, achando
+          # duas divergencias sobre ATAS e sincronizacao do conselho: nada que
+          # tenha a ver com midia. Alarme que aponta para o lugar errado gasta
+          # a confianca da faixa inteira, que foi o motivo dela existir.
+          #
+          # `skipped` conta como bom de proposito: quer dizer que outro fire ja
+          # trouxe o dado de hoje. A rodada nao trabalhou porque nao precisava.
+          coleta="${{ steps.coleta.outcome }}"
+          entrega="${{ steps.entrega.outcome }}"
+          if [ "$coleta" = "failure" ] || [ "$entrega" = "failure" ]; then
+            estado=falha
+          else
+            estado=ok
+          fi
+          detalhe="coleta ${coleta:-n/a} · entrega ${entrega:-n/a} · run ${{ github.run_number }}"
+          # a auditoria derruba a rodada (e isso e certo: alguem precisa ver),
+          # mas o problema dela nao e de midia -- entra como nota, nao como falha
+          if [ "${{ steps.auditoria.outcome }}" = "failure" ]; then
+            detalhe="$detalhe · rodada vermelha na auditoria (nao e midia)"
+          fi
+          python scripts/saude.py carimbar midias "$estado" "$detalhe"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/saude.json
           git diff --cached --quiet && exit 0
-          git commit -m "saude: midias ${{ job.status }}"
+          git commit -m "saude: midias $estado"
           for t in 1 2 3; do
             git push && exit 0
             git pull --rebase --autostash origin main || true
