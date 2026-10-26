@@ -7230,7 +7230,17 @@ function renderSaude(){
     if(!a) continue;                        // nunca carimbou: nao inventa alarme
     if(cfg.madrugadaOk && fechada) continue; // loja fechada, nada a buscar
     const base = a.ultimo_ok ? new Date(a.ultimo_ok) : null;
-    if(!base){ ruins.push(`${cfg.rot} nunca terminou bem`); continue; }
+    if(!base){
+      // Sem sucesso NENHUM registrado. "nunca terminou bem" e verdade e nao
+      // serve para nada: nao diz ha quanto tempo nem o que fazer. Quem carimba
+      // ja mediu isso e guardou no detalhe ("sem parecer ha 76h"), entao a
+      // faixa mostra o numero em vez da categoria. Aviso sem numero vira
+      // decoracao, e decoracao a gente para de ler.
+      const d = (a.detalhe || '').trim();
+      ruins.push(d ? `${cfg.rot}: ${d.length > 90 ? d.slice(0,88) + '…' : d}`
+                   : `${cfg.rot} nunca terminou bem`);
+      continue;
+    }
     const h = (agora - base) / 36e5;
     if(h > cfg.h) ruins.push(`${cfg.rot} sem atualizar há ${Math.round(h)}h`);
     else if(a.resultado === 'falha') ruins.push(`${cfg.rot}: última tentativa falhou`);

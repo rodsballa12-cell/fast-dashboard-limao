@@ -33,47 +33,12 @@ jobs:
 
       - name: Verificar frescor das atas
         id: freshness
-        run: |
-          # Hora atual UTC
-          AGORA=$(date -u +%s)
-          LIMITE_HORAS=24
-
-          # Procurar ultimo commit com 'ata:' no titulo (vem do rodar_agente.ps1)
-          # CONTEUDO, nao carimbo. Ate 23/10/2026 esta linha procurava o
-          # ultimo commit com `ata:` no nome -- e as 21 atas que diziam
-          # "Credit balance is too low" contavam como saudaveis, sete dias
-          # seguidos. Agora so vale ata com parecer de verdade dentro.
-          ULT_COMMIT=''
-          for sha_ts in $(git log --all --format='%H|%ct' -- docs/atas | head -40); do
-            sha=${sha_ts%%|*}; ts=${sha_ts##*|}
-            arqs=$(git show --name-only --format='' "$sha" -- docs/atas | grep '\.md$' || true)
-            for arq in $arqs; do
-              corpo=$(git show "$sha:$arq" 2>/dev/null || true)
-              echo "$corpo" | grep -qiE 'credit balance|too low|rate limit' && continue
-              [ "$(echo "$corpo" | wc -c)" -lt 400 ] && continue
-              ULT_COMMIT="$ts|$(basename "$arq")"; break 2
-            done
-          done
-          if [ -z "$ULT_COMMIT" ]; then
-            echo "status=critico" >> $GITHUB_OUTPUT
-            echo "motivo=nenhuma ata encontrada no historico" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          TS=$(echo "$ULT_COMMIT" | cut -d'|' -f1)
-          MSG=$(echo "$ULT_COMMIT" | cut -d'|' -f2-)
-          HORAS=$(( (AGORA - TS) / 3600 ))
-
-          echo "ultimo_commit=$MSG" >> $GITHUB_OUTPUT
-          echo "horas=$HORAS" >> $GITHUB_OUTPUT
-
-          if [ "$HORAS" -ge "$LIMITE_HORAS" ]; then
-            echo "status=alerta" >> $GITHUB_OUTPUT
-            echo "motivo=ultima ata ha ${HORAS}h (>${LIMITE_HORAS}h)" >> $GITHUB_OUTPUT
-          else
-            echo "status=ok" >> $GITHUB_OUTPUT
-            echo "motivo=ultima ata ha ${HORAS}h" >> $GITHUB_OUTPUT
-          fi
+        # A conta estava escrita AQUI, em bash, e de novo em Python. Dois
+        # leitores do mesmo fato divergem sempre: este descartava qualquer ata
+        # que contivesse "credit balance", e por isso jogava fora o Conselho de
+        # 22/10 -- 9.320 bytes de parecer -- porque ele FALAVA sobre os cinco
+        # dias sem credito. Agora ha um leitor so: scripts/saude_atas.py.
+        run: python3 scripts/saude_atas.py --github-output >> "$GITHUB_OUTPUT"
 
       - name: Verificar frescor dos dashboards
         id: dashboards
@@ -100,6 +65,27 @@ jobs:
           set +e
           python3 scripts/saude.py conferir
           echo "saude_rc=$?" >> $GITHUB_OUTPUT
+
+      - name: Carimbar a faixa do painel
+        if: always()
+        # O watchdog sempre soube. Entre 23 e 26/10/2026 ele avisou por 77h na
+        # issue #32, que acumulou sete comentarios que ninguem leu, enquanto a
+        # faixa no TOPO DO PAINEL mostrava "nunca carimbou" justamente nos dois
+        # itens que tinham parado. Alarme no lugar certo e metade do trabalho;
+        # a outra metade e o lugar onde a pessoa ja esta olhando.
+        run: |
+          python3 scripts/saude_atas.py || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/saude.json
+          git diff --cached --quiet && exit 0
+          git commit -m "saude: pareceres e conselho"
+          for n in 1 2 3; do
+            git push && exit 0
+            git pull --rebase --autostash origin main || true
+            sleep $((n * 4))
+          done
+          echo "::warning::Nao consegui empurrar o carimbo da faixa."
 
       - name: Abrir/atualizar issue se tem problema
         if: steps.freshness.outputs.status != 'ok' || steps.dashboards.outputs.dre_horas > 48 || steps.dashboards.outputs.dash_horas > 6
