@@ -11,6 +11,15 @@ base: DRE 20/10/2026 · comissões data/comissoes.json (18/10/2026)
 **Este arquivo não vai para o colégio.** O documento deles está no link acima e
 não traz margem, comissão nem custo.
 
+## O número de professoras está confirmado
+
+**27**, confirmado pelo Rodrigo em 27/10/2026.
+
+Os diretórios do censo escolar (QEdu, escol.as) listam **13 professores** para a
+Del Rios Silva Colégio, com 141 alunos. O dado do INEP atrasa cerca de dois anos
+e conta só docentes de sala — fica de fora coordenação, apoio e administrativo.
+**Não reabrir essa dúvida:** a fonte é o Rodrigo, não o censo.
+
 ## A cesta fechada pelo Rodrigo
 
 | Item | Qtd | Tabela | No plano | Off | Margem |
