@@ -922,12 +922,21 @@ def analisar(agend, transac, ini: date, fim: date):
             "atend_total": len(ag),
             "n_trans": len(tr),
             "ticket_trans": brl_round(caixa / max(len(tr), 1)),
-            # Bate com o relatorio Financeiro do Trinks (Ticket medio por venda).
-            # Numerador = soma de TODAS as formas de pagamento (inclui credito e
-            # vale-presente); denominador = n_trans (uma venda/comanda = 1).
-            "ticket_venda_trinks": brl_round(faturamento_bruto / max(len(tr), 1)),
+            # TICKET MEDIO OFICIAL (bate com Relatorio de Movimentacoes
+            # Financeiras do Trinks). Formula do Trinks:
+            #   Total Recebido / Qtde Atendimentos com pagamento
+            # Numerador = soma liquida de TODAS as formas de pagamento
+            # (inclui credito, vale-presente, pre-pago com sinal, troco
+            # negativo). Denominador = atendimentos finalizados (NAO
+            # cliente_dia, NAO n_trans/comandas).
+            # Validado via screenshot do Trinks em 27/10/2026: Escova out/26
+            # mostrava R$ 135,35 = R$ 48.589 / 359 atendimentos.
+            "ticket_medio": brl_round(faturamento_bruto / max(len(fin), 1)),
+            # Campos legados preservados para nao quebrar HTML cacheado
+            # com referencias antigas, mas o painel so expõe o oficial.
+            "ticket_medio_interno": brl_round(caixa / max(n_cliente_dia, 1)),
+            "ticket_venda_trinks": brl_round(faturamento_bruto / max(len(fin), 1)),
             "cliente_dia": n_cliente_dia,
-            "ticket_medio": brl_round(caixa / max(n_cliente_dia, 1)),
             "taxa_canc": round(len(canc) / max(len(ag), 1) * 100, 1),
             "dias_op": dias_com_op,
             "clientes_unicos": unicos,
