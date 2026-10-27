@@ -413,7 +413,18 @@ def analisar(agend, transac, ini: date, fim: date):
         return _serv + _prod + _pac + _saldo - _desc
 
     total_recebido = sum(_total_recebido_trinks(_t) for _t in tr)
-    tr_pagantes = [t for t in tr if _total_recebido_trinks(t) > 0]
+    # DENOMINADOR separado do numerador: no Trinks, "Qtde Atendimentos com
+    # pagamento" conta tx onde CLIENTE PAGOU ALGO (qualquer forma com valor>0),
+    # mesmo que seja saldo pre-pago (que faz Total Recebido == 0 nessa linha
+    # porque Serv e abatido pelo Pre-Pago). Validado 27/10 com screenshot:
+    # 400 tx brutas - 41 "Cliente utilizou pacote" (sem nenhuma forma de
+    # pagamento) = 359. Minha versao anterior usava total_recebido_t > 0 como
+    # filtro e excluia 216 — errado, pq tx paga 100% com credito tem
+    # total_recebido_t == 0 mas E atendimento com pagamento.
+    def _tem_pagto(_t):
+        return any(float(_fp.get("valor") or 0) != 0
+                   for _fp in (_t.get("formasPagamentos") or []))
+    tr_pagantes = [t for t in tr if _tem_pagto(t)]
     n_pagantes = len(tr_pagantes)
     ticket_medio_trinks = (total_recebido / n_pagantes) if n_pagantes > 0 else 0
 
