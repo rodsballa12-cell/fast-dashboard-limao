@@ -4044,10 +4044,10 @@ function renderAnual(data){
   const auditEl = document.getElementById('per-audit'); if(auditEl) auditEl.innerHTML = PER_AUDIT_TXT.anual;
   renderRecordes('per-recordes', data, 'anual');
   renderKPIs('per-kpis',[
-    {label:'Faturamento · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
+    {label:'Faturamento · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans · ${k.faturamento_bruto_trinks ? 'Trinks R$ '+brl0(k.faturamento_bruto_trinks).replace('R$ ','') : ''}`,accent:'accent'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`},
-    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`padrão Trinks`},
-    {label:'Clientes únicos',value:k.clientes_unicos+'',foot:`${((k.cliente_dia||0)/Math.max(k.clientes_unicos,1)).toFixed(1)} visitas/cliente médio`}
+    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`caixa÷visitas · interno`},
+    {label:'Ticket Trinks',value:brl(k.ticket_venda_trinks||0),foot:`fat.÷venda · bate com relatório Trinks`},
   ]);
   // Âncora removida a pedido — informação estática (muda 1×/ano) não merece card fixo
   if(a.meta && a.meta.meta) renderMetaProgress('per-meta','Meta Anual 2026',a.meta,'Projeção · realizado meses fechados + meta mensal restante', null, null, 'anual');
@@ -4152,7 +4152,8 @@ function renderMensal(data){
     {label:'Faturamento · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'Comissão apurada · mês',value:brl0(_comMTD),foot:`${_comPct.toFixed(1)}% do faturamento · base ranking prof executor × taxa oficial da categoria`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
-    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`(caixa÷visitas · padrão Trinks)`, delta_pct:k.ticket_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
+    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`caixa÷visitas · interno`, delta_pct:k.ticket_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
+    {label:'Ticket Trinks',value:brl(k.ticket_venda_trinks||0),foot:`fat.÷venda · bate com relatório Trinks`},
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
   ]);
   renderAvisoBase('per-kpis', k);
@@ -4187,7 +4188,8 @@ function renderSemanal(data){
   renderKPIs('per-kpis',[
     {label:'Faturamento · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
-    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
+    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`caixa÷visitas · interno`, delta_pct:k.ticket_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
+    {label:'Ticket Trinks',value:brl(k.ticket_venda_trinks||0),foot:`fat.÷venda · bate com relatório Trinks`},
     {label:'Dias operados',value:k.dias_op+'',foot:`de ${s.meta.dias_total} da semana`}
   ]);
   renderAvisoBase('per-kpis', k);
@@ -4221,7 +4223,8 @@ function renderDiario(data){
   renderKPIs('per-kpis',[
     {label:'Faturamento · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · +${k.em_atendimento} em curso`, delta_pct:k.cliente_dia_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
-    {label:'Ticket / visita',value:(k.cliente_dia||0)>0?brl(k.ticket_medio||0):'—',foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
+    {label:'Ticket / visita',value:(k.cliente_dia||0)>0?brl(k.ticket_medio||0):'—',foot:`caixa÷visitas · interno`, delta_pct:k.ticket_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
+    {label:'Ticket Trinks',value:(k.n_trans||0)>0?brl(k.ticket_venda_trinks||0):'—',foot:`fat.÷venda · bate com relatório Trinks`},
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
   ]);
   renderAvisoBase('per-kpis', k);

@@ -30,6 +30,7 @@ NAO_SOMAR = {
     "caixa_delta_bruto_pct", "pct_recorrentes", "pareto20_pct",
     "pct_faturamento", "estrelas_media", "rating",
     "ticket_medio", "ticket_medio_serv", "ticket_medio_visita",
+    "ticket_trans", "ticket_venda_trinks",
     "ltv_medio", "freq_media_visitas", "rs_hora", "rs_hora_salao",
     "media_dia",
     # Taxas do bloco Stone — somar duas taxas da 1,286 em vez de 0,643.
@@ -286,8 +287,13 @@ def recalcular_derivados(d):
         caixa = k.get("caixa") or 0
         atend = k.get("atend_fin") or 0
         cliente_dia = k.get("cliente_dia") or 0
+        n_trans = k.get("n_trans") or 0
+        fat_bruto = k.get("faturamento_bruto_trinks") or 0
         if cliente_dia > 0:
             k["ticket_medio"] = round(caixa / cliente_dia, 2)
+        if n_trans > 0:
+            k["ticket_trans"] = round(caixa / n_trans, 2)
+            k["ticket_venda_trinks"] = round(fat_bruto / n_trans, 2)
         # categorias.pct
         cat = aba.get("categorias") or {}
         for tipo, v in cat.items():
@@ -463,6 +469,7 @@ def corrigir_historico_consolidado(c, esc, spa):
         caixa = k.get("caixa") or 0
         cliente_dia = k.get("cliente_dia") or 0
         n_trans = k.get("n_trans") or 0
+        fat_bruto = k.get("faturamento_bruto_trinks") or 0
         horas = k.get("horas_operacao_periodo") or 0
         atend_total = k.get("atend_total") or 0
         atend_canc = k.get("atend_canc") or 0
@@ -470,6 +477,7 @@ def corrigir_historico_consolidado(c, esc, spa):
             k["ticket_medio"] = round(caixa / cliente_dia, 2)
         if n_trans > 0:
             k["ticket_trans"] = round(caixa / n_trans, 2)
+            k["ticket_venda_trinks"] = round(fat_bruto / n_trans, 2)
         if horas > 0:
             k["rs_hora_salao"] = round(caixa / horas, 2)
         if atend_total > 0:

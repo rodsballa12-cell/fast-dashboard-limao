@@ -448,9 +448,16 @@ def analisar(agend, transac, ini: date, fim: date):
     # inflava o caixa do SPA (ex: R$ 99 hoje 09/10 que foi vale usado).
     FORMAS_INTERNAS = ("crédito de cliente", "credito de cliente", "pré-pago", "pre-pago",
                        "voucher", "vale-presente", "vale presente")
+    # faturamento_bruto = soma de TODAS as formas de pagamento, incluindo as
+    # internas (credito, vale-presente, voucher). Serve pra bater com o
+    # relatorio Financeiro do Trinks ("Ticket medio por venda" = faturamento /
+    # n_trans). O painel usa `caixa` (sem internas) pra fluxo real, mas o
+    # Rodrigo precisa da leitura Trinks tambem pra conferencia (27/10/2026).
+    faturamento_bruto = 0.0
     for t in tr:
         for fp in (t.get("formasPagamentos") or []):
             v = float(fp.get("valor") or 0)
+            faturamento_bruto += v
             _nome_lower = (fp.get("descricao") or fp.get("nome") or "").lower().strip()
             if any(kw in _nome_lower for kw in FORMAS_INTERNAS):
                 continue  # nao e caixa real, e movimentacao interna de saldo
@@ -908,12 +915,17 @@ def analisar(agend, transac, ini: date, fim: date):
         "kpis": {
             "caixa": brl_round(caixa),
             "faturamento_apurado": brl_round(caixa),
+            "faturamento_bruto_trinks": brl_round(faturamento_bruto),
             "receita_serv": brl_round(receita_serv),
             "atend_fin": len(fin),
             "atend_canc": len(canc),
             "atend_total": len(ag),
             "n_trans": len(tr),
             "ticket_trans": brl_round(caixa / max(len(tr), 1)),
+            # Bate com o relatorio Financeiro do Trinks (Ticket medio por venda).
+            # Numerador = soma de TODAS as formas de pagamento (inclui credito e
+            # vale-presente); denominador = n_trans (uma venda/comanda = 1).
+            "ticket_venda_trinks": brl_round(faturamento_bruto / max(len(tr), 1)),
             "cliente_dia": n_cliente_dia,
             "ticket_medio": brl_round(caixa / max(n_cliente_dia, 1)),
             "taxa_canc": round(len(canc) / max(len(ag), 1) * 100, 1),
