@@ -391,8 +391,10 @@ def analisar(agend, transac, ini: date, fim: date):
     # Ticket Medio = Total Recebido / Qtde Atendimentos com pagamento
     #              = 48.589 / 359 = R$ 135,35 ✓
     def _total_recebido_trinks(_t):
-        _serv = sum(float(_s.get("valorUnitario") or 0) * int(_s.get("quantidade") or 1)
-                    for _s in (_t.get("servicos") or []))
+        # Servicos no Trinks usam .preco (nao valorUnitario). Validado via
+        # mesma logica em analisar() linha ~566: "preco_s = float(s.get('preco')
+        # or 0); serv_v += preco_s". Produtos e pacotes usam valorUnitario * q.
+        _serv = sum(float(_s.get("preco") or 0) for _s in (_t.get("servicos") or []))
         _prod = sum(float(_p.get("valorUnitario") or 0) * int(_p.get("quantidade") or 1)
                     for _p in (_t.get("produtos") or []))
         _pac = sum(float(_p.get("valorUnitario") or 0) * int(_p.get("quantidade") or 1)
