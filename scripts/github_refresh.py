@@ -379,23 +379,43 @@ def analisar(agend, transac, ini: date, fim: date):
 
     tr = [t for t in transac if t.get("dataHora") and ini <= parse_trinks_dt(t["dataHora"]).date() <= fim]
 
-    # Transacoes "com pagamento" (bate com Qtde Atendimentos do Trinks).
-    # Exclui transacoes cuja soma de formas de pagamento <= 0 (estornos
-    # liquidos, cortesias, demos sem cobranca). O Trinks nao conta estas
-    # na "Qtde Atendimentos com pagamento" do Relatorio Financeiro.
-    # Validado 27/10/2026 Escova out/26: 400 tr - 41 sem pagto = 359 (bate).
-    def _soma_pagto(_t):
-        return sum(float(_fp.get("valor") or 0) for _fp in (_t.get("formasPagamentos") or []))
-    tr_pagantes = [t for t in tr if _soma_pagto(t) > 0]
+    # TOTAL RECEBIDO TRINKS (bate EXATO com Relatorio Movimentacoes Financeiras).
+    # Formula validada 27/10/2026 com screenshot detalhado:
+    #   Total Recebido = Servicos + Produtos + Pacotes + Clube
+    #                    + Vale-Presente + Credito Cliente (entradas de saldo)
+    #                    + Pre-Pago (negativo quando consumo)
+    #                    - Descontos
+    # Escova out/26: 41.026 + 297 + 7.313 + (710 CC - 450 Pre) - 307 = 48.589 ✓
+    # Qtde Atendimentos com pagamento = transacoes com Total Recebido > 0
+    # (exclui "Cliente utilizou pacote" cujo Total=0, igual o Trinks faz)
+    # Ticket Medio = Total Recebido / Qtde Atendimentos com pagamento
+    #              = 48.589 / 359 = R$ 135,35 ✓
+    def _total_recebido_trinks(_t):
+        _serv = sum(float(_s.get("valorUnitario") or 0) * int(_s.get("quantidade") or 1)
+                    for _s in (_t.get("servicos") or []))
+        _prod = sum(float(_p.get("valorUnitario") or 0) * int(_p.get("quantidade") or 1)
+                    for _p in (_t.get("produtos") or []))
+        _pac = sum(float(_p.get("valorUnitario") or 0) * int(_p.get("quantidade") or 1)
+                   for _p in (_t.get("pacotes") or []))
+        _desc = float(_t.get("descontos") or 0)
+        # Formas internas somam com sinal preservado:
+        # Credito Cliente/Vale-Presente positivo quando cliente adiciona saldo,
+        # negativo quando consome. Pre-Pago negativo quando usa saldo (quase
+        # sempre). Clube positivo quando venda de assinatura.
+        INTERNAS_KW = ("crédito de cliente", "credito de cliente", "pré-pago",
+                       "pre-pago", "voucher", "vale-presente", "vale presente",
+                       "clube")
+        _saldo = 0.0
+        for _fp in (_t.get("formasPagamentos") or []):
+            _nome = (_fp.get("descricao") or _fp.get("nome") or "").lower().strip()
+            if any(_kw in _nome for _kw in INTERNAS_KW):
+                _saldo += float(_fp.get("valor") or 0)
+        return _serv + _prod + _pac + _saldo - _desc
 
-    # DIAGNOSTICO ticket medio (27/10/2026): o Rodrigo pede numero IGUAL ao
-    # Relatorio Movimentacoes Financeiras do Trinks (R$ 135,35 na Escova out).
-    # Expomos 3 candidatos no payload para ele escolher qual bate exato — o
-    # painel usa `ticket_medio` (hoje = faturamento_bruto / n_trans_pagantes).
-    # Se nenhuma destas bater, precisamos pedir detalhe de UMA venda do Trinks
-    # pra reverse-engineering da conta.
-    _total_pagar_sum = sum(float(_t.get("totalPagar") or 0) for _t in tr_pagantes)
-    _soma_pagto_total = sum(_soma_pagto(_t) for _t in tr_pagantes)
+    total_recebido = sum(_total_recebido_trinks(_t) for _t in tr)
+    tr_pagantes = [t for t in tr if _total_recebido_trinks(t) > 0]
+    n_pagantes = len(tr_pagantes)
+    ticket_medio_trinks = (total_recebido / n_pagantes) if n_pagantes > 0 else 0
 
     # KPIs base
     receita_serv = sum(float(a.get("valor") or 0) for a in fin)
@@ -940,40 +960,20 @@ def analisar(agend, transac, ini: date, fim: date):
             "atend_total": len(ag),
             "n_trans": len(tr),
             "ticket_trans": brl_round(caixa / max(len(tr), 1)),
-            "n_trans_com_pagto": len(tr_pagantes),
-            # DIAGNOSTICO ticket Trinks: 3 numeradores candidatos / 2 denominadores.
-            # Rodrigo (27/10) comparar com R$ 135,35 do Relatorio e dizer qual bate.
-            "_diag_ticket": {
-                "caixa_sem_internas": brl_round(caixa),
-                "faturamento_bruto_todas_formas": brl_round(faturamento_bruto),
-                "totalPagar_das_transacoes_pagantes": brl_round(_total_pagar_sum),
-                "soma_pagto_das_transacoes_pagantes": brl_round(_soma_pagto_total),
-                "n_trans_brutas": len(tr),
-                "n_trans_com_pagto": len(tr_pagantes),
-                "atend_fin": len(fin),
-                "candidatos_ticket_medio": {
-                    "caixa_div_n_trans_pagantes": brl_round(caixa / max(len(tr_pagantes), 1)),
-                    "fatur_bruto_div_n_trans_pagantes": brl_round(faturamento_bruto / max(len(tr_pagantes), 1)),
-                    "totalPagar_div_n_trans_pagantes": brl_round(_total_pagar_sum / max(len(tr_pagantes), 1)),
-                    "soma_pagto_div_n_trans_pagantes": brl_round(_soma_pagto_total / max(len(tr_pagantes), 1)),
-                    "fatur_bruto_div_atend_fin": brl_round(faturamento_bruto / max(len(fin), 1)),
-                    "fatur_bruto_div_n_trans_brutas": brl_round(faturamento_bruto / max(len(tr), 1)),
-                },
-                "_nota": "Rodrigo abre esse campo no browser DevTools (Console: TRINKS.abas.mensal.kpis._diag_ticket), compara com o Trinks R$ 135,35 (Escova out) e diz qual chave bate. Depois removemos as outras.",
-            },
-            # TICKET MEDIO OFICIAL (bate com Relatorio de Movimentacoes
-            # Financeiras do Trinks). Formula do Trinks:
-            #   Total Recebido / Qtde Atendimentos com pagamento
-            # Numerador = soma liquida de TODAS as formas de pagamento.
-            # Denominador = transacoes COM pagamento > 0 (exclui estornos,
-            # cortesias, demos sem cobranca que o Trinks nao conta).
-            # Validado 27/10/2026 Escova out/26: 400 tr brutas, 41 sem
-            # pagamento, 359 com pagamento. R$ 48.589 / 359 = R$ 135,35.
-            "ticket_medio": brl_round(faturamento_bruto / max(len(tr_pagantes), 1)),
-            # Campos legados preservados para nao quebrar HTML cacheado
-            # com referencias antigas, mas o painel so expõe o oficial.
+            "n_trans_com_pagto": n_pagantes,
+            "total_recebido_trinks": brl_round(total_recebido),
+            # TICKET MEDIO OFICIAL (bate EXATO com Relatorio Movimentacoes
+            # Financeiras do Trinks). Formula validada 27/10/2026:
+            #   total_recebido = servicos + produtos + pacotes + clube
+            #                    + vale-presente + credito_cliente + pre-pago(sinal)
+            #                    - descontos
+            #   atend_pagantes = tx com total_recebido > 0
+            #   ticket_medio = total_recebido / atend_pagantes
+            # Escova out/26: 48.589 / 359 = R$ 135,35 ✓
+            "ticket_medio": brl_round(ticket_medio_trinks),
+            # Legados preservados para auditoria (nao expostos na UI).
             "ticket_medio_interno": brl_round(caixa / max(n_cliente_dia, 1)),
-            "ticket_venda_trinks": brl_round(faturamento_bruto / max(len(tr_pagantes), 1)),
+            "ticket_venda_trinks": brl_round(ticket_medio_trinks),
             "cliente_dia": n_cliente_dia,
             "taxa_canc": round(len(canc) / max(len(ag), 1) * 100, 1),
             "dias_op": dias_com_op,
