@@ -395,6 +395,130 @@ def conferir_caixa_a_receber(achados):
                 f"R$ {ar['Spa']:,.2f})."))
 
 
+ESTOQUE_DESDE = "2026-10-28"
+
+
+def conferir_estoque(achados, fin):
+    """O estoque existe, soma entre as lojas e não está contado duas vezes?
+
+    Pedido do Rodrigo em 27/10/2026: compra de material não é CAPEX nem
+    despesa, é estoque, e "a auditoria tem de validar isso sempre". O perigo
+    é um pagamento ficar no estoque E numa categoria CAPEX/OPEX do razão: o
+    resultado paga a compra duas vezes. A conferência contra o razão é feita
+    pelo gerar_financeiro.py (só ele abre a planilha); aqui se acusa o que ele
+    gravou, e se o bloco sumiu.
+    """
+    blocos = {u: (fin.get(u) or {}).get("estoque") for u in ("escova", "spa", "consolidado")}
+    faltando = [u for u, b in blocos.items() if not isinstance(b, dict)]
+    if faltando:
+        # Antes do primeiro gerar_financeiro.py com o estoque (27/10/2026) a
+        # ausência é esperada; depois dele, é bloco que sumiu.
+        gerado = str((fin.get("consolidado") or {}).get("gerado_em") or "")[:10]
+        tipo = "erro" if gerado >= ESTOQUE_DESDE else "aviso"
+        achados.append((tipo,
+            f"Estoque: bloco ausente em {', '.join(faltando)}. O card de estoque "
+            f"some do painel e as compras de material deixam de ser conferidas "
+            f"contra o razão. Rode o gerar_financeiro.py no PC."))
+        return
+    for u, b in blocos.items():
+        if b.get("status") == "erro_leitura":
+            achados.append(("erro", f"Estoque ({u}): a leitura da aba quebrou — {b.get('erro')}"))
+            return
+    if blocos["consolidado"].get("status") == "aba_ausente":
+        achados.append(("aviso",
+            "Estoque: a planilha da Siibello ainda não tem a aba de estoque. "
+            "Compras de material não estão sendo controladas."))
+        return
+
+    e, s, c = blocos["escova"], blocos["spa"], blocos["consolidado"]
+
+    def _v(b, *ks):
+        for k in ks:
+            b = (b or {}).get(k)
+        return b
+
+    for rot, ks in (("compras", ("compras", "total")), ("estoque inicial", ("inicial", "valor")),
+                    ("contagem", ("contagem", "valor")), ("fora do resultado", ("fora_do_resultado",))):
+        a, b, t = _v(e, *ks), _v(s, *ks), _v(c, *ks)
+        if all(isinstance(x, (int, float)) for x in (a, b, t)) and abs(a + b - t) > 1.0:
+            achados.append(("erro",
+                f"Estoque · {rot}: Escova {brl(a)} + Spa {brl(b)} = {brl(a + b)}, "
+                f"mas o consolidado diz {brl(t)}."))
+
+    for nome, b in (("Escova", e), ("Spa", s)):
+        ini, cp, ct, cons = _v(b, "inicial", "valor"), _v(b, "compras", "total"), \
+            _v(b, "contagem", "valor"), b.get("consumo_estimado")
+        if all(isinstance(x, (int, float)) for x in (ini, cp, ct, cons)) and abs(ini + cp - ct - cons) > 1.0:
+            achados.append(("erro",
+                f"Estoque {nome}: consumo {brl(cons)} não fecha com inicial {brl(ini)} "
+                f"+ compras {brl(cp)} − contagem {brl(ct)}."))
+        if isinstance(cons, (int, float)) and cons < -1.0:
+            achados.append(("erro",
+                f"Estoque {nome}: a contagem ({brl(ct)}) é maior que o inicial mais as "
+                f"compras ({brl(ini + cp)}). Faltou lançar compra, ou a contagem tem "
+                f"custo errado."))
+        # O estoque inicial também foi comprado: se não estiver aberto em itens
+        # com a origem do pagamento, ninguém garante que não está no CAPEX.
+        # Em 27/10/2026 os R$ 15.542,16 do Spa eram exatamente Tulipia + Glossex
+        # + Mercado Livre, que estavam lançados no CAPEX ao mesmo tempo.
+        itens = _v(b, "inicial", "itens")
+        if isinstance(ini, (int, float)) and ini > 0:
+            if itens is None:
+                achados.append(("aviso",
+                    f"Estoque {nome}: o inicial de {brl(ini)} não está aberto em itens "
+                    f"(coluna G = 'Inicial' nas compras). Não dá para garantir que essas "
+                    f"compras não estão também no CAPEX ou na despesa."))
+            elif abs(itens - ini) > 1.0:
+                achados.append(("erro",
+                    f"Estoque {nome}: o inicial diz {brl(ini)} e os itens que o compõem "
+                    f"somam {brl(itens)}."))
+        sem_uso = _v(b, "contagem", "sem_uso") or 0
+        if _v(b, "contagem", "data") and sem_uso:
+            achados.append(("aviso",
+                f"Estoque {nome}: {sem_uso} produto(s) contado(s) sem o uso marcado "
+                f"(serviço ou revenda). O custo do atendimento e o da revenda ficam misturados."))
+
+    cf = c.get("conferencia") or {}
+    if cf.get("status") != "ok":
+        achados.append(("indef",
+            f"Estoque: compras não conferidas contra o razão ({cf.get('status') or 'sem conferência'})."))
+    else:
+        for x in cf.get("conflitos_capex_opex") or []:
+            achados.append(("erro",
+                f"Estoque: pagamento contado duas vezes — {x}. Ou é estoque, ou é "
+                f"CAPEX/despesa; nos dois lugares o resultado paga a compra duas vezes."))
+        if abs(cf.get("diferenca") or 0) > 1.0:
+            achados.append(("erro",
+                f"Estoque: o razão tem {brl(cf.get('razao_estoque_total') or 0)} classificados como "
+                f"estoque e a aba de estoque tem {brl(cf.get('compras_xp_total') or 0)} de "
+                f"compras pela conta XP (diferença de {brl(cf.get('diferenca') or 0)})."))
+        sp = cf.get("compras_sem_par_no_razao") or []
+        if sp:
+            achados.append(("aviso",
+                f"Estoque: {len(sp)} compra(s) pela conta XP sem pagamento no razão — "
+                f"{'; '.join(sp[:3])}{' …' if len(sp) > 3 else ''}"))
+        fc = cf.get("razao_fora_do_controle") or []
+        if fc:
+            achados.append(("aviso",
+                f"Estoque: {len(fc)} pagamento(s) classificado(s) como estoque no razão "
+                f"e fora da aba de estoque — {'; '.join(fc[:3])}{' …' if len(fc) > 3 else ''}"))
+        if cf.get("compras_cartao_nao_conferidas"):
+            achados.append(("indef",
+                f"Estoque: {cf['compras_cartao_nao_conferidas']} compra(s) no cartão ainda "
+                f"não conferida(s) contra a aba Cartão_Pessoal."))
+        if cf.get("compras_sem_loja"):
+            achados.append(("aviso",
+                f"Estoque: {len(cf['compras_sem_loja'])} compra(s) sem loja definida, "
+                f"rateadas 50/50 por falta de informação."))
+
+    fora = c.get("fora_do_resultado") or 0
+    if fora > 0 and not _v(c, "amortizacao", "regra"):
+        achados.append(("aviso",
+            f"Estoque: {brl(fora)} em compras de material estão fora do resultado "
+            f"porque a regra de amortização ainda não foi definida. O lucro do "
+            f"painel está maior do que será quando a regra entrar."))
+
+
 def conferir_saude_automacoes(achados):
     """As automacoes carimbaram que funcionaram, e isso bate com os arquivos?
 
@@ -671,6 +795,7 @@ def main() -> int:
     conferir_taxa_comissao(achados)
     conferir_preco_realizado(achados)
     conferir_caixa_a_receber(achados)
+    conferir_estoque(achados, fin)
     conferir_saude_automacoes(achados)
     conferir_atas_vazias(achados)
     conferir_decisoes_sem_desfecho(achados)
