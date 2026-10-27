@@ -1,0 +1,55 @@
+name: Debug ticket medio
+
+# Workflow unico-tiro para ler os numeros do ticket medio no payload (que esta
+# criptografado no repo publico). Imprime 6 valores por unidade — nada de dado
+# pessoal. Pode ser disparado quando houver suspeita de divergencia com Trinks.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Abrir cofre
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+        run: python scripts/cofre.py abrir
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Imprimir ticket medio das 3 unidades
+        run: |
+          python3 <<'PY'
+          import json, os
+          for label, path in [
+              ("ESCOVA", "data/dashboard_data.json"),
+              ("SPA", "data/spa/dashboard_data.json"),
+              ("CONSOLIDADO", "data/consolidado/dashboard_data.json"),
+          ]:
+              if not os.path.exists(path):
+                  print(f"=== {label} === arquivo nao existe (cofre nao abriu?)")
+                  continue
+              d = json.load(open(path, encoding="utf-8"))
+              for aba in ("anual", "mensal", "semanal", "diario"):
+                  k = (d.get("abas") or {}).get(aba, {}).get("kpis") or {}
+                  if not k:
+                      continue
+                  print(f"=== {label} · {aba.upper()} ===")
+                  for campo in ("caixa", "faturamento_bruto_trinks", "total_recebido_trinks",
+                                "atend_fin", "n_trans", "n_trans_com_pagto",
+                                "ticket_medio", "ticket_venda_trinks", "ticket_trans"):
+                      v = k.get(campo)
+                      print(f"  {campo:<30} {v}")
+                  print()
+          PY
