@@ -638,7 +638,6 @@ document.addEventListener('visibilitychange', () => {
       <div class="audit" id="fin-audit"><div>💰</div><div><strong>O resultado do mês contra o que era esperado.</strong> A receita vem do Trinks; o custo, do razão da conta. Embaixo, os pontos que pedem decisão.</div></div>
       <div id="fin-kpis"></div>
       <div id="fin-content"></div>
-      <div id="fin-estoque"></div>
       <div id="fin-decisoes"></div>
       <!-- ÚLTIMO · Ações Recomendadas Financeiro -->
       <div id="financeiro-insights"></div>
@@ -6911,7 +6910,6 @@ function renderFinanceiro(){
   }
 
   document.getElementById('fin-content').innerHTML=h;
-  renderEstoque();
 
   const sev={crit:'🔴',warn:'🟡',ok:'🟢'};
   const decisoesEl = document.getElementById('fin-decisoes');
@@ -6933,42 +6931,6 @@ function renderFinanceiro(){
   if(typeof TRINKS !== 'undefined' && TRINKS && TRINKS.insights){
     renderInsights('financeiro-insights', 'Financeiro', TRINKS.insights.financeiro);
   }
-}
-
-// Estoque (Rodrigo 27/10/2026): compra de material não é CAPEX nem despesa.
-// Lê FIN.estoque, gravado pelo gerar_financeiro.py a partir da aba de estoque
-// da planilha; a conferência contra o razão é refeita pela auditoria de coerência.
-function renderEstoque(){
-  const el = document.getElementById('fin-estoque');
-  if(!el) return;
-  const E = FIN && FIN.estoque;
-  if(!E){ el.innerHTML = `<div class="card"><h2>📦 Estoque</h2><div class="cap">Ainda não gerado. Rode o gerar_financeiro no PC depois de criar a aba de estoque na planilha.</div></div>`; return; }
-  if(E.status === 'aba_ausente'){ el.innerHTML = `<div class="card"><h2>📦 Estoque</h2><div class="cap">A planilha ainda não tem a aba de estoque.</div></div>`; return; }
-  if(E.status === 'erro_leitura'){ el.innerHTML = `<div class="card"><h2>📦 Estoque</h2><div class="cap">⚠️ A leitura da aba de estoque falhou: ${E.erro||''}</div></div>`; return; }
-  const v = x => (x==null ? 'NÃO VEJO' : brl(x));
-  const ct = E.contagem || {}, cp = E.compras || {}, ini = E.inicial || {};
-  const usos = Object.entries(cp.por_uso || {}).map(([k,x])=>`${k} ${brl0(x)}`).join(' · ');
-  const meses = Object.entries(cp.por_mes || {}).sort().map(([k,x])=>`<tr><td>${k.slice(5)}/${k.slice(0,4)}</td><td>${brl(x)}</td></tr>`).join('');
-  const cf = E.conferencia;
-  let conf = '';
-  if(cf && cf.status === 'ok'){
-    const ruins = (cf.conflitos_capex_opex||[]).length;
-    const ok = !ruins && Math.abs(cf.diferenca||0) <= 1 && !(cf.compras_sem_par_no_razao||[]).length && !(cf.razao_fora_do_controle||[]).length;
-    conf = `<div class="fin-fonte" style="margin-top:10px">${ok?'🟢':'🔴'} <strong>Conferência com a conta XP:</strong> ${brl(cf.compras_xp_total)} de compras no controle × ${brl(cf.razao_estoque_total)} classificados como estoque no razão${ruins?` · <strong>${ruins} pagamento(s) também lançado(s) como CAPEX/despesa</strong>`:''}${cf.compras_cartao_nao_conferidas?` · ${cf.compras_cartao_nao_conferidas} compra(s) no cartão a conferir`:''}</div>`;
-  }
-  const regra = E.amortizacao && E.amortizacao.regra;
-  el.innerHTML = `<div class="card"><h2>📦 Estoque — dinheiro parado na prateleira</h2>
-    <div class="cap">Compras de material não são CAPEX nem despesa: saem do caixa, mas só entram no resultado quando consumidas</div>
-    <table class="simple"><tbody>
-      <tr><td>Estoque inicial${ini.data?` (${fmtDate(ini.data)})`:''}<div class="fin-fonte" style="margin:2px 0 0">valor de compra, sem consumo descontado</div></td><td>${v(ini.valor)}</td></tr>
-      <tr><td>(+) Compras de estoque<div class="fin-fonte" style="margin:2px 0 0">${cp.n||0} pagamento(s)${usos?` · ${usos}`:''}</div></td><td>${brl(cp.total||0)}</td></tr>
-      <tr><td>(−) Contagem física${ct.data?` (${fmtDate(ct.data)})`:''}<div class="fin-fonte" style="margin:2px 0 0">${ct.data?`${ct.contados} de ${ct.produtos} produtos contados${ct.sem_uso?` · ${ct.sem_uso} sem uso marcado`:''}`:'ainda não feita'}</div></td><td>${ct.data?v(ct.valor):'—'}</td></tr>
-      <tr><td><strong>(=) Consumo do período</strong></td><td><strong>${E.consumo_estimado==null?'depende da contagem':brl(E.consumo_estimado)}</strong></td></tr>
-    </tbody></table>
-    ${meses?`<details style="margin-top:8px"><summary class="cap" style="cursor:pointer">Compras por mês</summary><table class="simple"><tbody>${meses}</tbody></table></details>`:''}
-    ${conf}
-    <div class="fin-fonte" style="margin-top:6px">${regra?`Regra de amortização: ${regra}`:`⚠️ <strong>Regra de amortização a definir.</strong> Até lá, ${brl(E.fora_do_resultado||0)} em compras de estoque estão fora do resultado — o lucro do painel aparece maior do que será.`}</div>
-  </div>`;
 }
 
 async function loadFinanceiro(){

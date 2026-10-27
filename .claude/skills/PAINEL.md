@@ -33,7 +33,6 @@ de cada cargo.
 | Card | O que vigiar |
 |---|---|
 | `renderFinanceiro` | DRE, ponto de equilíbrio |
-| `renderEstoque` | compra de material fora do CAPEX e da despesa · contagem física · consumo do período · regra de amortização (a definir) |
 | `renderRentabilidade` | margem por linha |
 | `renderStone` · `renderMeiosPagamento` · `renderParcelas` | recebível, taxa, prazo |
 | `renderTicketMeta` | ticket médio — **fronteira com Operação**: o número é dos dois, a leitura de margem é sua |
