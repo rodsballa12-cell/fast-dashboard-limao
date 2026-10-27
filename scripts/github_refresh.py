@@ -388,6 +388,15 @@ def analisar(agend, transac, ini: date, fim: date):
         return sum(float(_fp.get("valor") or 0) for _fp in (_t.get("formasPagamentos") or []))
     tr_pagantes = [t for t in tr if _soma_pagto(t) > 0]
 
+    # DIAGNOSTICO ticket medio (27/10/2026): o Rodrigo pede numero IGUAL ao
+    # Relatorio Movimentacoes Financeiras do Trinks (R$ 135,35 na Escova out).
+    # Expomos 3 candidatos no payload para ele escolher qual bate exato — o
+    # painel usa `ticket_medio` (hoje = faturamento_bruto / n_trans_pagantes).
+    # Se nenhuma destas bater, precisamos pedir detalhe de UMA venda do Trinks
+    # pra reverse-engineering da conta.
+    _total_pagar_sum = sum(float(_t.get("totalPagar") or 0) for _t in tr_pagantes)
+    _soma_pagto_total = sum(_soma_pagto(_t) for _t in tr_pagantes)
+
     # KPIs base
     receita_serv = sum(float(a.get("valor") or 0) for a in fin)
     dias_com_op = len({parse_trinks_dt(a["dataHoraInicio"]).date() for a in fin})
@@ -932,6 +941,26 @@ def analisar(agend, transac, ini: date, fim: date):
             "n_trans": len(tr),
             "ticket_trans": brl_round(caixa / max(len(tr), 1)),
             "n_trans_com_pagto": len(tr_pagantes),
+            # DIAGNOSTICO ticket Trinks: 3 numeradores candidatos / 2 denominadores.
+            # Rodrigo (27/10) comparar com R$ 135,35 do Relatorio e dizer qual bate.
+            "_diag_ticket": {
+                "caixa_sem_internas": brl_round(caixa),
+                "faturamento_bruto_todas_formas": brl_round(faturamento_bruto),
+                "totalPagar_das_transacoes_pagantes": brl_round(_total_pagar_sum),
+                "soma_pagto_das_transacoes_pagantes": brl_round(_soma_pagto_total),
+                "n_trans_brutas": len(tr),
+                "n_trans_com_pagto": len(tr_pagantes),
+                "atend_fin": len(fin),
+                "candidatos_ticket_medio": {
+                    "caixa_div_n_trans_pagantes": brl_round(caixa / max(len(tr_pagantes), 1)),
+                    "fatur_bruto_div_n_trans_pagantes": brl_round(faturamento_bruto / max(len(tr_pagantes), 1)),
+                    "totalPagar_div_n_trans_pagantes": brl_round(_total_pagar_sum / max(len(tr_pagantes), 1)),
+                    "soma_pagto_div_n_trans_pagantes": brl_round(_soma_pagto_total / max(len(tr_pagantes), 1)),
+                    "fatur_bruto_div_atend_fin": brl_round(faturamento_bruto / max(len(fin), 1)),
+                    "fatur_bruto_div_n_trans_brutas": brl_round(faturamento_bruto / max(len(tr), 1)),
+                },
+                "_nota": "Rodrigo abre esse campo no browser DevTools (Console: TRINKS.abas.mensal.kpis._diag_ticket), compara com o Trinks R$ 135,35 (Escova out) e diz qual chave bate. Depois removemos as outras.",
+            },
             # TICKET MEDIO OFICIAL (bate com Relatorio de Movimentacoes
             # Financeiras do Trinks). Formula do Trinks:
             #   Total Recebido / Qtde Atendimentos com pagamento
