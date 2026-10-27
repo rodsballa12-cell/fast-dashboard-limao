@@ -147,8 +147,9 @@ def ler(wb, regra_amortizacao=None):
         b["aba"] = ws.title
 
     data_contagem = None
-    compras_xp = []      # (data, valor) das compras com origem na conta XP
-    compras_cartao = 0
+    compras_xp = []      # (data, valor, descrição) com origem na conta XP
+    compras_cartao = []  # (id, data, valor, descrição) com origem no cartão
+    inicial_itens = {}   # loja -> soma dos itens marcados "Inicial"
     n_pagamentos = 0
     sem_loja = []
 
@@ -194,7 +195,6 @@ def ler(wb, regra_amortizacao=None):
         val = _num(e)
         if dt and val:
             val = abs(val)
-            n_pagamentos += 1
             rateio = _loja(c)
             if rateio is None:
                 sem_loja.append(f"{dt.isoformat()} {b_} {_brl(val)}")
@@ -203,7 +203,15 @@ def ler(wb, regra_amortizacao=None):
             if origem == "conta_xp":
                 compras_xp.append((dt, val, str(b_ or "")))
             elif origem == "cartao":
-                compras_cartao += 1
+                m = re.search(r"(\d+)", str(d))
+                compras_cartao.append((int(m.group(1)) if m else None, dt, val, str(b_ or "")))
+            # Coluna G = "Inicial": o item compõe o estoque inicial. É conferido
+            # contra o razão/cartão como qualquer compra, mas não soma de novo.
+            if _norm(g).startswith("inicial"):
+                for u, frac in rateio.items():
+                    inicial_itens[u] = round(inicial_itens.get(u, 0.0) + val * frac, 2)
+                continue
+            n_pagamentos += 1
             uso = _uso(f) or "sem uso"
             mes = f"{dt.year}-{dt.month:02d}"
             for u, frac in rateio.items():
@@ -221,6 +229,7 @@ def ler(wb, regra_amortizacao=None):
         if not data_contagem:
             bl["contagem"]["valor"] = None
             bl["contagem"]["por_uso"] = {}
+        bl["inicial"]["itens"] = inicial_itens.get(u)
         ini = bl["inicial"]["valor"]
         cont = bl["contagem"]["valor"]
         if ini is not None and cont is not None:
@@ -235,7 +244,8 @@ def ler(wb, regra_amortizacao=None):
         return None if x is None or y is None else round(x + y, 2)
 
     cons["inicial"] = {"data": e_["inicial"]["data"] or s_["inicial"]["data"],
-                       "valor": _som(e_["inicial"]["valor"], s_["inicial"]["valor"])}
+                       "valor": _som(e_["inicial"]["valor"], s_["inicial"]["valor"]),
+                       "itens": _som(e_["inicial"]["itens"], s_["inicial"]["itens"])}
     cons["compras"]["total"] = round(e_["compras"]["total"] + s_["compras"]["total"], 2)
     # Por pagamento: na loja, uma compra rateada conta nas duas.
     cons["compras"]["n"] = n_pagamentos
@@ -260,7 +270,11 @@ def ler(wb, regra_amortizacao=None):
     cons["fora_do_resultado"] = round(e_["fora_do_resultado"] + s_["fora_do_resultado"], 2)
 
     cons["conferencia"] = conferir_razao(wb, compras_xp)
-    cons["conferencia"]["compras_cartao_nao_conferidas"] = compras_cartao
+    cart = conferir_cartao(wb, compras_cartao)
+    cons["conferencia"]["cartao"] = cart
+    cons["conferencia"]["conflitos_capex_opex"] = (cons["conferencia"].get("conflitos_capex_opex") or []) \
+        + cart.get("conflitos", [])
+    cons["conferencia"]["compras_cartao_nao_conferidas"] = len(cart.get("nao_conferidas", []))
     cons["conferencia"]["compras_sem_loja"] = sem_loja
     return blocos
 
@@ -302,3 +316,58 @@ def conferir_razao(wb, compras_xp):
         "compras_sem_par_no_razao": sem_par,
         "razao_fora_do_controle": fora_do_controle,
     }
+
+
+def _aba_cartao(wb):
+    for nome in wb.sheetnames:
+        n = _norm(nome).replace("_", " ")
+        if n.startswith("cartao pessoal"):
+            return wb[nome]
+    return None
+
+
+def conferir_cartao(wb, compras_cartao):
+    """Cruza as compras no cartão com a aba Cartão_Pessoal pelo ID da compra.
+
+    O layout da aba não é fixo: o cabeçalho é achado pela célula "ID", e as
+    colunas de classificação pelo nome (CAPEX, classificação, natureza,
+    categoria). Uma compra de estoque cuja linha no cartão aponte para um item
+    do CAPEX (#nn) ou para OPEX está contada duas vezes.
+    """
+    if not compras_cartao:
+        return {"status": "ok", "conflitos": [], "nao_conferidas": []}
+    ws = _aba_cartao(wb)
+    sem = [f"{dt.strftime('%d/%m/%Y')} {desc} {_brl(v)} (ID {i})" for i, dt, v, desc in compras_cartao]
+    if ws is None:
+        return {"status": "sem_aba_cartao", "conflitos": [], "nao_conferidas": sem}
+    cab, col_id, cols_cls = None, None, []
+    for r in range(1, min(ws.max_row, 20) + 1):
+        vals = [_norm(ws.cell(r, k).value) for k in range(1, ws.max_column + 1)]
+        if "id" in vals:
+            cab, col_id = r, vals.index("id") + 1
+            cols_cls = [k + 1 for k, v in enumerate(vals)
+                        if any(x in v for x in ("capex", "classific", "natureza", "categoria"))]
+            break
+    if cab is None or not cols_cls:
+        return {"status": "layout_desconhecido", "conflitos": [], "nao_conferidas": sem}
+    linhas = {}
+    for r in range(cab + 1, ws.max_row + 1):
+        v = _num(ws.cell(r, col_id).value)
+        if v is not None:
+            linhas.setdefault(int(v), r)
+    conflitos, nao = [], []
+    for i, dt, val, desc in compras_cartao:
+        r = linhas.get(i)
+        rot = f"{dt.strftime('%d/%m/%Y')} {desc} {_brl(val)} (cartão ID {i})"
+        if r is None:
+            nao.append(rot)
+            continue
+        for k in cols_cls:
+            cls = str(ws.cell(r, k).value or "")
+            n = _norm(cls)
+            if not n or n.startswith("estoque"):
+                continue
+            if n.startswith("capex") or n.startswith("opex") or re.match(r"^#\s*\d+", n):
+                conflitos.append(f"{rot} está na aba do cartão como '{cls}'")
+                break
+    return {"status": "ok", "conflitos": conflitos, "nao_conferidas": nao}

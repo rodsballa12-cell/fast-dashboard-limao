@@ -457,6 +457,21 @@ def conferir_estoque(achados, fin):
                 f"Estoque {nome}: a contagem ({brl(ct)}) é maior que o inicial mais as "
                 f"compras ({brl(ini + cp)}). Faltou lançar compra, ou a contagem tem "
                 f"custo errado."))
+        # O estoque inicial também foi comprado: se não estiver aberto em itens
+        # com a origem do pagamento, ninguém garante que não está no CAPEX.
+        # Em 27/10/2026 os R$ 15.542,16 do Spa eram exatamente Tulipia + Glossex
+        # + Mercado Livre, que estavam lançados no CAPEX ao mesmo tempo.
+        itens = _v(b, "inicial", "itens")
+        if isinstance(ini, (int, float)) and ini > 0:
+            if itens is None:
+                achados.append(("aviso",
+                    f"Estoque {nome}: o inicial de {brl(ini)} não está aberto em itens "
+                    f"(coluna G = 'Inicial' nas compras). Não dá para garantir que essas "
+                    f"compras não estão também no CAPEX ou na despesa."))
+            elif abs(itens - ini) > 1.0:
+                achados.append(("erro",
+                    f"Estoque {nome}: o inicial diz {brl(ini)} e os itens que o compõem "
+                    f"somam {brl(itens)}."))
         sem_uso = _v(b, "contagem", "sem_uso") or 0
         if _v(b, "contagem", "data") and sem_uso:
             achados.append(("aviso",
