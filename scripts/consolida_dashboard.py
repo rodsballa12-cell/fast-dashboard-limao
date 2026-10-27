@@ -426,8 +426,9 @@ def _meta_spa_efetiva(spa, aba, hoje, inicio):
 
 
 def _ticket_meta(k, meta, dias_rest, ritmo_vis):
-    """Mesma regra do refresh (_inject_ticket_meta), sobre o total consolidado."""
-    v_atual = k.get("cliente_dia") or 0
+    """Mesma regra do refresh (_inject_ticket_meta), sobre o total consolidado.
+    Base = n_trans_com_pagto (bate com denominador do ticket_medio Trinks)."""
+    v_atual = k.get("n_trans_com_pagto") or k.get("n_trans") or 0
     visitas_proj = round(v_atual + ritmo_vis * dias_rest)
     realizado = meta.get("realizado") or 0
     falta_caixa = (meta.get("meta") or 0) - realizado
@@ -634,7 +635,8 @@ def corrigir_consolidado(c, esc, spa):
         horas = ck.get("horas_operacao_periodo") or 0
         if horas > 0:
             ck["rs_hora_salao"] = round(real / horas, 2)
-        vis_dia = lambda k: (k.get("cliente_dia") or 0) / max(k.get("dias_op") or 1, 1)
+        # Base do ritmo = n_trans_com_pagto (bate com denominador do ticket Trinks)
+        vis_dia = lambda k: (k.get("n_trans_com_pagto") or k.get("n_trans") or 0) / max(k.get("dias_op") or 1, 1)
         _ticket_meta(ck, cm, rest, vis_dia(ek) + vis_dia(sk))
 
     mes = c["abas"]["mensal"]["meta"]

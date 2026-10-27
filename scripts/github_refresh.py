@@ -2774,7 +2774,11 @@ def main():
     # um número fixo. Se a loja atrai muitas visitas, o ticket alvo cai; se atrai poucas,
     # o ticket alvo sobe. Assim o alvo se auto-ajusta ao mix operacional real.
     def _inject_ticket_meta(aba_kpis, meta_periodo, dias_realizados, dias_total):
-        v_atual = aba_kpis.get("cliente_dia", 0)
+        # Base = n_trans_com_pagto (comandas pagantes), MESMO denominador do
+        # ticket_medio oficial Trinks. Antes usava cliente_dia (par cliente×dia)
+        # que criava ticket_atual Trinks (por comanda) vs ticket_alvo (por
+        # cliente×dia) — nao batia. 27/10/2026.
+        v_atual = aba_kpis.get("n_trans_com_pagto", aba_kpis.get("n_trans", 0))
         ritmo_visitas = v_atual / max(dias_realizados, 1)
         visitas_proj = round(ritmo_visitas * dias_total)
         meta_v = meta_periodo.get("meta", 0)
