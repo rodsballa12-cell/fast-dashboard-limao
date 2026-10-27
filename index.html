@@ -922,8 +922,10 @@ function renderTicketMeta(container_id, periodo_label, kpis, aba_nome){
     acao = `<strong class="up">Meta de faturamento batida com folga de ${brl0(supera)}.</strong> Ticket de ${brl(real)}/visita foi suficiente com ${visitas} visitas. Padrão pra replicar no próximo período.`;
   } else if(status === 'encerrado_deficit'){
     cor='dn'; cor_bar='#ef4444';
-    // qual ticket teria batido meta com as visitas que houve?
-    const ticket_ideal = visitas>0 ? (kpis.caixa + deficit) / visitas : alvo_periodo;
+    // qual ticket teria batido meta com as comandas pagantes que houve?
+    // Usa total_recebido_trinks (bate com denominador do ticket oficial).
+    const _num_tri = (kpis.total_recebido_trinks || kpis.caixa) + deficit;
+    const ticket_ideal = visitas>0 ? _num_tri / visitas : alvo_periodo;
     header_val = brl(ticket_ideal);
     header_tag = `<span class="dn">DÉFICIT · −${brl0(deficit)}</span>`;
     alvo_display = ticket_ideal;
@@ -978,8 +980,11 @@ function renderTicketMeta(container_id, periodo_label, kpis, aba_nome){
     const kS = (((TRINKS_SPA||{}).abas||{})[aba_nome]||{}).kpis || {};
     const tE = kE.ticket_medio || 0;
     const tS = kS.ticket_medio || 0;
-    const vE = kE.cliente_dia || 0;
-    const vS = kS.cliente_dia || 0;
+    // Ponderação pelo MESMO denominador do ticket Trinks: comandas pagantes.
+    // Antes usava cliente_dia (par cliente×dia) — a decomposição não fechava
+    // com o ticket consolidado porque o denominador era outro. 27/10/2026.
+    const vE = kE.n_trans_com_pagto || kE.n_trans || 0;
+    const vS = kS.n_trans_com_pagto || kS.n_trans || 0;
     const vTot = vE + vS;
     const pctE = vTot > 0 ? vE/vTot*100 : 0;
     const pctS = vTot > 0 ? vS/vTot*100 : 0;
