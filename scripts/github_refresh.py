@@ -927,15 +927,18 @@ def analisar(agend, transac, ini: date, fim: date):
             #   Total Recebido / Qtde Atendimentos com pagamento
             # Numerador = soma liquida de TODAS as formas de pagamento
             # (inclui credito, vale-presente, pre-pago com sinal, troco
-            # negativo). Denominador = atendimentos finalizados (NAO
-            # cliente_dia, NAO n_trans/comandas).
+            # negativo). Denominador = n_trans (comandas/vendas), NAO
+            # atend_fin (que conta cada servico individual).
             # Validado via screenshot do Trinks em 27/10/2026: Escova out/26
-            # mostrava R$ 135,35 = R$ 48.589 / 359 atendimentos.
-            "ticket_medio": brl_round(faturamento_bruto / max(len(fin), 1)),
+            # mostrava R$ 135,35 = R$ 48.589 / 359 comandas. Nosso atend_fin
+            # era 642 porque conta cada servico (cliente com 3 servicos = 3).
+            # O "Qtde Atendimentos com pagamento" do Trinks e UMA LINHA por
+            # cliente-dia-pagamento, equivalente a n_trans aqui.
+            "ticket_medio": brl_round(faturamento_bruto / max(len(tr), 1)),
             # Campos legados preservados para nao quebrar HTML cacheado
             # com referencias antigas, mas o painel so expõe o oficial.
             "ticket_medio_interno": brl_round(caixa / max(n_cliente_dia, 1)),
-            "ticket_venda_trinks": brl_round(faturamento_bruto / max(len(fin), 1)),
+            "ticket_venda_trinks": brl_round(faturamento_bruto / max(len(tr), 1)),
             "cliente_dia": n_cliente_dia,
             "taxa_canc": round(len(canc) / max(len(ag), 1) * 100, 1),
             "dias_op": dias_com_op,
