@@ -1,86 +1,92 @@
 ---
 titulo: Colégio Del Rios — a conta interna (NÃO é o documento que o colégio vê)
 data: 2026-10-27
-versao: 4 — desconto em todos os serviços · massagem Renove-se em 45
+versao: 5 — FECHADA · 2 escovas 15% · 2 pés e mãos 30% · Renove-se R$ 99
 documento_do_cliente: https://claude.ai/artifact/4Hn97rDrEgkivAp7fFbqke
 base: DRE 20/10/2026 · comissões data/comissoes.json (18/10/2026)
 ---
 
 # Del Rios · a conta por trás da proposta
 
-**Este arquivo não vai para o colégio.** O documento que eles leem está no link
-acima e não traz margem, comissão nem custo.
+**Este arquivo não vai para o colégio.** O documento deles está no link acima e
+não traz margem, comissão nem custo.
 
-## O que mudou na v4
+## A cesta fechada pelo Rodrigo
 
-O Rodrigo pediu desconto **também na escova** (15%) e trocou a massagem: sai a
-facial de R$ 59, entra a **Renove-se em 45** (R$ 149) — a mais vendida do Spa,
-**76 sessões no mês**, contra 4 da facial. Era o item certo e eu tinha escolhido
-o errado.
+| Item | Qtd | Tabela | No plano | Off | Margem |
+|---|---|---|---|---|---|
+| Escova | 2 | R$ 158,00 | R$ 134,30 | 15% | R$ 65,73 |
+| Pés e mãos | 2 | R$ 192,00 | R$ 134,40 | 30% | R$ 36,86 |
+| Renove-se em 45 | 1 | R$ 149,00 | R$ 99,00 | 34% | R$ 48,47 |
+| **Total** | | **R$ 499,00** | **R$ 367.70** | **26%** | **R$ 151.06** |
 
-## A margem, por categoria
+**27 professoras: R$ 9,927.90/mês de receita · R$ 4,078.67/mês de margem.**
+R$ 119,134.80 e R$ 48,944.09 no ano.
 
-| Categoria | Comissão | Sobra de cada R$ 1 | Custo de R$ 1 de desconto |
+Sem a massagem: R$ 268.70/professora · R$ 7,254.90/mês · margem R$ 2,769.98/mês.
+
+## Como chegamos aqui — e por que 30% foi a escolha certa
+
+| Versão | Preço/profª | Margem/profª | 27: margem/mês |
 |---|---|---|---|
-| Escova | 30% | R$ 0,50 | R$ 0,56 |
-| **Unhas** | **50%** | R$ 0,30 | **R$ 0,36** |
-| Massagem | 25% | R$ 0,53 | R$ 0,61 |
+| 1 pés e mãos, Renove R$ 126,65 | R$ 318,55 | R$ 146,04 | R$ 3.943,08 |
+| 2 pés e mãos a 40%, Renove R$ 99 | R$ 348,50 | R$ 144,15 | R$ 3.892,05 |
+| **2 pés e mãos a 30%, Renove R$ 99** | **R$ 367.70** | **R$ 151.06** | **R$ 4,078.67** |
 
-A unha segue com o desconto maior (40%) porque é onde o desconto custa menos:
-metade dele é pago pela comissão que deixa de ser devida.
+A unha a 40% cobrava 9% a mais e rendia 1% a menos, porque o segundo pés e mãos
+descontado em 40% deixava só R$ 14,98. **A 30%, o mesmo item deixa R$ 18,43 —
+e o plano inteiro ganha R$ 1,627.13 por ano** sobre a versão de uma unha só.
 
-## Os dois modelos
+## Plano mensal (modelo B)
 
-| | Preço/profª | Margem/profª | 27: receita/mês | 27: margem/mês |
-|---|---|---|---|---|
-| **A · investimento único** (esc 15 · unha 40 · mass 15) | R$ 191.90 | R$ 80.70 | R$ 5,181.30 | R$ 2,179 |
-| A · com massagem | R$ 318.55 | R$ 146.04 | R$ 8,600.85 | R$ 3,943 |
-| **B · plano mensal 12m** (esc 20 · unha 50 · mass 20) | R$ 174.40 | R$ 72.82 | R$ 4,708.80 | R$ 1,966 |
-| B · com massagem | R$ 293.60 | R$ 133.62 | R$ 7,927.20 | R$ 3,608 |
+escova 20% · unha 40% · Renove R$ 89 → **R$ 330.60/professora** (34% off),
+R$ 8,926.20/mês, margem R$ 3,607.90/mês.
 
-Tabela cheia: R$ 254.00 (sem massagem) · R$ 403.00 (com).
-O desconto extra do plano mensal custa **R$ 2,553/ano** sem massagem e
-**R$ 4,026/ano** com ela.
+O desconto adicional custa **R$ 5,649.26/ano** de margem e compra 12 meses
+de receita previsível.
 
-**A massagem quase dobra a margem por professora.** Sozinha, a R$ 126,65, ela deixa R$ 65,34 — 81% do que as duas escovas e a unha somam (R$ 80,70). Com ela, a margem por professora vai de R$ 80,70 para R$ 146,04.
+## Investimento único — o caixa
 
-## Por que o investimento único vem primeiro
-
-**O caixa.** R$ 1.436,61 na conta contra R$ 32.228,67 de custo fixo mensal.
-Três meses à vista:
-
-| | 3 meses, 27 profªs | % de um mês de custo fixo |
+| | 27 profªs, completo | % de um mês de custo fixo |
 |---|---|---|
-| Escova + Unha | R$ 15,543.90 | 48% |
-| **Com a massagem** | **R$ 25,802.55** | **80%** |
+| 1 mês | R$ 9,927.90 | 31% |
+| **3 meses** | **R$ 29,783.70** | **92%** |
+| 6 meses | R$ 59,567.40 | 185% |
 
-Cartão cai em 30 dias e o extrato da Stone está 11 dias atrasado. **Um cheque à
-vista resolve um problema que a operação não resolve vendendo mais.**
+Contra R$ 1.436,61 em conta e R$ 32.228,67 de custo fixo mensal. **Três meses à
+vista pagam quase um mês inteiro de custo fixo, antes de o serviço acontecer.**
 
-**O contra, registrado:** vira obrigação de serviço futuro. Três meses de
-sessões devidas não aparecem em lugar nenhum do painel hoje. Se fechar, isso
-precisa virar linha no financeiro — senão o caixa parece melhor do que é.
+**O contra, registrado:** vira obrigação de serviço futuro. Três meses de sessões
+devidas não aparecem em lugar nenhum do painel. Se fechar, precisa virar linha
+no financeiro — senão o caixa parece melhor do que é.
 
-## Segunda a quinta — o espaço existe
+## Os dois alertas de capacidade
 
-Seg 9,4% · Ter 5,8% · Qua 8,1% · Qui 11,1% = **34,4% da semana (R$ 20.640/mês)**,
-quase empatando com o sábado sozinho (36%, R$ 21.600).
+| Serviço | O plano pede | A casa fez no mês | Aumento |
+|---|---|---|---|
+| Escova | 54/mês | ~552 sessões totais | folgado |
+| **Pés e mãos** | **54/mês** | **61** | **+89%** |
+| **Renove-se em 45** | **27/mês** | **76** | **+36%** |
 
-O plano com massagem traz R$ 8,601/mês — **+42% nesses quatro dias**.
+Cadeira de unha está a 6,3% de ocupação — cabe. **A massagem é a que preocupa:
+depende de massoterapeuta disponível, não de cadeira vazia.** Vale conferir a
+escala antes de assinar três meses.
 
-Ocupação: cabelo 11%, **unha 6,3%**. O plano acrescenta 54 escovas, 27 pés-e-mãos
-e 27 massagens por mês, diluídos em 16 a 17 dias úteis. Cabe.
+## Sobre o preço de R$ 99 da Renove-se
 
-**Atenção à massagem:** o Spa fez 76 Renove-se em 45 no mês inteiro. O plano
-acrescenta 27 — **+36% só nesse serviço**. É o único item da cesta onde a
-capacidade merece uma conferida antes de assinar, porque depende de
-massoterapeuta disponível, não de cadeira vazia.
+| | |
+|---|---|
+| Tabela | R$ 149,00 |
+| **O que o Spa realmente cobrou no mês** | **R$ 109,08** (média de 76 sessões) |
+| No plano | R$ 99,00 |
+
+Não é desconto de 34% sobre o que se pratica: é **R$ 10,08 abaixo do preço médio
+real**. Se uma professora comparar com uma cliente do Spa, o número dela é R$ 109.
 
 ## O risco que não mudou
 
-`comissoes.habilitado` continua **false**. As taxas de 30/50/25% estão no
-cadastro de serviços do Trinks, não no motor de comissão. **Se a conta real na
-hora de pagar for outra, toda esta margem muda.**
+`comissoes.habilitado` continua **false**. As taxas de 30/50/25% estão no cadastro
+de serviços do Trinks, não no motor de comissão.
 
 **Frescor:** DRE de 20/10 (7 dias) · extrato Stone até 16/10 (11 dias) · esta
 sessão leu do artefato de 23/10, porque o cofre não abre na nuvem.
