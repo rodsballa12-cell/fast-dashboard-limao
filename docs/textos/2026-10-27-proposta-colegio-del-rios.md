@@ -1,116 +1,77 @@
 ---
-titulo: Proposta Colégio Del Rios — 27 professoras, plano mensal Escova + Unha + Spa
+titulo: Colégio Del Rios — a conta interna (NÃO é o documento que o colégio vê)
 data: 2026-10-27
-versao: 2 — corrige dois erros da versão 1
-status: RASCUNHO — nenhum preço foi comunicado a ninguém
+versao: 3 — segunda a quinta · dois modelos comerciais
+documento_do_cliente: https://claude.ai/artifact/4Hn97rDrEgkivAp7fFbqke
 base: DRE 20/10/2026 · comissões data/comissoes.json (18/10/2026)
 ---
 
-# Colégio Del Rios · 27 professoras
+# Del Rios · a conta por trás da proposta
 
-**Nada aqui foi enviado.** Rascunho para aprovar, corrigir ou descartar.
+**Este arquivo não vai para o colégio.** O documento que eles leem está no
+link acima e não traz margem, comissão nem custo. Aqui fica o porquê de cada preço.
 
-## Duas correções da versão de ontem
+## A margem, por categoria
 
-**1. Usei a comissão média, e a média escondia o que importa.** O Trinks cobra
-por categoria, e as taxas são muito diferentes:
+| Categoria | Comissão | Sobra de cada R$ 1 | Custo de R$ 1 de desconto |
+|---|---|---|---|
+| Escova | 30% | R$ 0,50 | R$ 0,56 |
+| **Unhas** | **50%** | R$ 0,30 | **R$ 0,36** |
+| Massagem | 25% | R$ 0,53 | R$ 0,61 |
 
-| Categoria | Comissão | Sobra de cada R$ 1 cobrado |
+**O desconto cai na unha de propósito.** Cada real descontado ali custa
+R$ 0,36 de margem, contra R$ 0,56 na escova e R$ 0,61 na massagem — metade do
+desconto é pago pela comissão que deixa de ser devida.
+
+## Os dois modelos
+
+| | Preço/profª | Margem/profª | 27: receita/mês | 27: margem/mês |
+|---|---|---|---|---|
+| **A · investimento único** | R$ 215.60 | R$ 93.98 | R$ 5,821.20 | R$ 2,537 |
+| **B · plano mensal (12m)** | R$ 190.20 | R$ 81.67 | R$ 5,135.40 | R$ 2,205 |
+| A · com Spa | R$ 274.60 | R$ 125.25 | R$ 7,414.20 | R$ 3,382 |
+| B · com Spa | R$ 243.30 | R$ 109.34 | R$ 6,569.10 | R$ 2,952 |
+
+O desconto adicional do plano mensal custa **R$ 332 de margem por mês**
+(R$ 3,986 no ano) e compra 12 meses de receita previsível. Decisão sua.
+
+## Por que o investimento único vem primeiro — e é a melhor parte
+
+**O caixa.** Hoje são R$ 1.436,61 na conta contra R$ 32.228,67 de custo fixo
+mensal. Três meses à vista são **R$ 17,463.60** entrando **antes** do serviço —
+54% de um mês inteiro de custo fixo.
+
+Nenhuma venda da loja faz isso: cartão cai em 30 dias, e o extrato da Stone
+está 11 dias atrasado. Um cheque à vista resolve um problema que a operação
+não resolve vendendo mais.
+
+**O contra:** vira obrigação de serviço futuro. Três meses de sessões devidas
+não aparecem em lugar nenhum do painel hoje. **Se fechar, isso precisa virar
+uma linha no financeiro** — senão o caixa parece melhor do que é.
+
+## Segunda a quinta — o espaço existe
+
+| Dia | % da semana | Por mês |
 |---|---|---|
-| **Escova** | 30% | R$ 0,50 |
-| **Unhas** | **50%** | R$ 0,30 |
-| Massagem (Spa) | 25% | R$ 0,53 |
+| Segunda | 9,4% | R$ 5.640 |
+| Terça | 5,8% | R$ 3.480 |
+| Quarta | 8,1% | R$ 4.860 |
+| Quinta | 11,1% | R$ 6.660 |
+| **Seg a qui** | **34,4%** | **R$ 20.640** |
+| Sábado sozinho | 36,0% | R$ 21.600 |
 
-A média de 38,31% do DRE fazia a escova parecer pior do que é (41,7% quando é
-50%) e não mostrava que **unha é o serviço de comissão mais cara da casa**.
+Os quatro dias juntos quase empatam com o sábado sozinho. O plano traz
+R$ 5,821/mês — **+28% nesses quatro dias**.
 
-**2. Calculei o piso de desconto errado.** Tratei o custo como se ficasse
-parado quando o preço cai. Não fica: **comissão, Simples e royalty são
-percentuais do que foi cobrado** — caem junto com o desconto. Só o insumo é
-por sessão. O piso aritmético real é 83–89%, não os 30–45% que eu disse.
+Ocupação: cadeiras de cabelo a 11%, de unha a **6,3%**. O plano acrescenta 54
+escovas e 27 pés-e-mãos por mês, diluídos em 16 a 17 dias úteis. Cabe.
 
-Isso não quer dizer que dê para descontar 80%. Quer dizer que **o limite é
-comercial, não aritmético**: o que impede é não ensinar a cliente a esperar
-metade do preço, não a conta.
+## O risco que não mudou
 
-## A regra que muda a proposta
+`comissoes.habilitado` continua **false**. As taxas de 30/50/25% estão no
+cadastro de serviços do Trinks, não no motor de comissão. **Se a conta real na
+hora de pagar for outra, toda esta margem muda.** Antes de assinar 12 meses,
+confirmar a regra vale mais que qualquer ajuste de preço.
 
-**Cada R$ 1,00 de desconto custa diferente conforme onde ele cai:**
-
-| Descontar… | custa de margem |
-|---|---|
-| **Unha** | **R$ 0,36** |
-| Escova | R$ 0,56 |
-| Massagem | R$ 0,61 |
-
-É o contrário da intuição: **o desconto tem de cair no item de comissão alta**,
-porque metade dele é pago pela comissão que deixa de ser devida.
-
-Na prática, com a mesma cesta e **praticamente o mesmo preço para a professora**:
-
-| Como dar o desconto | Ela paga | Margem/ano nas 27 |
-|---|---|---|
-| 15% em tudo | R$ 215,90 | R$ 28.947 |
-| **40% só na unha** | **R$ 215,60** | **R$ 30.448** |
-
-**Mesmo preço no bolso dela, R$ 1.501 a mais por ano no seu.** E "40% de
-desconto na unha" vende melhor que "15% em tudo".
-
-## O plano
-
-**ESCOVA + UNHA — o plano base**
-
-| | |
-|---|---|
-| 2 escovas no mês | R$ 158,00 (preço cheio) |
-| 1 pés e mãos | R$ 57,60 (**40% off** de R$ 96) |
-| **Mensalidade** | **R$ 215,60** |
-| Margem por professora | R$ 93.98 |
-| **27 professoras** | **R$ 2,537/mês · R$ 30,448/ano** |
-
-**+ SPA — a subida**
-
-| | |
-|---|---|
-| O plano base | R$ 215,60 |
-| 1 massagem relaxante | R$ 59,00 (preço cheio — é o item que menos convém descontar) |
-| **Mensalidade** | **R$ 274.60** |
-| Margem por professora | R$ 125.25 |
-| **27 professoras** | **R$ 3,382/mês · R$ 40,580/ano** |
-
-## Por que terça e quarta, e por que isso é a proposta
-
-Terça vale 5,8% da semana e quarta 8,1% — juntas **R$ 8.340/mês**, contra
-R$ 21.600 do sábado sozinho. O plano base traz **R$ 5.821/mês**: isso é
-**+70% nesses dois dias**, com cadeira que hoje não rende nada.
-
-E cabe com folga: as cadeiras de cabelo operam a **11%** de ocupação e as de
-unha a **6,3%** — a mais vazia da casa. As 54 escovas e 27 pés-e-mãos do plano
-dão cerca de 10 atendimentos por dia nesses dias, espalhados em 12 horas.
-
-**Dar desconto para sábado seria tirar cadeira de quem paga inteiro no único
-dia com fila.** Em terça, a cadeira vazia não rende nada — e é por isso que o
-desconto cabe ali e não em qualquer dia.
-
-Vale notar: **MÃOS é o serviço mais vendido da casa** — 130 das 552 sessões do
-mês. Unha não é um acessório do plano; é o que a loja mais faz.
-
-## O que o Rodrigo decide
-
-1. **Quem paga:** o colégio (contrato, receita garantida) ou cada professora?
-2. **Sessão não usada:** acumula 30 dias, vence, ou vira crédito?
-3. **Com Spa ou só Escova + Unha?** O Spa sobe a mensalidade 27% e a margem 31%.
-4. **Terça e quarta fechado, ou abre exceção?** A recomendação é fechar.
-
-## Onde isto ainda pode estar errado
-
-**As comissões de `data/comissoes.json` vêm do BackOffice do Trinks, exportadas
-em 08/09 e atualizadas em 18/10. Mas `comissoes.habilitado` continua `false`** —
-ou seja, a regra está no cadastro de serviços e não no motor de comissão. Se
-na hora de pagar a conta for outra, a margem muda.
-
-Antes de assinar 12 meses, confirmar a regra de comissão vale mais que qualquer
-ajuste de preço aqui.
-
-**Frescor:** DRE de 20/10 (7 dias), extrato Stone até 16/10 (11 dias), e esta
-sessão leu do artefato de 23/10 porque o cofre não abre na nuvem.
+**Frescor:** DRE de 20/10 (7 dias) · extrato Stone até 16/10 (11 dias) · esta
+sessão leu do artefato de 23/10, porque o cofre não abre na nuvem.
