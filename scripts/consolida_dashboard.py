@@ -289,12 +289,13 @@ def recalcular_derivados(d):
         cliente_dia = k.get("cliente_dia") or 0
         n_trans = k.get("n_trans") or 0
         n_trans_pagto = k.get("n_trans_com_pagto") or n_trans
-        fat_bruto = k.get("faturamento_bruto_trinks") or 0
-        # TICKET MEDIO OFICIAL (bate com Trinks): fat_bruto / n_trans_com_pagto
-        # (transacoes com pagamento > 0, exclui estornos/cortesias/demos).
+        total_recebido = k.get("total_recebido_trinks") or 0
+        # TICKET MEDIO OFICIAL (bate com Trinks):
+        #   total_recebido_trinks / n_trans_com_pagto
+        # Formula validada no screenshot do Rodrigo em 27/10/2026.
         if n_trans_pagto > 0:
-            k["ticket_medio"] = round(fat_bruto / n_trans_pagto, 2)
-            k["ticket_venda_trinks"] = round(fat_bruto / n_trans_pagto, 2)
+            k["ticket_medio"] = round(total_recebido / n_trans_pagto, 2)
+            k["ticket_venda_trinks"] = round(total_recebido / n_trans_pagto, 2)
         if n_trans > 0:
             k["ticket_trans"] = round(caixa / n_trans, 2)
         if cliente_dia > 0:
@@ -475,14 +476,14 @@ def corrigir_historico_consolidado(c, esc, spa):
         cliente_dia = k.get("cliente_dia") or 0
         n_trans = k.get("n_trans") or 0
         n_trans_pagto = k.get("n_trans_com_pagto") or n_trans
-        fat_bruto = k.get("faturamento_bruto_trinks") or 0
+        total_recebido = k.get("total_recebido_trinks") or 0
         horas = k.get("horas_operacao_periodo") or 0
         atend_total = k.get("atend_total") or 0
         atend_canc = k.get("atend_canc") or 0
-        # TICKET MEDIO OFICIAL: fat_bruto / n_trans_com_pagto
+        # TICKET MEDIO OFICIAL: total_recebido_trinks / n_trans_com_pagto
         if n_trans_pagto > 0:
-            k["ticket_medio"] = round(fat_bruto / n_trans_pagto, 2)
-            k["ticket_venda_trinks"] = round(fat_bruto / n_trans_pagto, 2)
+            k["ticket_medio"] = round(total_recebido / n_trans_pagto, 2)
+            k["ticket_venda_trinks"] = round(total_recebido / n_trans_pagto, 2)
         if n_trans > 0:
             k["ticket_trans"] = round(caixa / n_trans, 2)
         if cliente_dia > 0:
