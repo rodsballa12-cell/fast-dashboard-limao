@@ -76,7 +76,7 @@ painel, confira até quando vai a fonte que o gerou e o que exatamente foi somad
 
 ## A empresa digital
 
-Sete cargos em `.claude/skills/`, cada um com sua ficha. `PROTOCOLO.md` é a
+Os cargos vivem em `.claude/skills/`, um por pasta, cada um com sua ficha. `PROTOCOLO.md` é a
 língua comum (SITUAÇÃO / FATOS / RISCO / NÃO VEJO / DECISÃO) e `PAINEL.md` diz
 quem responde por cada card dos 50. Leia os dois antes de escrever qualquer
 parecer.

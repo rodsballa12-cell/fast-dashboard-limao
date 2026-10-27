@@ -19,9 +19,12 @@ escreve. Um não substitui o outro — o robô é a matéria-prima do funcionár
 | Guardião da Memória | `/memoria` | **sim** — só em `docs/decisoes/` |
 | Conselho | `/conselho` | não |
 | Publicador | `/publicar` | não no repositório — **publica o Artifact** |
+| Entrada do Extrato Stone | `/extrato-stone` | **sim** — só o `.enc`, e só rodando no PC |
 
-Cinco departamentos apuram, a Memória registra, o Conselho cruza. **Só um
-cargo escreve no repositório**, e num único lugar.
+Cinco departamentos apuram, a Memória registra, o Conselho cruza. **Dois cargos
+escrevem no repositório**: a Memória, em `docs/decisoes/`, e a Entrada do Extrato
+Stone, que grava só a versão criptografada do histórico — e só consegue rodar no
+PC, onde está a chave do cofre.
 
 O `/publicar` é o único que sai do repositório: leva o painel para o Artifact
 que o Rodrigo abre no celular, sempre no mesmo endereço. Roda sozinho no fim do

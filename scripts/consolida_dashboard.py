@@ -30,6 +30,7 @@ NAO_SOMAR = {
     "caixa_delta_bruto_pct", "pct_recorrentes", "pareto20_pct",
     "pct_faturamento", "estrelas_media", "rating",
     "ticket_medio", "ticket_medio_serv", "ticket_medio_visita",
+    "ticket_trans", "ticket_venda_trinks",
     "ltv_medio", "freq_media_visitas", "rs_hora", "rs_hora_salao",
     "media_dia",
     # Taxas do bloco Stone — somar duas taxas da 1,286 em vez de 0,643.
@@ -286,8 +287,19 @@ def recalcular_derivados(d):
         caixa = k.get("caixa") or 0
         atend = k.get("atend_fin") or 0
         cliente_dia = k.get("cliente_dia") or 0
+        n_trans = k.get("n_trans") or 0
+        n_trans_pagto = k.get("n_trans_com_pagto") or n_trans
+        total_recebido = k.get("total_recebido_trinks") or 0
+        # TICKET MEDIO OFICIAL (bate com Trinks):
+        #   total_recebido_trinks / n_trans_com_pagto
+        # Formula validada no screenshot do Rodrigo em 27/10/2026.
+        if n_trans_pagto > 0:
+            k["ticket_medio"] = round(total_recebido / n_trans_pagto, 2)
+            k["ticket_venda_trinks"] = round(total_recebido / n_trans_pagto, 2)
+        if n_trans > 0:
+            k["ticket_trans"] = round(caixa / n_trans, 2)
         if cliente_dia > 0:
-            k["ticket_medio"] = round(caixa / cliente_dia, 2)
+            k["ticket_medio_interno"] = round(caixa / cliente_dia, 2)
         # categorias.pct
         cat = aba.get("categorias") or {}
         for tipo, v in cat.items():
@@ -414,8 +426,9 @@ def _meta_spa_efetiva(spa, aba, hoje, inicio):
 
 
 def _ticket_meta(k, meta, dias_rest, ritmo_vis):
-    """Mesma regra do refresh (_inject_ticket_meta), sobre o total consolidado."""
-    v_atual = k.get("cliente_dia") or 0
+    """Mesma regra do refresh (_inject_ticket_meta), sobre o total consolidado.
+    Base = n_trans_com_pagto (bate com denominador do ticket_medio Trinks)."""
+    v_atual = k.get("n_trans_com_pagto") or k.get("n_trans") or 0
     visitas_proj = round(v_atual + ritmo_vis * dias_rest)
     realizado = meta.get("realizado") or 0
     falta_caixa = (meta.get("meta") or 0) - realizado
@@ -463,13 +476,19 @@ def corrigir_historico_consolidado(c, esc, spa):
         caixa = k.get("caixa") or 0
         cliente_dia = k.get("cliente_dia") or 0
         n_trans = k.get("n_trans") or 0
+        n_trans_pagto = k.get("n_trans_com_pagto") or n_trans
+        total_recebido = k.get("total_recebido_trinks") or 0
         horas = k.get("horas_operacao_periodo") or 0
         atend_total = k.get("atend_total") or 0
         atend_canc = k.get("atend_canc") or 0
-        if cliente_dia > 0:
-            k["ticket_medio"] = round(caixa / cliente_dia, 2)
+        # TICKET MEDIO OFICIAL: total_recebido_trinks / n_trans_com_pagto
+        if n_trans_pagto > 0:
+            k["ticket_medio"] = round(total_recebido / n_trans_pagto, 2)
+            k["ticket_venda_trinks"] = round(total_recebido / n_trans_pagto, 2)
         if n_trans > 0:
             k["ticket_trans"] = round(caixa / n_trans, 2)
+        if cliente_dia > 0:
+            k["ticket_medio_interno"] = round(caixa / cliente_dia, 2)
         if horas > 0:
             k["rs_hora_salao"] = round(caixa / horas, 2)
         if atend_total > 0:
@@ -616,7 +635,8 @@ def corrigir_consolidado(c, esc, spa):
         horas = ck.get("horas_operacao_periodo") or 0
         if horas > 0:
             ck["rs_hora_salao"] = round(real / horas, 2)
-        vis_dia = lambda k: (k.get("cliente_dia") or 0) / max(k.get("dias_op") or 1, 1)
+        # Base do ritmo = n_trans_com_pagto (bate com denominador do ticket Trinks)
+        vis_dia = lambda k: (k.get("n_trans_com_pagto") or k.get("n_trans") or 0) / max(k.get("dias_op") or 1, 1)
         _ticket_meta(ck, cm, rest, vis_dia(ek) + vis_dia(sk))
 
     mes = c["abas"]["mensal"]["meta"]

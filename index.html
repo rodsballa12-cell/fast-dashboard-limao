@@ -922,8 +922,10 @@ function renderTicketMeta(container_id, periodo_label, kpis, aba_nome){
     acao = `<strong class="up">Meta de faturamento batida com folga de ${brl0(supera)}.</strong> Ticket de ${brl(real)}/visita foi suficiente com ${visitas} visitas. Padrão pra replicar no próximo período.`;
   } else if(status === 'encerrado_deficit'){
     cor='dn'; cor_bar='#ef4444';
-    // qual ticket teria batido meta com as visitas que houve?
-    const ticket_ideal = visitas>0 ? (kpis.caixa + deficit) / visitas : alvo_periodo;
+    // qual ticket teria batido meta com as comandas pagantes que houve?
+    // Usa total_recebido_trinks (bate com denominador do ticket oficial).
+    const _num_tri = (kpis.total_recebido_trinks || kpis.caixa) + deficit;
+    const ticket_ideal = visitas>0 ? _num_tri / visitas : alvo_periodo;
     header_val = brl(ticket_ideal);
     header_tag = `<span class="dn">DÉFICIT · −${brl0(deficit)}</span>`;
     alvo_display = ticket_ideal;
@@ -978,8 +980,11 @@ function renderTicketMeta(container_id, periodo_label, kpis, aba_nome){
     const kS = (((TRINKS_SPA||{}).abas||{})[aba_nome]||{}).kpis || {};
     const tE = kE.ticket_medio || 0;
     const tS = kS.ticket_medio || 0;
-    const vE = kE.cliente_dia || 0;
-    const vS = kS.cliente_dia || 0;
+    // Ponderação pelo MESMO denominador do ticket Trinks: comandas pagantes.
+    // Antes usava cliente_dia (par cliente×dia) — a decomposição não fechava
+    // com o ticket consolidado porque o denominador era outro. 27/10/2026.
+    const vE = kE.n_trans_com_pagto || kE.n_trans || 0;
+    const vS = kS.n_trans_com_pagto || kS.n_trans || 0;
     const vTot = vE + vS;
     const pctE = vTot > 0 ? vE/vTot*100 : 0;
     const pctS = vTot > 0 ? vS/vTot*100 : 0;
@@ -4046,7 +4051,7 @@ function renderAnual(data){
   renderKPIs('per-kpis',[
     {label:'Faturamento · 2026',value:brl0(k.caixa),foot:`${k.dias_op} dias oper. · ${k.n_trans} trans`,accent:'accent'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`},
-    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`padrão Trinks`},
+    {label:'Ticket médio',value:brl(k.ticket_medio||0),foot:`total recebido ÷ comandas · bate com Trinks`},
     {label:'Clientes únicos',value:k.clientes_unicos+'',foot:`${((k.cliente_dia||0)/Math.max(k.clientes_unicos,1)).toFixed(1)} visitas/cliente médio`}
   ]);
   // Âncora removida a pedido — informação estática (muda 1×/ano) não merece card fixo
@@ -4152,7 +4157,7 @@ function renderMensal(data){
     {label:'Faturamento · mês',value:brl0(k.caixa),foot:`${k.n_trans} trans · ritmo ${brl0(m.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'Comissão apurada · mês',value:brl0(_comMTD),foot:`${_comPct.toFixed(1)}% do faturamento · base ranking prof executor × taxa oficial da categoria`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
-    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`(caixa÷visitas · padrão Trinks)`, delta_pct:k.ticket_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
+    {label:'Ticket médio',value:brl(k.ticket_medio||0),foot:`total recebido ÷ comandas · bate com Trinks${(k.periodo_ant_ref||{}).ticket_medio ? ' · mês passado '+brl(k.periodo_ant_ref.ticket_medio) : ''}`, delta_pct:k.ticket_delta_pct, delta_label:`vs 01-${String((k.periodo_ant_ref||{}).janela_dias||'').padStart(2,'0')}/mês passado`},
     {label:'R$/hora salão',value:brl(k.rs_hora_salao||0),foot:`${k.horas_operacao_periodo||0}h operação · ${k.dias_op}d de ${data.dias_op_mes}`}
   ]);
   renderAvisoBase('per-kpis', k);
@@ -4187,7 +4192,7 @@ function renderSemanal(data){
   renderKPIs('per-kpis',[
     {label:'Faturamento · semana',value:brl0(k.caixa),foot:`${k.n_trans} trans · ${brl0(s.meta.ritmo_dia)}/dia`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · ${k.clientes_unicos} únicos`, delta_pct:k.cliente_dia_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
-    {label:'Ticket / visita',value:brl(k.ticket_medio||0),foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
+    {label:'Ticket médio',value:brl(k.ticket_medio||0),foot:`total recebido ÷ comandas · bate com Trinks${(k.periodo_ant_ref||{}).ticket_medio ? ' · sem passada '+brl(k.periodo_ant_ref.ticket_medio) : ''}`, delta_pct:k.ticket_delta_pct, delta_label:`vs mesmos ${(k.periodo_ant_ref||{}).janela_dias||''}d sem passada`},
     {label:'Dias operados',value:k.dias_op+'',foot:`de ${s.meta.dias_total} da semana`}
   ]);
   renderAvisoBase('per-kpis', k);
@@ -4221,7 +4226,7 @@ function renderDiario(data){
   renderKPIs('per-kpis',[
     {label:'Faturamento · hoje',value:brl0(k.caixa),foot:`${k.n_trans} trans fechadas`,accent:'accent', delta_pct:k.caixa_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Visitas',value:(k.cliente_dia||0)+'',foot:`${k.atend_fin} atend · +${k.em_atendimento} em curso`, delta_pct:k.cliente_dia_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
-    {label:'Ticket / visita',value:(k.cliente_dia||0)>0?brl(k.ticket_medio||0):'—',foot:`caixa÷visitas`, delta_pct:k.ticket_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
+    {label:'Ticket médio',value:(k.n_trans||0)>0?brl(k.ticket_medio||0):'—',foot:`total recebido ÷ comandas · bate com Trinks${(k.periodo_ant_ref||{}).ticket_medio ? ' · '+(k.dia_semana||'')+' passado '+brl(k.periodo_ant_ref.ticket_medio) : ''}`, delta_pct:k.ticket_delta_pct, delta_label:'vs '+(k.dia_semana||'')+' passado até mesma hora'},
     {label:'Meta do dia',value:pct(d.meta.pct),foot:`falta ${brl0(d.meta.falta)}`}
   ]);
   renderAvisoBase('per-kpis', k);
@@ -7230,7 +7235,17 @@ function renderSaude(){
     if(!a) continue;                        // nunca carimbou: nao inventa alarme
     if(cfg.madrugadaOk && fechada) continue; // loja fechada, nada a buscar
     const base = a.ultimo_ok ? new Date(a.ultimo_ok) : null;
-    if(!base){ ruins.push(`${cfg.rot} nunca terminou bem`); continue; }
+    if(!base){
+      // Sem sucesso NENHUM registrado. "nunca terminou bem" e verdade e nao
+      // serve para nada: nao diz ha quanto tempo nem o que fazer. Quem carimba
+      // ja mediu isso e guardou no detalhe ("sem parecer ha 76h"), entao a
+      // faixa mostra o numero em vez da categoria. Aviso sem numero vira
+      // decoracao, e decoracao a gente para de ler.
+      const d = (a.detalhe || '').trim();
+      ruins.push(d ? `${cfg.rot}: ${d.length > 90 ? d.slice(0,88) + '…' : d}`
+                   : `${cfg.rot} nunca terminou bem`);
+      continue;
+    }
     const h = (agora - base) / 36e5;
     if(h > cfg.h) ruins.push(`${cfg.rot} sem atualizar há ${Math.round(h)}h`);
     else if(a.resultado === 'falha') ruins.push(`${cfg.rot}: última tentativa falhou`);
