@@ -46,9 +46,16 @@ não lido. Esta pergunta pede uma resposta de uma palavra.
 > e mãos e uma massagem relaxante de 45 minutos — cinco atendimentos, de
 > segunda a quinta-feira, com horário garantido.
 >
-> O colégio contrata um período fechado e paga de uma vez. **Sugiro começar
-> com três meses: R$ 29.783,70 para as 27 professoras**, o que dá R$ 367,70
-> por professora/mês — 26% abaixo da nossa tabela.
+> A proposta mostra as três formas lado a lado — preço de tabela, compra só
+> deste mês e plano mensal de 12 meses — para vocês verem o impacto de cada
+> uma. Em resumo, para as 27 professoras:
+>
+> • **Tabela:** R$ 13.473,00/mês
+> • **Compra só deste mês:** R$ 9.927,90 (26% abaixo)
+> • **Plano mensal de 12 meses:** R$ 8.926,20/mês — economia de R$ 54.561,60 no ano
+>
+> Dá para começar comprando só este mês, sem compromisso nenhum, e decidir
+> depois.
 >
 > A proposta tem uma segunda aba, "Para as professoras", que vocês podem
 > encaminhar direto para elas quando decidirem.
