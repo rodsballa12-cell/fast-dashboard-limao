@@ -379,6 +379,15 @@ def analisar(agend, transac, ini: date, fim: date):
 
     tr = [t for t in transac if t.get("dataHora") and ini <= parse_trinks_dt(t["dataHora"]).date() <= fim]
 
+    # Transacoes "com pagamento" (bate com Qtde Atendimentos do Trinks).
+    # Exclui transacoes cuja soma de formas de pagamento <= 0 (estornos
+    # liquidos, cortesias, demos sem cobranca). O Trinks nao conta estas
+    # na "Qtde Atendimentos com pagamento" do Relatorio Financeiro.
+    # Validado 27/10/2026 Escova out/26: 400 tr - 41 sem pagto = 359 (bate).
+    def _soma_pagto(_t):
+        return sum(float(_fp.get("valor") or 0) for _fp in (_t.get("formasPagamentos") or []))
+    tr_pagantes = [t for t in tr if _soma_pagto(t) > 0]
+
     # KPIs base
     receita_serv = sum(float(a.get("valor") or 0) for a in fin)
     dias_com_op = len({parse_trinks_dt(a["dataHoraInicio"]).date() for a in fin})
@@ -922,23 +931,20 @@ def analisar(agend, transac, ini: date, fim: date):
             "atend_total": len(ag),
             "n_trans": len(tr),
             "ticket_trans": brl_round(caixa / max(len(tr), 1)),
+            "n_trans_com_pagto": len(tr_pagantes),
             # TICKET MEDIO OFICIAL (bate com Relatorio de Movimentacoes
             # Financeiras do Trinks). Formula do Trinks:
             #   Total Recebido / Qtde Atendimentos com pagamento
-            # Numerador = soma liquida de TODAS as formas de pagamento
-            # (inclui credito, vale-presente, pre-pago com sinal, troco
-            # negativo). Denominador = n_trans (comandas/vendas), NAO
-            # atend_fin (que conta cada servico individual).
-            # Validado via screenshot do Trinks em 27/10/2026: Escova out/26
-            # mostrava R$ 135,35 = R$ 48.589 / 359 comandas. Nosso atend_fin
-            # era 642 porque conta cada servico (cliente com 3 servicos = 3).
-            # O "Qtde Atendimentos com pagamento" do Trinks e UMA LINHA por
-            # cliente-dia-pagamento, equivalente a n_trans aqui.
-            "ticket_medio": brl_round(faturamento_bruto / max(len(tr), 1)),
+            # Numerador = soma liquida de TODAS as formas de pagamento.
+            # Denominador = transacoes COM pagamento > 0 (exclui estornos,
+            # cortesias, demos sem cobranca que o Trinks nao conta).
+            # Validado 27/10/2026 Escova out/26: 400 tr brutas, 41 sem
+            # pagamento, 359 com pagamento. R$ 48.589 / 359 = R$ 135,35.
+            "ticket_medio": brl_round(faturamento_bruto / max(len(tr_pagantes), 1)),
             # Campos legados preservados para nao quebrar HTML cacheado
             # com referencias antigas, mas o painel so expõe o oficial.
             "ticket_medio_interno": brl_round(caixa / max(n_cliente_dia, 1)),
-            "ticket_venda_trinks": brl_round(faturamento_bruto / max(len(tr), 1)),
+            "ticket_venda_trinks": brl_round(faturamento_bruto / max(len(tr_pagantes), 1)),
             "cliente_dia": n_cliente_dia,
             "taxa_canc": round(len(canc) / max(len(ag), 1) * 100, 1),
             "dias_op": dias_com_op,
