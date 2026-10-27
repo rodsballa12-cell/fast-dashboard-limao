@@ -22,6 +22,7 @@ jobs:
       - name: Abrir cofre
         env:
           FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
         run: python scripts/cofre.py abrir
 
       - uses: actions/setup-python@v5
