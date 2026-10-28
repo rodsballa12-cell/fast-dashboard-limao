@@ -53,6 +53,13 @@ XP (CSV)      ──► extrato_xp.py ─────► conferência do custo r
 SULTS (API)   ──► sults_leitura.py ──► OneDrive\...\SULTS\sults_limao.json (só PC, fora do repo)
 ```
 
+**Conferência contra o Trinks** (28/10/2026): `data/trinks_conferencia.json`
+guarda os números extraídos do Trinks a mão, por unidade e por mês (arquivo de
+cofre). `python3 scripts/conferir_trinks.py` compara o painel com eles, campo a
+campo, e a `auditoria_coerencia.py` avisa quando algo deixa de bater. Depois de
+cada extração nova, atualize o arquivo e rode a conferência **antes** da reunião
+com a agência — era lá que os dois lados se encontravam.
+
 **Receita vem do Trinks. Custo vem do Excel. Conciliação vem da Stone.** A conta
 XP é conta de **pagamento**: o dinheiro de venda chega lá em lotes que não batem
 com dia nenhum de caixa, e aporte entre os sócios passa por ela — R$ 1,2 milhão

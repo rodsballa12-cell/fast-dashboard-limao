@@ -7333,8 +7333,44 @@ function renderMidiasPlacarNegocio(){
 
   const dopA = A.dias_op || 0, dopB = (B && B.dias_op) || 0;
 
-  // delta honesto: para numero que SOMA ao longo do mes, compara media por
-  // dia de operacao; para media (ticket), compara direto.
+  // QUAL faturamento mostrar. O payload tem dois numeros de receita:
+  //   caixa                  o que entrou por forma de pagamento
+  //   total_recebido_trinks  servicos+produtos+pacotes+saldo-descontos
+  // O ticket medio e calculado sobre o SEGUNDO. Mostrar o primeiro como
+  // "Faturamento" deixava a tabela se contradizendo: quem dividisse o
+  // faturamento pelos atendimentos na reuniao achava um terceiro ticket.
+  // Entao a linha mostra a mesma base do ticket, e cai no caixa so quando
+  // o payload e antigo e nao tem o campo.
+  const fat = m => {
+    if(!m) return null;
+    return (m.total_recebido_trinks !== null && m.total_recebido_trinks !== undefined)
+      ? m.total_recebido_trinks : (m.caixa !== null && m.caixa !== undefined ? m.caixa : null);
+  };
+  // E se os dois divergirem, o painel diz — em vez de escolher em silencio.
+  const divergeA = (A.total_recebido_trinks !== null && A.total_recebido_trinks !== undefined
+                    && A.caixa !== null && A.caixa !== undefined)
+                   ? (A.total_recebido_trinks - A.caixa) : null;
+
+  // QUAL COMPARACAO MANDA.
+  //
+  // Normalizar por dia de operacao e o certo entre dois meses parecidos: sem
+  // isso, 24 dias contra 30 inventa queda. Mas quando um dos lados e um
+  // pedaco curto — o Spa abriu em setembro e o mes teve 7 dias de operacao
+  // contra 24 de outubro — a media por dia passa a mentir ao contrario.
+  // Medido em 28/10/2026 com os numeros reais do Spa: faturamento,
+  // atendimentos e clientes novos todos mais que dobraram, e a coluna por
+  // dia marcava queda de 37% a 49% em cada um. O quadro inteiro dizia o
+  // oposto do que tinha acontecido.
+  //
+  // Semana de inauguracao nao e semana normal: tem demanda represada, festa
+  // de abertura e conhecido do dono. Dividir por dia e trata-la como ritmo
+  // normal da loja.
+  //
+  // Entao: se os dois meses tem tamanhos comparaveis, manda a media por dia.
+  // Se nao tem, manda o TOTAL, e o outro numero aparece embaixo — nenhum dos
+  // dois e escondido.
+  const comparaveis = (dopA > 0 && dopB > 0) && (Math.min(dopA, dopB) / Math.max(dopA, dopB) >= 0.6);
+
   function cmp(va, vb, por_dia){
     if(va === null || va === undefined || vb === null || vb === undefined) return null;
     if(!vb) return null;
@@ -7342,6 +7378,12 @@ function renderMidiasPlacarNegocio(){
       if(!dopA || !dopB) return null;
       return ((va/dopA) / (vb/dopB) - 1) * 100;
     }
+    return (va/vb - 1) * 100;
+  }
+  // variacao do total, sem normalizar
+  function cmpTotal(va, vb){
+    if(va === null || va === undefined || vb === null || vb === undefined) return null;
+    if(!vb) return null;
     return (va/vb - 1) * 100;
   }
   function chip(d){
@@ -7360,8 +7402,8 @@ function renderMidiasPlacarNegocio(){
   // por_dia=true  → numero que acumula (faturamento, atendimentos, pacotes…)
   // por_dia=false → media, compara direto (ticket medio)
   const linhas = [
-    { rot:'Faturamento',      a:A.caixa,          b:B?B.caixa:null,          f:brl0, fd:brl0, por_dia:true,
-      fonte:'Trinks · soma do que foi pago nas transações do mês' },
+    { rot:'Faturamento',      a:fat(A),           b:fat(B),                  f:brl0, fd:brl0, por_dia:true,
+      fonte:'Trinks · serviços + produtos + pacotes − descontos (a mesma base do ticket médio)' },
     { rot:'Ticket médio',     a:A.ticket_medio,   b:B?B.ticket_medio:null,   f:v=>brl(v,2), fd:null, por_dia:false,
       fonte:'Trinks · recebido ÷ atendimentos com pagamento (fórmula corrigida em 27/10)' },
     { rot:'Atendimentos',     a:A.atend_fin,      b:B?B.atend_fin:null,      f:nf, fd:nf1, por_dia:true,
@@ -7375,7 +7417,13 @@ function renderMidiasPlacarNegocio(){
   ];
 
   const tr = linhas.map(L => {
-    const d = cmp(L.a, L.b, L.por_dia);
+    const d_dia = cmp(L.a, L.b, L.por_dia);
+    const d_tot = cmpTotal(L.a, L.b);
+    // Numero que e media (ticket) nao tem "total" separado.
+    const d = !L.por_dia ? d_dia : (comparaveis ? d_dia : d_tot);
+    const d_secundario = !L.por_dia ? null : (comparaveis ? d_tot : d_dia);
+    const rotulo_d = !L.por_dia ? '' : (comparaveis ? 'por dia' : 'no total');
+    const rotulo_s = !L.por_dia ? '' : (comparaveis ? 'no total' : 'por dia');
     const va = (L.a === null || L.a === undefined) ? NV : L.f(L.a);
     const vb = (!B || L.b === null || L.b === undefined) ? NV : L.f(L.b);
     const fd = L.fd || L.f;
@@ -7391,7 +7439,12 @@ function renderMidiasPlacarNegocio(){
       + '<td style="padding:9px 10px;text-align:right;white-space:nowrap"><div class="placar-v" style="font-weight:700;font-size:14px">' + vb + '</div>' + media_b + '</td>'
       + '<td style="padding:9px 10px;text-align:right;white-space:nowrap"><div class="placar-v" style="font-weight:800;font-size:15px">' + va + '</div>' + media + '</td>'
       + '<td style="padding:9px 10px;text-align:right;white-space:nowrap">' + chip(d)
-      +   (L.por_dia ? '<div class="placar-fonte" style="font-size:10px;color:var(--ink-3)">por dia</div>' : '') + '</td>'
+      +   (rotulo_d ? '<div style="font-size:10px;color:var(--ink-3)">' + rotulo_d + '</div>' : '')
+      +   (d_secundario !== null
+            ? '<div class="placar-fonte" style="font-size:10px;color:var(--ink-3);margin-top:3px">'
+              + (d_secundario > 0 ? '+' : '') + d_secundario.toFixed(0) + '% ' + rotulo_s + '</div>'
+            : '')
+      + '</td>'
       + '</tr>';
   }).join('');
 
@@ -7442,6 +7495,32 @@ function renderMidiasPlacarNegocio(){
   const rotulo_unid = (typeof unidadeInfo === 'function' && typeof UNIDADE_ATIVA !== 'undefined')
       ? (unidadeInfo(UNIDADE_ATIVA).nome || UNIDADE_ATIVA) : '';
 
+  // A frase do cabecalho muda conforme a comparacao que manda, e diz o
+  // porque. Quando o mes passado foi o mes em que a loja abriu, diz isso com
+  // todas as letras: e a informacao que impede alguem de levar "caiu 38%"
+  // para a reuniao quando o faturamento mais que dobrou.
+  const inaug = (typeof unidadeInfo === 'function' && typeof UNIDADE_ATIVA !== 'undefined')
+      ? (unidadeInfo(UNIDADE_ATIVA).data_inauguracao || null) : null;
+  const abriu_no_mes_ant = !!(inaug && String(inaug).slice(0, 7) === ant_k);
+  const Mai = t => t.charAt(0).toUpperCase() + t.slice(1);
+  const dias_txt = Mai(nome_atual) + ' tem ' + dopA + ' dia' + (dopA === 1 ? '' : 's')
+      + ' de operação até hoje (' + diaN + ' de ' + dias_mes_atual + '); '
+      + nome_ant + ' fechou com ' + dopB + '. ';
+  const explicacao = comparaveis
+    ? dias_txt + 'Como os dois meses têm tamanhos parecidos, a variação compara a '
+      + '<strong>média por dia de operação</strong> — mês pela metade contra mês fechado '
+      + 'inventa queda. O total vem logo abaixo, em cinza.'
+    : dias_txt
+      + (abriu_no_mes_ant
+          ? '<strong>A loja abriu em ' + fmtDate(inaug) + '</strong>, então ' + nome_ant
+            + ' foi só a semana de inauguração — demanda represada, festa de abertura, '
+            + 'conhecido do dono. Dividir aquilo por dia e chamar de ritmo normal faria '
+            + nome_atual + ' parecer uma queda, com o faturamento tendo crescido. '
+          : '<strong>Os dois meses têm tamanhos muito diferentes</strong>, então a média por '
+            + 'dia deixa de ser régua. ')
+      + 'Por isso a variação mostra o <strong>total</strong>, e a média por dia fica abaixo, '
+      + 'em cinza, para quem quiser os dois.';
+
   // aviso de dupla contagem no Consolidado: um cliente que vai na Escova e no
   // Spa conta duas vezes na soma das duas unidades. Dizer isso aqui evita que
   // a agencia receba um numero de clientes maior que o de pessoas.
@@ -7455,6 +7534,15 @@ function renderMidiasPlacarNegocio(){
   // que ficava fora da tela era justamente a coluna do MES CORRENTE — quem
   // abria no telefone via o mes passado primeiro. A procedencia sai (ela
   // continua inteira no rodape "Para conferir no Trinks") e os numeros ficam.
+  // Aviso de divergencia: so aparece quando ha o que avisar.
+  const aviso_receita = (divergeA !== null && Math.abs(divergeA) >= 1)
+    ? '<div style="margin-top:10px;padding:9px 12px;background:rgba(239,68,68,.10);border-left:3px solid #ef4444;border-radius:4px;font-size:11.5px;color:var(--ink-2)">'
+      + '<strong>Os dois números de receita do mês não batem entre si:</strong> o que entrou por forma de '
+      + 'pagamento é ' + brl0(A.caixa) + ' e a soma de serviços, produtos e pacotes é '
+      + brl0(A.total_recebido_trinks) + ' — ' + brl0(Math.abs(divergeA)) + ' de diferença. '
+      + 'A tabela mostra o segundo, que é a base do ticket médio. Vale conferir no Trinks antes da reunião.</div>'
+    : '';
+
   alvo.innerHTML =
     '<style>@media (max-width:640px){#midias-placar .placar-fonte{display:none}'
     + '#midias-placar table{min-width:300px!important}'
@@ -7466,11 +7554,7 @@ function renderMidiasPlacarNegocio(){
     + '<div style="font-size:10.5px;color:#22c55e;font-weight:800;text-transform:uppercase;letter-spacing:.08em">Placar do negócio · para a reunião com a agência</div>'
     + '<div style="font-size:18px;font-weight:800;color:var(--ink);margin-top:2px">' + nome_atual.charAt(0).toUpperCase() + nome_atual.slice(1)
     +   ' contra ' + nome_ant + (rotulo_unid ? ' · ' + rotulo_unid : '') + '</div>'
-    + '<div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">'
-    +   nome_atual.charAt(0).toUpperCase() + nome_atual.slice(1) + ' tem ' + dopA + ' dia' + (dopA===1?'':'s')
-    +   ' de operação até hoje (' + diaN + ' de ' + dias_mes_atual + '); ' + nome_ant + ' fechou com ' + dopB + '. '
-    +   'Por isso a última coluna compara a <strong>média por dia de operação</strong>, não o total — '
-    +   'mês pela metade contra mês fechado inventa queda.</div>'
+    + '<div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">' + explicacao + '</div>'
     + '</div>'
     + meta_html
     + '<section class="card" style="min-width:0;max-width:100%">'
@@ -7483,6 +7567,7 @@ function renderMidiasPlacarNegocio(){
     +   '<th style="text-align:right;padding:6px 10px;font-weight:700">' + nome_atual + '<div style="font-weight:500;text-transform:none;letter-spacing:0">até dia ' + diaN + '</div></th>'
     +   '<th style="text-align:right;padding:6px 10px;font-weight:700">Variação</th>'
     + '</tr></thead><tbody>' + tr + '</tbody></table></div>'
+    + aviso_receita
     + aviso_consol
     + '<div style="margin-top:12px;padding:9px 12px;background:var(--surface-2);border-radius:4px;font-size:11px;color:var(--ink-3);line-height:1.5">'
     +   '<strong style="color:var(--ink-2)">Para conferir no Trinks:</strong> faturamento e ticket médio saem do '
