@@ -184,6 +184,56 @@ def conferir_bloco_derivado(achados, dash, nome, sem_agendamentos_ok=False):
             "o passo de densidade não rodou no último refresh."))
 
 
+def conferir_placar_agencia(achados, dash, nome):
+    """Os sete numeros da reuniao com a agencia tem que estar no payload.
+
+    O placar da aba Midias (28/10/2026) le tudo de
+    `abas.anual.meses[YYYY-MM]`. Se um desses campos sumir do refresh, o
+    bloco nao desaparece — ele mostra NAO VEJO numa linha e as outras seis
+    continuam bonitas, o que e pior: a reuniao segue com um numero faltando
+    sem ninguem perceber. Mesma licao de `densidade_dow` em 14/09.
+
+    Confere o mes corrente e o anterior, que sao justamente os dois que o
+    placar compara.
+    """
+    CAMPOS = {
+        "meta":              "meta do mes",
+        "caixa":             "faturamento",
+        "ticket_medio":      "ticket medio (formula de 27/10)",
+        "n_trans_com_pagto": "denominador do ticket medio",
+        "atend_fin":         "atendimentos",
+        "clientes_unicos":   "clientes no mes",
+        "clientes_novos":    "clientes novos",
+        "pacotes_n":         "pacotes vendidos",
+        "dias_op":           "dias de operacao (base da comparacao por dia)",
+    }
+    if not isinstance(dash, dict):
+        return
+    meses = (((dash.get("abas") or {}).get("anual") or {}).get("meses")) or {}
+    if not meses:
+        achados.append(("erro",
+            f"{nome}: `abas.anual.meses` ausente — o placar do negocio da aba "
+            "Midias (o que a agencia pede) nao tem de onde ler."))
+        return
+    hoje = (dash.get("hoje") or "")[:7]
+    if not hoje:
+        return
+    ano, mes = int(hoje[:4]), int(hoje[5:7])
+    ant = f"{ano - 1}-12" if mes == 1 else f"{ano}-{mes - 1:02d}"
+    for ym, rotulo in ((hoje, "mes corrente"), (ant, "mes anterior")):
+        m = meses.get(ym)
+        if not isinstance(m, dict):
+            # mes sem movimento nao entra em `meses` — e esperado antes da
+            # loja abrir, nao e falha.
+            continue
+        faltam = [f"`{k}` ({v})" for k, v in CAMPOS.items() if m.get(k) is None]
+        if faltam:
+            achados.append(("erro",
+                f"{nome}: o {rotulo} ({ym}) esta sem " + ", ".join(faltam)
+                + " — o placar da aba Midias vai mostrar NAO VEJO nessa linha "
+                  "na proxima reuniao com a agencia."))
+
+
 def conferir_frescor(achados, arquivos):
     """Consolidado e unidade têm que sair da MESMA execução, não do mesmo dia.
 
@@ -800,6 +850,8 @@ def main() -> int:
     conferir_atas_vazias(achados)
     conferir_decisoes_sem_desfecho(achados)
     conferir_override_tem_todos_os_leitores(achados)
+    for _u in ("escova", "spa", "consolidado"):
+        conferir_placar_agencia(achados, dash.get(_u), _u.capitalize())
     conferir_funil_roas(achados)
     conferir_conselho_sincronizado(achados)
 
