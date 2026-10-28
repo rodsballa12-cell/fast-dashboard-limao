@@ -126,6 +126,11 @@ try:
             META_MENSAL_POR_MES[_k] = float(_v)
 except Exception:
     pass
+# META_MENSAL_BASE guarda a meta geral ANTES do override do mes corrente.
+# Sem ela, o historico por mes (`abas.anual.meses`) atribuia a meta DE HOJE a
+# todo mes passado sem override: numa unidade cuja meta sobe de mes a mes, um
+# mes antigo apareceria com a regua de hoje.
+META_MENSAL_BASE = META_MENSAL
 # Sobrescreve META_MENSAL pelo override do mes corrente (se existir)
 try:
     _hoje_key = datetime.now(BRT).strftime("%Y-%m")
@@ -2304,19 +2309,71 @@ def main():
     }
 
     # meses do ano
+    #
+    # ALINHAMENTO AGENCIA (28/10/2026) · a agencia pede sempre o MESMO conjunto:
+    # meta, faturamento, ticket medio, clientes novos, clientes totais,
+    # atendimentos e pacotes vendidos — deste mes e do mes passado. Antes disso
+    # cada reuniao recalculava a mao a partir de cards diferentes do painel, e o
+    # ticket medio ia pelo numero velho. Agora o mes carrega os sete, do mesmo
+    # lugar de onde o painel le, e o bloco da aba Midias so formata.
+    #
+    # ticket_medio aqui e o OFICIAL (total_recebido / tx com pagamento), formula
+    # validada contra o Relatorio de Movimentacoes Financeiras do Trinks em
+    # 27/10/2026 — nao confundir com ticket_trans (caixa / toda transacao),
+    # que fica ao lado so para auditoria.
+    def _meta_do_mes(ym):
+        """Meta daquele mes: a da tabela por mes, ou a meta geral.
+
+        Mesma regra que a aba mensal do painel usa — tabela por mes vence,
+        senao vale a meta geral. A unica diferenca e usar META_MENSAL_BASE
+        em vez de META_MENSAL: esta ultima ja foi sobrescrita pelo override
+        do mes CORRENTE, e usa-la aqui cravaria a meta de hoje nos meses
+        passados que nao estao na tabela.
+        """
+        if ym in META_MENSAL_POR_MES:
+            return META_MENSAL_POR_MES[ym], "meta_mensal_por_mes"
+        return META_MENSAL_BASE, "meta_mensal"
+
     meses = {}
     for m in range(1, 13):
         mi = date(hoje.year, m, 1)
         mf = date(hoje.year, m, monthrange(hoje.year, m)[1])
         am = analisar(agend, transac, mi, mf)
         if am["kpis"]["atend_fin"] > 0 or am["kpis"]["n_trans"] > 0:
-            meses[f"{hoje.year}-{m:02d}"] = {
+            ym = f"{hoje.year}-{m:02d}"
+            meta_m, meta_origem_m = _meta_do_mes(ym)
+            # novos vs recorrentes do mes, mesmo criterio do card do mes corrente
+            fin_m = [a for a in agend
+                     if (a.get("status") or {}).get("nome") == "Finalizado"
+                     and a.get("dataHoraInicio")
+                     and mi <= parse_trinks_dt(a["dataHoraInicio"]).date() <= mf]
+            try:
+                nvr_m = novos_vs_recorr(fin_m, cad_map, mi, transac_periodo=transac,
+                                        ini_periodo=mi, fim_periodo=mf)
+                novos_m = nvr_m["novos"]["clientes"]
+                recorr_m = nvr_m["recorrentes"]["clientes"]
+            except Exception as e:
+                # campo que nao foi lido fica None — regra da casa: nunca
+                # preencher numero que nao veio da fonte.
+                print(f"[meses] {ym} novos vs recorrentes falhou: {e}")
+                novos_m = recorr_m = None
+            meses[ym] = {
                 "caixa": am["kpis"]["caixa"], "receita_serv": am["kpis"]["receita_serv"],
                 "faturamento_apurado": am["kpis"].get("faturamento_apurado", am["kpis"]["caixa"]),
                 "atend_fin": am["kpis"]["atend_fin"], "clientes_unicos": am["kpis"]["clientes_unicos"],
                 "n_trans": am["kpis"]["n_trans"], "ticket_trans": am["kpis"]["ticket_trans"],
                 "taxa_canc": am["kpis"]["taxa_canc"], "categorias": am["categorias"],
                 "dias_op": am["kpis"]["dias_op"],
+                # --- alinhamento agencia ---
+                "meta": meta_m,
+                "meta_origem": meta_origem_m,
+                "ticket_medio": am["kpis"]["ticket_medio"],
+                "n_trans_com_pagto": am["kpis"]["n_trans_com_pagto"],
+                "total_recebido_trinks": am["kpis"]["total_recebido_trinks"],
+                "clientes_novos": novos_m,
+                "clientes_recorrentes": recorr_m,
+                "pacotes_n": am["categorias"]["pacotes"]["n"],
+                "pacotes_v": am["categorias"]["pacotes"]["v"],
             }
 
     # === SAZONALIDADE: pesos por dia da semana + curva horária ===

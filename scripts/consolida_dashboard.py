@@ -515,6 +515,61 @@ def corrigir_historico_consolidado(c, esc, spa):
         _recalc(bloco.get("kpis"), ek, sk)
 
 
+def corrigir_meses_consolidado(c, esc, spa):
+    """Reaplica a regra em abas.anual.meses[YYYY-MM] do consolidado.
+
+    O merge cego erra tres coisas por mes, e nenhuma delas grita:
+      · ticket_medio esta em NAO_SOMAR, entao o consolidado herdava o
+        valor da ESCOVA — o ticket do Spa, que e varias vezes maior,
+        sumia da conta;
+      · dias_op somava os dois calendarios (31 + 31 = 62 dias de outubro);
+      · taxa_canc somava duas porcentagens.
+
+    A meta, o faturamento, os atendimentos, os clientes e os pacotes somam
+    de verdade — esses o merge acerta. Aqui so refazemos os derivados.
+
+    Mesma regra de corrigir_historico_consolidado(), por mes.
+    """
+    def _meses(d):
+        return (((d.get("abas") or {}).get("anual") or {}).get("meses")) or {}
+
+    cons, c_esc, c_spa = _meses(c), _meses(esc), _meses(spa)
+    for ym, m in cons.items():
+        if not isinstance(m, dict):
+            continue
+        me, ms = c_esc.get(ym) or {}, c_spa.get(ym) or {}
+        # dias_op = calendario comum, nao soma dos dois calendarios
+        de, ds = me.get("dias_op") or 0, ms.get("dias_op") or 0
+        if de or ds:
+            m["dias_op"] = max(de, ds)
+        # TICKET MEDIO OFICIAL do mes: total_recebido / tx com pagamento
+        n_pagto = m.get("n_trans_com_pagto") or m.get("n_trans") or 0
+        recebido = m.get("total_recebido_trinks") or 0
+        if n_pagto > 0 and recebido:
+            m["ticket_medio"] = round(recebido / n_pagto, 2)
+        n_trans = m.get("n_trans") or 0
+        if n_trans > 0:
+            m["ticket_trans"] = round((m.get("caixa") or 0) / n_trans, 2)
+        # taxa_canc: media ponderada pelos atendimentos de cada unidade
+        te, ts = me.get("taxa_canc"), ms.get("taxa_canc")
+        ae, as_ = me.get("atend_fin") or 0, ms.get("atend_fin") or 0
+        if te is not None and ts is not None and (ae + as_) > 0:
+            m["taxa_canc"] = round((te * ae + ts * as_) / (ae + as_), 1)
+        elif te is not None and not ms:
+            m["taxa_canc"] = te
+        # meta_origem e string: o merge pegou a da Escova. No consolidado a
+        # meta e soma das duas, entao a procedencia e das duas.
+        oe, os_ = me.get("meta_origem"), ms.get("meta_origem")
+        if oe or os_:
+            m["meta_origem"] = "escova:%s + spa:%s" % (oe or "sem meta", os_ or "sem meta")
+        # clientes_novos/recorrentes podem vir None de uma unidade (regra da
+        # casa: campo que nao foi lido nao vira zero). Se qualquer lado
+        # faltou, o consolidado tambem nao sabe.
+        for campo in ("clientes_novos", "clientes_recorrentes"):
+            if me.get(campo) is None or (ms and ms.get(campo) is None):
+                m[campo] = None
+
+
 def corrigir_consolidado(c, esc, spa):
     hoje = _d(esc.get("hoje") or date.today().isoformat())
     inicio = _inicio_spa(spa)
@@ -835,6 +890,7 @@ def main():
     recalcular_derivados(consolidado)
     corrigir_consolidado(consolidado, escova, spa)
     corrigir_historico_consolidado(consolidado, escova, spa)
+    corrigir_meses_consolidado(consolidado, escova, spa)
     anexar_lado_a_lado(consolidado, escova, spa)
     anexar_cadastro_consolidado(consolidado, escova, spa)
     anexar_migracao_cruzada(consolidado, escova, spa)
