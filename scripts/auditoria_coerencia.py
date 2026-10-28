@@ -184,6 +184,52 @@ def conferir_bloco_derivado(achados, dash, nome, sem_agendamentos_ok=False):
             "o passo de densidade não rodou no último refresh."))
 
 
+def conferir_contra_trinks(achados, dash, unidade):
+    """O painel bate com o que foi extraido do Trinks a mao?
+
+    Pedido do Rodrigo em 28/10/2026, depois de subir um export do Trinks
+    para a reuniao com a agencia: "garanta que batam". Ate entao os dois
+    lados so se encontravam na frente da agencia.
+
+    A referencia vive em `data/trinks_conferencia.json`, que e arquivo de
+    cofre (financeiro). Sem ele, este passo nao reclama — so nao confere.
+    A regra de comparacao e a do proprio scripts/conferir_trinks.py, nao
+    uma copia: copia envelhece sozinha e passa a mentir.
+    """
+    ref_path = REPO / "data" / "trinks_conferencia.json"
+    if not ref_path.exists():
+        return
+    if not isinstance(dash, dict):
+        return
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "conferir_trinks", REPO / "scripts" / "conferir_trinks.py")
+        ct = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(ct)
+        ref_tudo = json.loads(ref_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        achados.append(("indef", f"nao consegui carregar a conferencia do Trinks: {e}"))
+        return
+
+    meses_ref = ref_tudo.get(unidade)
+    if not isinstance(meses_ref, dict):
+        return
+    meses = (((dash.get("abas") or {}).get("anual") or {}).get("meses")) or {}
+    for ym, r in meses_ref.items():
+        if ym.startswith("_") or not isinstance(r, dict):
+            continue
+        m = meses.get(ym)
+        if not isinstance(m, dict):
+            continue
+        fora = ct.divergencias(r, m)
+        for campo, t, p in fora:
+            achados.append(("aviso",
+                f"{unidade} {ym}: `{campo}` nao bate com o Trinks — "
+                f"Trinks {t}, painel {p}. Rode "
+                f"`python3 scripts/conferir_trinks.py {unidade} {ym}` para o detalhe."))
+
+
 def conferir_placar_agencia(achados, dash, nome):
     """Os sete numeros da reuniao com a agencia tem que estar no payload.
 
@@ -852,6 +898,8 @@ def main() -> int:
     conferir_override_tem_todos_os_leitores(achados)
     for _u in ("escova", "spa", "consolidado"):
         conferir_placar_agencia(achados, dash.get(_u), _u.capitalize())
+    for _u in ("escova", "spa"):
+        conferir_contra_trinks(achados, dash.get(_u), _u)
     conferir_funil_roas(achados)
     conferir_conselho_sincronizado(achados)
 

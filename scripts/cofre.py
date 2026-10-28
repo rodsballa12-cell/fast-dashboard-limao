@@ -35,6 +35,8 @@ PAINEL = [
     "data/dashboard_data.json", "data/spa/dashboard_data.json", "data/consolidado/dashboard_data.json",
     "data/financeiro.json", "data/spa/financeiro.json", "data/consolidado/financeiro.json",
     "data/wa_fila.json",
+    # Numeros conferidos no Trinks, por mes. Financeiro -> so criptografado.
+    "data/trinks_conferencia.json",
 ]
 CACHE = [f"data/{u}{n}" for u in ("", "spa/") for n in (
     "clientes_detalhes.json", "clientes_lista_cache.json", "agend_detail_cache.json",
