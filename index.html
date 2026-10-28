@@ -7336,15 +7336,19 @@ function renderMidiasPlacarNegocio(){
   // QUAL faturamento mostrar. O payload tem dois numeros de receita:
   //   caixa                  o que entrou por forma de pagamento
   //   total_recebido_trinks  servicos+produtos+pacotes+saldo-descontos
-  // O ticket medio e calculado sobre o SEGUNDO. Mostrar o primeiro como
-  // "Faturamento" deixava a tabela se contradizendo: quem dividisse o
-  // faturamento pelos atendimentos na reuniao achava um terceiro ticket.
-  // Entao a linha mostra a mesma base do ticket, e cai no caixa so quando
-  // o payload e antigo e nao tem o campo.
+  //
+  // MEDIDO em 28/10/2026 contra o export do Trinks do Spa: `caixa` bate
+  // com o faturamento do Trinks a virgula nos dois meses, e
+  // `total_recebido_trinks` nao bate em nenhum. Houve uma versao que
+  // mostrava o segundo, por consistencia com a base do ticket medio; ela
+  // fez setembro — mes FECHADO — mudar de valor na tela, e foi assim que o
+  // erro apareceu. Consistencia interna nao vale romper a conta com a
+  // fonte: a agencia tem o relatorio do Trinks na mao.
   const fat = m => {
     if(!m) return null;
+    if(m.caixa !== null && m.caixa !== undefined) return m.caixa;
     return (m.total_recebido_trinks !== null && m.total_recebido_trinks !== undefined)
-      ? m.total_recebido_trinks : (m.caixa !== null && m.caixa !== undefined ? m.caixa : null);
+      ? m.total_recebido_trinks : null;
   };
   // E se os dois divergirem, o painel diz — em vez de escolher em silencio.
   const divergeA = (A.total_recebido_trinks !== null && A.total_recebido_trinks !== undefined
@@ -7403,7 +7407,7 @@ function renderMidiasPlacarNegocio(){
   // por_dia=false → media, compara direto (ticket medio)
   const linhas = [
     { rot:'Faturamento',      a:fat(A),           b:fat(B),                  f:brl0, fd:brl0, por_dia:true,
-      fonte:'Trinks · serviços + produtos + pacotes − descontos (a mesma base do ticket médio)' },
+      fonte:'Trinks · soma do que foi pago nas transações (bate com o faturamento do relatório)' },
     { rot:'Ticket médio',     a:A.ticket_medio,   b:B?B.ticket_medio:null,   f:v=>brl(v,2), fd:null, por_dia:false,
       fonte:'Trinks · recebido ÷ atendimentos com pagamento (fórmula corrigida em 27/10)' },
     { rot:'Atendimentos',     a:A.atend_fin,      b:B?B.atend_fin:null,      f:nf, fd:nf1, por_dia:true,
@@ -7536,11 +7540,12 @@ function renderMidiasPlacarNegocio(){
   // continua inteira no rodape "Para conferir no Trinks") e os numeros ficam.
   // Aviso de divergencia: so aparece quando ha o que avisar.
   const aviso_receita = (divergeA !== null && Math.abs(divergeA) >= 1)
-    ? '<div style="margin-top:10px;padding:9px 12px;background:rgba(239,68,68,.10);border-left:3px solid #ef4444;border-radius:4px;font-size:11.5px;color:var(--ink-2)">'
-      + '<strong>Os dois números de receita do mês não batem entre si:</strong> o que entrou por forma de '
-      + 'pagamento é ' + brl0(A.caixa) + ' e a soma de serviços, produtos e pacotes é '
-      + brl0(A.total_recebido_trinks) + ' — ' + brl0(Math.abs(divergeA)) + ' de diferença. '
-      + 'A tabela mostra o segundo, que é a base do ticket médio. Vale conferir no Trinks antes da reunião.</div>'
+    ? '<div style="margin-top:10px;padding:9px 12px;background:rgba(245,158,11,.10);border-left:3px solid #f59e0b;border-radius:4px;font-size:11.5px;color:var(--ink-2)">'
+      + '<strong>Não divida o faturamento pelos atendimentos para achar o ticket médio</strong> — vai dar '
+      + 'outro número. A linha de faturamento mostra o que entrou por forma de pagamento ('
+      + brl0(A.caixa) + '), que é o que o relatório do Trinks chama de faturamento. O ticket médio é '
+      + 'calculado sobre outra base, a soma de serviços, produtos e pacotes (' + brl0(A.total_recebido_trinks)
+      + '), que neste mês difere em ' + brl0(Math.abs(divergeA)) + '.</div>'
     : '';
 
   alvo.innerHTML =
