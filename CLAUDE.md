@@ -29,7 +29,8 @@ Word, PDF, página — já sai no padrão oficial da FAST Escova e/ou do FAST Sp
 Montserrat, logo e rodapé. Ele não precisa pedir. **Escova → pele da Escova; Spa → pele do
 Spa; consolidado → as duas juntas.**
 
-**Monte sempre a partir do kit** `docs/marketing/modelos/kit.js`: logos oficiais em
+**Documento oficial sai em PDF pelo padrão premium** (`docs/marketing/modelos/premium/`); Word
+(`docs/marketing/modelos/kit.js`) só quando precisar ser editável. **Monte sempre a partir do kit**: logos oficiais em
 `docs/marketing/marca/` e números (cores, tamanhos, margens) em `docs/marketing/FICHA-DOCUMENTOS.md`.
 Funciona na nuvem e no PC. Nada de layout de cabeça: em 29/10 uma proposta feita sem o kit saiu
 sem logo e o Rodrigo a chamou de péssima. A ficha é a versão 1 e ainda aguarda conferência do

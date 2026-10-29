@@ -22,6 +22,25 @@ bloco que é de uma loja usa a pele dela (`K.sub(..., 'escova')`, `K.tabela(...,
 
 Documento com salário ou dado de pessoa **não vai para o repositório**. Só o modelo vai.
 
+
+## Padrão premium (oficial para documento que vai para alguém) · v1.1, 29/10/2026
+
+O Rodrigo achou o Word "muito pobre". **Documento oficial sai em PDF pelo padrão premium**:
+`modelos/premium/fast.css` + `modelos/premium/render.js` (Chromium + Montserrat do Google Fonts).
+Word (`kit.js`) fica só para o que precisa ser editado por outra pessoa.
+
+- **Capa:** faixa dupla de página inteira (preta com o logo da Escova, verde-água com o do Spa) com
+  filete amarelo e petróleo, título em Montserrat 900 de 34 pt e três cartões de número.
+- **Miolo:** cabeçalho com os dois logos em versão escura, rótulo da seção em verde-água
+  espaçado, título de 20 pt com filete bicolor, regras em cartões numerados, tabelas com
+  cabeçalho carvão e gráficos em HTML.
+- **Bloco de loja:** cartão com topo na cor da loja (preto/amarelo ou verde-água), chips de valor
+  e bônus em faixa clara.
+- **Peles:** `<body class="escova|spa|consolidado">`.
+- **Gerar:** `node docs/marketing/modelos/premium/render.js entrada.html saida.pdf [pasta_previas]`.
+  Sempre abra as prévias e confira se nada invade o rodapé antes de entregar.
+- **Referência viva:** a proposta da gerente (29/10). Ela não está no repositório porque traz salário.
+
 ## Cores (lidas dos arquivos de logo, pixel a pixel)
 
 | | Hex | Onde |
