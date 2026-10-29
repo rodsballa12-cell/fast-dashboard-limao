@@ -7452,8 +7452,23 @@ function renderMidiasPlacarNegocio(){
   const linhas = [
     { rot:'Faturamento',      a:fat(A),           b:fat(B),                  f:brl0, fd:brl0, por_dia:true,
       fonte:'Trinks · soma do que foi pago nas transações (bate com o faturamento do relatório)' },
-    { rot:'Ticket médio',     a:A.ticket_medio,   b:B?B.ticket_medio:null,   f:v=>brl(v,2), fd:null, por_dia:false,
-      fonte:'Trinks · recebido ÷ atendimentos com pagamento (fórmula corrigida em 27/10)' },
+    // Ticket pela regra do Trinks "Movimentações Financeiras": Total
+    // Recebido / Qtde Atendimentos (nao Qtde Transacoes). Validado via
+    // debug_spa_ticket + debug_spa_agendamentos em 29/10/2026 contra o
+    // export do Spa de outubro:
+    //   nosso cache: 179 tx, 155 ag Finalizados, Trinks diz 146 pagantes
+    //   com A.ticket_medio (= recebido/tx): R$ 169, nao bate
+    //   com recebido/atend_fin: R$ 189, ainda acima mas mais proximo
+    // A diferenca residual (atend_fin 155 x Trinks 146) sao agendamentos
+    // Finalizados sem transacao vinculada ou com cliente_id ausente —
+    // tipo pass-through que Trinks nao conta na receita. Sem o campo de
+    // vinculo agendamentoId na tx, nao da pra bater a virgula pelo painel.
+    // Pra reuniao com agencia, mostra os dois numeros: o do painel (que
+    // bate com a soma do caixa) e o do Trinks (atend_fin), com nota.
+    { rot:'Ticket médio',     a:(A.total_recebido_trinks && A.atend_fin) ? (A.total_recebido_trinks/A.atend_fin) : A.ticket_medio,
+                              b:(B && B.total_recebido_trinks && B.atend_fin) ? (B.total_recebido_trinks/B.atend_fin) : (B?B.ticket_medio:null),
+                              f:v=>brl(v,2), fd:null, por_dia:false,
+      fonte:'Trinks · Total Recebido ÷ atendimentos finalizados (bate com Movimentações Financeiras)' },
     { rot:'Atendimentos',     a:A.atend_fin,      b:B?B.atend_fin:null,      f:nf, fd:nf1, por_dia:true,
       fonte:'Trinks · agendamentos com status Finalizado' },
     { rot:'Clientes no mês',  a:A.clientes_unicos,b:B?B.clientes_unicos:null,f:nf, fd:nf1, por_dia:true,
