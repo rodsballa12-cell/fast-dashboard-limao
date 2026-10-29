@@ -661,12 +661,24 @@ document.addEventListener('visibilitychange', () => {
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11px">
           <span style="color:var(--ink-3);align-self:center">Ir para:</span>
+          <a href="#ato-placar" style="padding:3px 10px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);text-decoration:none;border:1px solid var(--border)">⓿ Placar do negócio</a>
           <a href="#ato-panorama" style="padding:3px 10px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);text-decoration:none;border:1px solid var(--border)">① Panorama</a>
           <a href="#ato-descoberta" style="padding:3px 10px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);text-decoration:none;border:1px solid var(--border)">② Descoberta</a>
           <a href="#ato-engajamento" style="padding:3px 10px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);text-decoration:none;border:1px solid var(--border)">③ Engajamento</a>
           <a href="#ato-conversao" style="padding:3px 10px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);text-decoration:none;border:1px solid var(--border)">④ Conversão</a>
           <a href="#ato-acoes" style="padding:3px 10px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);text-decoration:none;border:1px solid var(--border)">⑤ Ações</a>
         </div>
+      </div>
+
+      <!-- ═══ ⓿ PLACAR DO NEGOCIO · alinhamento com a agencia ═══ -->
+      <!-- Pedido do Rodrigo em 28/10/2026: os sete numeros que a agencia pede
+           em toda reuniao, deste mes e do mes passado, no mesmo lugar e vindos
+           da mesma fonte de onde o painel le. Fica aqui, no topo da aba Midias,
+           porque e a primeira pergunta da reuniao ("quanto a loja fez?") e
+           porque tudo que vem depois — gasto, CPA, conversas — so quer dizer
+           algo medido contra isto. -->
+      <div id="ato-placar" style="scroll-margin-top:120px">
+        <div id="midias-placar"></div>
       </div>
 
       <!-- ═══ ① PANORAMA DO PERÍODO ═══ -->
@@ -7258,8 +7270,325 @@ function renderSaude(){
   el.firstElementChild.addEventListener('click', () => { el.innerHTML = ''; });
 }
 
+// ============= PLACAR DO NEGOCIO · alinhamento com a agencia =============
+// Os sete numeros que a Beleza Boost pede em toda reuniao, deste mes e do
+// mes passado. Antes de 28/10/2026 cada reuniao recalculava a mao, lendo
+// card por card de abas diferentes — e o ticket medio ia pelo numero velho,
+// de antes da formula ser corrigida em 27/10.
+//
+// TRES cuidados que este bloco toma, e que a leitura a mao nao tomava:
+//
+//  1. O mes corrente e PARCIAL. Comparar 28 dias de outubro com 30 dias de
+//     setembro inventa uma queda que nao existe — e o erro que a casa ja
+//     cometeu comparando terca com segunda. Entao o que compara aqui e a
+//     media por dia de operacao, e a coluna do mes corrente diz em voz alta
+//     quantos dias ja entraram.
+//  2. Cada linha diz DE ONDE o numero vem, com a conta. Em reuniao, numero
+//     sem procedencia vira discussao sobre o numero em vez de sobre o
+//     negocio.
+//  3. Campo que nao foi lido aparece como "NAO VEJO", nunca como zero.
+function renderMidiasPlacarNegocio(){
+  const alvo = document.getElementById('midias-placar');
+  if(!alvo) return;
+  const T = (typeof TRINKS !== 'undefined') ? TRINKS : null;
+  const meses = (T && T.abas && T.abas.anual && T.abas.anual.meses) || null;
+  if(!T || !meses || !Object.keys(meses).length){
+    alvo.innerHTML = '<div class="audit" style="border-left:3px solid #f59e0b"><div>⚠️</div>'
+      + '<div><strong>Placar do negócio indisponível.</strong> O painel da unidade não trouxe o '
+      + 'histórico por mês (<code>abas.anual.meses</code>), então os números da reunião com a '
+      + 'agência não podem ser montados daqui. Rode o refresh do Trinks e recarregue.</div></div>';
+    return;
+  }
+
+  // mes corrente e anterior, a partir da data do proprio payload
+  const hoje = String(T.hoje || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(!hoje){ alvo.innerHTML = ''; return; }
+  const ano = +hoje[1], mesN = +hoje[2], diaN = +hoje[3];
+  const ym = y => y[0] + '-' + String(y[1]).padStart(2,'0');
+  const atual_k = ym([ano, mesN]);
+  const ant_k   = mesN === 1 ? ym([ano-1, 12]) : ym([ano, mesN-1]);
+  const A = meses[atual_k] || null;   // este mes (parcial)
+  const B = meses[ant_k]   || null;   // mes passado (fechado)
+  if(!A){ alvo.innerHTML = ''; return; }
+
+  const NOMES = ['janeiro','fevereiro','março','abril','maio','junho','julho',
+                 'agosto','setembro','outubro','novembro','dezembro'];
+  const nome_atual = NOMES[mesN-1];
+  const nome_ant   = NOMES[(mesN === 1 ? 12 : mesN-1) - 1];
+  const dias_mes_atual = new Date(ano, mesN, 0).getDate();
+
+  // meta do mes corrente: usa o bloco de meta da aba mensal, que e o mesmo
+  // que o painel mostra (traz a meta PONDERADA ate hoje — a unica regua
+  // honesta num mes pela metade).
+  const metaMensal = (T.abas && T.abas.mensal && T.abas.mensal.meta) || {};
+
+  const nf = n => (n === null || n === undefined)
+      ? null : Number(n).toLocaleString('pt-BR');
+  // Media por dia de CONTAGEM tem 1 decimal. Sem isto o nf devolvia a
+  // precisao inteira da divisao, e o resultado saia como "15,458/dia" —
+  // que numa reuniao se le como quinze mil.
+  const nf1 = n => (n === null || n === undefined)
+      ? null : Number(n).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
+  const NV = '<span style="color:#f59e0b;font-weight:700">NÃO VEJO</span>';
+
+  const dopA = A.dias_op || 0, dopB = (B && B.dias_op) || 0;
+
+  // QUAL faturamento mostrar. O payload tem dois numeros de receita:
+  //   caixa                  o que entrou por forma de pagamento
+  //   total_recebido_trinks  servicos+produtos+pacotes+saldo-descontos
+  //
+  // MEDIDO em 28/10/2026 contra o export do Trinks do Spa: `caixa` bate
+  // com o faturamento do Trinks a virgula nos dois meses, e
+  // `total_recebido_trinks` nao bate em nenhum. Houve uma versao que
+  // mostrava o segundo, por consistencia com a base do ticket medio; ela
+  // fez setembro — mes FECHADO — mudar de valor na tela, e foi assim que o
+  // erro apareceu. Consistencia interna nao vale romper a conta com a
+  // fonte: a agencia tem o relatorio do Trinks na mao.
+  const fat = m => {
+    if(!m) return null;
+    if(m.caixa !== null && m.caixa !== undefined) return m.caixa;
+    return (m.total_recebido_trinks !== null && m.total_recebido_trinks !== undefined)
+      ? m.total_recebido_trinks : null;
+  };
+  // E se os dois divergirem, o painel diz — em vez de escolher em silencio.
+  const divergeA = (A.total_recebido_trinks !== null && A.total_recebido_trinks !== undefined
+                    && A.caixa !== null && A.caixa !== undefined)
+                   ? (A.total_recebido_trinks - A.caixa) : null;
+
+  // QUAL COMPARACAO MANDA.
+  //
+  // Normalizar por dia de operacao e o certo entre dois meses parecidos: sem
+  // isso, 24 dias contra 30 inventa queda. Mas quando um dos lados e um
+  // pedaco curto — o Spa abriu em setembro e o mes teve 7 dias de operacao
+  // contra 24 de outubro — a media por dia passa a mentir ao contrario.
+  // Medido em 28/10/2026 com os numeros reais do Spa: faturamento,
+  // atendimentos e clientes novos todos mais que dobraram, e a coluna por
+  // dia marcava queda de 37% a 49% em cada um. O quadro inteiro dizia o
+  // oposto do que tinha acontecido.
+  //
+  // Semana de inauguracao nao e semana normal: tem demanda represada, festa
+  // de abertura e conhecido do dono. Dividir por dia e trata-la como ritmo
+  // normal da loja.
+  //
+  // Entao: se os dois meses tem tamanhos comparaveis, manda a media por dia.
+  // Se nao tem, manda o TOTAL, e o outro numero aparece embaixo — nenhum dos
+  // dois e escondido.
+  const comparaveis = (dopA > 0 && dopB > 0) && (Math.min(dopA, dopB) / Math.max(dopA, dopB) >= 0.6);
+
+  function cmp(va, vb, por_dia){
+    if(va === null || va === undefined || vb === null || vb === undefined) return null;
+    if(!vb) return null;
+    if(por_dia){
+      if(!dopA || !dopB) return null;
+      return ((va/dopA) / (vb/dopB) - 1) * 100;
+    }
+    return (va/vb - 1) * 100;
+  }
+  // variacao do total, sem normalizar
+  function cmpTotal(va, vb){
+    if(va === null || va === undefined || vb === null || vb === undefined) return null;
+    if(!vb) return null;
+    return (va/vb - 1) * 100;
+  }
+  function chip(d){
+    if(d === null) return '<span style="color:var(--ink-3);font-size:11px">—</span>';
+    // Abaixo de 1% e ruido, nao movimento — e mostrar "▼ -0,7%" ao lado de
+    // duas colunas que dizem "3,7/dia" nas duas faz o quadro parecer errado.
+    // Quem le a tabela em reuniao precisa de "mudou" ou "nao mudou".
+    if(Math.abs(d) < 1) return '<span class="placar-var" style="color:var(--ink-3);font-weight:600;font-size:12px">● igual</span>';
+    const cor = Math.abs(d) < 3 ? 'var(--ink-3)' : (d > 0 ? '#22c55e' : '#ef4444');
+    const seta = d > 0 ? '▲' : (d < 0 ? '▼' : '●');
+    return '<span class="placar-var" style="color:' + cor + ';font-weight:700;font-size:12px">'
+         + seta + ' ' + (d>0?'+':'') + d.toFixed(1) + '%</span>';
+  }
+
+  // --- as sete linhas ---------------------------------------------------
+  // por_dia=true  → numero que acumula (faturamento, atendimentos, pacotes…)
+  // por_dia=false → media, compara direto (ticket medio)
+  const linhas = [
+    { rot:'Faturamento',      a:fat(A),           b:fat(B),                  f:brl0, fd:brl0, por_dia:true,
+      fonte:'Trinks · soma do que foi pago nas transações (bate com o faturamento do relatório)' },
+    { rot:'Ticket médio',     a:A.ticket_medio,   b:B?B.ticket_medio:null,   f:v=>brl(v,2), fd:null, por_dia:false,
+      fonte:'Trinks · recebido ÷ atendimentos com pagamento (fórmula corrigida em 27/10)' },
+    { rot:'Atendimentos',     a:A.atend_fin,      b:B?B.atend_fin:null,      f:nf, fd:nf1, por_dia:true,
+      fonte:'Trinks · agendamentos com status Finalizado' },
+    { rot:'Clientes no mês',  a:A.clientes_unicos,b:B?B.clientes_unicos:null,f:nf, fd:nf1, por_dia:true,
+      fonte:'Trinks · pessoas distintas atendidas (quem veio 3× conta 1)' },
+    { rot:'Clientes novos',   a:A.clientes_novos, b:B?B.clientes_novos:null, f:nf, fd:nf1, por_dia:true,
+      fonte:'Trinks · cadastro criado dentro do próprio mês' },
+    { rot:'Pacotes vendidos', a:A.pacotes_n,      b:B?B.pacotes_n:null,      f:nf, fd:nf1, por_dia:true,
+      fonte:'Trinks · itens de pacote nas transações do mês' },
+  ];
+
+  const tr = linhas.map(L => {
+    const d_dia = cmp(L.a, L.b, L.por_dia);
+    const d_tot = cmpTotal(L.a, L.b);
+    // Numero que e media (ticket) nao tem "total" separado.
+    const d = !L.por_dia ? d_dia : (comparaveis ? d_dia : d_tot);
+    const d_secundario = !L.por_dia ? null : (comparaveis ? d_tot : d_dia);
+    const rotulo_d = !L.por_dia ? '' : (comparaveis ? 'por dia' : 'no total');
+    const rotulo_s = !L.por_dia ? '' : (comparaveis ? 'no total' : 'por dia');
+    const va = (L.a === null || L.a === undefined) ? NV : L.f(L.a);
+    const vb = (!B || L.b === null || L.b === undefined) ? NV : L.f(L.b);
+    const fd = L.fd || L.f;
+    const media = (L.por_dia && dopA && L.a !== null && L.a !== undefined)
+        ? '<div class="placar-dia" style="font-size:10.5px;color:var(--ink-3);margin-top:1px">'
+          + fd(L.a/dopA) + '/dia</div>' : '';
+    const media_b = (L.por_dia && dopB && B && L.b !== null && L.b !== undefined)
+        ? '<div class="placar-dia" style="font-size:10.5px;color:var(--ink-3);margin-top:1px">'
+          + fd(L.b/dopB) + '/dia</div>' : '';
+    return '<tr style="border-top:1px solid var(--border)">'
+      + '<td style="padding:9px 10px"><div style="font-weight:700;font-size:13px">' + L.rot + '</div>'
+      +   '<div class="placar-fonte" style="font-size:10.5px;color:var(--ink-3);margin-top:2px">' + L.fonte + '</div></td>'
+      + '<td style="padding:9px 10px;text-align:right;white-space:nowrap"><div class="placar-v" style="font-weight:700;font-size:14px">' + vb + '</div>' + media_b + '</td>'
+      + '<td style="padding:9px 10px;text-align:right;white-space:nowrap"><div class="placar-v" style="font-weight:800;font-size:15px">' + va + '</div>' + media + '</td>'
+      + '<td style="padding:9px 10px;text-align:right;white-space:nowrap">' + chip(d)
+      +   (rotulo_d ? '<div style="font-size:10px;color:var(--ink-3)">' + rotulo_d + '</div>' : '')
+      +   (d_secundario !== null
+            ? '<div class="placar-fonte" style="font-size:10px;color:var(--ink-3);margin-top:3px">'
+              + (d_secundario > 0 ? '+' : '') + d_secundario.toFixed(0) + '% ' + rotulo_s + '</div>'
+            : '')
+      + '</td>'
+      + '</tr>';
+  }).join('');
+
+  // --- linha da meta, que nao e comparavel como as outras ---------------
+  // Num mes pela metade, "40% da meta" nao diz nada sozinho: o que diz e a
+  // meta PONDERADA ate hoje (sabado pesa 37,6% do movimento e terca 6,2%),
+  // que o backend ja calcula em abas.mensal.meta.pct_ate_hoje.
+  const meta_a = A.meta || metaMensal.meta || 0;
+  const meta_b = B ? (B.meta || 0) : 0;
+  const pct_a = meta_a ? (A.caixa/meta_a*100) : null;
+  const pct_b = (B && meta_b) ? (B.caixa/meta_b*100) : null;
+  const pct_ate_hoje = metaMensal.pct_ate_hoje;
+  const projecao = metaMensal.projecao;
+  const proj_pct = metaMensal.projecao_pct;
+  const dias_rest = metaMensal.dias_restantes;
+  const corPct = v => v === null ? 'var(--ink-3)' : (v >= 100 ? '#22c55e' : (v >= 85 ? '#f59e0b' : '#ef4444'));
+
+  const meta_html =
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px">'
+    + '<div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border)">'
+    +   '<div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Meta de ' + nome_ant + '</div>'
+    +   '<div style="font-size:19px;font-weight:800;margin-top:3px">' + (meta_b ? brl0(meta_b) : NV) + '</div>'
+    +   '<div style="font-size:11.5px;margin-top:2px">' + (pct_b === null ? '&nbsp;'
+          : '<span style="color:' + corPct(pct_b) + ';font-weight:700">' + pct_b.toFixed(0) + '% atingida</span> · mês fechado') + '</div>'
+    + '</div>'
+    + '<div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border)">'
+    +   '<div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Meta de ' + nome_atual + '</div>'
+    +   '<div style="font-size:19px;font-weight:800;margin-top:3px">' + (meta_a ? brl0(meta_a) : NV) + '</div>'
+    +   '<div style="font-size:11.5px;margin-top:2px">' + (pct_a === null ? '&nbsp;'
+          : '<span style="color:' + corPct(pct_a) + ';font-weight:700">' + pct_a.toFixed(0) + '% atingida</span>'
+            + (dias_rest !== undefined && dias_rest !== null ? ' · faltam ' + dias_rest + ' dia' + (dias_rest===1?'':'s') : '')) + '</div>'
+    + '</div>'
+    + '<div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border)">'
+    +   '<div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700">No ritmo do mês?</div>'
+    +   '<div style="font-size:19px;font-weight:800;margin-top:3px;color:'
+    +     (pct_ate_hoje === null || pct_ate_hoje === undefined ? 'var(--ink-3)' : corPct(pct_ate_hoje)) + '">'
+    +     (pct_ate_hoje === null || pct_ate_hoje === undefined ? NV : pct_ate_hoje.toFixed(0) + '%') + '</div>'
+    +   '<div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">da meta ponderada até hoje</div>'
+    + '</div>'
+    + '<div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border:1px solid var(--border)">'
+    +   '<div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;font-weight:700">Projeção de fechamento</div>'
+    +   '<div style="font-size:19px;font-weight:800;margin-top:3px">' + (projecao ? brl0(projecao) : NV) + '</div>'
+    +   '<div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">'
+    +     (proj_pct ? proj_pct.toFixed(0) + '% da meta' : '&nbsp;') + '</div>'
+    + '</div>'
+    + '</div>';
+
+  const rotulo_unid = (typeof unidadeInfo === 'function' && typeof UNIDADE_ATIVA !== 'undefined')
+      ? (unidadeInfo(UNIDADE_ATIVA).nome || UNIDADE_ATIVA) : '';
+
+  // A frase do cabecalho muda conforme a comparacao que manda, e diz o
+  // porque. Quando o mes passado foi o mes em que a loja abriu, diz isso com
+  // todas as letras: e a informacao que impede alguem de levar "caiu 38%"
+  // para a reuniao quando o faturamento mais que dobrou.
+  const inaug = (typeof unidadeInfo === 'function' && typeof UNIDADE_ATIVA !== 'undefined')
+      ? (unidadeInfo(UNIDADE_ATIVA).data_inauguracao || null) : null;
+  const abriu_no_mes_ant = !!(inaug && String(inaug).slice(0, 7) === ant_k);
+  const Mai = t => t.charAt(0).toUpperCase() + t.slice(1);
+  const dias_txt = Mai(nome_atual) + ' tem ' + dopA + ' dia' + (dopA === 1 ? '' : 's')
+      + ' de operação até hoje (' + diaN + ' de ' + dias_mes_atual + '); '
+      + nome_ant + ' fechou com ' + dopB + '. ';
+  const explicacao = comparaveis
+    ? dias_txt + 'Como os dois meses têm tamanhos parecidos, a variação compara a '
+      + '<strong>média por dia de operação</strong> — mês pela metade contra mês fechado '
+      + 'inventa queda. O total vem logo abaixo, em cinza.'
+    : dias_txt
+      + (abriu_no_mes_ant
+          ? '<strong>A loja abriu em ' + fmtDate(inaug) + '</strong>, então ' + nome_ant
+            + ' foi só a semana de inauguração — demanda represada, festa de abertura, '
+            + 'conhecido do dono. Dividir aquilo por dia e chamar de ritmo normal faria '
+            + nome_atual + ' parecer uma queda, com o faturamento tendo crescido. '
+          : '<strong>Os dois meses têm tamanhos muito diferentes</strong>, então a média por '
+            + 'dia deixa de ser régua. ')
+      + 'Por isso a variação mostra o <strong>total</strong>, e a média por dia fica abaixo, '
+      + 'em cinza, para quem quiser os dois.';
+
+  // aviso de dupla contagem no Consolidado: um cliente que vai na Escova e no
+  // Spa conta duas vezes na soma das duas unidades. Dizer isso aqui evita que
+  // a agencia receba um numero de clientes maior que o de pessoas.
+  const aviso_consol = (typeof UNIDADE_ATIVA !== 'undefined' && UNIDADE_ATIVA === 'consolidado')
+    ? '<div style="margin-top:10px;padding:9px 12px;background:rgba(245,158,11,.10);border-left:3px solid #f59e0b;border-radius:4px;font-size:11.5px;color:var(--ink-2)">'
+      + '<strong>Vista Consolidado:</strong> clientes e clientes novos são a soma das duas lojas. '
+      + 'Quem se atende na Escova e no Spa conta duas vezes — para contagem de pessoas, leia cada loja separada.</div>'
+    : '';
+
+  // No celular as quatro colunas nao cabem com a linha de procedencia, e o
+  // que ficava fora da tela era justamente a coluna do MES CORRENTE — quem
+  // abria no telefone via o mes passado primeiro. A procedencia sai (ela
+  // continua inteira no rodape "Para conferir no Trinks") e os numeros ficam.
+  // Aviso de divergencia: so aparece quando ha o que avisar.
+  const aviso_receita = (divergeA !== null && Math.abs(divergeA) >= 1)
+    ? '<div style="margin-top:10px;padding:9px 12px;background:rgba(245,158,11,.10);border-left:3px solid #f59e0b;border-radius:4px;font-size:11.5px;color:var(--ink-2)">'
+      + '<strong>Não divida o faturamento pelos atendimentos para achar o ticket médio</strong> — vai dar '
+      + 'outro número. A linha de faturamento mostra o que entrou por forma de pagamento ('
+      + brl0(A.caixa) + '), que é o que o relatório do Trinks chama de faturamento. O ticket médio é '
+      + 'calculado sobre outra base, a soma de serviços, produtos e pacotes (' + brl0(A.total_recebido_trinks)
+      + '), que neste mês difere em ' + brl0(Math.abs(divergeA)) + '.</div>'
+    : '';
+
+  alvo.innerHTML =
+    '<style>@media (max-width:640px){#midias-placar .placar-fonte{display:none}'
+    + '#midias-placar table{min-width:300px!important}'
+    + '#midias-placar th,#midias-placar td{padding:8px 4px!important}'
+    + '#midias-placar .placar-v{font-size:13px!important}'
+    + '#midias-placar .placar-dia{font-size:9.5px!important}'
+    + '#midias-placar .placar-var{font-size:11px!important}}</style>'
+    + '<div style="margin:22px 0 10px 0;padding:14px 18px;background:linear-gradient(90deg,rgba(34,197,94,.12),transparent);border-left:4px solid #22c55e;border-radius:6px">'
+    + '<div style="font-size:10.5px;color:#22c55e;font-weight:800;text-transform:uppercase;letter-spacing:.08em">Placar do negócio · para a reunião com a agência</div>'
+    + '<div style="font-size:18px;font-weight:800;color:var(--ink);margin-top:2px">' + nome_atual.charAt(0).toUpperCase() + nome_atual.slice(1)
+    +   ' contra ' + nome_ant + (rotulo_unid ? ' · ' + rotulo_unid : '') + '</div>'
+    + '<div style="font-size:11.5px;color:var(--ink-3);margin-top:2px">' + explicacao + '</div>'
+    + '</div>'
+    + meta_html
+    + '<section class="card" style="min-width:0;max-width:100%">'
+    + '<div class="card-b" style="min-width:0;max-width:100%">'
+    + '<div style="overflow-x:auto;min-width:0;max-width:100%;-webkit-overflow-scrolling:touch">'
+    + '<table style="width:100%;border-collapse:collapse;min-width:460px">'
+    + '<thead><tr style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em">'
+    +   '<th style="text-align:left;padding:6px 10px;font-weight:700">O quê · e de onde vem</th>'
+    +   '<th style="text-align:right;padding:6px 10px;font-weight:700">' + nome_ant + '<div style="font-weight:500;text-transform:none;letter-spacing:0">fechado</div></th>'
+    +   '<th style="text-align:right;padding:6px 10px;font-weight:700">' + nome_atual + '<div style="font-weight:500;text-transform:none;letter-spacing:0">até dia ' + diaN + '</div></th>'
+    +   '<th style="text-align:right;padding:6px 10px;font-weight:700">Variação</th>'
+    + '</tr></thead><tbody>' + tr + '</tbody></table></div>'
+    + aviso_receita
+    + aviso_consol
+    + '<div style="margin-top:12px;padding:9px 12px;background:var(--surface-2);border-radius:4px;font-size:11px;color:var(--ink-3);line-height:1.5">'
+    +   '<strong style="color:var(--ink-2)">Para conferir no Trinks:</strong> faturamento e ticket médio saem do '
+    +   'relatório de <em>Movimentações Financeiras</em> do mês; atendimentos, do relatório de <em>Agendamentos</em> '
+    +   'com status Finalizado. <strong style="color:var(--ink-2)">Clientes novos</strong> aqui é quem teve o cadastro '
+    +   'criado dentro do mês — se o Trinks contar por primeira visita, os dois números divergem para quem se '
+    +   'cadastrou num mês e só apareceu no seguinte.</div>'
+    + '</div></section>';
+}
+
 function renderMidias(){
   if(!MID) return;
+  // Placar do negocio primeiro: e o que a agencia pergunta antes de tudo.
+  // Protegido porque renderMidias morre inteiro num TypeError (ver nota
+  // abaixo) — e o placar nao pode levar a aba com ele.
+  try { renderMidiasPlacarNegocio(); } catch(e){ console.warn('placar:', e); }
   const gerado = fmtDate(MID.gerado_em) + ' ' + new Date(MID.gerado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   // Vista vem do seletor de unidade do header (Escova / SPA / Consolidado)
   const view = (typeof UNIDADE_ATIVA !== 'undefined') ? UNIDADE_ATIVA : 'escova';
