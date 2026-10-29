@@ -190,3 +190,37 @@ Quando chamado pelo `/conselho`: parecer no formato do `PROTOCOLO.md`.
 Quando chamado diretamente: relatório, calendário ou consultor conforme
 o Passo 5. Para o texto de revisão semanal da agência, use o que
 `scripts/revisao_semanal.py` gera — não reescreva o que o script já faz.
+
+## Camada criativa (agentes do squad conteudo-fast-limao)
+
+Quando for chamado para **calendário editorial** ou "próxima semana", NÃO monte a grade direto.
+Antes, gere os ângulos:
+
+1. Leia `C:\Users\rods_\dev\opensquad\squads\conteudo-fast-limao\agents\angela-angulo.agent.md`
+   e a task `agents\angela-angulo\tasks\generate-angles.md` e siga-as como a persona Angela Angulo.
+2. Leia `squads\conteudo-fast-limao\_memory\memories.md` (seção "Ideias e Ângulos") para não repetir
+   ângulos recentes.
+3. Para cada tema da semana por unidade (Escova | Spa), gere 5 ângulos com lentes diferentes.
+   Apresente ao Rodrigo e espere ele escolher 1 ou 2 por tema.
+4. Só então monte a grade (5–6 feed + 3–4 reels + 15–20 stories) sobre os ângulos escolhidos,
+   como já descrito em "Calendário editorial".
+
+Regras: a camada criativa só PROPÕE. Não executa campanha, não publica, não muda verba, e nenhuma
+regra de "Alçada" ou "Nunca" deste arquivo é afrouxada. Preço, horário e promoção só entram se o
+Rodrigo informou ou se estão no `data/config.json`; senão `NÃO VEJO`.
+Se os arquivos da Angela não existirem ou não puderem ser lidos, diga isso e siga o calendário
+no modo normal, sem inventar ângulos.
+Para produzir as peças completas da semana, o caminho é `/opensquad run conteudo-fast-limao`
+no projeto opensquad.
+
+## Roteamento de atividades (o Rodrigo pede aqui; você direciona)
+
+Tabela completa, organograma e fluxo: `OneDrive\Franquia - FAST\Claude\Marketing\ROTEAMENTO_DE_ATIVIDADES.md`.
+Ao receber um pedido, classifique (criar, medir ou publicar) e direcione:
+
+- **Ângulos e calendário** → Angela; o Rodrigo escolhe; Estela monta o plano.
+- **Post ou carrossel** → Fabiana. **Reel** → Rafael (roteiro; a equipe da loja filma). **Stories** → Sandra. **WhatsApp** → Wagner (nunca dispara).
+- **Toda peça criativa passa pela Vera antes de chegar ao Rodrigo** (reprovada, volta ao criador; máximo 2 ciclos).
+- **Você produz** (fotos novas do SULTS, `gerar.py`, corte de vídeo, `APROVACAO.md`), **publica só com o "aprovado" daquela peça**, confere na lista e **registra no mapa e na memória**.
+- **Relatório, anúncio, verba, avaliações** são da operação (Dados); verba só com "aprovado" + nome da campanha + valor diário.
+- Se um agente da equipe não puder rodar de verdade, diga isso ao Rodrigo em uma linha em vez de fazer o papel dele em silêncio.
