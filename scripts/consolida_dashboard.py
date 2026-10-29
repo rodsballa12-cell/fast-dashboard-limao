@@ -37,6 +37,19 @@ NAO_SOMAR = {
     # So aparecem no consolidado quando as duas unidades tem extrato proprio.
     "taxa_pix_pct", "pix_tarifa_pct", "taxa_antecipacao_mensal_pct",
     "rendimento_estimado_pct",
+    # Audit 29/10/2026: medias/pcts dentro de arrays agregados.
+    # - ranking_prof_executor.taxa_efetiva: % comissao sobre faturamento, somar
+    #   duas unidades daria 2%, nao 1%. Recalculada em recalcular_derivados.
+    # - hora_media.media: media de atendimentos simultaneos por hora. Somar
+    #   das duas lojas daria 3,34 no agregado quando sabado tem 2,76 e 3,90
+    #   em cada; o painel usa isso pra "dias de pico" e mostrava numero
+    #   impossivel. Recalculada em recalcular_derivados.
+    # - ranking_prof.ticket / ranking_serv.ticket: ticket medio por prof/serv.
+    #   Somar daria R$ 300 quando o certo e R$ 150 em cada unidade.
+    #   Recalculada em recalcular_derivados.
+    # - rentabilidade_hora.min_medio: minutos medios por atendimento. Somar
+    #   duas durações nao faz sentido fisico. Peso ponderado em recalc.
+    "taxa_efetiva", "media", "ticket", "min_medio",
 }
 
 # Chaves de identidade — pega da Escova (baseline)
@@ -54,7 +67,21 @@ IDENTIDADE = {
     # NAO_SOMAR. Resultado: dia 02 mostrando valor do dia 01 do consolidado,
     # dia 04 com valor do dia 02 etc. Mesma coisa pra 'h' (hora), 'dow' etc.
     "d", "h", "dow", "nome",
+    # Audit 29/10/2026: campos de identidade dentro de itens de arrays
+    # agregados por chave. Quando o mesmo cliente aparece nas duas lojas,
+    # merge cego somava "dias ate aniversario" (5+5=10). Agora preserva
+    # (aniversario descreve o cliente, nao a loja — mesmo valor nos dois).
+    "dias", "data_aniv", "data_aniversario",
+    # Identificadores de slot/chave em rankings e categorias
+    "k", "meio", "tipo", "prof_id",
+    # Niveis de confianca (string "alta"/"media"/"baixa", mesmo em ambos)
+    "confianca",
 }
+
+# dias_sem_vir e ultima_visita precisam de merge especial: um cliente que
+# aparece nas duas unidades teve ultima visita A ou B — queremos a mais
+# recente (menor dias_sem_vir, maior ultima_visita). Fazemos isso no
+# merge dedicado a 'churn_early.top' em merge_list(), nao globalmente.
 
 # Chaves cujos arrays PRESERVAM ordem por índice (dow, hora, meses)
 ARRAY_POR_INDICE = {"por_dow", "hora_media", "hora_abs", "meses", "por_dia_mes", "dow_hist"}
@@ -77,6 +104,11 @@ ARRAY_POR_CHAVE = {
     # e escondia o restante do caixa.
     "meios_pagamento":      "nome",
     "upsell_pacotes":       None,   # agrupa por nome, sem _unidade
+    # Audit 29/10/2026: rankings de produtos/pacotes que caiam no fallback
+    # concat (a+b), duplicando itens no consolidado.
+    "ranking_produtos":     "nome",
+    "ranking_pacotes":      "nome",
+    "upsell_produtos":      None,   # agrupa por nome, sem _unidade
 }
 
 # Alguns 'top' sao de clientes (cross_sell.top / churn_early.top) e portanto
@@ -96,6 +128,11 @@ SORT_POR_PATH = {
     "cross_sell.top":    lambda z: -(z.get("ltv") or 0),
     "churn_early.top":   lambda z: -(z.get("ltv") or 0),
     "top_ltv.top":       lambda z: -(z.get("v") or 0),
+    # Audit 29/10/2026: rentabilidade_hora quebrada em dois grupos — cadeira
+    # (operacional, top-15 por rs_hora) e addon (upsell, ordenado por v).
+    # Sem SORT, o consolidado misturava os dois tipos e cortava arbitrariamente.
+    "rentabilidade_hora": lambda z: (0 if z.get("tipo") == "cadeira" else 1,
+                                     -(z.get("rs_hora") or z.get("v") or 0)),
 }
 
 # Rankings de profissionais — MESMA lógica de ARRAY_POR_CHAVE (agrega por nome
@@ -336,6 +373,63 @@ def recalcular_derivados(d):
             for c in cnat:
                 if isinstance(c, dict):
                     c["pct_receita"] = round((c.get("v") or 0) / caixa * 100, 1)
+        # Audit 29/10/2026: rankings de prof/serv/produto/pacote herdavam
+        # ticket_medio/ticket/taxa_efetiva da Escova (via NAO_SOMAR), mesmo
+        # quando o ranking agregava Escova+SPA. Agora recalcula sobre v/n
+        # consolidados.
+        for ranking_key in ("ranking_prof", "ranking_prof_executor",
+                            "ranking_serv", "ranking_produtos",
+                            "ranking_pacotes"):
+            lst = aba.get(ranking_key) or []
+            for item in lst:
+                if not isinstance(item, dict): continue
+                v = item.get("v") or 0
+                n = item.get("n") or 0
+                if n > 0:
+                    # ticket_medio e ticket (nome varia por ranking)
+                    if "ticket_medio" in item or ranking_key in ("ranking_prof", "ranking_serv", "ranking_prof_executor"):
+                        item["ticket_medio"] = round(v / n, 2)
+                    if "ticket" in item:
+                        item["ticket"] = round(v / n, 2)
+                # taxa_efetiva = comissao / v no ranking_prof_executor
+                if ranking_key == "ranking_prof_executor" and v > 0:
+                    com = item.get("comissao") or item.get("comissao_v") or 0
+                    if com:
+                        item["taxa_efetiva"] = round(com / v, 4)
+                # pct_faturamento sobre o caixa consolidado
+                if caixa > 0 and "pct_faturamento" in item:
+                    item["pct_faturamento"] = round(v / caixa * 100, 1)
+        # rentabilidade_hora: rs_hora, ticket, min_medio recalc
+        rh = aba.get("rentabilidade_hora") or []
+        for item in rh:
+            if not isinstance(item, dict): continue
+            v = item.get("v") or 0
+            n = item.get("n") or 0
+            min_medio = item.get("min_medio") or 0
+            if n > 0 and min_medio > 0:
+                # rs_hora = v / horas = v / (n * min_medio / 60)
+                horas = n * min_medio / 60
+                if horas > 0:
+                    item["rs_hora"] = round(v / horas, 2)
+            if n > 0:
+                item["ticket"] = round(v / n, 2)
+            if caixa > 0 and "pct_faturamento" in item:
+                item["pct_faturamento"] = round(v / caixa * 100, 1)
+        # Corta rentabilidade_hora pra cadeira:15 + addons (criterio original
+        # de cada unidade). Sem corte, o merge pode devolver mais linhas.
+        if rh:
+            cad = [x for x in rh if x.get("tipo") == "cadeira"][:15]
+            add = [x for x in rh if x.get("tipo") != "cadeira"]
+            aba["rentabilidade_hora"] = cad + add
+        # hora_media.media: media de atendimentos simultaneos por hora.
+        # Somar duas lojas inflava; agora recalcula sobre n_total e dias_op.
+        hm = aba.get("hora_media") or []
+        dias_op = k.get("dias_op") or 1
+        for item in hm:
+            if not isinstance(item, dict): continue
+            n_total = item.get("n_total") or 0
+            if dias_op > 0 and n_total > 0:
+                item["media"] = round(n_total / dias_op, 2)
         # meios_pagamento: pct precisa ser recalculado sobre o total consolidado
         # porque veio da Escova. Ordena por valor descendente.
         meios = aba.get("meios_pagamento") or []
