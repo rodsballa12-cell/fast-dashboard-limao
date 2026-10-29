@@ -11,6 +11,10 @@ este arquivo antes de escrever a primeira linha.
 
 ## Documentos (Word, PDF, apresentação, página)
 
+> **Proposta da nuvem, ainda não oficial.** Quem manda é o kit de `docs/marketing/modelos/` e a
+> `FICHA-DOCUMENTOS.md`, que o Marketing monta no PC (`ORDEM-kit-de-documentos.md`). Quando o kit
+> existir, esta tabela passa a resumir o kit.
+
 | | Documento só da Escova | Documento só do Spa | Documento das duas lojas |
 |---|---|---|---|
 | Cabeçalho | faixa preta `#0E0E0E`, lockup negativo | faixa creme `#F7E6D5`, lockup positivo | os dois lockups lado a lado, faixa preta neutra |
