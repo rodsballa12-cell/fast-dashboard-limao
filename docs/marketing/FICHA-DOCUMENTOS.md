@@ -39,6 +39,10 @@ Word (`kit.js`) fica só para o que precisa ser editado por outra pessoa.
 - **Peles:** `<body class="escova|spa|consolidado">`.
 - **Gerar:** `node docs/marketing/modelos/premium/render.js entrada.html saida.pdf [pasta_previas]`.
   Sempre abra as prévias e confira se nada invade o rodapé antes de entregar.
+- **Variação formal** (`<body class="... formal">`) para proposta de emprego, contrato e carta:
+  capa com faixa mais baixa, título em 24 pt sem destaque colorido, cartões brancos com filete,
+  texto em cláusulas numeradas (`.clausula`), saudação "Prezada", "Atenciosamente" e linhas de
+  assinatura. Rodapé: "Documento confidencial".
 - **Referência viva:** a proposta da gerente (29/10). Ela não está no repositório porque traz salário.
 
 ## Cores (lidas dos arquivos de logo, pixel a pixel)
