@@ -11,9 +11,9 @@ este arquivo antes de escrever a primeira linha.
 
 ## Documentos (Word, PDF, apresentação, página)
 
-> **Proposta da nuvem, ainda não oficial.** Quem manda é o kit de `docs/marketing/modelos/` e a
-> `FICHA-DOCUMENTOS.md`, que o Marketing monta no PC (`ORDEM-kit-de-documentos.md`). Quando o kit
-> existir, esta tabela passa a resumir o kit.
+> **Superada pelo kit (29/10/2026).** Quem manda é `docs/marketing/modelos/kit.js` e a
+> `FICHA-DOCUMENTOS.md`. As cores do kit foram lidas dos arquivos de logo: amarelo `#FBD300` e
+> verde-água `#00A6A4`, e não `#FFD50C` e `#3FB1AF` como está abaixo. A tabela fica só como histórico.
 
 | | Documento só da Escova | Documento só do Spa | Documento das duas lojas |
 |---|---|---|---|

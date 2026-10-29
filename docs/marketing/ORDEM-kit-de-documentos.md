@@ -1,5 +1,10 @@
 # Ordem de serviço · Marketing · Kit de documentos da rede
 
+> **Atualização 29/10, tarde:** a versão 1 do kit já existe, montada na nuvem com os logos
+> oficiais achados no ramo das artes de abertura (`modelos/kit.js`, `marca/`, `FICHA-DOCUMENTOS.md`).
+> O que resta para o PC: **conferir e corrigir** com o vault e o OneDrive (pendências no fim da
+> ficha), e não montar do zero.
+
 **Pedido do Rodrigo, 29/10/2026.** Prioridade alta. **Só a sessão do PC executa**, porque logos,
 peças e vault não existem na nuvem.
 

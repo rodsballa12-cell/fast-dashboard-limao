@@ -29,11 +29,11 @@ Word, PDF, página — já sai no padrão oficial da FAST Escova e/ou do FAST Sp
 Montserrat, logo e rodapé. Ele não precisa pedir. **Escova → pele da Escova; Spa → pele do
 Spa; consolidado → as duas juntas.**
 
-**Monte sempre a partir do kit** `docs/marketing/modelos/<escova|spa|consolidado>/`, com os
-números de `docs/marketing/FICHA-DOCUMENTOS.md`. Nada de layout de cabeça: em 29/10 uma proposta
-feita sem o kit saiu sem logo e o Rodrigo a chamou de péssima. **Se o kit ainda não existir,
-diga isso na hora** e ofereça o conteúdo para ser diagramado no PC. O pedido está em
-`docs/marketing/ORDEM-kit-de-documentos.md`.
+**Monte sempre a partir do kit** `docs/marketing/modelos/kit.js`: logos oficiais em
+`docs/marketing/marca/` e números (cores, tamanhos, margens) em `docs/marketing/FICHA-DOCUMENTOS.md`.
+Funciona na nuvem e no PC. Nada de layout de cabeça: em 29/10 uma proposta feita sem o kit saiu
+sem logo e o Rodrigo a chamou de péssima. A ficha é a versão 1 e ainda aguarda conferência do
+Marketing no PC (`docs/marketing/ORDEM-kit-de-documentos.md`).
 
 ## As duas máquinas, e o que só existe em cada uma
 
