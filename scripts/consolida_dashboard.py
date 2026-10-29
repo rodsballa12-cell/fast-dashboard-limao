@@ -183,6 +183,29 @@ def merge_list(a, b, path=""):
             v["_unidade"] = ("ambas" if v["n_escova"] > 0 and v["n_spa"] > 0
                              else ("escova" if v["n_escova"] > 0 else "spa"))
         return sorted(idx.values(), key=lambda z: -(z.get("receita") or 0))
+    # por_dia_mes: mesclar por 'd' (dia do mes), nao por indice. Cada unidade
+    # emite apenas os dias que TIVERAM transacao (github_refresh.py:954), entao
+    # os dois arrays podem ter tamanhos diferentes se uma loja fechou um dia que
+    # a outra operou. Antes caia no fallback `a + b` (concat), e o heatmap do
+    # Calendario de Metas sobrescrevia Escova pelo SPA — ficava mostrando so o
+    # SPA no consolidado. 29/10/2026. Fix: merge por 'd' somando n e v.
+    if key == "por_dia_mes":
+        idx = {}
+        for x in (a or []) + (b or []):
+            if not isinstance(x, dict): continue
+            d_key = x.get("d")
+            if d_key is None: continue
+            if d_key not in idx:
+                idx[d_key] = {"d": d_key, "n": 0, "v": 0.0}
+                # preserva outros campos de identidade (dow, nome, etc.)
+                for k2 in x:
+                    if k2 not in ("d", "n", "v"):
+                        idx[d_key][k2] = x[k2]
+            idx[d_key]["n"] += int(x.get("n") or 0)
+            idx[d_key]["v"] += float(x.get("v") or 0)
+        for v in idx.values():
+            v["v"] = round(v["v"], 2)
+        return sorted(idx.values(), key=lambda z: z["d"])
     # Arrays por índice (dow, hora, etc.) — soma item-a-item se mesmo tamanho
     if key in ARRAY_POR_INDICE and len(a) == len(b):
         return [merge(x, y, path) for x, y in zip(a, b)]
