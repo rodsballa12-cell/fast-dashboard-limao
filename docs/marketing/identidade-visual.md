@@ -4,6 +4,31 @@
 Nunca inventar cor, nunca pedir ao Canva para desenhar logo. A primeira versão deste
 arquivo (marrom e verde-seda) estava **errada** e foi descartada.
 
+**AMPLIADA (Rodrigo, 29/10/2026): vale para QUALQUER material que ele pedir**, não só
+mídia — proposta, contrato, relatório, apresentação, planilha, PDF, Word, página. Todo
+documento já nasce no layout padrão da rede, sem ele precisar pedir. Quem produz consulta
+este arquivo antes de escrever a primeira linha.
+
+## Documentos (Word, PDF, apresentação, página)
+
+| | Documento só da Escova | Documento só do Spa | Documento das duas lojas |
+|---|---|---|---|
+| Cabeçalho | faixa preta `#0E0E0E`, lockup negativo | faixa creme `#F7E6D5`, lockup positivo | os dois lockups lado a lado, faixa preta neutra |
+| Títulos | Montserrat ExtraBold, caixa alta, linha `#FFD50C` | Montserrat Bold `#0E5A5F`, linha `#3FB1AF` | Montserrat ExtraBold preto |
+| Corpo | Montserrat Regular, preto | Montserrat Regular, petróleo `#0E5A5F` | Montserrat Regular, preto |
+| Tabelas | cabeçalho preto, destaque amarelo `#FFD50C` | cabeçalho petróleo, destaque verde-água claro | **cada bloco de loja na cor da sua loja**; o que é das duas fica preto e branco |
+| Rodapé | SEM HORA MARCADA + endereço | SEM HORA MARCADA + telefone | SEM HORA MARCADA + as duas marcas |
+
+- **Logo:** sempre o arquivo real do `Marca\` (PC). Sessão sem acesso ao PC deixa o espaço do
+  logo marcado e **avisa**; nunca desenha nem digita um logo de imitação.
+- **Fonte:** Montserrat (Google Fonts, gratuita). Em Word, avisar que quem recebe precisa
+  dela instalada ou o arquivo cai em Calibri; quando a aparência importa, entregar também PDF.
+- **Documento das duas lojas:** a regra "nunca misturar" é por **bloco**. A fonte da verdade do
+  combo é o vault `15_Sistema_Combo_Duas_Marcas.md` (PC); a tabela acima é o padrão até
+  a sessão do PC conferir e corrigir.
+- **Cores do painel não são cores da marca.** O dashboard usa `#F5B800` e `#24B3A6`; documento
+  usa as oficiais acima.
+
 ## Fonte da verdade (só no PC)
 
 - Logos: `OneDrive\Franquia - FAST\Claude\Marketing\Marca\` (Escova e Spa, PNG e símbolo da folha em SVG).

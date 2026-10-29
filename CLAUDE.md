@@ -22,6 +22,14 @@ e **FAST Spa Limão** (aberta em 24/09/2026). Ele **não é programador**. Fale 
 reais, clientes e dias; nunca em nome de função ou nome de arquivo sem dizer o
 que a coisa faz.
 
+## 🎨 Todo material no layout da rede (regra-mãe, 29/10/2026)
+
+**Qualquer documento que o Rodrigo pedir** — proposta, contrato, relatório, apresentação,
+Word, PDF, página — já sai no padrão oficial da FAST Escova e/ou do FAST Spa: cores, fonte
+Montserrat, logo e rodapé. Ele não precisa pedir. **Antes de escrever a primeira linha, leia
+`docs/marketing/identidade-visual.md`.** Logo só o arquivo real (fica no PC); sem ele, deixe
+o espaço marcado e avise — nunca imite.
+
 ## As duas máquinas, e o que só existe em cada uma
 
 | | onde roda | alcança |
