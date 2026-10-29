@@ -1,0 +1,76 @@
+name: Probe Trinks · endpoints de relatorios
+
+# Rodrigo quer que o painel puxe os numeros do RELATORIO Movimentacoes
+# Financeiras direto da API do Trinks, nao reconstrua a mao somando
+# transacoes. Este workflow sonda endpoints candidatos pra descobrir
+# qual (se algum) existe e devolve o resumo mensal pronto.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install requests
+      - name: Sondar endpoints
+        env:
+          TRINKS_API_KEY_ESCOVA: ${{ secrets.TRINKS_API_KEY_ESCOVA }}
+          TRINKS_ESTABELECIMENTO_ID_ESCOVA: ${{ secrets.TRINKS_ESTABELECIMENTO_ID_ESCOVA }}
+          TRINKS_API_KEY_SPA: ${{ secrets.TRINKS_API_KEY_SPA }}
+          TRINKS_ESTABELECIMENTO_ID_SPA: ${{ secrets.TRINKS_ESTABELECIMENTO_ID_SPA }}
+        run: |
+          python3 <<'PY'
+          import os, requests, json
+
+          BASE = "https://api.trinks.com"
+          UNITS = {
+              "ESCOVA": (os.environ["TRINKS_API_KEY_ESCOVA"],
+                         os.environ["TRINKS_ESTABELECIMENTO_ID_ESCOVA"]),
+              "SPA":    (os.environ["TRINKS_API_KEY_SPA"],
+                         os.environ["TRINKS_ESTABELECIMENTO_ID_SPA"]),
+          }
+
+          CANDIDATOS = [
+              "/v1/relatorios/movimentacoes-financeiras",
+              "/v1/relatorios/movimentacoes",
+              "/v1/relatorios/financeiro",
+              "/v1/relatorios/resumo-financeiro",
+              "/v1/relatorios/vendas",
+              "/v1/relatorios/caixa",
+              "/v1/relatorios",
+              "/v1/financeiro/movimentacoes",
+              "/v1/financeiro/resumo",
+              "/v1/financeiro/mensal",
+              "/v1/caixa/resumo",
+              "/v1/caixa/movimentacoes",
+              "/v1/movimentacoes-financeiras",
+              "/v1/movimentacoes",
+              "/v1/dashboards/financeiro",
+          ]
+          PARAMS = {"dataInicio": "2026-10-01", "dataFim": "2026-10-29"}
+
+          for unit, (key, eid) in UNITS.items():
+              print(f"\n{'='*70}\n{unit} · estab {eid}\n{'='*70}")
+              headers = {"apiKey": key, "estabelecimentoId": eid}
+              for path in CANDIDATOS:
+                  try:
+                      r = requests.get(BASE + path, headers=headers,
+                                       params=PARAMS, timeout=10)
+                      status = r.status_code
+                      body_preview = r.text[:200].replace("\n", " ")
+                      marcador = " <-- OK?" if status == 200 else ""
+                      print(f"  [{status}] {path}{marcador}")
+                      if status == 200:
+                          print(f"    body: {body_preview}")
+                  except Exception as e:
+                      print(f"  [ERR] {path}: {e}")
+          PY
