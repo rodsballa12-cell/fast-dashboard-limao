@@ -631,12 +631,19 @@ def conferir_saude_automacoes(achados):
     """
     import subprocess
     try:
-        r = subprocess.run([sys.executable, str(REPO / "scripts" / "saude.py"), "conferir"],
-                           capture_output=True, text=True, timeout=60)
-        if r.returncode == 1:
-            for linha in r.stdout.splitlines():
-                if linha.strip().startswith(("🛑", "⚠️")):
-                    achados.append(("aviso", f"Saude: {linha.strip()[2:].strip()}"))
+        r = subprocess.run([sys.executable, "-X", "utf8", str(REPO / "scripts" / "saude.py"), "conferir"],
+                           capture_output=True, text=True, encoding="utf-8",
+                           errors="replace", timeout=60)
+        linhas = [l for l in (r.stdout or "").splitlines()
+                  if l.strip().startswith(("🛑", "⚠️"))]
+        if r.returncode == 1 and not linhas:
+            # saiu com erro mas nao disse qual automacao: o check quebrou, nao passou.
+            achados.append(("aviso",
+                "Saude: scripts/saude.py falhou sem dizer o que esta vermelho "
+                f"({(r.stderr or '').strip().splitlines()[-1:] or ['sem stderr']}). "
+                "Sem isso nenhuma automacao esta sendo vigiada."))
+        for linha in linhas:
+            achados.append(("aviso", f"Saude: {linha.strip()[2:].strip()}"))
     except Exception as exc:
         achados.append(("aviso", f"Saude: nao consegui rodar scripts/saude.py ({type(exc).__name__})."))
 
@@ -686,8 +693,25 @@ def conferir_atas_vazias(achados):
         # Erro de credencial, ou ata que nao tem corpo nenhum depois do cabecalho.
         corpo = re.sub(r"^---.*?---", "", t, flags=re.S).strip()
         corpo = re.sub(r"^#.*$|^↑.*$", "", corpo, flags=re.M).strip()
-        if re.search(r"credit balance|too low|quota|rate limit", t, re.I) or len(corpo) < 120:
+        # Erro de credencial so vale quando E o parecer (corpo curto). Um conselho
+        # de 8 KB que cita "Credit balance is too low" esta relatando o problema.
+        erro = re.search(r"credit balance|too low|quota|rate limit", corpo, re.I)
+        if (erro and len(corpo) < 400) or len(corpo) < 120:
             vazias.append(f.name[:-3])
+    # Ata que nao existe nao aparece em glob nenhum. Se o cargo gravou ontem e o
+    # horario de hoje ja passou, a falta e o sinal (Operacao diaria, 23/10).
+    from datetime import datetime
+    agora = datetime.now()
+    hoje_s, ontem_s = date.today().isoformat(), (date.today() - timedelta(days=1)).isoformat()
+    for f in sorted(pasta.glob(f"{ontem_s}-*.md")):
+        cargo = f.name[11:-3]
+        if (pasta / f"{hoje_s}-{cargo}.md").exists():
+            continue
+        m = re.search(r"^hora:\s*(\d{1,2}):(\d{2})", f.read_text(encoding="utf-8", errors="replace"), re.M)
+        if m and agora.hour * 60 + agora.minute > int(m[1]) * 60 + int(m[2]) + 90:
+            achados.append(("aviso",
+                f"Ata de {cargo} de hoje nao existe (ontem saiu as {m[1]}:{m[2]}). "
+                f"A tarefa agendada nao rodou ou nao commitou."))
     if vazias:
         achados.append(("erro",
             f"{len(vazias)} ata(s) dos ultimos 2 dias sem parecer de verdade "
@@ -792,9 +816,9 @@ def conferir_preco_realizado(achados):
         n_cad = pr.get("n_cadastro_desatualizado") or 0
         if n_cad:
             achados.append(("aviso",
-                f"{nome}: {n_cad} servico(s) cobrados ACIMA do preco cadastrado no "
-                f"Trinks — o cadastro esta velho. Enquanto nao atualizar, o card "
-                f"mostra desconto que nao existe."))
+                f"{nome}: {n_cad} servico(s) cobrados ACIMA do preco do catalogo do "
+                f"Trinks. Ou o preco subiu e ninguem registrou, ou esta sendo "
+                f"lancado no servico errado — confira em `preco_realizado.acoes`."))
 
 
 def conferir_taxa_comissao(achados):
