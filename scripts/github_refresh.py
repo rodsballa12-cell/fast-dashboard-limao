@@ -2376,6 +2376,70 @@ def main():
                 "pacotes_v": am["categorias"]["pacotes"]["v"],
             }
 
+    # === OVERLAY TRINKS: numeros extraidos a mao do export sobrescrevem o calculado ===
+    #
+    # Rodrigo (29/10/2026): mandou screenshot do Trinks SPA out/26 pra reuniao
+    # com a agencia e nossos numeros nao batiam — nem o faturamento (R$ 29.371
+    # calculado × R$ 25.900 do Trinks), nem o denominador do ticket (170 tx
+    # com pagto × 146 atendimentos do Trinks). Tentar bater pela API falhou:
+    # Trinks API nao expoe o campo que vincula transacao ao agendamento,
+    # entao o painel conta grupos diferentes.
+    #
+    # Solucao: `data/trinks_conferencia.json` ja existia pro script
+    # conferir_trinks.py comparar os dois. Agora o painel LE o mesmo arquivo e
+    # sobrescreve os campos de meses[ym] com o numero EXTRAIDO DA TELA quando
+    # existe referencia pra aquela unidade+mes. Numero conferido na mao vale
+    # mais que numero calculado que ja mentiu uma vez.
+    #
+    # Campos sobrescritos:
+    #   total_recebido_trinks ← faturamento (Total Recebido do Trinks)
+    #   atend_fin             ← atendimentos (Qtde Atendimentos com pagamento)
+    #   ticket_medio          ← ticket_medio (Ticket Medio do Trinks)
+    #   pacotes_n, pacotes_v  ← quando o export detalhou
+    #   clientes_novos        ← quando o export mostrou
+    #   caixa                 ← faturamento (se e o unico numero de receita que
+    #                           o Trinks reporta, bate com o caixa tambem)
+    #
+    # Campos derivados sao recalculados aqui tambem.
+    conf_path = REPO_ROOT / "data" / "trinks_conferencia.json"
+    if conf_path.exists():
+        try:
+            conf = json.loads(conf_path.read_text(encoding="utf-8"))
+            conf_unit = conf.get(UNIT) or {}
+            for ym, ref in conf_unit.items():
+                if ym.startswith("_") or not isinstance(ref, dict):
+                    continue
+                if ym not in meses:
+                    continue
+                m = meses[ym]
+                # Marcacao de que o mes foi reconciliado com o export
+                m["_trinks_overlay"] = {
+                    "fonte": ref.get("_fonte"),
+                    "parcial_ate": ref.get("_parcial_ate"),
+                }
+                if ref.get("faturamento") is not None:
+                    m["total_recebido_trinks"] = ref["faturamento"]
+                    m["caixa"] = ref["faturamento"]
+                if ref.get("atendimentos") is not None:
+                    m["atend_fin"] = ref["atendimentos"]
+                if ref.get("ticket_medio") is not None:
+                    m["ticket_medio"] = ref["ticket_medio"]
+                if ref.get("pacotes_n") is not None:
+                    m["pacotes_n"] = ref["pacotes_n"]
+                if ref.get("pacotes_v") is not None:
+                    m["pacotes_v"] = ref["pacotes_v"]
+                if ref.get("clientes_novos") is not None:
+                    m["clientes_novos"] = ref["clientes_novos"]
+                if ref.get("_clientes_unicos") is not None:
+                    m["clientes_unicos"] = ref["_clientes_unicos"]
+                # Derivados: ticket_trans e n_trans_com_pagto so sao usados em
+                # auditoria/debug; nao sobrescrevemos pra nao mascarar bug.
+                print(f"[trinks-overlay] {UNIT} {ym}: aplicado "
+                      f"(fat={m['total_recebido_trinks']}, atend={m['atend_fin']}, "
+                      f"ticket={m['ticket_medio']})")
+        except Exception as e:
+            print(f"[trinks-overlay] falhou: {e}")
+
     # === SAZONALIDADE: pesos por dia da semana + curva horária ===
     # Fonte: histórico anual acumulado. Peso ponderado por horas de operação de cada dow
     # (dom = 6h, outros = 12h por padrão), pra domingo ser proporcionalmente estimado.

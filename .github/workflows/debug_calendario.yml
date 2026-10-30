@@ -1,0 +1,73 @@
+name: Debug calendario de metas
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Abrir cofre
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python scripts/cofre.py abrir
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Calendario de metas dia a dia (outubro)
+        run: |
+          python3 <<'PY'
+          import json, os
+          from datetime import date
+
+          def _dow(iso):
+              y,m,d = map(int, iso.split("-"))
+              return ["Seg","Ter","Qua","Qui","Sex","Sab","Dom"][date(y,m,d).weekday()]
+          def _sm(iso):
+              d = int(iso.split("-")[2])
+              return (d-1)//7 + 1
+
+          mes = "2026-10"
+          dados = {}
+          for label, path in [
+              ("ESCOVA", "data/dashboard_data.json"),
+              ("SPA", "data/spa/dashboard_data.json"),
+              ("CONSOLIDADO", "data/consolidado/dashboard_data.json"),
+          ]:
+              if not os.path.exists(path): continue
+              d = json.load(open(path, encoding="utf-8"))
+              mpd = (d.get("sazonalidade") or {}).get("meta_por_data") or {}
+              pdm = (d.get("abas") or {}).get("mensal", {}).get("por_dia_mes") or []
+              real_por_d = {}
+              for x in pdm:
+                  if "d" in x:  # dia do mes
+                      real_por_d[x["d"]] = x.get("v", 0)
+              dados[label] = (mpd, real_por_d)
+
+          # cabeçalho
+          print(f"{'DATA':<12}{'DOW':<5}{'SM':<4} | {'META ESC':>10} {'REAL ESC':>10} | {'META SPA':>10} {'REAL SPA':>10} | {'META CONS':>11} {'REAL CONS':>10} | {'SOMA META':>11} {'CHECK':>8}")
+          print("-" * 130)
+          soma = {"meta_esc":0,"meta_spa":0,"meta_cons":0,"real_esc":0,"real_spa":0,"real_cons":0}
+          for d in range(1, 32):
+              iso = f"{mes}-{d:02d}"
+              me = dados.get("ESCOVA", ({}, {}))[0].get(iso, 0)
+              ms = dados.get("SPA", ({}, {}))[0].get(iso, 0)
+              mc = dados.get("CONSOLIDADO", ({}, {}))[0].get(iso, 0)
+              re_ = dados.get("ESCOVA", ({}, {}))[1].get(d, 0)
+              rs = dados.get("SPA", ({}, {}))[1].get(d, 0)
+              rc = dados.get("CONSOLIDADO", ({}, {}))[1].get(d, 0)
+              soma_m = me + ms
+              check = "OK" if abs(soma_m - mc) < 0.1 else f"✗ dif {mc - soma_m:+.0f}"
+              soma["meta_esc"] += me; soma["meta_spa"] += ms; soma["meta_cons"] += mc
+              soma["real_esc"] += re_; soma["real_spa"] += rs; soma["real_cons"] += rc
+              print(f"{iso:<12}{_dow(iso):<5}{_sm(iso):<4} | {me:>10.2f} {re_:>10.2f} | {ms:>10.2f} {rs:>10.2f} | {mc:>11.2f} {rc:>10.2f} | {soma_m:>11.2f} {check:>8}")
+          print("-" * 130)
+          print(f"{'TOTAIS':<21} | {soma['meta_esc']:>10.2f} {soma['real_esc']:>10.2f} | {soma['meta_spa']:>10.2f} {soma['real_spa']:>10.2f} | {soma['meta_cons']:>11.2f} {soma['real_cons']:>10.2f} | {soma['meta_esc']+soma['meta_spa']:>11.2f}")
+          PY

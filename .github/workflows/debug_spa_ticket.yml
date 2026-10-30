@@ -1,0 +1,173 @@
+name: Debug SPA ticket vs Trinks
+
+# Rodrigo mandou screenshot do Trinks SPA out/26 (ate 29/10):
+#   Total Recebido 25.900,02 · 146 Qtde Atendimentos com pagamento · Ticket 177,40
+# Painel SPA out/26 mostra:
+#   Total Recebido 30.104,38 · 177 trans · Ticket 170,08
+# Delta: +4.204 R$ no numerador, +31 tx no denominador.
+#
+# Este workflow re-roda a logica do github_refresh.py em cima das transacoes
+# SPA out/26 e imprime BREAKDOWN por tipo de tx, pra identificar qual
+# categoria o painel conta a mais que o Trinks.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar deps
+        run: pip install cryptography requests
+
+      - name: Abrir cofre
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python scripts/cofre.py abrir
+
+      - name: Analisar transacoes SPA out/26
+        env:
+          TRINKS_SPA_CLIENTID: ${{ secrets.TRINKS_SPA_CLIENTID }}
+          TRINKS_SPA_CLIENTSECRET: ${{ secrets.TRINKS_SPA_CLIENTSECRET }}
+          TRINKS_SPA_ESTABELECIMENTOID: ${{ secrets.TRINKS_SPA_ESTABELECIMENTOID }}
+        run: |
+          python3 <<'PY'
+          import json, os
+          from datetime import date, datetime
+          from collections import defaultdict
+
+          # Carrega as transacoes SPA do cache descriptografado
+          path = "data/spa/transacoes_ano_cache.json"
+          if not os.path.exists(path):
+              print(f"ARQUIVO NAO ENCONTRADO: {path}")
+              import sys; sys.exit(1)
+
+          cache = json.load(open(path, encoding="utf-8"))
+          # Formato: {ano: {transacoes: [...]}}  ou  {transacoes: [...]}
+          tr = cache.get("transacoes") or cache.get("items") or []
+          if not tr and isinstance(cache, dict):
+              # tenta pegar o primeiro ano
+              for k, v in cache.items():
+                  if isinstance(v, dict) and "transacoes" in v:
+                      tr = v["transacoes"]; break
+                  if isinstance(v, list):
+                      tr = v; break
+          print(f"Transacoes totais no cache: {len(tr)}")
+
+          def parse_dt(s):
+              # 2026-10-29T14:00:00 or similar
+              return datetime.fromisoformat(s.replace("Z","+00:00"))
+
+          ini = date(2026, 10, 1)
+          fim = date(2026, 10, 29)
+          tr_out = [t for t in tr if t.get("dataHora") and ini <= parse_dt(t["dataHora"]).date() <= fim]
+          print(f"Transacoes SPA out/26 (01-29): {len(tr_out)}")
+
+          INTERNAS_KW = ("crédito de cliente", "credito de cliente", "pré-pago",
+                         "pre-pago", "voucher", "vale-presente", "vale presente",
+                         "clube")
+
+          def total_recebido(t):
+              serv = sum(float(s.get("preco") or 0) for s in (t.get("servicos") or []))
+              prod = sum(float(p.get("valorUnitario") or 0) * int(p.get("quantidade") or 1)
+                         for p in (t.get("produtos") or []))
+              pac = sum(float(p.get("valorUnitario") or 0) * int(p.get("quantidade") or 1)
+                        for p in (t.get("pacotes") or []))
+              desc = float(t.get("descontos") or 0)
+              saldo = 0.0
+              for fp in (t.get("formasPagamentos") or []):
+                  nome = (fp.get("descricao") or fp.get("nome") or "").lower().strip()
+                  if any(kw in nome for kw in INTERNAS_KW):
+                      saldo += float(fp.get("valor") or 0)
+              return serv + prod + pac + saldo - desc
+
+          def tem_pagto_nao_zero(t):
+              return any(float(fp.get("valor") or 0) != 0
+                         for fp in (t.get("formasPagamentos") or []))
+
+          def tem_pagto_positivo(t):
+              return any(float(fp.get("valor") or 0) > 0
+                         for fp in (t.get("formasPagamentos") or []))
+
+          # Categorizar
+          cats = defaultdict(lambda: {"n": 0, "total": 0.0, "exemplos": []})
+          for t in tr_out:
+              tot = total_recebido(t)
+              formas = [(fp.get("descricao") or fp.get("nome") or "?", float(fp.get("valor") or 0))
+                        for fp in (t.get("formasPagamentos") or [])]
+              # chaves
+              tem_qq = tem_pagto_nao_zero(t)
+              tem_pos = tem_pagto_positivo(t)
+              so_negativo = tem_qq and not tem_pos
+              nenhuma_forma = len(formas) == 0
+
+              if nenhuma_forma:
+                  cat = "SEM_FORMAS (puro consumo pacote?)"
+              elif so_negativo:
+                  cat = "SO_NEGATIVO (so consumo de saldo)"
+              elif tot > 0:
+                  cat = "PAGTO_POSITIVO (tx normal)"
+              elif tot == 0:
+                  cat = "PAGTO_ZERO (100% com saldo credito)"
+              elif tot < 0:
+                  cat = "PAGTO_NEG_COM_FORMA_POSITIVA (raro)"
+              else:
+                  cat = "OUTRO"
+
+              cats[cat]["n"] += 1
+              cats[cat]["total"] += tot
+              if len(cats[cat]["exemplos"]) < 3:
+                  cats[cat]["exemplos"].append({
+                      "data": t.get("dataHora", "")[:16],
+                      "total_calc": round(tot, 2),
+                      "formas": formas,
+                      "serv_n": len(t.get("servicos") or []),
+                      "pac_n": len(t.get("pacotes") or []),
+                  })
+
+          print("\n" + "=" * 80)
+          print("BREAKDOWN POR CATEGORIA")
+          print("=" * 80)
+          for cat, info in sorted(cats.items(), key=lambda x: -x[1]["n"]):
+              print(f"\n{cat}: n={info['n']} · total_calc=R$ {info['total']:,.2f}")
+              for ex in info["exemplos"]:
+                  print(f"  {ex}")
+
+          # Filtros possiveis
+          print("\n" + "=" * 80)
+          print("FILTROS POSSIVEIS")
+          print("=" * 80)
+
+          filtros = [
+              ("ATUAL _tem_pagto (any valor != 0)", lambda t: tem_pagto_nao_zero(t)),
+              ("tem forma POSITIVA (any valor > 0)", lambda t: tem_pagto_positivo(t)),
+              ("total_recebido > 0", lambda t: total_recebido(t) > 0),
+              ("total_recebido >= 0", lambda t: total_recebido(t) >= 0),
+              ("tem_pagto AND total >= 0", lambda t: tem_pagto_nao_zero(t) and total_recebido(t) >= 0),
+          ]
+          print(f"\n{'FILTRO':<50} {'n':>5} {'total':>12} {'ticket':>8}")
+          print("-" * 80)
+          print(f"{'Trinks (ground truth)':<50} {146:>5} {25900.02:>12,.2f} {177.40:>8.2f}")
+          for nome, f in filtros:
+              txs = [t for t in tr_out if f(t)]
+              # Numerador: SEMPRE sum de total_recebido de todas tx (igual Trinks)
+              num_all = sum(total_recebido(t) for t in tr_out)
+              num_filtrado = sum(total_recebido(t) for t in txs)
+              n = len(txs)
+              tk = (num_filtrado / n) if n else 0
+              tk_all = (num_all / n) if n else 0
+              print(f"{nome:<50} {n:>5} {num_filtrado:>12,.2f} {tk:>8.2f}  (num_all={num_all:,.2f}, tk_all={tk_all:.2f})")
+          PY

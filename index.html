@@ -1952,9 +1952,13 @@ function renderTopClientes(container_id, titulo, subtitle, clientes, insight){
   const tituloFinal = clientes.length > EXP_VISIBLE
     ? `⭐ Base fiel · top ${EXP_VISIBLE} por LTV <span class="hi">(de ${clientes.length})</span>`
     : `⭐ Base fiel · top ${clientes.length} clientes por LTV`;
+  const _csvId = 'btn-csv-'+container_id;
   document.getElementById(container_id).innerHTML=`
     <div class="card">
-      <h2>${tituloFinal}</h2>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+        <h2 style="margin:0">${tituloFinal}</h2>
+        <button id="${_csvId}" class="btn-refresh" title="Baixa a lista COMPLETA (${clientes.length} clientes), nao so os ${EXP_VISIBLE} visiveis">⬇ Excel</button>
+      </div>
       <div class="cap">${subtitle} · Perder um destes machuca o LTV. Aniversário e WhatsApp direto pra facilitar contato pessoal.</div>
       <table class="simple">
         <thead><tr><th style="width:30px">#</th><th>Cliente</th><th style="text-align:right">Visitas</th><th style="text-align:right">LTV</th><th>Aniversário</th><th>WhatsApp</th></tr></thead>
@@ -1963,6 +1967,13 @@ function renderTopClientes(container_id, titulo, subtitle, clientes, insight){
       ${exp.footer}
       ${insight?'<div class="insight">'+insight+'</div>':''}
     </div>`;
+  document.getElementById(_csvId)?.addEventListener('click', () => {
+    csvExport('top-clientes-ltv.csv',
+      ['#','Cliente','Visitas','LTV','Aniversario','Telefone','Unidade'],
+      clientes.map((c,i) => [i+1, c.nome, c.n, c.v||0,
+        c.data_aniversario_txt || c.data_aniversario || '',
+        c.telefone || '', c._unidade || '']));
+  });
 }
 
 function renderCategTile(container_id, titulo, subtitle, categorias){
@@ -3656,8 +3667,12 @@ function renderSegmentacao(container_id, titulo, subtitulo, seg, sem_dado_label)
          <span style="color:var(--ink-3)">· largura da barra = % da receita total · divisão interna = origem por unidade</span>
        </div>`
     : '';
+  const _csvId = 'btn-csv-'+container_id;
   el.innerHTML = `<div class="card">
-    <h2>${titulo}</h2>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h2 style="margin:0">${titulo}</h2>
+      <button id="${_csvId}" class="btn-refresh" title="Baixa a lista COMPLETA (${seg.top.length}), nao so as 10 visiveis">⬇ Excel</button>
+    </div>
     <div class="cap">${subtitulo} · Cobertura: ${seg.cobertura_pct}% da base ativa · ${seg.sem_dado.n} clientes sem ${sem_dado_label} (R$ ${seg.sem_dado.receita.toFixed(0)} de receita)</div>
     ${legenda}
     <div style="display:grid;grid-template-columns:150px 1fr 90px 60px 90px;gap:10px;padding-bottom:8px;border-bottom:2px solid var(--surface-2);font-size:12px;color:var(--muted);">
@@ -3665,6 +3680,13 @@ function renderSegmentacao(container_id, titulo, subtitulo, seg, sem_dado_label)
     </div>
     ${barras}
   </div>`;
+  document.getElementById(_csvId)?.addEventListener('click', () => {
+    const nomeArq = ('segmentacao-' + (titulo || sem_dado_label || 'clientes')).toLowerCase().replace(/[^\w]+/g,'-') + '.csv';
+    csvExport(nomeArq,
+      ['Categoria','Receita','% receita','N clientes','Ticket medio por cliente','Receita Escova','Receita SPA'],
+      seg.top.map(t => [t.nome, t.receita, t.pct_receita, t.n_clientes,
+        t.ticket_medio_cliente, t.receita_escova||'', t.receita_spa||'']));
+  });
 }
 
 // Unifica alertas do cadastro (permanentes) com observações por atendimento (histórico)
@@ -3732,8 +3754,12 @@ function renderAniversariantes(container_id, lista){
   </tr>`);
   const exp = _expandableRows(rowArr);
   const headN = lista.length > EXP_VISIBLE ? `top ${EXP_VISIBLE} de ${lista.length}` : `${lista.length} nos próximos 14 dias`;
+  const _csvId = 'btn-csv-'+container_id;
   el.innerHTML = `<div class="card">
-    <h2>🎂 Aniversariantes próximos <span class="hi">(${headN})</span></h2>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h2 style="margin:0">🎂 Aniversariantes próximos <span class="hi">(${headN})</span></h2>
+      <button id="${_csvId}" class="btn-refresh" title="Baixa a lista COMPLETA (${lista.length}), nao so os ${EXP_VISIBLE} visiveis">⬇ Excel</button>
+    </div>
     <div class="cap">Clientes ativos que fazem aniversário em breve. Clica no WhatsApp e manda mensagem pessoal + cortesia — retenção máxima com esforço mínimo.</div>
     <table class="simple">
       <thead><tr><th>Cliente</th><th>Data</th><th>Quando</th><th>Visitas</th><th>LTV</th><th>Contato</th></tr></thead>
@@ -3741,6 +3767,12 @@ function renderAniversariantes(container_id, lista){
     </table>
     ${exp.footer}
   </div>`;
+  document.getElementById(_csvId)?.addEventListener('click', () => {
+    csvExport('aniversariantes.csv',
+      ['Cliente','Data aniversario','Dias ate','Visitas','LTV','Telefone','Unidade'],
+      lista.map(a => [a.cliente || a.nome, a.data_aniv, a.dias, a.n_visitas, a.ltv,
+        a.telefone || '', a._unidade || '']));
+  });
 }
 
 // ============= CROSS-SELL =============
@@ -3915,8 +3947,12 @@ function renderChurn(container_id, churn){
   const headN = topArr.length > EXP_VISIBLE
     ? `top ${EXP_VISIBLE} de ${churn.n_alerta} · LTV em risco ${brl0(churn.ltv_em_risco)}`
     : `${churn.n_alerta} · LTV em risco ${brl0(churn.ltv_em_risco)}`;
+  const _csvId = 'btn-csv-'+container_id;
   el.innerHTML = `<div class="card">
-    <h2>🛟 Clientes que sumiram <span class="hi">(${headN})</span></h2>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h2 style="margin:0">🛟 Clientes que sumiram <span class="hi">(${headN})</span></h2>
+      <button id="${_csvId}" class="btn-refresh" title="Baixa a lista COMPLETA (${topArr.length}), nao so os ${EXP_VISIBLE} visiveis">⬇ Excel</button>
+    </div>
     <div class="cap">Já vieram 3+ vezes e não voltam há 14+ dias. Ordenados por LTV. Manda WhatsApp pessoal citando o último serviço — resgate típico 30-40%.</div>
     <table class="simple">
       <thead><tr><th>Cliente</th><th>Visitas</th><th>LTV</th><th>Última</th><th>Sem vir</th><th>Últimos serviços</th><th>Contato</th></tr></thead>
@@ -3925,6 +3961,14 @@ function renderChurn(container_id, churn){
     ${exp.footer}
     <div class="insight"><strong>Ação sugerida:</strong> WhatsApp pros 5 primeiros hoje (não massa). Use os serviços que ela já consome pra propor a próxima — "Vi que faz tempo que você não vem fazer sua <em>[último serviço]</em>, tá com R$ 20 pra você essa semana." Retorno esperado: ${brl0(churn.ltv_em_risco * 0.35)}.</div>
   </div>`;
+  document.getElementById(_csvId)?.addEventListener('click', () => {
+    csvExport('clientes-que-sumiram.csv',
+      ['Cliente','Visitas','LTV','Ultima visita','Dias sem vir','Ultimos servicos','Telefone','Unidade'],
+      topArr.map(c => [c.cliente || c.nome, c.n_visitas, c.ltv,
+        c.ultima_visita, c.dias_sem_vir,
+        (c.ultimos_servicos||[]).join(' | '),
+        c.telefone || '', c._unidade || '']));
+  });
 }
 
 // ============= COMPARAÇÃO SEMANA × SEMANA ANTERIOR =============
