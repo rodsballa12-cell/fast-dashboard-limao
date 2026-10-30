@@ -22,6 +22,20 @@ e **FAST Spa Limão** (aberta em 24/09/2026). Ele **não é programador**. Fale 
 reais, clientes e dias; nunca em nome de função ou nome de arquivo sem dizer o
 que a coisa faz.
 
+## 🎨 Todo material no layout da rede (regra-mãe, 29/10/2026)
+
+**Qualquer documento que o Rodrigo pedir** — proposta, contrato, relatório, apresentação,
+Word, PDF, página — já sai no padrão oficial da FAST Escova e/ou do FAST Spa: cores, fonte
+Montserrat, logo e rodapé. Ele não precisa pedir. **Escova → pele da Escova; Spa → pele do
+Spa; consolidado → as duas juntas.**
+
+**Documento oficial sai em PDF pelo padrão premium** (`docs/marketing/modelos/premium/`); Word
+(`docs/marketing/modelos/kit.js`) só quando precisar ser editável. **Monte sempre a partir do kit**: logos oficiais em
+`docs/marketing/marca/` e números (cores, tamanhos, margens) em `docs/marketing/FICHA-DOCUMENTOS.md`.
+Funciona na nuvem e no PC. Nada de layout de cabeça: em 29/10 uma proposta feita sem o kit saiu
+sem logo e o Rodrigo a chamou de péssima. A ficha é a versão 1 e ainda aguarda conferência do
+Marketing no PC (`docs/marketing/ORDEM-kit-de-documentos.md`).
+
 ## As duas máquinas, e o que só existe em cada uma
 
 | | onde roda | alcança |

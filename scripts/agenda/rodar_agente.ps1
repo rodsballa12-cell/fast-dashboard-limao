@@ -297,11 +297,15 @@ $ErrorActionPreference = "Continue"   # mesma armadilha do 2>&1 explicada acima
 # com ele, vira uma ata de erro e uma linha FALHOU no log.
 $estourou = $false
 try {
+  # Start-Job abre um PowerShell novo, que NAO herda o Set-Location do script:
+  # sem o Set-Location abaixo o claude rodava em Documentos, longe de
+  # .claude/skills, e respondia "o comando /<cargo> nao existe" (29/10/2026).
   $jobClaude = Start-Job -ScriptBlock {
-    param($cli, $ag)
+    param($cli, $ag, $dir)
+    Set-Location $dir
     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
     & $cli -p "/$ag" 2>&1 | Out-String
-  } -ArgumentList $claude, $Agente
+  } -ArgumentList $claude, $Agente, $Projeto
   if (Wait-Job $jobClaude -Timeout 840) {
     $saida = (Receive-Job $jobClaude | Out-String)
   } else {
@@ -353,8 +357,11 @@ Registrar "Gravado em $arquivo"
 # Falha aqui nunca derruba o briefing. Carimba tambem quando deu errado: quem so
 # carimba no sucesso nao registra o que interessa (ver scripts/saude.py).
 $chaveSaude = if ($Agente -eq "conselho") { "conselho" } else { "cargos" }
+# Cargo que nao carregou: o claude responde que o comando nao existe. De 26 a
+# 30/10/2026 isso saiu em toda ata e o carimbo marcou "ok" (texto curto).
 $falhouCargo = $estourou -or [string]::IsNullOrWhiteSpace($saida) -or
-               (($saida -match "credit balance|too low|rate limit") -and $saida.Length -lt 400)
+               (($saida -match "credit balance|too low|rate limit") -and $saida.Length -lt 400) -or
+               (($saida -match "(n.o existe|n.o est. instalad|not installed|unknown (slash )?command|Unknown skill)") -and $saida.Length -lt 1500)
 $resSaude = if ($falhouCargo) { "falha" } else { "ok" }
 $anteriorEA = $ErrorActionPreference
 $ErrorActionPreference = "Continue"

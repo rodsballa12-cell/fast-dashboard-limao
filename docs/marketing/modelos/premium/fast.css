@@ -1,0 +1,201 @@
+/* FAST Limão · padrão premium de documentos (HTML → PDF A4)
+   Peles: body.escova | body.spa | body.consolidado
+   Cores lidas dos logos oficiais (ver ../../FICHA-DOCUMENTOS.md). */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=block');
+
+:root{
+  --amarelo:#FBD300; --amarelo-claro:#FFF6C2; --preto:#000; --carvao:#111214;
+  --agua:#00A6A4; --agua-escuro:#006C6B; --agua-claro:#DFF5F4; --agua-nevoa:#F4FBFB;
+  --grafite:#2B3133; --cinza:#5B6568; --linha:#E3E6E6; --papel:#FFFFFF; --off:#F7F8F8;
+}
+@page{size:A4;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Montserrat',sans-serif;color:var(--grafite);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{background:#d9dcdc}
+.pagina{width:210mm;height:297mm;background:var(--papel);position:relative;overflow:hidden;page-break-after:always;margin:0 auto}
+.pagina:last-child{page-break-after:auto}
+.miolo{padding:20mm 18mm 26mm}
+
+/* ---------- capa ---------- */
+.capa .faixas{display:flex;height:118mm}
+.capa .faixa{flex:1;display:flex;align-items:center;justify-content:center;position:relative}
+.capa .faixa img{width:62mm}
+.faixa.escova{background:var(--preto)}
+.faixa.spa{background:var(--agua)}
+.faixa.escova::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3mm;background:var(--amarelo)}
+.faixa.spa::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3mm;background:var(--agua-escuro)}
+body.escova .capa .faixa img{width:96mm} body.spa .capa .faixa img{width:96mm}
+.capa .corpo{padding:20mm 18mm 0}
+.rotulo{font-size:7.5pt;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:var(--cinza)}
+.capa h1{font-size:34pt;line-height:1.02;font-weight:900;letter-spacing:-.01em;color:var(--carvao);margin:5mm 0 4mm;text-transform:uppercase}
+.capa h1 em{font-style:normal;color:var(--agua)}
+body.escova .capa h1 em{color:var(--carvao);background:linear-gradient(transparent 62%,var(--amarelo) 62%)}
+.capa .lead{font-size:11pt;line-height:1.55;color:var(--cinza);max-width:150mm;font-weight:400}
+.para{margin-top:12mm;display:flex;gap:10mm;font-size:9pt}
+.para div b{display:block;font-size:7pt;letter-spacing:.25em;text-transform:uppercase;color:var(--cinza);margin-bottom:1.5mm;font-weight:700}
+.para div span{font-weight:700;color:var(--carvao);font-size:11pt}
+
+/* ---------- cartões de número ---------- */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:12mm}
+.kpi{border-radius:3mm;padding:6mm 5mm;background:var(--off);border:1px solid var(--linha)}
+.kpi.escuro{background:var(--carvao);border-color:var(--carvao);color:#fff}
+.kpi.agua{background:var(--agua);border-color:var(--agua);color:#fff}
+.kpi .k{font-size:6.8pt;font-weight:700;letter-spacing:.24em;text-transform:uppercase;opacity:.8}
+.kpi .v{font-size:21pt;font-weight:900;margin:2.5mm 0 1.5mm;letter-spacing:-.01em}
+.kpi.escuro .v{color:var(--amarelo)}
+.kpi .d{font-size:8pt;line-height:1.45;opacity:.85}
+
+/* ---------- títulos ---------- */
+.cab{display:flex;justify-content:space-between;align-items:center;padding-bottom:5mm;border-bottom:1px solid var(--linha);margin-bottom:9mm}
+.cab img{height:6.5mm}
+.cab .logos{display:flex;gap:5mm;align-items:center}
+.cab .logos .sep{width:1px;height:6mm;background:var(--linha)}
+.num{font-size:8pt;font-weight:800;letter-spacing:.3em;color:var(--agua);text-transform:uppercase}
+body.escova .num{color:var(--carvao)}
+h2{font-size:22pt;font-weight:900;line-height:1.05;text-transform:uppercase;color:var(--carvao);margin:2mm 0 4mm;letter-spacing:-.005em}
+h2::after{content:"";display:block;width:16mm;height:1.6mm;margin-top:4mm;background:linear-gradient(90deg,var(--amarelo) 50%,var(--agua) 50%)}
+body.escova h2::after{background:var(--amarelo)} body.spa h2::after{background:var(--agua)}
+h3{font-size:10pt;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--carvao);margin:8mm 0 3.5mm}
+p{font-size:9.6pt;line-height:1.6;color:var(--grafite);margin-bottom:3mm}
+.intro{font-size:10.5pt;color:var(--cinza);max-width:160mm}
+
+/* ---------- regras numeradas ---------- */
+.regras{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm}
+.regra{display:flex;gap:3.5mm;padding:4mm;border-radius:2.5mm;background:var(--off)}
+.regra i{flex:0 0 7mm;height:7mm;border-radius:50%;background:var(--carvao);color:var(--amarelo);font-style:normal;font-weight:800;font-size:8pt;display:flex;align-items:center;justify-content:center}
+body.spa .regra i{background:var(--agua);color:#fff}
+.regra div{font-size:8.6pt;line-height:1.5}
+.regra b{display:block;font-size:8.8pt;color:var(--carvao);margin-bottom:.8mm}
+
+/* ---------- escada de níveis ---------- */
+.escada{display:flex;align-items:flex-end;gap:3mm;height:74mm;margin:4mm 0 2mm}
+.degrau{flex:1;border-radius:2.5mm 2.5mm 0 0;padding:4mm 3.5mm;display:flex;flex-direction:column;justify-content:space-between;color:#fff;position:relative}
+.degrau .pct{font-size:24pt;font-weight:900;letter-spacing:-.02em}
+.degrau .nv{font-size:6.8pt;font-weight:700;letter-spacing:.24em;text-transform:uppercase;opacity:.85}
+.degrau .fx{font-size:8pt;font-weight:600;line-height:1.35}
+.d0{height:24%;background:var(--off);color:var(--cinza)!important;border:1px dashed #c9cdcd}
+.d1{height:44%;background:#3A4245}.d2{height:62%;background:var(--agua-escuro)}
+.d3{height:80%;background:var(--agua)}.d4{height:100%;background:var(--carvao)}
+.d4 .pct{color:var(--amarelo)}
+.chao{height:1.2mm;background:linear-gradient(90deg,var(--amarelo) 50%,var(--agua) 50%);border-radius:1mm}
+
+/* ---------- cartões de loja ---------- */
+.lojas{display:grid;grid-template-columns:1fr 1fr;gap:5mm}
+.loja{border-radius:3.5mm;overflow:hidden;border:1px solid var(--linha);display:flex;flex-direction:column}
+.loja .topo{padding:5.5mm 5mm;display:flex;justify-content:space-between;align-items:center}
+.loja.escova .topo{background:var(--preto)} .loja.spa .topo{background:var(--agua)}
+.loja .topo img{height:7mm}
+.loja .topo .max{font-size:6.6pt;letter-spacing:.2em;font-weight:700;text-transform:uppercase;color:#fff;opacity:.85;text-align:right}
+.loja .topo .max b{display:block;font-size:15pt;letter-spacing:0;opacity:1}
+.loja.escova .topo .max b{color:var(--amarelo)}
+.loja ul{list-style:none;padding:2mm 5mm;flex:1}
+.loja li{display:flex;justify-content:space-between;align-items:center;padding:3.2mm 0;border-bottom:1px solid var(--linha);font-size:8.8pt}
+.loja li:last-child{border-bottom:0}
+.loja li small{display:block;font-size:7pt;color:var(--cinza);margin-top:.6mm}
+.chip{font-weight:800;font-size:8.6pt;padding:1.4mm 3mm;border-radius:10mm;white-space:nowrap}
+.loja.escova .chip{background:var(--amarelo);color:#000}
+.loja.spa .chip{background:var(--agua-claro);color:var(--agua-escuro)}
+.loja .bonus{margin:0 5mm 5mm;padding:3.5mm 4mm;border-radius:2.5mm;display:flex;justify-content:space-between;align-items:center;font-size:8.4pt;font-weight:700}
+.loja.escova .bonus{background:var(--amarelo-claro);color:#000}
+.loja.spa .bonus{background:var(--agua-nevoa);color:var(--agua-escuro);border:1px solid var(--agua-claro)}
+.preencher{background:#FFE95C;padding:.2mm 1.2mm;border-radius:1mm;font-weight:700}
+
+.barra-total{margin-top:5mm;border-radius:3mm;background:var(--carvao);color:#fff;padding:5mm 6mm;display:flex;justify-content:space-between;align-items:center}
+.barra-total .k{font-size:7pt;letter-spacing:.25em;text-transform:uppercase;font-weight:700;opacity:.8}
+.barra-total .v{font-size:20pt;font-weight:900;color:var(--amarelo)}
+.nota{font-size:7.6pt;color:var(--cinza);line-height:1.5;margin-top:3mm}
+
+/* ---------- recibo (exemplo) ---------- */
+.recibo{border:1px solid var(--linha);border-radius:3mm;overflow:hidden}
+.recibo .ln{display:flex;justify-content:space-between;padding:3.6mm 5mm;font-size:9pt;border-bottom:1px solid var(--linha)}
+.recibo .ln span:last-child{font-weight:700}
+.recibo .tot{background:var(--carvao);color:#fff;border:0}
+.recibo .tot span:last-child{color:var(--amarelo);font-size:13pt;font-weight:900}
+
+/* ---------- tabela ---------- */
+table{width:100%;border-collapse:collapse;font-size:8.4pt}
+th{background:var(--carvao);color:#fff;font-size:6.8pt;letter-spacing:.18em;text-transform:uppercase;font-weight:700;padding:3mm 2.5mm;text-align:right}
+th:first-child,td:first-child{text-align:left}
+td{padding:2.8mm 2.5mm;border-bottom:1px solid var(--linha);text-align:right}
+tr:nth-child(even) td{background:var(--off)}
+td.forte{font-weight:800;color:var(--carvao)}
+td.top{font-weight:800;color:var(--agua-escuro)}
+
+/* ---------- gráfico de barras empilhadas ---------- */
+.grafico{display:flex;align-items:flex-end;gap:4mm;height:56mm;padding:0 2mm;border-bottom:1px solid var(--grafite);margin:6mm 0 2mm}
+.coluna{flex:1;display:flex;flex-direction:column-reverse;position:relative}
+.coluna span{display:block;width:100%}
+.coluna .f{background:#C9CFCF}.coluna .r1{background:var(--agua)}.coluna .r2{background:var(--amarelo)}
+.coluna .val{position:absolute;top:-5mm;left:0;right:0;text-align:center;font-size:7.4pt;font-weight:800;color:var(--carvao)}
+.eixo{display:flex;gap:4mm;padding:0 2mm;font-size:6.8pt;color:var(--cinza);text-align:center;font-weight:600}
+.eixo div{flex:1}
+.legenda{display:flex;gap:6mm;font-size:7.4pt;margin-top:3mm;color:var(--cinza)}
+.legenda i{display:inline-block;width:3mm;height:3mm;border-radius:.6mm;margin-right:1.5mm;vertical-align:-.4mm}
+
+/* ---------- condições e assinatura ---------- */
+.cond{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm}
+.cond div{padding:4.5mm;border-left:1.2mm solid var(--agua);background:var(--off);border-radius:0 2.5mm 2.5mm 0;font-size:8.6pt;line-height:1.5}
+.cond div:nth-child(odd){border-left-color:var(--amarelo)}
+.cond b{display:block;font-size:6.8pt;letter-spacing:.22em;text-transform:uppercase;color:var(--cinza);margin-bottom:1.2mm}
+.assina{display:grid;grid-template-columns:1fr 1fr;gap:14mm;margin-top:24mm}
+.assina div{border-top:1px solid var(--grafite);padding-top:2.5mm;font-size:8.4pt}
+.assina b{display:block;font-size:9.4pt;color:var(--carvao)}
+
+/* ---------- rodapé ---------- */
+.rodape{position:absolute;left:18mm;right:18mm;bottom:10mm;display:flex;justify-content:space-between;align-items:center;font-size:6.8pt;color:var(--cinza);padding-top:3mm;border-top:1px solid var(--linha)}
+.rodape b{letter-spacing:.28em;color:var(--carvao);font-weight:800}
+.rodape .pg{font-weight:700}
+.capa .rodape{border-top:0}
+
+/* ---------- ajustes v1.1 (densidade) ---------- */
+.miolo{padding:15mm 18mm 26mm}
+.cab{margin-bottom:6mm;padding-bottom:4mm}
+h2{font-size:20pt;margin:1.5mm 0 3mm}
+h2::after{margin-top:3mm}
+.intro{font-size:10pt;margin-bottom:4mm}
+h3{margin:6mm 0 3mm}
+.kpi .v small{display:block;font-size:9pt;font-weight:700;letter-spacing:.06em;opacity:.85;margin-bottom:.5mm}
+.d0{height:32%}
+.regra{padding:3.2mm 3.6mm}
+.regra div{font-size:8.2pt;line-height:1.45}
+.loja .topo{padding:4.2mm 5mm}
+.loja li{padding:2.4mm 0}
+.loja .bonus{margin:0 5mm 4mm;padding:3mm 4mm}
+.barra-total{margin-top:4mm;padding:4mm 6mm}
+.barra-total .v{font-size:17pt}
+.recibo .ln{padding:2.6mm 5mm;font-size:8.8pt}
+.grafico{height:44mm;margin:7mm 0 2mm}
+td{padding:2.1mm 2.5mm}
+th{padding:2.5mm 2.5mm}
+.assina .preencher{display:inline-block}
+
+/* ---------- variação FORMAL (proposta de emprego, contrato, carta) · body.formal ---------- */
+body.formal .capa .faixas{height:62mm}
+body.formal .capa .faixa img{width:52mm}
+body.formal .capa .corpo{padding:14mm 18mm 0}
+body.formal .capa h1{font-size:24pt;font-weight:800;letter-spacing:.01em;margin:4mm 0 2mm}
+body.formal .capa h1 em{color:var(--carvao)}
+body.formal h2{font-size:15pt;font-weight:800;text-transform:none;letter-spacing:0}
+body.formal h2::after{width:12mm;height:1mm;margin-top:2.5mm}
+body.formal .num{color:var(--cinza)}
+body.formal .kpi{background:#fff;border:1px solid var(--linha);color:var(--grafite)}
+body.formal .kpi .v{font-size:17pt;color:var(--carvao)}
+body.formal .kpi.escuro{border-top:1.2mm solid var(--amarelo)}
+body.formal .kpi.agua{border-top:1.2mm solid var(--agua)}
+body.formal .kpi.escuro .v{color:var(--carvao)}
+body.formal .kpi:not(.escuro):not(.agua){border-top:1.2mm solid var(--grafite)}
+.carta{font-size:9.8pt;line-height:1.7;color:var(--grafite)}
+.carta p{font-size:9.8pt;line-height:1.7;margin-bottom:3.2mm}
+.meta-carta{display:flex;justify-content:space-between;font-size:8.6pt;color:var(--cinza);margin-bottom:7mm}
+.meta-carta b{color:var(--carvao)}
+.clausula{display:flex;gap:5mm;margin-bottom:5mm}
+.clausula .n{flex:0 0 9mm;font-size:8pt;font-weight:800;color:var(--cinza);letter-spacing:.1em;padding-top:1mm}
+.clausula .c{flex:1}
+.clausula .c h4{font-size:10.4pt;font-weight:800;color:var(--carvao);margin-bottom:1.6mm}
+.clausula .c p,.clausula .c li{font-size:9.2pt;line-height:1.6;color:var(--grafite)}
+.clausula .c ul{padding-left:4.5mm;margin:1mm 0 2mm}
+.clausula .c li{margin-bottom:1mm}
+body.formal .escada{height:52mm}
+body.formal .degrau .pct{font-size:18pt}
+.cab .rotulo{white-space:nowrap}
+body.formal .d0{height:44%}
