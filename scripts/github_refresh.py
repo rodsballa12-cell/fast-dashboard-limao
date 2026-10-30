@@ -126,6 +126,11 @@ try:
             META_MENSAL_POR_MES[_k] = float(_v)
 except Exception:
     pass
+# META_MENSAL_BASE guarda a meta geral ANTES do override do mes corrente.
+# Sem ela, o historico por mes (`abas.anual.meses`) atribuia a meta DE HOJE a
+# todo mes passado sem override: numa unidade cuja meta sobe de mes a mes, um
+# mes antigo apareceria com a regua de hoje.
+META_MENSAL_BASE = META_MENSAL
 # Sobrescreve META_MENSAL pelo override do mes corrente (se existir)
 try:
     _hoje_key = datetime.now(BRT).strftime("%Y-%m")
@@ -379,6 +384,57 @@ def analisar(agend, transac, ini: date, fim: date):
 
     tr = [t for t in transac if t.get("dataHora") and ini <= parse_trinks_dt(t["dataHora"]).date() <= fim]
 
+    # TOTAL RECEBIDO TRINKS (bate EXATO com Relatorio Movimentacoes Financeiras).
+    # Formula validada 27/10/2026 com screenshot detalhado:
+    #   Total Recebido = Servicos + Produtos + Pacotes + Clube
+    #                    + Vale-Presente + Credito Cliente (entradas de saldo)
+    #                    + Pre-Pago (negativo quando consumo)
+    #                    - Descontos
+    # Escova out/26: 41.026 + 297 + 7.313 + (710 CC - 450 Pre) - 307 = 48.589 ✓
+    # Qtde Atendimentos com pagamento = transacoes com Total Recebido > 0
+    # (exclui "Cliente utilizou pacote" cujo Total=0, igual o Trinks faz)
+    # Ticket Medio = Total Recebido / Qtde Atendimentos com pagamento
+    #              = 48.589 / 359 = R$ 135,35 ✓
+    def _total_recebido_trinks(_t):
+        # Servicos no Trinks usam .preco (nao valorUnitario). Validado via
+        # mesma logica em analisar() linha ~566: "preco_s = float(s.get('preco')
+        # or 0); serv_v += preco_s". Produtos e pacotes usam valorUnitario * q.
+        _serv = sum(float(_s.get("preco") or 0) for _s in (_t.get("servicos") or []))
+        _prod = sum(float(_p.get("valorUnitario") or 0) * int(_p.get("quantidade") or 1)
+                    for _p in (_t.get("produtos") or []))
+        _pac = sum(float(_p.get("valorUnitario") or 0) * int(_p.get("quantidade") or 1)
+                   for _p in (_t.get("pacotes") or []))
+        _desc = float(_t.get("descontos") or 0)
+        # Formas internas somam com sinal preservado:
+        # Credito Cliente/Vale-Presente positivo quando cliente adiciona saldo,
+        # negativo quando consome. Pre-Pago negativo quando usa saldo (quase
+        # sempre). Clube positivo quando venda de assinatura.
+        INTERNAS_KW = ("crédito de cliente", "credito de cliente", "pré-pago",
+                       "pre-pago", "voucher", "vale-presente", "vale presente",
+                       "clube")
+        _saldo = 0.0
+        for _fp in (_t.get("formasPagamentos") or []):
+            _nome = (_fp.get("descricao") or _fp.get("nome") or "").lower().strip()
+            if any(_kw in _nome for _kw in INTERNAS_KW):
+                _saldo += float(_fp.get("valor") or 0)
+        return _serv + _prod + _pac + _saldo - _desc
+
+    total_recebido = sum(_total_recebido_trinks(_t) for _t in tr)
+    # DENOMINADOR separado do numerador: no Trinks, "Qtde Atendimentos com
+    # pagamento" conta tx onde CLIENTE PAGOU ALGO (qualquer forma com valor>0),
+    # mesmo que seja saldo pre-pago (que faz Total Recebido == 0 nessa linha
+    # porque Serv e abatido pelo Pre-Pago). Validado 27/10 com screenshot:
+    # 400 tx brutas - 41 "Cliente utilizou pacote" (sem nenhuma forma de
+    # pagamento) = 359. Minha versao anterior usava total_recebido_t > 0 como
+    # filtro e excluia 216 — errado, pq tx paga 100% com credito tem
+    # total_recebido_t == 0 mas E atendimento com pagamento.
+    def _tem_pagto(_t):
+        return any(float(_fp.get("valor") or 0) != 0
+                   for _fp in (_t.get("formasPagamentos") or []))
+    tr_pagantes = [t for t in tr if _tem_pagto(t)]
+    n_pagantes = len(tr_pagantes)
+    ticket_medio_trinks = (total_recebido / n_pagantes) if n_pagantes > 0 else 0
+
     # KPIs base
     receita_serv = sum(float(a.get("valor") or 0) for a in fin)
     dias_com_op = len({parse_trinks_dt(a["dataHoraInicio"]).date() for a in fin})
@@ -448,9 +504,16 @@ def analisar(agend, transac, ini: date, fim: date):
     # inflava o caixa do SPA (ex: R$ 99 hoje 09/10 que foi vale usado).
     FORMAS_INTERNAS = ("crédito de cliente", "credito de cliente", "pré-pago", "pre-pago",
                        "voucher", "vale-presente", "vale presente")
+    # faturamento_bruto = soma de TODAS as formas de pagamento, incluindo as
+    # internas (credito, vale-presente, voucher). Serve pra bater com o
+    # relatorio Financeiro do Trinks ("Ticket medio por venda" = faturamento /
+    # n_trans). O painel usa `caixa` (sem internas) pra fluxo real, mas o
+    # Rodrigo precisa da leitura Trinks tambem pra conferencia (27/10/2026).
+    faturamento_bruto = 0.0
     for t in tr:
         for fp in (t.get("formasPagamentos") or []):
             v = float(fp.get("valor") or 0)
+            faturamento_bruto += v
             _nome_lower = (fp.get("descricao") or fp.get("nome") or "").lower().strip()
             if any(kw in _nome_lower for kw in FORMAS_INTERNAS):
                 continue  # nao e caixa real, e movimentacao interna de saldo
@@ -908,14 +971,28 @@ def analisar(agend, transac, ini: date, fim: date):
         "kpis": {
             "caixa": brl_round(caixa),
             "faturamento_apurado": brl_round(caixa),
+            "faturamento_bruto_trinks": brl_round(faturamento_bruto),
             "receita_serv": brl_round(receita_serv),
             "atend_fin": len(fin),
             "atend_canc": len(canc),
             "atend_total": len(ag),
             "n_trans": len(tr),
             "ticket_trans": brl_round(caixa / max(len(tr), 1)),
+            "n_trans_com_pagto": n_pagantes,
+            "total_recebido_trinks": brl_round(total_recebido),
+            # TICKET MEDIO OFICIAL (bate EXATO com Relatorio Movimentacoes
+            # Financeiras do Trinks). Formula validada 27/10/2026:
+            #   total_recebido = servicos + produtos + pacotes + clube
+            #                    + vale-presente + credito_cliente + pre-pago(sinal)
+            #                    - descontos
+            #   atend_pagantes = tx com total_recebido > 0
+            #   ticket_medio = total_recebido / atend_pagantes
+            # Escova out/26: 48.589 / 359 = R$ 135,35 ✓
+            "ticket_medio": brl_round(ticket_medio_trinks),
+            # Legados preservados para auditoria (nao expostos na UI).
+            "ticket_medio_interno": brl_round(caixa / max(n_cliente_dia, 1)),
+            "ticket_venda_trinks": brl_round(ticket_medio_trinks),
             "cliente_dia": n_cliente_dia,
-            "ticket_medio": brl_round(caixa / max(n_cliente_dia, 1)),
             "taxa_canc": round(len(canc) / max(len(ag), 1) * 100, 1),
             "dias_op": dias_com_op,
             "clientes_unicos": unicos,
@@ -2232,20 +2309,136 @@ def main():
     }
 
     # meses do ano
+    #
+    # ALINHAMENTO AGENCIA (28/10/2026) · a agencia pede sempre o MESMO conjunto:
+    # meta, faturamento, ticket medio, clientes novos, clientes totais,
+    # atendimentos e pacotes vendidos — deste mes e do mes passado. Antes disso
+    # cada reuniao recalculava a mao a partir de cards diferentes do painel, e o
+    # ticket medio ia pelo numero velho. Agora o mes carrega os sete, do mesmo
+    # lugar de onde o painel le, e o bloco da aba Midias so formata.
+    #
+    # ticket_medio aqui e o OFICIAL (total_recebido / tx com pagamento), formula
+    # validada contra o Relatorio de Movimentacoes Financeiras do Trinks em
+    # 27/10/2026 — nao confundir com ticket_trans (caixa / toda transacao),
+    # que fica ao lado so para auditoria.
+    def _meta_do_mes(ym):
+        """Meta daquele mes: a da tabela por mes, ou a meta geral.
+
+        Mesma regra que a aba mensal do painel usa — tabela por mes vence,
+        senao vale a meta geral. A unica diferenca e usar META_MENSAL_BASE
+        em vez de META_MENSAL: esta ultima ja foi sobrescrita pelo override
+        do mes CORRENTE, e usa-la aqui cravaria a meta de hoje nos meses
+        passados que nao estao na tabela.
+        """
+        if ym in META_MENSAL_POR_MES:
+            return META_MENSAL_POR_MES[ym], "meta_mensal_por_mes"
+        return META_MENSAL_BASE, "meta_mensal"
+
     meses = {}
     for m in range(1, 13):
         mi = date(hoje.year, m, 1)
         mf = date(hoje.year, m, monthrange(hoje.year, m)[1])
         am = analisar(agend, transac, mi, mf)
         if am["kpis"]["atend_fin"] > 0 or am["kpis"]["n_trans"] > 0:
-            meses[f"{hoje.year}-{m:02d}"] = {
+            ym = f"{hoje.year}-{m:02d}"
+            meta_m, meta_origem_m = _meta_do_mes(ym)
+            # novos vs recorrentes do mes, mesmo criterio do card do mes corrente
+            fin_m = [a for a in agend
+                     if (a.get("status") or {}).get("nome") == "Finalizado"
+                     and a.get("dataHoraInicio")
+                     and mi <= parse_trinks_dt(a["dataHoraInicio"]).date() <= mf]
+            try:
+                nvr_m = novos_vs_recorr(fin_m, cad_map, mi, transac_periodo=transac,
+                                        ini_periodo=mi, fim_periodo=mf)
+                novos_m = nvr_m["novos"]["clientes"]
+                recorr_m = nvr_m["recorrentes"]["clientes"]
+            except Exception as e:
+                # campo que nao foi lido fica None — regra da casa: nunca
+                # preencher numero que nao veio da fonte.
+                print(f"[meses] {ym} novos vs recorrentes falhou: {e}")
+                novos_m = recorr_m = None
+            meses[ym] = {
                 "caixa": am["kpis"]["caixa"], "receita_serv": am["kpis"]["receita_serv"],
                 "faturamento_apurado": am["kpis"].get("faturamento_apurado", am["kpis"]["caixa"]),
                 "atend_fin": am["kpis"]["atend_fin"], "clientes_unicos": am["kpis"]["clientes_unicos"],
                 "n_trans": am["kpis"]["n_trans"], "ticket_trans": am["kpis"]["ticket_trans"],
                 "taxa_canc": am["kpis"]["taxa_canc"], "categorias": am["categorias"],
                 "dias_op": am["kpis"]["dias_op"],
+                # --- alinhamento agencia ---
+                "meta": meta_m,
+                "meta_origem": meta_origem_m,
+                "ticket_medio": am["kpis"]["ticket_medio"],
+                "n_trans_com_pagto": am["kpis"]["n_trans_com_pagto"],
+                "total_recebido_trinks": am["kpis"]["total_recebido_trinks"],
+                "clientes_novos": novos_m,
+                "clientes_recorrentes": recorr_m,
+                "pacotes_n": am["categorias"]["pacotes"]["n"],
+                "pacotes_v": am["categorias"]["pacotes"]["v"],
             }
+
+    # === OVERLAY TRINKS: numeros extraidos a mao do export sobrescrevem o calculado ===
+    #
+    # Rodrigo (29/10/2026): mandou screenshot do Trinks SPA out/26 pra reuniao
+    # com a agencia e nossos numeros nao batiam — nem o faturamento (R$ 29.371
+    # calculado × R$ 25.900 do Trinks), nem o denominador do ticket (170 tx
+    # com pagto × 146 atendimentos do Trinks). Tentar bater pela API falhou:
+    # Trinks API nao expoe o campo que vincula transacao ao agendamento,
+    # entao o painel conta grupos diferentes.
+    #
+    # Solucao: `data/trinks_conferencia.json` ja existia pro script
+    # conferir_trinks.py comparar os dois. Agora o painel LE o mesmo arquivo e
+    # sobrescreve os campos de meses[ym] com o numero EXTRAIDO DA TELA quando
+    # existe referencia pra aquela unidade+mes. Numero conferido na mao vale
+    # mais que numero calculado que ja mentiu uma vez.
+    #
+    # Campos sobrescritos:
+    #   total_recebido_trinks ← faturamento (Total Recebido do Trinks)
+    #   atend_fin             ← atendimentos (Qtde Atendimentos com pagamento)
+    #   ticket_medio          ← ticket_medio (Ticket Medio do Trinks)
+    #   pacotes_n, pacotes_v  ← quando o export detalhou
+    #   clientes_novos        ← quando o export mostrou
+    #   caixa                 ← faturamento (se e o unico numero de receita que
+    #                           o Trinks reporta, bate com o caixa tambem)
+    #
+    # Campos derivados sao recalculados aqui tambem.
+    conf_path = REPO_ROOT / "data" / "trinks_conferencia.json"
+    if conf_path.exists():
+        try:
+            conf = json.loads(conf_path.read_text(encoding="utf-8"))
+            conf_unit = conf.get(UNIT) or {}
+            for ym, ref in conf_unit.items():
+                if ym.startswith("_") or not isinstance(ref, dict):
+                    continue
+                if ym not in meses:
+                    continue
+                m = meses[ym]
+                # Marcacao de que o mes foi reconciliado com o export
+                m["_trinks_overlay"] = {
+                    "fonte": ref.get("_fonte"),
+                    "parcial_ate": ref.get("_parcial_ate"),
+                }
+                if ref.get("faturamento") is not None:
+                    m["total_recebido_trinks"] = ref["faturamento"]
+                    m["caixa"] = ref["faturamento"]
+                if ref.get("atendimentos") is not None:
+                    m["atend_fin"] = ref["atendimentos"]
+                if ref.get("ticket_medio") is not None:
+                    m["ticket_medio"] = ref["ticket_medio"]
+                if ref.get("pacotes_n") is not None:
+                    m["pacotes_n"] = ref["pacotes_n"]
+                if ref.get("pacotes_v") is not None:
+                    m["pacotes_v"] = ref["pacotes_v"]
+                if ref.get("clientes_novos") is not None:
+                    m["clientes_novos"] = ref["clientes_novos"]
+                if ref.get("_clientes_unicos") is not None:
+                    m["clientes_unicos"] = ref["_clientes_unicos"]
+                # Derivados: ticket_trans e n_trans_com_pagto so sao usados em
+                # auditoria/debug; nao sobrescrevemos pra nao mascarar bug.
+                print(f"[trinks-overlay] {UNIT} {ym}: aplicado "
+                      f"(fat={m['total_recebido_trinks']}, atend={m['atend_fin']}, "
+                      f"ticket={m['ticket_medio']})")
+        except Exception as e:
+            print(f"[trinks-overlay] falhou: {e}")
 
     # === SAZONALIDADE: pesos por dia da semana + curva horária ===
     # Fonte: histórico anual acumulado. Peso ponderado por horas de operação de cada dow
@@ -2702,7 +2895,11 @@ def main():
     # um número fixo. Se a loja atrai muitas visitas, o ticket alvo cai; se atrai poucas,
     # o ticket alvo sobe. Assim o alvo se auto-ajusta ao mix operacional real.
     def _inject_ticket_meta(aba_kpis, meta_periodo, dias_realizados, dias_total):
-        v_atual = aba_kpis.get("cliente_dia", 0)
+        # Base = n_trans_com_pagto (comandas pagantes), MESMO denominador do
+        # ticket_medio oficial Trinks. Antes usava cliente_dia (par cliente×dia)
+        # que criava ticket_atual Trinks (por comanda) vs ticket_alvo (por
+        # cliente×dia) — nao batia. 27/10/2026.
+        v_atual = aba_kpis.get("n_trans_com_pagto", aba_kpis.get("n_trans", 0))
         ritmo_visitas = v_atual / max(dias_realizados, 1)
         visitas_proj = round(ritmo_visitas * dias_total)
         meta_v = meta_periodo.get("meta", 0)

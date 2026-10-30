@@ -65,7 +65,16 @@ on:
     # 50 runs: apenas 1 execucao em 06h UTC vs 5 em 13h UTC. Reforcei o 06h
     # com 4 tiros (:07, :27, :47, :57) · se qualquer um disparar, o
     # early-exit de recencia (55min) cuida de nao duplicar.
-    - cron: '7,27,47,57 6 * * *'
+    #
+    # NOTA (27/10): mesmo com 4 tiros, 06h UTC foi inteiramente pulado em
+    # 27/10 — Rodrigo abriu o painel 08h BRT e viu "parado desde 02h". O
+    # pico do GH esta mais pesado. Adicionei dois "ambulancias" fora do
+    # pico (09h e 10h UTC = 06h e 07h BRT), tambem com dois tiros cada.
+    # Early-exit de recencia garante que se qualquer dos 06h UTC passar,
+    # os de 09h/10h saem em <10s sem tocar API Trinks.
+    - cron: '7,27,47,57 6 * * *'      # 03h BRT · 4 tiros · pico GH, pula muito
+    - cron: '12,42 9 * * *'           # 06h BRT · 2 tiros · fallback fora de pico
+    - cron: '12,42 10 * * *'          # 07h BRT · 2 tiros · ultima chance antes do 10h BRT
     - cron: '17 13,15-23,0 * * *'
     - cron: '47 13,15-23,0 * * *'
 

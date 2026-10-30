@@ -17,6 +17,7 @@ escreve. Um não substitui o outro — o robô é a matéria-prima do funcionár
 | Gerente de Relacionamento | `/relacionamento` | não |
 | Gerente de Pessoas | `/pessoas` | não |
 | Guardião da Memória | `/memoria` | **sim** — só em `docs/decisoes/` |
+| Gerente Comercial | `/comercial` | não — entrega rascunho; **nunca envia nem publica** |
 | Conselho | `/conselho` | não |
 | Publicador | `/publicar` | não no repositório — **publica o Artifact** |
 | Entrada do Extrato Stone | `/extrato-stone` | **sim** — só o `.enc`, e só rodando no PC |

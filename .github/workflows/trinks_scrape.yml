@@ -1,0 +1,99 @@
+name: Trinks · scrape do relatorio Movimentacoes Financeiras
+
+# Loga no painel web do Trinks (sistema.trinks.com) e extrai os numeros
+# do relatorio Movimentacoes Financeiras pras duas unidades (Escova e
+# SPA). Grava em `data/trinks_conferencia.json` (cofre) — o painel ja
+# faz overlay desse arquivo em cima do calculado.
+#
+# Roda de 6 em 6h e manualmente. Primeira execucao: usar com --debug
+# ligado pra capturar screenshot+HTML das paginas em caso de falha.
+
+on:
+  workflow_dispatch:
+    inputs:
+      unidade:
+        description: 'escova, spa ou ambas'
+        required: false
+        default: 'ambas'
+      debug:
+        description: 'ligar dump de screenshot/HTML pra inspecao (true/false)'
+        required: false
+        default: 'false'
+      mes:
+        description: 'YYYY-MM (default: mes corrente)'
+        required: false
+  schedule:
+    # 4 vezes/dia BRT (UTC-3): 06h, 12h, 18h, 23h — pre-reuniao e fim do dia
+    - cron: '0 9,15,21 * * *'
+    - cron: '0 2 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Instalar deps
+        run: pip install playwright cryptography requests
+      - name: Abrir cofre
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python scripts/cofre.py abrir
+
+      - name: Scrape Escova
+        if: ${{ inputs.unidade == 'escova' || inputs.unidade == 'ambas' || inputs.unidade == '' }}
+        env:
+          TRINKS_PAINEL_USUARIO_ESCOVA: ${{ secrets.TRINKS_PAINEL_USUARIO_ESCOVA }}
+          TRINKS_PAINEL_SENHA_ESCOVA: ${{ secrets.TRINKS_PAINEL_SENHA_ESCOVA }}
+        run: |
+          args="--unidade escova"
+          [ "${{ inputs.mes }}" != "" ] && args="$args --mes ${{ inputs.mes }}"
+          [ "${{ inputs.debug }}" = "true" ] && args="$args --debug"
+          python3 scripts/trinks_scrape_relatorio.py $args || echo "[warn] scrape escova falhou — ver logs"
+
+      - name: Scrape SPA
+        if: ${{ inputs.unidade == 'spa' || inputs.unidade == 'ambas' || inputs.unidade == '' }}
+        env:
+          TRINKS_PAINEL_USUARIO_SPA: ${{ secrets.TRINKS_PAINEL_USUARIO_SPA }}
+          TRINKS_PAINEL_SENHA_SPA: ${{ secrets.TRINKS_PAINEL_SENHA_SPA }}
+        run: |
+          args="--unidade spa"
+          [ "${{ inputs.mes }}" != "" ] && args="$args --mes ${{ inputs.mes }}"
+          [ "${{ inputs.debug }}" = "true" ] && args="$args --debug"
+          python3 scripts/trinks_scrape_relatorio.py $args || echo "[warn] scrape spa falhou — ver logs"
+
+      - name: Dumps de debug (sempre, se existirem)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trinks-scrape-dumps
+          path: /tmp/trinks_dump_*
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Fechar cofre
+        if: always()
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python scripts/cofre.py fechar
+
+      - name: Commitar .enc atualizado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/trinks_conferencia.json.enc
+          if git diff --cached --quiet; then
+            echo "nada a commitar"
+          else
+            git commit -m "trinks_conferencia: scrape $(date -u +%Y-%m-%d-%HZ)"
+            git pull --rebase origin main || true
+            git push
+          fi

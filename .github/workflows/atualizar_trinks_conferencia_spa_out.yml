@@ -1,0 +1,91 @@
+name: Atualizar trinks_conferencia · SPA out/26
+
+# Rodrigo mandou screenshots do Trinks SPA out/26 (ate 29/10) na mesma
+# conversa que ja validou os numeros:
+#   Nº Clientes 145 · Qtde Atendimentos com pagamento 146
+#   Ticket Medio R$ 177,40 · Total Recebido R$ 25.900,02
+#   Servicos 18.208,70 · Produtos 948 · Pacotes R$ 6.081 (4 unidades)
+#   Credito Cliente 7.135 · Pre-Pago -4.847,70 · Descontos 23,02
+#
+# Este workflow grava esses numeros em `data/trinks_conferencia.json`
+# (arquivo criptografado, existente pra esse exato fim segundo CLAUDE.md).
+# Nao chama a Trinks API nem recalcula: a FONTE DE VERDADE do mes do
+# SPA out/26 passa a ser o export que o Rodrigo mandou.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install cryptography
+      - name: Abrir cofre
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python scripts/cofre.py abrir
+
+      - name: Gravar SPA out/26 em trinks_conferencia.json
+        run: |
+          python3 <<'PY'
+          import json, os
+          from pathlib import Path
+
+          path = Path("data/trinks_conferencia.json")
+          ref = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+
+          # Numeros do export Trinks SPA out/26 (ate 29/10), tal como Rodrigo
+          # mandou. Nenhum calculado — todos lidos da tela de Movimentacoes
+          # Financeiras.
+          ref.setdefault("spa", {})
+          ref["spa"]["2026-10"] = {
+              "_fonte": "Trinks · Movimentacoes Financeiras · export 29/10/2026",
+              "_parcial_ate": "2026-10-29",
+              "faturamento": 25900.02,       # Total Recebido
+              "atendimentos": 146,           # Qtde Atendimentos com pagamento
+              "clientes_novos": None,        # nao esta no screenshot — fica NAO VEJO
+              "pacotes_n": 4,                # 4 vendas de pacote
+              "pacotes_v": 6081.00,          # Pacotes
+              "ticket_medio": 177.40,        # Ticket Medio do Trinks
+              # extras pra conferencia detalhada do painel
+              "_servicos": 18208.70,
+              "_produtos": 948.00,
+              "_credito_cliente": 7135.00,
+              "_pre_pago": -4847.70,
+              "_descontos": 23.02,
+              "_clientes_unicos": 145,
+          }
+
+          path.write_text(json.dumps(ref, indent=2, ensure_ascii=False),
+                          encoding="utf-8")
+          print(f"Atualizado: spa 2026-10")
+          print(json.dumps(ref["spa"]["2026-10"], indent=2, ensure_ascii=False))
+          PY
+
+      - name: Fechar cofre
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python scripts/cofre.py fechar
+
+      - name: Commitar .enc
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/trinks_conferencia.json.enc
+          if git diff --cached --quiet; then
+            echo "nada a commitar"
+          else
+            git commit -m "trinks_conferencia: SPA out/26 do export do Rodrigo"
+            git push
+          fi

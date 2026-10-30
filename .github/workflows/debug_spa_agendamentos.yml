@@ -1,0 +1,144 @@
+name: Debug SPA agendamentos vs Trinks
+
+# Debug anterior (debug_spa_ticket) mostrou: 179 tx no cache, Trinks diz 146
+# atendimentos. Diferenca 33 nao bate em nenhum filtro de formasPagamento.
+#
+# Hipotese: Trinks "Qtde Atendimentos com pagamento" conta AGENDAMENTOS
+# Finalizados com pagamento, nao TRANSACOES. Nosso painel ja mostra
+# atend_fin = len(agendamentos Finalizados) = 177 (do painel) — ainda 31 a mais.
+#
+# Possibilidades:
+#   1. Agendamentos duplicados no cache (mesmo id aparece 2x)
+#   2. Status "Em atendimento" sendo contado como Finalizado
+#   3. Agendamentos sem transacao sendo contados (cliente agendou e nao pagou)
+#
+# Este workflow categoriza os agendamentos SPA out/26 por status e cruza com
+# as transacoes pra identificar os 31 extras.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install cryptography
+      - name: Abrir cofre
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python scripts/cofre.py abrir
+      - name: Analisar agendamentos SPA out/26
+        run: |
+          python3 <<'PY'
+          import json, os
+          from datetime import date, datetime
+          from collections import Counter, defaultdict
+
+          # Carrega
+          ag_path = "data/spa/agendamentos_ano_cache.json"
+          tr_path = "data/spa/transacoes_ano_cache.json"
+          ag_cache = json.load(open(ag_path, encoding="utf-8"))
+          tr_cache = json.load(open(tr_path, encoding="utf-8"))
+
+          def _extract(cache, key):
+              v = cache.get(key) or cache.get("items")
+              if v: return v
+              if isinstance(cache, dict):
+                  for k, val in cache.items():
+                      if isinstance(val, dict) and key in val: return val[key]
+                      if isinstance(val, list): return val
+              return []
+
+          ag = _extract(ag_cache, "agendamentos")
+          tr = _extract(tr_cache, "transacoes")
+
+          def pdt(s):
+              return datetime.fromisoformat(s.replace("Z","+00:00"))
+
+          ini = date(2026, 10, 1)
+          fim = date(2026, 10, 29)
+          ag_out = [a for a in ag if a.get("dataHoraInicio") and ini <= pdt(a["dataHoraInicio"]).date() <= fim]
+          tr_out = [t for t in tr if t.get("dataHora") and ini <= pdt(t["dataHora"]).date() <= fim]
+
+          print(f"Total agendamentos SPA out/26: {len(ag_out)}")
+          print(f"Total transacoes SPA out/26: {len(tr_out)}")
+
+          # Status
+          print("\n=== STATUS DOS AGENDAMENTOS ===")
+          c = Counter()
+          for a in ag_out:
+              s = (a.get("status") or {}).get("nome") or "?"
+              c[s] += 1
+          for k, v in c.most_common():
+              print(f"  {k}: {v}")
+
+          # Duplicatas por ID
+          print("\n=== DUPLICATAS ===")
+          ids_fin = [a.get("id") for a in ag_out if (a.get("status") or {}).get("nome") == "Finalizado"]
+          dup_fin = Counter(ids_fin)
+          dup = {k: v for k, v in dup_fin.items() if v > 1}
+          print(f"Finalizados: {len(ids_fin)} total, {len(set(ids_fin))} unicos, {len(dup)} duplicados")
+          if dup:
+              print("  Exemplos de duplicatas:")
+              for i, (k, v) in enumerate(list(dup.items())[:5]):
+                  print(f"    id={k} aparece {v}x")
+
+          # Cruzamento ag Finalizados × tx (pelo campo agendamentoId se existir)
+          print("\n=== CRUZAMENTO AGENDAMENTO x TRANSACAO ===")
+          # Tenta identificar o campo que conecta
+          if tr_out:
+              amostra = tr_out[0]
+              print(f"Campos de uma transacao: {list(amostra.keys())}")
+
+          # Agendamentos Finalizados que NAO tem transacao associada
+          ids_tr = set()
+          for t in tr_out:
+              # Varias possibilidades
+              for campo in ("agendamentoId", "idAgendamento", "agendamento_id"):
+                  if campo in t and t[campo]:
+                      ids_tr.add(t[campo])
+          print(f"\nIds de agendamento em tx: {len(ids_tr)}")
+          ids_ag_fin = set(a.get("id") for a in ag_out if (a.get("status") or {}).get("nome") == "Finalizado")
+          sem_tx = ids_ag_fin - ids_tr
+          com_tx = ids_ag_fin & ids_tr
+          print(f"Ag Finalizados COM transacao: {len(com_tx)}")
+          print(f"Ag Finalizados SEM transacao: {len(sem_tx)}")
+
+          # Clientes unicos
+          print("\n=== CLIENTES UNICOS ===")
+          cli_fin = set((a.get("cliente") or {}).get("id") for a in ag_out
+                        if (a.get("status") or {}).get("nome") == "Finalizado"
+                        and (a.get("cliente") or {}).get("id"))
+          print(f"Clientes unicos (ag Finalizados): {len(cli_fin)}")
+          print(f"  (Trinks diz: 145)")
+
+          # Pareamento: ag Finalizados com pagto (via tr com mesmo agendamentoId)
+          # Se nao ha vinculo, cruzamos por cliente+data
+          if not ids_tr:
+              print("\n(sem campo de vinculo direto, cruzando por cliente+data)")
+              key_tr = set()
+              for t in tr_out:
+                  cid = (t.get("cliente") or {}).get("id")
+                  dt = pdt(t["dataHora"]).date().isoformat() if t.get("dataHora") else None
+                  if cid and dt:
+                      key_tr.add((cid, dt))
+              ag_fin_pagto = 0
+              for a in ag_out:
+                  if (a.get("status") or {}).get("nome") != "Finalizado": continue
+                  cid = (a.get("cliente") or {}).get("id")
+                  dt = pdt(a["dataHoraInicio"]).date().isoformat() if a.get("dataHoraInicio") else None
+                  if (cid, dt) in key_tr:
+                      ag_fin_pagto += 1
+              print(f"Ag Finalizados c/ cliente+data em tr: {ag_fin_pagto}")
+              print(f"  (Trinks diz: 146 Qtde Atend c/ pagto)")
+          PY

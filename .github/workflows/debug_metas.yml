@@ -1,0 +1,99 @@
+name: Debug metas
+
+# Imprime todas as metas por unidade + aba. Serve pra validar os calendarios
+# de metas quando Rodrigo achar que algo esta estranho. Nao escreve nada.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Abrir cofre
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python scripts/cofre.py abrir
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Imprimir metas das 3 unidades
+        run: |
+          python3 <<'PY'
+          import json, os
+          from datetime import date
+
+          for label, path in [
+              ("ESCOVA", "data/dashboard_data.json"),
+              ("SPA", "data/spa/dashboard_data.json"),
+              ("CONSOLIDADO", "data/consolidado/dashboard_data.json"),
+          ]:
+              if not os.path.exists(path):
+                  print(f"=== {label} === arquivo nao existe")
+                  continue
+              d = json.load(open(path, encoding="utf-8"))
+              print(f"\n########## {label} ##########")
+              print(f"hoje: {d.get('hoje')} · dias_op_mes: {d.get('dias_op_mes')}")
+
+              # Metas por aba
+              for aba in ("anual", "mensal", "semanal", "diario"):
+                  m = (d.get("abas") or {}).get(aba, {}).get("meta") or {}
+                  if not m: continue
+                  print(f"\n--- {aba.upper()} meta ---")
+                  for k in ("meta", "realizado", "pct", "falta",
+                            "dias_realizados", "dias_total", "dias_restantes",
+                            "necessario_dia", "ritmo_dia", "projecao",
+                            "projecao_pct", "projecao_metodo", "meta_ate_hoje",
+                            "pct_ate_hoje", "saldo_ate_hoje", "peso_realizado",
+                            "peso_restante", "_meta_escova", "_meta_spa"):
+                      if k in m:
+                          print(f"  {k:<22} {m[k]}")
+
+              # metas_franqueadora
+              mf = d.get("metas_franqueadora") or {}
+              if mf:
+                  print(f"\n--- metas_franqueadora ---")
+                  print(f"  meta_mensal_total: {mf.get('meta_mensal_total')}")
+                  cm = mf.get("categorias_mensal") or {}
+                  for k, v in cm.items():
+                      print(f"    cat {k:<20} {v}")
+                  if "_spa_total_rateado" in mf:
+                      print(f"  _spa_total_rateado: {mf['_spa_total_rateado']}")
+                      print(f"  _spa_rateado_em:    {mf['_spa_rateado_em']}")
+
+              # Sazonalidade (meta_por_data) — últimos 7 dias
+              saz = d.get("sazonalidade") or {}
+              mpd = saz.get("meta_por_data") or {}
+              print(f"\n--- sazonalidade.peso_dow ---")
+              pw = saz.get("peso_dow") or {}
+              for n in ("Seg","Ter","Qua","Qui","Sex","Sáb","Dom"):
+                  print(f"  {n}: {pw.get(n)}")
+              mddow = saz.get("meta_dia_por_dow") or {}
+              print(f"\n--- sazonalidade.meta_dia_por_dow (meta media por DOW) ---")
+              for n in ("Seg","Ter","Qua","Qui","Sex","Sáb","Dom"):
+                  print(f"  {n}: {mddow.get(n)}")
+              if mpd:
+                  print(f"\n--- sazonalidade.meta_por_data (ultimas 10 datas com meta>0) ---")
+                  items = sorted([(k,v) for k,v in mpd.items() if v > 0])[-10:]
+                  for k, v in items:
+                      print(f"  {k}: {v}")
+                  # soma total vs meta_mensal
+                  hoje = d.get("hoje") or "2026-10-29"
+                  ano, mes = hoje[:4], hoje[5:7]
+                  mes_atual = f"{ano}-{mes}"
+                  soma_mes = sum(v for k,v in mpd.items() if k.startswith(mes_atual))
+                  print(f"\n  Soma meta_por_data do mes {mes_atual}: {round(soma_mes,2)}")
+
+              print()
+          PY

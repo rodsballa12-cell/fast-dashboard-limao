@@ -251,7 +251,12 @@ def coletar() -> dict:
         "gerado_em": datetime.now(BRT).replace(microsecond=0).isoformat(),
         "n_abertas": len(abertas),
         "n_fechadas": fechadas,
-        "mais_antiga_dias": max((d["dias"] for d in abertas), default=0),
+        # Decisao com revisao marcada no futuro nao esta esquecida: esta agendada.
+        # So uma assim (meta patrimonial, 04/07, revisao em 01/01/2027) mantinha
+        # o aviso de "ha 111 dias" aceso sozinha.
+        "mais_antiga_dias": max((d["dias"] for d in abertas
+                                 if not (d["revisao"] and not d["revisao_vencida"])),
+                                default=0),
         "revisoes_vencidas": sum(1 for d in abertas if d["revisao_vencida"]),
         "repeticoes": sum(1 for d in abertas if d.get("repete")),
         "destaque": abertas[:NO_TOPO],

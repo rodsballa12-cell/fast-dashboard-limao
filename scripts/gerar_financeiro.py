@@ -676,6 +676,19 @@ def main():
 
     d_cons["monitor_encargos"] = _monitor_encargos(wb)
 
+    # Estoque (Rodrigo 27/10/2026): compra de material não é CAPEX nem despesa.
+    # Se a leitura quebrar, o bloco vai com o erro em vez de sumir — a
+    # auditoria de coerência acusa as duas coisas.
+    try:
+        import estoque as _estoque
+        est = _estoque.ler(wb, regra_amortizacao=(CFG.get("estoque") or {}).get("amortizacao"))
+    except Exception as exc:  # noqa: BLE001
+        est = {u: {"status": "erro_leitura", "erro": f"{type(exc).__name__}: {exc}"}
+               for u in ("escova", "spa", "consolidado")}
+    d_escova["estoque"], d_spa["estoque"], d_cons["estoque"] = est["escova"], est["spa"], est["consolidado"]
+    print(f"[estoque] {est['consolidado'].get('status')} · compras "
+          f"R$ {est['consolidado'].get('compras', {}).get('total', 0):,.2f}")
+
     for path, payload, tag in [
         (OUT_ESCOVA, d_escova, "escova"),
         (OUT_SPA,    d_spa,    "spa"),

@@ -291,10 +291,33 @@ $encAnterior = [Console]::OutputEncoding
 $eaAnterior  = $ErrorActionPreference
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Continue"   # mesma armadilha do 2>&1 explicada acima
-try   { $saida = & $claude -p "/$Agente" 2>&1 | Out-String }
+# Com limite de tempo: a tarefa agendada tem 20 min e, em 23/10/2026, a
+# Operacao das 11h30 foi morta pelo Agendador no meio do `claude -p` (codigo
+# 0xC000013A) sem escrever ata nem log. Sem este limite o script morria calado;
+# com ele, vira uma ata de erro e uma linha FALHOU no log.
+$estourou = $false
+try {
+  $jobClaude = Start-Job -ScriptBlock {
+    param($cli, $ag)
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    & $cli -p "/$ag" 2>&1 | Out-String
+  } -ArgumentList $claude, $Agente
+  if (Wait-Job $jobClaude -Timeout 840) {
+    $saida = (Receive-Job $jobClaude | Out-String)
+  } else {
+    Stop-Job $jobClaude -ErrorAction SilentlyContinue
+    $estourou = $true
+    $saida = ""
+  }
+  Remove-Job $jobClaude -Force -ErrorAction SilentlyContinue
+}
 finally {
   [Console]::OutputEncoding = $encAnterior
   $ErrorActionPreference = $eaAnterior
+}
+if ($estourou) {
+  Registrar "FALHOU: o claude passou de 14 min em /$Agente e foi interrompido."
+  $saida = "O comando ``claude -p /$Agente`` passou de 14 minutos e foi interrompido. Nao ha parecer hoje - veja _execucoes.log."
 }
 
 # Briefing vazio e uma falha, nao um dia sem noticia. Sem esta checagem ele
@@ -326,6 +349,25 @@ $semBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText($arquivo, ($cabecalho + $saida), $semBom)
 Registrar "Gravado em $arquivo"
 
+# --- Carimbo de saude -------------------------------------------------------
+# Falha aqui nunca derruba o briefing. Carimba tambem quando deu errado: quem so
+# carimba no sucesso nao registra o que interessa (ver scripts/saude.py).
+$chaveSaude = if ($Agente -eq "conselho") { "conselho" } else { "cargos" }
+$falhouCargo = $estourou -or [string]::IsNullOrWhiteSpace($saida) -or
+               (($saida -match "credit balance|too low|rate limit") -and $saida.Length -lt 400)
+$resSaude = if ($falhouCargo) { "falha" } else { "ok" }
+$anteriorEA = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+try {
+  $py = (Get-Command python -ErrorAction SilentlyContinue).Source
+  if ($py) {
+    $env:PYTHONUTF8 = "1"
+    $saidaSaude = (& $py (Join-Path $Projeto "scripts\saude.py") carimbar $chaveSaude $resSaude "$Agente $data $hora" 2>&1 | Out-String).Trim()
+    Registrar "Saude: $saidaSaude"
+  }
+} catch { Registrar ("Carimbo de saude falhou: " + $_.Exception.Message) }
+finally { $ErrorActionPreference = $anteriorEA }
+
 # --- Copia pro repositorio ------------------------------------------------
 # O briefing no vault so existe nesta maquina. Uma copia em docs/atas/ da a
 # ele tres coisas que o vault nao da: historico versionado, leitura por
@@ -345,7 +387,7 @@ Copy-Item -Path $arquivo -Destination $ata -Force
 # e ele falhava com "unstaged changes" desde 13/10/2026.
 $rel = "docs/atas/$data-$Agente.md"
 if ((Git-Passo "pull antes de publicar" @("pull","--rebase","--autostash")) -and
-    (Git-Passo "add da ata" @("add","--",$rel))) {
+    (Git-Passo "add da ata" @("add","--",$rel,"data/saude.json"))) {
 
   $ErrorActionPreference = "Continue"
   & git -C $Projeto diff --cached --quiet

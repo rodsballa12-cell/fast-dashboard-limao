@@ -1,7 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "Read(//home/user/fast-dashboard-limao/**)",
       "Read(./**)",
       "Glob",
       "Grep",
@@ -14,7 +13,6 @@
       "Bash(tail:*)",
       "Bash(ls:*)",
       "Bash(wc:*)",
-      "Bash(python -c:*)",
       "Bash(python3 scripts/auditoria_coerencia.py:*)",
       "Bash(python scripts/auditoria_coerencia.py:*)",
       "Bash(python3 scripts/alerta_entrega.py:*)",
@@ -24,7 +22,30 @@
       "Bash(python3 scripts/insights.py:*)",
       "Bash(python scripts/insights.py:*)",
       "Bash(python3 scripts/densidade_dow.py:*)",
-      "Bash(python scripts/densidade_dow.py:*)"
+      "Bash(python scripts/densidade_dow.py:*)",
+      "Bash(python -X utf8 scripts/auditoria_coerencia.py:*)",
+      "Bash(python -X utf8 scripts/densidade_dow.py:*)",
+      "Bash(python -X utf8 scripts/revisao_semanal.py:*)",
+      "Bash(python -X utf8 scripts/insights.py:*)",
+      "Bash(python -X utf8 scripts/alerta_entrega.py:*)",
+      "Bash(python scripts/cofre.py abrir:*)",
+      "Bash(python3 scripts/cofre.py abrir:*)",
+      "Bash(python -X utf8 scripts/cofre.py abrir:*)",
+      "Bash(python scripts/marketing/sults_comunicados.py:*)",
+      "Bash(python -X utf8 scripts/marketing/sults_comunicados.py:*)",
+      "Bash(python scripts/marketing/gerar.py:*)",
+      "Bash(python -X utf8 scripts/marketing/gerar.py:*)",
+      "Artifact",
+      "SendUserFile",
+      "mcp__ccd_turn__update_plan",
+      "mcp__ccd_turn__wrap_up",
+      "Read(//c/Users/rods_/OneDrive/Franquia - FAST/Claude/**)",
+      "Write(//c/Users/rods_/OneDrive/Franquia - FAST/Claude/**)",
+      "Edit(//c/Users/rods_/OneDrive/Franquia - FAST/Claude/**)",
+      "Write(//c/Users/rods_/dev/fast-dashboard-limao/scripts/marketing/**)",
+      "Bash(python -X utf8 -c:*)",
+      "mcp__claude-in-chrome",
+      "ToolSearch"
     ],
     "deny": [
       "Bash(curl:*)",

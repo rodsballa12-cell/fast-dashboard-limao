@@ -184,6 +184,102 @@ def conferir_bloco_derivado(achados, dash, nome, sem_agendamentos_ok=False):
             "o passo de densidade não rodou no último refresh."))
 
 
+def conferir_contra_trinks(achados, dash, unidade):
+    """O painel bate com o que foi extraido do Trinks a mao?
+
+    Pedido do Rodrigo em 28/10/2026, depois de subir um export do Trinks
+    para a reuniao com a agencia: "garanta que batam". Ate entao os dois
+    lados so se encontravam na frente da agencia.
+
+    A referencia vive em `data/trinks_conferencia.json`, que e arquivo de
+    cofre (financeiro). Sem ele, este passo nao reclama — so nao confere.
+    A regra de comparacao e a do proprio scripts/conferir_trinks.py, nao
+    uma copia: copia envelhece sozinha e passa a mentir.
+    """
+    ref_path = REPO / "data" / "trinks_conferencia.json"
+    if not ref_path.exists():
+        return
+    if not isinstance(dash, dict):
+        return
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "conferir_trinks", REPO / "scripts" / "conferir_trinks.py")
+        ct = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(ct)
+        ref_tudo = json.loads(ref_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        achados.append(("indef", f"nao consegui carregar a conferencia do Trinks: {e}"))
+        return
+
+    meses_ref = ref_tudo.get(unidade)
+    if not isinstance(meses_ref, dict):
+        return
+    meses = (((dash.get("abas") or {}).get("anual") or {}).get("meses")) or {}
+    for ym, r in meses_ref.items():
+        if ym.startswith("_") or not isinstance(r, dict):
+            continue
+        m = meses.get(ym)
+        if not isinstance(m, dict):
+            continue
+        fora = ct.divergencias(r, m)
+        for campo, t, p in fora:
+            achados.append(("aviso",
+                f"{unidade} {ym}: `{campo}` nao bate com o Trinks — "
+                f"Trinks {t}, painel {p}. Rode "
+                f"`python3 scripts/conferir_trinks.py {unidade} {ym}` para o detalhe."))
+
+
+def conferir_placar_agencia(achados, dash, nome):
+    """Os sete numeros da reuniao com a agencia tem que estar no payload.
+
+    O placar da aba Midias (28/10/2026) le tudo de
+    `abas.anual.meses[YYYY-MM]`. Se um desses campos sumir do refresh, o
+    bloco nao desaparece — ele mostra NAO VEJO numa linha e as outras seis
+    continuam bonitas, o que e pior: a reuniao segue com um numero faltando
+    sem ninguem perceber. Mesma licao de `densidade_dow` em 14/09.
+
+    Confere o mes corrente e o anterior, que sao justamente os dois que o
+    placar compara.
+    """
+    CAMPOS = {
+        "meta":              "meta do mes",
+        "caixa":             "faturamento",
+        "ticket_medio":      "ticket medio (formula de 27/10)",
+        "n_trans_com_pagto": "denominador do ticket medio",
+        "atend_fin":         "atendimentos",
+        "clientes_unicos":   "clientes no mes",
+        "clientes_novos":    "clientes novos",
+        "pacotes_n":         "pacotes vendidos",
+        "dias_op":           "dias de operacao (base da comparacao por dia)",
+    }
+    if not isinstance(dash, dict):
+        return
+    meses = (((dash.get("abas") or {}).get("anual") or {}).get("meses")) or {}
+    if not meses:
+        achados.append(("erro",
+            f"{nome}: `abas.anual.meses` ausente — o placar do negocio da aba "
+            "Midias (o que a agencia pede) nao tem de onde ler."))
+        return
+    hoje = (dash.get("hoje") or "")[:7]
+    if not hoje:
+        return
+    ano, mes = int(hoje[:4]), int(hoje[5:7])
+    ant = f"{ano - 1}-12" if mes == 1 else f"{ano}-{mes - 1:02d}"
+    for ym, rotulo in ((hoje, "mes corrente"), (ant, "mes anterior")):
+        m = meses.get(ym)
+        if not isinstance(m, dict):
+            # mes sem movimento nao entra em `meses` — e esperado antes da
+            # loja abrir, nao e falha.
+            continue
+        faltam = [f"`{k}` ({v})" for k, v in CAMPOS.items() if m.get(k) is None]
+        if faltam:
+            achados.append(("erro",
+                f"{nome}: o {rotulo} ({ym}) esta sem " + ", ".join(faltam)
+                + " — o placar da aba Midias vai mostrar NAO VEJO nessa linha "
+                  "na proxima reuniao com a agencia."))
+
+
 def conferir_frescor(achados, arquivos):
     """Consolidado e unidade têm que sair da MESMA execução, não do mesmo dia.
 
@@ -395,6 +491,130 @@ def conferir_caixa_a_receber(achados):
                 f"R$ {ar['Spa']:,.2f})."))
 
 
+ESTOQUE_DESDE = "2026-10-28"
+
+
+def conferir_estoque(achados, fin):
+    """O estoque existe, soma entre as lojas e não está contado duas vezes?
+
+    Pedido do Rodrigo em 27/10/2026: compra de material não é CAPEX nem
+    despesa, é estoque, e "a auditoria tem de validar isso sempre". O perigo
+    é um pagamento ficar no estoque E numa categoria CAPEX/OPEX do razão: o
+    resultado paga a compra duas vezes. A conferência contra o razão é feita
+    pelo gerar_financeiro.py (só ele abre a planilha); aqui se acusa o que ele
+    gravou, e se o bloco sumiu.
+    """
+    blocos = {u: (fin.get(u) or {}).get("estoque") for u in ("escova", "spa", "consolidado")}
+    faltando = [u for u, b in blocos.items() if not isinstance(b, dict)]
+    if faltando:
+        # Antes do primeiro gerar_financeiro.py com o estoque (27/10/2026) a
+        # ausência é esperada; depois dele, é bloco que sumiu.
+        gerado = str((fin.get("consolidado") or {}).get("gerado_em") or "")[:10]
+        tipo = "erro" if gerado >= ESTOQUE_DESDE else "aviso"
+        achados.append((tipo,
+            f"Estoque: bloco ausente em {', '.join(faltando)}. O card de estoque "
+            f"some do painel e as compras de material deixam de ser conferidas "
+            f"contra o razão. Rode o gerar_financeiro.py no PC."))
+        return
+    for u, b in blocos.items():
+        if b.get("status") == "erro_leitura":
+            achados.append(("erro", f"Estoque ({u}): a leitura da aba quebrou — {b.get('erro')}"))
+            return
+    if blocos["consolidado"].get("status") == "aba_ausente":
+        achados.append(("aviso",
+            "Estoque: a planilha da Siibello ainda não tem a aba de estoque. "
+            "Compras de material não estão sendo controladas."))
+        return
+
+    e, s, c = blocos["escova"], blocos["spa"], blocos["consolidado"]
+
+    def _v(b, *ks):
+        for k in ks:
+            b = (b or {}).get(k)
+        return b
+
+    for rot, ks in (("compras", ("compras", "total")), ("estoque inicial", ("inicial", "valor")),
+                    ("contagem", ("contagem", "valor")), ("fora do resultado", ("fora_do_resultado",))):
+        a, b, t = _v(e, *ks), _v(s, *ks), _v(c, *ks)
+        if all(isinstance(x, (int, float)) for x in (a, b, t)) and abs(a + b - t) > 1.0:
+            achados.append(("erro",
+                f"Estoque · {rot}: Escova {brl(a)} + Spa {brl(b)} = {brl(a + b)}, "
+                f"mas o consolidado diz {brl(t)}."))
+
+    for nome, b in (("Escova", e), ("Spa", s)):
+        ini, cp, ct, cons = _v(b, "inicial", "valor"), _v(b, "compras", "total"), \
+            _v(b, "contagem", "valor"), b.get("consumo_estimado")
+        if all(isinstance(x, (int, float)) for x in (ini, cp, ct, cons)) and abs(ini + cp - ct - cons) > 1.0:
+            achados.append(("erro",
+                f"Estoque {nome}: consumo {brl(cons)} não fecha com inicial {brl(ini)} "
+                f"+ compras {brl(cp)} − contagem {brl(ct)}."))
+        if isinstance(cons, (int, float)) and cons < -1.0:
+            achados.append(("erro",
+                f"Estoque {nome}: a contagem ({brl(ct)}) é maior que o inicial mais as "
+                f"compras ({brl(ini + cp)}). Faltou lançar compra, ou a contagem tem "
+                f"custo errado."))
+        # O estoque inicial também foi comprado: se não estiver aberto em itens
+        # com a origem do pagamento, ninguém garante que não está no CAPEX.
+        # Em 27/10/2026 os R$ 15.542,16 do Spa eram exatamente Tulipia + Glossex
+        # + Mercado Livre, que estavam lançados no CAPEX ao mesmo tempo.
+        itens = _v(b, "inicial", "itens")
+        if isinstance(ini, (int, float)) and ini > 0:
+            if itens is None:
+                achados.append(("aviso",
+                    f"Estoque {nome}: o inicial de {brl(ini)} não está aberto em itens "
+                    f"(coluna G = 'Inicial' nas compras). Não dá para garantir que essas "
+                    f"compras não estão também no CAPEX ou na despesa."))
+            elif abs(itens - ini) > 1.0:
+                achados.append(("erro",
+                    f"Estoque {nome}: o inicial diz {brl(ini)} e os itens que o compõem "
+                    f"somam {brl(itens)}."))
+        sem_uso = _v(b, "contagem", "sem_uso") or 0
+        if _v(b, "contagem", "data") and sem_uso:
+            achados.append(("aviso",
+                f"Estoque {nome}: {sem_uso} produto(s) contado(s) sem o uso marcado "
+                f"(serviço ou revenda). O custo do atendimento e o da revenda ficam misturados."))
+
+    cf = c.get("conferencia") or {}
+    if cf.get("status") != "ok":
+        achados.append(("indef",
+            f"Estoque: compras não conferidas contra o razão ({cf.get('status') or 'sem conferência'})."))
+    else:
+        for x in cf.get("conflitos_capex_opex") or []:
+            achados.append(("erro",
+                f"Estoque: pagamento contado duas vezes — {x}. Ou é estoque, ou é "
+                f"CAPEX/despesa; nos dois lugares o resultado paga a compra duas vezes."))
+        if abs(cf.get("diferenca") or 0) > 1.0:
+            achados.append(("erro",
+                f"Estoque: o razão tem {brl(cf.get('razao_estoque_total') or 0)} classificados como "
+                f"estoque e a aba de estoque tem {brl(cf.get('compras_xp_total') or 0)} de "
+                f"compras pela conta XP (diferença de {brl(cf.get('diferenca') or 0)})."))
+        sp = cf.get("compras_sem_par_no_razao") or []
+        if sp:
+            achados.append(("aviso",
+                f"Estoque: {len(sp)} compra(s) pela conta XP sem pagamento no razão — "
+                f"{'; '.join(sp[:3])}{' …' if len(sp) > 3 else ''}"))
+        fc = cf.get("razao_fora_do_controle") or []
+        if fc:
+            achados.append(("aviso",
+                f"Estoque: {len(fc)} pagamento(s) classificado(s) como estoque no razão "
+                f"e fora da aba de estoque — {'; '.join(fc[:3])}{' …' if len(fc) > 3 else ''}"))
+        if cf.get("compras_cartao_nao_conferidas"):
+            achados.append(("indef",
+                f"Estoque: {cf['compras_cartao_nao_conferidas']} compra(s) no cartão ainda "
+                f"não conferida(s) contra a aba Cartão_Pessoal."))
+        if cf.get("compras_sem_loja"):
+            achados.append(("aviso",
+                f"Estoque: {len(cf['compras_sem_loja'])} compra(s) sem loja definida, "
+                f"rateadas 50/50 por falta de informação."))
+
+    fora = c.get("fora_do_resultado") or 0
+    if fora > 0 and not _v(c, "amortizacao", "regra"):
+        achados.append(("aviso",
+            f"Estoque: {brl(fora)} em compras de material estão fora do resultado "
+            f"porque a regra de amortização ainda não foi definida. O lucro do "
+            f"painel está maior do que será quando a regra entrar."))
+
+
 def conferir_saude_automacoes(achados):
     """As automacoes carimbaram que funcionaram, e isso bate com os arquivos?
 
@@ -411,12 +631,19 @@ def conferir_saude_automacoes(achados):
     """
     import subprocess
     try:
-        r = subprocess.run([sys.executable, str(REPO / "scripts" / "saude.py"), "conferir"],
-                           capture_output=True, text=True, timeout=60)
-        if r.returncode == 1:
-            for linha in r.stdout.splitlines():
-                if linha.strip().startswith(("🛑", "⚠️")):
-                    achados.append(("aviso", f"Saude: {linha.strip()[2:].strip()}"))
+        r = subprocess.run([sys.executable, "-X", "utf8", str(REPO / "scripts" / "saude.py"), "conferir"],
+                           capture_output=True, text=True, encoding="utf-8",
+                           errors="replace", timeout=60)
+        linhas = [l for l in (r.stdout or "").splitlines()
+                  if l.strip().startswith(("🛑", "⚠️"))]
+        if r.returncode == 1 and not linhas:
+            # saiu com erro mas nao disse qual automacao: o check quebrou, nao passou.
+            achados.append(("aviso",
+                "Saude: scripts/saude.py falhou sem dizer o que esta vermelho "
+                f"({(r.stderr or '').strip().splitlines()[-1:] or ['sem stderr']}). "
+                "Sem isso nenhuma automacao esta sendo vigiada."))
+        for linha in linhas:
+            achados.append(("aviso", f"Saude: {linha.strip()[2:].strip()}"))
     except Exception as exc:
         achados.append(("aviso", f"Saude: nao consegui rodar scripts/saude.py ({type(exc).__name__})."))
 
@@ -466,8 +693,25 @@ def conferir_atas_vazias(achados):
         # Erro de credencial, ou ata que nao tem corpo nenhum depois do cabecalho.
         corpo = re.sub(r"^---.*?---", "", t, flags=re.S).strip()
         corpo = re.sub(r"^#.*$|^↑.*$", "", corpo, flags=re.M).strip()
-        if re.search(r"credit balance|too low|quota|rate limit", t, re.I) or len(corpo) < 120:
+        # Erro de credencial so vale quando E o parecer (corpo curto). Um conselho
+        # de 8 KB que cita "Credit balance is too low" esta relatando o problema.
+        erro = re.search(r"credit balance|too low|quota|rate limit", corpo, re.I)
+        if (erro and len(corpo) < 400) or len(corpo) < 120:
             vazias.append(f.name[:-3])
+    # Ata que nao existe nao aparece em glob nenhum. Se o cargo gravou ontem e o
+    # horario de hoje ja passou, a falta e o sinal (Operacao diaria, 23/10).
+    from datetime import datetime
+    agora = datetime.now()
+    hoje_s, ontem_s = date.today().isoformat(), (date.today() - timedelta(days=1)).isoformat()
+    for f in sorted(pasta.glob(f"{ontem_s}-*.md")):
+        cargo = f.name[11:-3]
+        if (pasta / f"{hoje_s}-{cargo}.md").exists():
+            continue
+        m = re.search(r"^hora:\s*(\d{1,2}):(\d{2})", f.read_text(encoding="utf-8", errors="replace"), re.M)
+        if m and agora.hour * 60 + agora.minute > int(m[1]) * 60 + int(m[2]) + 90:
+            achados.append(("aviso",
+                f"Ata de {cargo} de hoje nao existe (ontem saiu as {m[1]}:{m[2]}). "
+                f"A tarefa agendada nao rodou ou nao commitou."))
     if vazias:
         achados.append(("erro",
             f"{len(vazias)} ata(s) dos ultimos 2 dias sem parecer de verdade "
@@ -572,9 +816,9 @@ def conferir_preco_realizado(achados):
         n_cad = pr.get("n_cadastro_desatualizado") or 0
         if n_cad:
             achados.append(("aviso",
-                f"{nome}: {n_cad} servico(s) cobrados ACIMA do preco cadastrado no "
-                f"Trinks — o cadastro esta velho. Enquanto nao atualizar, o card "
-                f"mostra desconto que nao existe."))
+                f"{nome}: {n_cad} servico(s) cobrados ACIMA do preco do catalogo do "
+                f"Trinks. Ou o preco subiu e ninguem registrou, ou esta sendo "
+                f"lancado no servico errado — confira em `preco_realizado.acoes`."))
 
 
 def conferir_taxa_comissao(achados):
@@ -671,10 +915,15 @@ def main() -> int:
     conferir_taxa_comissao(achados)
     conferir_preco_realizado(achados)
     conferir_caixa_a_receber(achados)
+    conferir_estoque(achados, fin)
     conferir_saude_automacoes(achados)
     conferir_atas_vazias(achados)
     conferir_decisoes_sem_desfecho(achados)
     conferir_override_tem_todos_os_leitores(achados)
+    for _u in ("escova", "spa", "consolidado"):
+        conferir_placar_agencia(achados, dash.get(_u), _u.capitalize())
+    for _u in ("escova", "spa"):
+        conferir_contra_trinks(achados, dash.get(_u), _u)
     conferir_funil_roas(achados)
     conferir_conselho_sincronizado(achados)
 

@@ -125,7 +125,15 @@ def apurar(dash):
             continue
 
         tabela = float(t.get("tabela") or 0)
-        cadast = float(t.get("praticado") or 0)
+        # CADASTRO = o preco do catalogo do Trinks (`tabela` aqui, vindo de
+        # /v1/servicos). Ate 23/10/2026 isto lia `praticado`, que e a MEDIANA
+        # HISTORICA DO QUE FOI COBRADO: ela inclui vendas do preco antigo e ficava
+        # abaixo do catalogo. Resultado: "cadastro velho" para Modelada (R$ 99 x
+        # R$ 109 no catalogo) e Fast Mask (R$ 39,50 x R$ 89), que ja estavam certos
+        # no Trinks, e uma instrucao "Atualizar no Trinks" que nao tinha o que
+        # atualizar. A mediana cobrada segue no item, so que com o nome certo.
+        cadast = float(t.get("tabela") or 0)
+        mediana_cobrada = float(t.get("praticado") or 0)
         pagas = (v / cadast) if cadast else None
         zeros = (nq - pagas) if pagas is not None else None
         perto_inteiro = (zeros is not None
@@ -135,6 +143,7 @@ def apurar(dash):
             "servico": x.get("nome"), "n": nq,
             "tabela": round(tabela, 2), "cadastrado": round(cadast, 2),
             "cobrado_medio": round(cobrado, 2),
+            "mediana_historica_cobrada": round(mediana_cobrada, 2),
             "sessoes_a_zero_estimadas": (round(zeros, 1) if zeros is not None else None),
             "deixado_na_mesa": 0.0,
         }
@@ -151,10 +160,9 @@ def apurar(dash):
                 item.update({
                     "classe": "cadastro_desatualizado",
                     "desvio_real_pct": round((cobrado / tabela - 1) * 100, 1) if tabela else None,
-                    "leitura": (f"Cobrado a {brl(cobrado)} com cadastro de {brl(cadast)} — "
-                                f"o cadastro no Trinks está velho, não o atendimento. "
-                                f"Contra a tabela de {brl(tabela)}: "
-                                f"{(cobrado / tabela - 1) * 100:+.1f}%."),
+                    "leitura": (f"Cobrado a {brl(cobrado)} com catálogo de {brl(cadast)} no Trinks — "
+                                f"acima do catálogo. Confira se o preço subiu ou se está "
+                                f"sendo lançado no serviço errado."),
                 })
             else:
                 n_cadastro += 1
@@ -162,7 +170,7 @@ def apurar(dash):
                     "classe": "cadastro_desatualizado",
                     "desvio_real_pct": round((cobrado / tabela - 1) * 100, 1) if tabela else None,
                     "leitura": (f"Cobrado a {brl(cobrado)} — acima da tabela de "
-                                f"{brl(tabela)} e do cadastro de {brl(cadast)}. "
+                                f"{brl(tabela)} do catálogo do Trinks. "
                                 f"Ou o preço subiu e ninguém registrou, ou está "
                                 f"sendo lançado no serviço errado."),
                 })

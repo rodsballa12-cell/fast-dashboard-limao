@@ -34,6 +34,14 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+# No Windows o console padrao e cp1252 e o ✅/🛑 abaixo derrubava o script;
+# a auditoria, que le esta saida por subprocess, recebia vazio e nao acusava nada.
+for _f in (sys.stdout, sys.stderr):
+    try:
+        _f.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 RAIZ = Path(__file__).resolve().parent.parent
 ARQ = RAIZ / "data" / "saude.json"
 BRT = timezone(timedelta(hours=-3))
@@ -76,6 +84,12 @@ def carimbar(nome: str, resultado: str, detalhe: str = "") -> int:
         return 2
     d = ler_arquivo()
     anterior = (d.get("automacoes") or {}).get(nome) or {}
+    # "cargos" e carimbado por seis tarefas em sequencia. Sem esta regra, a
+    # falha das 07:30 sumia quando a das 09:30 terminava bem.
+    if (nome == "cargos" and resultado == "ok" and anterior.get("resultado") == "falha"
+            and str(anterior.get("quando", ""))[:10] == _agora().date().isoformat()):
+        print(f"[saude] {nome}: mantive a falha de hoje ({anterior.get('detalhe', '')[:60]})")
+        return 0
     d.setdefault("automacoes", {})[nome] = {
         "quando": _agora().replace(microsecond=0).isoformat(),
         "resultado": resultado,

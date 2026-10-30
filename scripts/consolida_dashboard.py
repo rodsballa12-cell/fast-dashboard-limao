@@ -30,12 +30,26 @@ NAO_SOMAR = {
     "caixa_delta_bruto_pct", "pct_recorrentes", "pareto20_pct",
     "pct_faturamento", "estrelas_media", "rating",
     "ticket_medio", "ticket_medio_serv", "ticket_medio_visita",
+    "ticket_trans", "ticket_venda_trinks",
     "ltv_medio", "freq_media_visitas", "rs_hora", "rs_hora_salao",
     "media_dia",
     # Taxas do bloco Stone — somar duas taxas da 1,286 em vez de 0,643.
     # So aparecem no consolidado quando as duas unidades tem extrato proprio.
     "taxa_pix_pct", "pix_tarifa_pct", "taxa_antecipacao_mensal_pct",
     "rendimento_estimado_pct",
+    # Audit 29/10/2026: medias/pcts dentro de arrays agregados.
+    # - ranking_prof_executor.taxa_efetiva: % comissao sobre faturamento, somar
+    #   duas unidades daria 2%, nao 1%. Recalculada em recalcular_derivados.
+    # - hora_media.media: media de atendimentos simultaneos por hora. Somar
+    #   das duas lojas daria 3,34 no agregado quando sabado tem 2,76 e 3,90
+    #   em cada; o painel usa isso pra "dias de pico" e mostrava numero
+    #   impossivel. Recalculada em recalcular_derivados.
+    # - ranking_prof.ticket / ranking_serv.ticket: ticket medio por prof/serv.
+    #   Somar daria R$ 300 quando o certo e R$ 150 em cada unidade.
+    #   Recalculada em recalcular_derivados.
+    # - rentabilidade_hora.min_medio: minutos medios por atendimento. Somar
+    #   duas durações nao faz sentido fisico. Peso ponderado em recalc.
+    "taxa_efetiva", "media", "ticket", "min_medio",
 }
 
 # Chaves de identidade — pega da Escova (baseline)
@@ -53,7 +67,21 @@ IDENTIDADE = {
     # NAO_SOMAR. Resultado: dia 02 mostrando valor do dia 01 do consolidado,
     # dia 04 com valor do dia 02 etc. Mesma coisa pra 'h' (hora), 'dow' etc.
     "d", "h", "dow", "nome",
+    # Audit 29/10/2026: campos de identidade dentro de itens de arrays
+    # agregados por chave. Quando o mesmo cliente aparece nas duas lojas,
+    # merge cego somava "dias ate aniversario" (5+5=10). Agora preserva
+    # (aniversario descreve o cliente, nao a loja — mesmo valor nos dois).
+    "dias", "data_aniv", "data_aniversario",
+    # Identificadores de slot/chave em rankings e categorias
+    "k", "meio", "tipo", "prof_id",
+    # Niveis de confianca (string "alta"/"media"/"baixa", mesmo em ambos)
+    "confianca",
 }
+
+# dias_sem_vir e ultima_visita precisam de merge especial: um cliente que
+# aparece nas duas unidades teve ultima visita A ou B — queremos a mais
+# recente (menor dias_sem_vir, maior ultima_visita). Fazemos isso no
+# merge dedicado a 'churn_early.top' em merge_list(), nao globalmente.
 
 # Chaves cujos arrays PRESERVAM ordem por índice (dow, hora, meses)
 ARRAY_POR_INDICE = {"por_dow", "hora_media", "hora_abs", "meses", "por_dia_mes", "dow_hist"}
@@ -76,6 +104,11 @@ ARRAY_POR_CHAVE = {
     # e escondia o restante do caixa.
     "meios_pagamento":      "nome",
     "upsell_pacotes":       None,   # agrupa por nome, sem _unidade
+    # Audit 29/10/2026: rankings de produtos/pacotes que caiam no fallback
+    # concat (a+b), duplicando itens no consolidado.
+    "ranking_produtos":     "nome",
+    "ranking_pacotes":      "nome",
+    "upsell_produtos":      None,   # agrupa por nome, sem _unidade
 }
 
 # Alguns 'top' sao de clientes (cross_sell.top / churn_early.top) e portanto
@@ -95,6 +128,11 @@ SORT_POR_PATH = {
     "cross_sell.top":    lambda z: -(z.get("ltv") or 0),
     "churn_early.top":   lambda z: -(z.get("ltv") or 0),
     "top_ltv.top":       lambda z: -(z.get("v") or 0),
+    # Audit 29/10/2026: rentabilidade_hora quebrada em dois grupos — cadeira
+    # (operacional, top-15 por rs_hora) e addon (upsell, ordenado por v).
+    # Sem SORT, o consolidado misturava os dois tipos e cortava arbitrariamente.
+    "rentabilidade_hora": lambda z: (0 if z.get("tipo") == "cadeira" else 1,
+                                     -(z.get("rs_hora") or z.get("v") or 0)),
 }
 
 # Rankings de profissionais — MESMA lógica de ARRAY_POR_CHAVE (agrega por nome
@@ -182,6 +220,29 @@ def merge_list(a, b, path=""):
             v["_unidade"] = ("ambas" if v["n_escova"] > 0 and v["n_spa"] > 0
                              else ("escova" if v["n_escova"] > 0 else "spa"))
         return sorted(idx.values(), key=lambda z: -(z.get("receita") or 0))
+    # por_dia_mes: mesclar por 'd' (dia do mes), nao por indice. Cada unidade
+    # emite apenas os dias que TIVERAM transacao (github_refresh.py:954), entao
+    # os dois arrays podem ter tamanhos diferentes se uma loja fechou um dia que
+    # a outra operou. Antes caia no fallback `a + b` (concat), e o heatmap do
+    # Calendario de Metas sobrescrevia Escova pelo SPA — ficava mostrando so o
+    # SPA no consolidado. 29/10/2026. Fix: merge por 'd' somando n e v.
+    if key == "por_dia_mes":
+        idx = {}
+        for x in (a or []) + (b or []):
+            if not isinstance(x, dict): continue
+            d_key = x.get("d")
+            if d_key is None: continue
+            if d_key not in idx:
+                idx[d_key] = {"d": d_key, "n": 0, "v": 0.0}
+                # preserva outros campos de identidade (dow, nome, etc.)
+                for k2 in x:
+                    if k2 not in ("d", "n", "v"):
+                        idx[d_key][k2] = x[k2]
+            idx[d_key]["n"] += int(x.get("n") or 0)
+            idx[d_key]["v"] += float(x.get("v") or 0)
+        for v in idx.values():
+            v["v"] = round(v["v"], 2)
+        return sorted(idx.values(), key=lambda z: z["d"])
     # Arrays por índice (dow, hora, etc.) — soma item-a-item se mesmo tamanho
     if key in ARRAY_POR_INDICE and len(a) == len(b):
         return [merge(x, y, path) for x, y in zip(a, b)]
@@ -286,8 +347,19 @@ def recalcular_derivados(d):
         caixa = k.get("caixa") or 0
         atend = k.get("atend_fin") or 0
         cliente_dia = k.get("cliente_dia") or 0
+        n_trans = k.get("n_trans") or 0
+        n_trans_pagto = k.get("n_trans_com_pagto") or n_trans
+        total_recebido = k.get("total_recebido_trinks") or 0
+        # TICKET MEDIO OFICIAL (bate com Trinks):
+        #   total_recebido_trinks / n_trans_com_pagto
+        # Formula validada no screenshot do Rodrigo em 27/10/2026.
+        if n_trans_pagto > 0:
+            k["ticket_medio"] = round(total_recebido / n_trans_pagto, 2)
+            k["ticket_venda_trinks"] = round(total_recebido / n_trans_pagto, 2)
+        if n_trans > 0:
+            k["ticket_trans"] = round(caixa / n_trans, 2)
         if cliente_dia > 0:
-            k["ticket_medio"] = round(caixa / cliente_dia, 2)
+            k["ticket_medio_interno"] = round(caixa / cliente_dia, 2)
         # categorias.pct
         cat = aba.get("categorias") or {}
         for tipo, v in cat.items():
@@ -301,6 +373,63 @@ def recalcular_derivados(d):
             for c in cnat:
                 if isinstance(c, dict):
                     c["pct_receita"] = round((c.get("v") or 0) / caixa * 100, 1)
+        # Audit 29/10/2026: rankings de prof/serv/produto/pacote herdavam
+        # ticket_medio/ticket/taxa_efetiva da Escova (via NAO_SOMAR), mesmo
+        # quando o ranking agregava Escova+SPA. Agora recalcula sobre v/n
+        # consolidados.
+        for ranking_key in ("ranking_prof", "ranking_prof_executor",
+                            "ranking_serv", "ranking_produtos",
+                            "ranking_pacotes"):
+            lst = aba.get(ranking_key) or []
+            for item in lst:
+                if not isinstance(item, dict): continue
+                v = item.get("v") or 0
+                n = item.get("n") or 0
+                if n > 0:
+                    # ticket_medio e ticket (nome varia por ranking)
+                    if "ticket_medio" in item or ranking_key in ("ranking_prof", "ranking_serv", "ranking_prof_executor"):
+                        item["ticket_medio"] = round(v / n, 2)
+                    if "ticket" in item:
+                        item["ticket"] = round(v / n, 2)
+                # taxa_efetiva = comissao / v no ranking_prof_executor
+                if ranking_key == "ranking_prof_executor" and v > 0:
+                    com = item.get("comissao") or item.get("comissao_v") or 0
+                    if com:
+                        item["taxa_efetiva"] = round(com / v, 4)
+                # pct_faturamento sobre o caixa consolidado
+                if caixa > 0 and "pct_faturamento" in item:
+                    item["pct_faturamento"] = round(v / caixa * 100, 1)
+        # rentabilidade_hora: rs_hora, ticket, min_medio recalc
+        rh = aba.get("rentabilidade_hora") or []
+        for item in rh:
+            if not isinstance(item, dict): continue
+            v = item.get("v") or 0
+            n = item.get("n") or 0
+            min_medio = item.get("min_medio") or 0
+            if n > 0 and min_medio > 0:
+                # rs_hora = v / horas = v / (n * min_medio / 60)
+                horas = n * min_medio / 60
+                if horas > 0:
+                    item["rs_hora"] = round(v / horas, 2)
+            if n > 0:
+                item["ticket"] = round(v / n, 2)
+            if caixa > 0 and "pct_faturamento" in item:
+                item["pct_faturamento"] = round(v / caixa * 100, 1)
+        # Corta rentabilidade_hora pra cadeira:15 + addons (criterio original
+        # de cada unidade). Sem corte, o merge pode devolver mais linhas.
+        if rh:
+            cad = [x for x in rh if x.get("tipo") == "cadeira"][:15]
+            add = [x for x in rh if x.get("tipo") != "cadeira"]
+            aba["rentabilidade_hora"] = cad + add
+        # hora_media.media: media de atendimentos simultaneos por hora.
+        # Somar duas lojas inflava; agora recalcula sobre n_total e dias_op.
+        hm = aba.get("hora_media") or []
+        dias_op = k.get("dias_op") or 1
+        for item in hm:
+            if not isinstance(item, dict): continue
+            n_total = item.get("n_total") or 0
+            if dias_op > 0 and n_total > 0:
+                item["media"] = round(n_total / dias_op, 2)
         # meios_pagamento: pct precisa ser recalculado sobre o total consolidado
         # porque veio da Escova. Ordena por valor descendente.
         meios = aba.get("meios_pagamento") or []
@@ -414,8 +543,9 @@ def _meta_spa_efetiva(spa, aba, hoje, inicio):
 
 
 def _ticket_meta(k, meta, dias_rest, ritmo_vis):
-    """Mesma regra do refresh (_inject_ticket_meta), sobre o total consolidado."""
-    v_atual = k.get("cliente_dia") or 0
+    """Mesma regra do refresh (_inject_ticket_meta), sobre o total consolidado.
+    Base = n_trans_com_pagto (bate com denominador do ticket_medio Trinks)."""
+    v_atual = k.get("n_trans_com_pagto") or k.get("n_trans") or 0
     visitas_proj = round(v_atual + ritmo_vis * dias_rest)
     realizado = meta.get("realizado") or 0
     falta_caixa = (meta.get("meta") or 0) - realizado
@@ -463,13 +593,19 @@ def corrigir_historico_consolidado(c, esc, spa):
         caixa = k.get("caixa") or 0
         cliente_dia = k.get("cliente_dia") or 0
         n_trans = k.get("n_trans") or 0
+        n_trans_pagto = k.get("n_trans_com_pagto") or n_trans
+        total_recebido = k.get("total_recebido_trinks") or 0
         horas = k.get("horas_operacao_periodo") or 0
         atend_total = k.get("atend_total") or 0
         atend_canc = k.get("atend_canc") or 0
-        if cliente_dia > 0:
-            k["ticket_medio"] = round(caixa / cliente_dia, 2)
+        # TICKET MEDIO OFICIAL: total_recebido_trinks / n_trans_com_pagto
+        if n_trans_pagto > 0:
+            k["ticket_medio"] = round(total_recebido / n_trans_pagto, 2)
+            k["ticket_venda_trinks"] = round(total_recebido / n_trans_pagto, 2)
         if n_trans > 0:
             k["ticket_trans"] = round(caixa / n_trans, 2)
+        if cliente_dia > 0:
+            k["ticket_medio_interno"] = round(caixa / cliente_dia, 2)
         if horas > 0:
             k["rs_hora_salao"] = round(caixa / horas, 2)
         if atend_total > 0:
@@ -494,6 +630,61 @@ def corrigir_historico_consolidado(c, esc, spa):
         ek = (esc_sem.get(semana) or {}).get("kpis") or {}
         sk = (spa_sem.get(semana) or {}).get("kpis") or {}
         _recalc(bloco.get("kpis"), ek, sk)
+
+
+def corrigir_meses_consolidado(c, esc, spa):
+    """Reaplica a regra em abas.anual.meses[YYYY-MM] do consolidado.
+
+    O merge cego erra tres coisas por mes, e nenhuma delas grita:
+      · ticket_medio esta em NAO_SOMAR, entao o consolidado herdava o
+        valor da ESCOVA — o ticket do Spa, que e varias vezes maior,
+        sumia da conta;
+      · dias_op somava os dois calendarios (31 + 31 = 62 dias de outubro);
+      · taxa_canc somava duas porcentagens.
+
+    A meta, o faturamento, os atendimentos, os clientes e os pacotes somam
+    de verdade — esses o merge acerta. Aqui so refazemos os derivados.
+
+    Mesma regra de corrigir_historico_consolidado(), por mes.
+    """
+    def _meses(d):
+        return (((d.get("abas") or {}).get("anual") or {}).get("meses")) or {}
+
+    cons, c_esc, c_spa = _meses(c), _meses(esc), _meses(spa)
+    for ym, m in cons.items():
+        if not isinstance(m, dict):
+            continue
+        me, ms = c_esc.get(ym) or {}, c_spa.get(ym) or {}
+        # dias_op = calendario comum, nao soma dos dois calendarios
+        de, ds = me.get("dias_op") or 0, ms.get("dias_op") or 0
+        if de or ds:
+            m["dias_op"] = max(de, ds)
+        # TICKET MEDIO OFICIAL do mes: total_recebido / tx com pagamento
+        n_pagto = m.get("n_trans_com_pagto") or m.get("n_trans") or 0
+        recebido = m.get("total_recebido_trinks") or 0
+        if n_pagto > 0 and recebido:
+            m["ticket_medio"] = round(recebido / n_pagto, 2)
+        n_trans = m.get("n_trans") or 0
+        if n_trans > 0:
+            m["ticket_trans"] = round((m.get("caixa") or 0) / n_trans, 2)
+        # taxa_canc: media ponderada pelos atendimentos de cada unidade
+        te, ts = me.get("taxa_canc"), ms.get("taxa_canc")
+        ae, as_ = me.get("atend_fin") or 0, ms.get("atend_fin") or 0
+        if te is not None and ts is not None and (ae + as_) > 0:
+            m["taxa_canc"] = round((te * ae + ts * as_) / (ae + as_), 1)
+        elif te is not None and not ms:
+            m["taxa_canc"] = te
+        # meta_origem e string: o merge pegou a da Escova. No consolidado a
+        # meta e soma das duas, entao a procedencia e das duas.
+        oe, os_ = me.get("meta_origem"), ms.get("meta_origem")
+        if oe or os_:
+            m["meta_origem"] = "escova:%s + spa:%s" % (oe or "sem meta", os_ or "sem meta")
+        # clientes_novos/recorrentes podem vir None de uma unidade (regra da
+        # casa: campo que nao foi lido nao vira zero). Se qualquer lado
+        # faltou, o consolidado tambem nao sabe.
+        for campo in ("clientes_novos", "clientes_recorrentes"):
+            if me.get(campo) is None or (ms and ms.get(campo) is None):
+                m[campo] = None
 
 
 def corrigir_consolidado(c, esc, spa):
@@ -616,7 +807,8 @@ def corrigir_consolidado(c, esc, spa):
         horas = ck.get("horas_operacao_periodo") or 0
         if horas > 0:
             ck["rs_hora_salao"] = round(real / horas, 2)
-        vis_dia = lambda k: (k.get("cliente_dia") or 0) / max(k.get("dias_op") or 1, 1)
+        # Base do ritmo = n_trans_com_pagto (bate com denominador do ticket Trinks)
+        vis_dia = lambda k: (k.get("n_trans_com_pagto") or k.get("n_trans") or 0) / max(k.get("dias_op") or 1, 1)
         _ticket_meta(ck, cm, rest, vis_dia(ek) + vis_dia(sk))
 
     mes = c["abas"]["mensal"]["meta"]
@@ -815,6 +1007,7 @@ def main():
     recalcular_derivados(consolidado)
     corrigir_consolidado(consolidado, escova, spa)
     corrigir_historico_consolidado(consolidado, escova, spa)
+    corrigir_meses_consolidado(consolidado, escova, spa)
     anexar_lado_a_lado(consolidado, escova, spa)
     anexar_cadastro_consolidado(consolidado, escova, spa)
     anexar_migracao_cruzada(consolidado, escova, spa)
