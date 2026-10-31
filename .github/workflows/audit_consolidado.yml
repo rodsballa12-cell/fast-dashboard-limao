@@ -1,0 +1,39 @@
+name: Audit profundo do consolidado
+
+# Rodrigo (31/10): "valores e ranking nao bate, faca uma auditoria de
+# tudo". Este workflow descriptografa os payloads das 3 unidades e roda:
+#   1. auditoria_coerencia.py (existente, cobre kpis + consolidado basico)
+#   2. audit_consolidado_profundo.py (novo, cobre TODOS os blocos:
+#      categorias, rankings, meses, hora_media, meios_pagamento,
+#      por_dia_mes, rentabilidade_hora)
+#
+# Printa no log a lista completa de divergencias. Nao altera dado — so
+# audita.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 1}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install cryptography
+      - name: Abrir cofre
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python scripts/cofre.py abrir
+
+      - name: Auditoria basica (auditoria_coerencia.py)
+        run: python3 scripts/auditoria_coerencia.py || echo "[note] auditoria encontrou achados — ver detalhe acima"
+
+      - name: Auditoria profunda do consolidado
+        run: python3 scripts/audit_consolidado_profundo.py || echo "[note] auditoria profunda encontrou divergencias — ver detalhe acima"
