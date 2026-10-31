@@ -415,10 +415,14 @@ def recalcular_derivados(d):
                 item["ticket"] = round(v / n, 2)
             if caixa > 0 and "pct_faturamento" in item:
                 item["pct_faturamento"] = round(v / caixa * 100, 1)
-        # Corta rentabilidade_hora pra cadeira:15 + addons (criterio original
-        # de cada unidade). Sem corte, o merge pode devolver mais linhas.
+        # Corta rentabilidade_hora pra cadeira:30 + addons no consolidado.
+        # Cada unidade individual gera top-15 por rs_hora; o consolidado
+        # pode ter ate 30 cadeiras distintas (15 so da Escova + 15 so do
+        # SPA + sobreposicoes). Audit (31/10) achou 5 servicos sumindo no
+        # mensal por conta do corte em 15 — elevar pra 30 preserva todos
+        # os servicos que apareciam em qualquer uma das lojas.
         if rh:
-            cad = [x for x in rh if x.get("tipo") == "cadeira"][:15]
+            cad = [x for x in rh if x.get("tipo") == "cadeira"][:30]
             add = [x for x in rh if x.get("tipo") != "cadeira"]
             aba["rentabilidade_hora"] = cad + add
         # hora_media.media: media de atendimentos simultaneos por hora.
