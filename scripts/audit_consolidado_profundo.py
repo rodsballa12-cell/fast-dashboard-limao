@@ -32,17 +32,28 @@ RAIZ = Path(__file__).resolve().parent.parent
 
 TOL = 0.05  # dinheiro em reais; 5 centavos tolerancia
 TOL_INT = 0  # inteiro: tolerancia zero
-MAX_LISTAR = 5  # limita listagem por bloco pra nao estourar log
+MAX_LISTAR = 20  # limita listagem por bloco pra nao estourar log
 
 # Campos que NAO somam (medias/percentuais) — mesma lista do
-# consolida_dashboard.NAO_SOMAR + alguns extras pra auditoria
-DERIVADO = re.compile(
+# consolida_dashboard.NAO_SOMAR + alguns extras pra auditoria.
+# Dois jeitos de bater: prefixo (comeca com) OU sufixo _pct.
+_DERIVADO_PREFIXOS = re.compile(
     r"^(ticket_|rs_hora|pct|utilizacao|cobertura|delta|rating|"
     r"estrelas|ltv_medio|freq_|rendimento|taxa_pix|taxa_antec|"
-    r"media_dia|media$|taxa_canc|taxa_efetiva|min_medio|"
-    r"pix_tarifa|_atingimento|conf_|_pct$)",
+    r"media_dia|taxa_canc|taxa_efetiva|min_medio|"
+    r"pix_tarifa|conf_)",
     re.I,
 )
+_DERIVADO_SUFIXOS = re.compile(r"(_pct|_atingimento|_delta|^media$)", re.I)
+
+def _eh_derivado(campo):
+    return bool(_DERIVADO_PREFIXOS.search(campo) or _DERIVADO_SUFIXOS.search(campo))
+
+# Dias de operacao: no consolidado e o MAIOR dos calendarios, nao a soma
+# (documentado em consolida_dashboard.corrigir_meses_consolidado). Audit
+# nao pode acusar como erro.
+_NAO_SOMA_EM_MESES = {"dias_op", "meta", "meta_origem", "clientes_novos",
+                      "clientes_recorrentes", "taxa_canc"}
 
 
 def carregar(path):
@@ -72,7 +83,7 @@ def auditar_kpis(e, s, c, aba, acha):
         a, b, cv = ke.get(campo), ks.get(campo), kc.get(campo)
         if not all(eh_num(x) for x in (a, b, cv)):
             continue
-        if DERIVADO.search(campo):
+        if _eh_derivado(campo):
             continue
         soma = a + b
         if difere(soma, cv):
@@ -184,11 +195,9 @@ def auditar_meses(e, s, c, acha):
             a, b, cv = ve.get(campo), vs.get(campo), vc.get(campo)
             if not all(eh_num(x) for x in (a, b, cv)):
                 continue
-            if DERIVADO.search(campo):
+            if _eh_derivado(campo):
                 continue
-            if campo in ("meta",):
-                # meta nao e soma direta (SPA pode ter meta rateada antes
-                # da abertura)
+            if campo in _NAO_SOMA_EM_MESES:
                 continue
             soma = a + b
             if difere(soma, cv, tol=0.1):
