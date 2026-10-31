@@ -55,6 +55,13 @@ def _eh_derivado(campo):
 _NAO_SOMA_EM_MESES = {"dias_op", "meta", "meta_origem", "clientes_novos",
                       "clientes_recorrentes", "taxa_canc"}
 
+# Mesma regra em kpis (dias_op) + derivados calculados por consolida_
+# dashboard em `_ticket_meta` (visitas_projetadas, visitas_restantes,
+# ticket_meta_*) que vem com valor PROPRIO do consolidado (nao soma).
+_NAO_SOMA_EM_KPIS = {"dias_op", "visitas_projetadas", "visitas_restantes",
+                     "ticket_meta_deficit_caixa", "ticket_meta_supera_caixa",
+                     "ticket_gap_por_atend"}
+
 
 def carregar(path):
     p = RAIZ / path
@@ -84,6 +91,8 @@ def auditar_kpis(e, s, c, aba, acha):
         if not all(eh_num(x) for x in (a, b, cv)):
             continue
         if _eh_derivado(campo):
+            continue
+        if campo in _NAO_SOMA_EM_KPIS:
             continue
         soma = a + b
         if difere(soma, cv):
