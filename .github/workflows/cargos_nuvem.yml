@@ -86,6 +86,20 @@ jobs:
         if: steps.ja.outputs.tem != 'sim'
         run: npm install -g @anthropic-ai/claude-code
 
+      - name: Confiar na pasta do projeto
+        if: steps.ja.outputs.tem != 'sim'
+        # Sem isto o claude ignora as permissões de .claude/settings.json
+        # ("this workspace has not been trusted"), como no 1º teste de 01/11/2026.
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib
+          arq = pathlib.Path.home() / ".claude.json"
+          d = json.loads(arq.read_text()) if arq.exists() else {}
+          d.setdefault("projects", {}).setdefault(os.environ["GITHUB_WORKSPACE"], {})["hasTrustDialogAccepted"] = True
+          arq.write_text(json.dumps(d))
+          print("pasta confiável:", os.environ["GITHUB_WORKSPACE"])
+          PY
+
       - name: Rodar o cargo
         if: steps.ja.outputs.tem != 'sim'
         env:
