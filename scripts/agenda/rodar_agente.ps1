@@ -238,6 +238,27 @@ function SULTS-Leitura {
 }
 SULTS-Leitura
 
+# --- A nuvem ja fez o parecer de hoje? ----------------------------------------
+# Desde 31/10/2026 os cargos rodam primeiro no GitHub (cargos_nuvem.yml), com o
+# PC ligado ou nao. Se a ata de hoje ja chegou pelo pull e e um parecer de
+# verdade, este PC so leva a copia para o vault. O Excel, o DRE e o SULTS acima
+# continuam rodando aqui, porque so este PC alcanca.
+$eaNuvem = $ErrorActionPreference
+$ErrorActionPreference = "Continue"   # python com 2>&1 nao pode derrubar o script
+$pyAta = (Get-Command python -ErrorAction SilentlyContinue).Source
+$ataNuvem = Join-Path $Projeto "docs\atas\$data-$Agente.md"
+if ($pyAta -and (Test-Path $ataNuvem)) {
+  $env:PYTHONUTF8 = "1"
+  $temParecer = (& $pyAta (Join-Path $Projeto "scripts\agenda\gravar_ata.py") --ja-tem $Agente 2>&1 | Out-String).Trim()
+  if ($temParecer -eq "sim") {
+    Copy-Item -Path $ataNuvem -Destination $arquivo -Force
+    Registrar "Parecer da nuvem ja estava pronto; copiado para o vault sem rodar o claude aqui."
+    Registrar "Fim."
+    exit 0
+  }
+}
+$ErrorActionPreference = $eaNuvem
+
 # 'claude' pode nao estar no PATH de uma tarefa agendada.
 $claude = (Get-Command claude -ErrorAction SilentlyContinue).Source
 if (-not $claude) {
@@ -295,6 +316,17 @@ $ErrorActionPreference = "Continue"   # mesma armadilha do 2>&1 explicada acima
 # Operacao das 11h30 foi morta pelo Agendador no meio do `claude -p` (codigo
 # 0xC000013A) sem escrever ata nem log. Sem este limite o script morria calado;
 # com ele, vira uma ata de erro e uma linha FALHOU no log.
+# Pede para ler a ficha em vez de "/<cargo>": desde a noite de 23/10/2026 o
+# claude deste PC respondia "o comando /conselho nao existe nesta sessao".
+$pedido = "/$Agente"
+$eaNuvem = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+if ($pyAta) {
+  $env:PYTHONUTF8 = "1"
+  $p = (& $pyAta (Join-Path $Projeto "scripts\agenda\gravar_ata.py") --pedido $Agente 2>&1 | Out-String).Trim()
+  if ($LASTEXITCODE -eq 0 -and $p) { $pedido = $p }
+}
+$ErrorActionPreference = $eaNuvem
 $estourou = $false
 try {
   # Start-Job abre um PowerShell novo, que NAO herda o Set-Location do script:
@@ -304,8 +336,8 @@ try {
     param($cli, $ag, $dir)
     Set-Location $dir
     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-    & $cli -p "/$ag" 2>&1 | Out-String
-  } -ArgumentList $claude, $Agente, $Projeto
+    & $cli -p $ag 2>&1 | Out-String
+  } -ArgumentList $claude, $pedido, $Projeto
   if (Wait-Job $jobClaude -Timeout 840) {
     $saida = (Receive-Job $jobClaude | Out-String)
   } else {
@@ -362,6 +394,18 @@ $chaveSaude = if ($Agente -eq "conselho") { "conselho" } else { "cargos" }
 $falhouCargo = $estourou -or [string]::IsNullOrWhiteSpace($saida) -or
                (($saida -match "credit balance|too low|rate limit") -and $saida.Length -lt 400) -or
                (($saida -match "(n.o existe|n.o est. instalad|not installed|unknown (slash )?command|Unknown skill)") -and $saida.Length -lt 1500)
+# Regra principal desde 31/10/2026: vale o FORMATO do parecer (PROTOCOLO.md),
+# nao a frase do erro. O mesmo verificador que a nuvem usa.
+if (-not $falhouCargo -and $pyAta) {
+  $eaAval = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  $tmpSaida = Join-Path $env:TEMP "fast-$Agente-saida.txt"
+  [System.IO.File]::WriteAllText($tmpSaida, $saida, (New-Object System.Text.UTF8Encoding($false)))
+  $aval = (& $pyAta (Join-Path $Projeto "scripts\agenda\gravar_ata.py") --avaliar $Agente $tmpSaida 2>&1 | Out-String).Trim()
+  Registrar "Formato do parecer: $aval"
+  if ($aval -like "falha*") { $falhouCargo = $true }
+  $ErrorActionPreference = $eaAval
+}
 $resSaude = if ($falhouCargo) { "falha" } else { "ok" }
 $anteriorEA = $ErrorActionPreference
 $ErrorActionPreference = "Continue"
@@ -428,7 +472,8 @@ if ($Publicar) {
   $eaAnt2  = $ErrorActionPreference
   [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
   $ErrorActionPreference = "Continue"
-  try   { $pub = & $claude -p "/publicar" 2>&1 | Out-String }
+  # Pela ficha, nao pelo atalho "/publicar" (mesmo motivo do pedido dos cargos).
+  try   { $pub = & $claude -p "Leia .claude/skills/publicar/SKILL.md e execute a rotina dessa ficha agora: republique o painel no mesmo artefato de sempre com os dados atuais do repositorio. Responda em uma linha com o resultado." 2>&1 | Out-String }
   finally {
     [Console]::OutputEncoding = $encAnt2
     $ErrorActionPreference = $eaAnt2

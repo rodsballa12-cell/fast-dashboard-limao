@@ -1,0 +1,173 @@
+name: Cargos na nuvem (parecer diário e conselho)
+
+# Por que existe (31/10/2026): os sete cargos só rodavam no PC do Rodrigo, e
+# de 23 a 31/10 nenhum parecer de verdade saiu. Primeiro o crédito acabou,
+# depois o claude do PC passou a responder "o comando /conselho não existe",
+# depois o PC parou de mandar ata. Aqui eles rodam com o PC ligado ou não,
+# com a chave do cofre que já está nos Secrets.
+#
+# Custo: usa CLAUDE_CODE_OAUTH_TOKEN, gerado no PC com `claude setup-token`.
+# É a mesma assinatura Max do PC, sem cobrança por uso da API.
+#
+# O PC continua com o que só ele alcança (Excel, DRE, SULTS, Obsidian). Quando
+# a ata da nuvem já existe, o rodar_agente.ps1 só copia a ata para o vault.
+
+on:
+  schedule:
+    # Horários em UTC; Brasília = UTC-3. Mesmos horários das tarefas do PC.
+    - cron: '30 10 * * *'   # 07h30 Memória
+    - cron: '0 11 * * *'    # 08h00 Marketing
+    - cron: '30 11 * * *'   # 08h30 Financeiro
+    - cron: '0 12 * * *'    # 09h00 Relacionamento
+    - cron: '30 12 * * *'   # 09h30 Pessoas
+    - cron: '30 14 * * *'   # 11h30 Operação
+    - cron: '30 1 * * *'    # 22h30 Conselho (01h30 UTC do dia seguinte)
+  workflow_dispatch:
+    inputs:
+      agente:
+        description: 'Cargo (memoria, marketing, financeiro, relacionamento, pessoas, operacao-diaria, conselho)'
+        required: true
+        default: 'conselho'
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: cargos-nuvem
+  cancel-in-progress: false
+
+jobs:
+  cargo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Qual cargo
+        id: qual
+        run: |
+          case "${{ github.event.schedule }}" in
+            '30 10 * * *') a=memoria ;;
+            '0 11 * * *')  a=marketing ;;
+            '30 11 * * *') a=financeiro ;;
+            '0 12 * * *')  a=relacionamento ;;
+            '30 12 * * *') a=pessoas ;;
+            '30 14 * * *') a=operacao-diaria ;;
+            '30 1 * * *')  a=conselho ;;
+            *)             a="${{ github.event.inputs.agente }}" ;;
+          esac
+          echo "agente=$a" >> "$GITHUB_OUTPUT"
+          echo "Cargo: $a"
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Já tem parecer de hoje?
+        id: ja
+        env:
+          TZ: America/Sao_Paulo
+        run: |
+          r=$(python3 scripts/agenda/gravar_ata.py --ja-tem "${{ steps.qual.outputs.agente }}")
+          echo "tem=$r" >> "$GITHUB_OUTPUT"
+          echo "Já existe parecer válido hoje: $r"
+
+      - name: Abrir cofre
+        if: steps.ja.outputs.tem != 'sim'
+        env:
+          FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}
+          FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
+        run: python3 -m pip install -q cryptography && python3 scripts/cofre.py abrir
+
+      - name: Instalar Claude Code
+        if: steps.ja.outputs.tem != 'sim'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Rodar o cargo
+        if: steps.ja.outputs.tem != 'sim'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          TZ: America/Sao_Paulo
+        run: |
+          AG="${{ steps.qual.outputs.agente }}"
+          if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
+            echo "Falta o segredo CLAUDE_CODE_OAUTH_TOKEN no GitHub (gere no PC com 'claude setup-token')." > /tmp/saida.txt
+            exit 0
+          fi
+          PEDIDO=$(python3 scripts/agenda/gravar_ata.py --pedido "$AG")
+          # 25 min para o conselho (ele lê os seis cargos), 14 para os demais.
+          LIM=840; [ "$AG" = "conselho" ] && LIM=1500
+          timeout "$LIM" claude -p "$PEDIDO" --output-format text > /tmp/saida.txt 2>&1 \
+            || echo "[claude terminou com código $? — tempo limite ${LIM}s]" >> /tmp/saida.txt
+          wc -c /tmp/saida.txt
+
+      - name: Gravar ata e conferir o formato
+        id: ata
+        if: steps.ja.outputs.tem != 'sim'
+        env:
+          TZ: America/Sao_Paulo
+        run: python3 scripts/agenda/gravar_ata.py "${{ steps.qual.outputs.agente }}" /tmp/saida.txt --origem "nuvem (GitHub Actions)"
+
+      - name: Carimbo de saúde
+        if: steps.ja.outputs.tem != 'sim'
+        env:
+          TZ: America/Sao_Paulo
+        run: |
+          AG="${{ steps.qual.outputs.agente }}"
+          CH=cargos; [ "$AG" = "conselho" ] && CH=conselho
+          python3 scripts/saude.py carimbar "$CH" "${{ steps.ata.outputs.resultado }}" "$AG nuvem · ${{ steps.ata.outputs.motivo }}"
+
+      - name: Publicar a ata
+        if: steps.ja.outputs.tem != 'sim'
+        run: |
+          git config user.name "FAST Agenda (nuvem)"
+          git config user.email "noreply@anthropic.com"
+          # Só a ata e o carimbo. O que o cofre abriu está no .gitignore e não entra.
+          git add -- "${{ steps.ata.outputs.arquivo }}" data/saude.json
+          git diff --cached --quiet && { echo "nada novo"; exit 0; }
+          git commit -m "ata: ${{ steps.qual.outputs.agente }} (nuvem) · ${{ steps.ata.outputs.resultado }}"
+          for t in 1 2 3; do
+            git push && exit 0
+            git pull --rebase --autostash origin main || true
+            sleep $((t * 5))
+          done
+          echo "::error::Nao consegui empurrar a ata."
+          exit 1
+
+      - name: Avisar quando falhar
+        if: steps.ja.outputs.tem != 'sim' && steps.ata.outputs.resultado == 'falha'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          AG="${{ steps.qual.outputs.agente }}"
+          TIT="Cargo sem parecer: $AG"
+          {
+            echo "O cargo **$AG** rodou na nuvem e **não entregou parecer** no formato do protocolo."
+            echo
+            echo "Motivo: ${{ steps.ata.outputs.motivo }}"
+            echo
+            echo "Ata: \`${{ steps.ata.outputs.arquivo }}\` · execução: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            echo "---"
+            echo "_Generated by [Claude Code](https://claude.ai/code)_"
+          } > /tmp/corpo.md
+          n=$(gh issue list --state open --search "in:title \"$TIT\"" --json number -q '.[0].number')
+          if [ -n "$n" ]; then gh issue comment "$n" --body-file /tmp/corpo.md
+          else gh issue create --title "$TIT" --body-file /tmp/corpo.md; fi
+
+      - name: Conselho chega no celular
+        if: steps.qual.outputs.agente == 'conselho' && steps.ata.outputs.resultado == 'ok'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Um issue por noite: o GitHub manda e-mail e notificação no app.
+          # O de ontem fecha sozinho, para a lista não virar paisagem.
+          for n in $(gh issue list --state open --label conselho --json number -q '.[].number'); do
+            gh issue close "$n" --comment "Substituído pelo conselho de hoje."
+          done
+          gh label create conselho --color FBD300 --description "Ata do conselho da noite" 2>/dev/null || true
+          { sed '1,/^---$/d' "${{ steps.ata.outputs.arquivo }}"; echo; echo "---"; echo "_Generated by [Claude Code](https://claude.ai/code)_"; } > /tmp/conselho.md
+          gh issue create --title "⚖️ Conselho $(TZ=America/Sao_Paulo date +%d/%m)" --label conselho --body-file /tmp/conselho.md
