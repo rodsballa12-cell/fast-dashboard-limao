@@ -580,16 +580,30 @@ def main():
     com_spa    = _load_comissoes(dash_spa)
     print(f"[dre] comissão Escova {com_escova*100:.2f}% · SPA {com_spa*100:.2f}%")
 
+    # Meta de CADA mês, não a de hoje. Até 03/11/2026 todo mês recebia a meta
+    # do mês corrente: quando a Escova subiu para R$ 70.000 em novembro, o
+    # Financeiro passaria a medir julho a outubro com a régua nova (e, sem
+    # rodar, seguia mostrando R$ 60.000 em novembro). Mesma regra do painel de
+    # operação: tabela por mês vence, senão vale a meta geral. Mês anterior à
+    # inauguração tem meta zero (a régua geral ali inventaria meta para loja
+    # que não existia — o Spa sairia com R$ 50.000 em julho).
+    def _meta_do_mes(unidade, padrao, ano, mes):
+        abre = str(((CFG.get("unidades") or {}).get(unidade) or {}).get("data_inauguracao") or "")[:7]
+        ym = f"{ano}-{mes:02d}"
+        return 0.0 if abre and ym < abre else _meta_mensal(unidade, padrao, ym)
+
     # Escova
     meses_escova = {}
     for col, (ano, mes) in cols_meses.items():
-        m = monta_mes(ws, col, ano, mes, linha_titulo_escova, META_MES_ESCOVA, com_escova, "Fast Escova")
+        meta_m = _meta_do_mes("escova", META_MES_ESCOVA, ano, mes)
+        m = monta_mes(ws, col, ano, mes, linha_titulo_escova, meta_m, com_escova, "Fast Escova")
         meses_escova[m["chave"]] = m
 
     # SPA
     meses_spa = {}
     for col, (ano, mes) in cols_meses.items():
-        m = monta_mes(ws, col, ano, mes, linha_titulo_spa, META_MES_SPA, com_spa, "Fast SPA")
+        meta_m = _meta_do_mes("spa", META_MES_SPA, ano, mes)
+        m = monta_mes(ws, col, ano, mes, linha_titulo_spa, meta_m, com_spa, "Fast SPA")
         meses_spa[m["chave"]] = m
 
     # Consolidado
