@@ -79,11 +79,26 @@ Registrar "Inicio."
 # changes" (13/10, 15/10, 16/10, 18/10 e 20/10/2026). Se ainda assim falhar,
 # espera um pouco e tenta de novo uma vez, que e o caso de outra rotina
 # estar com o git ocupado.
+#
+# Rebase que parou no meio trava TODA rodada seguinte ("unmerged files"): de
+# 30/10 a 04/11/2026 nenhum pull passou e o painel ficou parado em 23/10.
+# Quem chega e encontra um rebase aberto desfaz e avisa - a rodada perde no
+# maximo a ata dela, nunca a semana.
+#
+# -X theirs: no rebase, "theirs" e o commit DESTA maquina. O PC e a nuvem
+# carimbam o mesmo data/saude.json, e foi esse conflito que abriu o rebase de
+# 30/10. Carimbo de saude se refaz a cada rodada; perder um e melhor que travar.
+$pullArgs = @("pull","--rebase","--autostash","-X","theirs")
+if ((Test-Path (Join-Path $Projeto ".git\rebase-merge")) -or (Test-Path (Join-Path $Projeto ".git\rebase-apply"))) {
+  if (Git-Passo "desfazer rebase travado de rodada anterior" @("rebase","--abort")) {
+    Registrar "Havia um rebase travado de rodada anterior; desfiz."
+  }
+}
 $avisoGit = ""
-$atualizou = Git-Passo "atualizar o repositorio antes de rodar" @("pull","--rebase","--autostash")
+$atualizou = Git-Passo "atualizar o repositorio antes de rodar" $pullArgs
 if (-not $atualizou) {
   Start-Sleep -Seconds (15 + (Get-Random -Maximum 20))
-  $atualizou = Git-Passo "atualizar o repositorio antes de rodar (2a tentativa)" @("pull","--rebase","--autostash")
+  $atualizou = Git-Passo "atualizar o repositorio antes de rodar (2a tentativa)" $pullArgs
 }
 if (-not $atualizou) {
   $avisoGit = "> [!warning] Nao consegui atualizar o repositorio. Os numeros podem estar atrasados.`n"
@@ -429,16 +444,38 @@ finally { $ErrorActionPreference = $anteriorEA }
 $atasDir = Join-Path $Projeto "docs\atas"
 if (-not (Test-Path $atasDir)) { New-Item -ItemType Directory -Path $atasDir -Force | Out-Null }
 $ata = Join-Path $atasDir "$data-$Agente.md"
-Copy-Item -Path $arquivo -Destination $ata -Force
 
 # Falha aqui nunca derruba o briefing: ele ja esta salvo no vault. Mas agora
 # cada passo diz em qual ponto parou, no log.
 # --autostash: DRE-Para-JSON reescreve os tres financeiro.json a cada rodada
 # (o gerado_em muda mesmo sem novidade), entao a arvore chega suja neste pull
 # e ele falhava com "unstaged changes" desde 13/10/2026.
+#
+# PULL ANTES DA COPIA, nunca depois. A nuvem roda o mesmo cargo na mesma hora
+# e grava o mesmo nome de arquivo. Com a copia antes, a ata do PC ficava solta
+# na pasta enquanto a da nuvem chegava pelo pull, e o git recusava sobrescrever
+# ("untracked working tree files would be overwritten") - em 04/11/2026 com a
+# ata de Pessoas. Depois do pull, a ata da nuvem ja esta aqui e quem decide e a
+# regra abaixo, nao o git.
 $rel = "docs/atas/$data-$Agente.md"
-if ((Git-Passo "pull antes de publicar" @("pull","--rebase","--autostash")) -and
-    (Git-Passo "add da ata" @("add","--",$rel,"data/saude.json"))) {
+$puxou = Git-Passo "pull antes de publicar" $pullArgs
+$nuvemVenceu = $false
+if ($puxou -and (Test-Path $ata) -and $pyAta) {
+  # A nuvem publicou enquanto o claude rodava aqui. Parecer valido dela fica;
+  # ata dela que so registra falha da lugar a desta maquina.
+  $eaCol = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  $env:PYTHONUTF8 = "1"
+  $nuvemValida = (& $pyAta (Join-Path $Projeto "scripts\agenda\gravar_ata.py") --ja-tem $Agente 2>&1 | Out-String).Trim()
+  $ErrorActionPreference = $eaCol
+  if ($nuvemValida -eq "sim") {
+    $nuvemVenceu = $true
+    Registrar "A nuvem publicou um parecer valido de hoje durante esta rodada; mantive o dela no repositorio (o vault fica com o deste PC)."
+  }
+}
+if (-not $nuvemVenceu) { Copy-Item -Path $arquivo -Destination $ata -Force }
+$addArgs = if ($nuvemVenceu) { @("add","--","data/saude.json") } else { @("add","--",$rel,"data/saude.json") }
+if ($puxou -and (Git-Passo "add da ata" $addArgs)) {
 
   $ErrorActionPreference = "Continue"
   & git -C $Projeto diff --cached --quiet
@@ -450,7 +487,12 @@ if ((Git-Passo "pull antes de publicar" @("pull","--rebase","--autostash")) -and
   }
   elseif (Git-Passo "commit da ata" @("-c","user.name=FAST Agenda","-c","user.email=noreply@anthropic.com",
                                       "commit","-m","ata: $Agente $data $hora")) {
-    if (Git-Passo "push da ata" @("push")) { Registrar "Publicado em $rel" }
+    # A nuvem pode ter empurrado entre o pull e o push: puxa de novo e tenta
+    # mais uma vez, em vez de deixar o commit para a proxima rodada brigar.
+    if ((Git-Passo "push da ata" @("push")) -or
+        ((Git-Passo "pull depois do push recusado" $pullArgs) -and (Git-Passo "push da ata (2a tentativa)" @("push")))) {
+      Registrar "Publicado em $rel"
+    }
     else { Registrar "Commit feito, push falhou. A ata sobe no proximo briefing." }
   }
 }
