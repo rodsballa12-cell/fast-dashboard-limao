@@ -29,4 +29,6 @@ Sem prazo automático. Volte a esta decisão no próximo Conselho.
 
 ## Resultado
 
-_(em branco até a revisão)_
+**Status:** executada · 04/11/2026 (marcada pelo Rodrigo)
+
+O rebase travado desde 30/10 foi desfeito, o PC voltou para o `main` e as 25 atas presas subiram; o `rodar_agente.ps1` passou a evitar a colisão com as atas da nuvem. A meta de novembro da Escova já estava confirmada em 29/10 (R$ 70.000).

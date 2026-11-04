@@ -166,6 +166,10 @@ traz histórico (última visita, ticket médio, serviço favorito) e sugere
 resposta no tom FAST. Se cliente novo: sugere texto de boas-vindas e
 indica criar cadastro no HubSpot.
 
+## Nova identidade visual (a partir de 16/11/2026)
+
+Decisão do Rodrigo (04/11/2026): toda peça nova pedida ao squad com postagem a partir de 16/11 segue a identidade v1.0/v1.1 do squad. As regras N1 a N10 estão em `OneDrive\Franquia - FAST\Claude\Marketing\Squad\REGRAS_FIXAS_ler_antes_de_produzir.md` (bloco "NOVA IDENTIDADE VISUAL"); leia antes de pedir ou revisar qualquer peça. Até 15/11 vale a identidade atual. Peça agendada, publicada ou aprovada não se refaz (reels V3 de 19/11 e V5 de 25/11 ficam fora). Aplicar nos perfis só com "aprovado" do Rodrigo.
+
 ## Alçada
 
 **Decide sozinho:** o que é oscilação normal e o que é queda real; qual
