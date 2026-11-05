@@ -7272,6 +7272,39 @@
       "docs_decisao": "docs/decisoes/2026-11-01-conselho-destravar-o-pc-e-confirmar-a-meta-de-nov.md",
       "origem_conselho": "2026-11-01",
       "resultado": "Executada em 04/11/2026: rebase desfeito, PC no main e atas enviadas; meta de novembro da Escova já confirmada em 29/10 (R$ 70.000)."
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-11-04] Exportar hoje os extratos da Stone das duas lojas e dizer o saldo real da conta XP e da Reserva",
+      "detalhe": "R$ 54.025 a receber e R$ 46.643 de vendas lançadas depois do extrato, sem conferência. O caixa visível (R$ 1.676, de 17/10) cobre menos de 1 dia do custo fixo consolidado (R$ 64.718 por mês).",
+      "acao": "Executar: você exporta o CSV e o Financeiro sobe e confere.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-11-04-conselho-exportar-hoje-os-extratos-da-stone-das-d.md",
+      "origem_conselho": "2026-11-04"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-11-04] Nomear quem contata os 167 clientes sumidos, com meta por dia, a começar pelos 20 maiores e pelos 17 aniversariantes da semana (3 fazem aniversário amanhã), antes de sábado",
+      "detalhe": "R$ 20.630 de resgate estimado pelo painel (30–40% de R$ 58.944 de valor de vida) e R$ 3.322 dos aniversariantes",
+      "acao": "Executar: Relacionamento monta a lista; a gerente ou a recepção envia.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-11-04-conselho-nomear-quem-contata-os-167-clientes-sumi.md",
+      "origem_conselho": "2026-11-04"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-11-04] Mandar o número real de outubro para o Excel: receita da Escova e aluguel",
+      "detalhe": "+R$ 8.357 de receita (R$ 60.476 contra R$ 52.119) e −R$ 9.039 de aluguel, que decidem se o \"primeiro mês no azul\" (+R$ 8.141) existiu",
+      "acao": "Executar: você manda o valor; o Financeiro registra, e ele não mexe na planilha sem você.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-11-04-conselho-mandar-o-numero-real-de-outubro-para-o-e.md",
+      "origem_conselho": "2026-11-04"
     }
   ],
   "insights_narrativa": [
@@ -9053,6 +9086,111 @@
         "Não alterei arquivo do repositório nem a planilha, e não enviei nada a cliente.",
         "Pulei a densidade por dia da escala, porque a janela que manda é o mês.",
         "Quer que eu salve esta ata no vault, ou prefere liberar a permissão de escrita?** E diga se bate o martelo nas três decisões, para eu seguir com a Memória e a cópia em `Briefings/`."
+      ]
+    },
+    {
+      "data": "2026-11-04",
+      "hora": "22:30",
+      "tipo": "noturno",
+      "sincronizado_em": "2026-11-04T22:40:20-03:00",
+      "sincronizado_por": "auto (workflow conselho_sync.yml)",
+      "ata": "docs/atas/2026-11-04-conselho.md",
+      "mesa": {
+        "operacao": "atencao",
+        "financeiro": "critico",
+        "marketing": "atencao",
+        "relacionamento": "ok",
+        "pessoas": "ok"
+      },
+      "decisoes": [
+        {
+          "n": 1,
+          "titulo": "Exportar hoje os extratos da Stone das duas lojas e dizer o saldo real da conta XP e da Reserva",
+          "em_jogo": "R$ 54.025 a receber e R$ 46.643 de vendas lançadas depois do extrato, sem conferência. O caixa visível (R$ 1.676, de 17/10) cobre menos de 1 dia do custo fixo consolidado (R$ 64.718 por mês).",
+          "executor": "você exporta o CSV e o Financeiro sobe e confere",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-11-04-conselho-exportar-hoje-os-extratos-da-stone-das-d.md"
+        },
+        {
+          "n": 2,
+          "titulo": "Nomear quem contata os 167 clientes sumidos, com meta por dia, a começar pelos 20 maiores e pelos 17 aniversariantes da semana (3 fazem aniversário amanhã), antes de sábado",
+          "em_jogo": "R$ 20.630 de resgate estimado pelo painel (30–40% de R$ 58.944 de valor de vida) e R$ 3.322 dos aniversariantes",
+          "executor": "Relacionamento monta a lista; a gerente ou a recepção envia",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-11-04-conselho-nomear-quem-contata-os-167-clientes-sumi.md"
+        },
+        {
+          "n": 3,
+          "titulo": "Mandar o número real de outubro para o Excel: receita da Escova e aluguel",
+          "em_jogo": "+R$ 8.357 de receita (R$ 60.476 contra R$ 52.119) e −R$ 9.039 de aluguel, que decidem se o \"primeiro mês no azul\" (+R$ 8.141) existiu",
+          "executor": "você manda o valor; o Financeiro registra, e ele não mexe na planilha sem você",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-11-04-conselho-mandar-o-numero-real-de-outubro-para-o-e.md"
+        }
+      ],
+      "cruzamentos_chave": [
+        "(Spa: R$ 41.458, 28% da meta anual, projeta 43%.)",
+        "→ **Manda hoje: a semana.** É onde ainda dá tempo de agir, com sexta e sábado pela frente e a Yellow Friday em curso.",
+        "As janelas discordam.** O dia está em 135%, a semana em 64% e o mês em 82%. O dia forte vem de um pacote só e não muda a leitura da semana.",
+        "SITUAÇÃO DA MESA**",
+        "Operação 🟡 — dia forte por um pacote, semana atrás. Preço fora da tabela subiu de 31 de 58 serviços (set) para **38 de 59**, então piorou. Cancelamento no mês: 2 de 57 (3,5%). Consultas ao Trinks: restam 9.084 de 10.000.",
+        "Financeiro 🔴 — caixa e Stone cegos há 16 a 19 dias.",
+        "Marketing 🟡 — conversa a R$ 6,30 (semana), Combos caros, Spa gastando mais.",
+        "Relacionamento 🟡 — 167 clientes sumidos, WhatsApp automático desligado.",
+        "Pessoas 🟡 — três produtoras fora de novembro, comissão sem regra.",
+        "Memória 🔴 — a mesa está repetindo pedidos sem dono.",
+        "Dois relógios do Financeiro (silêncio suspeito).** O DRE está datado de 04/11 e parece fresco.",
+        "Mas o caixa da conta (R$ 1.436,61 na Escova) é igual ao citado em 17/10.",
+        "O \"a receber\" de R$ 54.025 (Escova R$ 35.552 + Spa R$ 18.473) vai só até 16/10. Já passaram 19 dias, então parte disso provavelmente já caiu na conta.",
+        "O extrato da Stone vai até 16/10 (Escova) e 19/10 (Spa). Escova tem 233 vendas (R$ 33.861) e Spa 83 vendas (R$ 12.782) lançadas depois do extrato. Isso é extrato atrasado, não dinheiro sumido.",
+        "Órfãos reais: Escova 9 PIX do Trinks sem par na Stone (R$ 882) e 6 PIX da Stone sem venda (R$ 679). O próprio painel manda não ligar para cliente antes do extrato novo.",
+        "Outubro \"no azul\" não é comparável (Financeiro × Operação).** A Escova fechou outubro com resultado de +R$ 8.141. Mas o aluguel está em R$ 0 em outubro (era R$ 9.039 nos outros meses e volta em novembro). A receita do DRE (R$ 52.119) também está R$ 8.357 abaixo do caixa do Trinks (R$ 60.476). E a recepção entra pelo maior valor (R$ 9.888 contra R$ 6.671 do Excel), o que puxa no sentido contrário (R$ 3.217).",
+        "Novembro projeta −R$ 3.015 na Escova, −R$ 8.489 no Spa e **−R$ 11.504** no consolidado, mas com receita projetada (R$ 60 mil + R$ 40 mil), não real.",
+        "O ponto de equilíbrio da Escova (R$ 66.192) está acima da meta do DRE (R$ 60 mil) e da projeção do painel (R$ 57.251).",
+        "Comissão (Pessoas × Financeiro).** Não há regra cadastrada no Trinks. Os números em uso são três: 38,31% no DRE da Escova, 32,99% na premissa do consolidado e 30% no padrão do painel. Entre 38,31% e 32,99% há 5,3 pontos, cerca de R$ 3,2 mil por mês numa receita de R$ 60 mil (conta minha). A margem pode estar errada para qualquer lado.",
+        "Spa: a mídia subiu e a loja não encheu (Marketing × Operação).** Gasto de R$ 61 por dia nos últimos 7 dias, contra R$ 36 por dia nos últimos 30 (+71%). Foram 29 conversas e R$ 248 de mídia de 01 a 04/11. No mesmo período o caixa do Spa foi R$ 902, com 8 atendimentos. Quantas conversas viraram cliente, NÃO VEJO.",
+        "Escala (Pessoas × Operação).** Erika e Thaise não têm nenhum atendimento de 01 a 04/11, e Katyane só 3 (R$ 178). As três somam R$ 38,98 mil de produção acumulada, e a situação delas foi pedida à gerente em 31/10 e 01/11 sem resposta registrada. O dado não separa folga, escala e saída, então não atribuo a pessoa.",
+        "Sábado 07/11** é o dia que manda: meta de R$ 5.923 e pico de 3,77 atendimentos simultâneos às 17h. A manhã de sábado (3,58 às 11h) também é cheia.",
+        "Domingo: pico às 10h (1,96) e quase nada depois das 12h30. Nada de corte uniforme de horário.",
+        "Contradição de Marketing.** O quadro de metas mostra custo por conversa de R$ 7,71 em 30 dias (340 conversas, R$ 2.622, leitura direta da Meta das 14:53). O alerta curado das 08:12 diz R$ 8,99 (291 conversas, outra fonte). Prevalece a leitura direta, por ser a mais fresca. A outra fica para verificação.",
+        "Os 3 pacotes de Combo gastam 38% da verba a R$ 17,93 por conversa, contra R$ 5,33 do PLÁSTICA. O COMBO SEMANAL (R$ 16 por dia reservados) está sem gasto há 7 dias.",
+        "Alarme que não sobreviveu (Operação).** A leitura das 11:30 dizia \"painel parado desde 30/10\". Era a sessão que não conseguiu atualizar o repositório. O painel de hoje é das 17:27 e o refresh das 22:29 deu certo.",
+        "Franqueadora esperando a loja (Spa).** Quatro chamados com a vez da loja:",
+        "Vídeo da sala dupla e dispensers**, pedido ontem (03/11).",
+        "Troca de produto vencido**: 22 dias sem retorno.",
+        "Óleos**: 26 dias sem retorno.",
+        "Treinamento**: Conselho da rede em 12/11 (8 dias) e Workshop em 24 a 26/11, sem resposta há 27 dias.",
+        "Na Escova há 2 chamados seus aguardando a franqueadora, com prazos em 05/11 e 11/11."
+      ],
+      "sem_dono": [
+        "Fechamento de hoje, depois das 17:27.** Falta abrir o cofre com o refresh das 22:29. É no PC.",
+        "Se a loja abriu em 02/11 (feriado).** Escova e Spa mostram caixa zero. → Operação, com a gerente.",
+        "Quantas conversas viraram cliente (Escova 49 e Spa 29 no mês).** Falta ligar o telefone da conversa ao cadastro do Trinks; hoje só o campo \"como nos conheceu\" da recepção chega perto. WhatsApp Cloud está desligado.",
+        "Saldo real da conta e da Reserva.** Não há conector; só CSV manual.",
+        "Escala de Erika, Thaise e Katyane em novembro.** → Pessoas, com a gerente.",
+        "Quem contatou os sumidos desde 16/10, e quantos.** Sem registro em lugar nenhum.",
+        "Página do Facebook.** Está sem leitura porque o Supermetrics não tem essa fonte na licença.",
+        "As rotinas automáticas.** Falta renovar o token que está recusando (erro 401) e corrigir a regra de permissão de escrita no OneDrive, que a rotina rejeitou (\"Write\" onde só vale \"Edit\").",
+        "⏰ **Revisão vencida (6):**",
+        "14/09 ata do App Meta (revisão 14/10): WhatsApp Cloud segue desconectado, nada mudou em 21 dias.",
+        "14/09 WhatsApp Cloud nas duas unidades (revisão 14/10): foi superada pela decisão \"não configurar\" da mesma noite e ficou aberta. Fechar como SUPERADA, se você confirmar.",
+        "14/09 Spa no número da Escova (revisão 25/10): se separaram o número, NÃO VEJO. A conta do Spa ainda marca WhatsApp pendente.",
+        "30/09 avaliação de 2★ de mega hair (revisão 30/10): desfecho NÃO VEJO.",
+        "16/10 clientes sumindo por canal manual (revisão 23/10): sumidos subiram de 157 para 167, o WhatsApp automático segue desligado e ninguém registrou contato.",
+        "16/10 Spa parar de operar às cegas (revisão 23/10): a mídia do Spa está fresca (leitura de hoje 15:08); a Stone do Spa segue em 19/10.",
+        "🔁 **Parecem repetição:** a de 06/10 e a de 07/10 pedem a mesma coisa (confirmar o saldo da Reserva XP antes de antecipar a Stone, R$ 254 de taxa). Conferi os dois títulos e são o mesmo pedido. **Vence a de 07/10; a de 06/10 fecha como SUPERADA.**",
+        "O script não pegou dois grupos que repetem de fato: o extrato da Stone (17/10 duas vezes, 18/10, 31/10, 01/11) e os clientes sumidos (16/10, 17/10, 22/10, 31/10, 01/11). Pergunta certa: quem exatamente ia fazer isso, e ele soube?",
+        "📋 **Tocadas pelo dia de hoje:**",
+        "17/10 caixa de R$ 1.436,61 (18 dias): o valor segue idêntico.",
+        "17/10 Spa, verba e extrato (R$ 15.865 de prejuízo projetado em outubro): o DRE de outubro do Spa mostra +R$ 242, o que não bate com esse prejuízo e precisa de explicação.",
+        "15/09 comissão por categoria no Trinks (50 dias): a regra segue sem cadastro.",
+        "30/09 corte de custo fixo (35 dias): é exatamente o risco de outubro voltar sozinho.",
+        "22/10 recarregar o crédito das rotinas (13 dias): provável causa dos erros 401 de hoje.",
+        "23/10 verba de vaga e post impulsionado (R$ 1.480,68 em 30 dias): **revisão em 06/11, em 2 dias**.",
+        "31/10 e 01/11 situação de Erika, Katyane e Thaise: sem resposta."
       ]
     }
   ],
