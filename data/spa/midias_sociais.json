@@ -6834,6 +6834,39 @@
       "revisao_em": null,
       "docs_decisao": "docs/decisoes/2026-11-04-conselho-mandar-o-numero-real-de-outubro-para-o-e.md",
       "origem_conselho": "2026-11-04"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-11-05] Exportar hoje os extratos da Stone das duas lojas, para decidir a antecipação do recebível.",
+      "detalhe": "R$ 54.025 de cartão a receber (Escova R$ 35.552, Spa R$ 18.473), R$ 47.534 de vendas lançadas depois do extrato e caixa visível de R$ 1.676 contra R$ 64,7 mil de custo fixo no mês. Antecipar tudo custa cerca de R$ 472.",
+      "acao": "Executar: Rodrigo exporta; o Financeiro sobe com `stone_local.py` e confere.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-11-05-conselho-exportar-hoje-os-extratos-da-stone-das-d.md",
+      "origem_conselho": "2026-11-05"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-11-05] Nomear quem contata os clientes sumidos e os aniversariantes, com meta por dia, antes de sábado.",
+      "detalhe": "71 clientes na janela (R$ 34.566 já gastos), 55 prestes a sair da regra (R$ 5.838), 7 aniversários da semana.",
+      "acao": "Executar: Relacionamento monta a lista; a Natasha ou a recepção envia, e nada é enviado sem aprovação dele.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-11-05-conselho-nomear-quem-contata-os-clientes-sumidos.md",
+      "origem_conselho": "2026-11-05"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-11-05] Spa: manter a meta de R$ 40 mil em novembro e decidir sobre o recebível.",
+      "detalhe": "−R$ 8.489 projetados no mês, R$ 18,3 mil de cartão a receber e caixa de R$ 239.",
+      "acao": "Executar: Financeiro registra; ele não mexe na planilha sem ordem.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-11-05-conselho-spa-manter-a-meta-de-r-40-mil-em-novembr.md",
+      "origem_conselho": "2026-11-05"
     }
   ],
   "insights_narrativa": [
@@ -8565,6 +8598,88 @@
         "22/10 recarregar o crédito das rotinas (13 dias): provável causa dos erros 401 de hoje.",
         "23/10 verba de vaga e post impulsionado (R$ 1.480,68 em 30 dias): **revisão em 06/11, em 2 dias**.",
         "31/10 e 01/11 situação de Erika, Katyane e Thaise: sem resposta."
+      ]
+    },
+    {
+      "data": "2026-11-05",
+      "hora": "22:30",
+      "tipo": "noturno",
+      "sincronizado_em": "2026-11-05T22:35:08-03:00",
+      "sincronizado_por": "auto (workflow conselho_sync.yml)",
+      "ata": "docs/atas/2026-11-05-conselho.md",
+      "mesa": {
+        "operacao": "atencao",
+        "financeiro": "critico",
+        "marketing": "atencao",
+        "relacionamento": "atencao",
+        "pessoas": "ok"
+      },
+      "decisoes": [
+        {
+          "n": 1,
+          "titulo": "Exportar hoje os extratos da Stone das duas lojas, para decidir a antecipação do recebível.",
+          "em_jogo": "R$ 54.025 de cartão a receber (Escova R$ 35.552, Spa R$ 18.473), R$ 47.534 de vendas lançadas depois do extrato e caixa visível de R$ 1.676 contra R$ 64,7 mil de custo fixo no mês. Antecipar tudo custa cerca de R$ 472.",
+          "executor": "Rodrigo exporta; o Financeiro sobe com `stone_local.py` e confere",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-11-05-conselho-exportar-hoje-os-extratos-da-stone-das-d.md"
+        },
+        {
+          "n": 2,
+          "titulo": "Nomear quem contata os clientes sumidos e os aniversariantes, com meta por dia, antes de sábado.",
+          "em_jogo": "71 clientes na janela (R$ 34.566 já gastos), 55 prestes a sair da regra (R$ 5.838), 7 aniversários da semana.",
+          "executor": "Relacionamento monta a lista; a Natasha ou a recepção envia, e nada é enviado sem aprovação dele",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-11-05-conselho-nomear-quem-contata-os-clientes-sumidos.md"
+        },
+        {
+          "n": 3,
+          "titulo": "Spa: manter a meta de R$ 40 mil em novembro e decidir sobre o recebível.",
+          "em_jogo": "−R$ 8.489 projetados no mês, R$ 18,3 mil de cartão a receber e caixa de R$ 239.",
+          "executor": "Financeiro registra; ele não mexe na planilha sem ordem",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-11-05-conselho-spa-manter-a-meta-de-r-40-mil-em-novembr.md"
+        }
+      ],
+      "cruzamentos_chave": [
+        "Alarme que não sobrevive à conferência (Operação × Financeiro).** O painel acusa \"9 PIX sem confirmação, R$ 882\" na Escova e 5 no Spa. O extrato Stone vai só até 16/10 (Escova) e 19/10 (Spa), e esses PIX são quase todos de novembro. Não é dinheiro sumido, e não se liga para cliente. O \"risco\" de R$ 37.113 inclui R$ 35.552 de cartão em prazo normal (D+30). O pedido certo é exportar o extrato.",
+        "Financeiro × Operação: o mês de novembro é plano, não realizado.** O DRE de novembro projeta −R$ 3.015 na Escova, −R$ 8.489 no Spa e **−R$ 11.504** no consolidado, com receita suposta (R$ 60 mil + R$ 40 mil). O custo fixo sobe de R$ 38,5 mil para R$ 64,7 mil (+R$ 26,2 mil). A Escova só cobre o fixo com cerca de R$ 83 mil (conta do Financeiro), e a projeção do painel é R$ 68,7 mil. O caixa visível é de R$ 1.676, e a única folga imediata é antecipar o cartão: R$ 321 na Escova e R$ 151 no Spa.",
+        "Silêncio suspeito na Pessoas.** Pessoas marcou 🟢, mas o próprio parecer cita comissão sem regra, que deixa a margem do Financeiro sem base (🔴), e R$ 14 mil de produção em \"Prof desligado\". Em 04/11 foi apontado que Erika, Thaise e Katyane não têm atendimento em novembro, e a gerente não respondeu. Pessoas não tem a grade para ver isso. O verde vale para a equipe, não para o cadastro.",
+        "Marketing × Operação (Spa).** Foram R$ 428 em 7 dias e 49 conversas, a R$ 8,73. O caixa do Spa em novembro é R$ 902 em 6 visitas. Quantas conversas viraram cliente, NÃO VEJO. Só 51,9% das fichas do Spa dizem de onde o cliente veio.",
+        "Marketing × Operação (Escova).** A frequência chegou a 2,57 e o CTR está em 1,16% (meta 1,5%). Os combos custam R$ 14,69 por conversa contra R$ 4,93 da PLÁSTICA, e o excesso é de cerca de R$ 435 em 30 dias. O custo médio de R$ 7,71 é puxado por vagas de emprego (R$ 3,41), que são candidato e não cliente.",
+        "Contradição de fonte (Marketing).** O custo por conversa em 30 dias é R$ 7,71 (leitura direta, 340 conversas) ou R$ 8,99 (alerta curado, 291 conversas). Prevalece o R$ 7,71, por ser mais fresco. Verificar antes de a agência ver.",
+        "Contradição de meta do Spa.** O painel mede o Spa contra R$ 40.000, mas o `config.json` ainda diz R$ 50.000 \"provisória\". Outubro fechou em R$ 27.048, 68% dos R$ 40.000.",
+        "Relacionamento × Operação.** O WhatsApp automático está desligado e há 71 clientes na janela de reativação (R$ 34.566 já gastos). 55 clientes com 91 a 120 dias saem da regra de 120 dias. Cada dia parado empurra gente para fora da janela.",
+        "Franqueadora esperando a loja (Spa).** A lista `chamados_urgentes` do SULTS traz 4 chamados do Spa (ids 847, 935, 936, 646). A Escova tem lista vazia. Pelo Conselho de 04/11, a loja deve resposta em vídeo da sala dupla, produto vencido (22 dias), óleos (26 dias) e treinamento. O Conselho da rede é em 12/11 e o Workshop de 24 a 26/11. Os dias de espera vêm de ontem e não foram recontados."
+      ],
+      "sem_dono": [
+        "Fechamento de quinta 05/11.** Falta abrir o cofre com o refresh das 21h46, que só roda no PC.",
+        "Saldo real da conta XP e da Reserva.** Não há conector, só CSV manual.",
+        "Se as conversas viraram cliente (Escova e Spa).** Falta ligar o telefone da conversa ao cadastro do Trinks. O WhatsApp Cloud está desligado.",
+        "Por que o COMBO SEMANAL não gasta (R$ 16/dia reservados).** Falta abrir o Gerenciador de Anúncios.",
+        "Se a loja abriu em 02/11 (feriado).** Escova e Spa mostram caixa zero. → Operação, com a gerente.",
+        "Escala de Erika, Thaise e Katyane em novembro.** → Pessoas, com a gerente.",
+        "Quem contatou os sumidos desde 16/10.** Não há registro em lugar nenhum.",
+        "Facebook da Escova e Google Business.** O Facebook não está na licença do Supermetrics, e o Google Business não foi lido hoje.",
+        "As rotinas automáticas.** Falta renovar o acesso do robô (erro 401) e trocar as regras `Write(...)` por `Edit(...)` em `.claude/settings.json`. Se o 401 afeta também o PC, NÃO VEJO.",
+        "⏰ **Revisão vencida:**",
+        "14/09 App Meta (revisão 14/10): WhatsApp Cloud segue desconectado.",
+        "14/09 WhatsApp Cloud nas duas unidades (revisão 14/10): foi superada pela decisão \"não configurar\" e ficou aberta. Fechar como SUPERADA, se ele confirmar.",
+        "14/09 Spa no número da Escova (revisão 25/10): desfecho NÃO VEJO.",
+        "30/09 avaliação de 2★ de mega hair (revisão 30/10): desfecho NÃO VEJO.",
+        "16/10 clientes sumindo por canal manual (revisão 23/10): sumidos subiram de 157 para 167 em 04/11, sem registro de contato.",
+        "16/10 Spa parar de operar às cegas (revisão 23/10): a Stone do Spa segue em 19/10.",
+        "Também vencidas segundo a Memória (só pelas datas, sem ler o campo \"Resultado\"): meta do Spa em outubro (02/11), leitor de módulos do SULTS (04/11) e religar a empresa digital no PC (19/10).",
+        "🔁 **Parecem repetição:**",
+        "06/10 e 07/10 pedem o mesmo (confirmar o saldo da Reserva XP antes de antecipar a Stone, R$ 254 de taxa). **Vence a de 07/10, e a de 06/10 fecha como SUPERADA.** Conferi os dois títulos ontem, mas não reabri os arquivos hoje.",
+        "Dois grupos o script não pega: o extrato da Stone (17/10 duas vezes, 18/10, 31/10, 01/11) e os clientes sumidos (16/10, 17/10, 22/10, 31/10, 01/11). A pergunta certa não é \"por que não fizeram?\". É \"quem exatamente ia fazer, e ele soube?\".",
+        "📋 **Tocadas pelo dia de hoje:**",
+        "17/10 caixa de R$ 1.436,61: o valor segue idêntico (cerca de 19 dias).",
+        "15/09 comissão por categoria no Trinks (cerca de 51 dias): a regra segue sem cadastro.",
+        "22/10 recarregar o crédito das rotinas: provável causa do 401.",
+        "23/10 verba de vaga e post impulsionado (R$ 1.480,68 em 30 dias): **revisão amanhã, 06/11.**"
       ]
     }
   ]
