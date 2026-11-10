@@ -6945,6 +6945,39 @@
       "revisao_em": null,
       "docs_decisao": "docs/decisoes/2026-11-08-conselho-nomear-com-nome-quem-chama-os-sumidos-e.md",
       "origem_conselho": "2026-11-08"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-11-09] Exportar o extrato Stone das duas lojas (de 16/10 até hoje) e carregar no PC; depois decidir antecipar recebível ou aportar",
+      "detalhe": "R$ 54.025 a receber sem conferência (Escova R$ 35.552, Spa R$ 18.473)",
+      "acao": "Executar: Financeiro, depois do CSV.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-11-09-conselho-exportar-o-extrato-stone-das-duas-lojas.md",
+      "origem_conselho": "2026-11-09"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-11-09] Dar um nome a quem chama os clientes sumidos e os aniversariantes (ou reabrir o WhatsApp)",
+      "detalhe": "R$ 62.344 de gasto histórico de 179 clientes (teto, não perda); 25 aniversariantes entre 08/11 e 21/11, 3 já passaram",
+      "acao": "Executar: Relacionamento monta a lista e a recepção liga pelo WhatsApp comum. Não afrouxar nenhuma trava.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-11-09-conselho-dar-um-nome-a-quem-chama-os-clientes-sum.md",
+      "origem_conselho": "2026-11-09"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-11-09] Trocar o criativo dos combos (cerca de R$ 30/dia somados)",
+      "detalhe": "R$ 896 por mês a R$ 16 por conversa",
+      "acao": "Executar: Marketing, só com o seu \"aprovado\" nomeando campanha e valor diário.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-11-09-conselho-trocar-o-criativo-dos-combos-cerca-de-r.md",
+      "origem_conselho": "2026-11-09"
     }
   ],
   "insights_narrativa": [
@@ -9032,6 +9065,89 @@
         "amortização do material de R$ 4.132;",
         "meta do Spa em novembro (05 e 06/11).",
         "Das notas de 05 a 07/11, 62 seguem com \"Resultado\" em branco (leitura da Memória de hoje, não conferida)."
+      ]
+    },
+    {
+      "data": "2026-11-09",
+      "hora": "22:30",
+      "tipo": "noturno",
+      "sincronizado_em": "2026-11-09T22:35:19-03:00",
+      "sincronizado_por": "auto (workflow conselho_sync.yml)",
+      "ata": "docs/atas/2026-11-09-conselho.md",
+      "mesa": {
+        "operacao": "atencao",
+        "financeiro": "critico",
+        "marketing": "atencao",
+        "relacionamento": "atencao",
+        "pessoas": "atencao"
+      },
+      "decisoes": [
+        {
+          "n": 1,
+          "titulo": "Exportar o extrato Stone das duas lojas (de 16/10 até hoje) e carregar no PC; depois decidir antecipar recebível ou aportar",
+          "em_jogo": "R$ 54.025 a receber sem conferência (Escova R$ 35.552, Spa R$ 18.473)",
+          "executor": "Financeiro, depois do CSV",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-11-09-conselho-exportar-o-extrato-stone-das-duas-lojas.md"
+        },
+        {
+          "n": 2,
+          "titulo": "Dar um nome a quem chama os clientes sumidos e os aniversariantes (ou reabrir o WhatsApp)",
+          "em_jogo": "R$ 62.344 de gasto histórico de 179 clientes (teto, não perda); 25 aniversariantes entre 08/11 e 21/11, 3 já passaram",
+          "executor": "Relacionamento monta a lista e a recepção liga pelo WhatsApp comum. Não afrouxar nenhuma trava",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-11-09-conselho-dar-um-nome-a-quem-chama-os-clientes-sum.md"
+        },
+        {
+          "n": 3,
+          "titulo": "Trocar o criativo dos combos (cerca de R$ 30/dia somados)",
+          "em_jogo": "R$ 896 por mês a R$ 16 por conversa",
+          "executor": "Marketing, só com o seu \"aprovado\" nomeando campanha e valor diário",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-11-09-conselho-trocar-o-criativo-dos-combos-cerca-de-r.md"
+        }
+      ],
+      "cruzamentos_chave": [],
+      "sem_dono": [
+        "O movimento de segunda 09/11: o painel cifrado de 20h existe, falta abrir. → sessão com Python no PC.",
+        "Quantas das 69 conversas da Escova e das 49 do Spa viraram agendamento. → falta o funil de conversão; Trinks sozinho não responde.",
+        "Números do Facebook das duas páginas (campo vazio) e Google Business (até 03/11). → licença do Facebook e Supermetrics.",
+        "Comissão realizada: o DRE presume 32% e agosto foi 37,4% (cerca de R$ 2.662 de desvio). → Trinks sem regra cadastrada, que só o Rodrigo cria.",
+        "Regra de amortização de R$ 4.132,16 em material fora do resultado. → Rodrigo.",
+        "Quem são os profissionais \"desligados\" (#722613, #726814, #722596) e quem é Renata Lemes (13 atendimentos, R$ 0 de serviço). → Rodrigo e Operação.",
+        "Segunda recepcionista, que a franqueadora conta e o Trinks não mostra. → Operação.",
+        "Chamados do Spa (03/11 e dois de produtos, 26 e 30 dias): precisam de resposta da loja. → quem atende pela loja, na Franquia.",
+        "O próprio Conselho está falhando. Em 09/11, 05h30, a gravação foi barrada por uma regra de permissão (`Write` no lugar de `Edit`) e por erro de login 401. A conta de login também expira entre 16 e 19/11. → ajuste no `.claude/settings.json`, e `claude auth login` antes disso.",
+        "🕰️ DECISÕES SEM DESFECHO** — 64 abertas · a mais antiga há 56 dias",
+        "⏰ Revisão vencida (7):**",
+        "Realocar a verba de vaga e post impulsionado (revisão 06/11, R$ 1.480,68 em 30 dias): sem resultado.",
+        "Migrar as duas unidades para o WhatsApp Cloud API (revisão 14/10): não aconteceu, o canal está desligado.",
+        "Conselho 14/09 — App Meta (revisão 14/10): continua sem acesso de administrador.",
+        "Spa abre no número da Escova, separação em 30 dias (revisão 25/10): nenhum resultado registrado.",
+        "Avaliação 2★ de mega hair (revisão 30/10): nenhum resultado registrado.",
+        "Clientes sumindo: canal manual com dono e meta diária (revisão 23/10): sem dono; é a mesma decisão da fila de hoje.",
+        "Spa: confirmar mídia e responsável pelos conectores (revisão 23/10): a mídia do Spa roda hoje, mas a Stone do Spa só vai até 19/10.",
+        "🔁 Parecem repetição (11):**",
+        "Extrato Stone: seis versões de 04 a 08/11. Vence a última (\"de 16/10 até hoje e rodar o carregamento no PC\"); as anteriores fecham como `SUPERADA`.",
+        "Sumidos e aniversariantes: cinco versões, seis contando a de 04/11 que fala em 167 clientes. Vence a de 08/11 (\"com nome, ou reabrir o WhatsApp\").",
+        "Spa, meta de novembro: duas versões (05/11 e 06/11). A de 06/11 vence.",
+        "A decisão repetida não é decisão esquecida, é decisão que nunca teve dono. A pergunta certa é quem ia fazer e se ele soube. Nas duas filas, o campo de executor está em branco ou genérico.",
+        "📋 Tocadas pelo dia de hoje:**",
+        "Caixa de R$ 1.436,61 contra R$ 32.229 de custo fixo (23 dias, R$ 35.734).",
+        "Escova, mix do sábado, não a verba (23 dias, R$ 1.977).",
+        "Trocar o criativo dos combos 1-2-3 (07/11 e 08/11).",
+        "Spa: próximo passo comercial, COMBO INAUG parado desde 28/09 (40 dias, R$ 25.000).",
+        "Definir quem atende no Spa (47 dias, R$ 15.000).",
+        "📌 MEMÓRIA** 🔴",
+        "Extrato Stone:** a mesma ordem foi gravada em 04, 05, 06, 07 e 08/11 e ninguém registrou que foi cumprida.",
+        "Sumidos:** é a quinta ou sexta vez sem dono, depois de os pedidos de 04, 06, 07 e 08/11.",
+        "Aprendizado de ago/2026 (aprovação por tarefa aberta):** 7 de 9 pedidos morreram sem resposta. A lição foi mover a trava para o código e não reintroduzir portão humano em rotina diária. Nomear dono pela quinta vez repete o padrão. O que funcionou foi automação com trava no código; o que falhou foi pedir ao humano que lembrasse.",
+        "Alarme de 15/09:** PIX sem confirmação lido como dinheiro sumido, quando era extrato atrasado. O alarme dos 9 PIX de hoje cai no mesmo caso.",
+        "Cobrança de pausa:** a decisão vencida da realocação de verba (06/11) é parente da pausa de campanhas que já funcionou no passado, quando a entrega zerou 27–31/08 e custou cerca de R$ 480.",
+        "Depois da decisão:** a Memória grava as três em `docs/decisoes/` com `Revisar em` e `Resultado`, com executor nomeado."
       ]
     }
   ]
