@@ -2853,6 +2853,88 @@
         "Cobrança de pausa:** a decisão vencida da realocação de verba (06/11) é parente da pausa de campanhas que já funcionou no passado, quando a entrega zerou 27–31/08 e custou cerca de R$ 480.",
         "Depois da decisão:** a Memória grava as três em `docs/decisoes/` com `Revisar em` e `Resultado`, com executor nomeado."
       ]
+    },
+    {
+      "data": "2026-11-10",
+      "hora": "22:30",
+      "tipo": "noturno",
+      "sincronizado_em": "2026-11-10T22:37:16-03:00",
+      "sincronizado_por": "auto (workflow conselho_sync.yml)",
+      "ata": "docs/atas/2026-11-10-conselho.md",
+      "mesa": {
+        "operacao": "critico",
+        "financeiro": "critico",
+        "marketing": "atencao",
+        "relacionamento": "atencao",
+        "pessoas": "atencao"
+      },
+      "decisoes": [
+        {
+          "n": 1,
+          "titulo": "Exportar hoje o extrato da Stone das duas lojas (de 16/10 até hoje) e carregar no PC",
+          "em_jogo": "R$ 54.025 a receber sem conferência (Escova R$ 35.552, Spa R$ 18.473), caixa visível de R$ 1.676 e R$ 8.400 vencendo",
+          "executor": "Financeiro, depois do CSV",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-11-10-conselho-exportar-hoje-o-extrato-da-stone-das-dua.md"
+        },
+        {
+          "n": 2,
+          "titulo": "Entregar a quem liga uma lista pronta por dia, em vez de pedir de novo \"um nome\"** (você diz quem na recepção, o Relacionamento monta a lista de cerca de 10 por dia, nenhuma trava afrouxada)",
+          "em_jogo": "181 clientes e R$ 62.193 de histórico (teto), mais 23 aniversariantes em 14 dias. Os 3 maiores somam R$ 3.293",
+          "executor": "Relacionamento monta, a recepção liga pelo WhatsApp comum",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-11-10-conselho-entregar-a-quem-liga-uma-lista-pronta-po.md"
+        },
+        {
+          "n": 3,
+          "titulo": "Autorizar a troca do criativo dos combos da Escova antes do Yellow Day (amanhã) e da Yellow Friday (até 15/11)",
+          "em_jogo": "R$ 896 por mês (cerca de R$ 30/dia) a cerca de R$ 16 por conversa, contra R$ 4–5 da Plástica. A semana está R$ 58 acima da meta de custo",
+          "executor": "Marketing, só com \"aprovado\", nome da campanha e valor diário. O Marketing recomenda não aumentar a verba. - **Pendência com a franqueadora, fora da conta das 3 (só o Spa; Escova sem chamado urgente):** - Chamado da inauguração: a franqueadora pediu em 03/11 o vídeo da sala dupla e a confirmação dos dispensers de papel e álcool. Está há 7 dias com a loja. - Chamado de produto vencido: a franqueadora passou o contato do fornecedor Tulipia em 13/10 e pediu que a loja avise se ele não ligasse. Está há 28 dias sem resposta",
+          "status": "pendente",
+          "revisao_em": null,
+          "docs_decisao": "docs/decisoes/2026-11-10-conselho-autorizar-a-troca-do-criativo-dos-combos.md"
+        }
+      ],
+      "cruzamentos_chave": [],
+      "sem_dono": [
+        "Movimento de 10/11 e se a segunda de R$ 106 é real ou atraso de captura. → reabrir o cofre no PC e esperar o Trinks fechar.",
+        "Quantas conversas da Escova (75) e do Spa (45) viraram atendimento. → falta o funil de conversão, que Trinks sozinho não responde.",
+        "Quantas conversas do Spa são de vaga e não de cliente. → Rodrigo, no Gerenciador de Anúncios.",
+        "Saldo real e data do caixa de R$ 1.676, e quanto do recebível já entrou. → extrato Stone.",
+        "Grade de novembro de Erika, Katyane e Renata, e quem é o \"desligado\" com R$ 396. → Operação, pela agenda do Trinks.",
+        "Regra de comissão. → Rodrigo cadastra no Trinks. Sem ela a margem do Financeiro continua presumida.",
+        "Regra de amortização de R$ 4.132 em material fora do resultado. → Rodrigo.",
+        "Endereço do Spa na ficha do Google: o painel mostra 382 e a decisão de 31/10 diz 362. → Marketing confere no Google.",
+        "O próprio Conselho:** o da nuvem falhou às 05h42 (erro de login 401 e regra de permissão em `.claude/settings.json` que deveria ser `Edit`, não `Write`). O último que rodou de verdade foi o de 09/11. O login expira entre 16 e 19/11. → sessão no PC.",
+        "🕰️ DECISÕES SEM DESFECHO** — 67 abertas · a mais antiga há 57 dias (lido do arquivo gerado em 10/11 às 21h54). Pelos títulos e valores da fila, não abri os arquivos um a um.",
+        "⏰ **Revisão vencida (7):**",
+        "Realocar a verba de vaga e post impulsionado (R$ 1.480,68 em 30 dias, revisão 06/11): sem resultado registrado.",
+        "Cloud API do WhatsApp nas duas lojas (revisão 14/10): não aconteceu, o canal está desligado.",
+        "App Meta, Conselho de 14/09 (revisão 14/10): continua sem acesso de administrador.",
+        "Spa no número da Escova, separar em 30 dias (revisão 25/10): sem resultado.",
+        "Avaliação 2★ de mega hair (revisão 30/10): sem resultado.",
+        "Sumidos com canal manual e meta diária (revisão 23/10): sem dono, é a mesma pauta da decisão 2.",
+        "Responsável pelos conectores do Spa (revisão 23/10): a mídia roda, mas a Stone do Spa para em 19/10.",
+        "🔁 **Parecem repetição (13 apontadas):** a posterior vence e as anteriores fecham como `SUPERADA`.",
+        "Extrato Stone: vence a de 09/11, e as de 04 a 08/11 fecham.",
+        "Sumidos e aniversariantes: vence a de 09/11, e as de 04 a 08/11 fecham.",
+        "Combos: vence a de 09/11, e as de 07 e 08/11 fecham.",
+        "Meta do Spa: vence a de 06/11 sobre a de 05/11.",
+        "A pergunta certa não é \"por que não fizeram\", é \"quem ia fazer, e ele soube?\". O campo de executor está vazio ou genérico em quase todas.",
+        "📋 **Tocadas pelo dia de hoje:**",
+        "Caixa de R$ 1.436,61 contra R$ 32.229 de custo fixo (17/10, 24 dias).",
+        "Número real de outubro para o Excel (04/11): R$ 60.476 contra R$ 52.119, e aluguel de R$ 9.039.",
+        "Meta do Spa em novembro, R$ 40 mil ou R$ 50 mil (06/11).",
+        "Escova, mix do sábado e não a verba (R$ 1.977/mês, 17/10).",
+        "📌 MEMÓRIA** 🔴",
+        "As três decisões de hoje foram gravadas de 04 a 09/11 sem que ninguém registrasse cumprimento ou recusa. O campo `Resultado` está em branco em todas.",
+        "Aprendizado de ago/2026:** 7 de 9 pedidos de aprovação humana morreram sem resposta, e a correção foi mover a trava para o código. Repetir \"nomeie alguém\" pela sexta vez é o mesmo padrão. A decisão 2 muda a forma: o código monta a lista todo dia e o humano só liga.",
+        "Alarme de 15/09:** PIX sem confirmação lido como dinheiro sumido, quando era extrato atrasado. Os 9 PIX de hoje caem no mesmo caso.",
+        "Pausa de campanha:** a pausa de campanhas que não convertem já funcionou antes, quando a entrega zerada de 27 a 31/08 custou cerca de R$ 480. A decisão 3 é parente disso.",
+        "Depois do \"sim\":** gravar as três com executor nomeado e `Revisar em`, e fechar as versões anteriores como `SUPERADA`."
+      ]
     }
   ],
   "recomendacoes": [
@@ -3879,6 +3961,39 @@
       "revisao_em": null,
       "docs_decisao": "docs/decisoes/2026-11-09-conselho-trocar-o-criativo-dos-combos-cerca-de-r.md",
       "origem_conselho": "2026-11-09"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-11-10] Exportar hoje o extrato da Stone das duas lojas (de 16/10 até hoje) e carregar no PC",
+      "detalhe": "R$ 54.025 a receber sem conferência (Escova R$ 35.552, Spa R$ 18.473), caixa visível de R$ 1.676 e R$ 8.400 vencendo",
+      "acao": "Executar: Financeiro, depois do CSV.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-11-10-conselho-exportar-hoje-o-extrato-da-stone-das-dua.md",
+      "origem_conselho": "2026-11-10"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-11-10] Entregar a quem liga uma lista pronta por dia, em vez de pedir de novo \"um nome\"** (você diz quem na recepção, o Relacionamento monta a lista de cerca de 10 por dia, nenhuma trava afrouxada)",
+      "detalhe": "181 clientes e R$ 62.193 de histórico (teto), mais 23 aniversariantes em 14 dias. Os 3 maiores somam R$ 3.293",
+      "acao": "Executar: Relacionamento monta, a recepção liga pelo WhatsApp comum.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-11-10-conselho-entregar-a-quem-liga-uma-lista-pronta-po.md",
+      "origem_conselho": "2026-11-10"
+    },
+    {
+      "sev": "warn",
+      "titulo": "[Conselho 2026-11-10] Autorizar a troca do criativo dos combos da Escova antes do Yellow Day (amanhã) e da Yellow Friday (até 15/11)",
+      "detalhe": "R$ 896 por mês (cerca de R$ 30/dia) a cerca de R$ 16 por conversa, contra R$ 4–5 da Plástica. A semana está R$ 58 acima da meta de custo",
+      "acao": "Executar: Marketing, só com \"aprovado\", nome da campanha e valor diário. O Marketing recomenda não aumentar a verba. - **Pendência com a franqueadora, fora da conta das 3 (só o Spa; Escova sem chamado urgente):** - Chamado da inauguração: a franqueadora pediu em 03/11 o vídeo da sala dupla e a confirmação dos dispensers de papel e álcool. Está há 7 dias com a loja. - Chamado de produto vencido: a franqueadora passou o contato do fornecedor Tulipia em 13/10 e pediu que a loja avise se ele não ligasse. Está há 28 dias sem resposta.",
+      "status": "pendente",
+      "aprovada_em": null,
+      "revisao_em": null,
+      "docs_decisao": "docs/decisoes/2026-11-10-conselho-autorizar-a-troca-do-criativo-dos-combos.md",
+      "origem_conselho": "2026-11-10"
     }
   ],
   "kpi_estrela": {
