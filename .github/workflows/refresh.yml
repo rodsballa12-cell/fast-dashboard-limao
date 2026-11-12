@@ -255,6 +255,18 @@ jobs:
           FAST_PAINEL_SENHA: ${{ secrets.FAST_PAINEL_SENHA }}
         run: python3 -m pip install -q cryptography 2>/dev/null || python3 -m pip install -q --break-system-packages cryptography && python3 scripts/cofre.py fechar
 
+      # Pagina da RECEPCAO (so a aba Clientes, com senha propria). Roda com o
+      # cofre aberto e antes do commit, no mesmo refresh. Sem o Secret
+      # FAST_RECEPCAO_SENHA ela so regenera o html e avisa - nao derruba o refresh.
+      - name: Pagina da recepcao
+        if: steps.recency.outputs.skip != 'true'
+        continue-on-error: true
+        env:
+          FAST_RECEPCAO_SENHA: ${{ secrets.FAST_RECEPCAO_SENHA }}
+        run: |
+          python3 -m pip install -q cryptography 2>/dev/null || python3 -m pip install -q --break-system-packages cryptography
+          python3 scripts/recepcao_gerar.py
+
       - name: Commit e push
         if: steps.recency.outputs.skip != 'true'
         run: |
@@ -266,7 +278,7 @@ jobs:
           # apesar do dashboard ter dados novos.
           # Fix: adicionar cada arquivo individualmente (o `|| true` só cobre o
           # próprio git add, não os outros).
-          for f in data/dashboard_data.json.enc \
+          for f in recepcao.html data/recepcao_clientes.json.enc data/dashboard_data.json.enc \
                    data/clientes_detalhes.json.enc \
                    data/profissionais_cache.json \
                    data/clientes_lista_cache.json.enc \
