@@ -7611,6 +7611,10 @@ function renderSaude(){
   const el = document.getElementById('saude-faixa');
   if(!el) return;
   el.innerHTML = '';
+  // Faixa retirada a pedido do Rodrigo (12/11/2026). O estado das automações
+  // continua em data/saude.json (scripts/saude.py) e na auditoria de
+  // coerência; para voltar a mostrar no topo, apague a linha abaixo.
+  return;
   if(!SAUDE || !SAUDE.automacoes) return;
 
   const agora = new Date();
