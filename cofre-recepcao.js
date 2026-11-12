@@ -86,7 +86,11 @@
     });
     cache.catch(function () { cache = null; });
     // Depois que a senha entrou, abre tambem o saldo de pacotes (mesma senha).
-    cache.then(function () { carregarPacotes(); });
+    cache.then(function (obj) {
+      window.fastRecepcaoDados = obj;
+      document.dispatchEvent(new CustomEvent('recepcao-dados', { detail: obj }));
+      carregarPacotes();
+    });
     return cache;
   }
 

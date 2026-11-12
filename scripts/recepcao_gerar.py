@@ -4,6 +4,7 @@
 
 Cria, na raiz do repositorio:
   recepcao.html                     pagina (derivada do index.html, sem dado)
+  recepcao-app.js                   tela "Hoje na recepcao" (escrita a mao)
   data/recepcao_clientes.json.enc   recorte de clientes Escova + Spa, CIFRADO
                                     com FAST_RECEPCAO_SENHA
 
@@ -42,7 +43,41 @@ def senha() -> str:
     return os.environ.get("FAST_RECEPCAO_SENHA", "").strip()
 
 
-def recorte(d: dict) -> dict:
+def _tel(det: dict) -> str:
+    t = (det or {}).get("telefone")
+    if isinstance(t, list):
+        t = t[0] if t else ""
+    return str(t or "")
+
+
+def _ontem(d: dict, sub: str) -> list:
+    """Clientes atendidas no dia anterior ao `hoje` do painel (para o pos-venda)."""
+    import datetime
+    base = REPO / "data" / sub
+    ftr, fcl = base / "transacoes_ano_cache.json", base / "clientes_detalhes.json"
+    if not (ftr.exists() and fcl.exists()):
+        return []
+    try:
+        ontem = (datetime.date.fromisoformat(str(d.get("hoje"))[:10]) - datetime.timedelta(days=1)).isoformat()
+    except Exception:
+        return []
+    trans = json.loads(ftr.read_text(encoding="utf-8")).get("payload") or []
+    cli = json.loads(fcl.read_text(encoding="utf-8"))
+    cli = cli.get("payload", cli) if isinstance(cli, dict) else {}
+    vistos, saida = set(), []
+    for t in trans:
+        if str(t.get("dataHora", ""))[:10] != ontem:
+            continue
+        c = t.get("cliente") or {}
+        cid = str(c.get("id"))
+        if cid in vistos or not c.get("nome"):
+            continue
+        vistos.add(cid)
+        saida.append({"cliente": c["nome"].strip(), "telefone": _tel(cli.get(cid))})
+    return sorted(saida, key=lambda x: x["cliente"].lower())
+
+
+def recorte(d: dict, sub: str = "") -> dict:
     anual = (d.get("abas") or {}).get("anual") or {}
     return {
         "gerado_em": d.get("gerado_em"), "hoje": d.get("hoje"),
@@ -50,48 +85,8 @@ def recorte(d: dict) -> dict:
         "dias_op_mes": d.get("dias_op_mes"),
         "abas": {"anual": {k: anual[k] for k in CHAVES_CLIENTES if k in anual}},
         "insights": {"clientes": (d.get("insights") or {}).get("clientes")},
+        "ontem": _ontem(d, sub),
     }
-
-
-# Secao "Pacotes com sessao a consumir" no topo da aba Clientes. Os dados vem do
-# cofre-recepcao.js (evento recepcao-pacotes). Pacote nao tem validade: a lista
-# e de quem ainda tem sessao sobrando, para a recepcao oferecer o uso/renovacao.
-RENDER_PACOTES = r"""
-<script>
-(function(){
-  var DADOS=null;
-  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-  function unidade(){try{return localStorage.getItem('unidade_ativa_recepcao')==='spa'?'spa':'escova';}catch(e){return 'escova';}}
-  function dataBR(iso){var p=String(iso||'').split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:esc(iso||'');}
-  function desenhar(){
-    var raiz=document.getElementById('tab-clientes'); if(!raiz||!DADOS) return;
-    var alvo=document.getElementById('recepcao-pacotes');
-    if(!alvo){alvo=document.createElement('div');alvo.id='recepcao-pacotes';raiz.insertBefore(alvo,raiz.firstChild);}
-    var u=unidade(), lista=DADOS[u]||[], nome=u==='spa'?'Spa':'Escova';
-    var q=(document.getElementById('rp-busca')||{}).value||'';
-    var qn=q.toLowerCase();
-    var linhasP=lista.map(function(p){
-      var total=p.itens.reduce(function(s,it){return s+it.restante;},0);
-      return {cliente:p.cliente,pacote:p.pacote,itens:p.itens,total:total};
-    }).filter(function(p){return !qn||p.cliente.toLowerCase().indexOf(qn)>=0;});
-    linhasP.sort(function(a,b){var pa=a.total<=1?0:(a.total===2?1:2),pb=b.total<=1?0:(b.total===2?1:2);return pa-pb||a.cliente.localeCompare(b.cliente,'pt-BR')||a.pacote.localeCompare(b.pacote,'pt-BR');});
-    var renovar=lista.filter(function(p){return p.itens.reduce(function(s,it){return s+it.restante;},0)<=1;}).length;
-    var linhas=linhasP.map(function(p){
-      var itens=p.itens.map(function(it){return '<strong>'+it.restante+'</strong> × '+esc(it.servico);}).join('<br>');
-      var sit=p.total<=1?'<strong style="color:#c0392b">🔴 Renovar agora</strong>':(p.total===2?'<strong style="color:#b7791f">🟡 Falta pouco</strong>':'<span style="color:var(--ink-3)">em uso</span>');
-      return '<tr><td><strong>'+esc(p.cliente)+'</strong></td><td>'+esc(p.pacote)+'</td><td>'+itens+'</td><td>'+sit+'</td></tr>';
-    }).join('');
-    alvo.innerHTML='<div class="card"><h2>🎁 Pacotes com sessão a consumir · '+nome+'</h2>'+
-      '<div class="cap"><strong>'+renovar+'</strong> pacote(s) com 1 sessão restante: oferecer a renovação antes de acabar e não deixar a cliente sair com a comanda zerada. Pacote não tem validade. Posição do Trinks em '+dataBR(DADOS.posicao)+'.</div>'+
-      '<input id="rp-busca" type="search" placeholder="Buscar cliente…" value="'+esc(q)+'" style="width:100%;box-sizing:border-box;margin:10px 0;padding:9px 12px;font-size:15px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--ink)">'+
-      (linhas?'<div style="overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Pacote</th><th>Falta consumir</th><th>Situação</th></tr></thead><tbody>'+linhas+'</tbody></table></div>':'<div class="cap">Nenhum cliente encontrado.</div>')+'</div>';
-    var b=document.getElementById('rp-busca'); b.addEventListener('input',function(){var pos=b.selectionStart;desenhar();var n=document.getElementById('rp-busca');n.focus();try{n.setSelectionRange(pos,pos);}catch(e){}});
-  }
-  document.addEventListener('recepcao-pacotes',function(ev){DADOS=ev.detail;desenhar();});
-  document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('.unid-btn')){setTimeout(desenhar,80);}});
-})();
-</script>
-"""
 
 
 def gerar_html() -> None:
@@ -125,7 +120,8 @@ def gerar_html() -> None:
         "if(h)h.innerHTML='Atendimento <span style=\"color:var(--accent-ink)\">Fast</span>';\n"
         "var s=document.getElementById('brand-sub');if(s)s.textContent='Clientes · recepção';});</script>\n"
     )
-    corpo = corpo.replace("</head>", extra + RENDER_PACOTES + "</head>", 1)
+    app = '<script src="recepcao-app.js"></script>\n'
+    corpo = corpo.replace("</head>", extra + app + "</head>", 1)
     (REPO / "recepcao.html").write_text(corpo, encoding="utf-8")
     print(f"[recepcao] recepcao.html gerado ({len(corpo):,} chars)")
 
@@ -142,7 +138,7 @@ def gerar_cofre() -> int:
         if not p.exists():
             print(f"[recepcao] AVISO: {rel} ausente (cofre fechado?) — cofre NAO atualizado.")
             return 0
-        saida[u] = recorte(json.loads(p.read_text(encoding="utf-8")))
+        saida[u] = recorte(json.loads(p.read_text(encoding="utf-8")), "" if u == "escova" else "spa/")
         print(f"[recepcao] {u}: dado de {saida[u]['gerado_em']}")
     enc = REPO / "data" / "recepcao_clientes.json.enc"
     enc.write_bytes(cifrar(json.dumps(saida, ensure_ascii=False).encode("utf-8"), s))

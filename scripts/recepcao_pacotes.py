@@ -48,13 +48,34 @@ def main() -> int:
                 return 1
             grupos.setdefault((u, cli, pac), []).append({"servico": serv, "restante": int(qtd)})
             n += 1
+    # Telefone por nome (cadastro local de clientes da unidade). Sem casar = sem botao de WhatsApp.
+    def tels(sub):
+        f = REPO / "data" / sub / "clientes_detalhes.json"
+        if not f.exists():
+            return {}
+        c = json.loads(f.read_text(encoding="utf-8"))
+        c = c.get("payload", c) if isinstance(c, dict) else {}
+        m = {}
+        for v in c.values():
+            t = v.get("telefone")
+            t = t[0] if isinstance(t, list) and t else (t if isinstance(t, str) else "")
+            if v.get("nome") and t:
+                m[" ".join(v["nome"].split()).casefold()] = t
+        return m
+    tel_u = {"escova": tels(""), "spa": tels("spa")}
     saida = {"posicao": posicao, "fonte": "Trinks · Pacotes · Saldo (por cliente)",
              "escova": [], "spa": []}
     for (u, cli, pac), itens in sorted(grupos.items(), key=lambda k: (k[0][0], k[0][1].lower(), k[0][2])):
-        saida[u].append({"cliente": cli, "pacote": pac, "itens": itens})
+        item = {"cliente": cli, "pacote": pac, "itens": itens}
+        t = tel_u[u].get(" ".join(cli.split()).casefold())
+        if t:
+            item["telefone"] = t
+        saida[u].append(item)
     enc = REPO / "data" / "recepcao_pacotes.json.enc"
     enc.write_bytes(cifrar(json.dumps(saida, ensure_ascii=False).encode("utf-8"), s))
     print(f"{n} linhas · escova: {len(saida['escova'])} pacotes · spa: {len(saida['spa'])} pacotes · posicao {posicao}")
+    com_tel = sum(1 for u in ("escova", "spa") for p in saida[u] if p.get("telefone"))
+    print(f"telefone encontrado para {com_tel} de {len(saida['escova']) + len(saida['spa'])} pacotes")
     print(f"gravado {enc.relative_to(REPO)}")
     return 0
 
