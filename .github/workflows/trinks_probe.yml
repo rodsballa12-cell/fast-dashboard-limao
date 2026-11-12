@@ -1,0 +1,22 @@
+name: Trinks · sonda de pacotes (one-off)
+on:
+  workflow_dispatch:
+    inputs:
+      cliente:
+        description: 'id de cliente com pacote (so o numero)'
+        required: true
+permissions:
+  contents: read
+jobs:
+  sonda:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install -q requests
+      - env:
+          TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
+          TRINKS_ESTABELECIMENTO_ID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID }}
+          TRINKS_API_KEY_SPA: ${{ secrets.TRINKS_API_KEY_SPA }}
+          TRINKS_ESTABELECIMENTO_ID_SPA: ${{ secrets.TRINKS_ESTABELECIMENTO_ID_SPA }}
+        run: python scripts/trinks_probe_pacotes.py "${{ github.event.inputs.cliente }}"
