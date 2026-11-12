@@ -80,9 +80,14 @@ def casa(nome: str, profs: set[str]) -> bool:
 
 
 def ler():
-    regras = {}
+    regras, regras_cred = {}, {}
     try:
-        regras = {norm(k): v for k, v in (json.loads(REGRAS.read_text(encoding="utf-8")).get("por_nome") or {}).items()}
+        _r = json.loads(REGRAS.read_text(encoding="utf-8"))
+        regras = {norm(k): v for k, v in (_r.get("por_nome") or {}).items()}
+        # Crédito que não é cliente (ex.: devolução de Pix enviado por engano). A chave
+        # "NOME@dd/mm/aaaa HH:MM" vale só para aquele lançamento; só o NOME vale para todos.
+        regras_cred = {(norm(k.split("@")[0]) + ("@" + k.split("@")[1] if "@" in k else "")): v
+                       for k, v in (_r.get("por_nome_credito") or {}).items()}
     except (OSError, ValueError):
         pass
     rot = lambda c: "Stone Spa — " + c.replace("OPEX (", "").rstrip(")") if c.startswith("OPEX (") else c
@@ -109,6 +114,9 @@ def ler():
                 cat, desc = "Stone Spa — Resgate da Reserva", "Resgate da Reserva Stone"
             elif not deb and "SIIBELLO" in contra.upper():
                 cat, desc = "Stone Spa — Transferência da conta XP", "Transferência XP → Stone Spa"
+            elif regras_cred.get(norm(contra) + "@" + l["Data"][:16]) or regras_cred.get(norm(contra)):
+                cat = regras_cred.get(norm(contra) + "@" + l["Data"][:16]) or regras_cred.get(norm(contra))
+                desc = "Crédito que não é de cliente (regra por nome)"
             else:
                 cat, desc = "Stone Spa — Recebimento de cliente", "Recebimento (cartão/Pix) — a receita vem do Trinks"
             L.append(dict(quando=quando, idx=idx, contra=("Clientes (Stone)" if desconhecido and not deb else contra),
