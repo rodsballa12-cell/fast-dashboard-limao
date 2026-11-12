@@ -78,9 +78,9 @@ document.addEventListener('visibilitychange', () => {
   /* Fintech Modern · light-first, dark opcional via prefers-color-scheme */
   :root{
     --bg:#FAFAFA; --surface:#FFFFFF; --surface-2:#F5F5F7; --border:#E7E7EA;
-    --ink:#0A0A0C; --ink-2:#4B4B54; --ink-3:#8A8A94;
-    --accent:#F5B800; --accent-2:#B88A00; --accent-soft:#FEF3C7;
-    --good:#059669; --good-soft:#D1FAE5; --warn:#D97706; --warn-soft:#FEF3C7; --crit:#DC2626; --crit-soft:#FEE2E2;
+    --ink:#0A0A0C; --ink-2:#4B4B54; --ink-3:#6B6B75;
+    --accent:#F5B800; --accent-ink:#8A6A00; --accent-2:#B88A00; --accent-soft:#FEF3C7;
+    --good:#047857; --good-soft:#D1FAE5; --warn:#B45309; --warn-soft:#FEF3C7; --crit:#B91C1C; --crit-soft:#FEE2E2;
     --grid:#EEEEF0;
     --shadow-sm:0 1px 2px rgba(15,15,20,.04);
     --shadow:0 1px 3px rgba(15,15,20,.06), 0 4px 12px rgba(15,15,20,.04);
@@ -90,9 +90,9 @@ document.addEventListener('visibilitychange', () => {
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --bg:#0B0B0F; --surface:#141419; --surface-2:#1D1D24; --border:#2A2A33;
-      --ink:#F4F4F7; --ink-2:#B4B4BE; --ink-3:#7A7A85;
-      --accent:#FFCB05; --accent-2:#E0A82E; --accent-soft:#3D2E00;
-      --good:#10B981; --good-soft:#053626; --warn:#F59E0B; --warn-soft:#3D2900; --crit:#EF4444; --crit-soft:#3D1414;
+      --ink:#F4F4F7; --ink-2:#B4B4BE; --ink-3:#8E8E99;
+      --accent:#FFCB05; --accent-ink:#FFCB05; --accent-2:#E0A82E; --accent-soft:#3D2E00;
+      --good:#10B981; --good-soft:#053626; --warn:#F59E0B; --warn-soft:#3D2900; --crit:#F87171; --crit-soft:#3D1414;
       --grid:#252530;
       --shadow-sm:0 1px 2px rgba(0,0,0,.3);
       --shadow:0 1px 3px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.35);
@@ -101,9 +101,9 @@ document.addEventListener('visibilitychange', () => {
   }
   :root[data-theme="dark"]{
     --bg:#0B0B0F; --surface:#141419; --surface-2:#1D1D24; --border:#2A2A33;
-    --ink:#F4F4F7; --ink-2:#B4B4BE; --ink-3:#7A7A85;
-    --accent:#FFCB05; --accent-2:#E0A82E; --accent-soft:#3D2E00;
-    --good:#10B981; --good-soft:#053626; --warn:#F59E0B; --warn-soft:#3D2900; --crit:#EF4444; --crit-soft:#3D1414;
+    --ink:#F4F4F7; --ink-2:#B4B4BE; --ink-3:#8E8E99;
+    --accent:#FFCB05; --accent-ink:#FFCB05; --accent-2:#E0A82E; --accent-soft:#3D2E00;
+    --good:#10B981; --good-soft:#053626; --warn:#F59E0B; --warn-soft:#3D2900; --crit:#F87171; --crit-soft:#3D1414;
     --grid:#252530;
     --shadow-sm:0 1px 2px rgba(0,0,0,.3);
     --shadow:0 1px 3px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.35);
@@ -111,9 +111,9 @@ document.addEventListener('visibilitychange', () => {
   }
   :root[data-theme="light"]{
     --bg:#FAFAFA; --surface:#FFFFFF; --surface-2:#F5F5F7; --border:#E7E7EA;
-    --ink:#0A0A0C; --ink-2:#4B4B54; --ink-3:#8A8A94;
-    --accent:#F5B800; --accent-2:#B88A00; --accent-soft:#FEF3C7;
-    --good:#059669; --good-soft:#D1FAE5; --warn:#D97706; --warn-soft:#FEF3C7; --crit:#DC2626; --crit-soft:#FEE2E2;
+    --ink:#0A0A0C; --ink-2:#4B4B54; --ink-3:#6B6B75;
+    --accent:#F5B800; --accent-ink:#8A6A00; --accent-2:#B88A00; --accent-soft:#FEF3C7;
+    --good:#047857; --good-soft:#D1FAE5; --warn:#B45309; --warn-soft:#FEF3C7; --crit:#B91C1C; --crit-soft:#FEE2E2;
     --grid:#EEEEF0;
     --shadow-sm:0 1px 2px rgba(15,15,20,.04);
     --shadow:0 1px 3px rgba(15,15,20,.06), 0 4px 12px rgba(15,15,20,.04);
@@ -152,7 +152,7 @@ document.addEventListener('visibilitychange', () => {
   .placeholder-unidade h2{font-size:24px;margin:0 0 10px;color:var(--ink);}
   .placeholder-unidade .sub{color:var(--ink-3);font-size:13px;margin-bottom:24px;}
   .placeholder-unidade .countdown{background:var(--surface-2);border-radius:12px;padding:20px;margin:20px 0;font-size:14px;}
-  .placeholder-unidade .countdown strong{font-size:32px;color:var(--accent);display:block;margin-bottom:4px;}
+  .placeholder-unidade .countdown strong{font-size:32px;color:var(--accent-ink);display:block;margin-bottom:4px;}
   .placeholder-unidade .abas-list{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:20px;}
   .placeholder-unidade .abas-list span{background:var(--surface-2);color:var(--ink-2);padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;}
   .btn-refresh{background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-size:12px;font-family:inherit;cursor:pointer;transition:all .18s cubic-bezier(0.4,0,0.2,1);font-weight:600;box-shadow:var(--shadow-sm);}
@@ -163,7 +163,7 @@ document.addEventListener('visibilitychange', () => {
   #toast{position:fixed;top:20px;right:20px;background:var(--surface);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:8px;padding:14px 20px;box-shadow:var(--shadow);z-index:1000;font-size:13px;color:var(--ink);max-width:340px;display:none;}
   #toast.show{display:block;animation:slideIn .3s;}
   #toast.err{border-color:var(--crit);border-left-color:var(--crit);}
-  #toast strong{color:var(--accent);}
+  #toast strong{color:var(--accent-ink);}
   #toast.err strong{color:var(--crit);}
   @keyframes slideIn{from{transform:translateX(400px);}to{transform:translateX(0);}}
   .tabs{display:flex;gap:4px;margin-bottom:26px;overflow-x:auto;flex-wrap:wrap;background:var(--surface-2);padding:4px;border-radius:12px;}
@@ -182,7 +182,7 @@ document.addEventListener('visibilitychange', () => {
   .kpi:hover{box-shadow:var(--shadow);transform:translateY(-1px);border-color:var(--ink-3);}
   .kpi .label{font-size:11px;letter-spacing:0;text-transform:none;color:var(--ink-3);font-weight:600;}
   .kpi .value{font-family:inherit;font-size:30px;font-weight:700;line-height:1.15;margin-top:6px;font-variant-numeric:tabular-nums;color:var(--ink);letter-spacing:-0.03em;}
-  .kpi .value.accent{color:var(--accent);}
+  .kpi .value.accent{color:var(--accent-ink);}
   .kpi .foot{margin-top:10px;font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums;line-height:1.4;}
   .kpi .up{color:var(--good);font-weight:600;background:var(--good-soft);padding:2px 8px;border-radius:999px;display:inline-block;font-size:11px;}
   .kpi .dn{color:var(--crit);font-weight:600;background:var(--crit-soft);padding:2px 8px;border-radius:999px;display:inline-block;font-size:11px;}
@@ -193,12 +193,12 @@ document.addEventListener('visibilitychange', () => {
   .meta-cell{background:var(--surface-2);border-radius:12px;padding:14px 16px;}
   .meta-cell .l{font-size:11px;color:var(--ink-3);letter-spacing:0;text-transform:none;font-weight:600;}
   .meta-cell .v{font-family:inherit;font-size:22px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:6px;letter-spacing:-0.02em;line-height:1.15;}
-  .meta-cell .v.good{color:var(--good);} .meta-cell .v.warn{color:var(--warn);} .meta-cell .v.crit{color:var(--crit);} .meta-cell .v.accent{color:var(--accent);}
+  .meta-cell .v.good{color:var(--good);} .meta-cell .v.warn{color:var(--warn);} .meta-cell .v.crit{color:var(--crit);} .meta-cell .v.accent{color:var(--accent-ink);}
   .progress{height:26px;background:var(--surface-2);border-radius:6px;overflow:hidden;position:relative;border:1px solid var(--border);}
   .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent));position:relative;transition:width .5s;}
   .progress-fill::after{content:"";position:absolute;top:0;right:0;bottom:0;width:2px;background:var(--accent);box-shadow:0 0 8px var(--accent);}
   .progress-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-top:6px;font-variant-numeric:tabular-nums;}
-  .progress-labels .now{color:var(--accent);font-weight:700;}
+  .progress-labels .now{color:var(--accent-ink);font-weight:700;}
   /* Marca onde o realizado DEVERIA estar pelos dias já corridos. Sem ela a
      barra no dia 3 de 30 mostra ~3% e parece fracasso, quando é só o mês
      tendo começado. */
@@ -221,7 +221,7 @@ document.addEventListener('visibilitychange', () => {
   .grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
   .sala-wrap{margin-bottom:12px;}
   .sala-wrap .sala-header{background:linear-gradient(90deg,var(--surface-2),transparent);padding:10px 14px;border-radius:8px 8px 0 0;border-left:4px solid var(--accent);margin-bottom:2px;}
-  .sala-wrap .sala-header h3{margin:0;font-size:15px;color:var(--accent);letter-spacing:0.5px;}
+  .sala-wrap .sala-header h3{margin:0;font-size:15px;color:var(--accent-ink);letter-spacing:0.5px;}
   .sala-wrap .sala-header .sub{font-size:12px;color:var(--muted);margin-top:2px;}
   .sala-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
   @media (min-width:1200px){.sala-grid{grid-template-columns:1fr 1fr 1fr;}}
@@ -238,7 +238,7 @@ document.addEventListener('visibilitychange', () => {
   table.simple tr:last-child td{border-bottom:0;}
   .up{color:var(--good);font-weight:700;} .dn{color:var(--crit);font-weight:700;} .neu{color:var(--ink-3);}
   .badge-new{display:inline-block;background:var(--accent);color:#000;font-size:9.5px;padding:1px 6px;border-radius:3px;font-weight:800;letter-spacing:.05em;margin-left:4px;}
-  .badge-live{display:inline-block;background:var(--warn);color:#000;font-size:9.5px;padding:1px 6px;border-radius:3px;font-weight:800;letter-spacing:.05em;margin-left:4px;animation:pulse 1.5s infinite;}
+  .badge-live{display:inline-block;background:var(--warn);color:#fff;font-size:9.5px;padding:1px 6px;border-radius:3px;font-weight:800;letter-spacing:.05em;margin-left:4px;animation:pulse 1.5s infinite;}
   .categ-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
   .categ-tile{background:var(--surface-2);border-radius:12px;padding:16px;border:1px solid transparent;transition:all .2s cubic-bezier(0.4,0,0.2,1);}
   .categ-tile:hover{border-color:var(--border);background:var(--surface);box-shadow:var(--shadow-sm);}
@@ -279,12 +279,12 @@ document.addEventListener('visibilitychange', () => {
   .insight-card.info .ic-tag{background:var(--good);color:#000;}
   .insight-card .ic-body{font-size:12.5px;color:var(--ink-2);line-height:1.5;margin-bottom:6px;}
   .insight-card .ic-acao{font-size:12px;color:var(--ink);border-top:1px dashed var(--border);padding-top:6px;margin-top:6px;}
-  .insight-card .ic-acao::before{content:'→ ';color:var(--accent);font-weight:800;}
+  .insight-card .ic-acao::before{content:'→ ';color:var(--accent-ink);font-weight:800;}
   #loading{display:flex;align-items:center;justify-content:center;min-height:400px;color:var(--ink-3);font-size:14px;}
   .spinner{width:30px;height:30px;border:3px solid var(--surface-2);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin-right:12px;}
   @keyframes spin{to{transform:rotate(360deg);}}
   footer{margin-top:28px;padding-top:16px;border-top:1px solid var(--border);font-size:11.5px;color:var(--ink-3);line-height:1.7;}
-  footer code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:11px;color:var(--accent);}
+  footer code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:11px;color:var(--accent-ink);}
   .dec-item{background:var(--surface-2);border-radius:8px;padding:13px 15px;margin-bottom:9px;border-left:3px solid var(--muted);}
   .dec-item.crit{border-left-color:#ef4444;} .dec-item.warn{border-left-color:#f59e0b;} .dec-item.ok{border-left-color:#22c55e;}
   .dec-item .dt{font-weight:700;font-size:13.5px;color:var(--ink);display:flex;gap:8px;align-items:baseline;}
@@ -460,7 +460,7 @@ document.addEventListener('visibilitychange', () => {
         </svg>
       </div>
       <div class="brand-txt">
-        <h1 id="brand-title">Ritmo <span style="color:var(--accent)">Fast</span></h1>
+        <h1 id="brand-title">Ritmo <span style="color:var(--accent-ink)">Fast</span></h1>
         <span class="sub" id="brand-sub">São Paulo · id 276461 · abertura 23/07/2026</span>
       </div>
     </div>
@@ -888,7 +888,7 @@ function renderPaceIntraday(container_id, pace, curva_horaria){
         <div class="meta-cell"><div class="l">Falta pra meta</div><div class="v ${projecao>=meta?'up':'warn'}">${brl0(Math.max(meta-real,0))}</div></div>
       </div>
       ${curva_svg ? `<div style="margin-top:14px;text-align:center;background:var(--surface-2);padding:12px;border-radius:8px;">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Curva esperada (tracejado) · Agora: <span style="color:${cor_bar}">●</span> real · <span style="color:var(--accent)">●</span> esperado</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Curva esperada (tracejado) · Agora: <span style="color:${cor_bar}">●</span> real · <span style="color:var(--accent-ink)">●</span> esperado</div>
         ${curva_svg}
       </div>` : ''}
       <div class="cap" style="margin-top:14px;padding:10px 12px;background:var(--surface-2);border-radius:8px;">${acao}</div>
@@ -975,7 +975,7 @@ function renderTicketMeta(container_id, periodo_label, kpis, aba_nome){
   const gapCor = status==='encerrado_batido' ? 'up' : (status==='fechado' ? '' : (gap>0 || deficit>0 ? 'warn' : 'up'));
 
   // Header: alvo sempre com valor numerico (ou —), status vira tag separada
-  const alvoHeader = alvo_display>0 ? `<span style="color:var(--accent)">${brl(alvo_display)}</span> / visita` : '<span style="color:var(--muted)">sem alvo</span>';
+  const alvoHeader = alvo_display>0 ? `<span style="color:var(--accent-ink)">${brl(alvo_display)}</span> / visita` : '<span style="color:var(--muted)">sem alvo</span>';
   const statusTag = header_tag ? ` · ${header_tag}` : '';
   // No consolidado, ticket_medio e MEDIA PONDERADA por visita — Escova tem
   // muito mais volume, entao o numero fica perto do dela e esconde o SPA.
@@ -1033,7 +1033,7 @@ function renderTicketMeta(container_id, periodo_label, kpis, aba_nome){
   }
   const html = `
     <section class="meta-card">
-      <h2><span style="color:var(--accent)">🎫</span> Ticket ${periodo_label} · alvo ${alvoHeader}${statusTag}</h2>
+      <h2><span style="color:var(--accent-ink)">🎫</span> Ticket ${periodo_label} · alvo ${alvoHeader}${statusTag}</h2>
       ${barra}
       <div class="meta-row" style="margin-top:16px;">
         <div class="meta-cell"><div class="l">Atual</div><div class="v ${cor}">${real>0?brl(real):'—'}</div></div>
@@ -1155,7 +1155,7 @@ function renderMetaProgress(container_id, titulo, meta, subtitle, pace_intraday,
           <div class="meta-cell"><div class="l">Projeção fim dia</div><div class="v ${projecao>=p.meta_dia?'up':(projecao>=p.meta_dia*0.8?'warn':'dn')}">${brl0(projecao)}</div></div>
         </div>
         ${curva_svg ? `<div style="margin-top:12px;text-align:center;background:var(--surface-2);padding:10px;border-radius:8px;">
-          <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Curva esperada (tracejado) · Agora: <span style="color:${cor_bar}">●</span> real · <span style="color:var(--accent)">●</span> esperado</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Curva esperada (tracejado) · Agora: <span style="color:${cor_bar}">●</span> real · <span style="color:var(--accent-ink)">●</span> esperado</div>
           ${curva_svg}
         </div>` : ''}
         <div class="cap" style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;">${acao}</div>
@@ -1164,7 +1164,7 @@ function renderMetaProgress(container_id, titulo, meta, subtitle, pace_intraday,
 
   const html=`
     <section class="meta-card">
-      <h2><span style="color:var(--accent)">🎯</span> ${titulo} · <span style="color:var(--accent)">${brl0(meta.meta)}</span></h2>
+      <h2><span style="color:var(--accent-ink)">🎯</span> ${titulo} · <span style="color:var(--accent-ink)">${brl0(meta.meta)}</span></h2>
       <div class="sub">${subtitle||''}</div>
       <div class="progress">
         ${barFill}
@@ -1229,7 +1229,7 @@ function renderCategoriasSimples(container_id, titulo, meta_valor, meta_realizad
   }).join('');
   const meta_pct = meta_valor>0 ? meta_realizado/meta_valor*100 : 0;
   const cor_tot = meta_pct>=100?'up':(meta_pct>=70?'warn':'dn');
-  const total_row = `<tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL META</td><td>${brl0(meta_valor)}</td><td>${brl0(meta_realizado)}</td><td class="${cor_tot}">${pct(meta_pct)}</td><td>${brl0(Math.max(meta_valor-meta_realizado,0))}</td><td>${brl0(meta_projecao)} (${pct(proj_pct)})</td></tr>`;
+  const total_row = `<tr style="font-weight:700;background:var(--surface-2);color:var(--accent-ink);"><td>TOTAL META</td><td>${brl0(meta_valor)}</td><td>${brl0(meta_realizado)}</td><td class="${cor_tot}">${pct(meta_pct)}</td><td>${brl0(Math.max(meta_valor-meta_realizado,0))}</td><td>${brl0(meta_projecao)} (${pct(proj_pct)})</td></tr>`;
   el.innerHTML = `<div class="card">
     <h2>Detalhamento por categoria · Meta vs Realizado ${titulo}</h2>
     <div class="cap">Meta rateada por <strong>share do mix realizado</strong> nas categorias nativas do Trinks. Unidade não usa plano fixo de franqueadora.</div>
@@ -1279,7 +1279,7 @@ function renderCategoriasMeta(container_id, titulo, categorias, meta_valor, meta
     const cor_proj=proj_pct_cat>=90?'up':(proj_pct_cat>=70?'warn':'dn');
     return `<tr title="${r.desc}"><td>${r.nome}</td><td>${brl0(meta_cat)}</td><td>${brl0(real_cat)}</td><td class="${cor}">${pct(pct_ating)}</td><td>${brl0(Math.max(meta_cat-real_cat,0))}</td><td class="${cor_proj}">${brl0(proj_cat)} (${pct(proj_pct_cat)})</td></tr>`;
   }).join('');
-  const total_row=`<tr style="font-weight:700;background:var(--surface-2);color:var(--accent);"><td>TOTAL META</td><td>${brl0(meta_valor)}</td><td>${brl0(meta_realizado)}</td><td>${pct(meta_valor>0?meta_realizado/meta_valor*100:0)}</td><td>${brl0(Math.max(meta_valor-meta_realizado,0))}</td><td>${brl0(meta_projecao)} (${pct(proj_pct)})</td></tr>`;
+  const total_row=`<tr style="font-weight:700;background:var(--surface-2);color:var(--accent-ink);"><td>TOTAL META</td><td>${brl0(meta_valor)}</td><td>${brl0(meta_realizado)}</td><td>${pct(meta_valor>0?meta_realizado/meta_valor*100:0)}</td><td>${brl0(Math.max(meta_valor-meta_realizado,0))}</td><td>${brl0(meta_projecao)} (${pct(proj_pct)})</td></tr>`;
 
   // Categorias nativas Trinks: meta = share OFICIAL (config.meta_categoria_nativa_share)
   // × meta de SERVIÇOS do período. Traz TODAS as categorias com share (mesmo sem venda),
@@ -2335,7 +2335,7 @@ function renderBalcaoUnificado(container_id, bv, cats, catsAno, kpisPeriodo, kpi
       const pac = calcCom('pacotes', l.pacotes_v);
       const pro = calcCom('produtos', l.produtos_v);
       const totCom = (pac?.com || 0) + (pac?.bon || 0) + (pro?.com || 0) + (pro?.bon || 0);
-      comissaoCel = `<td style="text-align:right;font-weight:600;color:var(--accent)">${brl0(totCom)}</td>`;
+      comissaoCel = `<td style="text-align:right;font-weight:600;color:var(--accent-ink)">${brl0(totCom)}</td>`;
       const bonusVisual = [];
       if(pac?.prev) bonusVisual.push(pac.bateu ? `✅ pac ${brl0(pac.prev)}` : `<span style="color:var(--ink-3)">pac ${brl0(pac.prev)}?</span>`);
       if(pro?.prev) bonusVisual.push(pro.bateu ? `✅ prod ${brl0(pro.prev)}` : `<span style="color:var(--ink-3)">prod ${brl0(pro.prev)}?</span>`);
@@ -2649,7 +2649,7 @@ function renderComissaoRecepcao(container_id, bv, categorias, plano, nrec){
           ${row('produtos', 'Produtos', l.produtos_v, pro)}
           <tr style="font-weight:700;background:var(--surface-2)">
             <td>a receber</td><td colspan="3"></td>
-            <td style="text-align:right;color:var(--accent)">${brl0(ganho)}</td>
+            <td style="text-align:right;color:var(--accent-ink)">${brl0(ganho)}</td>
             <td style="text-align:center;color:var(--ink-3);font-size:11px">de ${brl0(teto)}</td>
           </tr>
         </tbody>
@@ -2882,7 +2882,7 @@ function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_
   const somaAtend = rp.reduce((a,p)=>a+(p.n||0),0);
   const somaHoras = rp.reduce((a,p)=>a+(p.horas_trab||0),0);
   const totalComEquipe = rp.reduce((s,p)=>s + ((p.comissao != null && p.comissao > 0) ? p.comissao : (p.v||0) * (taxaEfetiva/100)), 0) * scale;
-  const totalRow = `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700">
+  const totalRow = `<tr style="background:var(--surface-2);color:var(--accent-ink);font-weight:700">
     <td>TOTAL EQUIPE (${rp.length})</td>
     <td style="text-align:right">${somaAtend}</td>
     <td style="text-align:right">${somaHoras.toFixed(1)}h</td>
@@ -2909,7 +2909,7 @@ function renderProfComissoes(container_id, periodo_label, ranking_prof, ranking_
       <td style="text-align:right;color:#22c55e;font-weight:700">${brl0(c.comissao)}</td>
     </tr>`;
   }).join('');
-  const catTotalRow = catBreak.length ? `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700">
+  const catTotalRow = catBreak.length ? `<tr style="background:var(--surface-2);color:var(--accent-ink);font-weight:700">
     <td>TOTAL SERVIÇOS</td>
     <td style="text-align:right">${catBreak.reduce((a,x)=>a+x.n_atend,0)}</td>
     <td style="text-align:right">${taxaEfetiva.toFixed(1)}%</td>
@@ -2984,7 +2984,7 @@ function renderComissoesPer(container_id, periodo_label, categoria_native, ranki
     <td style="text-align:right">${c.taxa_pct.toFixed(0)}%</td>
     <td style="text-align:right;color:#22c55e;font-weight:700">${brl0(c.comissao)}</td>
   </tr>`).join('');
-  const totalRow = `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700">
+  const totalRow = `<tr style="background:var(--surface-2);color:var(--accent-ink);font-weight:700">
     <td>TOTAL ${periodo_label.toUpperCase()}</td>
     <td style="text-align:right">${cat.reduce((a,x)=>a+x.n_atend,0)}</td>
     <td style="text-align:right">${brl0(receitaTotal)}</td>
@@ -3001,7 +3001,7 @@ function renderComissoesPer(container_id, periodo_label, categoria_native, ranki
   }).join('') : '';
   const prodTotal = rp.reduce((a,x)=>a+(x.v||0), 0);
   const prodTotalCom = prodTotal * (taxaEfetiva/100);
-  const prodTotalRow = rp.length ? `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700">
+  const prodTotalRow = rp.length ? `<tr style="background:var(--surface-2);color:var(--accent-ink);font-weight:700">
     <td>TOTAL EQUIPE (${rp.length})</td>
     <td style="text-align:right">${rp.reduce((a,x)=>a+(x.n||0),0)}</td>
     <td style="text-align:right">${brl0(prodTotal)}</td>
@@ -3479,7 +3479,7 @@ function renderClientesSnapshot(container_id, snap, ltv, nvr){
     <!-- HERO: base total + divisão fiéis vs uma-vez -->
     <div style="text-align:center;padding:22px 16px;background:var(--surface-2);border-radius:12px;margin-top:14px">
       <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Sua base total · ano ${new Date().getFullYear()}</div>
-      <div style="font-size:52px;font-weight:800;color:var(--accent);line-height:1.05;margin:4px 0">${totalBase}</div>
+      <div style="font-size:52px;font-weight:800;color:var(--accent-ink);line-height:1.05;margin:4px 0">${totalBase}</div>
       <div style="font-size:13px;color:var(--ink-2)">pessoas atendidas desde a abertura</div>
       <div style="display:flex;justify-content:center;gap:36px;margin-top:16px;flex-wrap:wrap;font-size:12.5px">
         <div><span style="font-size:22px;font-weight:800;color:var(--good)">${pctFieis}%</span> <span style="color:var(--ink-2)">voltaram (fiéis)</span></div>
@@ -3510,7 +3510,7 @@ function renderClientesSnapshot(container_id, snap, ltv, nvr){
       <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Cada cliente rende, em média</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
         <div style="padding:10px 12px;background:var(--surface-2);border-radius:8px;text-align:center">
-          <div style="font-size:20px;font-weight:800;color:var(--accent)">${brl0(snap.ltv_medio)}</div>
+          <div style="font-size:20px;font-weight:800;color:var(--accent-ink)">${brl0(snap.ltv_medio)}</div>
           <div style="font-size:11px;color:var(--ink-3);margin-top:2px">total no ano</div>
         </div>
         <div style="padding:10px 12px;background:var(--surface-2);border-radius:8px;text-align:center">
@@ -3655,7 +3655,7 @@ function renderSegmentacao(container_id, titulo, subtitulo, seg, sem_dado_label)
     return `<div style="display:grid;grid-template-columns:150px 1fr 90px 60px 90px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--surface-2);">
       <div><strong>${t.nome}</strong></div>
       ${barraStacked(t)}
-      <div style="text-align:right;color:var(--accent);font-variant-numeric:tabular-nums;">${brl0(t.receita)}</div>
+      <div style="text-align:right;color:var(--accent-ink);font-variant-numeric:tabular-nums;">${brl0(t.receita)}</div>
       <div style="text-align:right;font-variant-numeric:tabular-nums;">${t.pct_receita}%</div>
       <div style="text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px;">${t.n_clientes} clientes<br>ticket ${brl0(t.ticket_medio_cliente)}</div>
     </div>`;
@@ -4134,7 +4134,7 @@ function renderAnual(data){
   const sub_atend = meses.reduce((s,[,m])=>s+(m.atend_fin||0), 0);
   const sub_trans = meses.reduce((s,[,m])=>s+(m.n_trans||0), 0);
   const sub_ticket = sub_trans > 0 ? sub_caixa / sub_trans : 0;
-  const subtotal_row = `<tr style="background:var(--surface-2);color:var(--accent);font-weight:700"><td>SUBTOTAL</td><td>${brl0(sub_caixa)}</td><td>${sub_atend}</td><td>${brl(sub_ticket)}</td></tr>`;
+  const subtotal_row = `<tr style="background:var(--surface-2);color:var(--accent-ink);font-weight:700"><td>SUBTOTAL</td><td>${brl0(sub_caixa)}</td><td>${sub_atend}</td><td>${brl(sub_ticket)}</td></tr>`;
   const tabela_html = `<div class="card">
     <h2>📅 Trajetória do ano · mês a mês</h2>
     <div class="cap">Fechados + mês corrente. Acompanhe se está acelerando.</div>
@@ -4592,7 +4592,7 @@ function renderAuditoria(data){
           <div style="font-size:11px;color:var(--ink-2)">${criticos>0?'nome do pagador Stone BATE com cliente cancelado':'✅ nenhum match nome-a-nome'}</div>
         </div>
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid ${revisar>0?'var(--accent)':'var(--border)'}">
-          <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase">🔍 Revisar</div>
+          <div style="font-size:11px;color:var(--accent-ink);font-weight:800;text-transform:uppercase">🔍 Revisar</div>
           <div style="font-size:26px;font-weight:800;color:var(--ink);margin:2px 0">${revisar}</div>
           <div style="font-size:11px;color:var(--ink-2)">valor+dia batem no Stone mas nome não confere</div>
         </div>
@@ -4614,7 +4614,7 @@ function renderAuditoria(data){
       <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Volume analisado</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
         <div style="padding:10px 12px;background:var(--surface-2);border-radius:8px;text-align:center">
-          <div style="font-size:20px;font-weight:800;color:var(--accent)">${aud.n_com_valor}</div>
+          <div style="font-size:20px;font-weight:800;color:var(--accent-ink)">${aud.n_com_valor}</div>
           <div style="font-size:11px;color:var(--ink-3);margin-top:2px">cancel. com valor</div>
         </div>
         <div style="padding:10px 12px;background:var(--surface-2);border-radius:8px;text-align:center">
@@ -4919,7 +4919,7 @@ function renderStone(data){
             <tbody>
               <tr><td>Débito (D+1)</td><td>${antec.debito.n}</td><td>${brl0(antec.debito.bruto)}</td><td>${antec.debito.mdr_pct.toFixed(2)}%</td><td>${antec.debito.dias_medio_restante != null ? antec.debito.dias_medio_restante + ' d' : '—'}</td><td>${brl0(antec.debito.liq_espera)}</td><td>${brl0(antec.debito.liq_antecipar)}</td><td class="neu">${brl0(antec.debito.custo_antecipacao)} <em>(irrisório)</em></td></tr>
               <tr><td>Crédito 1x (D+30)</td><td>${antec.credito.n}</td><td>${brl0(antec.credito.bruto)}</td><td>${antec.credito.mdr_pct.toFixed(2)}%</td><td>${antec.credito.dias_medio_restante != null ? antec.credito.dias_medio_restante + ' d' : '—'}</td><td>${brl0(antec.credito.liq_espera)}</td><td>${brl0(antec.credito.liq_antecipar)}</td><td class="dn">${brl0(antec.credito.custo_antecipacao)}</td></tr>
-              <tr style="background:var(--surface-2);color:var(--accent);font-weight:700"><td>TOTAL cartão</td><td>${antec.debito.n + antec.credito.n}</td><td>${brl0(antec.total.bruto)}</td><td>—</td><td>—</td><td>${brl0(antec.total.liq_espera)}</td><td>${brl0(antec.total.liq_antecipar)}</td><td>${brl0(antec.total.custo_antecipacao)} (${antec.total.custo_pct.toFixed(2)}%)</td></tr>
+              <tr style="background:var(--surface-2);color:var(--accent-ink);font-weight:700"><td>TOTAL cartão</td><td>${antec.debito.n + antec.credito.n}</td><td>${brl0(antec.total.bruto)}</td><td>—</td><td>—</td><td>${brl0(antec.total.liq_espera)}</td><td>${brl0(antec.total.liq_antecipar)}</td><td>${brl0(antec.total.custo_antecipacao)} (${antec.total.custo_pct.toFixed(2)}%)</td></tr>
             </tbody>
           </table>
         </div>
@@ -5004,7 +5004,7 @@ function renderStone(data){
           <div style="font-size:11px;color:var(--ink-3)">PIX + cartão (de vendas anteriores) + dinheiro</div>
         </div>
         <div style="padding:14px 16px;background:var(--surface-2);border-radius:10px;border-left:3px solid var(--accent)">
-          <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.06em">🎯 Loja vendeu no período</div>
+          <div style="font-size:11px;color:var(--accent-ink);font-weight:800;text-transform:uppercase;letter-spacing:.06em">🎯 Loja vendeu no período</div>
           <div style="font-size:28px;font-weight:800;color:var(--ink);margin:6px 0 2px">${brl0(vendido_total)}</div>
           <div style="font-size:11px;color:var(--ink-3)">Trinks bruto · cartão vira caixa em ~30d</div>
         </div>
@@ -5118,7 +5118,7 @@ function renderStone(data){
     bloco_receb = `<div class="card">
       <details><summary style="cursor:pointer;font-weight:700;font-size:15px;list-style:disclosure-closed">💳 Recebíveis de cartão creditados <span style="font-size:11px;color:var(--ink-3);font-weight:400">(${s.recebiveis_cartao.length} lançamentos · ${brl0(tot)} total)</span></summary>
         <div class="cap" style="margin-top:8px">Vendas de cartão que já caíram na conta (30 dias após a venda) · valor líquido descontada a taxa</div>
-        <table class="simple"><thead><tr><th>Data</th><th>Valor</th></tr></thead><tbody>${rows}<tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>TOTAL</td><td>${brl0(tot)}</td></tr></tbody></table>
+        <table class="simple"><thead><tr><th>Data</th><th>Valor</th></tr></thead><tbody>${rows}<tr style="background:var(--surface-2);color:var(--accent-ink);font-weight:700;"><td>TOTAL</td><td>${brl0(tot)}</td></tr></tbody></table>
       </details>
     </div>`;
   }
@@ -5144,12 +5144,12 @@ function renderStone(data){
           <tr><td>Hoje</td><td>${din_hoje.n}</td><td>${brl0(din_hoje.total)}</td><td>${din_hoje.total>0?'💵 no caixa físico':'—'}</td></tr>
           <tr><td>Semana</td><td>${din_semana.n}</td><td>${brl0(din_semana.total)}</td><td>${din_semana.total>0?'💵 no caixa físico':'—'}</td></tr>
           <tr><td>Mês</td><td>${din_mes.n}</td><td>${brl0(din_mes.total)}</td><td>${din_mes.total>0?'⚠️ acumulado · confirmar depósito':'—'}</td></tr>
-          <tr style="background:var(--surface-2);color:var(--accent);font-weight:700;"><td>Ano 2026</td><td>${din_ano.n}</td><td>${brl0(din_ano.total)}</td><td>—</td></tr>
+          <tr style="background:var(--surface-2);color:var(--accent-ink);font-weight:700;"><td>Ano 2026</td><td>${din_ano.n}</td><td>${brl0(din_ano.total)}</td><td>—</td></tr>
         </tbody>
       </table>
       ${din_mes.transacoes && din_mes.transacoes.length ? `
       <details style="margin-top:12px;">
-        <summary style="cursor:pointer;color:var(--accent);font-size:13px;">Ver ${din_mes.transacoes.length} transações em dinheiro do mês</summary>
+        <summary style="cursor:pointer;color:var(--accent-ink);font-size:13px;">Ver ${din_mes.transacoes.length} transações em dinheiro do mês</summary>
         <table class="simple" style="margin-top:8px;">
           <thead><tr><th>Data</th><th>Cliente</th><th>Valor</th></tr></thead>
           <tbody>${din_mes.transacoes.map(t=>`<tr><td>${fmtDate(t.data||'')}</td><td>${t.cliente||'?'}</td><td>${brl0(t.valor)}</td></tr>`).join('')}</tbody>
@@ -5218,7 +5218,7 @@ function renderStone(data){
         ${bloco_meta}
         ${mov_rows ? `
         <details style="margin-top:12px;">
-          <summary style="cursor:pointer;color:var(--accent);font-size:13px;">Ver últimos ${ap.ultimos_movs.length} dias com aportes</summary>
+          <summary style="cursor:pointer;color:var(--accent-ink);font-size:13px;">Ver últimos ${ap.ultimos_movs.length} dias com aportes</summary>
           <table class="simple" style="margin-top:8px;">
             <thead><tr><th>Data</th><th>Aporte do dia</th><th>Resgate</th><th>Transf. Stone Principal</th><th>Saldo aplicado acum.</th></tr></thead>
             <tbody>${mov_rows}</tbody>
@@ -5351,7 +5351,7 @@ function renderStone(data){
       </div>
 
       <div style="padding:14px 16px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--accent)">
-        <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.06em">🏦 Investido na Reserva Stone</div>
+        <div style="font-size:11px;color:var(--accent-ink);font-weight:800;text-transform:uppercase;letter-spacing:.06em">🏦 Investido na Reserva Stone</div>
         <div style="font-size:30px;font-weight:800;color:var(--ink);margin:4px 0;line-height:1.1">${brl0(reserva_hoje)}</div>
         <div style="font-size:11.5px;color:var(--ink-2);line-height:1.5">
           ${reserva_hoje > 0
@@ -5521,7 +5521,7 @@ function atualizarHeaderUnidade(){
   root.setAttribute('data-unidade', UNIDADE_ATIVA);
   if(title){
     if(UNIDADE_ATIVA === 'consolidado'){
-      title.innerHTML = `Ritmo <span style="color:var(--accent)">Fast</span> <span style="color:var(--ink-2);font-weight:500">· Consolidado</span>`;
+      title.innerHTML = `Ritmo <span style="color:var(--accent-ink)">Fast</span> <span style="color:var(--ink-2);font-weight:500">· Consolidado</span>`;
     } else {
       const cor = info.accent || 'var(--accent)';
       title.innerHTML = `${info.produto || 'Ritmo'} <span style="color:${cor}">${info.marca || 'Fast'}</span> <span style="color:var(--ink-3);font-weight:500">· ${info.tipo || ''}</span>`;
@@ -6643,7 +6643,7 @@ function renderFinanceiro(){
       <div style="font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px">Situação de caixa · agora</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
         <div style="padding:12px 14px;background:var(--surface-2);border-radius:8px;border-left:3px solid var(--accent)">
-          <div style="font-size:11px;color:var(--accent);font-weight:800;text-transform:uppercase">💵 Caixa em conta</div>
+          <div style="font-size:11px;color:var(--accent-ink);font-weight:800;text-transform:uppercase">💵 Caixa em conta</div>
           <div style="font-size:22px;font-weight:800;color:var(--ink);margin:2px 0">${k.caixa_conta==null?'—':brl0(k.caixa_conta)}</div>
           <div style="font-size:11px;color:var(--ink-2)">${k.caixa_conta==null?(k.caixa_conta_obs||'não separável por loja'):(k.caixa_conta_obs||`conta corrente da PJ · posição ${baselineFmt}`)}</div>
         </div>
@@ -7805,7 +7805,7 @@ function renderMidias(){
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px;padding-top:16px;border-top:1px dashed var(--border)">
           <div style="text-align:center">
             <div style="font-size:10.5px;color:var(--ink-3);text-transform:uppercase;font-weight:700">💰 Investido no ano</div>
-            <div style="font-size:24px;font-weight:800;color:var(--accent);margin-top:4px">${brl0(gastoMes)}</div>
+            <div style="font-size:24px;font-weight:800;color:var(--accent-ink);margin-top:4px">${brl0(gastoMes)}</div>
             <div style="font-size:11px;color:var(--ink-3)">desde a abertura</div>
           </div>
           <div style="text-align:center">
@@ -8262,7 +8262,7 @@ function renderMidias(){
         if(b.cpa_msg==null) return -1;
         return a.cpa_msg-b.cpa_msg;
       }).map(a=>`<tr style="border-bottom:1px solid var(--surface-2)">
-        <td style="padding:8px"><strong style="font-size:11px">${a.campanha}</strong><br><span style="color:var(--accent);font-size:10.5px;font-weight:500">${a.adset}</span></td>
+        <td style="padding:8px"><strong style="font-size:11px">${a.campanha}</strong><br><span style="color:var(--accent-ink);font-size:10.5px;font-weight:500">${a.adset}</span></td>
         <td style="text-align:right;padding:8px">${brl(a.gasto)}</td>
         <td style="text-align:right;padding:8px">${nOpt(a.reach)}</td>
         <td style="text-align:right;padding:8px">${a.ctr_pct.toFixed(2)}%</td>
@@ -8422,7 +8422,7 @@ function renderMidias(){
           <td style="text-align:right;padding:8px">${nfmt(p.shares||0)}</td>
           <td style="text-align:right;padding:8px">${nfmt(p.saved||0)}</td>
           <td style="text-align:right;padding:8px;font-weight:700;color:#E1306C">${nfmt(p.total_interactions||0)}</td>
-          <td style="text-align:center;padding:8px"><a href="${p.url}" target="_blank" style="color:var(--accent);text-decoration:none">🔗</a></td>
+          <td style="text-align:center;padding:8px"><a href="${p.url}" target="_blank" style="color:var(--accent-ink);text-decoration:none">🔗</a></td>
         </tr>`).join('')}</tbody></table></div>`:''}
       </section>`;
   } else { igBox.innerHTML=''; }
@@ -8504,7 +8504,7 @@ function renderMidias(){
           <td style="text-align:right;padding:5px">${nfmt(p.reach||0)}</td>
           <td style="text-align:right;padding:5px">${nfmt(p.reactions_total||0)}</td>
           <td style="text-align:right;padding:5px;font-weight:700;color:#1877F2">${nfmt(p.engajamento_total||0)}</td>
-          <td style="text-align:center;padding:5px">${p.url?`<a href="${p.url}" target="_blank" style="color:var(--accent);text-decoration:none">🔗</a>`:'—'}</td>
+          <td style="text-align:center;padding:5px">${p.url?`<a href="${p.url}" target="_blank" style="color:var(--accent-ink);text-decoration:none">🔗</a>`:'—'}</td>
         </tr>`).join('')}</tbody></table></div>`:''}
       ${fbNotaPP?`<div style="margin-top:10px;padding:8px;background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;border-radius:6px;font-size:11px;color:var(--ink-2)"><strong>ℹ️ Nota Meta:</strong> ${fbNotaPP}</div>`:''}
       </div>
