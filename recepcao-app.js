@@ -152,7 +152,10 @@
       return linha(u, 'pos', x.cliente, 'atendida ontem · envie a 2ª só se a resposta da 1ª for positiva', b1 + b2);
     });
 
-    var datadado = (D.gerado_em || '').slice(0, 16).replace('T', ' ');
+    var datadado = dataBR(D.gerado_em) + ' ' + String(D.gerado_em || '').slice(11, 16);
+    var bt = document.getElementById('brand-title'), bs = document.getElementById('brand-sub');
+    if (bt) bt.innerHTML = 'Atendimento <span style="color:var(--accent-ink)">Fast</span>';
+    if (bs) bs.textContent = 'Recepção · ' + L.nome;
     var cab = '<div class="rp-top"><h2>📋 Hoje na recepção · ' + L.nome + '</h2>' +
       '<div class="rp-meta">Dados dos clientes de ' + esc(datadado) + ' · pacotes: posição do Trinks em ' + (PACOTES ? dataBR(PACOTES.posicao) : '<strong>indisponível</strong>') + '</div>' +
       '<input id="rp-busca" type="search" placeholder="🔎 Cliente chegou? Digite o nome…" value="' + esc(q) + '">' +
