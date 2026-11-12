@@ -70,19 +70,21 @@ RENDER_PACOTES = r"""
     var u=unidade(), lista=DADOS[u]||[], nome=u==='spa'?'Spa':'Escova';
     var q=(document.getElementById('rp-busca')||{}).value||'';
     var qn=q.toLowerCase();
-    var porCliente={};
-    lista.forEach(function(p){(porCliente[p.cliente]=porCliente[p.cliente]||[]).push(p);});
-    var nomes=Object.keys(porCliente).sort(function(a,b){return a.localeCompare(b,'pt-BR');}).filter(function(n){return !qn||n.toLowerCase().indexOf(qn)>=0;});
-    var linhas=nomes.map(function(n){
-      return porCliente[n].map(function(p,i){
-        var itens=p.itens.map(function(it){return '<strong>'+it.restante+'</strong> × '+esc(it.servico);}).join('<br>');
-        return '<tr>'+(i===0?'<td rowspan="'+porCliente[n].length+'"><strong>'+esc(n)+'</strong></td>':'')+'<td>'+esc(p.pacote)+'</td><td>'+itens+'</td></tr>';
-      }).join('');
+    var linhasP=lista.map(function(p){
+      var total=p.itens.reduce(function(s,it){return s+it.restante;},0);
+      return {cliente:p.cliente,pacote:p.pacote,itens:p.itens,total:total};
+    }).filter(function(p){return !qn||p.cliente.toLowerCase().indexOf(qn)>=0;});
+    linhasP.sort(function(a,b){var pa=a.total<=1?0:(a.total===2?1:2),pb=b.total<=1?0:(b.total===2?1:2);return pa-pb||a.cliente.localeCompare(b.cliente,'pt-BR')||a.pacote.localeCompare(b.pacote,'pt-BR');});
+    var renovar=lista.filter(function(p){return p.itens.reduce(function(s,it){return s+it.restante;},0)<=1;}).length;
+    var linhas=linhasP.map(function(p){
+      var itens=p.itens.map(function(it){return '<strong>'+it.restante+'</strong> × '+esc(it.servico);}).join('<br>');
+      var sit=p.total<=1?'<strong style="color:#c0392b">🔴 Renovar agora</strong>':(p.total===2?'<strong style="color:#b7791f">🟡 Falta pouco</strong>':'<span style="color:var(--ink-3)">em uso</span>');
+      return '<tr><td><strong>'+esc(p.cliente)+'</strong></td><td>'+esc(p.pacote)+'</td><td>'+itens+'</td><td>'+sit+'</td></tr>';
     }).join('');
     alvo.innerHTML='<div class="card"><h2>🎁 Pacotes com sessão a consumir · '+nome+'</h2>'+
-      '<div class="cap">'+Object.keys(porCliente).length+' cliente(s) com saldo. Pacote não tem validade: ofereça o uso e a renovação quando vierem. Posição do Trinks em '+dataBR(DADOS.posicao)+'.</div>'+
+      '<div class="cap"><strong>'+renovar+'</strong> pacote(s) com 1 sessão restante: oferecer a renovação antes de acabar e não deixar a cliente sair com a comanda zerada. Pacote não tem validade. Posição do Trinks em '+dataBR(DADOS.posicao)+'.</div>'+
       '<input id="rp-busca" type="search" placeholder="Buscar cliente…" value="'+esc(q)+'" style="width:100%;box-sizing:border-box;margin:10px 0;padding:9px 12px;font-size:15px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--ink)">'+
-      (linhas?'<div style="overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Pacote</th><th>Falta consumir</th></tr></thead><tbody>'+linhas+'</tbody></table></div>':'<div class="cap">Nenhum cliente encontrado.</div>')+'</div>';
+      (linhas?'<div style="overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Pacote</th><th>Falta consumir</th><th>Situação</th></tr></thead><tbody>'+linhas+'</tbody></table></div>':'<div class="cap">Nenhum cliente encontrado.</div>')+'</div>';
     var b=document.getElementById('rp-busca'); b.addEventListener('input',function(){var pos=b.selectionStart;desenhar();var n=document.getElementById('rp-busca');n.focus();try{n.setSelectionRange(pos,pos);}catch(e){}});
   }
   document.addEventListener('recepcao-pacotes',function(ev){DADOS=ev.detail;desenhar();});
