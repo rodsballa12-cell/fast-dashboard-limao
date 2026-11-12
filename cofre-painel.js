@@ -80,7 +80,7 @@
     if (document.body) montar(); else document.addEventListener('DOMContentLoaded', montar);
   }
 
-  window.fetch = function (entrada, init) {
+  var buscaCofre = function (entrada, init) {
     var url = typeof entrada === 'string' ? entrada : (entrada && entrada.url) || '';
     var u;
     try { u = new URL(url, location.href); } catch (e) { return origFetch(entrada, init); }
@@ -127,4 +127,9 @@
       });
     });
   };
+  window.fetch = buscaCofre;
+  // Guardada à parte: extensões do navegador (antivírus) trocam window.fetch
+  // depois que a página abre, e o painel perdia o cofre ao trocar de unidade.
+  // O index.html busca sempre por window.fastFetchDados.
+  window.fastFetchDados = buscaCofre;
 })();

@@ -194,6 +194,9 @@ def main() -> int:
         "    if (!orig) return Promise.reject(new Error('fetch indisponível: ' + url));\n"
         "    return orig(entrada, init);\n"
         "  };\n"
+        # Guardado à parte: extensões do navegador trocam window.fetch depois que
+        # a página abre; o index.html busca sempre por window.fastFetchDados.
+        "  window.fastFetchDados = window.fetch;\n"
         "})();\n"
         "</script>\n"
     )

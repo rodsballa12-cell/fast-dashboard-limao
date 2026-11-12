@@ -94,7 +94,7 @@ document.addEventListener('visibilitychange', () => {
       --bg:#0B0B0F; --surface:#141419; --surface-2:#1D1D24; --border:#2A2A33;
       --ink:#F4F4F7; --ink-2:#B4B4BE; --ink-3:#8E8E99;
       --accent:#FFCB05; --accent-ink:#FFCB05; --accent-2:#E0A82E; --accent-soft:#3D2E00;
-      --good:var(--good); --good-soft:#053626; --warn:var(--warn); --warn-soft:#3D2900; --crit:#F87171; --crit-soft:#3D1414;
+      --good:#10B981; --good-soft:#053626; --warn:#F59E0B; --warn-soft:#3D2900; --crit:#F87171; --crit-soft:#3D1414;
       --grid:#252530;
       --shadow-sm:0 1px 2px rgba(0,0,0,.3);
       --shadow:0 1px 3px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.35);
@@ -105,7 +105,7 @@ document.addEventListener('visibilitychange', () => {
     --bg:#0B0B0F; --surface:#141419; --surface-2:#1D1D24; --border:#2A2A33;
     --ink:#F4F4F7; --ink-2:#B4B4BE; --ink-3:#8E8E99;
     --accent:#FFCB05; --accent-ink:#FFCB05; --accent-2:#E0A82E; --accent-soft:#3D2E00;
-    --good:var(--good); --good-soft:#053626; --warn:var(--warn); --warn-soft:#3D2900; --crit:#F87171; --crit-soft:#3D1414;
+    --good:#10B981; --good-soft:#053626; --warn:#F59E0B; --warn-soft:#3D2900; --crit:#F87171; --crit-soft:#3D1414;
     --grid:#252530;
     --shadow-sm:0 1px 2px rgba(0,0,0,.3);
     --shadow:0 1px 3px rgba(0,0,0,.4), 0 4px 12px rgba(0,0,0,.35);
@@ -1089,6 +1089,15 @@ document.addEventListener('visibilitychange', () => {
 </div>
 
 <script>
+// ============= BUSCA DE DADOS À PROVA DE EXTENSÃO =============
+// 12/11/2026: uma extensão do navegador (antivírus) trocava window.fetch depois
+// que a página abria. O primeiro carregamento passava pelo cofre; ao trocar de
+// unidade o fetch já era o da extensão, que não conhece o .enc -> HTTP 404 e
+// "escova nao carregou". Todo fetch deste painel passa a usar a função guardada
+// pelo cofre (ou pelo shim do artefato), não a que estiver em window.fetch.
+// O `const` global sombreia window.fetch para todos os scripts do painel.
+const fetch = function(){ return (window.fastFetchDados || window.fetch).apply(window, arguments); };
+
 // ============= HELPERS =============
 const DOW=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
 const HORAS=[8,9,10,11,12,13,14,15,16,17,18,19,20];
