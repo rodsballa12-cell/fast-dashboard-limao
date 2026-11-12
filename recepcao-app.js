@@ -27,6 +27,12 @@
   function salvarCfg(u, c) { ls('rp_cfg_' + u, JSON.stringify(c)); }
   function primeiro(n) { var t = String(n || '').trim().split(/\s+/)[0] || ''; return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase(); }
   function tel(t) { var d = String(t || '').replace(/\D/g, ''); if (!d) return ''; if (d.length <= 11) d = '55' + d; return d; }
+  function fone(t) {
+    var d = String(t || '').replace(/\D/g, ''); if (d.length > 11 && d.indexOf('55') === 0) d = d.slice(2);
+    if (!d) return '<span class="rp-sf">sem telefone</span>';
+    var f = d.length === 11 ? '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7) : (d.length === 10 ? '(' + d.slice(0, 2) + ') ' + d.slice(2, 6) + '-' + d.slice(6) : d);
+    return '📞 ' + f;
+  }
   function bonito(s) { return String(s || '').toLowerCase().replace(/(^|[\s(+\-])(\S)/g, function (m, a, b) { return a + b.toUpperCase(); }); }
 
   // ---------- mensagens (textos da diretora comercial) ----------
@@ -127,7 +133,7 @@
     pacs.sort(function (x, y) { var px = x.total <= 1 ? 0 : (x.total === 2 ? 1 : 2), py = y.total <= 1 ? 0 : (y.total === 2 ? 1 : 2); return px - py || x.cliente.localeCompare(y.cliente, 'pt-BR'); });
     function linhaPacote(p, comMsg) {
       var itens = p.itens.map(function (it) { return '<strong>' + it.restante + '</strong> × ' + esc(bonito(it.servico)); }).join(' · ');
-      var det = esc(bonito(p.pacote)) + ' — falta ' + itens;
+      var det = esc(bonito(p.pacote)) + ' — falta ' + itens + ' · ' + fone(p.telefone);
       var cb = combos(u, p.pacote);
       var extra = (comMsg && cb.length) ? '<details class="rp-cb"><summary>Combos para oferecer hoje</summary><ul>' + cb.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></details>' : '';
       var ac = comMsg ? botoes('', 'renovar', p.cliente, p.telefone, msgRenovar(u, c, p, p.total), 'Mensagem de renovação') : '';
@@ -139,17 +145,17 @@
 
     // aniversariantes (hoje até +3 dias)
     var aniv = (a.aniversariantes || []).filter(function (x) { return x.dias <= 3 && pass(x.cliente); }).map(function (x) {
-      return linha(u, 'aniv', x.cliente, (x.dias === 0 ? '<strong>HOJE</strong>' : (x.dias === 1 ? 'amanhã' : 'em ' + x.dias + ' dias')) + ' · ' + esc(x.data_aniv) + ' · ' + x.n_visitas + ' visita(s)', botoes('', 'aniv', x.cliente, x.telefone, msgAniv(u, c, x), 'Parabéns no WhatsApp'));
+      return linha(u, 'aniv', x.cliente, (x.dias === 0 ? '<strong>HOJE</strong>' : (x.dias === 1 ? 'amanhã' : 'em ' + x.dias + ' dias')) + ' · ' + esc(x.data_aniv) + ' · ' + x.n_visitas + ' visita(s) · ' + fone(x.telefone), botoes('', 'aniv', x.cliente, x.telefone, msgAniv(u, c, x), 'Parabéns no WhatsApp'));
     });
     // resgate (+30 dias)
     var resg = ((a.churn_early || {}).top || []).filter(function (x) { return x.dias_sem_vir >= 30 && pass(x.cliente); }).map(function (x) {
-      return linha(u, 'resg', x.cliente, 'sem vir há <strong>' + x.dias_sem_vir + ' dias</strong> · ' + x.n_visitas + ' visita(s) · última em ' + dataBR(x.ultima_visita) + (x.ultimos_servicos && x.ultimos_servicos.length ? ' · fez: ' + esc(x.ultimos_servicos.slice(0, 2).join(', ')) : ''), botoes('', 'resg', x.cliente, x.telefone, msgResgate(u, c, x), 'Chamar de volta'));
+      return linha(u, 'resg', x.cliente, 'sem vir há <strong>' + x.dias_sem_vir + ' dias</strong> · ' + x.n_visitas + ' visita(s) · última em ' + dataBR(x.ultima_visita) + (x.ultimos_servicos && x.ultimos_servicos.length ? ' · fez: ' + esc(x.ultimos_servicos.slice(0, 2).join(', ')) : '') + ' · ' + fone(x.telefone), botoes('', 'resg', x.cliente, x.telefone, msgResgate(u, c, x), 'Chamar de volta'));
     });
     // pós-venda (clientes de ontem)
     var pos = (D.ontem || []).filter(function (x) { return pass(x.cliente); }).map(function (x) {
       var b1 = botoes('', 'pos', x.cliente, x.telefone, msgPos1(u, c, x), '1ª mensagem');
       var b2 = c.google ? botoes('', 'pos2', x.cliente, x.telefone, msgPos2(u, c), '2ª: avaliação Google') : '<span class="rp-b rp-off" title="Preencha o link do Google em Meus dados">2ª: falta o link do Google</span>';
-      return linha(u, 'pos', x.cliente, 'atendida ontem · envie a 2ª só se a resposta da 1ª for positiva', b1 + b2);
+      return linha(u, 'pos', x.cliente, 'atendida ontem · ' + fone(x.telefone) + ' · envie a 2ª só se a resposta da 1ª for positiva', b1 + b2);
     });
 
     var datadado = dataBR(D.gerado_em) + ' ' + String(D.gerado_em || '').slice(11, 16);
@@ -195,7 +201,7 @@
     '.rp-s{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px}.rp-s h3{margin:0;font-size:17px}.rp-n{background:var(--surface-2);border-radius:20px;padding:1px 10px;font-size:13px;margin-left:6px}' +
     '.rp-sub{color:var(--ink-3);font-size:13px;margin:4px 0 8px}.rp-vazio{color:var(--ink-3);padding:8px 0}' +
     '.rp-l{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;padding:11px 0;border-top:1px solid var(--border)}.rp-l.rp-f{opacity:.45}' +
-    '.rp-t{flex:1 1 240px;min-width:0}.rp-t label{cursor:pointer;font-size:16px}.rp-t input[type=checkbox]{width:20px;height:20px;vertical-align:-4px}.rp-d{color:var(--ink-2);font-size:13.5px;margin:2px 0 0 28px}' +
+    '.rp-t{flex:1 1 240px;min-width:0}.rp-t label{cursor:pointer;font-size:16px}.rp-t input[type=checkbox]{width:20px;height:20px;vertical-align:-4px}.rp-sf{color:#b7791f}.rp-d{color:var(--ink-2);font-size:13.5px;margin:2px 0 0 28px}' +
     '.rp-a{display:flex;gap:8px;flex-wrap:wrap}.rp-b{display:inline-block;padding:10px 14px;border-radius:9px;font-size:14.5px;font-weight:600;text-decoration:none;border:0;cursor:pointer;white-space:nowrap}' +
     '.rp-wa{background:#25D366;color:#06260f}.rp-cp{background:var(--surface-2);color:var(--ink);border:1px solid var(--border)}.rp-off{background:var(--surface-2);color:var(--ink-3);cursor:default;font-weight:500;white-space:normal}' +
     '.rp-cb,.rp-mais{margin:6px 0 0 28px;font-size:13.5px}.rp-cb summary,.rp-mais summary{cursor:pointer;color:var(--ink-2);font-weight:600}.rp-cb ul{margin:6px 0;padding-left:18px}' +
