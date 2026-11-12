@@ -11,7 +11,7 @@ Dashboard operacional da franquia FAST Escova Limão (SP · Trinks id 276461).
 - `git push` → GitHub Pages atualiza em ~30s
 
 ## Estrutura
-- `index.html` — dashboard completo (auto-gerado)
+- `index.html` — dashboard completo (layout editado à mão; os números vêm dos arquivos de `data/`, atualizados pelas Actions)
 - `data/dashboard_data.json` — snapshot dos dados (auto-gerado)
 
 ## Fonte
