@@ -53,6 +53,45 @@ def recorte(d: dict) -> dict:
     }
 
 
+# Secao "Pacotes com sessao a consumir" no topo da aba Clientes. Os dados vem do
+# cofre-recepcao.js (evento recepcao-pacotes). Pacote nao tem validade: a lista
+# e de quem ainda tem sessao sobrando, para a recepcao oferecer o uso/renovacao.
+RENDER_PACOTES = r"""
+<script>
+(function(){
+  var DADOS=null;
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function unidade(){try{return localStorage.getItem('unidade_ativa_recepcao')==='spa'?'spa':'escova';}catch(e){return 'escova';}}
+  function dataBR(iso){var p=String(iso||'').split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:esc(iso||'');}
+  function desenhar(){
+    var raiz=document.getElementById('tab-clientes'); if(!raiz||!DADOS) return;
+    var alvo=document.getElementById('recepcao-pacotes');
+    if(!alvo){alvo=document.createElement('div');alvo.id='recepcao-pacotes';raiz.insertBefore(alvo,raiz.firstChild);}
+    var u=unidade(), lista=DADOS[u]||[], nome=u==='spa'?'Spa':'Escova';
+    var q=(document.getElementById('rp-busca')||{}).value||'';
+    var qn=q.toLowerCase();
+    var porCliente={};
+    lista.forEach(function(p){(porCliente[p.cliente]=porCliente[p.cliente]||[]).push(p);});
+    var nomes=Object.keys(porCliente).sort(function(a,b){return a.localeCompare(b,'pt-BR');}).filter(function(n){return !qn||n.toLowerCase().indexOf(qn)>=0;});
+    var linhas=nomes.map(function(n){
+      return porCliente[n].map(function(p,i){
+        var itens=p.itens.map(function(it){return '<strong>'+it.restante+'</strong> × '+esc(it.servico);}).join('<br>');
+        return '<tr>'+(i===0?'<td rowspan="'+porCliente[n].length+'"><strong>'+esc(n)+'</strong></td>':'')+'<td>'+esc(p.pacote)+'</td><td>'+itens+'</td></tr>';
+      }).join('');
+    }).join('');
+    alvo.innerHTML='<div class="card"><h2>🎁 Pacotes com sessão a consumir · '+nome+'</h2>'+
+      '<div class="cap">'+Object.keys(porCliente).length+' cliente(s) com saldo. Pacote não tem validade: ofereça o uso e a renovação quando vierem. Posição do Trinks em '+dataBR(DADOS.posicao)+'.</div>'+
+      '<input id="rp-busca" type="search" placeholder="Buscar cliente…" value="'+esc(q)+'" style="width:100%;box-sizing:border-box;margin:10px 0;padding:9px 12px;font-size:15px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--ink)">'+
+      (linhas?'<div style="overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Pacote</th><th>Falta consumir</th></tr></thead><tbody>'+linhas+'</tbody></table></div>':'<div class="cap">Nenhum cliente encontrado.</div>')+'</div>';
+    var b=document.getElementById('rp-busca'); b.addEventListener('input',function(){var pos=b.selectionStart;desenhar();var n=document.getElementById('rp-busca');n.focus();try{n.setSelectionRange(pos,pos);}catch(e){}});
+  }
+  document.addEventListener('recepcao-pacotes',function(ev){DADOS=ev.detail;desenhar();});
+  document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('.unid-btn')){setTimeout(desenhar,80);}});
+})();
+</script>
+"""
+
+
 def gerar_html() -> None:
     corpo = (REPO / "index.html").read_text(encoding="utf-8")
     # Cofre da recepcao no lugar do cofre do painel.
@@ -84,7 +123,7 @@ def gerar_html() -> None:
         "if(h)h.innerHTML='Atendimento <span style=\"color:var(--accent-ink)\">Fast</span>';\n"
         "var s=document.getElementById('brand-sub');if(s)s.textContent='Clientes · recepção';});</script>\n"
     )
-    corpo = corpo.replace("</head>", extra + "</head>", 1)
+    corpo = corpo.replace("</head>", extra + RENDER_PACOTES + "</head>", 1)
     (REPO / "recepcao.html").write_text(corpo, encoding="utf-8")
     print(f"[recepcao] recepcao.html gerado ({len(corpo):,} chars)")
 

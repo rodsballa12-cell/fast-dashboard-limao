@@ -85,7 +85,26 @@
       return tentar(0);
     });
     cache.catch(function () { cache = null; });
+    // Depois que a senha entrou, abre tambem o saldo de pacotes (mesma senha).
+    cache.then(function () { carregarPacotes(); });
     return cache;
+  }
+
+  // Saldo de pacotes por cliente: arquivo proprio, atualizado a mao a partir
+  // do relatorio do Trinks (a API nao entrega o saldo). Se nao existir, a
+  // secao simplesmente nao aparece.
+  var pacotesIniciado = false;
+  function carregarPacotes() {
+    if (pacotesIniciado) return;
+    pacotesIniciado = true;
+    origFetch('data/recepcao_pacotes.json.enc?_=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (env) { return env ? decifrar(env, lerSenha()) : null; })
+      .then(function (obj) {
+        window.fastRecepcaoPacotes = obj;
+        document.dispatchEvent(new CustomEvent('recepcao-pacotes', { detail: obj }));
+      })
+      .catch(function (e) { console.warn('[recepcao] pacotes indisponiveis:', e); });
   }
 
   // A pagina pede data/dashboard_data.json (Escova) e data/spa/dashboard_data.json.
