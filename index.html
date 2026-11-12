@@ -10398,8 +10398,10 @@ setInterval(()=>{if(!document.hidden) reloadAllTabs();}, 5*60*1000);
     var cat=m.categorias||{}, cs=(cat.servicos||{}).v||0, cp=(cat.pacotes||{}).v||0, cpr=(cat.produtos||{}).v||0, ctot=cs+cp+cpr;
     var ref=k.periodo_ant_ref||{}, refTxt = ref.periodo_ini ? 'vs '+dataBR(ref.periodo_ini)+'–'+dataBR(ref.periodo_fim) : 'vs mesmo trecho do mês anterior';
     var CONS=(typeof UNIDADE_ATIVA!=='undefined'&&UNIDADE_ATIVA==='consolidado');
-    if(CONS){ k=Object.assign({},k,{ticket_delta_pct:null,cliente_dia_delta_pct:null}); }
-    var comp=(k.base_comparacao||{}), avisoBase = (!CONS && comp.comparavel===false) ? '<div class="rs-fonte">Atenção: o trecho comparado tem outra mistura de dias da semana — a variação exagera a diferença.</div>' : '';
+    // dado do consolidado antes da correção de 12/11/2026 (sem _ticket_obs): variações copiadas da Escova
+    var CONS_ANTIGO=CONS&&!((k.periodo_ant_ref||{})._ticket_obs);
+    if(CONS_ANTIGO){ k=Object.assign({},k,{ticket_delta_pct:null,cliente_dia_delta_pct:null}); }
+    var comp=(k.base_comparacao||{}), avisoBase = (!CONS_ANTIGO && comp.comparavel===false) ? '<div class="rs-fonte">Atenção: o trecho comparado tem outra mistura de dias da semana — a variação exagera a diferença.</div>' : '';
 
     var lojaDe=function(x){ if(!CONS) return ''; var e=(typeof TRINKS_ESC!=='undefined'&&TRINKS_ESC&&TRINKS_ESC.insights&&TRINKS_ESC.insights.mensal)||[], sp=(typeof TRINKS_SPA!=='undefined'&&TRINKS_SPA&&TRINKS_SPA.insights&&TRINKS_SPA.insights.mensal)||[];
       if(e.some(function(y){return y.texto===x.texto;})) return 'Escova · '; if(sp.some(function(y){return y.texto===x.texto;})) return 'Spa · '; return ''; };
@@ -10429,7 +10431,7 @@ setInterval(()=>{if(!document.hidden) reloadAllTabs();}, 5*60*1000);
       '<div class="rs-box rs-kpi"><div class="rs-k-l">Clientes novos</div><div class="rs-k-v">'+N(nov)+'<span style="font-size:14px;color:var(--ink-3);font-weight:700"> de '+N(tot)+'</span></div>'+
         (tot?'<div class="rs-stack"><span style="width:'+(nov/tot*100).toFixed(1)+'%;background:var(--accent)"></span><span style="width:'+(rec/tot*100).toFixed(1)+'%;background:var(--ink-2)"></span></div>':'')+
         '<div class="rs-k-d">'+(tot?P(nov/tot*100,0)+' novos · '+P(rec/tot*100,0)+' voltaram':'não vejo')+'</div></div>'+
-      (CONS ? '<div class="rs-box rs-kpi"><div class="rs-k-l">Faturamento vs. mês anterior</div><div class="rs-k-v">'+R$(k.caixa)+'</div><div class="rs-k-d">contra '+R$(ref.caixa)+' de '+(ref.periodo_ini?dataBR(ref.periodo_ini)+'–'+dataBR(ref.periodo_fim):'mesmo trecho do mês anterior')+'. A variação % do consolidado não confere com as lojas e foi omitida.</div></div>'
+      (CONS_ANTIGO ? '<div class="rs-box rs-kpi"><div class="rs-k-l">Faturamento vs. mês anterior</div><div class="rs-k-v">'+R$(k.caixa)+'</div><div class="rs-k-d">contra '+R$(ref.caixa)+' de '+(ref.periodo_ini?dataBR(ref.periodo_ini)+'–'+dataBR(ref.periodo_fim):'mesmo trecho do mês anterior')+'. A variação % do consolidado não confere com as lojas e foi omitida.</div></div>'
  : '<div class="rs-box rs-kpi"><div class="rs-k-l">Faturamento vs. mês anterior</div><div class="rs-k-v">'+(k.caixa_delta_pct!=null?(k.caixa_delta_pct>0?'+':'')+N(k.caixa_delta_pct,1)+'%':'—')+'</div><div class="rs-k-d">'+R$(k.caixa)+' '+refTxt+(comp.caixa_delta_ajustado_pct!=null?' · ajustado pelos dias da semana: '+(comp.caixa_delta_ajustado_pct>0?'+':'')+N(comp.caixa_delta_ajustado_pct,1)+'%':'')+'</div></div>')+
     '</div>'+avisoBase+(CONS?comparativo():'')+tendencia(T);
 

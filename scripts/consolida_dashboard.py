@@ -998,6 +998,81 @@ def anexar_lado_a_lado(c, esc, spa):
     }
 
 
+
+def _dpct(atual, ant):
+    if not ant: return None
+    return round((atual - ant) / ant * 100, 1)
+
+
+def corrigir_comparacoes_consolidado(c, esc, spa):
+    """Variações contra o período anterior, recalculadas sobre a SOMA das duas lojas.
+
+    Os campos *_delta_pct estão em NAO_SOMAR, então o merge copiava os da
+    Escova: em 12/11/2026 o consolidado mostrava faturamento -37,4% (o da
+    Escova) quando a soma das lojas dava R$ 18.564 contra R$ 32.141, -42,2%.
+    O bloco base_comparacao era ainda pior: razão de peso e variação ajustada
+    eram SOMADAS (-15,4% + -40,5% = -55,9%), e periodo_ant_ref.dias_op e
+    janela_dias dobravam (o card dizia "vs 01-20/mês passado").
+
+    Mesma fórmula do github_refresh.py (delta bruto + secundário por dia com
+    movimento). A variação ajustada pelos dias da semana combina o ajuste de
+    cada loja: soma(caixa) ÷ soma(caixa_anterior ÷ razão_de_peso) − 1, que é
+    exatamente o ajustado de cada loja quando a outra não existe.
+    O ticket do período anterior não é recomposto: faltaria o total recebido
+    e as comandas pagas do período anterior de cada loja. Fica None ("não vejo")
+    em vez de herdar o da Escova.
+    """
+    for aba in ("mensal", "semanal", "diario"):
+        kc = (((c.get("abas") or {}).get(aba)) or {}).get("kpis")
+        ke = (((esc.get("abas") or {}).get(aba)) or {}).get("kpis") or {}
+        ks = (((spa.get("abas") or {}).get(aba)) or {}).get("kpis") or {}
+        if not kc: continue
+        re_, rs_ = ke.get("periodo_ant_ref") or {}, ks.get("periodo_ant_ref") or {}
+        ref = kc.get("periodo_ant_ref")
+        if isinstance(ref, dict):
+            for campo in ("caixa", "atend_fin", "cliente_dia", "faturamento_apurado"):
+                if campo in re_ or campo in rs_:
+                    ref[campo] = (re_.get(campo) or 0) + (rs_.get(campo) or 0)
+            ref["dias_op"] = max(re_.get("dias_op") or 0, rs_.get("dias_op") or 0) or None
+            # tamanho da janela é de calendário, igual nas duas lojas: não soma (somado dava "01-20")
+            if "janela_dias" in re_ or "janela_dias" in rs_:
+                ref["janela_dias"] = re_.get("janela_dias") or rs_.get("janela_dias")
+            ref["ticket_medio"] = None
+            ref["_ticket_obs"] = "não recomposto no consolidado: faltam total recebido e comandas pagas do período anterior"
+        ant = ref if isinstance(ref, dict) else {}
+        dias_atu, dias_ant = kc.get("dias_op") or 0, ant.get("dias_op") or 0
+        perdia = lambda a, b: (_dpct(a / dias_atu, b / dias_ant) if dias_atu and dias_ant and b else None)
+        kc["caixa_delta_pct"] = _dpct(kc.get("caixa") or 0, ant.get("caixa") or 0)
+        kc["caixa_delta_bruto_pct"] = kc["caixa_delta_pct"]
+        kc["atend_delta_pct"] = _dpct(kc.get("atend_fin") or 0, ant.get("atend_fin") or 0)
+        kc["cliente_dia_delta_pct"] = _dpct(kc.get("cliente_dia") or 0, ant.get("cliente_dia") or 0)
+        kc["caixa_delta_perdia_pct"] = perdia(kc.get("caixa") or 0, ant.get("caixa") or 0)
+        kc["atend_delta_perdia_pct"] = perdia(kc.get("atend_fin") or 0, ant.get("atend_fin") or 0)
+        kc["cliente_dia_delta_perdia_pct"] = perdia(kc.get("cliente_dia") or 0, ant.get("cliente_dia") or 0)
+        kc["ticket_delta_pct"] = None
+        if isinstance(kc.get("dias_com_movimento"), dict):
+            kc["dias_com_movimento"] = {"atual": dias_atu, "anterior": dias_ant}
+
+        be, bs = ke.get("base_comparacao") or {}, ks.get("base_comparacao") or {}
+        bc = kc.get("base_comparacao")
+        if isinstance(bc, dict) and (be or bs):
+            soma_atual = soma_ant = soma_ant_ajust = 0.0
+            for k_u, b_u, r_u in ((ke, be, re_), (ks, bs, rs_)):
+                a_u = r_u.get("caixa") or 0
+                if not a_u: continue
+                raz = b_u.get("razao_peso") or 1.0
+                soma_atual += k_u.get("caixa") or 0
+                soma_ant += a_u
+                soma_ant_ajust += a_u / raz
+            razao = round(soma_ant / soma_ant_ajust, 2) if soma_ant_ajust else None
+            bc["razao_peso"] = razao
+            bc["comparavel"] = razao is not None and abs(razao - 1) <= 0.15
+            bc["caixa_delta_ajustado_pct"] = round((soma_atual / soma_ant_ajust - 1) * 100, 1) if soma_ant_ajust else None
+            # pesos e composição são do calendário de cada loja: fica o da Escova (referência)
+            for campo in ("peso_semana_atual_pct", "peso_semana_anterior_pct", "composicao_atual", "composicao_anterior"):
+                if campo in be: bc[campo] = copy.deepcopy(be[campo])
+
+
 def main():
     if not os.path.exists(ESC):
         raise SystemExit("Escova payload não existe.")
@@ -1010,6 +1085,7 @@ def main():
     consolidado = merge(escova, spa)
     recalcular_derivados(consolidado)
     corrigir_consolidado(consolidado, escova, spa)
+    corrigir_comparacoes_consolidado(consolidado, escova, spa)
     corrigir_historico_consolidado(consolidado, escova, spa)
     corrigir_meses_consolidado(consolidado, escova, spa)
     anexar_lado_a_lado(consolidado, escova, spa)
