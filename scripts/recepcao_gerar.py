@@ -54,26 +54,22 @@ def _ontem(d: dict, sub: str) -> list:
     """Clientes atendidas no dia anterior ao `hoje` do painel (para o pos-venda)."""
     import datetime
     base = REPO / "data" / sub
-    ftr, fcl = base / "transacoes_ano_cache.json", base / "clientes_detalhes.json"
-    if not (ftr.exists() and fcl.exists()):
+    frec, fcl = base / "recepcao_ontem.json", base / "clientes_detalhes.json"
+    if not (frec.exists() and fcl.exists()):
         return []
     try:
         ontem = (datetime.date.fromisoformat(str(d.get("hoje"))[:10]) - datetime.timedelta(days=1)).isoformat()
     except Exception:
         return []
-    trans = json.loads(ftr.read_text(encoding="utf-8")).get("payload") or []
+    rec = json.loads(frec.read_text(encoding="utf-8"))
     cli = json.loads(fcl.read_text(encoding="utf-8"))
     cli = cli.get("payload", cli) if isinstance(cli, dict) else {}
     vistos, saida = set(), []
-    for t in trans:
-        if str(t.get("dataHora", ""))[:10] != ontem:
+    for r in rec:
+        if r.get("dia") != ontem or str(r["id"]) in vistos:
             continue
-        c = t.get("cliente") or {}
-        cid = str(c.get("id"))
-        if cid in vistos or not c.get("nome"):
-            continue
-        vistos.add(cid)
-        saida.append({"cliente": c["nome"].strip(), "telefone": _tel(cli.get(cid))})
+        vistos.add(str(r["id"]))
+        saida.append({"cliente": r["nome"].strip(), "telefone": _tel(cli.get(str(r["id"])))})
     return sorted(saida, key=lambda x: x["cliente"].lower())
 
 

@@ -1515,6 +1515,23 @@ def main():
     transac.extend(transac_mes)
     print(f"[fetch] transacoes merged: {len(transac)} total")
 
+    # Clientes atendidos nos ultimos 3 dias, para o pos-venda da pagina da
+    # recepcao. O cache do ano so avanca aos domingos e o mes corrente nao e
+    # guardado, entao "ontem" nunca existia la. Arquivo de cofre (tem nome).
+    try:
+        _lim = (datetime.now(BRT).date() - timedelta(days=3)).isoformat()
+        _rec = {}
+        for _x in transac:
+            _d = str(_x.get("dataHora") or "")[:10]
+            _c = _x.get("cliente") or {}
+            if _d >= _lim and _c.get("id") and _c.get("nome"):
+                _rec[(_d, _c["id"])] = {"dia": _d, "id": _c["id"], "nome": _c["nome"]}
+        (DATA_UNIT / "recepcao_ontem.json").write_text(
+            json.dumps(sorted(_rec.values(), key=lambda r: (r["dia"], r["nome"])), ensure_ascii=False),
+            encoding="utf-8")
+    except Exception as _e:
+        print(f"  [warn] recepcao_ontem nao gravado: {_e}")
+
     # === CLIENTES LISTA · cache 12h (base muda pouco durante o dia) ===
     # incluirEtiquetas=true: cada cliente vem com etiquetasAssociadas populado
     # (segmentacao manual do BackOffice: VIP, aniversariante, etc). Custo zero

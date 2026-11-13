@@ -39,7 +39,7 @@ PAINEL = [
     "data/trinks_conferencia.json",
 ]
 CACHE = [f"data/{u}{n}" for u in ("", "spa/") for n in (
-    "clientes_detalhes.json", "clientes_lista_cache.json", "agend_detail_cache.json",
+    "clientes_detalhes.json", "clientes_lista_cache.json", "recepcao_ontem.json", "agend_detail_cache.json",
     "agendamentos_ano_cache.json", "transacoes_ano_cache.json", "stone_extrato.csv")] + [
     "data/aniversarios_fila.json", "data/wa_historico.json",
 ]
