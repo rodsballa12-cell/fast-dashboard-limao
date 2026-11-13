@@ -816,6 +816,8 @@ document.addEventListener('visibilitychange', () => {
 
   /* blocos de um clique: fechados mostram só o cabeçalho e a legenda */
   .m-fold>.m-fold-head{cursor:pointer;position:relative;padding-right:56px!important;user-select:none;}
+  /* cabeçalho com botão (Excel/CSV): a regra do .card>div:first-child pesava mais e o botão encostava na seta */
+  .card.m-fold>div.m-fold-head:first-child{padding-right:58px!important;}
   .m-fold>.m-fold-head::after{content:"";position:absolute;right:22px;top:50%;width:9px;height:9px;border-right:2.5px solid var(--ink-2);border-bottom:2.5px solid var(--ink-2);transform:translateY(-70%) rotate(45deg);transition:transform .2s;}
   .m-fold.aberto>.m-fold-head::after{transform:translateY(-30%) rotate(-135deg);}
   .m-fold:not(.aberto)>:not(.m-fold-head):not(.cap){display:none!important;}
@@ -10354,8 +10356,20 @@ setInterval(()=>{if(!document.hidden) reloadAllTabs();}, 5*60*1000);
     if(typeof TRINKS_ESC==='undefined'||!TRINKS_ESC||typeof TRINKS_SPA==='undefined'||!TRINKS_SPA) return '';
     return '<div class="rs-secao">Escova × Spa · quem puxa e quem segura <span class="rs-mock">mock</span></div><div class="rs-lados">'+lado(TRINKS_ESC,'FAST Escova','#FBD300')+lado(TRINKS_SPA,'FAST Spa','#00A6A4')+'</div>';
   }
-  /* ---- MOCK: ações com acompanhamento (fica neste aparelho) ---- */
-  var LS={get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
+  /* ---- ações com acompanhamento ----
+     No artefato do claude.ai (celular e computador) o status fica no banco
+     compartilhado do artefato: marcou "Feito" num aparelho, aparece em todos.
+     Fora dele (site do GitHub Pages) continua neste navegador. 12/11/2026. */
+  var LS_ACAO={}, DB_ACAO=null;
+  function idAcao(k){ return String(k).replace(/[^A-Za-z0-9_.~:@+-]/g,'_').slice(0,180); }
+  var LS={get:function(k){ if(Object.prototype.hasOwnProperty.call(LS_ACAO,k)) return LS_ACAO[k]; try{return localStorage.getItem(k);}catch(e){return null;}},
+          set:function(k,v){ LS_ACAO[k]=v; try{localStorage.setItem(k,v);}catch(e){}
+            if(DB_ACAO){ DB_ACAO.doc('acoes/'+idAcao(k)).set({chave:String(k),estado:v,em:new Date().toISOString()}).catch(function(e){console.warn('acao status',e);}); } }};
+  function marcaAcoes(){ document.querySelectorAll('.rs-acao-bt').forEach(function(bt){ var b0=bt.querySelector('button'); if(!b0) return; var m=(b0.getAttribute('onclick')||'').match(/__fastAcao\(this,'(.*?)','/); if(!m) return; var e=LS.get(m[1])||''; var box=bt.closest('.rs-acao,.ac-row'); if(box) box.setAttribute('data-estado',e); bt.querySelectorAll('button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-e')===e);}); }); }
+  try{ if(window.claude&&typeof window.claude.use==='function'){ window.claude.use('db').then(function(db){ if(!db) return; DB_ACAO=db;
+    db.collection('acoes').onSnapshot(function(snap){ snap.docs.forEach(function(d){ var x=d.exists&&d.data(); if(x&&x.chave){ LS_ACAO[x.chave]=x.estado||''; try{localStorage.setItem(x.chave,x.estado||'');}catch(e){} } }); marcaAcoes(); }, function(e){ console.warn('acoes db',e); DB_ACAO=null; });
+  }).catch(function(){}); } }catch(e){}
+  window.__fastAcaoGet=function(k){return LS.get(k);};
   window.__fastAcao=function(btn,chave,est){ var atual=LS.get(chave); var novo=atual===est?'':est; LS.set(chave,novo); var box=btn.closest('.rs-acao,.ac-row'); box.setAttribute('data-estado',novo); box.querySelectorAll('.rs-acao-bt button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-e')===novo);}); };
   function acaoBotoes(chave){ var e=LS.get(chave)||''; return '<div class="rs-acao-bt"><button type="button" data-e="andamento" class="'+(e==='andamento'?'on':'')+'" onclick="__fastAcao(this,\''+chave+'\',\'andamento\')">Em andamento</button><button type="button" data-e="feito" class="'+(e==='feito'?'on':'')+'" onclick="__fastAcao(this,\''+chave+'\',\'feito\')">Feito</button></div>'; }
 
@@ -10609,7 +10623,7 @@ setInterval(()=>{if(!document.hidden) reloadAllTabs();}, 5*60*1000);
       g+='</svg><div class="rs-leg"><span><i style="background:var(--accent)"></i>custo por conversa dentro da meta</span><span><i style="background:color-mix(in srgb,var(--ink-3) 45%,var(--surface))"></i>acima da meta</span></div>';
     } else g='<div class="ab-vazio">Não vejo a série diária.</div>';
     var al=(M.alertas_topo||[]).slice(0,3).map(function(x){ var sev=x.sev==='crit'?'critico':(x.sev==='warn'||x.sev==='atencao'?'atencao':'info');
-      var ch='fast-acao-mid|'+String(x.titulo||'').replace(/[^\w]+/g,'-').slice(0,40); var est=''; try{est=localStorage.getItem(ch)||'';}catch(e){}
+      var ch='fast-acao-mid|'+String(x.titulo||'').replace(/[^\w]+/g,'-').slice(0,40); var est=(window.__fastAcaoGet?window.__fastAcaoGet(ch):'')||'';
       return window.__fastAcaoLinha?window.__fastAcaoLinha({tipo:sev,rotulo:{critico:'Crítico',atencao:'Atenção',info:'Bom sinal'}[sev],loja:'',titulo:(function(t){t=String(t||'').replace(/^[^\p{L}\p{N}]+/u,'').replace(/^\[?Conselho[^\]]*\]\s*/i,''); return t.length>90?t.slice(0,89).replace(/\s+\S*$/,'')+'…':t;})(x.titulo),texto:x.detalhe,acao:'',chave:ch,estado:est}):''; }).join('');
     h+=caixa('Conversas por dia · últimos 30 dias',g)+(al?'<div class="ab-detalhe" style="margin-top:18px">Os 3 mais urgentes · lista completa no grupo 6, Plano de ação</div><div class="ac-lista ac-sem-passos">'+al+'</div>':'');
     return h+fechaDetalhe;
