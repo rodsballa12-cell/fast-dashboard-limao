@@ -109,10 +109,10 @@
     return '<div class="rp-l' + (f ? ' rp-f' : '') + '"><div class="rp-t"><label><input type="checkbox" class="rp-ck" data-k="' + esc(u + '_' + tipo + '_' + chave) + '"' + (f ? ' checked' : '') + '> <strong>' + esc(bonito(cliente)) + '</strong></label>' +
       '<div class="rp-d">' + detalhe + '</div>' + (extra || '') + '</div><div class="rp-a">' + acoes + '</div></div>';
   }
-  function bloco(id, titulo, sub, itens, vazio, limite) {
-    var corpo = itens.length ? itens.slice(0, limite || 999).join('') : '<div class="rp-vazio">' + vazio + '</div>';
-    var mais = (limite && itens.length > limite) ? '<details class="rp-mais"><summary>Ver mais ' + (itens.length - limite) + '</summary>' + itens.slice(limite).join('') + '</details>' : '';
-    return '<section class="rp-s" id="rp-' + id + '"><h3>' + titulo + ' <span class="rp-n">' + itens.length + '</span></h3><div class="rp-sub">' + sub + '</div>' + corpo + mais + '</section>';
+  var ABERTO = { renovar: true, poucos: true, aniv: true }; // lembra o que a recepcao abriu/fechou
+  function bloco(id, titulo, sub, itens, vazio) {
+    var corpo = itens.length ? itens.join('') : '<div class="rp-vazio">' + vazio + '</div>';
+    return '<details class="rp-s" id="rp-' + id + '" data-id="' + id + '"' + (ABERTO[id] ? ' open' : '') + '><summary><span class="rp-h">' + titulo + '</span> <span class="rp-n">' + itens.length + '</span></summary><div class="rp-sub">' + sub + '</div>' + corpo + '</details>';
   }
   function inputCfg(k, rot, v, dica) { return '<label class="rp-f1"><span>' + rot + '</span><input data-cfg="' + k + '" value="' + esc(v) + '" placeholder="' + esc(dica || '') + '"></label>'; }
 
@@ -144,7 +144,7 @@
     var emUso = pacs.filter(function (p) { return p.total > 2; }).map(function (p) { return linhaPacote(p, false); });
 
     // aniversariantes (hoje até +3 dias)
-    var aniv = (a.aniversariantes || []).filter(function (x) { return x.dias <= 3 && pass(x.cliente); }).map(function (x) {
+    var aniv = (a.aniversariantes || []).filter(function (x) { return x.dias <= 14 && pass(x.cliente); }).map(function (x) {
       return linha(u, 'aniv', x.cliente, (x.dias === 0 ? '<strong>HOJE</strong>' : (x.dias === 1 ? 'amanhã' : 'em ' + x.dias + ' dias')) + ' · ' + esc(x.data_aniv) + ' · ' + x.n_visitas + ' visita(s) · ' + fone(x.telefone), botoes('', 'aniv', x.cliente, x.telefone, msgAniv(u, c, x), 'Parabéns no WhatsApp'));
     });
     // resgate (+30 dias)
@@ -177,14 +177,15 @@
     var secoes =
       bloco('renovar', '🔴 Renovar pacote agora', 'Falta 1 sessão. Ofereça a renovação e não deixe sair com a comanda zerada.', renovar, qn ? 'Nenhum encontrado.' : 'Nenhum pacote com 1 sessão restante.') +
       bloco('poucos', '🟡 Pacote acabando', 'Faltam 2 sessões: já vá preparando a renovação.', poucos, qn ? 'Nenhum encontrado.' : 'Nenhum no momento.') +
-      bloco('aniv', '🎂 Aniversariantes (hoje até 3 dias)', 'Mande o parabéns com o presente.', aniv, qn ? 'Nenhum encontrado.' : 'Ninguém faz aniversário nos próximos 3 dias.') +
-      bloco('pos', '⭐ Pós-venda (atendidas ontem)', 'Agradeça e peça a opinião. A 2ª mensagem (Google) só se responderem de forma positiva.', pos, qn ? 'Nenhum encontrado.' : 'Sem clientes de ontem nos dados.', 8) +
-      bloco('resg', '💛 Resgate (sumidas há mais de 30 dias)', 'Mensagem de saudade com o mimo de retorno.', resg, qn ? 'Nenhum encontrado.' : 'Nenhuma cliente em risco.', 8) +
-      bloco('uso', '🎁 Outros pacotes em uso', 'Mais de 2 sessões restantes.', emUso, qn ? 'Nenhum encontrado.' : 'Nenhum.', 5);
+      bloco('aniv', '🎂 Aniversariantes (próximos 14 dias)', 'Mande o parabéns com o presente.', aniv, qn ? 'Nenhum encontrado.' : 'Ninguém faz aniversário nos próximos 14 dias.') +
+      bloco('pos', '⭐ Pós-venda (atendidas ontem)', 'Agradeça e peça a opinião. A 2ª mensagem (Google) só se responderem de forma positiva.', pos, qn ? 'Nenhum encontrado.' : 'Sem clientes de ontem nos dados.') +
+      bloco('resg', '💛 Resgate (sumidas há mais de 30 dias)', 'Mensagem de saudade com o mimo de retorno.', resg, qn ? 'Nenhum encontrado.' : 'Nenhuma cliente em risco.') +
+      bloco('uso', '🎁 Outros pacotes em uso', 'Mais de 2 sessões restantes.', emUso, qn ? 'Nenhum encontrado.' : 'Nenhum.');
 
     alvo.innerHTML = cab + secoes;
     var b = document.getElementById('rp-busca');
     b.addEventListener('input', function () { var pos = b.selectionStart; desenhar(); var n = document.getElementById('rp-busca'); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} });
+    alvo.querySelectorAll('details.rp-s').forEach(function (el) { el.addEventListener('toggle', function () { ABERTO[el.getAttribute('data-id')] = el.open; }); });
     alvo.querySelectorAll('.rp-cp').forEach(function (el) { el.addEventListener('click', function () { copiar(MSGS[+el.getAttribute('data-i')], el); }); });
     alvo.querySelectorAll('.rp-ck').forEach(function (el) { el.addEventListener('change', function () { ls('rp_feito_' + hojeISO() + '_' + el.getAttribute('data-k'), el.checked ? '1' : null); el.closest('.rp-l').classList.toggle('rp-f', el.checked); }); });
     alvo.querySelectorAll('[data-cfg]').forEach(function (el) { el.addEventListener('change', function () { var cc = cfg(u); cc[el.getAttribute('data-cfg')] = el.value.trim(); salvarCfg(u, cc); desenhar(); }); });
@@ -198,7 +199,7 @@
     '#rp-busca{width:100%;box-sizing:border-box;padding:12px 14px;font-size:17px;border:2px solid var(--border);border-radius:10px;background:var(--surface);color:var(--ink);margin-bottom:10px}' +
     '.rp-cfg{background:var(--surface-2);border-radius:10px;padding:10px 12px;margin-bottom:14px}.rp-cfg summary{cursor:pointer;font-weight:600}' +
     '.rp-f1{display:block;margin-top:10px}.rp-f1 span{display:block;font-size:12.5px;color:var(--ink-3);margin-bottom:3px}.rp-f1 input{width:100%;box-sizing:border-box;padding:9px 10px;font-size:15px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--ink)}' +
-    '.rp-s{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px}.rp-s h3{margin:0;font-size:17px}.rp-n{background:var(--surface-2);border-radius:20px;padding:1px 10px;font-size:13px;margin-left:6px}' +
+    '.rp-s{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px}.rp-s summary{cursor:pointer;list-style:none;font-size:17px;font-weight:700;padding:2px 0}.rp-s summary::-webkit-details-marker{display:none}.rp-s summary::before{content:\"▸ \";color:var(--ink-3)}.rp-s[open] summary::before{content:\"▾ \"}.rp-n{background:var(--surface-2);border-radius:20px;padding:1px 10px;font-size:13px;margin-left:6px}' +
     '.rp-sub{color:var(--ink-3);font-size:13px;margin:4px 0 8px}.rp-vazio{color:var(--ink-3);padding:8px 0}' +
     '.rp-l{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;padding:11px 0;border-top:1px solid var(--border)}.rp-l.rp-f{opacity:.45}' +
     '.rp-t{flex:1 1 240px;min-width:0}.rp-t label{cursor:pointer;font-size:16px}.rp-t input[type=checkbox]{width:20px;height:20px;vertical-align:-4px}.rp-sf{color:#b7791f}.rp-d{color:var(--ink-2);font-size:13.5px;margin:2px 0 0 28px}' +
