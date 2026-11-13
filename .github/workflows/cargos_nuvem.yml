@@ -13,15 +13,10 @@ name: Cargos na nuvem (parecer diário e conselho)
 # a ata da nuvem já existe, o rodar_agente.ps1 só copia a ata para o vault.
 
 on:
-  schedule:
-    # Horários em UTC; Brasília = UTC-3. Mesmos horários das tarefas do PC.
-    - cron: '30 10 * * *'   # 07h30 Memória
-    - cron: '0 11 * * *'    # 08h00 Marketing
-    - cron: '30 11 * * *'   # 08h30 Financeiro
-    - cron: '0 12 * * *'    # 09h00 Relacionamento
-    - cron: '30 12 * * *'   # 09h30 Pessoas
-    - cron: '30 14 * * *'   # 11h30 Operação
-    - cron: '30 1 * * *'    # 22h30 Conselho (01h30 UTC do dia seguinte)
+  # Horários desligados em 13/11/2026: o CLAUDE_CODE_OAUTH_TOKEN dá 401 desde
+  # 01/11, e cada falha gravava uma ata de erro por cima do parecer bom do PC
+  # (12/11: pessoas e relacionamento). Fica só o disparo manual até a chave valer.
+  # Para religar, devolva os sete crons (ver docs/rotinas/inventario-automacoes.md).
   workflow_dispatch:
     inputs:
       agente:
