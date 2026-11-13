@@ -104,6 +104,23 @@ if (-not $atualizou) {
   $avisoGit = "> [!warning] Nao consegui atualizar o repositorio. Os numeros podem estar atrasados.`n"
 }
 
+# --- Abre o cofre com o dado que o pull acabou de trazer -----------------------
+# Desde 21/10/2026 o dado chega criptografado (*.enc). Sem este passo os cargos
+# liam a ultima copia aberta a mao: em 12/11 os pareceres usavam o painel de
+# 10/11 21:54 enquanto o refresh ja tinha publicado o de 12/11.
+$eaCofre = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+$pyCofre = (Get-Command python -ErrorAction SilentlyContinue).Source
+if ($pyCofre) {
+  $env:PYTHONUTF8 = "1"
+  $saidaCofre = (& $pyCofre -X utf8 (Join-Path $Projeto "scripts\cofre.py") abrir 2>&1 | Out-String).Trim()
+  if ($LASTEXITCODE -ne 0) {
+    Registrar "FALHOU: abrir o cofre (codigo $LASTEXITCODE). $saidaCofre"
+    $avisoGit += "> [!warning] O cofre nao abriu. Os numeros podem ser de uma leitura anterior.`n"
+  } else { Registrar "Cofre aberto com o dado do pull." }
+}
+$ErrorActionPreference = $eaCofre
+
 # --- Reserva Stone no Excel -------------------------------------------------
 # O extrato Stone chega pelo repositorio; o Excel so existe neste PC. Depois
 # do pull, leva o saldo da Reserva Stone para o rodape da aba Conta_XP, que

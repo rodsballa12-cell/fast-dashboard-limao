@@ -11,19 +11,23 @@ Atualize esta tabela sempre que criar, mudar ou desligar uma rotina.
 | Mídias | `midias_refresh.yml` | 07h, 09h e 11h | Meta Ads, Instagram e Facebook das duas lojas; Google Business via Supermetrics |
 | Trinks scrape | `trinks_scrape.yml` | 06h, 12h, 18h e 23h | relatório de movimentações financeiras |
 | WhatsApp automático | `campanhas_wa.yml` | 10h | aniversário e reativação (fila) |
-| **Cargos na nuvem** (novo) | `cargos_nuvem.yml` | 07h30 Memória · 08h Marketing · 08h30 Financeiro · 09h Relacionamento · 09h30 Pessoas · 11h30 Operação · **22h30 Conselho** | os sete pareceres e o conselho, conferidos pelo formato; ata em `docs/atas/`; o conselho vira issue (e-mail e celular) |
+| **Cargos na nuvem** | `cargos_nuvem.yml` | **horários desligados em 13/11** (chave dava 401 e a falha sobrescrevia a ata boa do PC); só disparo manual | os sete pareceres e o conselho, conferidos pelo formato; ata em `docs/atas/`; o conselho vira issue (e-mail e celular) |
 | A empresa se reuniu ontem? | `auditoria_agenda.yml` | 09h20 e 10h20 | confere se as atas do dia anterior existem |
 | Watchdog | `watchdog.yml` | 09h e 15h | abre issue quando o pipeline local trava |
 | Conselho Sync | `conselho_sync.yml` | quando `Briefings/*-conselho.md` chega na main | aplica as decisões aprovadas no painel |
 | HubSpot sync | `hubspot_sync.yml` | desativado desde 14/09 | — |
 | Sob demanda | `aniversarios*`, `stone_entrada`, `historico_cliente`, `fechamento_dia`, `cofre_checar`, `debug_*`, `probe_*`, `sults_probe`, `trinks_discover`, `audit_consolidado` | manual | — |
 
+## Rotina do claude.ai (sem PC, sem chave)
+
+"Conselho FAST Limão · noite", todo dia às 22h17, notificação no celular. Não tem o cofre (lê só o que é aberto) e não consegue gravar no repositório.
+
 ## PC do Rodrigo: só roda se o PC estiver ligado
 
 Sete tarefas no Agendador do Windows (`scripts/agenda/instalar_tarefas.ps1`), nos mesmos
 horários dos cargos. Cada uma chama `rodar_agente.ps1`, que faz:
 
-1. `git pull`;
+1. `git pull` e **abre o cofre** com o dado novo (desde 13/11; antes lia a última cópia aberta à mão);
 2. **o que só o PC alcança**: reserva Stone no Excel, Stone do Spa no razão, dados frescos
    no Excel, DRE → `financeiro.json`, comissões Trinks × Pix, leitura do SULTS;
 3. **se a nuvem já gravou o parecer do dia**: só copia a ata para o Obsidian e termina;
