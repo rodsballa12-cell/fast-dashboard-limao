@@ -30,7 +30,7 @@ sys.path.insert(0, str(REPO / "scripts"))
 UNIDADES = {"escova": "data/dashboard_data.json", "spa": "data/spa/dashboard_data.json"}
 # Unica parte de abas.anual que a aba Clientes le (renderClientes).
 CHAVES_CLIENTES = ["clientes_snapshot", "top_ltv", "novos_vs_recorr", "aniversariantes",
-                   "churn_early", "cross_sell", "clientes_cadastro", "seg_genero"]
+                   "churn_early", "clientes_cadastro"]
 
 
 def senha() -> str:
@@ -96,7 +96,7 @@ def _resgate(sub: str) -> list:
     f = REPO / "data" / sub / "recepcao_resgate.json"
     if not f.exists():
         return []
-    return json.loads(f.read_text(encoding="utf-8"))
+    return [{k: v for k, v in x.items() if k != "ltv"} for x in json.loads(f.read_text(encoding="utf-8"))]
 
 
 def _aniv30(d: dict, base: list) -> list:
@@ -126,13 +126,38 @@ def _aniv30(d: dict, base: list) -> list:
     return sorted(saida, key=lambda x: (x["dias"], x["cliente"].lower()))
 
 
+def _sem_dinheiro(a: dict) -> dict:
+    """Tira valores em reais do recorte da recepcao (receita, LTV, ticket), mantendo a forma
+    dos dados para o index.html (que le essas chaves) nao quebrar."""
+    snap = dict(a.get("clientes_snapshot") or {})
+    for k in ("ltv_medio", "ticket_medio_visita"):
+        snap.pop(k, None)
+    if "clientes_snapshot" in a:
+        a["clientes_snapshot"] = snap
+    if "top_ltv" in a:
+        tl = a["top_ltv"]
+        a["top_ltv"] = {"total_clientes": tl.get("total_clientes"), "uma_vez": tl.get("uma_vez"),
+                        "duas_mais": tl.get("duas_mais"), "top": []}
+    if "novos_vs_recorr" in a:
+        nr = a["novos_vs_recorr"]
+        a["novos_vs_recorr"] = {k: {"clientes": (nr.get(k) or {}).get("clientes"), "atend": (nr.get(k) or {}).get("atend"),
+                                    "receita": 0} for k in ("novos", "recorrentes")}
+    ch = a.get("churn_early")
+    if ch:
+        a["churn_early"] = {"n_alerta": ch.get("n_alerta"), "ltv_em_risco": 0,
+                            "top": [{k: v for k, v in x.items() if k != "ltv"} for x in ch.get("top", [])]}
+    if "aniversariantes" in a:
+        a["aniversariantes"] = [{k: v for k, v in x.items() if k != "ltv"} for x in a["aniversariantes"]]
+    return a
+
+
 def recorte(d: dict, sub: str = "") -> dict:
     anual = (d.get("abas") or {}).get("anual") or {}
     return {
         "gerado_em": d.get("gerado_em"), "hoje": d.get("hoje"),
         "unidade": d.get("unidade"), "_unidade_ativa": d.get("_unidade_ativa"),
         "dias_op_mes": d.get("dias_op_mes"),
-        "abas": {"anual": {k: anual[k] for k in CHAVES_CLIENTES if k in anual}},
+        "abas": {"anual": _sem_dinheiro({k: anual[k] for k in CHAVES_CLIENTES if k in anual})},
         "insights": {"clientes": (d.get("insights") or {}).get("clientes")},
         "resgate": _resgate(sub),
         "ontem": _ontem(d, sub),

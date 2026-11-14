@@ -126,6 +126,30 @@
     var resto = itens.length > VISIVEIS ? '<details class="rp-mais" data-id="' + id + '"' + (ABERTO[id] ? ' open' : '') + '><summary>Ver todas (' + itens.length + ')</summary>' + itens.slice(VISIVEIS).join('') + '</details>' : '';
     return '<section class="rp-s" id="rp-' + id + '"><h3>' + titulo + ' <span class="rp-n">' + itens.length + '</span></h3><div class="rp-sub">' + sub + '</div>' + corpo + resto + '</section>';
   }
+  function pct(v) { return v == null ? '–' : String(v).replace('.', ',') + '%'; }
+  function num(v) { return v == null ? '–' : Number(v).toLocaleString('pt-BR'); }
+  function tile(rot, val, dica, tom) { return '<div class="rp-k' + (tom ? ' rp-k-' + tom : '') + '"><div class="rp-kv">' + val + '</div><div class="rp-kr">' + rot + '</div><div class="rp-kd">' + dica + '</div></div>'; }
+  function kpis(a) {
+    var s = a.clientes_snapshot, cad = (a.clientes_cadastro || {}).cobertura;
+    if (!s) return '';
+    function cob(v) { return v == null ? '' : (v >= 90 ? 'ok' : (v >= 60 ? 'at' : 'ruim')); }
+    var g1 = tile('Clientes na base', num(s.total_base), 'cadastradas na loja') +
+      tile('Ativas (30 dias)', num(s.ativos_30d), 'vieram no último mês') +
+      tile('Novas (30 dias)', num(s.novos_30d), 'primeira visita recente') +
+      tile('Sem vir há +60 dias', num(s.dormentes_60d), 'chamar de volta', s.dormentes_60d ? 'at' : '') +
+      tile('Em risco de sumir', num(s.n_alerta_churn), 'lista de Resgate abaixo', s.n_alerta_churn ? 'at' : '');
+    var g2 = tile('Voltam à loja', pct(s.pct_recorrentes), 'clientes com 2+ visitas', s.pct_recorrentes >= 60 ? 'ok' : 'at') +
+      tile('Recorrentes', num(s.n_recorrentes), 'vieram 2 vezes ou mais') +
+      tile('Vieram uma vez só', num(s.n_uma_vez), 'oportunidade de fidelizar', s.n_uma_vez ? 'at' : '') +
+      tile('Visitas por cliente', s.freq_media_visitas == null ? '–' : String(s.freq_media_visitas).replace('.', ','), 'média no ano');
+    var g3 = cad ? tile('Telefone', pct(cad.telefone), 'sem ele não há WhatsApp', cob(cad.telefone)) +
+      tile('Aniversário', pct(cad.data_nasc), 'permite o parabéns', cob(cad.data_nasc)) +
+      tile('E-mail', pct(cad.email), 'cadastrar na recepção', cob(cad.email)) +
+      tile('Como nos conheceu', pct(cad.canal_aquisicao), 'ajuda a medir a divulgação', cob(cad.canal_aquisicao)) : '';
+    return '<div class="rp-kg"><h3>👥 Clientes</h3><div class="rp-kw">' + g1 + '</div></div>' +
+      '<div class="rp-kg"><h3>🔁 Recorrência</h3><div class="rp-kw">' + g2 + '</div></div>' +
+      (g3 ? '<div class="rp-kg"><h3>✅ Qualidade do cadastro</h3><div class="rp-kw">' + g3 + '</div></div>' : '');
+  }
   function inputCfg(k, rot, v, dica) { return '<label class="rp-f1"><span>' + rot + '</span><input data-cfg="' + k + '" value="' + esc(v) + '" placeholder="' + esc(dica || '') + '"></label>'; }
 
   function desenhar() {
@@ -193,6 +217,7 @@
     if (bs) bs.textContent = 'Recepção · ' + L.nome;
     var cab = '<div class="rp-top"><h2>📋 Hoje na recepção · ' + L.nome + '</h2>' +
       '<div class="rp-meta">Dados dos clientes de ' + esc(datadado) + ' · pacotes: posição do Trinks em ' + (PACOTES ? dataBR(PACOTES.posicao) : '<strong>indisponível</strong>') + '</div>' +
+      kpis(a) +
       '<input id="rp-busca" type="search" placeholder="🔎 Cliente chegou? Digite o nome…" value="' + esc(q) + '">' +
       '<details class="rp-cfg"><summary>⚙️ Meus dados e brindes (ficam só neste aparelho)</summary>' +
       inputCfg('nome', 'Seu nome (assina o pós-venda)', c.nome, 'ex.: Ana') +
@@ -236,7 +261,7 @@
     '.rp-s{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px}.rp-s summary{cursor:pointer;list-style:none;font-size:17px;font-weight:700;padding:2px 0}.rp-s summary::-webkit-details-marker{display:none}.rp-s summary::before{content:\"▸ \";color:var(--ink-3)}.rp-s[open] summary::before{content:\"▾ \"}.rp-n{background:var(--surface-2);border-radius:20px;padding:1px 10px;font-size:13px;margin-left:6px}' +
     '.rp-sub{color:var(--ink-3);font-size:13px;margin:4px 0 8px}.rp-vazio{color:var(--ink-3);padding:8px 0}' +
     '.rp-l{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;padding:11px 0;border-top:1px solid var(--border)}.rp-l.rp-f{opacity:.45}' +
-    '.rp-t{flex:1 1 240px;min-width:0}.rp-t label{cursor:pointer;font-size:16px}.rp-t input[type=checkbox]{width:20px;height:20px;vertical-align:-4px}.rp-env{flex-basis:100%;font-size:13px;color:#1e7e34;font-weight:600}.rp-env a{color:var(--ink-3);font-weight:500}.rp-ok{background:#e7f6ec;color:#1e7e34;border:1px solid #b7e1c4}.rp-mais{margin-top:6px}.rp-sf{color:#b7791f}.rp-d{color:var(--ink-2);font-size:13.5px;margin:2px 0 0 28px}' +
+    '.rp-t{flex:1 1 240px;min-width:0}.rp-t label{cursor:pointer;font-size:16px}.rp-t input[type=checkbox]{width:20px;height:20px;vertical-align:-4px}.rp-env{flex-basis:100%;font-size:13px;color:#1e7e34;font-weight:600}.rp-env a{color:var(--ink-3);font-weight:500}.rp-ok{background:#e7f6ec;color:#1e7e34;border:1px solid #b7e1c4}.rp-mais{margin-top:6px}.rp-kg{margin:0 0 12px}.rp-kg h3{margin:0 0 6px;font-size:15px}.rp-kw{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:8px}.rp-k{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}.rp-kv{font-size:22px;font-weight:800;line-height:1.1}.rp-kr{font-size:13px;font-weight:600;margin-top:2px}.rp-kd{font-size:11.5px;color:var(--ink-3)}.rp-k-ok{border-left:4px solid #1e9e4a}.rp-k-at{border-left:4px solid #e0a100}.rp-k-ruim{border-left:4px solid #c0392b}.rp-sf{color:#b7791f}.rp-d{color:var(--ink-2);font-size:13.5px;margin:2px 0 0 28px}' +
     '.rp-a{display:flex;gap:8px;flex-wrap:wrap}.rp-b{display:inline-block;padding:10px 14px;border-radius:9px;font-size:14.5px;font-weight:600;text-decoration:none;border:0;cursor:pointer;white-space:nowrap}' +
     '.rp-wa{background:#25D366;color:#06260f}.rp-cp{background:var(--surface-2);color:var(--ink);border:1px solid var(--border)}.rp-off{background:var(--surface-2);color:var(--ink-3);cursor:default;font-weight:500;white-space:normal}' +
     '.rp-cb,.rp-mais{margin:6px 0 0 28px;font-size:13.5px}.rp-cb summary,.rp-mais summary{cursor:pointer;color:var(--ink-2);font-weight:600}.rp-cb ul{margin:6px 0;padding-left:18px}' +
