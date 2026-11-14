@@ -14,7 +14,7 @@
   // Brindes: só o que o documento da comercial já define para a Escova.
   // Spa e renovação começam vazios: a recepção preenche (e a frase some se vazio).
   var CFG_PADRAO = {
-    escova: { nome: '', google: 'https://search.google.com/local/writereview?placeid=ChIJ0wkZd4z5zpQRO9VrCLQoAEE', brRen: '', brRenUnhas: '', brRenCabelo: '', brResg: 'uma Nutrição Capilar', brAniv: 'uma Hidratação com Ozonioterapia', brAmiga: 'uma Ozonioterapia' },
+    escova: { nome: '', google: 'https://search.google.com/local/writereview?placeid=ChIJ0wkZd4z5zpQRO9VrCLQoAEE', brRen: '', brRenUnhas: 'um design de sobrancelhas', brRenCabelo: 'uma hidratação', brResg: 'uma Nutrição Capilar', brAniv: 'uma Hidratação com Ozonioterapia', brAmiga: 'uma Ozonioterapia' },
     spa: { nome: '', google: 'https://search.google.com/local/writereview?placeid=ChIJ2-w36075zpQREVX7xtpVpno', brRen: '', brRenUnhas: '', brRenCabelo: '', brResg: '', brAniv: '', brAmiga: '' }
   };
 
