@@ -134,7 +134,13 @@ def gerar_html() -> None:
         "if(h)h.innerHTML='Atendimento <span style=\"color:var(--accent-ink)\">Fast</span>';\n"
         "var s=document.getElementById('brand-sub');if(s)s.textContent='Clientes · recepção';});</script>\n"
     )
-    app = '<script src="recepcao-app.js"></script>\n'
+    import hashlib
+
+    def _v(nome):  # versao pelo conteudo: o navegador nunca fica com o script antigo
+        return hashlib.sha1((REPO / nome).read_bytes()).hexdigest()[:8]
+    app = '<script src="recepcao-app.js?v=' + _v("recepcao-app.js") + '"></script>\n'
+    corpo = corpo.replace('<script src="cofre-recepcao.js"></script>',
+                          '<script src="cofre-recepcao.js?v=' + _v("cofre-recepcao.js") + '"></script>')
     corpo = corpo.replace("</head>", extra + app + "</head>", 1)
     (REPO / "recepcao.html").write_text(corpo, encoding="utf-8")
     print(f"[recepcao] recepcao.html gerado ({len(corpo):,} chars)")
