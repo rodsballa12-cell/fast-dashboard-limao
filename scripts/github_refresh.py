@@ -1532,6 +1532,32 @@ def main():
     except Exception as _e:
         print(f"  [warn] recepcao_ontem nao gravado: {_e}")
 
+    # Fast Retoque por cliente (para o bloco de retoque da pagina da recepcao):
+    # quem ja fez (ultimo dia e quantas vezes) e quem faz escova com frequencia e nunca fez.
+    try:
+        _ret, _esc = {}, {}
+        for _x in transac:
+            _c = _x.get("cliente") or {}
+            _id, _nm, _dia = _c.get("id"), _c.get("nome"), str(_x.get("dataHora") or "")[:10]
+            if not (_id and _nm and _dia):
+                continue
+            for _s in (_x.get("servicos") or []):
+                _n = str(_s.get("nome") or "").upper()
+                if "RETOQUE" in _n:
+                    _r = _ret.setdefault(_id, {"id": _id, "nome": _nm, "dias": set()})
+                    _r["dias"].add(_dia)
+                elif "ESCOVA" in _n and "MEGA" not in _n:
+                    _e = _esc.setdefault(_id, {"id": _id, "nome": _nm, "dias": set()})
+                    _e["dias"].add(_dia)
+        _out = {
+            "retoque": [{"id": r["id"], "nome": r["nome"], "ultimo": max(r["dias"]), "n": len(r["dias"])} for r in _ret.values()],
+            "escova_sem_retoque": [{"id": e["id"], "nome": e["nome"], "dias_escova": len(e["dias"]), "ultima": max(e["dias"])}
+                                   for e in _esc.values() if e["id"] not in _ret and len(e["dias"]) >= 4],
+        }
+        (DATA_UNIT / "recepcao_retoque.json").write_text(json.dumps(_out, ensure_ascii=False), encoding="utf-8")
+    except Exception as _e:
+        print(f"  [warn] recepcao_retoque nao gravado: {_e}")
+
     # === CLIENTES LISTA · cache 12h (base muda pouco durante o dia) ===
     # incluirEtiquetas=true: cada cliente vem com etiquetasAssociadas populado
     # (segmentacao manual do BackOffice: VIP, aniversariante, etc). Custo zero

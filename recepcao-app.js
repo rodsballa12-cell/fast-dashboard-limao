@@ -70,6 +70,14 @@
     return 'Ficamos muito felizes que você gostou do atendimento!\nNossa missão é valorizar o seu tempo com resultados incríveis.\nVocê poderia dedicar 30 segundinhos para nos avaliar no Google?\nSua avaliação ajuda outras pessoas a nos encontrarem!\nClique aqui para avaliar: ' + c.google;
   }
 
+  // Retoque (documento "Gestão de clientes Fast Retoque", da diretora comercial)
+  function msgRetoque(u, c, x) {
+    return 'Olá ' + primeiro(x.cliente) + '! Passando para lembrar que sua raiz está no ponto ideal para o Fast Retoque. Para te incentivar a manter o brilho, se você vier entre hoje e amanhã, sua Hidratação é por nossa conta. É só apresentar esta mensagem na recepção.';
+  }
+  function msgRetoquePacote(u, c, x) {
+    return 'Oi, ' + primeiro(x.cliente) + '! Vi que você é super certinha com o seu Fast Retoque. Pensando em clientes fiéis como você, temos o Pacote de Fast Retoque: fechando 4 retoques (que você já faria de qualquer jeito), você ganha 2 Hidratações de presente. Quer que eu deixe separado para você?';
+  }
+
   // ---------- combos do documento "Combos para clientes de pacotes" ----------
   function combos(u, pacote) {
     if (u !== 'escova') return [];
@@ -103,7 +111,7 @@
     _envc = null;
   }
   function quando(iso) { var d = new Date(iso); return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
-  var TIPOS = { renovar: 'Renovação', aniv: 'Aniversário', resg: 'Resgate', pos: 'Pós-venda (1ª)', pos2: 'Pós-venda (Google)', consulta: 'Contato' };
+  var TIPOS = { renovar: 'Renovação', aniv: 'Aniversário', resg: 'Resgate', pos: 'Pós-venda (1ª)', pos2: 'Pós-venda (Google)', ret15: 'Lembrete de retoque', retatr: 'Retoque atrasado', retpkg: 'Pacote de retoque', consulta: 'Contato' };
   var MSGS = []; // textos por índice (evita jogar texto longo em atributo)
   function botoes(chave, tipo, cliente, telefone, texto, rotulo) {
     var i = MSGS.push(texto) - 1, t = tel(telefone), u = unidade();
@@ -218,6 +226,23 @@
       return linha(u, 'consulta', x.n, det, botoes('', 'consulta', x.n, x.t, 'Oi, ' + primeiro(x.n) + '! Tudo bem?', 'WhatsApp'));
     });
 
+    // Fast Retoque (so Escova)
+    var R = D.retoque || {}, ret = { lembrar: [], atrasadas: [], pacote: [], nunca: [] };
+    if (u === 'escova') {
+      ret.lembrar = (R.lembrar || []).filter(function (x) { return pass(x.cliente); }).map(function (x) {
+        return linha(u, 'ret15', x.cliente, 'último retoque há <strong>' + x.dias + ' dias</strong> · ' + x.n + ' retoque(s) · voucher de hidratação vale até 25 dias', botoes('', 'ret15', x.cliente, x.telefone, msgRetoque(u, c, x), 'Lembrete de retoque'));
+      });
+      ret.atrasadas = (R.atrasadas || []).filter(function (x) { return pass(x.cliente); }).map(function (x) {
+        return linha(u, 'retatr', x.cliente, 'último retoque há <strong>' + x.dias + ' dias</strong> · ' + x.n + ' retoque(s) · raiz já passou do ponto', botoes('', 'retatr', x.cliente, x.telefone, msgRetoque(u, c, x), 'Chamar para retoque'));
+      });
+      ret.pacote = (R.pacote || []).filter(function (x) { return pass(x.cliente); }).map(function (x) {
+        return linha(u, 'retpkg', x.cliente, x.n + ' retoques avulsos · último há ' + x.dias + ' dias · ofereça o pacote de 4 retoques + 2 hidratações', botoes('', 'retpkg', x.cliente, x.telefone, msgRetoquePacote(u, c, x), 'Oferecer pacote'));
+      });
+      ret.nunca = (R.nunca || []).filter(function (x) { return pass(x.cliente); }).map(function (x) {
+        return linha(u, 'retnunca', x.cliente, 'veio <strong>' + x.dias_escova + ' vezes</strong> fazer escova e nunca fez retoque · última escova há ' + x.dias + ' dias', '<span class="rp-b rp-off" style="white-space:normal">abordar na cadeira</span>');
+      });
+    }
+
     // historico de envios (60 dias), mais recentes primeiro
     var env = envLer(), hist = Object.keys(env).filter(function (k) { return k.indexOf(u + '|') === 0 && pass(env[k].n); }).map(function (k) { return { k: k, r: env[k] }; });
     hist.sort(function (x, y) { return new Date(y.r.t) - new Date(x.r.t); });
@@ -249,6 +274,10 @@
       bloco('aniv', '🎂 Aniversariantes (próximos 30 dias)', 'Mande o parabéns com o presente.', aniv, qn ? 'Nenhum encontrado.' : 'Ninguém faz aniversário nos próximos 30 dias.') +
       bloco('pos', '⭐ Pós-venda (atendidas nos últimos 3 dias)', 'Agradeça e peça a opinião. A 2ª mensagem (Google) só se responderem de forma positiva.', pos, qn ? 'Nenhum encontrado.' : 'Sem clientes de ontem nos dados.') +
       bloco('resg', '💛 Resgate (sumidas há mais de 30 dias)', 'Mensagem de saudade com o mimo de retorno.', resg, qn ? 'Nenhum encontrado.' : 'Nenhuma cliente em risco.') +
+      (u === 'escova' ? bloco('retlem', '💇 Retoque: lembrar agora (15 a 25 dias)', 'Última vez há 15 a 25 dias. Mande o lembrete com o voucher de hidratação, que vale até 25 dias.', ret.lembrar, qn ? 'Nenhum encontrado.' : 'Ninguém nessa janela hoje.') +
+        bloco('retatr', '💇 Retoque: raiz já passou do ponto (26 a 60 dias)', 'Fizeram há mais de 25 dias. Chame de volta.', ret.atrasadas, qn ? 'Nenhum encontrado.' : 'Ninguém nessa janela hoje.') +
+        bloco('retpkg', '💇 Retoque: oferecer o pacote', 'Já fizeram 2 ou mais retoques avulsos. Pacote: 4 retoques + 2 hidratações de bônus (valor do pacote: confira com a gerente).', ret.pacote, qn ? 'Nenhum encontrado.' : 'Nenhuma cliente com 2 retoques ainda.') +
+        bloco('retnunca', '👀 Retoque: nunca fez e faz escova sempre', 'Olhe a raiz na lavagem e ofereça: "Notei que sua raiz já está pedindo um carinho! Aqui a gente resolve em 30 minutos, enquanto você toma um café. Como você já está na cadeira para a escova, podemos fazer agora?"', ret.nunca, qn ? 'Nenhum encontrado.' : 'Nenhuma cliente nesse perfil.') : '') +
       bloco('env', '✅ Mensagens enviadas (60 dias)', 'Clientes marcadas como enviadas neste aparelho, e quando. Vale só aqui: outros aparelhos têm o próprio registro.', enviadas, 'Nenhuma mensagem registrada ainda.') +
       bloco('uso', '🎁 Outros pacotes em uso', 'Mais de 2 sessões restantes.', emUso, qn ? 'Nenhum encontrado.' : 'Nenhum.') +
       bloco('todos', '📇 Todas as clientes', 'A base inteira em ordem alfabética. Toque em "Ver todas" para abrir; a busca do topo também filtra aqui.', todos, 'Nenhuma cliente encontrada.', 0);

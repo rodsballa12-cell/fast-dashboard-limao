@@ -151,6 +151,44 @@ def _sem_dinheiro(a: dict) -> dict:
     return a
 
 
+def _retoque(d: dict, sub: str, base: list) -> dict:
+    """Listas do bloco Fast Retoque. Escova apenas (o Spa nao tem o servico)."""
+    import datetime
+    f = REPO / "data" / sub / "recepcao_retoque.json"
+    vazio = {"lembrar": [], "atrasadas": [], "pacote": [], "nunca": []}
+    if not f.exists():
+        return vazio
+    try:
+        h = datetime.date.fromisoformat(str(d.get("hoje"))[:10])
+    except Exception:
+        return vazio
+    raw = json.loads(f.read_text(encoding="utf-8"))
+    tel = {}
+    c = REPO / "data" / sub / "clientes_detalhes.json"
+    if c.exists():
+        cj = json.loads(c.read_text(encoding="utf-8"))
+        cj = cj.get("payload", cj) if isinstance(cj, dict) else {}
+        tel = {str(k): _tel(v) for k, v in cj.items()}
+    out = {"lembrar": [], "atrasadas": [], "pacote": [], "nunca": []}
+    for r in raw.get("retoque", []):
+        dias = (h - datetime.date.fromisoformat(r["ultimo"])).days
+        item = {"cliente": r["nome"].strip(), "dias": dias, "n": r["n"], "telefone": tel.get(str(r["id"]), "")}
+        if 15 <= dias <= 25:
+            out["lembrar"].append(item)
+        elif 26 <= dias <= 60:
+            out["atrasadas"].append(item)
+        if r["n"] >= 2:
+            out["pacote"].append(item)
+    for r in raw.get("escova_sem_retoque", []):
+        dias = (h - datetime.date.fromisoformat(r["ultima"])).days
+        out["nunca"].append({"cliente": r["nome"].strip(), "dias_escova": r["dias_escova"], "dias": dias, "telefone": tel.get(str(r["id"]), "")})
+    for k in ("lembrar", "atrasadas"):
+        out[k].sort(key=lambda x: -x["dias"])
+    out["pacote"].sort(key=lambda x: (-x["n"], x["dias"]))
+    out["nunca"].sort(key=lambda x: (-x["dias_escova"], x["cliente"].lower()))
+    return out
+
+
 def recorte(d: dict, sub: str = "") -> dict:
     anual = (d.get("abas") or {}).get("anual") or {}
     return {
@@ -163,6 +201,7 @@ def recorte(d: dict, sub: str = "") -> dict:
         "ontem": _ontem(d, sub),
         "base": _base(sub),
         "aniv30": _aniv30(d, _base(sub)),
+        "retoque": _retoque(d, sub, []),
     }
 
 
