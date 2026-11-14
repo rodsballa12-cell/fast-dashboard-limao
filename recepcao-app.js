@@ -33,52 +33,47 @@
   function bonito(s) { return String(s || '').toLowerCase().replace(/(^|[\s(+\-])(\S)/g, function (m, a, b) { return a + b.toUpperCase(); }); }
 
   // ---------- mensagens (textos da diretora comercial) ----------
-  // ---------- mensagens: voz da Fast (curtas, diretas, coloridas) ----------
-  // Escova = 💛 amarelo da marca · Spa = 🌿 verde-agua. Sem preco. Brinde so entra se estiver preenchido.
-  function cor(u) { return u === 'spa' ? '🌿' : '💛'; }
-  function msgOi(u, nome) { return 'Oi, ' + primeiro(nome) + '! ' + cor(u) + ' Tudo bem?'; }
+  // Tom de recepcionista no WhatsApp: simples, especifico, sem exagero. Quase sem emoji, sem preco.
+  // Brinde so entra na frase se estiver preenchido em "Meus dados e brindes".
+  function msgOi(u, nome) { return 'Oi, ' + primeiro(nome) + ', tudo bem?'; }
   function quandoAtendida(x) {
     if (!x || !x.dia) return 'ontem';
     return x.dia === ontemISO() ? 'ontem' : 'no dia ' + dataBR(x.dia).slice(0, 5);
   }
   function msgRenovar(u, c, p, total) {
     var n = primeiro(p.cliente), falta = total === 1 ? 'falta só 1 sessão' : 'faltam só ' + total + ' sessões';
-    var presente = c.brRen ? '\n🎁 Renovando agora, você ganha ' + c.brRen + ' na 1ª ' + (u === 'escova' ? 'escova' : 'sessão') + ' do novo pacote!' : '';
-    if (u === 'spa') {
-      return 'Oi, ' + n + '! 🌿\nSeu pacote de ' + bonito(p.pacote) + ' está no fim: ' + falta + ' 💆‍♀️' + presente + '\nBora renovar e manter seu momento de relaxar? 😉';
-    }
-    return 'Oi, ' + n + '! 💛\nSeu pacote de ' + bonito(p.pacote) + ' está acabando: ' + falta + ' ⏳' + presente + '\nJá deixo a renovação pronta pra você? Na sua próxima visita é só chegar! ✨';
+    var presente = c.brRen ? ' Renovando agora, você ganha ' + c.brRen + ' na 1ª ' + (u === 'escova' ? 'escova' : 'sessão') + ' do pacote novo.' : '';
+    return 'Oi, ' + n + ', tudo bem? Seu pacote de ' + bonito(p.pacote) + ' está no fim: ' + falta + '.' + presente +
+      ' Se quiser, já deixo a renovação pronta para a sua próxima vinda.';
   }
   function msgResgate(u, c, cli) {
-    var n = primeiro(cli.cliente);
-    var mimo = c.brResg ? '\n🎁 Venha esta semana e ganhe ' + c.brResg + '!' : '';
-    if (u === 'spa') {
-      return 'Oi, ' + n + '! 🌿\nSentimos sua falta no Fast Spa! 💆‍♀️' + mimo + '\nPode vir como está, sem hora marcada. Te esperamos! 💚';
-    }
-    return 'Oi, ' + n + '! 💛\nSentimos sua falta por aqui! ✨' + mimo + '\nÉ só chegar, sem hora marcada: seu cabelo agradece! 💁‍♀️';
+    var n = primeiro(cli.cliente), loja = u === 'spa' ? 'no Fast Spa' : 'na Fast';
+    var mimo = c.brResg ? ' Se vier essa semana, ganha ' + c.brResg + '.' : '';
+    return 'Oi, ' + n + ', tudo bem? Faz um tempinho que você não aparece ' + loja + '.' + mimo +
+      (u === 'spa' ? ' Pode vir como está, sem hora marcada.' : ' Não precisa agendar, é só chegar.');
   }
   function msgAniv(u, c, a) {
     var n = primeiro(a.cliente);
-    var topo = a.dias === 0 ? 'Parabéns, ' + n + '! 🎉' : 'Seu aniversário está chegando, ' + n + '! 🎂';
+    var abre = a.dias === 0 ? 'Oi, ' + n + ', parabéns pelo seu dia! 🎂' : 'Oi, ' + n + ', seu aniversário está chegando.';
     if (u === 'spa') {
-      return topo + ' 🌿\nQue tal comemorar com um momento só seu? 💆‍♀️' + (c.brAniv ? '\n🎁 Presente: ' + c.brAniv + '!' : '') + '\nPode vir como está, sem hora marcada. 💚';
+      return abre + (c.brAniv ? ' Para comemorar, vem aqui no Fast Spa e ganha ' + c.brAniv + '.' : ' Vem comemorar com a gente no Fast Spa.') + ' Pode vir como está, sem hora marcada.';
     }
-    return topo + ' 💛\nVem comemorar com a gente! ✨' + (c.brAniv ? '\n🎁 Na sua escova você ganha ' + c.brAniv + '!' : '') +
-      (c.brAmiga ? '\n👯‍♀️ Traga uma amiga e ela ganha ' + c.brAmiga + '!' : '') + '\nSem hora marcada: é só chegar e brilhar! 🌟';
+    return abre + (c.brAniv ? ' Na sua escova de aniversário você ganha ' + c.brAniv + '.' : ' Vem comemorar com a gente.') +
+      (c.brAmiga ? ' Se trouxer uma amiga, ela ganha ' + c.brAmiga + '.' : '') + ' Sem hora marcada, é só chegar.';
   }
   function msgPos1(u, c, cli) {
-    var L = LOJAS[u], quem = c.nome ? 'Aqui é a ' + c.nome + ', da ' + L.nome : 'Aqui é da ' + L.nome;
-    return 'Oi, ' + primeiro(cli.cliente) + '! ' + cor(u) + '\n' + quem + '. Obrigada por vir ' + quandoAtendida(cli) + '! ✨\nComo foi? Conta pra gente 😊\nPostou? Marca a gente: @' + L.ig + ' 📸';
+    var L = LOJAS[u], quem = c.nome ? 'aqui é a ' + c.nome + ', da ' + L.nome : 'aqui é da ' + L.nome;
+    return 'Oi, ' + primeiro(cli.cliente) + ', ' + quem + '. Obrigada por ter vindo ' + quandoAtendida(cli) + '. Gostou do atendimento? Se postar, marca a gente: @' + L.ig;
   }
   function msgPos2(u, c) {
-    return 'Que bom que você gostou! 🥰\nUm favor de 30 segundos? Avalie a gente no Google e ajude mais gente a nos encontrar ⭐\n👉 ' + c.google + '\nObrigada! ' + cor(u);
+    return 'Que bom que gostou! Se puder, avalia a gente no Google. Leva 30 segundos e ajuda muito: ' + c.google + ' Obrigada!';
   }
   // Retoque (documento "Gestão de clientes Fast Retoque", da diretora comercial)
   function msgRetoque(u, c, x) {
-    return 'Oi, ' + primeiro(x.cliente) + '! 💜\nSua raiz já está no ponto ideal pro Fast Retoque: 30 minutinhos! ⏱️\n🎁 Vem entre hoje e amanhã e a Hidratação é por nossa conta. É só mostrar esta mensagem na recepção.\nSem hora marcada. Te esperamos! ✨';
+    return 'Oi, ' + primeiro(x.cliente) + ', tudo bem? Já deve estar na hora de retocar a raiz. O Fast Retoque leva 30 minutos. Se vier até amanhã, a hidratação é por nossa conta: é só mostrar esta mensagem na recepção.';
   }
   function msgRetoquePacote(u, c, x) {
-    return 'Oi, ' + primeiro(x.cliente) + '! 💜\nVocê é fiel ao Fast Retoque, então tem presente pra você 🎁\nFechando o pacote de 4 retoques, você ganha 2 Hidratações de bônus! ✨\nQuer que eu deixe reservado? 😉';
+    return 'Oi, ' + primeiro(x.cliente) + ', tudo bem? Como você faz o Fast Retoque com frequência, tenho uma proposta: no pacote com 4 retoques você ganha 2 hidratações de bônus. Quer que eu deixe reservado?';
   }
 
   // ---------- combos do documento "Combos para clientes de pacotes" ----------
