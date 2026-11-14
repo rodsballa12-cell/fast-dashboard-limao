@@ -263,7 +263,7 @@
     var cab = '<div class="rp-top"><h2>📋 Hoje na recepção · ' + L.nome + '</h2>' +
       '<div class="rp-meta">Dados dos clientes de ' + esc(datadado) + ' · pacotes: posição do Trinks em ' + (PACOTES ? dataBR(PACOTES.posicao) : '<strong>indisponível</strong>') + '</div>' +
       kpis(a, D.leads) +
-      '<div class="rp-busca-w"><input id="rp-busca" type="search" placeholder="🔎 Cliente chegou? Digite o nome…" value="' + esc(q) + '"></div>' +
+      '<div class="rp-busca-w"><input id="rp-busca" type="search" placeholder="Cliente chegou? Digite o nome…" value="' + esc(q) + '"></div>' +
       '<details class="rp-cfg"><summary>⚙️ Meus dados e brindes (ficam só neste aparelho)</summary>' +
       inputCfg('nome', 'Seu nome (assina o pós-venda)', c.nome, 'ex.: Ana') +
       inputCfg('google', 'Link de avaliação do Google da loja', c.google, 'cole o link') +
@@ -354,7 +354,7 @@
 .rp-wa{background:#1fa855;color:#fff;box-shadow:0 2px 8px rgba(31,168,85,.3)}.rp-wa:hover{filter:brightness(1.06)}
 .rp-ok{background:transparent;color:var(--ink-2);border-color:var(--border)}.rp-ok:hover{background:var(--surface-2)}
 .rp-off{background:var(--surface-2);color:var(--ink-3);cursor:default;font-weight:600;white-space:normal}
-.rp-env{flex-basis:100%;text-align:right;font-size:12px;font-weight:700;color:#1e8a45;background:color-mix(in srgb,#1e8a45 12%,transparent);padding:4px 10px;border-radius:999px;align-self:center}
+.rp-env{flex-basis:100%;white-space:normal;line-height:1.35;text-align:right;font-size:12px;font-weight:700;color:#1e8a45;background:color-mix(in srgb,#1e8a45 12%,transparent);padding:4px 10px;border-radius:999px;align-self:center}
 .rp-env a{color:var(--ink-3);font-weight:500}
 .rp-l:has(.rp-env){opacity:.72}
 .rp-sf{color:#b7791f}
