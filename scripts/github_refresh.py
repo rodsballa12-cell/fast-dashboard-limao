@@ -2084,6 +2084,12 @@ def main():
         # Antes era 20, mas o botao 'ver top 50' precisa de material ate 50.
         "top": churn_candidatos[:50],
     }
+    # Lista COMPLETA para a pagina da recepcao (o painel so mostra os 50 primeiros).
+    try:
+        (DATA_UNIT / "recepcao_resgate.json").write_text(
+            json.dumps(churn_candidatos, ensure_ascii=False), encoding="utf-8")
+    except Exception as _e:
+        print(f"  [warn] recepcao_resgate nao gravado: {_e}")
 
     # === Série diária de clientes NOVOS (para o funil respeitar a competência) ===
     # O funil do painel cruza gasto de mídia com clientes novos do Trinks. Enquanto

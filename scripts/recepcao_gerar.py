@@ -90,6 +90,14 @@ def _base(sub: str) -> list:
     return sorted(saida, key=lambda x: x["n"].lower())
 
 
+def _resgate(sub: str) -> list:
+    """Lista completa de clientes sumidas (o painel guarda so as 50 primeiras)."""
+    f = REPO / "data" / sub / "recepcao_resgate.json"
+    if not f.exists():
+        return []
+    return json.loads(f.read_text(encoding="utf-8"))
+
+
 def recorte(d: dict, sub: str = "") -> dict:
     anual = (d.get("abas") or {}).get("anual") or {}
     return {
@@ -98,6 +106,7 @@ def recorte(d: dict, sub: str = "") -> dict:
         "dias_op_mes": d.get("dias_op_mes"),
         "abas": {"anual": {k: anual[k] for k in CHAVES_CLIENTES if k in anual}},
         "insights": {"clientes": (d.get("insights") or {}).get("clientes")},
+        "resgate": _resgate(sub),
         "ontem": _ontem(d, sub),
         "base": _base(sub),
     }
