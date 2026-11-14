@@ -58,19 +58,20 @@ def _ontem(d: dict, sub: str) -> list:
     if not (frec.exists() and fcl.exists()):
         return []
     try:
-        ontem = (datetime.date.fromisoformat(str(d.get("hoje"))[:10]) - datetime.timedelta(days=1)).isoformat()
+        h = datetime.date.fromisoformat(str(d.get("hoje"))[:10])
+        ini, fim = (h - datetime.timedelta(days=3)).isoformat(), (h - datetime.timedelta(days=1)).isoformat()
     except Exception:
         return []
     rec = json.loads(frec.read_text(encoding="utf-8"))
     cli = json.loads(fcl.read_text(encoding="utf-8"))
     cli = cli.get("payload", cli) if isinstance(cli, dict) else {}
     vistos, saida = set(), []
-    for r in rec:
-        if r.get("dia") != ontem or str(r["id"]) in vistos:
+    for r in sorted(rec, key=lambda r: r.get("dia", ""), reverse=True):  # o dia mais recente de cada cliente
+        if not (ini <= r.get("dia", "") <= fim) or str(r["id"]) in vistos:
             continue
         vistos.add(str(r["id"]))
-        saida.append({"cliente": r["nome"].strip(), "telefone": _tel(cli.get(str(r["id"])))})
-    return sorted(saida, key=lambda x: x["cliente"].lower())
+        saida.append({"cliente": r["nome"].strip(), "dia": r["dia"], "telefone": _tel(cli.get(str(r["id"])))})
+    return sorted(saida, key=lambda x: (x["dia"], x["cliente"].lower()), reverse=True)
 
 
 def _base(sub: str) -> list:
@@ -98,6 +99,33 @@ def _resgate(sub: str) -> list:
     return json.loads(f.read_text(encoding="utf-8"))
 
 
+def _aniv30(d: dict, base: list) -> list:
+    """Aniversariantes dos proximos 30 dias, de toda a base (o painel so lista 14 dias)."""
+    import datetime
+    try:
+        h = datetime.date.fromisoformat(str(d.get("hoje"))[:10])
+    except Exception:
+        return []
+    visitas = {" ".join(x["cliente"].split()).casefold(): x.get("n_visitas")
+               for x in ((d.get("abas") or {}).get("anual") or {}).get("aniversariantes", [])}
+    saida = []
+    for c in base:
+        a = c.get("a") or ""
+        if len(a) != 5:
+            continue
+        try:
+            x = datetime.date(h.year, int(a[3:5]), int(a[0:2]))
+        except ValueError:
+            continue
+        if x < h:
+            x = x.replace(year=h.year + 1)
+        dias = (x - h).days
+        if dias <= 30:
+            saida.append({"cliente": c["n"], "data_aniv": a, "dias": dias, "telefone": c.get("t", ""),
+                          "n_visitas": visitas.get(" ".join(c["n"].split()).casefold())})
+    return sorted(saida, key=lambda x: (x["dias"], x["cliente"].lower()))
+
+
 def recorte(d: dict, sub: str = "") -> dict:
     anual = (d.get("abas") or {}).get("anual") or {}
     return {
@@ -109,6 +137,7 @@ def recorte(d: dict, sub: str = "") -> dict:
         "resgate": _resgate(sub),
         "ontem": _ontem(d, sub),
         "base": _base(sub),
+        "aniv30": _aniv30(d, _base(sub)),
     }
 
 

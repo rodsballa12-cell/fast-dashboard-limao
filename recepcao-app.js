@@ -21,6 +21,7 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function unidade() { try { return localStorage.getItem('unidade_ativa_recepcao') === 'spa' ? 'spa' : 'escova'; } catch (e) { return 'escova'; } }
   function hojeISO() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function ontemISO() { var d = new Date(Date.now() - 86400000); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
   function dataBR(iso) { var p = String(iso || '').slice(0, 10).split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : ''; }
   function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} return null; }
   function cfg(u) { var c = {}, base = CFG_PADRAO[u], salvo = {}; try { salvo = JSON.parse(ls('rp_cfg_' + u) || '{}'); } catch (e) {} Object.keys(base).forEach(function (k) { c[k] = (k in salvo) ? salvo[k] : base[k]; }); return c; }
@@ -155,8 +156,8 @@
     var emUso = pacs.filter(function (p) { return p.total > 2; }).map(function (p) { return linhaPacote(p, false); });
 
     // aniversariantes (hoje até +3 dias)
-    var aniv = (a.aniversariantes || []).filter(function (x) { return x.dias <= 14 && pass(x.cliente); }).map(function (x) {
-      return linha(u, 'aniv', x.cliente, (x.dias === 0 ? '<strong>HOJE</strong>' : (x.dias === 1 ? 'amanhã' : 'em ' + x.dias + ' dias')) + ' · ' + esc(x.data_aniv) + ' · ' + x.n_visitas + ' visita(s)' + fone(x.telefone), botoes('', 'aniv', x.cliente, x.telefone, msgAniv(u, c, x), 'Parabéns no WhatsApp'));
+    var aniv = ((D.aniv30 && D.aniv30.length ? D.aniv30 : a.aniversariantes) || []).filter(function (x) { return x.dias <= 30 && pass(x.cliente); }).map(function (x) {
+      return linha(u, 'aniv', x.cliente, (x.dias === 0 ? '<strong>HOJE</strong>' : (x.dias === 1 ? 'amanhã' : 'em ' + x.dias + ' dias')) + ' · ' + esc(x.data_aniv) + (x.n_visitas != null ? ' · ' + x.n_visitas + ' visita(s)' : '') + fone(x.telefone), botoes('', 'aniv', x.cliente, x.telefone, msgAniv(u, c, x), 'Parabéns no WhatsApp'));
     });
     // resgate (+30 dias)
     var resg = ((D.resgate && D.resgate.length ? D.resgate : (a.churn_early || {}).top) || []).filter(function (x) { return x.dias_sem_vir >= 30 && pass(x.cliente); }).map(function (x) {
@@ -166,7 +167,7 @@
     var pos = (D.ontem || []).filter(function (x) { return pass(x.cliente); }).map(function (x) {
       var b1 = botoes('', 'pos', x.cliente, x.telefone, msgPos1(u, c, x), '1ª mensagem');
       var b2 = c.google ? botoes('', 'pos2', x.cliente, x.telefone, msgPos2(u, c), '2ª: avaliação Google') : '<span class="rp-b rp-off" title="Preencha o link do Google em Meus dados">2ª: falta o link do Google</span>';
-      return linha(u, 'pos', x.cliente, 'atendida ontem' + fone(x.telefone) + ' · envie a 2ª só se a resposta da 1ª for positiva', b1 + b2);
+      return linha(u, 'pos', x.cliente, 'atendida ' + (x.dia ? (x.dia === ontemISO() ? 'ontem' : 'em ' + dataBR(x.dia).slice(0, 5)) : 'ontem') + fone(x.telefone) + ' · envie a 2ª só se a resposta da 1ª for positiva', b1 + b2);
     });
 
     // consulta de qualquer cliente da base (a partir de 3 letras)
@@ -206,8 +207,8 @@
       (qn.length >= 3 ? bloco('consulta', '🔎 Consulta de cliente', 'Qualquer cliente da base, mesmo sem pacote ou aniversário.', consulta, 'Ninguém com esse nome na base.') : '') +
       bloco('renovar', '🔴 Renovar pacote agora', 'Falta 1 sessão. Ofereça a renovação e não deixe sair com a comanda zerada.', renovar, qn ? 'Nenhum encontrado.' : 'Nenhum pacote com 1 sessão restante.') +
       bloco('poucos', '🟡 Pacote acabando', 'Faltam 2 sessões: já vá preparando a renovação.', poucos, qn ? 'Nenhum encontrado.' : 'Nenhum no momento.') +
-      bloco('aniv', '🎂 Aniversariantes (próximos 14 dias)', 'Mande o parabéns com o presente.', aniv, qn ? 'Nenhum encontrado.' : 'Ninguém faz aniversário nos próximos 14 dias.') +
-      bloco('pos', '⭐ Pós-venda (atendidas ontem)', 'Agradeça e peça a opinião. A 2ª mensagem (Google) só se responderem de forma positiva.', pos, qn ? 'Nenhum encontrado.' : 'Sem clientes de ontem nos dados.') +
+      bloco('aniv', '🎂 Aniversariantes (próximos 30 dias)', 'Mande o parabéns com o presente.', aniv, qn ? 'Nenhum encontrado.' : 'Ninguém faz aniversário nos próximos 30 dias.') +
+      bloco('pos', '⭐ Pós-venda (atendidas nos últimos 3 dias)', 'Agradeça e peça a opinião. A 2ª mensagem (Google) só se responderem de forma positiva.', pos, qn ? 'Nenhum encontrado.' : 'Sem clientes de ontem nos dados.') +
       bloco('resg', '💛 Resgate (sumidas há mais de 30 dias)', 'Mensagem de saudade com o mimo de retorno.', resg, qn ? 'Nenhum encontrado.' : 'Nenhuma cliente em risco.') +
       bloco('env', '✅ Mensagens enviadas (60 dias)', 'Clientes marcadas como enviadas neste aparelho, e quando. Vale só aqui: outros aparelhos têm o próprio registro.', enviadas, 'Nenhuma mensagem registrada ainda.') +
       bloco('uso', '🎁 Outros pacotes em uso', 'Mais de 2 sessões restantes.', emUso, qn ? 'Nenhum encontrado.' : 'Nenhum.');
