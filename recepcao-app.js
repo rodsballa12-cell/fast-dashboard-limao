@@ -94,11 +94,13 @@
     function fallback() { var t = document.createElement('textarea'); t.value = txt; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); ok(); } catch (e) {} t.remove(); }
   }
   // ---------- registro de mensagens enviadas (so neste aparelho) ----------
-  function envLer() { try { return JSON.parse(ls('rp_env') || '{}'); } catch (e) { return {}; } }
+  var _envc = null;
+  function envLer() { if (_envc) return _envc; try { _envc = JSON.parse(ls('rp_env') || '{}'); } catch (e) { _envc = {}; } return _envc; }
   function envGravar(o) {
     var corte = Date.now() - 60 * 86400000;
     Object.keys(o).forEach(function (k) { if (new Date(o[k].t).getTime() < corte) delete o[k]; });
     ls('rp_env', JSON.stringify(o));
+    _envc = null;
   }
   function quando(iso) { var d = new Date(iso); return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
   var TIPOS = { renovar: 'Renovação', aniv: 'Aniversário', resg: 'Resgate', pos: 'Pós-venda (1ª)', pos2: 'Pós-venda (Google)', consulta: 'Contato' };
@@ -121,9 +123,10 @@
   }
   var ABERTO = {}; // lembra o que a recepcao expandiu
   var VISIVEIS = 5; // quantas ficam a vista em cada tema; o resto abre em "Ver todas"
-  function bloco(id, titulo, sub, itens, vazio) {
-    var corpo = itens.length ? itens.slice(0, VISIVEIS).join('') : '<div class="rp-vazio">' + vazio + '</div>';
-    var resto = itens.length > VISIVEIS ? '<details class="rp-mais" data-id="' + id + '"' + (ABERTO[id] ? ' open' : '') + '><summary>Ver todas (' + itens.length + ')</summary>' + itens.slice(VISIVEIS).join('') + '</details>' : '';
+  function bloco(id, titulo, sub, itens, vazio, vis) {
+    if (vis == null) vis = VISIVEIS;
+    var corpo = itens.length ? itens.slice(0, vis).join('') : '<div class="rp-vazio">' + vazio + '</div>';
+    var resto = itens.length > vis ? '<details class="rp-mais" data-id="' + id + '"' + (ABERTO[id] ? ' open' : '') + '><summary>Ver todas (' + itens.length + ')</summary>' + itens.slice(vis).join('') + '</details>' : '';
     return '<section class="rp-s" id="rp-' + id + '"><h3>' + titulo + ' <span class="rp-n">' + itens.length + '</span></h3><div class="rp-sub">' + sub + '</div>' + corpo + resto + '</section>';
   }
   function pct(v) { return v == null ? '–' : String(v).replace('.', ',') + '%'; }
@@ -161,6 +164,7 @@
     var qEl = document.getElementById('rp-busca'), q = qEl ? qEl.value : '', qn = q.trim().toLowerCase();
     function pass(n) { return !qn || String(n).toLowerCase().indexOf(qn) >= 0; }
     MSGS = [];
+    _envc = null;
 
     // pacotes
     var pacs = ((PACOTES && PACOTES[u]) || []).map(function (p) {
@@ -204,6 +208,16 @@
         return linha(u, 'consulta', x.n, det, botoes('', 'consulta', x.n, x.t, 'Oi, ' + primeiro(x.n) + '! Tudo bem?', 'Abrir WhatsApp'));
       });
     }
+    // lista completa da base (ordem alfabetica), com saldo de pacote e aniversario
+    var pmap = {};
+    ((PACOTES && PACOTES[u]) || []).forEach(function (p) { var k = p.cliente.split(/\s+/).join(' ').toLowerCase(); (pmap[k] = pmap[k] || []).push(p); });
+    var todos = (D.base || []).filter(function (x) { return pass(x.n); }).map(function (x) {
+      var pk = pmap[x.n.toLowerCase()] || [];
+      var pt = pk.length ? pk.map(function (p) { return esc(bonito(p.pacote)) + ': ' + p.itens.map(function (it) { return '<strong>' + it.restante + '</strong> × ' + esc(bonito(it.servico)); }).join(', '); }).join(' | ') : '';
+      var det = [pt, x.a ? 'aniversário ' + esc(x.a) : ''].filter(Boolean).join(' · ') || '&nbsp;';
+      return linha(u, 'consulta', x.n, det, botoes('', 'consulta', x.n, x.t, 'Oi, ' + primeiro(x.n) + '! Tudo bem?', 'WhatsApp'));
+    });
+
     // historico de envios (60 dias), mais recentes primeiro
     var env = envLer(), hist = Object.keys(env).filter(function (k) { return k.indexOf(u + '|') === 0 && pass(env[k].n); }).map(function (k) { return { k: k, r: env[k] }; });
     hist.sort(function (x, y) { return new Date(y.r.t) - new Date(x.r.t); });
@@ -236,7 +250,8 @@
       bloco('pos', '⭐ Pós-venda (atendidas nos últimos 3 dias)', 'Agradeça e peça a opinião. A 2ª mensagem (Google) só se responderem de forma positiva.', pos, qn ? 'Nenhum encontrado.' : 'Sem clientes de ontem nos dados.') +
       bloco('resg', '💛 Resgate (sumidas há mais de 30 dias)', 'Mensagem de saudade com o mimo de retorno.', resg, qn ? 'Nenhum encontrado.' : 'Nenhuma cliente em risco.') +
       bloco('env', '✅ Mensagens enviadas (60 dias)', 'Clientes marcadas como enviadas neste aparelho, e quando. Vale só aqui: outros aparelhos têm o próprio registro.', enviadas, 'Nenhuma mensagem registrada ainda.') +
-      bloco('uso', '🎁 Outros pacotes em uso', 'Mais de 2 sessões restantes.', emUso, qn ? 'Nenhum encontrado.' : 'Nenhum.');
+      bloco('uso', '🎁 Outros pacotes em uso', 'Mais de 2 sessões restantes.', emUso, qn ? 'Nenhum encontrado.' : 'Nenhum.') +
+      bloco('todos', '📇 Todas as clientes', 'A base inteira em ordem alfabética. Toque em "Ver todas" para abrir; a busca do topo também filtra aqui.', todos, 'Nenhuma cliente encontrada.', 0);
 
     alvo.innerHTML = cab + secoes;
     var b = document.getElementById('rp-busca');
