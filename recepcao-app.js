@@ -62,7 +62,7 @@
       (c.brAmiga ? ' Se trouxer uma amiga, ela ganha ' + c.brAmiga + '.' : '') + ' Sem hora marcada, é só chegar.';
   }
   function msgPos1(u, c, cli) {
-    var L = LOJAS[u], quem = c.nome ? 'aqui é a ' + c.nome + ', da ' + L.nome : 'aqui é da ' + L.nome;
+    var L = LOJAS[u], art = u === 'spa' ? 'do' : 'da', quem = c.nome ? 'aqui é a ' + c.nome + ', ' + art + ' ' + L.nome : 'aqui é ' + art + ' ' + L.nome;
     return 'Oi, ' + primeiro(cli.cliente) + ', ' + quem + '. Obrigada por ter vindo ' + quandoAtendida(cli) + '. Gostou do atendimento? Se postar, marca a gente: @' + L.ig;
   }
   function msgPos2(u, c) {
