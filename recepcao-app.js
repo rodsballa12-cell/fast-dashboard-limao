@@ -14,8 +14,8 @@
   // Brindes: só o que o documento da comercial já define para a Escova.
   // Spa e renovação começam vazios: a recepção preenche (e a frase some se vazio).
   var CFG_PADRAO = {
-    escova: { nome: '', google: '', brRen: '', brResg: 'uma Nutrição Capilar', brAniv: 'uma Hidratação com Ozonioterapia', brAmiga: 'uma Ozonioterapia' },
-    spa: { nome: '', google: 'https://share.google/kRBbT1PkzzpVKQ8m6', brRen: '', brResg: '', brAniv: '', brAmiga: '' }
+    escova: { nome: '', google: 'https://search.google.com/local/writereview?placeid=ChIJ0wkZd4z5zpQRO9VrCLQoAEE', brRen: '', brResg: 'uma Nutrição Capilar', brAniv: 'uma Hidratação com Ozonioterapia', brAmiga: 'uma Ozonioterapia' },
+    spa: { nome: '', google: 'https://search.google.com/local/writereview?placeid=ChIJ2-w36075zpQREVX7xtpVpno', brRen: '', brResg: '', brAniv: '', brAmiga: '' }
   };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -266,7 +266,7 @@
       '<div class="rp-busca-w"><input id="rp-busca" type="search" placeholder="Cliente chegou? Digite o nome…" value="' + esc(q) + '"></div>' +
       '<details class="rp-cfg"><summary>⚙️ Meus dados e brindes (ficam só neste aparelho)</summary>' +
       inputCfg('nome', 'Seu nome (assina o pós-venda)', c.nome, 'ex.: Ana') +
-      inputCfg('google', 'Link de avaliação do Google da loja', c.google, 'cole o link') +
+      inputCfg('google', 'Link de avaliação do Google (já vem preenchido)', c.google, 'cole o link') +
       inputCfg('brRen', 'Brinde da renovação do pacote', c.brRen, 'ex.: uma Hidratação (vazio = sem brinde)') +
       inputCfg('brResg', 'Brinde do resgate (sumidas)', c.brResg, 'vazio = sem brinde') +
       inputCfg('brAniv', 'Brinde de aniversário', c.brAniv, 'vazio = sem brinde') +
