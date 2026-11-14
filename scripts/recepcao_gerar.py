@@ -73,6 +73,23 @@ def _ontem(d: dict, sub: str) -> list:
     return sorted(saida, key=lambda x: x["cliente"].lower())
 
 
+def _base(sub: str) -> list:
+    """Todos os clientes da unidade (so nome, telefone e dia/mes do aniversario) para consulta."""
+    f = REPO / "data" / sub / "clientes_detalhes.json"
+    if not f.exists():
+        return []
+    c = json.loads(f.read_text(encoding="utf-8"))
+    c = c.get("payload", c) if isinstance(c, dict) else {}
+    saida = []
+    for v in c.values():
+        if not v.get("nome"):
+            continue
+        nasc = str(v.get("dataNascimento") or "")
+        a = nasc[8:10] + "/" + nasc[5:7] if len(nasc) >= 10 else ""
+        saida.append({"n": " ".join(v["nome"].split()), "t": _tel(v), "a": a})
+    return sorted(saida, key=lambda x: x["n"].lower())
+
+
 def recorte(d: dict, sub: str = "") -> dict:
     anual = (d.get("abas") or {}).get("anual") or {}
     return {
@@ -82,6 +99,7 @@ def recorte(d: dict, sub: str = "") -> dict:
         "abas": {"anual": {k: anual[k] for k in CHAVES_CLIENTES if k in anual}},
         "insights": {"clientes": (d.get("insights") or {}).get("clientes")},
         "ontem": _ontem(d, sub),
+        "base": _base(sub),
     }
 
 
