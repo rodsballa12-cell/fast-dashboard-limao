@@ -189,6 +189,16 @@ def _retoque(d: dict, sub: str, base: list) -> dict:
     return out
 
 
+def _leads(sub: str) -> dict:
+    """Conversas iniciadas pelos anuncios da Meta (so contagem, sem gasto)."""
+    f = REPO / "data" / "midias_sociais.json"
+    if not f.exists():
+        return {}
+    m = json.loads(f.read_text(encoding="utf-8"))
+    per = ((m.get("meta_ads_spa") if sub else m.get("meta_ads")) or {}).get("por_periodo") or {}
+    return {k: (per.get(k) or {}).get("conversas_msg") for k in ("hoje", "7d", "30d")}
+
+
 def recorte(d: dict, sub: str = "") -> dict:
     anual = (d.get("abas") or {}).get("anual") or {}
     return {
@@ -202,6 +212,7 @@ def recorte(d: dict, sub: str = "") -> dict:
         "base": _base(sub),
         "aniv30": _aniv30(d, _base(sub)),
         "retoque": _retoque(d, sub, []),
+        "leads": _leads(sub),
     }
 
 

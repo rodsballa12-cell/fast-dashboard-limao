@@ -140,7 +140,7 @@
   function pct(v) { return v == null ? '–' : String(v).replace('.', ',') + '%'; }
   function num(v) { return v == null ? '–' : Number(v).toLocaleString('pt-BR'); }
   function tile(rot, val, dica, tom) { return '<div class="rp-k' + (tom ? ' rp-k-' + tom : '') + '"><div class="rp-kv">' + val + '</div><div class="rp-kr">' + rot + '</div><div class="rp-kd">' + dica + '</div></div>'; }
-  function kpis(a) {
+  function kpis(a, L) {
     var s = a.clientes_snapshot, cad = (a.clientes_cadastro || {}).cobertura;
     if (!s) return '';
     function cob(v) { return v == null ? '' : (v >= 90 ? 'ok' : (v >= 60 ? 'at' : 'ruim')); }
@@ -157,9 +157,11 @@
       tile('Aniversário', pct(cad.data_nasc), 'permite o parabéns', cob(cad.data_nasc)) +
       tile('E-mail', pct(cad.email), 'cadastrar na recepção', cob(cad.email)) +
       tile('Como nos conheceu', pct(cad.canal_aquisicao), 'ajuda a medir a divulgação', cob(cad.canal_aquisicao)) : '';
+    var g4 = (L && (L.hoje != null || L['7d'] != null)) ? tile('Hoje', num(L.hoje), 'conversas iniciadas pelos anúncios') + tile('Últimos 7 dias', num(L['7d']), 'cada uma é uma cliente a retornar') + tile('Últimos 30 dias', num(L['30d']), 'responder e checar se veio') : '';
     return '<div class="rp-kg"><h3>👥 Clientes</h3><div class="rp-kw">' + g1 + '</div></div>' +
       '<div class="rp-kg"><h3>🔁 Recorrência</h3><div class="rp-kw">' + g2 + '</div></div>' +
-      (g3 ? '<div class="rp-kg"><h3>✅ Qualidade do cadastro</h3><div class="rp-kw">' + g3 + '</div></div>' : '');
+      (g3 ? '<div class="rp-kg"><h3>✅ Qualidade do cadastro</h3><div class="rp-kw">' + g3 + '</div></div>' : '') +
+      (g4 ? '<div class="rp-kg"><h3>📲 Leads dos anúncios (Meta)</h3><div class="rp-kw">' + g4 + '</div></div>' : '');
   }
   function inputCfg(k, rot, v, dica) { return '<label class="rp-f1"><span>' + rot + '</span><input data-cfg="' + k + '" value="' + esc(v) + '" placeholder="' + esc(dica || '') + '"></label>'; }
 
@@ -256,7 +258,7 @@
     if (bs) bs.textContent = 'Recepção · ' + L.nome;
     var cab = '<div class="rp-top"><h2>📋 Hoje na recepção · ' + L.nome + '</h2>' +
       '<div class="rp-meta">Dados dos clientes de ' + esc(datadado) + ' · pacotes: posição do Trinks em ' + (PACOTES ? dataBR(PACOTES.posicao) : '<strong>indisponível</strong>') + '</div>' +
-      kpis(a) +
+      kpis(a, D.leads) +
       '<input id="rp-busca" type="search" placeholder="🔎 Cliente chegou? Digite o nome…" value="' + esc(q) + '">' +
       '<details class="rp-cfg"><summary>⚙️ Meus dados e brindes (ficam só neste aparelho)</summary>' +
       inputCfg('nome', 'Seu nome (assina o pós-venda)', c.nome, 'ex.: Ana') +
