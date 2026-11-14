@@ -273,6 +273,10 @@ def gerar_cofre() -> int:
             return 0
         saida[u] = recorte(json.loads(p.read_text(encoding="utf-8")), "" if u == "escova" else "spa/")
         print(f"[recepcao] {u}: dado de {saida[u]['gerado_em']}")
+    # Registro compartilhado de mensagens enviadas (opcional): planilha do Google via Apps Script.
+    su, st = os.environ.get("FAST_RECEPCAO_SYNC_URL", "").strip(), os.environ.get("FAST_RECEPCAO_SYNC_TOKEN", "").strip()
+    if su and st:
+        saida["sync"] = {"url": su, "token": st}
     enc = REPO / "data" / "recepcao_clientes.json.enc"
     enc.write_bytes(cifrar(json.dumps(saida, ensure_ascii=False).encode("utf-8"), s))
     print(f"[recepcao] {enc.relative_to(REPO)} gravado")

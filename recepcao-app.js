@@ -14,8 +14,8 @@
   // Brindes: só o que o documento da comercial já define para a Escova.
   // Spa e renovação começam vazios: a recepção preenche (e a frase some se vazio).
   var CFG_PADRAO = {
-    escova: { nome: '', google: 'https://search.google.com/local/writereview?placeid=ChIJ0wkZd4z5zpQRO9VrCLQoAEE', brRen: '', brResg: 'uma Nutrição Capilar', brAniv: 'uma Hidratação com Ozonioterapia', brAmiga: 'uma Ozonioterapia' },
-    spa: { nome: '', google: 'https://search.google.com/local/writereview?placeid=ChIJ2-w36075zpQREVX7xtpVpno', brRen: '', brResg: '', brAniv: '', brAmiga: '' }
+    escova: { nome: '', google: 'https://search.google.com/local/writereview?placeid=ChIJ0wkZd4z5zpQRO9VrCLQoAEE', brRen: '', brRenUnhas: '', brRenCabelo: '', brResg: 'uma Nutrição Capilar', brAniv: 'uma Hidratação com Ozonioterapia', brAmiga: 'uma Ozonioterapia' },
+    spa: { nome: '', google: 'https://search.google.com/local/writereview?placeid=ChIJ2-w36075zpQREVX7xtpVpno', brRen: '', brRenUnhas: '', brRenCabelo: '', brResg: '', brAniv: '', brAmiga: '' }
   };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -42,7 +42,8 @@
   }
   function msgRenovar(u, c, p, total) {
     var n = primeiro(p.cliente), falta = total === 1 ? 'falta só 1 sessão' : 'faltam só ' + total + ' sessões';
-    var presente = c.brRen ? ' Renovando agora, você ganha ' + c.brRen + ' na 1ª ' + (u === 'escova' ? 'escova' : 'sessão') + ' do pacote novo.' : '';
+    var unhas = /M[ÃA]OS|P[ÉE]S|UNHAS/i.test(p.pacote), br = (unhas ? c.brRenUnhas : c.brRenCabelo) || c.brRen;
+    var presente = br ? ' Renovando agora, você ganha ' + br + ' na 1ª ' + (u === 'escova' ? (unhas ? 'visita' : 'escova') : 'sessão') + ' do pacote novo.' : '';
     return 'Oi, ' + n + ', tudo bem? Seu pacote de ' + bonito(p.pacote) + ' está no fim: ' + falta + '.' + presente +
       ' Se quiser, já deixo a renovação pronta para a sua próxima vinda.';
   }
@@ -108,6 +109,38 @@
     ls('rp_env', JSON.stringify(o));
     _envc = null;
   }
+  // ---- registro compartilhado (planilha do Google, opcional) ----
+  // Se o cofre trouxer DADOS.sync {url, token}, o registro de enviadas e sincronizado entre os aparelhos.
+  // Apagar vira um registro com x:1 (para a remocao tambem chegar aos outros aparelhos).
+  var SYNC = null, syncTimer = null, syncFalhou = false;
+  function syncPost(itens) {
+    if (!SYNC || !itens.length) return Promise.resolve();
+    return fetch(SYNC.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ token: SYNC.token, itens: itens }) })
+      .then(function (r) { return r.json(); }).then(function (j) { syncFalhou = !(j && j.ok); }).catch(function () { syncFalhou = true; });
+  }
+  function syncPull() {
+    if (!SYNC) return;
+    fetch(SYNC.url + (SYNC.url.indexOf('?') >= 0 ? '&' : '?') + 'token=' + encodeURIComponent(SYNC.token) + '&_=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j || !j.ok) { syncFalhou = true; return; }
+        syncFalhou = false;
+        var local = envLer(), srv = j.registros || {}, mudou = false, enviar = [];
+        function seg(r) { return Math.floor(new Date(r.t).getTime() / 1000); }
+        Object.keys(srv).forEach(function (k) { if (!local[k] || seg(srv[k]) > seg(local[k])) { local[k] = srv[k]; mudou = true; } });
+        Object.keys(local).forEach(function (k) { if (!srv[k] || seg(local[k]) > seg(srv[k])) enviar.push({ key: k, rec: local[k] }); });
+        if (mudou) { envGravar(local); desenhar(); }
+        if (enviar.length) syncPost(enviar);
+      }).catch(function () { syncFalhou = true; });
+  }
+  function syncIniciar(s) {
+    if (!s || !s.url || !s.token || (SYNC && SYNC.url === s.url)) return;
+    SYNC = s; syncPull();
+    if (syncTimer) clearInterval(syncTimer);
+    syncTimer = setInterval(syncPull, 45000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) syncPull(); });
+  }
+  function envMarcar(k, rec) { var o = envLer(); o[k] = rec; envGravar(o); syncPost([{ key: k, rec: rec }]); }
   function quando(iso) { var d = new Date(iso); return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
   var TIPOS = { renovar: 'Renovação', aniv: 'Aniversário', resg: 'Resgate', pos: 'Pós-venda (1ª)', pos2: 'Pós-venda (Google)', ret15: 'Lembrete de retoque', retatr: 'Retoque atrasado', retpkg: 'Pacote de retoque', consulta: 'Contato' };
   var MSGS = []; // textos por índice (evita jogar texto longo em atributo)
@@ -116,7 +149,8 @@
     var ek = esc(u + '|' + tipo + '|' + (chave || cliente)), en = esc(cliente);
     var wa = t ? '<a class="rp-b rp-wa" data-ek="' + ek + '" data-en="' + en + '" data-tp="' + tipo + '" target="_blank" rel="noopener" href="https://wa.me/' + t + '?text=' + encodeURIComponent(texto) + '">💬 ' + (rotulo || 'Abrir WhatsApp') + '</a>' : '<span class="rp-b rp-off" title="Sem telefone cadastrado">sem telefone</span>';
     var rec = envLer()[u + '|' + tipo + '|' + (chave || cliente)];
-    var sel = rec ? '<div class="rp-env">✅ ' + 'Mensagem enviada (' + (TIPOS[tipo] || 'contato') + ') em ' + quando(rec.t) + ' · <a href="#" class="rp-und" data-ek="' + ek + '">desfazer</a></div>' : '';
+    if (rec && rec.x) rec = null;
+    var sel = rec ? '<div class="rp-env">✅ ' + 'Mensagem enviada (' + (TIPOS[tipo] || 'contato') + ') em ' + quando(rec.t) + (rec.por ? ' por ' + esc(rec.por) : '') + ' · <a href="#" class="rp-und" data-ek="' + ek + '">desfazer</a></div>' : '';
     var mk = rec ? '' : '<button class="rp-b rp-ok" data-ek="' + ek + '" data-en="' + en + '" data-tp="' + tipo + '" title="Toque depois de mandar a mensagem">✅ Marcar como enviada</button>';
     return wa + mk + sel;
   }
@@ -248,7 +282,7 @@
     }
 
     // historico de envios (60 dias), mais recentes primeiro
-    var env = envLer(), hist = Object.keys(env).filter(function (k) { return k.indexOf(u + '|') === 0 && pass(env[k].n); }).map(function (k) { return { k: k, r: env[k] }; });
+    var env = envLer(), hist = Object.keys(env).filter(function (k) { return k.indexOf(u + '|') === 0 && !env[k].x && pass(env[k].n); }).map(function (k) { return { k: k, r: env[k] }; });
     hist.sort(function (x, y) { return new Date(y.r.t) - new Date(x.r.t); });
     var enviadas = hist.map(function (h) {
       return '<div class="rp-l"><div class="rp-t"><strong>' + esc(bonito(h.r.n)) + '</strong><div class="rp-d">' + esc(TIPOS[h.r.tp] || 'Mensagem') + ' · enviada em ' + quando(h.r.t) + '</div></div><div class="rp-a"><a href="#" class="rp-b rp-cp rp-und" data-ek="' + esc(h.k) + '">desfazer</a></div></div>';
@@ -265,7 +299,9 @@
       '<details class="rp-cfg"><summary>⚙️ Meus dados e brindes (ficam só neste aparelho)</summary>' +
       inputCfg('nome', 'Seu nome (assina o pós-venda)', c.nome, 'ex.: Ana') +
       inputCfg('google', 'Link de avaliação do Google (já vem preenchido)', c.google, 'cole o link') +
-      inputCfg('brRen', 'Brinde da renovação do pacote', c.brRen, 'ex.: uma Hidratação (vazio = sem brinde)') +
+      inputCfg('brRenUnhas', 'Brinde da renovação: pacote de unhas', c.brRenUnhas, 'vazio = sem brinde') +
+      inputCfg('brRenCabelo', 'Brinde da renovação: pacote de escova/cabelo', c.brRenCabelo, 'vazio = sem brinde') +
+      inputCfg('brRen', 'Brinde da renovação: outros pacotes', c.brRen, 'vazio = sem brinde') +
       inputCfg('brResg', 'Brinde do resgate (sumidas)', c.brResg, 'vazio = sem brinde') +
       inputCfg('brAniv', 'Brinde de aniversário', c.brAniv, 'vazio = sem brinde') +
       (u === 'escova' ? inputCfg('brAmiga', 'Presente para a amiga (aniversário)', c.brAmiga, 'vazio = sem') : '') +
@@ -282,7 +318,7 @@
         bloco('retatr', '💇 Retoque: raiz já passou do ponto (26 a 60 dias)', 'Fizeram há mais de 25 dias. Chame de volta.', ret.atrasadas, qn ? 'Nenhum encontrado.' : 'Ninguém nessa janela hoje.') +
         bloco('retpkg', '💇 Retoque: oferecer o pacote', 'Já fizeram 2 ou mais retoques avulsos. Pacote: 4 retoques + 2 hidratações de bônus (valor do pacote: confira com a gerente).', ret.pacote, qn ? 'Nenhum encontrado.' : 'Nenhuma cliente com 2 retoques ainda.') +
         bloco('retnunca', '👀 Retoque: nunca fez e faz escova sempre', 'Olhe a raiz na lavagem e ofereça: "Notei que sua raiz já está pedindo um carinho! Aqui a gente resolve em 30 minutos, enquanto você toma um café. Como você já está na cadeira para a escova, podemos fazer agora?"', ret.nunca, qn ? 'Nenhum encontrado.' : 'Nenhuma cliente nesse perfil.') : '') +
-      bloco('env', '✅ Mensagens enviadas (60 dias)', 'Clientes marcadas como enviadas neste aparelho, e quando. Vale só aqui: outros aparelhos têm o próprio registro.', enviadas, 'Nenhuma mensagem registrada ainda.') +
+      bloco('env', '✅ Mensagens enviadas (60 dias)', (SYNC ? 'Compartilhado entre todos os aparelhos e as duas lojas.' : 'Clientes marcadas como enviadas neste aparelho, e quando. Vale só aqui.'), enviadas, 'Nenhuma mensagem registrada ainda.') +
       bloco('uso', '🎁 Outros pacotes em uso', 'Mais de 2 sessões restantes.', emUso, qn ? 'Nenhum encontrado.' : 'Nenhum.') +
       bloco('todos', '📇 Todas as clientes', 'A base inteira em ordem alfabética. Toque em "Ver todas" para abrir; a busca do topo também filtra aqui.', todos, 'Nenhuma cliente encontrada.', 0);
 
@@ -290,10 +326,10 @@
     var b = document.getElementById('rp-busca');
     b.addEventListener('input', function () { var pos = b.selectionStart; desenhar(); var n = document.getElementById('rp-busca'); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} });
     alvo.querySelectorAll('details.rp-mais').forEach(function (el) { el.addEventListener('toggle', function () { ABERTO[el.getAttribute('data-id')] = el.open; }); });
-    function registrar(el) { var o = envLer(); o[el.getAttribute('data-ek')] = { t: new Date().toISOString(), n: el.getAttribute('data-en'), tp: el.getAttribute('data-tp') }; envGravar(o); setTimeout(desenhar, 150); }
+    function registrar(el) { envMarcar(el.getAttribute('data-ek'), { t: new Date().toISOString(), n: el.getAttribute('data-en'), tp: el.getAttribute('data-tp'), por: c.nome || '' }); setTimeout(desenhar, 150); }
     alvo.querySelectorAll('.rp-ok').forEach(function (el) { el.addEventListener('click', function () { registrar(el); }); });
     alvo.querySelectorAll('.rp-cp[data-i]').forEach(function (el) { el.addEventListener('click', function () { copiar(MSGS[+el.getAttribute('data-i')], el); }); });
-    alvo.querySelectorAll('.rp-und').forEach(function (el) { el.addEventListener('click', function (ev) { ev.preventDefault(); var o = envLer(); delete o[el.getAttribute('data-ek')]; envGravar(o); desenhar(); }); });
+    alvo.querySelectorAll('.rp-und').forEach(function (el) { el.addEventListener('click', function (ev) { ev.preventDefault(); var k = el.getAttribute('data-ek'), r0 = envLer()[k] || {}; envMarcar(k, { t: new Date().toISOString(), n: r0.n || '', tp: r0.tp || '', x: 1 }); desenhar(); }); });
     alvo.querySelectorAll('.rp-ck').forEach(function (el) { el.addEventListener('change', function () { ls('rp_feito_' + hojeISO() + '_' + el.getAttribute('data-k'), el.checked ? '1' : null); el.closest('.rp-l').classList.toggle('rp-f', el.checked); }); });
     alvo.querySelectorAll('[data-cfg]').forEach(function (el) { el.addEventListener('change', function () { var cc = cfg(u); cc[el.getAttribute('data-cfg')] = el.value.trim(); salvarCfg(u, cc); desenhar(); }); });
   }
@@ -373,7 +409,7 @@
 `;
   document.head.appendChild(css);
 
-  document.addEventListener('recepcao-dados', function (ev) { DADOS = ev.detail; desenhar(); });
+  document.addEventListener('recepcao-dados', function (ev) { DADOS = ev.detail; syncIniciar(DADOS && DADOS.sync); desenhar(); });
   document.addEventListener('recepcao-pacotes', function (ev) { PACOTES = ev.detail; desenhar(); });
   document.addEventListener('click', function (ev) { if (ev.target.closest && ev.target.closest('.unid-btn')) setTimeout(desenhar, 80); });
 })();

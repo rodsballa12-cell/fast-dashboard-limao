@@ -263,6 +263,8 @@ jobs:
         continue-on-error: true
         env:
           FAST_RECEPCAO_SENHA: ${{ secrets.FAST_RECEPCAO_SENHA }}
+          FAST_RECEPCAO_SYNC_URL: ${{ secrets.FAST_RECEPCAO_SYNC_URL }}
+          FAST_RECEPCAO_SYNC_TOKEN: ${{ secrets.FAST_RECEPCAO_SYNC_TOKEN }}
         run: |
           python3 -m pip install -q cryptography 2>/dev/null || python3 -m pip install -q --break-system-packages cryptography
           python3 scripts/recepcao_gerar.py
