@@ -15,7 +15,7 @@
   // Spa e renovação começam vazios: a recepção preenche (e a frase some se vazio).
   var CFG_PADRAO = {
     escova: { nome: '', google: '', brRen: '', brResg: 'uma Nutrição Capilar', brAniv: 'uma Hidratação com Ozonioterapia', brAmiga: 'uma Ozonioterapia' },
-    spa: { nome: '', google: '', brRen: '', brResg: '', brAniv: '', brAmiga: '' }
+    spa: { nome: '', google: 'https://share.google/kRBbT1PkzzpVKQ8m6', brRen: '', brResg: '', brAniv: '', brAmiga: '' }
   };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -208,7 +208,7 @@
     // pós-venda (clientes de ontem)
     var pos = (D.ontem || []).filter(function (x) { return pass(x.cliente); }).map(function (x) {
       var b1 = botoes('', 'pos', x.cliente, x.telefone, msgPos1(u, c, x), '1ª mensagem');
-      var b2 = c.google ? botoes('', 'pos2', x.cliente, x.telefone, msgPos2(u, c), '2ª: avaliação Google') : '<span class="rp-b rp-off" title="Preencha o link do Google em Meus dados">2ª: falta o link do Google</span>';
+      var b2 = c.google ? botoes('', 'pos2', x.cliente, x.telefone, msgPos2(u, c), '2ª: avaliação Google') : '<span class="rp-b rp-off" title="Cole o link em Meus dados e brindes">2ª: falta o link do Google desta loja (⚙️ Meus dados)</span>';
       return linha(u, 'pos', x.cliente, 'atendida ' + (x.dia ? (x.dia === ontemISO() ? 'ontem' : 'em ' + dataBR(x.dia).slice(0, 5)) : 'ontem') + fone(x.telefone) + ' · envie a 2ª só se a resposta da 1ª for positiva', b1 + b2);
     });
 
