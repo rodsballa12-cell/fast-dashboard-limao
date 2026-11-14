@@ -28,7 +28,7 @@
   function primeiro(n) { var t = String(n || '').trim().split(/\s+/)[0] || ''; return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase(); }
   function tel(t) { var d = String(t || '').replace(/\D/g, ''); if (!d) return ''; if (d.length <= 11) d = '55' + d; return d; }
   // O numero nao aparece na tela: so o botao do WhatsApp o carrega. Aqui so o aviso de falta.
-  function fone(t) { return String(t || '').replace(/\D/g, '') ? '' : ' · <span class="rp-sf">sem telefone</span>'; }
+  function fone() { return ''; } // o botao ja avisa "sem telefone"
   function bonito(s) { return String(s || '').toLowerCase().replace(/(^|[\s(+\-])(\S)/g, function (m, a, b) { return a + b.toUpperCase(); }); }
 
   // ---------- mensagens (textos da diretora comercial) ----------
@@ -107,7 +107,7 @@
     var ek = esc(u + '|' + tipo + '|' + (chave || cliente)), en = esc(cliente);
     var wa = t ? '<a class="rp-b rp-wa" data-ek="' + ek + '" data-en="' + en + '" data-tp="' + tipo + '" target="_blank" rel="noopener" href="https://wa.me/' + t + '?text=' + encodeURIComponent(texto) + '">💬 ' + (rotulo || 'Abrir WhatsApp') + '</a>' : '<span class="rp-b rp-off" title="Sem telefone cadastrado">sem telefone</span>';
     var rec = envLer()[u + '|' + tipo + '|' + (chave || cliente)];
-    var sel = rec ? '<div class="rp-env">✅ ' + (TIPOS[tipo] || 'Mensagem') + ' enviada em ' + quando(rec.t) + ' · <a href="#" class="rp-und" data-ek="' + ek + '">desfazer</a></div>' : '';
+    var sel = rec ? '<div class="rp-env">✅ ' + 'Mensagem enviada (' + (TIPOS[tipo] || 'contato') + ') em ' + quando(rec.t) + ' · <a href="#" class="rp-und" data-ek="' + ek + '">desfazer</a></div>' : '';
     return wa + '<button class="rp-b rp-cp" data-i="' + i + '" data-ek="' + ek + '" data-en="' + en + '" data-tp="' + tipo + '">📋 Copiar</button>' + sel;
   }
   function feito(u, tipo, cliente) { return ls('rp_feito_' + hojeISO() + '_' + u + '_' + tipo + '_' + cliente) === '1'; }
