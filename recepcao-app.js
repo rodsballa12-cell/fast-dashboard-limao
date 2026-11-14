@@ -33,49 +33,52 @@
   function bonito(s) { return String(s || '').toLowerCase().replace(/(^|[\s(+\-])(\S)/g, function (m, a, b) { return a + b.toUpperCase(); }); }
 
   // ---------- mensagens (textos da diretora comercial) ----------
+  // ---------- mensagens: voz da Fast (curtas, diretas, coloridas) ----------
+  // Escova = 💛 amarelo da marca · Spa = 🌿 verde-agua. Sem preco. Brinde so entra se estiver preenchido.
+  function cor(u) { return u === 'spa' ? '🌿' : '💛'; }
+  function msgOi(u, nome) { return 'Oi, ' + primeiro(nome) + '! ' + cor(u) + ' Tudo bem?'; }
+  function quandoAtendida(x) {
+    if (!x || !x.dia) return 'ontem';
+    return x.dia === ontemISO() ? 'ontem' : 'no dia ' + dataBR(x.dia).slice(0, 5);
+  }
   function msgRenovar(u, c, p, total) {
-    var n = primeiro(p.cliente), L = LOJAS[u];
-    var resta = total + (total === 1 ? ' serviço restante' : ' serviços restantes');
-    return 'Oi ' + n + '! Tudo bem?\n\nPassando para te avisar que o seu pacote de ' + bonito(p.pacote) + ' está terminando. Você tem apenas ' + resta + '.\n\n' +
-      'Como sabemos que sua rotina é super corrida e você não abre mão da praticidade da Fast, já deixei tudo engatilhado para sua renovação. Assim, você garante que seu crédito de beleza esteja sempre ativo para quando você precisar chegar e ser atendida rapidinho.\n\n' +
-      (c.brRen ? 'Na renovação deste mês, você ganha ' + c.brRen + ' de presente na primeira ' + (u === 'escova' ? 'escova' : 'sessão') + ' do novo pacote. ' : '') +
-      'Vamos garantir sua tranquilidade?';
+    var n = primeiro(p.cliente), falta = total === 1 ? 'falta só 1 sessão' : 'faltam só ' + total + ' sessões';
+    var presente = c.brRen ? '\n🎁 Renovando agora, você ganha ' + c.brRen + ' na 1ª ' + (u === 'escova' ? 'escova' : 'sessão') + ' do novo pacote!' : '';
+    if (u === 'spa') {
+      return 'Oi, ' + n + '! 🌿\nSeu pacote de ' + bonito(p.pacote) + ' está no fim: ' + falta + ' 💆‍♀️' + presente + '\nBora renovar e manter seu momento de relaxar? 😉';
+    }
+    return 'Oi, ' + n + '! 💛\nSeu pacote de ' + bonito(p.pacote) + ' está acabando: ' + falta + ' ⏳' + presente + '\nJá deixo a renovação pronta pra você? Na sua próxima visita é só chegar! ✨';
   }
   function msgResgate(u, c, cli) {
-    var n = primeiro(cli.cliente), L = LOJAS[u];
-    var mimo = c.brResg ? "Preparamos um 'Mimo de Retorno' exclusivo para você: ao realizar qualquer serviço nesta semana, você ganha " + c.brResg + '.\n' : '';
-    if (u === 'escova') {
-      return 'Olá, ' + n + '! Sentimos sua falta por aqui!\n\nSua última visita já faz um tempinho e seu cabelo deve estar sentindo falta daquele brilho que só a nossa finalização entrega. ' + mimo + 'Vamos renovar esse visual hoje?';
+    var n = primeiro(cli.cliente);
+    var mimo = c.brResg ? '\n🎁 Venha esta semana e ganhe ' + c.brResg + '!' : '';
+    if (u === 'spa') {
+      return 'Oi, ' + n + '! 🌿\nSentimos sua falta no Fast Spa! 💆‍♀️' + mimo + '\nPode vir como está, sem hora marcada. Te esperamos! 💚';
     }
-    return 'Olá, ' + n + '! Sentimos sua falta por aqui!\n\nSua última visita ao ' + L.nome + ' já faz um tempinho. ' + mimo + 'Vamos cuidar de você hoje?';
+    return 'Oi, ' + n + '! 💛\nSentimos sua falta por aqui! ✨' + mimo + '\nÉ só chegar, sem hora marcada: seu cabelo agradece! 💁‍♀️';
   }
   function msgAniv(u, c, a) {
-    var n = primeiro(a.cliente), L = LOJAS[u];
-    var abre = a.dias === 0 ? 'Hoje o dia é todo seu' : 'Seu aniversário está chegando';
-    var corpo;
-    if (u === 'escova' && c.brAniv) {
-      corpo = 'Sabemos que no seu aniversário você quer estar ainda mais maravilhosa, por isso preparamos um presente especial: na sua visita de aniversário, ao realizar sua Escova, você ganha ' + c.brAniv + ' para sair daqui pronta para comemorar! 💄✨' +
-        (c.brAmiga ? '\nE tem mais: se você quiser trazer uma amiga para se produzir com você, ela ganha ' + c.brAmiga + ' de presente.' : '');
-    } else {
-      corpo = c.brAniv ? 'Preparamos um presente especial: na sua visita de aniversário, você ganha ' + c.brAniv + '!' : 'Venha comemorar com a gente!';
+    var n = primeiro(a.cliente);
+    var topo = a.dias === 0 ? 'Parabéns, ' + n + '! 🎉' : 'Seu aniversário está chegando, ' + n + '! 🎂';
+    if (u === 'spa') {
+      return topo + ' 🌿\nQue tal comemorar com um momento só seu? 💆‍♀️' + (c.brAniv ? '\n🎁 Presente: ' + c.brAniv + '!' : '') + '\nPode vir como está, sem hora marcada. 💚';
     }
-    return 'Oi, ' + n + '! Tudo bem?\n' + abre + ' e a equipe do ' + L.nome + ' quer celebrar com você! 🎉\n' + corpo + '\nNão precisa de hora marcada, é só chegar' + (u === 'escova' ? ' e brilhar' : '') + '! Parabéns' + (a.dias === 0 ? ' pelo seu dia' : ' antecipado') + '!';
+    return topo + ' 💛\nVem comemorar com a gente! ✨' + (c.brAniv ? '\n🎁 Na sua escova você ganha ' + c.brAniv + '!' : '') +
+      (c.brAmiga ? '\n👯‍♀️ Traga uma amiga e ela ganha ' + c.brAmiga + '!' : '') + '\nSem hora marcada: é só chegar e brilhar! 🌟';
   }
   function msgPos1(u, c, cli) {
-    var n = primeiro(cli.cliente), L = LOJAS[u];
-    return 'Oi, ' + n + '! Aqui é a ' + (c.nome || 'equipe') + ' da ' + L.nome + '.\nPassando para agradecer a confiança no nosso trabalho ontem! Esperamos que tenha amado a experiência.\n' +
-      'Se puder, nos conte o que achou: sua opinião ajuda nossa equipe a ser cada vez melhor! Ah, e se tirou aquela foto incrível, marca a gente no Instagram (@' + L.ig + '), queremos te ver brilhar! ✨ Até a próxima!';
+    var L = LOJAS[u], quem = c.nome ? 'Aqui é a ' + c.nome + ', da ' + L.nome : 'Aqui é da ' + L.nome;
+    return 'Oi, ' + primeiro(cli.cliente) + '! ' + cor(u) + '\n' + quem + '. Obrigada por vir ' + quandoAtendida(cli) + '! ✨\nComo foi? Conta pra gente 😊\nPostou? Marca a gente: @' + L.ig + ' 📸';
   }
   function msgPos2(u, c) {
-    return 'Ficamos muito felizes que você gostou do atendimento!\nNossa missão é valorizar o seu tempo com resultados incríveis.\nVocê poderia dedicar 30 segundinhos para nos avaliar no Google?\nSua avaliação ajuda outras pessoas a nos encontrarem!\nClique aqui para avaliar: ' + c.google;
+    return 'Que bom que você gostou! 🥰\nUm favor de 30 segundos? Avalie a gente no Google e ajude mais gente a nos encontrar ⭐\n👉 ' + c.google + '\nObrigada! ' + cor(u);
   }
-
   // Retoque (documento "Gestão de clientes Fast Retoque", da diretora comercial)
   function msgRetoque(u, c, x) {
-    return 'Olá ' + primeiro(x.cliente) + '! Passando para lembrar que sua raiz está no ponto ideal para o Fast Retoque. Para te incentivar a manter o brilho, se você vier entre hoje e amanhã, sua Hidratação é por nossa conta. É só apresentar esta mensagem na recepção.';
+    return 'Oi, ' + primeiro(x.cliente) + '! 💜\nSua raiz já está no ponto ideal pro Fast Retoque: 30 minutinhos! ⏱️\n🎁 Vem entre hoje e amanhã e a Hidratação é por nossa conta. É só mostrar esta mensagem na recepção.\nSem hora marcada. Te esperamos! ✨';
   }
   function msgRetoquePacote(u, c, x) {
-    return 'Oi, ' + primeiro(x.cliente) + '! Vi que você é super certinha com o seu Fast Retoque. Pensando em clientes fiéis como você, temos o Pacote de Fast Retoque: fechando 4 retoques (que você já faria de qualquer jeito), você ganha 2 Hidratações de presente. Quer que eu deixe separado para você?';
+    return 'Oi, ' + primeiro(x.cliente) + '! 💜\nVocê é fiel ao Fast Retoque, então tem presente pra você 🎁\nFechando o pacote de 4 retoques, você ganha 2 Hidratações de bônus! ✨\nQuer que eu deixe reservado? 😉';
   }
 
   // ---------- combos do documento "Combos para clientes de pacotes" ----------
@@ -219,7 +222,7 @@
         var pk = ((PACOTES && PACOTES[u]) || []).filter(function (p) { return p.cliente.split(/\s+/).join(' ').toLowerCase() === x.n.toLowerCase(); });
         var pt = pk.length ? pk.map(function (p) { return esc(bonito(p.pacote)) + ': ' + p.itens.map(function (it) { return '<strong>' + it.restante + '</strong> × ' + esc(bonito(it.servico)); }).join(', '); }).join(' | ') : 'sem pacote com saldo';
         var det = pt + (x.a ? ' · aniversário ' + esc(x.a) : '') + fone(x.t);
-        return linha(u, 'consulta', x.n, det, botoes('', 'consulta', x.n, x.t, 'Oi, ' + primeiro(x.n) + '! Tudo bem?', 'Abrir WhatsApp'));
+        return linha(u, 'consulta', x.n, det, botoes('', 'consulta', x.n, x.t, msgOi(u, x.n), 'Abrir WhatsApp'));
       });
     }
     // lista completa da base (ordem alfabetica), com saldo de pacote e aniversario
@@ -229,7 +232,7 @@
       var pk = pmap[x.n.toLowerCase()] || [];
       var pt = pk.length ? pk.map(function (p) { return esc(bonito(p.pacote)) + ': ' + p.itens.map(function (it) { return '<strong>' + it.restante + '</strong> × ' + esc(bonito(it.servico)); }).join(', '); }).join(' | ') : '';
       var det = [pt, x.a ? 'aniversário ' + esc(x.a) : ''].filter(Boolean).join(' · ') || '&nbsp;';
-      return linha(u, 'consulta', x.n, det, botoes('', 'consulta', x.n, x.t, 'Oi, ' + primeiro(x.n) + '! Tudo bem?', 'WhatsApp'));
+      return linha(u, 'consulta', x.n, det, botoes('', 'consulta', x.n, x.t, msgOi(u, x.n), 'WhatsApp'));
     });
 
     // Fast Retoque (so Escova)
