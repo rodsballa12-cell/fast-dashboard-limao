@@ -110,7 +110,7 @@
     var rec = envLer()[u + '|' + tipo + '|' + (chave || cliente)];
     var sel = rec ? '<div class="rp-env">✅ ' + 'Mensagem enviada (' + (TIPOS[tipo] || 'contato') + ') em ' + quando(rec.t) + ' · <a href="#" class="rp-und" data-ek="' + ek + '">desfazer</a></div>' : '';
     var mk = rec ? '' : '<button class="rp-b rp-ok" data-ek="' + ek + '" data-en="' + en + '" data-tp="' + tipo + '" title="Toque depois de mandar a mensagem">✅ Marcar como enviada</button>';
-    return wa + '<button class="rp-b rp-cp" data-i="' + i + '" title="Só copia o texto da mensagem">📋 Copiar mensagem</button>' + mk + sel;
+    return wa + mk + sel;
   }
   function feito(u, tipo, cliente) { return ls('rp_feito_' + hojeISO() + '_' + u + '_' + tipo + '_' + cliente) === '1'; }
   function linha(u, tipo, cliente, detalhe, acoes, extra, chave) {
