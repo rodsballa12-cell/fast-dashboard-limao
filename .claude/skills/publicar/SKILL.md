@@ -29,6 +29,17 @@ python3 scripts/cofre.py abrir   # dados chegam criptografados desde 21/10/2026
 python3 scripts/auditoria_coerencia.py
 ```
 
+**Notas fiscais das profissionais (aba Comissões, desde 17/11/2026).** No PC,
+antes do build, importe as respostas do Forms:
+
+```bash
+python scripts/notas_forms.py      # lê a planilha mais nova em OneDrive\Franquia - FAST\Claude\Notas profissionais
+```
+
+Sem isso a aba Comissões vai ao ar só com o lado Trinks e avisa que as notas não
+foram importadas. Na nuvem esse passo não existe (a planilha está no OneDrive):
+diga isso ao Rodrigo antes de publicar.
+
 Auditoria vermelha **não publica**. Painel bonito com número que não bate é
 pior que painel velho: o velho pelo menos avisa a idade.
 

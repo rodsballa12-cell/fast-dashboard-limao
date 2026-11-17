@@ -12,8 +12,8 @@ Como calcula:
   taxa da categoria em data/comissoes.json (Spa: 25% uniforme). Mesma regra do ranking
   de comissões do painel (github_refresh.py).
 - Pago = Pix do razão (aba Conta_XP do Excel do PC) com categoria "OPEX (Comissão)".
-- Janela de pagamento da quinzena: do 1º dia da quinzena até 5 dias depois do fim
-  (os repasses saem no dia 15 e no último dia, às vezes no 1º dia útil seguinte).
+- Quinzena: 1 a 14 (paga dia 15) e 15 ao último (paga dia 30) — regra em comissao_quinzena.py.
+  Janela de pagamento: do 1º dia da quinzena até 5 dias depois do fim.
 - Nome do Pix × nome do Trinks: casa por 1º + último nome; apelidos e cadastros
   duplicados (ex.: MEI) em comissoes_aliases.json, ao lado do Excel. Profissionais
   desligadas usam o nome de data/prof_overrides.json quando preenchido.
@@ -69,16 +69,12 @@ def norm(s) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
-def quinzena(d: dt.date) -> tuple[int, int, int]:
-    return (d.year, d.month, 1 if d.day <= 15 else 2)
-
-
-def limites(q: tuple[int, int, int]) -> tuple[dt.date, dt.date]:
-    y, m, h = q
-    if h == 1:
-        return dt.date(y, m, 1), dt.date(y, m, 15)
-    prox = dt.date(y + (m == 12), m % 12 + 1, 1)
-    return dt.date(y, m, 16), prox - dt.timedelta(days=1)
+# A regra da quinzena mora em comissao_quinzena.py (17/11/2026): 1ª = dia 1 a 14
+# (paga dia 15), 2ª = dia 15 ao último (paga dia 30). Até aqui este arquivo
+# cortava em 1–15 / 16–fim; uma regra só, para a aba Comissões do painel e esta
+# conciliação falarem da mesma quinzena.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from comissao_quinzena import limites, quinzena  # noqa: E402
 
 
 def rotulo(q) -> str:

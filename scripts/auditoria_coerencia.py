@@ -865,6 +865,32 @@ def conferir_taxa_comissao(achados):
             f"profissional e a taxa efetiva estao erradas — e comissao paga gente."))
 
 
+def conferir_comissoes_quinzena(achados, dash):
+    """A aba Comissões precisa do bloco `comissoes_quinzena` nas três unidades.
+
+    Gravado por scripts/comissao_quinzena.py num passo separado do refresh
+    (17/11/2026) — a mesma situação do `densidade_dow`: se o passo não roda,
+    a aba abre dizendo que o cálculo não chegou, e só quem abrir a aba vê.
+    Também confere que o consolidado é a soma das unidades, quinzena a quinzena.
+    """
+    blocos = {u: (d or {}).get("comissoes_quinzena") if isinstance(d, dict) else None
+              for u, d in dash.items()}
+    for u in ("escova", "consolidado"):
+        if not blocos.get(u):
+            achados.append(("aviso",
+                f"{u.capitalize()}: bloco `comissoes_quinzena` ausente — a aba Comissões "
+                "abre vazia. Rode scripts/comissao_quinzena.py --gravar."))
+    esc, spa, cons = blocos.get("escova"), blocos.get("spa"), blocos.get("consolidado")
+    if esc and cons:
+        for i, qc in enumerate(cons.get("quinzenas") or []):
+            soma = sum(((b or {}).get("quinzenas") or [{}] * (i + 1))[i].get("total_comissao", 0)
+                       for b in (esc, spa) if b and len(b.get("quinzenas") or []) > i)
+            if abs(soma - qc.get("total_comissao", 0)) > 1:
+                achados.append(("erro",
+                    f"Comissões {qc.get('rotulo')}: consolidado {brl(qc.get('total_comissao'))} "
+                    f"≠ Escova + Spa {brl(soma)}."))
+
+
 def main() -> int:
     achados: list[tuple[str, str]] = []
 
@@ -913,6 +939,7 @@ def main() -> int:
             "da recep\u00e7\u00e3o ficam sem acompanhamento."))
 
     conferir_taxa_comissao(achados)
+    conferir_comissoes_quinzena(achados, dash)
     conferir_preco_realizado(achados)
     conferir_caixa_a_receber(achados)
     conferir_estoque(achados, fin)

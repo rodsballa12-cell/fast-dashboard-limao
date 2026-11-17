@@ -249,6 +249,14 @@ jobs:
         continue-on-error: true
         run: python scripts/preco_praticado.py || true
 
+      # Comissão por quinzena de pagamento (1-14 paga dia 15; 15-fim paga dia 30),
+      # nas tres unidades, para a aba Comissoes. Depois da consolidacao pelo
+      # mesmo motivo da densidade: o payload da holding e regerado antes e
+      # perderia o bloco. As notas fiscais (Forms) entram pelo PC.
+      - name: Comissao por quinzena (aba Comissoes)
+        continue-on-error: true
+        run: python scripts/comissao_quinzena.py --gravar || true
+
       - name: Fechar cofre (criptografa antes do commit)
         env:
           FAST_COFRE_CHAVE: ${{ secrets.FAST_COFRE_CHAVE }}

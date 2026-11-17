@@ -244,6 +244,31 @@ function Comissoes-Trinks {
 }
 Comissoes-Trinks
 
+# --- Notas fiscais das profissionais (Forms) -> aba Comissoes do painel -------
+# Le a planilha de respostas do Forms "Envio de notas - Profissionais" (a mais
+# nova em OneDrive\Franquia - FAST\Claude\Notas profissionais) e grava
+# data/notas_profissionais.json, que a aba Comissoes cruza com o Trinks. Codigo 3
+# = ainda nao ha planilha na pasta (nao e falha). Pedido do Rodrigo em 17/11/2026.
+function Notas-Forms {
+  $anterior = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $py = (Get-Command python -ErrorAction SilentlyContinue).Source
+    if (-not $py) { Registrar "Notas do Forms: python nao encontrado, pulei."; return }
+    $envAntes = $env:PYTHONUTF8
+    $env:PYTHONUTF8 = "1"
+    try {
+      $saidaPy = (& $py (Join-Path $Projeto "scripts\notas_forms.py") 2>&1 | Out-String).Trim()
+      if ($LASTEXITCODE -eq 3) { Registrar $saidaPy }
+      elseif ($LASTEXITCODE -ne 0) { Registrar "FALHOU: Notas do Forms (codigo $LASTEXITCODE). $saidaPy" }
+      else { Registrar $saidaPy }
+    } finally { $env:PYTHONUTF8 = $envAntes }
+  } catch {
+    Registrar ("FALHOU: Notas do Forms. " + $_.Exception.Message)
+  } finally { $ErrorActionPreference = $anterior }
+}
+Notas-Forms
+
 # --- SULTS (franqueadora): chamados, pedidos, comunicados, checklists --------
 # So leitura (GET) e so das lojas Limao: o token enxerga a rede inteira, o
 # script filtra e descarta o resto. O resultado NAO vai para o repositorio

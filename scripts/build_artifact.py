@@ -64,6 +64,9 @@ ARQUIVOS = [
     # (o arquivo tem as categorias do Spa desde 07/10). O shim corta a query
     # string, entao o `?_=` de cache-busting do loader nao atrapalha.
     ("data/comissoes.json", False),
+    # Notas fiscais das profissionais (Forms -> scripts/notas_forms.py, só no PC).
+    # Opcional: sem ele a aba Comissões mostra só o lado Trinks e avisa.
+    ("data/notas_profissionais.json", False),
 ]
 
 

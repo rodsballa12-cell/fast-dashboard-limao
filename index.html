@@ -932,6 +932,7 @@ document.addEventListener('visibilitychange', () => {
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="stone">🏦 Stone<span class="subn" id="tab-stone-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="auditoria">🛡️ Auditoria<span class="subn" id="tab-auditoria-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="financeiro">💰 Financeiro<span class="subn" id="tab-financeiro-sub"></span></button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="comissoes">🧾 Comissões<span class="subn" id="tab-comissoes-sub"></span></button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="midias">📣 Mídias</button>
     </div>
 
@@ -1048,6 +1049,25 @@ document.addEventListener('visibilitychange', () => {
       <div id="fin-decisoes"></div>
       <!-- ÚLTIMO · Ações Recomendadas Financeiro -->
       <div id="financeiro-insights"></div>
+    </div>
+
+    <div class="panel" id="tab-comissoes">
+      <div class="audit"><div>🧾</div><div><strong>Comissão de cada profissional, quinzena a quinzena: o que o Trinks diz e o que veio na nota fiscal.</strong> As notas chegam pelo Forms até o dia do pagamento (15 e 30). Em cima, quem falta e quem não bate; embaixo, a mensagem pronta para cobrar.</div></div>
+      <style>
+        /* No celular a tabela vira um cartão por pessoa: cinco colunas não cabem em 390px. */
+        @media (max-width:640px){
+          #com-content table.com-tbl,#com-content table.com-tbl tbody,#com-content table.com-tbl tfoot{display:block;width:100%;min-width:0}
+          #com-content table.com-tbl tr:hover td{background:none}
+          #com-content table.com-tbl thead{display:none}
+          #com-content table.com-tbl tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;box-sizing:border-box;gap:4px 10px;padding:12px 0;border-bottom:1px solid var(--grid)}
+          #com-content table.com-tbl td{border:0;padding:0;text-align:left !important}
+          #com-content table.com-tbl td:first-child,#com-content table.com-tbl td:last-child{grid-column:1/-1}
+          #com-content table.com-tbl td[data-l]:not([data-l=""])::before{content:attr(data-l);display:block;font-size:10.5px;color:var(--ink-3);font-weight:600}
+          #com-content table.com-tbl td{min-width:0;overflow-wrap:anywhere}
+          #com-content table.com-tbl tfoot td:last-child{display:none}
+        }
+      </style>
+      <div id="com-content"></div>
     </div>
 
     <div class="panel" id="tab-midias">
@@ -6043,6 +6063,7 @@ async function load(showToast=false){
     renderClientes(data);
     renderStone(data);
     renderAuditoria(data);
+    try{ renderComissoes(data); }catch(e){ console.warn('comissoes', e); }
     if(FIN) renderFinanceiro();   // a receita da DRE acompanha o Trinks
     // O funil de Mídias soma clientes novos do Trinks na janela escolhida:
     // quando o dado do Trinks chega depois, a aba precisa se redesenhar.
@@ -7331,6 +7352,188 @@ function renderFinanceiro(){
     renderInsights('financeiro-insights', 'Financeiro', TRINKS.insights.financeiro);
   }
 }
+
+// ============= COMISSÕES · Trinks × nota fiscal (17/11/2026) =============
+// Lado Trinks: TRINKS.comissoes_quinzena (scripts/comissao_quinzena.py, roda no
+// refresh). Lado nota: data/notas_profissionais.json (scripts/notas_forms.py,
+// só no PC, lê as respostas do Forms). A aba junta os dois por pessoa e quinzena.
+// O valor do Trinks é REFERÊNCIA para conferir a nota: a regra de comissão não
+// está cadastrada por profissional no Trinks, e quem fecha o valor é o Lucas.
+let NOTAS = null, NOTAS_ERRO = null, COM_Q_SEL = null;
+const COM_TOLERANCIA = 1.00;   // diferença de até R$ 1 é arredondamento
+const FORMS_NOTAS_URL_PADRAO = 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=DQSIkWdsW0yxEjajBLZtrQAAAAAAAAAAAANAAQbc9Y1UQTcxVDlGT1BWOE5HSklNT1ZGU1AxTFVGSS4u';
+async function loadNotas(){
+  try{
+    const r = await fetch('data/notas_profissionais.json?_='+Date.now(), {cache:'no-store'});
+    if(r.ok){ NOTAS = await r.json(); NOTAS_ERRO = null; }
+    else NOTAS_ERRO = r.status === 404 ? 'ausente' : ('HTTP '+r.status);
+  }catch(e){ NOTAS_ERRO = 'ausente'; }
+  if(typeof TRINKS !== 'undefined' && TRINKS){ try{ renderComissoes(TRINKS); }catch(e){ console.warn('comissoes', e); } }
+}
+function _comEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function _comNorm(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim(); }
+function _comData(iso){ if(!iso) return '—'; const p = String(iso).slice(0,10).split('-'); return p[2]+'/'+p[1]; }
+function _comHoje(){ return new Date(Date.now() - 3*3600e3).toISOString().slice(0,10); }
+function _comDias(a, b){ return Math.round((new Date(b+'T12:00:00Z') - new Date(a+'T12:00:00Z'))/864e5); }
+function _comUnidadeNome(u){ return u === 'spa' ? 'Spa' : 'Escova'; }
+
+function _comCruzar(q, unidadesVisiveis){
+  const hoje = _comHoje();
+  const notas = ((NOTAS && NOTAS.notas) || []).filter(n => n.quinzena === q.id && !n.substituida);
+  const linhas = [];
+  const usadas = new Set();
+  for(const p of (q.profissionais || [])){
+    const k = _comNorm(p.nome);
+    const minhas = notas.filter(n => n.nome_trinks && _comNorm(n.nome_trinks) === k && (!n.unidade || n.unidade === p.unidade));
+    minhas.forEach(n => usadas.add(n));
+    const comValor = minhas.filter(n => n.valor != null);
+    const totalNota = comValor.reduce((s,n) => s + n.valor, 0);
+    let st, cls;
+    const dif = comValor.length ? Math.round((totalNota - p.comissao)*100)/100 : null;
+    if(!minhas.length){
+      if(q.situacao === 'aberta'){ st = '⏳ Quinzena em andamento'; cls = ''; }
+      else if(hoje > q.pagamento){ st = '❌ Sem nota · prazo passou'; cls = 'crit'; }
+      else { st = '🟡 Falta enviar'; cls = 'warn'; }
+    } else if(!comValor.length){ st = '❔ Nota sem valor'; cls = 'warn'; }
+    else if(Math.abs(dif) <= COM_TOLERANCIA){ st = '✅ Confere'; cls = 'good'; }
+    else { st = '⚠️ Diverge'; cls = 'crit'; }
+    const obs = [];
+    if(minhas.length > 1) obs.push(minhas.length+' notas enviadas');
+    if(minhas.some(n => n.quinzena_origem === 'data_envio')) obs.push('quinzena deduzida pela data de envio');
+    if(q.situacao === 'aberta' && minhas.length) obs.push('Trinks ainda vai mudar até '+_comData(q.fim));
+    if(p.base_pacote > 0) obs.push('inclui '+brl(p.base_pacote,0)+' de pacote a preço de tabela');
+    linhas.push({p, notas:minhas, totalNota: comValor.length ? totalNota : null, dif, st, cls, obs});
+  }
+  // Notas sem produção no Trinks nesta quinzena/unidade, ou com nome que não casou
+  const orfas = notas.filter(n => !usadas.has(n) && (!n.unidade || unidadesVisiveis.includes(n.unidade)));
+  return {linhas, orfas};
+}
+
+function _comMensagem(l, q, forms){
+  const primeiro = (l.p.nome.split(' ')[0] || '').replace(/^./, c => c.toUpperCase());
+  const loja = 'FAST ' + _comUnidadeNome(l.p.unidade) + ' Limão';
+  if(l.cls === 'crit' && l.dif != null){
+    return `Oi, ${primeiro}! Aqui é o Lucas, da ${loja}. Recebemos sua nota da quinzena de ${q.rotulo} (pagamento em ${_comData(q.pagamento)}), mas o valor não bateu com o nosso fechamento. Pode falar comigo para a gente conferir junto antes do pagamento?`;
+  }
+  return `Oi, ${primeiro}! Aqui é o Lucas, da ${loja}. Para o pagamento de ${_comData(q.pagamento)} (atendimentos de ${q.rotulo}), ainda não recebemos a sua nota fiscal. Consegue enviar pelo formulário até ${_comData(q.pagamento)}? ${forms}`;
+}
+
+function renderComissoes(data){
+  const box = document.getElementById('com-content');
+  if(!box) return;
+  const cq = data && data.comissoes_quinzena;
+  if(!cq || !(cq.quinzenas||[]).length){
+    box.innerHTML = `<div class="card" style="font-size:13px;color:var(--ink-2)">O cálculo por quinzena ainda não chegou neste painel. Ele é gerado no refresh por <code>scripts/comissao_quinzena.py --gravar</code>.</div>`;
+    return;
+  }
+  const hoje = _comHoje();
+  const qs = cq.quinzenas;
+  if(!COM_Q_SEL || !qs.some(q => q.id === COM_Q_SEL)){
+    // A próxima a ser paga: o menor dia de pagamento que ainda não passou
+    const futuras = qs.filter(q => q.pagamento >= hoje).sort((a,b) => a.pagamento < b.pagamento ? -1 : 1);
+    COM_Q_SEL = (futuras[0] || qs[0]).id;
+  }
+  const q = qs.find(x => x.id === COM_Q_SEL);
+  const visiveis = UNIDADE_ATIVA === 'consolidado' ? ['escova','spa'] : [UNIDADE_ATIVA === 'spa' ? 'spa' : 'escova'];
+  const mostraUnidade = UNIDADE_ATIVA === 'consolidado';
+  const {linhas, orfas} = _comCruzar(q, visiveis);
+  const forms = (CONFIG && CONFIG.comissoes_notas && CONFIG.comissoes_notas.forms_url) || FORMS_NOTAS_URL_PADRAO;
+
+  const nTot = linhas.length;
+  const nOk = linhas.filter(l => l.cls === 'good').length;
+  const nDiv = linhas.filter(l => l.st.startsWith('⚠️')).length;
+  const nFalta = linhas.filter(l => !l.notas.length).length;
+  const totTrinks = linhas.reduce((s,l) => s + l.p.comissao, 0);
+  const totNotas = linhas.reduce((s,l) => s + (l.totalNota||0), 0) + orfas.reduce((s,n) => s + (n.valor||0), 0);
+  const diasPag = _comDias(hoje, q.pagamento);
+  const prazo = diasPag > 0 ? `faltam ${diasPag} dia${diasPag>1?'s':''}` : diasPag === 0 ? '<b style="color:var(--warn)">é hoje</b>' : `<b style="color:var(--crit)">passou há ${-diasPag} dia${diasPag<-1?'s':''}</b>`;
+
+  const chips = qs.slice().reverse().map(x => {
+    const sel = x.id === q.id;
+    return `<button class="tab-btn com-q-btn" data-q="${x.id}" aria-selected="${sel}" style="padding:6px 12px;font-size:12px">${x.rotulo}<span style="display:block;font-size:10.5px;opacity:.75">paga ${_comData(x.pagamento)}</span></button>`;
+  }).join('');
+
+  const kpi = (label, value, foot, cls='') => `<div class="kpi"><div class="label">${label}</div><div class="value ${cls}" style="font-size:24px">${value}</div><div class="foot">${foot}</div></div>`;
+
+  const linhaHtml = l => {
+    const n = l.notas;
+    const notaTxt = l.totalNota != null ? brl(l.totalNota) : (n.length ? '—' : '');
+    const notaFoot = n.length ? n.map(x => `${x.numero ? 'nº '+_comEsc(x.numero) : 'sem nº'} · ${_comData(x.enviado_em)}`).join('<br>') : '';
+    const difTxt = l.dif == null ? '' : (Math.abs(l.dif) <= COM_TOLERANCIA ? '—' : `<b style="color:var(--crit)">${l.dif>0?'+ ':'− '}${brl(Math.abs(l.dif))}</b>`);
+    const corSt = l.cls ? `color:var(--${l.cls})` : 'color:var(--ink-3)';
+    return `<tr>
+      <td style="text-align:left">${_comEsc(l.p.nome)}${mostraUnidade?`<div style="font-size:11px;color:var(--ink-3)">${_comUnidadeNome(l.p.unidade)}</div>`:''}${l.obs.length?`<div style="font-size:11px;color:var(--ink-3)">${l.obs.map(_comEsc).join(' · ')}</div>`:''}</td>
+      <td data-l="Trinks">${brl(l.p.comissao)}<div style="font-size:11px;color:var(--ink-3)">${l.p.n_serv} serv. · base ${brl(l.p.base,0)}</div></td>
+      <td data-l="Nota">${notaTxt||'—'}<div style="font-size:11px;color:var(--ink-3)">${notaFoot}</div></td>
+      <td data-l="Diferença">${difTxt||'—'}</td>
+      <td data-l="" style="${corSt};font-weight:600;white-space:nowrap">${l.st}</td>
+    </tr>`;
+  };
+  const ordem = l => l.cls === 'crit' ? 0 : l.cls === 'warn' ? 1 : l.cls === '' ? 2 : 3;
+  const tabela = `<div class="card" style="overflow-x:auto"><table class="simple com-tbl">
+      <thead><tr><th>Profissional</th><th>Trinks (referência)</th><th>Nota fiscal</th><th>Diferença</th><th>Situação</th></tr></thead>
+      <tbody>${linhas.slice().sort((a,b) => ordem(a)-ordem(b) || b.p.comissao - a.p.comissao).map(linhaHtml).join('') || '<tr><td colspan="5" style="text-align:left;color:var(--ink-3)">Ninguém com atendimento nesta quinzena.</td></tr>'}</tbody>
+      <tfoot><tr><td style="text-align:left;font-weight:700">Total</td><td data-l="Trinks" style="font-weight:700">${brl(totTrinks)}</td><td data-l="Nota" style="font-weight:700">${brl(totNotas)}</td><td></td><td></td></tr></tfoot>
+    </table></div>`;
+
+  const orfasHtml = orfas.length ? `<div class="card" style="overflow-x:auto"><div style="font-weight:700;margin-bottom:6px">🔎 Notas que não encontraram par no Trinks (${orfas.length})</div>
+      <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:8px">O nome digitado no Forms não bateu com o cadastro, ou a pessoa não tem atendimento nesta quinzena e unidade. Se for apelido, cadastre em <code>comissoes_aliases.json</code> → <code>forms_para_trinks</code>.</div>
+      <table class="simple"><thead><tr><th>Nome no Forms</th><th>Unidade</th><th>Valor</th><th>Enviada</th></tr></thead><tbody>
+      ${orfas.map(n => `<tr><td style="text-align:left">${_comEsc(n.nome_forms)}${n.nome_trinks?`<div style="font-size:11px;color:var(--ink-3)">→ ${_comEsc(n.nome_trinks)} (sem atendimento nesta quinzena)</div>`:''}</td><td>${n.unidade?_comUnidadeNome(n.unidade):'—'}</td><td>${n.valor!=null?brl(n.valor):'—'}</td><td>${_comData(n.enviado_em)}</td></tr>`).join('')}
+      </tbody></table></div>` : '';
+
+  const cobrar = linhas.filter(l => q.situacao !== 'aberta' && (!l.notas.length || l.cls === 'crit'));
+  const cobrancaHtml = cobrar.length ? `<div class="card"><div style="font-weight:700;margin-bottom:4px">📲 Cobrança · ${cobrar.length} pessoa${cobrar.length>1?'s':''}</div>
+      <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:10px">Mensagens prontas para o Lucas. Nada é enviado daqui: copie ou abra no WhatsApp e escolha a pessoa.</div>
+      ${cobrar.map((l,i) => { const m = _comMensagem(l, q, forms); return `<div style="border-top:1px solid var(--grid);padding:10px 0">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">${_comEsc(l.p.nome)} · ${l.st}</div>
+        <textarea readonly id="com-msg-${i}" style="width:100%;box-sizing:border-box;min-height:104px;font:inherit;font-size:12.5px;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink)">${_comEsc(m)}</textarea>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+          <button class="tab-btn com-copiar" data-alvo="com-msg-${i}" style="padding:6px 12px;font-size:12px">📋 Copiar</button>
+          <a class="tab-btn" href="https://wa.me/?text=${encodeURIComponent(m)}" target="_blank" rel="noopener" style="padding:6px 12px;font-size:12px;text-decoration:none">💬 Abrir no WhatsApp</a>
+        </div></div>`; }).join('')}
+    </div>` : '';
+
+  let notasAviso;
+  if(NOTAS){
+    notasAviso = `Notas importadas em ${new Date(NOTAS.gerado_em).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'})} (planilha <code>${_comEsc(NOTAS.fonte)}</code>). Nota enviada depois disso só aparece na próxima importação.`;
+  } else {
+    notasAviso = `<b style="color:var(--warn)">As notas do Forms ainda não foram importadas.</b> A importação roda no PC (<code>scripts/notas_forms.py</code>), que é quem alcança a planilha de respostas no OneDrive. Até lá, a coluna "Nota fiscal" fica vazia.`;
+  }
+  const trinksAte = q.trinks_ate || cq.trinks_ate;
+  const avisoTrinks = trinksAte && trinksAte < q.fim && q.situacao !== 'aberta'
+    ? ` <b style="color:var(--warn)">O Trinks deste painel vai só até ${_comData(trinksAte)}, antes do fim da quinzena (${_comData(q.fim)}): o valor ainda pode subir.</b>` : '';
+
+  box.innerHTML = `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${chips}</div>
+    <div class="kpi-grid">
+      ${kpi('Comissão pelo Trinks', brl(totTrinks,0), `${nTot} profissiona${nTot===1?'l':'is'} · atendimentos de ${q.rotulo}`)}
+      ${kpi('Notas recebidas', `${nTot - nFalta} de ${nTot}`, `${brl(totNotas,0)} em notas`, nFalta ? '' : 'accent')}
+      ${kpi('Conferem · divergem', `${nOk} · ${nDiv}`, `diferença acima de ${brl(COM_TOLERANCIA)} conta como divergência`)}
+      ${kpi('Pagamento', _comData(q.pagamento), q.situacao === 'aberta' ? `quinzena aberta até ${_comData(q.fim)} · ${prazo}` : prazo)}
+    </div>
+    ${tabela}
+    ${cobrancaHtml}
+    ${orfasHtml}
+    <div class="card" style="font-size:12px;color:var(--ink-3);line-height:1.6">
+      <b>De onde vêm os números.</b> Trinks: cada serviço × a taxa da categoria (Escova 30%, Maquiagem e Retoque 40%, Unhas 50%, Spa 25%), pela data da transação; serviço de pacote entra pelo preço de tabela. Dado do Trinks até ${_comData(trinksAte)}.${avisoTrinks}
+      É <b>referência para conferir a nota</b>: a regra de comissão não está cadastrada por profissional no Trinks, e o valor a pagar é o que o Lucas fecha no Trinks.<br>
+      ${notasAviso}<br>
+      Quinzenas: dia 1 a 14 paga dia 15; dia 15 ao fim do mês paga dia 30. Formulário: <a href="${forms}" target="_blank" rel="noopener">Envio de notas — Profissionais</a>.
+    </div>`;
+
+  box.querySelectorAll('.com-q-btn').forEach(b => b.addEventListener('click', () => { COM_Q_SEL = b.dataset.q; renderComissoes(TRINKS); }));
+  box.querySelectorAll('.com-copiar').forEach(b => b.addEventListener('click', () => {
+    const t = document.getElementById(b.dataset.alvo);
+    const ok = () => { b.textContent = '✅ Copiado'; setTimeout(() => b.textContent = '📋 Copiar', 1500); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t.value).then(ok, () => { t.select(); document.execCommand('copy'); ok(); });
+    } else { t.select(); document.execCommand('copy'); ok(); }
+  }));
+  const sub = document.getElementById('tab-comissoes-sub');
+  if(sub) sub.textContent = (nFalta + nDiv) && q.situacao !== 'aberta' ? ` ${nFalta + nDiv}` : '';
+}
+loadNotas();
 
 async function loadFinanceiro(){
   if(UNIDADE_SEM_DADOS) return;  // placeholder mode
