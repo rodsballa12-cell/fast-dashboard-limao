@@ -6,7 +6,7 @@
  * Formato e algoritmo: ver scripts/cofre.py (AES-256-GCM + PBKDF2-SHA256).
  */
 (function () {
-  var SENSIVEIS = /^data\/(?:(?:spa|consolidado)\/)?(?:dashboard_data|financeiro)\.json$|^data\/wa_fila\.json$/;
+  var SENSIVEIS = /^data\/(?:(?:spa|consolidado)\/)?(?:dashboard_data|financeiro)\.json$|^data\/wa_fila\.json$|^data\/(?:notas_profissionais|comissoes_pagas)\.json$/;
   var CHAVE_LS = 'fast_painel_senha';
   var origFetch = window.fetch.bind(window);
   var senhaPromessa = null;

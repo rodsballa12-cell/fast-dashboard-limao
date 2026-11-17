@@ -12,15 +12,17 @@ Como calcula:
   taxa da categoria em data/comissoes.json (Spa: 25% uniforme). Mesma regra do ranking
   de comissões do painel (github_refresh.py).
 - Pago = Pix do razão (aba Conta_XP do Excel do PC) com categoria "OPEX (Comissão)".
-- Janela de pagamento da quinzena: do 1º dia da quinzena até 5 dias depois do fim
-  (os repasses saem no dia 15 e no último dia, às vezes no 1º dia útil seguinte).
+- Quinzena: 1 a 14 (paga dia 15) e 15 ao último (paga dia 30) — regra em comissao_quinzena.py.
+  Janela de pagamento: do 1º dia da quinzena até 5 dias depois do fim.
 - Nome do Pix × nome do Trinks: casa por 1º + último nome; apelidos e cadastros
   duplicados (ex.: MEI) em comissoes_aliases.json, ao lado do Excel. Profissionais
   desligadas usam o nome de data/prof_overrides.json quando preenchido.
 
-PRIVACIDADE: o repositório é público. O resultado (valor pago por pessoa) NUNCA vai para
-o repositório — sai só no arquivo de pendências do OneDrive (aba "11 Comissões x Trinks")
-e num JSON ao lado dele. Este script não grava nada em data/.
+PRIVACIDADE: o repositório é público. A aba "11 Comissões x Trinks" e o JSON ao lado dela
+ficam só no OneDrive. Desde 17/11/2026 (pedido do Rodrigo: coluna "Pago" na aba Comissões
+do painel) o script também grava data/comissoes_pagas.json — cada Pix de comissão com
+nome do Trinks, quinzena e valor. Esse arquivo é do COFRE (lista PAINEL do cofre.py):
+vai para o git só criptografado, nunca em texto puro.
 
 Uso:
     python scripts/conciliacao_comissoes.py            # grava a aba se o resultado mudou
@@ -69,16 +71,16 @@ def norm(s) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
-def quinzena(d: dt.date) -> tuple[int, int, int]:
-    return (d.year, d.month, 1 if d.day <= 15 else 2)
+# A regra da quinzena mora em comissao_quinzena.py (17/11/2026): 1ª = dia 1 a 14
+# (paga dia 15), 2ª = dia 15 ao último (paga dia 30). Até aqui este arquivo
+# cortava em 1–15 / 16–fim; uma regra só, para a aba Comissões do painel e esta
+# conciliação falarem da mesma quinzena.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from comissao_quinzena import anterior, devido as devido_unidade, dia_pagamento, limites, qid, quinzena  # noqa: E402
 
-
-def limites(q: tuple[int, int, int]) -> tuple[dt.date, dt.date]:
-    y, m, h = q
-    if h == 1:
-        return dt.date(y, m, 1), dt.date(y, m, 15)
-    prox = dt.date(y + (m == 12), m % 12 + 1, 1)
-    return dt.date(y, m, 16), prox - dt.timedelta(days=1)
+PAGOS_PAINEL = RAIZ / "data" / "comissoes_pagas.json"
+FONTES_ATE: dict[str, dt.date] = {}     # até quando vai cada fonte de pagamento
+_POR_ORIGEM = {}                         # alvo -> [(data, valor, origem)], preenchido em conciliar()
 
 
 def rotulo(q) -> str:
@@ -130,6 +132,8 @@ def pagos_razao():
     pagos = collections.defaultdict(list)
     for row in x.iter_rows(min_row=16, max_col=7, values_only=True):
         a, b, _c, v, _e, _f, g = row
+        if isinstance(a, dt.datetime) and isinstance(v, (int, float)):
+            FONTES_ATE["razao_xp"] = max(FONTES_ATE.get("razao_xp", a.date()), a.date())
         if isinstance(a, dt.datetime) and isinstance(v, (int, float)) and v < 0 and str(g).startswith("OPEX (Comiss"):
             pagos[norm(b)].append((a.date(), round(-v, 2)))
     # O Spa também paga comissão DIRETO da conta Stone (visto em 20/10/2026). Entram os
@@ -140,6 +144,11 @@ def pagos_razao():
     if spa.exists():
         with spa.open(encoding="utf-8") as fh:
             for lin in csv.DictReader(fh):
+                try:
+                    d0 = dt.datetime.strptime((lin.get("Data") or "")[:10], "%d/%m/%Y").date()
+                    FONTES_ATE["stone_spa"] = max(FONTES_ATE.get("stone_spa", d0), d0)
+                except ValueError:
+                    pass
                 if lin.get("Tipo") != "Pix" or lin.get("Movimentação") != "Débito":
                     continue
                 if "SIIBELLO" in (lin.get("Destino") or "").upper():
@@ -177,6 +186,9 @@ def conciliar():
         if alvo not in nomes:
             nomes[alvo] = kp.title()
         por[alvo].extend(ps)
+        _POR_ORIGEM.setdefault(alvo, []).extend((d, v, "stone_spa" if kp.startswith("stone:") else "razao_xp") for d, v in ps)
+    _POR_ORIGEM["__nomes__"] = dict(nomes)
+    _POR_ORIGEM["__dev__"] = set(dev)      # quem tem produção no Trinks (casou)
     # quinzenas fechadas: fim + folga já passou e o Trinks cobre o fim da quinzena
     hoje = dt.date.today()
     qs = sorted({q for d in dev.values() for q in d})
@@ -218,6 +230,58 @@ def conciliar():
     return dict(gerado_em=dt.datetime.now().isoformat(timespec="seconds"), trinks_ate=ate.isoformat(),
                 periodo=f"{INICIO:%d/%m/%Y} a {limites(fechadas[-1])[1]:%d/%m/%Y}" if fechadas else "-",
                 quinzenas=[rotulo(q) for q in fechadas], totais=tot, linhas=linhas)
+
+
+# ---------------------------------------------------------------- coluna "Pago" do painel
+def quinzena_paga(d: dt.date):
+    """A quinzena que um Pix feito no dia `d` paga: a mais recente cujo dia de
+    pagamento (15 ou 30) já chegou, com 3 dias de tolerância para pagamento
+    adiantado (fim de semana). Pix do dia 16/11 paga 01-14/11; do dia 03/12, 15-30/11."""
+    q = quinzena(d)
+    while dia_pagamento(q) - dt.timedelta(days=3) > d:
+        q = anterior(q)
+    return q
+
+
+def gravar_painel():
+    """data/comissoes_pagas.json: um item por Pix de comissão, já com o nome do
+    Trinks, a quinzena que ele paga e a unidade. A aba Comissões soma por pessoa."""
+    nomes = _POR_ORIGEM.get("__nomes__", {})
+    casados = _POR_ORIGEM.get("__dev__", set())
+    # Em que unidade a pessoa produziu em cada quinzena: Pix da Stone do Spa é Spa;
+    # Pix da XP vai para a unidade onde houve produção (Escova se houve nas duas).
+    prod = {}
+    for u, pasta in (("escova", RAIZ / "data"), ("spa", RAIZ / "data" / "spa")):
+        dv, _ = devido_unidade(u, pasta)
+        for q, pessoas in (dv or {}).items():
+            for n in pessoas:
+                prod.setdefault((norm(n), q), set()).add(u)
+    corte = dt.date.today() - dt.timedelta(days=200)
+    itens = []
+    for alvo, lst in _POR_ORIGEM.items():
+        if alvo in ("__nomes__", "__dev__"):
+            continue
+        nome = nomes.get(alvo, alvo)
+        for d, v, origem in sorted(lst):
+            if d < corte:
+                continue
+            q = quinzena_paga(d)
+            us = prod.get((alvo, q), set())
+            if origem == "stone_spa":
+                unidade = "spa"
+            else:
+                unidade = "escova" if "escova" in us or not us else "spa"
+            itens.append({"nome_trinks": nome if alvo in casados else None, "nome_pix": nome,
+                          "quinzena": qid(q), "data": d.isoformat(), "valor": round(v, 2),
+                          "origem": origem, "unidade": unidade, "duas_unidades": len(us) > 1})
+    PAGOS_PAINEL.write_text(json.dumps({
+        "gerado_em": dt.datetime.now().isoformat(timespec="seconds"),
+        "fontes_ate": {k: v.isoformat() for k, v in FONTES_ATE.items()},
+        "regra": "Pix 'OPEX (Comissão)' do razão (aba Conta_XP) + Pix de saída da Stone do Spa para pessoas com produção. "
+                 "Quinzena paga = a mais recente cujo dia de pagamento (15/30) já chegou, 3 dias de tolerância.",
+        "pagamentos": itens,
+    }, ensure_ascii=False, indent=1), encoding="utf-8")
+    return len(itens)
 
 
 # ---------------------------------------------------------------- aba no arquivo de pendências
@@ -297,6 +361,12 @@ def main():
     except PermissionError:
         print("Comissoes x Trinks: Excel do painel inacessivel agora; tento na proxima rodada.")
         return 0
+    if not seco:
+        try:
+            n_pix = gravar_painel()
+            print(ascii_(f"Comissoes pagas para o painel: {n_pix} Pix em data/comissoes_pagas.json"))
+        except Exception as e:      # o painel nao pode derrubar a conciliacao
+            print(ascii_(f"FALHOU: comissoes_pagas.json ({type(e).__name__}: {e})"))
     t = res["totais"]
     pend = [l for l in res["linhas"] if l["situacao"] != "OK"]
     resumo = (f"Comissoes x Trinks {res['periodo']}: devido R$ {t['devido']:.2f} x pago R$ {t['pago']:.2f} "
