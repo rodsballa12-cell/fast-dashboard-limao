@@ -1,6 +1,17 @@
 name: Meta · sonda de leads (one-off)
+# Sondas SÓ DE LEITURA contra a Graph API com o META_ACCESS_TOKEN.
+#   alvo=leads    -> scripts/meta_probe_leads.py (a sonda original)
+#   alvo=whatsapp -> scripts/meta_probe_whatsapp.py (17/11/2026: o que existe
+#                    para ligar o WhatsApp oficial nas duas lojas)
+# O repositório é público e este log também: os scripts não imprimem token
+# nem nome de pessoa.
 on:
   workflow_dispatch:
+    inputs:
+      alvo:
+        description: "leads ou whatsapp"
+        required: false
+        default: leads
 permissions:
   contents: read
 jobs:
@@ -12,4 +23,7 @@ jobs:
       - run: pip install -q requests
       - env:
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
-        run: python scripts/meta_probe_leads.py
+          ALVO: ${{ inputs.alvo || 'leads' }}
+        run: |
+          if [ "$ALVO" = "whatsapp" ]; then python scripts/meta_probe_whatsapp.py
+          else python scripts/meta_probe_leads.py; fi
