@@ -39,6 +39,8 @@ PAINEL = [
     "data/trinks_conferencia.json",
     # Notas fiscais das profissionais (Forms), nome + valor por pessoa. 17/11/2026.
     "data/notas_profissionais.json",
+    # Pix de comissão por pessoa (conciliacao_comissoes.py, só no PC). 17/11/2026.
+    "data/comissoes_pagas.json",
 ]
 CACHE = [f"data/{u}{n}" for u in ("", "spa/") for n in (
     "clientes_detalhes.json", "clientes_lista_cache.json", "recepcao_ontem.json", "recepcao_resgate.json", "recepcao_retoque.json", "agend_detail_cache.json",

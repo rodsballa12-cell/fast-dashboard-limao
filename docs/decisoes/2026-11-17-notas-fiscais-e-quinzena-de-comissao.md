@@ -13,8 +13,9 @@
 2. **A nota fiscal chega pelo Forms** "Envio de notas — Profissionais" até o dia do pagamento.
 3. **Quem cobra e fecha o valor no Trinks é o Lucas.**
 4. **A aba 🧾 Comissões do painel** mostra, para cada quinzena e cada profissional, o valor pelo
-   Trinks, o valor da nota e a diferença. A situação de cada pessoa é uma destas: confere, diverge,
-   falta a nota ou prazo passou. A aba também traz a mensagem de cobrança pronta (nada é enviado
+   Trinks, o valor da nota, quanto foi pago e a diferença. Quem fecha as três pontas fica
+   "Conciliado". As outras situações: pago diferente da nota, pago sem nota, nota diverge do
+   Trinks, falta a nota, prazo passou, nota ok aguardando pagamento. A aba também traz a mensagem de cobrança pronta (nada é enviado
    pelo painel) e as notas cujo nome não casou com o cadastro.
 
 ## Como funciona
@@ -23,10 +24,17 @@
 |---|---|---|
 | Trinks | serviço × taxa da categoria (`data/comissoes.json`; Spa 25%), pela data de referência da transação | refresh do GitHub, passo "Comissao por quinzena" |
 | Nota | planilha de respostas do Forms no OneDrive → `data/notas_profissionais.json` (cofre) | PC: `scripts/notas_forms.py`, dentro do `rodar_agente.ps1` e antes de publicar |
+| Pago | Pix "OPEX (Comissão)" do razão (aba Conta_XP do Excel) + Pix de saída da Stone do Spa → `data/comissoes_pagas.json` (cofre) | PC: `scripts/conciliacao_comissoes.py`, que já rodava todo dia |
 
 O valor do Trinks é **referência para conferir a nota**, não a decisão de pagamento: a regra de
 comissão não está cadastrada por profissional no Trinks (`comissoes.habilitado` = falso).
 Atendimento de pacote entra pelo preço de tabela.
+
+**Pago entra no painel (decisão do Rodrigo, 17/11/2026).** Até aqui o valor pago por pessoa
+ficava só no OneDrive, porque o repositório é público. Agora ele vai também para o painel,
+**sempre criptografado** pelo cofre. Um Pix paga a quinzena mais recente cujo dia de pagamento
+já chegou, com 3 dias de tolerância. Sem lançamento no razão até o dia do pagamento, a aba
+diz "aguardando", e não "não pago": o razão entra à mão e atrasa.
 
 ## Pendências
 

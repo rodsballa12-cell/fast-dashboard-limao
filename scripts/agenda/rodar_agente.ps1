@@ -223,8 +223,9 @@ DRE-Para-JSON
 # Confere a comissao devida (Trinks, taxa por categoria) contra os Pix de
 # comissao do razao, por profissional e quinzena fechada, e grava a aba
 # "11 Comissoes x Trinks" no arquivo de pendencias do OneDrive. So regrava
-# quando o resultado muda; pula se o arquivo estiver aberto. O resultado NAO
-# vai para o repositorio (publico). Pedido do Rodrigo em 16/10/2026.
+# quando o resultado muda; pula se o arquivo estiver aberto. Pedido do Rodrigo
+# em 16/10/2026. Desde 17/11/2026 tambem grava data/comissoes_pagas.json (coluna
+# "Pago" da aba Comissoes do painel) - arquivo do cofre, so vai cifrado ao git.
 function Comissoes-Trinks {
   $anterior = $ErrorActionPreference
   $ErrorActionPreference = "Continue"

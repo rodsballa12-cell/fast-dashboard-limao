@@ -67,6 +67,8 @@ ARQUIVOS = [
     # Notas fiscais das profissionais (Forms -> scripts/notas_forms.py, só no PC).
     # Opcional: sem ele a aba Comissões mostra só o lado Trinks e avisa.
     ("data/notas_profissionais.json", False),
+    # Pix de comissão pagos (conciliacao_comissoes.py, só no PC): coluna "Pago".
+    ("data/comissoes_pagas.json", False),
 ]
 
 
