@@ -7524,7 +7524,7 @@ function renderComissoes(data){
     const difTxt = l.dif == null ? '' : (Math.abs(l.dif) <= COM_TOLERANCIA ? '—' : `<b style="color:var(--crit)">${l.dif>0?'+ ':'− '}${brl(Math.abs(l.dif))}</b>`);
     const corSt = l.cls ? `color:var(--${l.cls})` : 'color:var(--ink-3)';
     return `<tr>
-      <td style="text-align:left">${_comEsc(l.p.nome)}${mostraUnidade?`<div style="font-size:11px;color:var(--ink-3)">${_comUnidadeNome(l.p.unidade)}</div>`:''}${l.obs.length?`<div style="font-size:11px;color:var(--ink-3)">${l.obs.map(_comEsc).join(' · ')}</div>`:''}</td>
+      <td style="text-align:left">${_comEsc(l.p.nome)}${waUrl(l.p.telefone) ? ` <a href="${waUrl(l.p.telefone)}" target="_blank" rel="noopener" title="Abrir conversa no WhatsApp" style="text-decoration:none">📱</a>` : ''}${mostraUnidade?`<div style="font-size:11px;color:var(--ink-3)">${_comUnidadeNome(l.p.unidade)}</div>`:''}${l.obs.length?`<div style="font-size:11px;color:var(--ink-3)">${l.obs.map(_comEsc).join(' · ')}</div>`:''}</td>
       <td data-l="Trinks">${brl(l.p.comissao)}<div style="font-size:11px;color:var(--ink-3)">${l.p.n_serv} serv. · base ${brl(l.p.base,0)}</div></td>
       <td data-l="Nota">${notaTxt||'—'}<div style="font-size:11px;color:var(--ink-3)">${notaFoot}</div></td>
       <td data-l="Pago">${pagoTxt}<div style="font-size:11px;color:var(--ink-3)">${pagoFoot}</div></td>
@@ -7552,13 +7552,14 @@ function renderComissoes(data){
 
   const cobrar = linhas.filter(l => q.situacao !== 'aberta' && ['falta','atrasada','diverge'].includes(l.notaSt));
   const cobrancaHtml = cobrar.length ? `<div class="card"><div style="font-weight:700;margin-bottom:4px">📲 Cobrança · ${cobrar.length} pessoa${cobrar.length>1?'s':''}</div>
-      <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:10px">Mensagens prontas para o Lucas. Nada é enviado daqui: copie ou abra no WhatsApp e escolha a pessoa.</div>
-      ${cobrar.map((l,i) => { const m = _comMensagem(l, q, forms); return `<div style="border-top:1px solid var(--grid);padding:10px 0">
-        <div style="font-size:13px;font-weight:600;margin-bottom:6px">${_comEsc(l.p.nome)} · ${l.st}</div>
+      <div style="font-size:12.5px;color:var(--ink-2);margin-bottom:10px">Mensagens prontas para o Lucas. Nada é enviado daqui: o botão abre a conversa da profissional com o texto pronto, e quem aperta enviar é você.</div>
+      ${cobrar.map((l,i) => { const m = _comMensagem(l, q, forms); const wa = waUrl(l.p.telefone, m); return `<div style="border-top:1px solid var(--grid);padding:10px 0">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">${_comEsc(l.p.nome)} · ${l.st}${wa ? '' : ' <span style="font-weight:500;color:var(--warn)">· sem WhatsApp no cadastro</span>'}</div>
         <textarea readonly id="com-msg-${i}" style="width:100%;box-sizing:border-box;min-height:104px;font:inherit;font-size:12.5px;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--ink)">${_comEsc(m)}</textarea>
         <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
           <button class="tab-btn com-copiar" data-alvo="com-msg-${i}" style="padding:6px 12px;font-size:12px">📋 Copiar</button>
-          <a class="tab-btn" href="https://wa.me/?text=${encodeURIComponent(m)}" target="_blank" rel="noopener" style="padding:6px 12px;font-size:12px;text-decoration:none">💬 Abrir no WhatsApp</a>
+          ${wa ? `<a class="tab-btn" href="${wa}" target="_blank" rel="noopener" style="padding:6px 12px;font-size:12px;text-decoration:none">💬 Abrir conversa com ${_comEsc((l.p.nome||'').split(' ')[0])}</a>`
+               : `<a class="tab-btn" href="https://wa.me/?text=${encodeURIComponent(m)}" target="_blank" rel="noopener" style="padding:6px 12px;font-size:12px;text-decoration:none" title="Sem número: o WhatsApp abre para você escolher a pessoa">💬 Abrir no WhatsApp (escolher contato)</a>`}
         </div></div>`; }).join('')}
     </div>` : '';
 

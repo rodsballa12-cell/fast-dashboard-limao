@@ -249,6 +249,20 @@ jobs:
         continue-on-error: true
         run: python scripts/preco_praticado.py || true
 
+      # WhatsApp das profissionais para o botao de cobranca da aba Comissoes.
+      # A API do Trinks nao entrega o celular da profissional: casa o CPF dela
+      # com o cadastro de cliente (e usa o WhatsApp do Forms de notas).
+      # O arquivo de contatos esta no .gitignore; o numero chega ao painel
+      # dentro do dashboard_data, que o cofre criptografa.
+      - name: WhatsApp das profissionais (aba Comissoes)
+        continue-on-error: true
+        env:
+          TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
+          TRINKS_ESTABELECIMENTO_ID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID }}
+          TRINKS_API_KEY_SPA: ${{ secrets.TRINKS_API_KEY_SPA }}
+          TRINKS_ESTABELECIMENTO_ID_SPA: ${{ secrets.TRINKS_ESTABELECIMENTO_ID_SPA }}
+        run: python scripts/profissionais_contato.py || true
+
       # Comissão por quinzena de pagamento (1-14 paga dia 15; 15-fim paga dia 30),
       # nas tres unidades, para a aba Comissoes. Depois da consolidacao pelo
       # mesmo motivo da densidade: o payload da holding e regerado antes e

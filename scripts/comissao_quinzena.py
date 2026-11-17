@@ -142,10 +142,18 @@ def devido(unidade: str, pasta: Path):
     return out, ate
 
 
+def contatos() -> dict:
+    """WhatsApp por profissional (scripts/profissionais_contato.py). O número
+    entra no dashboard_data, que o cofre criptografa; o arquivo de contatos
+    em si nunca vai para o git."""
+    return ((_ler(RAIZ / "data" / "profissionais_contato.json", {}) or {}).get("contatos") or {})
+
+
 def bloco(unidade: str, pasta: Path, hoje: dt.date) -> dict | None:
     dev, ate = devido(unidade, pasta)
     if dev is None:
         return None
+    tels = contatos()
     qs, q = [], quinzena(hoje)
     for _ in range(N_QUINZENAS):
         qs.append(q)
@@ -156,7 +164,8 @@ def bloco(unidade: str, pasta: Path, hoje: dt.date) -> dict | None:
         pag = dia_pagamento(q)
         profs = [{"nome": n, "unidade": unidade, "n_serv": r["n_serv"],
                   "base": round(r["base"], 2), "base_pacote": round(r["base_pacote"], 2),
-                  "comissao": round(r["comissao"], 2)}
+                  "comissao": round(r["comissao"], 2),
+                  "telefone": (tels.get(n) or {}).get("telefone")}
                  for n, r in (dev.get(q) or {}).items() if r["comissao"] >= 0.01]
         profs.sort(key=lambda x: -x["comissao"])
         quinzenas.append({

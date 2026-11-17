@@ -199,7 +199,11 @@ def processar(linhas: list[dict], aliases: dict[str, str], cand: dict[str, set[s
     c_per = coluna(cab, "periodo", "quinzena")
     c_uni = coluna(cab, "unidade", "loja")
     c_val = coluna(cab, "valor")
-    c_num = coluna(cab, "numero da n", "numero")
+    # WhatsApp da profissional (17/11/2026): alimenta profissionais_contato.py,
+    # para o botão de cobrança abrir a conversa dela. Achado ANTES do número da
+    # nota, porque "Número do WhatsApp" também contém "numero".
+    c_wa = coluna(cab, "whatsapp", "celular", "telefone")
+    c_num = coluna([h for h in cab if h != c_wa], "numero da n", "numero")
     c_cha = coluna(cab, "chave")
     c_arq = coluna(cab, "arquivo", "pdf", "anexo")
     c_id = coluna(cab, "id", exato={"id"})
@@ -231,6 +235,7 @@ def processar(linhas: list[dict], aliases: dict[str, str], cand: dict[str, set[s
             "periodo_texto": str(l.get(c_per) or "").strip() if c_per else "",
             "valor": valor(l.get(c_val)) if c_val else None,
             "numero": num or None,
+            "whatsapp": (re.sub(r"\D", "", str(l.get(c_wa) or "")) or None) if c_wa else None,
             "chave": chave if len(chave) >= 40 else None,
             "arquivo": str(l.get(c_arq) or "").strip()[:300] if c_arq else "",
         })
