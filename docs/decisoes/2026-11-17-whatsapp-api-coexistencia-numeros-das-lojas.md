@@ -39,6 +39,24 @@ migração tiraria o número do aplicativo, e a recepção perderia o atendiment
   cobrar uma mensalidade à parte.
 - **Textos aprovados pela Meta** antes do primeiro envio.
 
+## O que a Meta mostrou em 17/11 (sonda só de leitura, `meta_probe.yml`, alvo=whatsapp)
+
+| Portfolio | ID | Papel do Rodrigo | Verificado | Observação |
+|---|---|---|---|---|
+| Fast Escova Limão | 1493087112411026 | **ADMIN** (único) | não | |
+| FAST Escova Limao | 1091274630024583 | **ADMIN** (único) | não | dono do app "FAST Limão · integrações" (964019103388501) |
+| Fast Spa 2026 | 1042081858063235 | só funcionário | não | o administrador é outra pessoa |
+
+- **O bloqueio de 14/09 caiu na Escova.** O Rodrigo agora é administrador dos dois portfolios da
+  Escova, mas é o único administrador de cada um: se perder o acesso, ninguém recupera.
+- **No Spa ele ainda não é administrador.**
+- **Nenhuma página está ligada a um WhatsApp.** Nenhum portfolio tem usuário do sistema.
+- **O token do painel não tem as permissões de WhatsApp** (`whatsapp_business_management` e
+  `whatsapp_business_messaging`). Por isso não deu para ver se já existe conta de WhatsApp (WABA).
+  É token de usuário e vence; o de usuário do sistema não vence.
+- **Há dois portfolios da Escova com quase o mesmo nome.** É preciso escolher um para ser a casa
+  do WhatsApp.
+
 ## O que muda no código
 
 `scripts/wa_dispatch.py` fala direto com a Graph API da Meta. Conforme o parceiro escolhido, muda
