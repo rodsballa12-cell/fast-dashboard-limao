@@ -188,7 +188,7 @@ def parse_briefing(path: Path) -> dict:
     return {
         "data": data_iso,
         "hora": hora,
-        "tipo": "noturno" if hora >= "18:00" else "matinal",
+        "tipo": "noturno" if (hora >= "18:00" or hora < "06:00") else "matinal",
         "mesa": mesa,
         "decisoes": decisoes,
         "cruzamentos_chave": cruzamentos,

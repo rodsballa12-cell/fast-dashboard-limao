@@ -29,7 +29,7 @@ PC, onde está a chave do cofre.
 
 O `/publicar` é o único que sai do repositório: leva o painel para o Artifact
 que o Rodrigo abre no celular, sempre no mesmo endereço. Roda sozinho no fim do
-Conselho das 22h30 — o dia fechou e o número é o final. O GitHub Actions não
+Conselho da madrugada (fila das 00h40) — o dia fechou e o número é o final. O GitHub Actions não
 consegue fazer isso: a ferramenta de Artifact só existe dentro de uma sessão.
 
 ## Como eles conversam

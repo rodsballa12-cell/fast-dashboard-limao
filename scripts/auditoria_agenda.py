@@ -26,14 +26,16 @@ BRT = timezone(timedelta(hours=-3))
 ATAS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs", "atas")
 
 # Quem deveria comparecer, e o horario que a agenda reserva para cada um.
+# Desde 18/11/2026 rodam em fila na madrugada seguinte (a partir das 00h40) e a
+# ata leva a data do dia de que falam: as atas de ontem chegam de madrugada.
 CARGOS = [
-    ("memoria", "07:30"),
-    ("marketing", "08:00"),
-    ("financeiro", "08:30"),
-    ("relacionamento", "09:00"),
-    ("pessoas", "09:30"),
-    ("operacao-diaria", "11:30"),
-    ("conselho", "22:30"),
+    ("memoria", "00:40"),
+    ("marketing", "00:40"),
+    ("financeiro", "00:40"),
+    ("relacionamento", "00:40"),
+    ("pessoas", "00:40"),
+    ("operacao-diaria", "00:40"),
+    ("conselho", "00:40"),
 ]
 
 

@@ -34,6 +34,14 @@ PEDIDO = (
     "no formato da ficha, sem comentar a execução. Não altere arquivos, não faça commit "
     "nem push e não envie mensagens: a ata é gravada por fora."
 )
+# Rodada da madrugada (desde 18/11/2026): os sete cargos rodam juntos às 00h40,
+# numa janela de cota em que nenhuma outra rotina do Rodrigo roda, e falam do
+# dia que acabou de fechar. O rodar_agente.ps1 (com -Ontem) passa essa data em
+# --pedido e --ja-tem; sem data, vale hoje, como sempre foi.
+AVISO_ONTEM = (
+    " Esta é a rodada da madrugada: o dia de referência é {dia} (ontem), já encerrado."
+    " Onde a ficha disser 'hoje', leia {dia}; o que for para agir, é para hoje ({amanha})."
+)
 ATAS = RAIZ / "docs" / "atas"
 BRT = timezone(timedelta(hours=-3))
 
@@ -51,6 +59,16 @@ EXIGE = {
 # explicitamente que nada mudou.
 DIA_PARADO = re.compile(r"\bsem novidade\b|\bnada mudou\b|\bnada a decidir\b", re.I)
 TAMANHO_MINIMO = {"operacao-diaria": 120, "_": 250}
+
+
+def pedido(agente: str, dia: str | None = None) -> str:
+    texto = PEDIDO.format(agente=agente)
+    hoje = datetime.now(BRT).strftime("%Y-%m-%d")
+    if dia and dia != hoje:
+        d = datetime.strptime(dia, "%Y-%m-%d")
+        texto += AVISO_ONTEM.format(dia=d.strftime("%d/%m/%Y"),
+                                    amanha=(d + timedelta(days=1)).strftime("%d/%m/%Y"))
+    return texto
 
 
 def avaliar(agente: str, texto: str) -> tuple[bool, str]:
@@ -134,8 +152,8 @@ def ja_tem_parecer(agente: str, data: str | None = None) -> bool:
 
 if __name__ == "__main__":
     if len(sys.argv) >= 3 and sys.argv[1] == "--pedido":
-        # python3 scripts/agenda/gravar_ata.py --pedido <agente> -> o texto para o claude -p
-        print(PEDIDO.format(agente=sys.argv[2]))
+        # python3 scripts/agenda/gravar_ata.py --pedido <agente> [AAAA-MM-DD] -> o texto para o claude -p
+        print(pedido(sys.argv[2], sys.argv[3] if len(sys.argv) >= 4 else None))
         sys.exit(0)
     if len(sys.argv) >= 4 and sys.argv[1] == "--avaliar":
         # python3 scripts/agenda/gravar_ata.py --avaliar <agente> <arquivo> -> ok/falha (para o PC)
@@ -144,7 +162,7 @@ if __name__ == "__main__":
         print(("ok" if ok else "falha") + " | " + motivo)
         sys.exit(0)
     if len(sys.argv) >= 3 and sys.argv[1] == "--ja-tem":
-        # python3 scripts/agenda/gravar_ata.py --ja-tem <agente>  -> imprime sim/nao
-        print("sim" if ja_tem_parecer(sys.argv[2]) else "nao")
+        # python3 scripts/agenda/gravar_ata.py --ja-tem <agente> [AAAA-MM-DD] -> imprime sim/nao
+        print("sim" if ja_tem_parecer(sys.argv[2], sys.argv[3] if len(sys.argv) >= 4 else None) else "nao")
         sys.exit(0)
     sys.exit(main(sys.argv))

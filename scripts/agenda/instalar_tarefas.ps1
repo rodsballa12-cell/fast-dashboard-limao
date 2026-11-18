@@ -1,5 +1,5 @@
 ﻿<#
-  Registra as sete tarefas agendadas dos cargos no Agendador do Windows — uma por cargo.
+  Registra a rodada da madrugada no Agendador do Windows: os sete cargos em fila, às 00h40.
 
   Use Register-ScheduledTask em vez de schtasks porque só ele expõe
   StartWhenAvailable: se o computador estiver desligado na hora, a tarefa roda
@@ -31,65 +31,64 @@ if (-not $admin) { Falhar "Rode este arquivo num PowerShell aberto COMO ADMINIST
 $runner = Join-Path $Projeto "scripts\agenda\rodar_agente.ps1"
 if (-not (Test-Path $runner)) { Falhar "Não achei $runner. Confira o caminho do projeto (-Projeto)." }
 
-# As tarefas: nome, agente, hora, e por que esse horário.
-$tarefas = @(
-  @{ Nome="FAST\Memoria 07h30";      Agente="memoria";          Hora="07:30"
-     Porque="lê o resultado da auditoria de coerência que roda às 07h no GitHub" }
-  @{ Nome="FAST\Marketing 08h";      Agente="marketing";        Hora="08:00"
-     Porque="o refresh de mídia sai às 07h" }
-  @{ Nome="FAST\Financeiro 08h30";   Agente="financeiro";       Hora="08:30"
-     Porque="caixa e margem antes do dia começar a gastar" }
-  @{ Nome="FAST\Relacionamento 09h"; Agente="relacionamento";   Hora="09:00"
-     Porque="chamar quem sumiu antes do movimento começar" }
-  @{ Nome="FAST\Pessoas 09h30";      Agente="pessoas";          Hora="09:30"
-     Porque="equipe e escala antes do turno da tarde, que é onde o movimento está" }
-  @{ Nome="FAST\Operacao 11h30";     Agente="operacao-diaria";  Hora="11:30"
-     Porque="o painel atualiza às 11h — ainda dá tempo de salvar o dia" }
-  @{ Nome="FAST\Conselho 22h30";     Agente="conselho";         Hora="22:30"; Publicar=$true
-     Porque="fecha o dia depois do último refresh, das 22h" }
-)
+# Uma tarefa so, com os sete cargos EM FILA (desde 18/11/2026).
+#
+# Por que de madrugada: a assinatura do Claude tem uma cota que vale por 5 horas
+# e e dividida com todas as outras rotinas do Rodrigo (painel de investimentos
+# das 07h14 as 19h14, cotacoes de hora em hora no pregao, midias 08h e 18h,
+# cerebro 19h). Em 11/11 o conselho das 22h30 caiu no "5-hour limit" aberto as
+# 19h; em 14/11 memoria, marketing e financeiro cairam na janela das 03h40.
+# Das 00h40 as ~03h nada mais roda, e a janela fica so para a FAST.
+#
+# Por que em fila e nao em sete horarios: o Agendador roda as acoes de uma
+# tarefa uma depois da outra. Se o PC estava desligado, StartWhenAvailable
+# dispara a fila inteira quando ele ligar, e mesmo assim um cargo nao atropela
+# o outro (antes as sete tarefas atrasadas disparavam juntas).
+#
+# O conselho e o ultimo: le os seis pareceres que acabaram de sair. Todos falam
+# do dia que fechou (antes do meio-dia o dia de referencia e ontem).
+$Hora  = "00:40"
+$Nome  = "FAST\Rodada da madrugada"
+$fila  = @("memoria","marketing","financeiro","relacionamento","pessoas","operacao-diaria","conselho")
+
+# Remove TODAS as tarefas antigas da pasta FAST (uma por cargo, horarios de dia):
+# se ficassem, cada cargo rodaria duas vezes e gastaria cota em dobro.
+foreach ($velha in @(Get-ScheduledTask -TaskPath "\FAST\" -ErrorAction SilentlyContinue)) {
+  Unregister-ScheduledTask -TaskName $velha.TaskName -TaskPath $velha.TaskPath -Confirm:$false
+  Ok "removida: $($velha.TaskName)"
+}
 
 if ($Remover) {
-  foreach ($t in $tarefas) {
-    if (Get-ScheduledTask -TaskName $t.Nome -ErrorAction SilentlyContinue) {
-      Unregister-ScheduledTask -TaskName $t.Nome -Confirm:$false
-      Ok "removida: $($t.Nome)"
-    }
-  }
-  Write-Host "`nTarefas removidas. Os cargos continuam existindo — só não são chamados sozinhos."
+  Write-Host "`nTarefas removidas. Os cargos continuam existindo, so nao sao chamados sozinhos."
   exit 0
 }
 
 # 'claude' pode não estar no PATH quando a tarefa roda sem sessão interativa.
-# O rodar_agente.ps1 já procura em locais conhecidos, mas avisar aqui evita
-# descobrir isso só amanhã de manhã, num briefing vazio.
 if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
   Aviso "O comando 'claude' não está no PATH desta sessão. O runner tenta caminhos conhecidos, mas se os briefings saírem com erro, rode 'where claude' e me diga o caminho."
 }
 
-Write-Host "`nRegistrando as sete tarefas — uma por cargo...`n"
-
-foreach ($t in $tarefas) {
-  $acao = New-ScheduledTaskAction -Execute "powershell.exe" `
+$acoes = foreach ($ag in $fila) {
+  New-ScheduledTaskAction -Execute "powershell.exe" `
     -Argument ("-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$runner`" " +
-               "-Agente $($t.Agente) -Projeto `"$Projeto`"" +
-               $(if ($t.Publicar) { " -Publicar" } else { "" }))
-  $gatilho = New-ScheduledTaskTrigger -Daily -At $t.Hora
-  # StartWhenAvailable: recupera a execucao se o PC estava desligado.
-  # DontStopIfGoingOnBatches / AllowStartIfOnBatteries: notebook nao deve pular.
-  # RestartCount/RestartInterval: se a tarefa FALHAR (nao se pular), retenta
-  # 3 vezes a cada 5 min — cobre perfil que subiu com atraso, OneDrive travado,
-  # etc. Nao retenta se o script devolver codigo 0. Observado 14/10/2026:
-  # PC bootou 07:23, Memoria 07:30 nao disparou (perfil ainda carregando).
-  $config = New-ScheduledTaskSettingsSet -StartWhenAvailable `
-    -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries `
-    -ExecutionTimeLimit (New-TimeSpan -Minutes 20) `
-    -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 5)
-
-  Register-ScheduledTask -TaskName $t.Nome -Action $acao -Trigger $gatilho `
-    -Settings $config -Description "Cargo $($t.Agente) — $($t.Porque)" -Force | Out-Null
-  Ok "$($t.Nome.PadRight(24)) $($t.Hora)  ·  $($t.Porque)"
+               "-Agente $ag -Ontem -Projeto `"$Projeto`"" +
+               $(if ($ag -eq "conselho") { " -Publicar" } else { "" }))
 }
+$gatilho = New-ScheduledTaskTrigger -Daily -At $Hora
+# WakeToRun: acorda o PC da suspensao para rodar (desligado de vez, nao).
+# StartWhenAvailable: se perdeu o horario, roda assim que o PC ligar.
+# Sete cargos de ate ~20 min cada: limite de 3 horas para a fila inteira.
+# RestartCount: se falhar, refaz; quem ja tem ata valida do dia e pulado em
+# segundos pelo rodar_agente.ps1, entao refazer nao gasta cota de novo.
+$config = New-ScheduledTaskSettingsSet -StartWhenAvailable -WakeToRun `
+  -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries `
+  -ExecutionTimeLimit (New-TimeSpan -Hours 3) `
+  -RestartCount 2 -RestartInterval (New-TimeSpan -Minutes 10)
+
+Register-ScheduledTask -TaskName $Nome -Action $acoes -Trigger $gatilho `
+  -Settings $config -Force `
+  -Description "Os sete cargos da FAST em fila, de madrugada, fora da hora das outras rotinas do Claude" | Out-Null
+Ok "$Nome  $Hora  ·  $($fila -join ' > ')"
 
 Write-Host "`nConferindo..."
 Get-ScheduledTask -TaskPath "\FAST\" | Select-Object TaskName, State,
@@ -99,4 +98,4 @@ Get-ScheduledTask -TaskPath "\FAST\" | Select-Object TaskName, State,
 Write-Host "Os briefings aparecem em:" -ForegroundColor Cyan
 Write-Host "  Obsidian Vault\Cerebro_Claude\Briefings\AAAA-MM-DD-<cargo>.md`n"
 Write-Host "Para testar agora, sem esperar o horário:" -ForegroundColor Cyan
-Write-Host "  Start-ScheduledTask -TaskName 'FAST\Operacao 11h30'`n"
+Write-Host "  Start-ScheduledTask -TaskName 'FAST\Rodada da madrugada'`n"
