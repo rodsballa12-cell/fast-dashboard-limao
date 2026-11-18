@@ -44,7 +44,7 @@ PAINEL = [
 ]
 CACHE = [f"data/{u}{n}" for u in ("", "spa/") for n in (
     "clientes_detalhes.json", "clientes_lista_cache.json", "recepcao_ontem.json", "recepcao_resgate.json", "recepcao_retoque.json", "agend_detail_cache.json",
-    "agendamentos_ano_cache.json", "transacoes_ano_cache.json", "stone_extrato.csv")] + [
+    "agendamentos_ano_cache.json", "transacoes_ano_cache.json", "transacoes_mes_cache.json", "stone_extrato.csv")] + [
     "data/aniversarios_fila.json", "data/wa_historico.json",
 ]
 TODOS = PAINEL + CACHE

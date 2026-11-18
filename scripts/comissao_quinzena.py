@@ -112,6 +112,14 @@ def devido(unidade: str, pasta: Path):
                  for s in ((_ler(pasta / "servicos_cache.json", {}) or {}).get("payload") or [])
                  if isinstance(s, dict)}
     cache = _ler(pasta / "transacoes_ano_cache.json")
+    # O cache do ano só avança aos domingos; o mês corrente vem fresco do
+    # refresh em transacoes_mes_cache.json. Mesma junção do github_refresh:
+    # ano SEM o mês corrente + mês corrente (pela dataHora).
+    mes = _ler(pasta / "transacoes_mes_cache.json")
+    if cache is not None and isinstance(mes, dict) and mes.get("mes"):
+        m = mes["mes"]
+        cache = {**cache, "payload": [x for x in (cache.get("payload") or [])
+                                      if str(x.get("dataHora") or "")[:7] != m] + (mes.get("payload") or [])}
     if cache is None:
         return None, None
     out = collections.defaultdict(lambda: collections.defaultdict(

@@ -188,7 +188,10 @@ jobs:
 
       - name: Install deps
         if: steps.recency.outputs.skip != 'true'
-        run: pip install requests
+        # python-dotenv: trinks_common.py importa (profissionais_contato.py
+        # quebrava com ModuleNotFoundError em 18/11/2026, e o WhatsApp das
+        # profissionais nunca chegava na aba Comissoes).
+        run: pip install requests python-dotenv
 
       - name: Fetch Trinks + build dashboard (Escova)
         if: steps.recency.outputs.skip != 'true'
@@ -313,6 +316,7 @@ jobs:
                    data/agend_detail_cache.json.enc \
                    data/agendamentos_ano_cache.json.enc \
                    data/transacoes_ano_cache.json.enc \
+                   data/transacoes_mes_cache.json.enc \
                    data/quota_status.json \
                    data/spa/dashboard_data.json.enc \
                    data/spa/financeiro.json.enc \
@@ -326,6 +330,7 @@ jobs:
                    data/spa/agend_detail_cache.json.enc \
                    data/spa/agendamentos_ano_cache.json.enc \
                    data/spa/transacoes_ano_cache.json.enc \
+                   data/spa/transacoes_mes_cache.json.enc \
                    data/spa/quota_status.json \
                    data/consolidado/dashboard_data.json.enc \
                    data/consolidado/financeiro.json.enc; do
