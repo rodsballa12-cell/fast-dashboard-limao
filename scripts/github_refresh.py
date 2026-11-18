@@ -1507,6 +1507,18 @@ def main():
     print("[fetch] transacoes MÊS corrente (fresh)...")
     transac_mes = _transacoes(t, ini_mes, fim_mes)
     print(f"  {len(transac_mes)} transações do mês")
+    # O cache do ano só avança aos domingos e o mês corrente não era guardado:
+    # a aba Comissões (scripts/comissao_quinzena.py) lia o Trinks com até 6 dias
+    # de atraso e, no dia 15, mostrava a quinzena de 1 a 14 pela metade
+    # (visto em 18/11/2026: "até 15/11"). Arquivo de cofre (tem cliente).
+    try:
+        (DATA_UNIT / "transacoes_mes_cache.json").write_text(json.dumps({
+            "gerado_em": datetime.now(BRT).isoformat(timespec="seconds"),
+            "mes": ini_mes_iso[:7],
+            "payload": transac_mes,
+        }, ensure_ascii=False), encoding="utf-8")
+    except Exception as _e:
+        print(f"  [warn] transacoes_mes_cache nao gravado: {_e}")
 
     # Merge: cache ano SEM mês corrente + mês corrente fresh
     transac = [x for x in transac_ano
