@@ -107,7 +107,7 @@ O GitHub Actions **não consegue publicar no claude.ai** — a ferramenta de
 Artifact só existe dentro de uma sessão do Claude. Por isso a publicação
 depende de alguém rodar este cargo.
 
-O encaixe natural é o **Conselho das 22h30**, que já roda diariamente na
+O encaixe natural é o **Conselho da madrugada**, que já roda diariamente na
 máquina do Rodrigo: o dia fechou, o dado é o final, e o painel amanhece
 atualizado. Publicar a cada refresh seria publicar sete vezes por dia para
 mudar centavos.

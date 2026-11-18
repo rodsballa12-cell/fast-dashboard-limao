@@ -18,13 +18,19 @@
 param(
   [Parameter(Mandatory=$true)][string]$Agente,
   [switch]$Publicar,   # roda o cargo /publicar depois da ata (so o Conselho usa)
+  [switch]$Ontem,      # rodada da madrugada: antes do meio-dia, o dia de referencia e ontem
   [string]$Projeto = "C:\Users\rods_\dev\fast-dashboard-limao",
   [string]$Destino = "C:\Users\rods_\OneDrive\Documentos\Obsidian Vault\Cerebro_Claude\02-PROJETOS\Franquia_FAST_Limao\76_Briefings_Agentes"
 )
 
 $ErrorActionPreference = "Stop"
-$data = Get-Date -Format "yyyy-MM-dd"
-$hora = Get-Date -Format "HH:mm"
+# Dia de referencia. Desde 18/11/2026 os sete cargos rodam em fila as 00h40
+# (instalar_tarefas.ps1 passa -Ontem), numa janela de cota em que nenhuma outra
+# rotina do Rodrigo roda, e falam do dia que acabou de fechar: antes do
+# meio-dia, a ata leva a data de ONTEM. Rodado a mao, sem -Ontem, vale hoje.
+$agora = Get-Date
+$data = if ($Ontem -and $agora.Hour -lt 12) { $agora.AddDays(-1).ToString("yyyy-MM-dd") } else { $agora.ToString("yyyy-MM-dd") }
+$hora = $agora.ToString("HH:mm")
 
 if (-not (Test-Path $Destino)) { New-Item -ItemType Directory -Path $Destino -Force | Out-Null }
 $arquivo = Join-Path $Destino "$data-$Agente.md"
@@ -307,7 +313,7 @@ $pyAta = (Get-Command python -ErrorAction SilentlyContinue).Source
 $ataNuvem = Join-Path $Projeto "docs\atas\$data-$Agente.md"
 if ($pyAta -and (Test-Path $ataNuvem)) {
   $env:PYTHONUTF8 = "1"
-  $temParecer = (& $pyAta (Join-Path $Projeto "scripts\agenda\gravar_ata.py") --ja-tem $Agente 2>&1 | Out-String).Trim()
+  $temParecer = (& $pyAta (Join-Path $Projeto "scripts\agenda\gravar_ata.py") --ja-tem $Agente $data 2>&1 | Out-String).Trim()
   if ($temParecer -eq "sim") {
     Copy-Item -Path $ataNuvem -Destination $arquivo -Force
     Registrar "Parecer da nuvem ja estava pronto; copiado para o vault sem rodar o claude aqui."
@@ -381,7 +387,7 @@ $eaNuvem = $ErrorActionPreference
 $ErrorActionPreference = "Continue"
 if ($pyAta) {
   $env:PYTHONUTF8 = "1"
-  $p = (& $pyAta (Join-Path $Projeto "scripts\agenda\gravar_ata.py") --pedido $Agente 2>&1 | Out-String).Trim()
+  $p = (& $pyAta (Join-Path $Projeto "scripts\agenda\gravar_ata.py") --pedido $Agente $data 2>&1 | Out-String).Trim()
   if ($LASTEXITCODE -eq 0 -and $p) { $pedido = $p }
 }
 $ErrorActionPreference = $eaNuvem
@@ -509,7 +515,7 @@ if ($puxou -and (Test-Path $ata) -and $pyAta) {
   $eaCol = $ErrorActionPreference
   $ErrorActionPreference = "Continue"
   $env:PYTHONUTF8 = "1"
-  $nuvemValida = (& $pyAta (Join-Path $Projeto "scripts\agenda\gravar_ata.py") --ja-tem $Agente 2>&1 | Out-String).Trim()
+  $nuvemValida = (& $pyAta (Join-Path $Projeto "scripts\agenda\gravar_ata.py") --ja-tem $Agente $data 2>&1 | Out-String).Trim()
   $ErrorActionPreference = $eaCol
   if ($nuvemValida -eq "sim") {
     $nuvemVenceu = $true
@@ -542,7 +548,7 @@ if ($puxou -and (Git-Passo "add da ata" $addArgs)) {
 
 # --- Leva o painel pro celular ----------------------------------------------
 # So o Conselho passa -Publicar. Publicar a cada refresh seriam sete vezes por
-# dia para mudar centavos, e sete notificacoes no celular do Rodrigo; as 22h30
+# dia para mudar centavos, e sete notificacoes no celular do Rodrigo; na rodada da madrugada
 # o dia ja fechou e o numero e o final.
 #
 # Chamada SEPARADA do claude, de proposito: se a publicacao falhar, o briefing

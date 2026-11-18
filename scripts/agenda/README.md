@@ -50,8 +50,8 @@ powershell -ExecutionPolicy Bypass -File "...\instalar_tarefas.ps1" -Remover
 ## Conferir e testar
 
 ```powershell
-schtasks /Query /TN "FAST\*" /FO LIST          # ver as quatro
-schtasks /Run   /TN "FAST\Operacao 11h30"      # rodar agora, sem esperar
+schtasks /Query /TN "FAST\*" /FO LIST                 # ver a tarefa
+schtasks /Run   /TN "FAST\Rodada da madrugada"      # rodar agora, sem esperar
 ```
 
 Depois de rodar à mão, abra a pasta `Briefings` — o arquivo do dia deve estar lá.
@@ -61,7 +61,7 @@ Depois de rodar à mão, abra a pasta `Briefings` — o arquivo do dia deve esta
 A tarefa não roda. Para recuperar a execução perdida ao ligar:
 
 ```powershell
-schtasks /Change /TN "FAST\Operacao 11h30" /ENABLE
+schtasks /Change /TN "FAST\Rodada da madrugada" /ENABLE
 ```
 
 e marque **"Executar assim que possível após perder um início agendado"** nas
@@ -74,20 +74,28 @@ schtasks /Change /TN "FAST\Marketing sexta" /DISABLE   # pausa
 schtasks /Delete /TN "FAST\Marketing sexta" /F         # remove
 ```
 
-## As sete tarefas
+## A rodada da madrugada (desde 18/11/2026)
 
-| Hora | Cargo | Por que esse horário |
-|---|---|---|
-| 07h30 | `/memoria` | lê a auditoria de coerência que roda às 07h no GitHub |
-| 08h00 | `/marketing` | o refresh de mídia sai às 07h |
-| 08h30 | `/financeiro` | caixa e margem antes de o dia começar a gastar |
-| 09h00 | `/relacionamento` | chamar quem sumiu antes do movimento começar |
-| 09h30 | `/pessoas` | equipe e escala antes do turno da tarde |
-| 11h30 | `/operacao-diaria` | o painel atualiza às 11h — ainda dá tempo de salvar o dia |
-| 22h30 | `/conselho` | fecha o dia nas quatro janelas, com os seis departamentos |
+Uma tarefa só, `FAST\Rodada da madrugada`, às **00h40**, com os sete cargos em
+fila: memória → marketing → financeiro → relacionamento → pessoas → operação →
+conselho (este por último, lendo os seis que acabaram de sair, e republicando o
+painel). Leva de 1 a 2 horas.
 
-Um cargo, uma tarefa. O Conselho continua convocando todo mundo à noite — o
-briefing individual da manhã é para agir, a reunião da noite é para decidir.
+**Por que de madrugada.** A assinatura do Claude tem uma cota que vale por 5 horas
+e é dividida com todas as outras rotinas do Rodrigo: painel de investimentos
+(07h14 e 19h14), cotações de hora em hora no pregão, mídias (08h e 18h), cérebro
+(19h), backup (06h). Em 11/11 o conselho das 22h30 caiu no limite aberto às 19h;
+em 14/11 três cargos da manhã caíram também. Das 00h40 às ~03h nenhuma outra
+rotina roda: a janela fica só para a FAST.
+
+**Que dia cada ata cobre.** Antes do meio-dia o dia de referência é **ontem**, já
+fechado, e a ata leva a data dele (`rodar_agente.ps1 -Ontem`, corte às 12h). O Rodrigo acorda com os sete pareceres e o conselho do dia anterior.
+
+**PC desligado.** `WakeToRun` acorda o PC da suspensão; desligado de vez, a fila
+roda inteira quando ele ligar, um cargo depois do outro. Para o PC acordar
+sozinho, o Windows precisa permitir "temporizadores de ativação" (Opções de
+energia → Configurações avançadas → Suspender → Permitir temporizadores de
+ativação → Habilitar).
 
 ### A trava contra ruído
 

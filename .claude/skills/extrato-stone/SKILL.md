@@ -93,7 +93,7 @@ registre em `docs/aprendizados/` se a taxa mudar de patamar.
    disparado à mão, mas custa ~27 chamadas da cota do Trinks — não faça por
    hábito.
 3. Publicar no Artifact do celular é outro cargo (`/publicar`), e o encaixe
-   natural dele é o Conselho das 22h30.
+   natural dele é o Conselho da madrugada.
 
 ## O Spa é outro arquivo
 

@@ -51,7 +51,7 @@ BRT = timezone(timedelta(hours=-3))
 #   refresh  roda de hora em hora das 10h às 21h  -> 3h de folga cobre um pulo
 #            do cron e a madrugada nao conta (ver `madrugada_ok`)
 #   midias   roda uma vez por dia, de manha       -> 30h cobre um dia pulado
-#   conselho roda as 22:30                        -> 30h
+#   conselho roda na fila da madrugada (00h40)    -> 30h
 LIMITES = {
     "refresh":  {"horas": 3,  "rotulo": "Painel (Trinks)",   "madrugada_ok": True},
     "midias":   {"horas": 30, "rotulo": "Mídias (Meta)",     "madrugada_ok": False},

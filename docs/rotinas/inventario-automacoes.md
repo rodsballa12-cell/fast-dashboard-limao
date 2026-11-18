@@ -20,12 +20,34 @@ Atualize esta tabela sempre que criar, mudar ou desligar uma rotina.
 
 ## Rotina do claude.ai (sem PC, sem chave)
 
-"Conselho FAST Limão · noite", todo dia às 22h17, notificação no celular. Não tem o cofre (lê só o que é aberto) e não consegue gravar no repositório.
+"Conselho FAST Limão · noite" (22h17): **pausada em 18/11/2026**. Repetia o conselho do PC
+sem o cofre e gastava a mesma cota. Para religar: pedir numa sessão "religue o conselho do claude.ai".
+
+## Quem gasta a cota do Claude, hora a hora (18/11/2026)
+
+A assinatura tem uma cota que vale por 5 horas e outra por semana, **divididas por tudo abaixo**
+e pelas conversas do Rodrigo. Quando uma acaba, quem roda depois fica sem resposta.
+
+| Hora (BRT) | Rotina | Peso |
+|---|---|---|
+| **00h40 → ~03h** | **FAST: os sete cargos em fila, conselho por último** | alto |
+| 06h00 | backup do espólio (navegador) | baixo |
+| 07h00 | Google Business (Supermetrics) | baixo |
+| 07h14 e 19h14 (dias úteis) | painel patrimonial, rodada da manhã e do fechamento | alto |
+| 07h23 (quarta) | post do LinkedIn | médio |
+| 08h00 e 18h00 | mídias sociais (Supermetrics) | médio |
+| 10h07 a 18h07 e 10h37 a 17h37 (dias úteis) | cotações do pregão (+ notícias no :07) | médio, somado |
+| 19h00 | rotina diária do cérebro (Obsidian) | alto |
+
+De 00h40 às 06h nada mais roda: é a única janela que fica só para a FAST.
 
 ## PC do Rodrigo: só roda se o PC estiver ligado
 
-Sete tarefas no Agendador do Windows (`scripts/agenda/instalar_tarefas.ps1`), nos mesmos
-horários dos cargos. Cada uma chama `rodar_agente.ps1`, que faz:
+Uma tarefa no Agendador do Windows, `FAST\Rodada da madrugada` (`scripts/agenda/instalar_tarefas.ps1`),
+às **00h40**, com os sete cargos **em fila** (memória, marketing, financeiro, relacionamento,
+pessoas, operação, conselho + publicar o painel). Antes do meio-dia o dia de referência é
+**ontem**: a ata leva a data do dia fechado. Até 18/11 eram sete tarefas de dia (07h30 a 11h30
+e conselho 22h30), e caíam no limite de cota das outras rotinas. Cada cargo da fila chama `rodar_agente.ps1`, que faz:
 
 1. `git pull` e **abre o cofre** com o dado novo (desde 13/11; antes lia a última cópia aberta à mão);
 2. **o que só o PC alcança**: reserva Stone no Excel, Stone do Spa no razão, dados frescos
