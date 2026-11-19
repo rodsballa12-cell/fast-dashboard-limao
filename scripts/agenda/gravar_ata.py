@@ -77,7 +77,9 @@ def avaliar(agente: str, texto: str) -> tuple[bool, str]:
         return False, "o claude não devolveu texto"
     # Erro de acesso não é "formato errado": diga o que fazer (12/11/2026, a
     # chave venceu e por dois dias o painel culpou um aviso de permissão).
-    if re.search(r"401|Invalid bearer token|Failed to authenticate|OAuth token has expired", t):
+    # Só vale para texto curto: mensagem de erro é curta. Um parecer inteiro pode
+    # ter "401" num valor (19/11/2026: o conselho saiu bom e foi marcado como falha).
+    if len(t) < 600 and re.search(r"401|Invalid bearer token|Failed to authenticate|OAuth token has expired", t):
         return False, "chave de acesso do Claude recusada (401) — gerar outra no PC com 'claude setup-token' e trocar o segredo CLAUDE_CODE_OAUTH_TOKEN no GitHub"
     if re.search(r"credit balance|usage limit|rate limit", t, re.I) and len(t) < 600:
         return False, "limite de uso do Claude atingido"
