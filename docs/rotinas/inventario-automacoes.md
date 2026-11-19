@@ -11,7 +11,7 @@ Atualize esta tabela sempre que criar, mudar ou desligar uma rotina.
 | Mídias | `midias_refresh.yml` | 07h, 09h e 11h | Meta Ads, Instagram e Facebook das duas lojas; Google Business via Supermetrics |
 | Trinks scrape | `trinks_scrape.yml` | 06h, 12h, 18h e 23h | relatório de movimentações financeiras |
 | WhatsApp automático | `campanhas_wa.yml` | 10h | aniversário e reativação (fila) |
-| **Cargos na nuvem** | `cargos_nuvem.yml` | **horários desligados em 13/11** (chave dava 401 e a falha sobrescrevia a ata boa do PC); só disparo manual | os sete pareceres e o conselho, conferidos pelo formato; ata em `docs/atas/`; o conselho vira issue (e-mail e celular) |
+| **Cargos na nuvem** | `cargos_nuvem.yml` | **religado em 19/11, só de madrugada**: 04h00 memória, 04h20 marketing, 04h40 financeiro, 05h00 relacionamento, 05h20 pessoas, 05h40 operação, 06h00 conselho | **reserva do PC**: cada cargo só trabalha se o parecer do dia anterior ainda não existir (se o PC fez, termina em segundos, sem gastar cota). Execução atrasada para depois das 08h é pulada. Ata em `docs/atas/` com a data de ontem; o conselho vira issue (e-mail e celular) |
 | A empresa se reuniu ontem? | `auditoria_agenda.yml` | 09h20 e 10h20 | confere se as atas do dia anterior existem |
 | Watchdog | `watchdog.yml` | 09h e 15h | abre issue quando o pipeline local trava |
 | Conselho Sync | `conselho_sync.yml` | quando `Briefings/*-conselho.md` chega na main | aplica as decisões aprovadas no painel |
@@ -29,8 +29,10 @@ Atualize esta tabela sempre que criar, mudar ou desligar uma rotina.
   auditoria de coerência (4 divergências); o dado de mídia chegou e o carimbo registra "nao e midia".
 - **Instagram**: a métrica `profile_activity` retorna HTTP 400 (a Meta não a aceita mais). O erro agora
   aparece inteiro no log, com a lista de métricas válidas, para escolher a substituta. Até lá o campo vale 0.
-- **Cargos na nuvem**: continuam parados (token 401). As issues "Cargo sem parecer" (#67 a #74) ficam
-  abertas de propósito: são o alarme enquanto o `CLAUDE_CODE_OAUTH_TOKEN` não for renovado.
+- **Cargos na nuvem**: token renovado e testado em 19/11 (o conselho saiu e passou no formato). Religados
+  de madrugada, como reserva do PC (ver a tabela acima). O conferidor de ata só trata "401" como erro
+  de acesso em texto curto: um parecer bom com "401" no meio era marcado como falha. As issues antigas
+  "Cargo sem parecer" (#67 a #74) foram fechadas.
 
 ## Rotina do claude.ai (sem PC, sem chave)
 
@@ -45,6 +47,7 @@ e pelas conversas do Rodrigo. Quando uma acaba, quem roda depois fica sem respos
 | Hora (BRT) | Rotina | Peso |
 |---|---|---|
 | **00h40 → ~03h** | **FAST: os sete cargos em fila, conselho por último** | alto |
+| **04h00 → 06h25** | **FAST na nuvem (reserva)**: só roda o cargo que o PC não entregou; se tudo saiu, não gasta nada | zero a alto |
 | 06h00 | backup do espólio (navegador) | baixo |
 | 07h00 | Google Business (Supermetrics) | baixo |
 | 07h14 e 19h14 (dias úteis) | painel patrimonial, rodada da manhã e do fechamento | alto |
@@ -53,7 +56,7 @@ e pelas conversas do Rodrigo. Quando uma acaba, quem roda depois fica sem respos
 | 10h07 a 18h07 e 10h37 a 17h37 (dias úteis) | cotações do pregão (+ notícias no :07) | médio, somado |
 | 19h00 | rotina diária do cérebro (Obsidian) | alto |
 
-De 00h40 às 06h nada mais roda: é a única janela que fica só para a FAST.
+De 00h40 às 06h30 só a FAST roda (PC primeiro, nuvem de reserva). **Nada da nuvem roda em horário comercial** (regra de 19/11).
 
 ## PC do Rodrigo: só roda se o PC estiver ligado
 

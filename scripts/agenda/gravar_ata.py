@@ -104,6 +104,11 @@ def main(argv: list[str]) -> int:
     ok, motivo = avaliar(agente, texto)
     agora = datetime.now(BRT)
     data, hora = agora.strftime("%Y-%m-%d"), agora.strftime("%H:%M")
+    # --dia AAAA-MM-DD: rodada da madrugada, a ata leva o dia de referência (ontem)
+    if "--dia" in argv:
+        d = argv[argv.index("--dia") + 1]
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", d):
+            data = d
 
     cabecalho = (
         "---\n"

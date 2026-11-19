@@ -13,10 +13,27 @@ name: Cargos na nuvem (parecer diário e conselho)
 # a ata da nuvem já existe, o rodar_agente.ps1 só copia a ata para o vault.
 
 on:
-  # Horários desligados em 13/11/2026: o CLAUDE_CODE_OAUTH_TOKEN dá 401 desde
-  # 01/11, e cada falha gravava uma ata de erro por cima do parecer bom do PC
-  # (12/11: pessoas e relacionamento). Fica só o disparo manual até a chave valer.
-  # Para religar, devolva os sete crons (ver docs/rotinas/inventario-automacoes.md).
+  # Religado em 19/11/2026, como RESERVA da rodada da madrugada do PC.
+  # Motivo do desligamento de 13/11: o token dava 401 e cada falha gravava uma ata
+  # de erro por cima do parecer bom do PC. O token foi trocado e testado em 19/11.
+  #
+  # Regra de cota (Rodrigo, 19/11): NADA disto roda em horário comercial. O PC faz
+  # a fila às 00h40 (termina por volta das 03h). A nuvem entra DEPOIS, das 04h às
+  # 06h30 (BRT), uma de cada vez, e cada cargo só trabalha se o parecer do dia de
+  # referência ainda não existir: se o PC já fez, a rodada termina em segundos e
+  # não gasta cota. Uma execução que o GitHub atrase para depois das 08h é pulada.
+  #
+  # Espaço de 20 min entre os cargos: o `concurrency` guarda só UMA execução
+  # esperando, então dois cargos colados perderiam um deles.
+  schedule:
+    # UTC; Brasília = UTC-3
+    - cron: '0 7 * * *'    # 04h00 Memória
+    - cron: '20 7 * * *'   # 04h20 Marketing
+    - cron: '40 7 * * *'   # 04h40 Financeiro
+    - cron: '0 8 * * *'    # 05h00 Relacionamento
+    - cron: '20 8 * * *'   # 05h20 Pessoas
+    - cron: '40 8 * * *'   # 05h40 Operação
+    - cron: '0 9 * * *'    # 06h00 Conselho (até 06h25)
   workflow_dispatch:
     inputs:
       agente:
@@ -41,17 +58,28 @@ jobs:
         id: qual
         run: |
           case "${{ github.event.schedule }}" in
-            '30 10 * * *') a=memoria ;;
-            '0 11 * * *')  a=marketing ;;
-            '30 11 * * *') a=financeiro ;;
-            '0 12 * * *')  a=relacionamento ;;
-            '30 12 * * *') a=pessoas ;;
-            '30 14 * * *') a=operacao-diaria ;;
-            '30 1 * * *')  a=conselho ;;
+            '0 7 * * *')   a=memoria ;;
+            '20 7 * * *')  a=marketing ;;
+            '40 7 * * *')  a=financeiro ;;
+            '0 8 * * *')   a=relacionamento ;;
+            '20 8 * * *')  a=pessoas ;;
+            '40 8 * * *')  a=operacao-diaria ;;
+            '0 9 * * *')   a=conselho ;;
             *)             a="${{ github.event.inputs.agente }}" ;;
           esac
+          # Dia de referência: na rodada agendada da madrugada é ONTEM (dia já
+          # fechado), como no PC. Disparo manual vale hoje, como sempre valeu.
+          hora=$(TZ=America/Sao_Paulo date +%H)
+          dia=$(TZ=America/Sao_Paulo date +%F)
+          pula=nao
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ $((10#$hora)) -ge 8 ]; then pula=sim; fi
+            if [ $((10#$hora)) -lt 12 ]; then dia=$(TZ=America/Sao_Paulo date -d yesterday +%F); fi
+          fi
           echo "agente=$a" >> "$GITHUB_OUTPUT"
-          echo "Cargo: $a"
+          echo "dia=$dia" >> "$GITHUB_OUTPUT"
+          echo "pula=$pula" >> "$GITHUB_OUTPUT"
+          echo "Cargo: $a · dia de referência: $dia · pular (fora da madrugada): $pula"
 
       - uses: actions/checkout@v4
         with:
@@ -66,7 +94,13 @@ jobs:
         env:
           TZ: America/Sao_Paulo
         run: |
-          r=$(python3 scripts/agenda/gravar_ata.py --ja-tem "${{ steps.qual.outputs.agente }}")
+          if [ "${{ steps.qual.outputs.pula }}" = "sim" ]; then
+            # execução agendada que o GitHub atrasou para depois das 08h: não gasta cota
+            echo "tem=sim" >> "$GITHUB_OUTPUT"
+            echo "Fora da janela da madrugada (depois das 08h): pulado."
+            exit 0
+          fi
+          r=$(python3 scripts/agenda/gravar_ata.py --ja-tem "${{ steps.qual.outputs.agente }}" "${{ steps.qual.outputs.dia }}")
           echo "tem=$r" >> "$GITHUB_OUTPUT"
           echo "Já existe parecer válido hoje: $r"
 
@@ -106,7 +140,7 @@ jobs:
             echo "Falta o segredo CLAUDE_CODE_OAUTH_TOKEN no GitHub (gere no PC com 'claude setup-token')." > /tmp/saida.txt
             exit 0
           fi
-          PEDIDO=$(python3 scripts/agenda/gravar_ata.py --pedido "$AG")
+          PEDIDO=$(python3 scripts/agenda/gravar_ata.py --pedido "$AG" "${{ steps.qual.outputs.dia }}")
           # 25 min para o conselho (ele lê os seis cargos), 14 para os demais.
           LIM=840; [ "$AG" = "conselho" ] && LIM=1500
           timeout "$LIM" claude -p "$PEDIDO" --output-format text > /tmp/saida.txt 2>&1 \
@@ -118,7 +152,7 @@ jobs:
         if: steps.ja.outputs.tem != 'sim'
         env:
           TZ: America/Sao_Paulo
-        run: python3 scripts/agenda/gravar_ata.py "${{ steps.qual.outputs.agente }}" /tmp/saida.txt --origem "nuvem (GitHub Actions)"
+        run: python3 scripts/agenda/gravar_ata.py "${{ steps.qual.outputs.agente }}" /tmp/saida.txt --origem "nuvem (GitHub Actions)" --dia "${{ steps.qual.outputs.dia }}"
 
       - name: Carimbo de saúde
         if: steps.ja.outputs.tem != 'sim'
@@ -179,4 +213,4 @@ jobs:
           done
           gh label create conselho --color FBD300 --description "Ata do conselho da noite" 2>/dev/null || true
           { sed '1,/^---$/d' "${{ steps.ata.outputs.arquivo }}"; echo; echo "---"; echo "_Generated by [Claude Code](https://claude.ai/code)_"; } > /tmp/conselho.md
-          gh issue create --title "⚖️ Conselho $(TZ=America/Sao_Paulo date +%d/%m)" --label conselho --body-file /tmp/conselho.md
+          gh issue create --title "⚖️ Conselho $(date -d "${{ steps.qual.outputs.dia }}" +%d/%m)" --label conselho --body-file /tmp/conselho.md
