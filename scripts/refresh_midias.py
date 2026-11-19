@@ -956,7 +956,7 @@ def _fetch_ig_insights_range(ig_user_id: str, token: str, since: date, until: da
                 if isinstance(v, (int, float)):
                     agg[metric_name] = int(v)
         except Exception as e:
-            print(f"  [INFO] IG {metric_name} {since}..{until} indisponivel: {str(e)[:100]}", file=sys.stderr)
+            print(f"  [INFO] IG {metric_name} {since}..{until} indisponivel: {str(e)[:600]}", file=sys.stderr)
 
     return agg
 

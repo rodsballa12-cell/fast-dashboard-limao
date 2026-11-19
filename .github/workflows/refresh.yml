@@ -222,16 +222,21 @@ jobs:
       # dashboard_data.json. A densidade agregada que o payload ja traz mistura
       # os dias e nao serve pra escala — ver scripts/densidade_dow.py.
       - name: Mapa de escala (densidade por dia da semana)
+        id: densidade
         continue-on-error: true
         run: |
-          python scripts/densidade_dow.py --gravar --unidade escova || true
-          python scripts/densidade_dow.py --gravar --unidade spa    || true
+          # sem `|| true`: se uma unidade falhar, o passo fica vermelho e o
+          # carimbo de saude registra (continue-on-error segura a rodada)
+          rc=0
+          python scripts/densidade_dow.py --gravar --unidade escova || rc=1
+          python scripts/densidade_dow.py --gravar --unidade spa    || rc=1
           # O consolidado roda por ultimo e soma os brutos das duas unidades.
           # Sem esta linha o bloco nunca chegava no payload da holding (a
           # consolidacao acontece ANTES deste passo) e o card "Mapa de escala"
           # abria vazio la. Passou 15/09 sem ninguem ver porque a auditoria so
           # conferia a Escova.
-          python scripts/densidade_dow.py --gravar --unidade consolidado || true
+          python scripts/densidade_dow.py --gravar --unidade consolidado || rc=1
+          exit $rc
 
       # Tabela x cadastrado x COBRADO, nas tres unidades.
       #
@@ -249,8 +254,9 @@ jobs:
       # Depois da consolidacao, como a densidade: o payload da holding e
       # regerado antes e perderia o bloco.
       - name: Preco cobrado vs tabela (Escova + SPA + Consolidado)
+        id: preco
         continue-on-error: true
-        run: python scripts/preco_praticado.py || true
+        run: python scripts/preco_praticado.py
 
       # WhatsApp das profissionais para o botao de cobranca da aba Comissoes.
       # A API do Trinks nao entrega o celular da profissional: casa o CPF dela
@@ -258,21 +264,23 @@ jobs:
       # O arquivo de contatos esta no .gitignore; o numero chega ao painel
       # dentro do dashboard_data, que o cofre criptografa.
       - name: WhatsApp das profissionais (aba Comissoes)
+        id: contatos
         continue-on-error: true
         env:
           TRINKS_API_KEY: ${{ secrets.TRINKS_API_KEY }}
           TRINKS_ESTABELECIMENTO_ID: ${{ secrets.TRINKS_ESTABELECIMENTO_ID }}
           TRINKS_API_KEY_SPA: ${{ secrets.TRINKS_API_KEY_SPA }}
           TRINKS_ESTABELECIMENTO_ID_SPA: ${{ secrets.TRINKS_ESTABELECIMENTO_ID_SPA }}
-        run: python scripts/profissionais_contato.py || true
+        run: python scripts/profissionais_contato.py
 
       # Comissão por quinzena de pagamento (1-14 paga dia 15; 15-fim paga dia 30),
       # nas tres unidades, para a aba Comissoes. Depois da consolidacao pelo
       # mesmo motivo da densidade: o payload da holding e regerado antes e
       # perderia o bloco. As notas fiscais (Forms) entram pelo PC.
       - name: Comissao por quinzena (aba Comissoes)
+        id: quinzena
         continue-on-error: true
-        run: python scripts/comissao_quinzena.py --gravar || true
+        run: python scripts/comissao_quinzena.py --gravar
 
       - name: Fechar cofre (criptografa antes do commit)
         env:
@@ -397,9 +405,18 @@ jobs:
       - name: Carimbar saude
         if: always()
         run: |
+          # passos opcionais (continue-on-error) que falharam entram no detalhe:
+          # a rodada fica verde, mas a falha deixa de ser silenciosa
+          opcionais=""
+          [ "${{ steps.densidade.outcome }}" = "failure" ] && opcionais="$opcionais densidade"
+          [ "${{ steps.preco.outcome }}" = "failure" ] && opcionais="$opcionais preco"
+          [ "${{ steps.contatos.outcome }}" = "failure" ] && opcionais="$opcionais whatsapp-profissionais"
+          [ "${{ steps.quinzena.outcome }}" = "failure" ] && opcionais="$opcionais quinzena"
+          detalhe="${{ job.status }} · run ${{ github.run_number }}"
+          [ -n "$opcionais" ] && detalhe="$detalhe · passos opcionais com erro:$opcionais"
           python scripts/saude.py carimbar refresh \
             "${{ job.status == 'success' && 'ok' || 'falha' }}" \
-            "${{ job.status }} · run ${{ github.run_number }}"
+            "$detalhe"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/saude.json data/decisoes.json

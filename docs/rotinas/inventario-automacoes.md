@@ -16,7 +16,21 @@ Atualize esta tabela sempre que criar, mudar ou desligar uma rotina.
 | Watchdog | `watchdog.yml` | 09h e 15h | abre issue quando o pipeline local trava |
 | Conselho Sync | `conselho_sync.yml` | quando `Briefings/*-conselho.md` chega na main | aplica as decisões aprovadas no painel |
 | HubSpot sync | `hubspot_sync.yml` | desativado desde 14/09 | — |
-| Sob demanda | `aniversarios*`, `stone_entrada`, `historico_cliente`, `fechamento_dia`, `cofre_checar`, `debug_*`, `probe_*`, `sults_probe`, `trinks_discover`, `audit_consolidado` | manual | — |
+| Sob demanda | `aniversarios`, `aniversarios_dispatch` (por comentário), `stone_entrada`, `historico_cliente`, `fechamento_dia`, `cofre_checar`, `audit_consolidado`, `meta_probe`, `trinks_probe` | manual | — |
+| Deploy do site | `pages-build-deployment` (do GitHub) | a cada commit na main | publica o painel no GitHub Pages; falhou por timeout em 19/11 12:03 e 12:33, reexecutado e passou |
+
+## Conferido em 19/11/2026 (só GitHub)
+
+- **Refresh do painel**: os quatro passos opcionais (densidade, preço, WhatsApp das profissionais e quinzena)
+  não usam mais `|| true`. Se falharem a rodada continua verde, mas o carimbo de saúde lista quais
+  falharam (`passos opcionais com erro: ...`). Antes o erro de `dotenv` no WhatsApp das profissionais
+  passou semanas sem aparecer.
+- **Mídias**: a coleta grava antes da auditoria. Em 13 a 17/11 a rodada ficou vermelha só por causa da
+  auditoria de coerência (4 divergências); o dado de mídia chegou e o carimbo registra "nao e midia".
+- **Instagram**: a métrica `profile_activity` retorna HTTP 400 (a Meta não a aceita mais). O erro agora
+  aparece inteiro no log, com a lista de métricas válidas, para escolher a substituta. Até lá o campo vale 0.
+- **Cargos na nuvem**: continuam parados (token 401). As issues "Cargo sem parecer" (#67 a #74) ficam
+  abertas de propósito: são o alarme enquanto o `CLAUDE_CODE_OAUTH_TOKEN` não for renovado.
 
 ## Rotina do claude.ai (sem PC, sem chave)
 
