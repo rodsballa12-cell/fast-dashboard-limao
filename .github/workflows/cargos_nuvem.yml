@@ -25,15 +25,30 @@ on:
   #
   # Espaço de 20 min entre os cargos: o `concurrency` guarda só UMA execução
   # esperando, então dois cargos colados perderiam um deles.
+  #
+  # 20/11/2026: na primeira madrugada NENHUMA das sete disparou (o GitHub descarta
+  # cron em horário redondo sob carga). Por isso: (1) minutos quebrados (:07, :27,
+  # :47) e (2) uma SEGUNDA TENTATIVA dos sete cargos, das 06h37 às 07h37, mais
+  # apertada (10 min) porque quase tudo já terá parecer e termina em segundos.
+  # Depois das 08h (atraso do GitHub) nada roda.
   schedule:
     # UTC; Brasília = UTC-3
-    - cron: '0 7 * * *'    # 04h00 Memória
-    - cron: '20 7 * * *'   # 04h20 Marketing
-    - cron: '40 7 * * *'   # 04h40 Financeiro
-    - cron: '0 8 * * *'    # 05h00 Relacionamento
-    - cron: '20 8 * * *'   # 05h20 Pessoas
-    - cron: '40 8 * * *'   # 05h40 Operação
-    - cron: '0 9 * * *'    # 06h00 Conselho (até 06h25)
+    # 1ª tentativa
+    - cron: '7 7 * * *'    # 04h07 Memória
+    - cron: '27 7 * * *'   # 04h27 Marketing
+    - cron: '47 7 * * *'   # 04h47 Financeiro
+    - cron: '7 8 * * *'    # 05h07 Relacionamento
+    - cron: '27 8 * * *'   # 05h27 Pessoas
+    - cron: '47 8 * * *'   # 05h47 Operação
+    - cron: '7 9 * * *'    # 06h07 Conselho (até ~06h32)
+    # 2ª tentativa (só trabalha o que ainda não tem parecer)
+    - cron: '37 9 * * *'   # 06h37 Memória
+    - cron: '47 9 * * *'   # 06h47 Marketing
+    - cron: '57 9 * * *'   # 06h57 Financeiro
+    - cron: '7 10 * * *'   # 07h07 Relacionamento
+    - cron: '17 10 * * *'  # 07h17 Pessoas
+    - cron: '27 10 * * *'  # 07h27 Operação
+    - cron: '37 10 * * *'  # 07h37 Conselho
   workflow_dispatch:
     inputs:
       agente:
@@ -58,13 +73,13 @@ jobs:
         id: qual
         run: |
           case "${{ github.event.schedule }}" in
-            '0 7 * * *')   a=memoria ;;
-            '20 7 * * *')  a=marketing ;;
-            '40 7 * * *')  a=financeiro ;;
-            '0 8 * * *')   a=relacionamento ;;
-            '20 8 * * *')  a=pessoas ;;
-            '40 8 * * *')  a=operacao-diaria ;;
-            '0 9 * * *')   a=conselho ;;
+            '7 7 * * *'|'37 9 * * *')    a=memoria ;;
+            '27 7 * * *'|'47 9 * * *')   a=marketing ;;
+            '47 7 * * *'|'57 9 * * *')   a=financeiro ;;
+            '7 8 * * *'|'7 10 * * *')    a=relacionamento ;;
+            '27 8 * * *'|'17 10 * * *')  a=pessoas ;;
+            '47 8 * * *'|'27 10 * * *')  a=operacao-diaria ;;
+            '7 9 * * *'|'37 10 * * *')   a=conselho ;;
             *)             a="${{ github.event.inputs.agente }}" ;;
           esac
           # Dia de referência: na rodada agendada da madrugada é ONTEM (dia já
