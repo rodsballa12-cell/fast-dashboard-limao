@@ -153,6 +153,13 @@ def ja_tem_parecer(agente: str, data: str | None = None) -> bool:
     txt = arq.read_text(encoding="utf-8", errors="replace")
     if re.search(r"^resultado:\s*falha", txt, re.M):
         return False
+    # Conselho é fechamento do dia. Um conselho rodado de dia (entre 06h e 18h,
+    # por exemplo um disparo manual na nuvem) é parcial e não conta: em 19/11 o
+    # da nuvem das 12h12 fez a fila da madrugada pular o fechamento de verdade.
+    if agente == "conselho":
+        m = re.search(r"^hora:\s*(\d{2}):(\d{2})", txt, re.M)
+        if m and 6 <= int(m.group(1)) < 18:
+            return False
     corpo = txt.split("---", 2)[-1]
     return avaliar(agente, corpo)[0]
 
