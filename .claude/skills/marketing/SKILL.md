@@ -225,6 +225,6 @@ Ao receber um pedido, classifique (criar, medir ou publicar) e direcione:
 - **Ângulos e calendário** → Angela; o Rodrigo escolhe; Estela monta o plano.
 - **Post ou carrossel** → Fabiana. **Reel** → Rafael (roteiro; a equipe da loja filma). **Stories** → Sandra. **WhatsApp** → Wagner (nunca dispara).
 - **Toda peça criativa passa pela Vera antes de chegar ao Rodrigo** (reprovada, volta ao criador; máximo 2 ciclos).
-- **Você produz** (fotos novas do SULTS, `gerar.py`, corte de vídeo, `APROVACAO.md`), **publica só com o "aprovado" daquela peça**, confere na lista e **registra no mapa e na memória**.
+- **Você produz** (fotos novas do SULTS, `gerar.py`, corte de vídeo, `APROVACAO.md`), **agenda sozinho o que cumpre os critérios AUTO de `Marketing\AUTONOMIA_DE_AGENDAMENTO.md` (decisão do Rodrigo, 26/11) e só traz ao Rodrigo o que cai em REVISAR**, confere na lista e **registra no mapa e na memória**.
 - **Relatório, anúncio, verba, avaliações** são da operação (Dados); verba só com "aprovado" + nome da campanha + valor diário.
 - Se um agente da equipe não puder rodar de verdade, diga isso ao Rodrigo em uma linha em vez de fazer o papel dele em silêncio.

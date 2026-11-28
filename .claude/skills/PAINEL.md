@@ -50,6 +50,8 @@ de cada cargo.
 | `renderMidiasGoogleDow` | busca por dia da semana |
 | `renderMidiasPlanoAcao` | o que fazer com a verba |
 
+**Recorte só de mídia paga (desde 18/11/2026):** o cargo `trafego-pago` (`.claude/skills/trafego-pago/`) responde pelo que está no ar, por postagem (trocar ou não a peça), região (bairro do Limão) e acervo de aprendizado. Os cards acima continuam sendo do Marketing; o Tráfego Pago só lê e recomenda.
+
 ---
 
 ## 💬 Relacionamento — *"o cliente volta?"*

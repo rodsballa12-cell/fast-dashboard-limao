@@ -2,7 +2,7 @@
 titulo: Textos para os clientes sumidos — rascunho para aprovação
 data: 2026-10-23
 decisao: 2026-10-16-conselho-clientes-sumindo-canal-manual-com-dono.md
-status: AGUARDANDO APROVAÇÃO DO RODRIGO
+status: APROVADO PELO RODRIGO EM 25/11/2026 (os três textos, como estão; só Escova — Spa não tem texto)
 quem_envia: gerente da loja, pelo botão 📱 do painel (WhatsApp dela, não disparo automático)
 ---
 
